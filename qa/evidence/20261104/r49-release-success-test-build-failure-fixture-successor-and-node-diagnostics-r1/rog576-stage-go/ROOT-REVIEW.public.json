@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.root.successor5767739-ROG-stage.source-review.r1",
+  "sourceTree": "f852b1189074d42c661b52e44d21fba0d0fc71cb",
+  "authorChecksReproduced": 94,
+  "extraActualChecks": [
+    {
+      "name": "Exact published candidate manifest bytes",
+      "pass": true
+    },
+    {
+      "name": "Read-only02b base qualification belongs to prior whole publication",
+      "pass": true
+    },
+    {
+      "name": "Frozen successor actual tree/parent/readback",
+      "pass": true
+    },
+    {
+      "name": "Original build/log owner explicitly released",
+      "pass": true
+    }
+  ],
+  "scope": "Nineteen exact source edits, seven hunks. Existing495 source and failed observer checks retained; independent readonly02b clone base added before/after; only canonical bundle prerequisite uses02b.",
+  "noProductOrPythonExecution": true,
+  "NativeCalls": 0
+}

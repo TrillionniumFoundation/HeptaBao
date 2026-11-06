@@ -1,0 +1,12 @@
+{
+  "entry": "verify576CanonicalInfoActual",
+  "evaluate": [
+    {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685
+    },
+    "verifier.source.js"
+  ],
+  "input": "Whole packet filename->exact text map",
+  "scope": "Original3-call chain and exact INFO metadata only"
+}

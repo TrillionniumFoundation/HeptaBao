@@ -1,0 +1,120 @@
+{
+  "inputs": {
+    "PROPOSAL.original.json": {
+      "blob": "5cff599bb32ba254b0494d9abd0ac3cdb0a05dc4",
+      "bytes": 3856,
+      "sha256": "8a3641d96e58077f08fb1cd1faf76da5fd874154941085b4f54d170648f6059f"
+    },
+    "candidate-index.original.txt": {
+      "blob": "4e4052b40639f1f490adf7c4f9c8a9bab1b7ac99",
+      "bytes": 453838,
+      "sha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423"
+    },
+    "deadline.before.rs": {
+      "blob": "244a172794577d50bf52bbb986448f171d905fae",
+      "bytes": 4576,
+      "sha256": "5b1d932e1ca9ab49226cc9459ca1cadb8cf147abab797ed5d8c3f0dd876828cd"
+    },
+    "deadline.after.rs": {
+      "blob": "432a89db6d9702bd5448134dadf28ad7f9bd654c",
+      "bytes": 4767,
+      "sha256": "d57744707e5179ae16725669f6ba8d421751dfdbebbf26296268692f610de0f1"
+    },
+    "support.before.rs": {
+      "blob": "e6f1031dae7db7c6c09e63305d0a06f047437005",
+      "bytes": 8120,
+      "sha256": "41bd4c12c7fb55979c4f3bde6316353a0d5f6d510dd62f9650d8b1d64188e08d"
+    },
+    "support.after.rs": {
+      "blob": "e861ef9860f25bb250791df7e493fd4a1fb49f63",
+      "bytes": 8343,
+      "sha256": "9ed84d5ace763a9746fc7f932de9c6c1d0d9a7fa8d2eb595eebc3fe70ad2eb62"
+    },
+    "audit.before.rs": {
+      "blob": "0c51b759c257d836adf521bea3d75b90af0b301f",
+      "bytes": 16080,
+      "sha256": "c0cdbd2a5951991b55ae2a93c22c6585c708f280c56f89d6ff105c0fd808448e"
+    },
+    "audit.after.rs": {
+      "blob": "7ca123003ff5740325c11b90dbb8445ba8d5455e",
+      "bytes": 16082,
+      "sha256": "01ee81d4a14cb93911fe596e37476e952acad02b6f0c31ae58a9a1bcdd4399ae"
+    },
+    "change0.forward.diff": {
+      "blob": "a3440d0bb6e32525945bf6ff30dae01a41caaa9a",
+      "bytes": 515,
+      "sha256": "10ddc625f8f436df2358b1d2fee1366e41509cc13b91535bb81d0b7623401535"
+    },
+    "change1.forward.diff": {
+      "blob": "dfecb0116ef1d37e8b9508a138e5e2ce6a09759b",
+      "bytes": 598,
+      "sha256": "1d7797cbe5abf130c8aeae15e99e558c057a2311cd7d223355d16bd33bbfbe22"
+    },
+    "change2.forward.diff": {
+      "blob": "b0d19d199ebc63eb17ac03a1709d75c36deaad56",
+      "bytes": 832,
+      "sha256": "834ff89748c8de0e768ea8b603a4f29ee1afb7f509a224c6bcf6f22da38fa85e"
+    }
+  },
+  "dependencies": [
+    {
+      "file": "ha.rs",
+      "pin": {
+        "blob": "577f2e3234bac279dca98d09f74200ffc8653cb6",
+        "bytes": 171763,
+        "sha256": "619692557bfb072e9aab8a820bdd41ac453184460c6ff177c9a81820d5d2a284"
+      },
+      "purpose": "576 HaProcess fields and authenticated production construction"
+    },
+    {
+      "file": "ha_snapshot_forward.rs",
+      "pin": {
+        "blob": "553b70d33e329e7c71dd957f609b672d4e3ff7a5",
+        "bytes": 6680,
+        "sha256": "feebc80e9f2e4f8cc3f9c70756ce2384aa308070b0b1e418bb7fc02d79be1ffd"
+      },
+      "purpose": "empty handler and missing peer pin reject paths"
+    },
+    {
+      "file": "ha_native_v6_runtime.rs",
+      "pin": {
+        "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+        "bytes": 61623,
+        "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+      },
+      "purpose": "native_v6_enabled actual predicate"
+    },
+    {
+      "file": "historical_restore_tests.rs",
+      "pin": {
+        "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+        "bytes": 53166,
+        "sha256": "ff6cc53a65ea25bcb9d4817f5875d1de950c4814b54bd7eafdff6b95ad8ed69d"
+      },
+      "purpose": "selection returns verified NativeV6PublishedRoot clone"
+    },
+    {
+      "file": "v6_root_publication.rs",
+      "pin": {
+        "blob": "0f341b1260303a721ca2432a9cf7631c1fb86f78",
+        "bytes": 28849,
+        "sha256": "a91a94dfb2e51a1d708435c26c97abcae3d86cb5bde1ef5fe156bdbaf0af66f9"
+      },
+      "purpose": "borrowed exact-size epoch iterator"
+    },
+    {
+      "file": "pipeline_tests.rs",
+      "pin": {
+        "blob": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+        "bytes": 70780,
+        "sha256": "0e204bfd4f2a2b5640e1da6611014f5a87799b099c9b2f6c861283e60c57c2ea"
+      },
+      "purpose": "real TLS pipeline parent and audit module ancestry"
+    }
+  ],
+  "pure_helper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  }
+}

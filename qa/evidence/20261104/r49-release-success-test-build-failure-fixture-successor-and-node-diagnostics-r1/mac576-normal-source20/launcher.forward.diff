@@ -1,0 +1,90 @@
+--- a/launch_normal_same_root_publication.py
++++ b/launch_normal_same_root_publication.py
+@@ -20,8 +20,9 @@
+ for name in ('commit', 'tree', 'stage-sha256', 'runner-sha256', 'groups-sha256', 'launcher-sha256', 'controls-sha256', 'controls-full9-json'):
+     parser.add_argument('--' + name, required=True)
+ args = parser.parse_args()
+-assert args.commit == '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
+-assert args.tree == '9781e9615ac5fb068d217241c74bb54bf87942cf'
++assert args.commit == '5767739cd25e458ac052dc8d384019bab8688ae0'
++assert args.tree == '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
++STAGE_EXPECTED_FULL9 = None
+ for name in ('commit', 'tree'):
+     assert re.fullmatch('[0-9a-f]{40}', getattr(args, name))
+ for name in ('stage_sha256', 'runner_sha256', 'groups_sha256', 'launcher_sha256', 'controls_sha256'):
+@@ -29,7 +30,7 @@
+ 
+ if args.host == 'mac':
+     BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+-    STAGE_ROOT = BASE / 'hb-02b90762-src-20261106-r1'
++    STAGE_ROOT = BASE / 'hb-5767739c-src-20261106-r1'
+     ROOT = STAGE_ROOT / 'normal-build-r1'
+     R9 = BASE / 'continuation-20261104-native-http-r9'
+     OLD = BASE / 'continuation-20261104-native-ssh-http-r8'
+@@ -301,7 +302,7 @@
+ assert not ADMISSION.exists() and not ADMISSION.is_symlink()
+ assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+ stage_raw, stage_pin = read_bound(STAGE_REPORT, args.stage_sha256, 65536)
+-assert [str(x) for x in stage_pin['identity']] == ["16777244","72756440","501","20","33152","1","10558","1793996068500746233","1793996068500755233"]
++assert STAGE_EXPECTED_FULL9 is not None and [str(x) for x in stage_pin['identity']] == STAGE_EXPECTED_FULL9
+ stage = json.loads(stage_raw)
+ assert stage['schema'] == 'heptabao.final-mac-source-only-stage.v1'
+ assert stage['status'] == 'prepared' and stage['source_commit'] == args.commit and stage['source_tree'] == args.tree
+@@ -310,14 +311,14 @@
+ assert stage['stage_purpose'] == 'SOURCE_ONLY_NO_BUILD_CONTROLS' and stage['controls_published'] is False
+ assert stage['full_strict_fsck_passed'] and stage['within_new_stage_deadline']
+ assert stage['full_worktree']['tracked_leaf_count'] == 3932
+-assert stage['full_worktree']['tracked_bytes'] == 62537554
+-assert stage['full_worktree']['full_leaf_index_sha256'] == 'c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc'
++assert stage['full_worktree']['tracked_bytes'] == 62553540
++assert stage['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'
+ assert all(x['direct_child_reaped'] and not x['remaining'] and not x.get('cleanup_error_type') for x in stage['cleanup'])
+ controls_raw, controls_pin = read_bound(CONTROLS_RECEIPT, args.controls_sha256, 20000)
+ assert [str(x) for x in controls_pin['identity']] == json.loads(args.controls_full9_json)
+ assert stat.S_IMODE(controls_pin['identity'][4]) == 0o600
+ controls = json.loads(controls_raw)
+-assert controls['schema'] == 'heptabao.final-mac-normal61-controls-inert.v1'
++assert controls['schema'] == 'heptabao.mac-normal61-native-jwt-pki28-controls-inert.v1'
+ assert controls['status'] == 'prepared' and controls['root_created'] and controls['control_created']
+ assert controls['compiler_started'] is False and controls['service_started'] is False and controls['source_executed'] is False
+ assert controls['source_stage']['path'] == str(STAGE_REPORT)
+@@ -329,9 +330,13 @@
+ assert set(file_rows) == {str(CONTROL / name) for name in (RUNNER_NAME, 'launch_normal_same_root_publication.py', 'normal-test-groups.public.json')}
+ _, launcher_pin = read_bound(Path(__file__), args.launcher_sha256, 40000)
+ runner = CONTROL / RUNNER_NAME
+-_, runner_pin = read_bound(runner, args.runner_sha256, 40000)
++_, runner_pin = read_bound(runner, args.runner_sha256, 49152)
+ groups_raw, groups_pin = read_bound(CONTROL / 'normal-test-groups.public.json', args.groups_sha256, 20000)
+-groups = json.loads(groups_raw)
++group_plan = json.loads(groups_raw)
++assert set(group_plan) == {'schema', 'normal61_groups', 'native_jwt_pki_groups'}
++assert group_plan['schema'] == 'heptabao.mac.normal61-native-jwt-pki28-groups.v1'
++groups = group_plan['normal61_groups']
++native_groups = group_plan['native_jwt_pki_groups']
+ for name, pin in ((RUNNER_NAME, runner_pin), ('launch_normal_same_root_publication.py', launcher_pin), ('normal-test-groups.public.json', groups_pin)):
+     row = file_rows[str(CONTROL / name)]
+     assert row['publication'] == 'created' and row['mode'] == '0600'
+@@ -341,6 +346,12 @@
+ assert sum(len(g['tests']) for g in groups) == controls['exact_test_count'] == 44
+ assert controls['normal_total_test_count'] == 61
+ assert all(g['runtime_seconds'] == 600 for g in groups)
++assert [[g['label'], g['libtest_profile'], len(g['tests'])] for g in native_groups] == controls['native_groups'] == [
++    ['native-jwt-pki-file28', 'file', 28], ['native-jwt-pki-default28', 'default', 28]]
++assert all(g['runtime_seconds'] == 600 for g in native_groups)
++assert native_groups[0]['tests'] == native_groups[1]['tests']
++assert controls['native_unique_test_count'] == 28 and controls['native_profile_execution_count'] == 56
++assert controls['selected_unique_test_count'] == 89 and controls['selected_profile_execution_count'] == 117
+ ADMISSION.mkdir(mode=0o700)
+ result = {'schema': 'heptabao.same-root-publication-normal-target-admission.v1', 'status': 'failed',
+           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+@@ -391,6 +402,10 @@
+                   exact_test_count=controls['exact_test_count'],
+                   additional_existing_ingress_tests=7, additional_cold_h2_tests=9,
+                   additional_same_root_publication_tests=1, original_60_test_count=60,
++                  original_61_test_count=61, native_jwt_pki_unique_tests=28,
++                  native_jwt_pki_profile_executions=56, selected_unique_test_total=89,
++                  selected_profile_execution_total=117, additional_file_libtest_cap_seconds=1800,
++                  default_profile_reuses_same_run_normal_libtest=True,
+                   each_additional_group_total_cap_seconds=600,
+                   original_supervisor_seconds=ORIGINAL_OUTER_SECONDS,
+                   outer_started_monotonic=OUTER_STARTED, outer_until_monotonic=OUTER_UNTIL)

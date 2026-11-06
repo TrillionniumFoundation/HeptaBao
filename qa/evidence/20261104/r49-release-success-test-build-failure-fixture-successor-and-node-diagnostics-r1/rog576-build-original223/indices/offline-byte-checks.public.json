@@ -1,0 +1,1149 @@
+{
+  "schema": "heptabao.current576-original-build-lifecycle-byte-checks.r1",
+  "checks": 285,
+  "passed": true,
+  "results": [
+    {
+      "name": "c576-fresh-build-r1-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-start:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-start:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-status0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-status0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-status0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-status0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-p0:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-p0:native_from_sdk",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-p0:request_arm",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-p0:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "1e631334aabd46e696ad9307bc2c5120a62aeb814df8888e0c9e0f27c2e22a25:admission",
+      "passed": true
+    },
+    {
+      "name": "1e631334aabd46e696ad9307bc2c5120a62aeb814df8888e0c9e0f27c2e22a25:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority0-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "1e631334aabd46e696ad9307bc2c5120a62aeb814df8888e0c9e0f27c2e22a25:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "1e631334aabd46e696ad9307bc2c5120a62aeb814df8888e0c9e0f27c2e22a25:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "1e631334aabd46e696ad9307bc2c5120a62aeb814df8888e0c9e0f27c2e22a25:future_closed",
+      "passed": true
+    },
+    {
+      "name": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88:admission",
+      "passed": true
+    },
+    {
+      "name": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams0-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88:future_closed",
+      "passed": true
+    },
+    {
+      "name": "d239b79328708f65ece5525e5a93e91b4ab42049720eb8685369142470560d25:admission",
+      "passed": true
+    },
+    {
+      "name": "d239b79328708f65ece5525e5a93e91b4ab42049720eb8685369142470560d25:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority1-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "d239b79328708f65ece5525e5a93e91b4ab42049720eb8685369142470560d25:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "d239b79328708f65ece5525e5a93e91b4ab42049720eb8685369142470560d25:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "d239b79328708f65ece5525e5a93e91b4ab42049720eb8685369142470560d25:future_closed",
+      "passed": true
+    },
+    {
+      "name": "461b3092964e7cb149905a79143bbc626890fc6c980b7b0e9dd442aa13feefa8:admission",
+      "passed": true
+    },
+    {
+      "name": "461b3092964e7cb149905a79143bbc626890fc6c980b7b0e9dd442aa13feefa8:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams1-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "461b3092964e7cb149905a79143bbc626890fc6c980b7b0e9dd442aa13feefa8:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "461b3092964e7cb149905a79143bbc626890fc6c980b7b0e9dd442aa13feefa8:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "461b3092964e7cb149905a79143bbc626890fc6c980b7b0e9dd442aa13feefa8:future_closed",
+      "passed": true
+    },
+    {
+      "name": "1afed80292d81f7b1e0f08943a71bd49fb4c708a40561e3d9f850c67ea56e0bf:admission",
+      "passed": true
+    },
+    {
+      "name": "1afed80292d81f7b1e0f08943a71bd49fb4c708a40561e3d9f850c67ea56e0bf:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority2-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "1afed80292d81f7b1e0f08943a71bd49fb4c708a40561e3d9f850c67ea56e0bf:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "1afed80292d81f7b1e0f08943a71bd49fb4c708a40561e3d9f850c67ea56e0bf:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "1afed80292d81f7b1e0f08943a71bd49fb4c708a40561e3d9f850c67ea56e0bf:future_closed",
+      "passed": true
+    },
+    {
+      "name": "63b4b551c16d4e0f50e8171647f5831898a558704514a69fdaf1ee64d391fea0:admission",
+      "passed": true
+    },
+    {
+      "name": "63b4b551c16d4e0f50e8171647f5831898a558704514a69fdaf1ee64d391fea0:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority3-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "63b4b551c16d4e0f50e8171647f5831898a558704514a69fdaf1ee64d391fea0:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "63b4b551c16d4e0f50e8171647f5831898a558704514a69fdaf1ee64d391fea0:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "63b4b551c16d4e0f50e8171647f5831898a558704514a69fdaf1ee64d391fea0:future_closed",
+      "passed": true
+    },
+    {
+      "name": "89aa336fc6ced09db40c932af2999042f14edf59b26962fb25008f5bf30056b3:admission",
+      "passed": true
+    },
+    {
+      "name": "89aa336fc6ced09db40c932af2999042f14edf59b26962fb25008f5bf30056b3:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams2-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "89aa336fc6ced09db40c932af2999042f14edf59b26962fb25008f5bf30056b3:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "89aa336fc6ced09db40c932af2999042f14edf59b26962fb25008f5bf30056b3:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "89aa336fc6ced09db40c932af2999042f14edf59b26962fb25008f5bf30056b3:future_closed",
+      "passed": true
+    },
+    {
+      "name": "d56f6c335c42d5caf14077a5e47935128dc37a74cfcfaab27cc92bcc98515480:admission",
+      "passed": true
+    },
+    {
+      "name": "d56f6c335c42d5caf14077a5e47935128dc37a74cfcfaab27cc92bcc98515480:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority4-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "d56f6c335c42d5caf14077a5e47935128dc37a74cfcfaab27cc92bcc98515480:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "d56f6c335c42d5caf14077a5e47935128dc37a74cfcfaab27cc92bcc98515480:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "d56f6c335c42d5caf14077a5e47935128dc37a74cfcfaab27cc92bcc98515480:future_closed",
+      "passed": true
+    },
+    {
+      "name": "b2cd4e23a5baccb3940d0a8ee270201da4997a72d5a1945fe106b178699402f6:admission",
+      "passed": true
+    },
+    {
+      "name": "b2cd4e23a5baccb3940d0a8ee270201da4997a72d5a1945fe106b178699402f6:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority5-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "b2cd4e23a5baccb3940d0a8ee270201da4997a72d5a1945fe106b178699402f6:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "b2cd4e23a5baccb3940d0a8ee270201da4997a72d5a1945fe106b178699402f6:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "b2cd4e23a5baccb3940d0a8ee270201da4997a72d5a1945fe106b178699402f6:future_closed",
+      "passed": true
+    },
+    {
+      "name": "473b9bbece624dd1a45dc00e9ba2fb96075f4b8ffd6608670e12bf314bc8efaf:admission",
+      "passed": true
+    },
+    {
+      "name": "473b9bbece624dd1a45dc00e9ba2fb96075f4b8ffd6608670e12bf314bc8efaf:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams3-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "473b9bbece624dd1a45dc00e9ba2fb96075f4b8ffd6608670e12bf314bc8efaf:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "473b9bbece624dd1a45dc00e9ba2fb96075f4b8ffd6608670e12bf314bc8efaf:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "473b9bbece624dd1a45dc00e9ba2fb96075f4b8ffd6608670e12bf314bc8efaf:future_closed",
+      "passed": true
+    },
+    {
+      "name": "730c2204b871d74dc67277404d9e83ede0301d1bf9c4f72e91d4199ddde81efa:admission",
+      "passed": true
+    },
+    {
+      "name": "730c2204b871d74dc67277404d9e83ede0301d1bf9c4f72e91d4199ddde81efa:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority6-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "730c2204b871d74dc67277404d9e83ede0301d1bf9c4f72e91d4199ddde81efa:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "730c2204b871d74dc67277404d9e83ede0301d1bf9c4f72e91d4199ddde81efa:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "730c2204b871d74dc67277404d9e83ede0301d1bf9c4f72e91d4199ddde81efa:future_closed",
+      "passed": true
+    },
+    {
+      "name": "001b3b129f9386dc04fd6998d647734b40944e265cd34decb71495f2fc1520ba:admission",
+      "passed": true
+    },
+    {
+      "name": "001b3b129f9386dc04fd6998d647734b40944e265cd34decb71495f2fc1520ba:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams4-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "001b3b129f9386dc04fd6998d647734b40944e265cd34decb71495f2fc1520ba:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "001b3b129f9386dc04fd6998d647734b40944e265cd34decb71495f2fc1520ba:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "001b3b129f9386dc04fd6998d647734b40944e265cd34decb71495f2fc1520ba:future_closed",
+      "passed": true
+    },
+    {
+      "name": "772814f1351e54d5797a44c3a56add38a8378dbc3944023c757fad82bf011527:admission",
+      "passed": true
+    },
+    {
+      "name": "772814f1351e54d5797a44c3a56add38a8378dbc3944023c757fad82bf011527:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-authority7-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "772814f1351e54d5797a44c3a56add38a8378dbc3944023c757fad82bf011527:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "772814f1351e54d5797a44c3a56add38a8378dbc3944023c757fad82bf011527:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "772814f1351e54d5797a44c3a56add38a8378dbc3944023c757fad82bf011527:future_closed",
+      "passed": true
+    },
+    {
+      "name": "9b54607739383b9a4729c17120002fd5cc26505fa9d3bbcb5c21a57e4e39a64c:admission",
+      "passed": true
+    },
+    {
+      "name": "9b54607739383b9a4729c17120002fd5cc26505fa9d3bbcb5c21a57e4e39a64c:finite_calls",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-p0:extent",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-p0:one_payload",
+      "passed": true
+    },
+    {
+      "name": "c576-fresh-build-r1-streams5-p0:EOF_geometry",
+      "passed": true
+    },
+    {
+      "name": "9b54607739383b9a4729c17120002fd5cc26505fa9d3bbcb5c21a57e4e39a64c:whole_payload",
+      "passed": true
+    },
+    {
+      "name": "9b54607739383b9a4729c17120002fd5cc26505fa9d3bbcb5c21a57e4e39a64c:native_from_payload",
+      "passed": true
+    },
+    {
+      "name": "9b54607739383b9a4729c17120002fd5cc26505fa9d3bbcb5c21a57e4e39a64c:future_closed",
+      "passed": true
+    },
+    {
+      "name": "counts43_14_14",
+      "passed": true
+    }
+  ],
+  "productPassed": false,
+  "GitUNKNOWNPreserved": true
+}

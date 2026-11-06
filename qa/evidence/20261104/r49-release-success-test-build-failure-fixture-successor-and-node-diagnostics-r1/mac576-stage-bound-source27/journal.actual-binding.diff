@@ -1,0 +1,22 @@
+--- a/stage.gitfirst.actual-binding.js
++++ b/stage.gitfirst.actual-binding.js
+@@ -5,8 +5,8 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "final02b_mac_source_only_stage_gitfirst_r1";
+-const GF_REQUEST = {"blob":"bd3f20cc6390cc8519265142cf2fb8624cf87008","bytes":254446,"sha256":"21ca75b8e1ca736dd96f3e564a70e757dc487d758d216793af5b420c5d46c99e"};
++const GF_SLOT = "successor576_mac_source_only_stage_gitfirst_r1";
++const GF_REQUEST = {"blob":"3b86e61a47028c1b5d8e23369ef336490dc6382b","bytes":32676,"sha256":"8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -45,7 +45,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-final02b-mac-source-only-ea096d7a-/.test(q.idempotency_key),
++    && /^heptabao-5767739c-mac-source-only-a70bc4e2-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

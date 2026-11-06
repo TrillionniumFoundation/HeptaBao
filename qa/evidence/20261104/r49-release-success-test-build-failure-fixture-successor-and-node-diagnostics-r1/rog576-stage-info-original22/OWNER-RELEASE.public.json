@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.combined576-stage-report-info.release.r1",
+  "job": "1a1b2c397c4-fc05-7fa4",
+  "slot": "combined_5767739c_rog_source_gitfirst_r1",
+  "NativeCallInFlight": false,
+  "activeObserver": null,
+  "pending": null,
+  "paused": false,
+  "observer": {
+    "id": "b5919c7edbcb372ba080012ff3b5e52c112e810333986ba423b34aa6b9a7a79e",
+    "tool": "file_info",
+    "payload": {
+      "blob": "d54465dcb00ff9999b567c8eb31c2b41c966f563",
+      "bytes": 579,
+      "sha256": "f99ef1a7e565dc25acbd0c50a4b9f69c8fd216d420343b2ad586bcceaed26201"
+    },
+    "payloadTree": "8affd922fe389708c171796520d8e15c9f8f8dbc",
+    "nativeText": {
+      "blob": "edde85e8e5b009982938abf33173b344ab3eade5",
+      "bytes": 462,
+      "sha256": "3540177cbe4105baee12a595ad77ff19a1ab69569b8b9365db81c03545ff359a"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "info": {
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "size": 29748,
+    "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662",
+    "version": "66306:31358204:29748:1794000540708114035:1794000540708114035",
+    "nativeText": {
+      "blob": "edde85e8e5b009982938abf33173b344ab3eade5",
+      "bytes": 462,
+      "sha256": "3540177cbe4105baee12a595ad77ff19a1ab69569b8b9365db81c03545ff359a"
+    },
+    "originalOperation": "b5919c7edbcb372ba080012ff3b5e52c112e810333986ba423b34aa6b9a7a79e",
+    "full9Strings": [
+      "66306",
+      "31358204",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "29748",
+      "1794000540708114035",
+      "1794000540708114035"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "callCount": 3,
+  "originalPayloadPages": 1,
+  "bodyStarted": false,
+  "bodyAuthorized": false
+}

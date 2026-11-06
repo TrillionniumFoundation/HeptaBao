@@ -1,0 +1,632 @@
+{
+  "schema": "heptabao.combined5767739.fresh-joint-source-verification.r1",
+  "ok": true,
+  "checks": 156,
+  "results": [
+    {
+      "name": "runner_before_pin",
+      "pass": true
+    },
+    {
+      "name": "runner_after_pin",
+      "pass": true
+    },
+    {
+      "name": "runner_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "runner_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "runner_reverse_file_strict",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_commit",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_tree",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_groups_sha",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_group_shapes",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_jwt_pki_instances",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_jwt_pki_unique",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_doc",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_fresh_target",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_same_names",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_expected_total",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_declared_unique",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_selected_totals",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_batch_delta",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_actual_total",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_actual_unique",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_actual_instances",
+      "pass": true
+    },
+    {
+      "name": "runner_only_declared_edits",
+      "pass": true
+    },
+    {
+      "name": "runner_same_functions",
+      "pass": true
+    },
+    {
+      "name": "runner_function_signal_received",
+      "pass": true
+    },
+    {
+      "name": "runner_function_sha",
+      "pass": true
+    },
+    {
+      "name": "runner_function_fresh_identity",
+      "pass": true
+    },
+    {
+      "name": "runner_function_current_tool_whole",
+      "pass": true
+    },
+    {
+      "name": "runner_function_fresh_target_pin",
+      "pass": true
+    },
+    {
+      "name": "runner_function_preserve_prior_df026",
+      "pass": true
+    },
+    {
+      "name": "runner_function_write",
+      "pass": true
+    },
+    {
+      "name": "runner_function_git",
+      "pass": true
+    },
+    {
+      "name": "runner_function_freeze",
+      "pass": true
+    },
+    {
+      "name": "runner_function_group_members",
+      "pass": true
+    },
+    {
+      "name": "runner_function_terminate_owned",
+      "pass": true
+    },
+    {
+      "name": "runner_function_bounded_remaining",
+      "pass": true
+    },
+    {
+      "name": "runner_function_owned",
+      "pass": true
+    },
+    {
+      "name": "launcher_before_pin",
+      "pass": true
+    },
+    {
+      "name": "launcher_after_pin",
+      "pass": true
+    },
+    {
+      "name": "launcher_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "launcher_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "launcher_reverse_file_strict",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_commit",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_tree",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_groups_sha",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_group_shapes",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_jwt_pki_instances",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_jwt_pki_unique",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_doc",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_source_root",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_control_root",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_target_root",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_index_sha",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_tracked_bytes",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_groups_bound",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_all_instances",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_all_unique",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_admission_totals",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_admission_jwt_pki",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_admission_jwt",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_summary_totals",
+      "pass": true
+    },
+    {
+      "name": "launcher_only_declared_edits",
+      "pass": true
+    },
+    {
+      "name": "launcher_same_functions",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_identity",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_read_bound",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_freeze",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_public",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_preserve_r9",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_preserve_r10",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_preserve_successful_observer",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_preserve_failed_observer",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_preserve_current_early_failure",
+      "pass": true
+    },
+    {
+      "name": "launcher_function_holders",
+      "pass": true
+    },
+    {
+      "name": "publisher_before_pin",
+      "pass": true
+    },
+    {
+      "name": "publisher_after_pin",
+      "pass": true
+    },
+    {
+      "name": "publisher_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "publisher_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "publisher_reverse_file_strict",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_fresh_root",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_three_literal_pins",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_commit",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_tree",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_actual_stage_sha",
+      "pass": true
+    },
+    {
+      "name": "publisher_only_declared_edits",
+      "pass": true
+    },
+    {
+      "name": "publisher_same_functions",
+      "pass": true
+    },
+    {
+      "name": "publisher_function_publication_timeout",
+      "pass": true
+    },
+    {
+      "name": "publisher_function_sha",
+      "pass": true
+    },
+    {
+      "name": "publisher_function_ident",
+      "pass": true
+    },
+    {
+      "name": "publisher_function_sync_dir",
+      "pass": true
+    },
+    {
+      "name": "publisher_function_exact",
+      "pass": true
+    },
+    {
+      "name": "publisher_function_publish",
+      "pass": true
+    },
+    {
+      "name": "journal_before_pin",
+      "pass": true
+    },
+    {
+      "name": "journal_after_pin",
+      "pass": true
+    },
+    {
+      "name": "journal_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "journal_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "journal_reverse_file_strict",
+      "pass": true
+    },
+    {
+      "name": "journal_unique_slot",
+      "pass": true
+    },
+    {
+      "name": "journal_unique_request_pin",
+      "pass": true
+    },
+    {
+      "name": "journal_unique_observer_prefix",
+      "pass": true
+    },
+    {
+      "name": "journal_only_declared_edits",
+      "pass": true
+    },
+    {
+      "name": "control_caps_unchanged",
+      "pass": true
+    },
+    {
+      "name": "groups_specific_bound",
+      "pass": true
+    },
+    {
+      "name": "groups_whole",
+      "pass": true
+    },
+    {
+      "name": "family_native-jwt-pki-file28",
+      "pass": true
+    },
+    {
+      "name": "family_native-jwt-pki-default28",
+      "pass": true
+    },
+    {
+      "name": "family_legacy-jwt-default67",
+      "pass": true
+    },
+    {
+      "name": "family_native-auth-identity-default69",
+      "pass": true
+    },
+    {
+      "name": "family_snapshot-body10",
+      "pass": true
+    },
+    {
+      "name": "family_snapshot-peer7",
+      "pass": true
+    },
+    {
+      "name": "family_snapshot-actor2",
+      "pass": true
+    },
+    {
+      "name": "family_snapshot-wire4",
+      "pass": true
+    },
+    {
+      "name": "family_snapshot-service-audit4",
+      "pass": true
+    },
+    {
+      "name": "family_ssh25",
+      "pass": true
+    },
+    {
+      "name": "family_mount1",
+      "pass": true
+    },
+    {
+      "name": "family_redirect5",
+      "pass": true
+    },
+    {
+      "name": "family_actor2",
+      "pass": true
+    },
+    {
+      "name": "family_ordinary5",
+      "pass": true
+    },
+    {
+      "name": "family_no_forward6",
+      "pass": true
+    },
+    {
+      "name": "family_ingress_observer",
+      "pass": true
+    },
+    {
+      "name": "family_cold_h2",
+      "pass": true
+    },
+    {
+      "name": "family_same_root_publication",
+      "pass": true
+    },
+    {
+      "name": "exact_counts",
+      "pass": true
+    },
+    {
+      "name": "two_profiles_same_names",
+      "pass": true
+    },
+    {
+      "name": "rest16groups_byte_values_same",
+      "pass": true
+    },
+    {
+      "name": "all_normal61",
+      "pass": true
+    },
+    {
+      "name": "snapshot27_unchanged",
+      "pass": true
+    },
+    {
+      "name": "first4_164_192",
+      "pass": true
+    },
+    {
+      "name": "six_explicit_new_cases",
+      "pass": true
+    },
+    {
+      "name": "profile_0_only_rename_and_six",
+      "pass": true
+    },
+    {
+      "name": "profile_1_only_rename_and_six",
+      "pass": true
+    },
+    {
+      "name": "request_whole",
+      "pass": true
+    },
+    {
+      "name": "request_shape",
+      "pass": true
+    },
+    {
+      "name": "request_fresh_key",
+      "pass": true
+    },
+    {
+      "name": "stdin_exact",
+      "pass": true
+    },
+    {
+      "name": "payload_closed_names",
+      "pass": true
+    },
+    {
+      "name": "payload_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "publisher_pin_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "payload_launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "publisher_pin_launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "payload_jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "publisher_pin_jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "typed_digest",
+      "pass": true
+    },
+    {
+      "name": "candidate_exact",
+      "pass": true
+    },
+    {
+      "name": "stage_whole_actual",
+      "pass": true
+    },
+    {
+      "name": "stage_source_prepared",
+      "pass": true
+    },
+    {
+      "name": "stage_full_tree",
+      "pass": true
+    },
+    {
+      "name": "stage_clean_and_closed",
+      "pass": true
+    },
+    {
+      "name": "no_prior_compile_or_format_qualification",
+      "pass": true
+    },
+    {
+      "name": "publisher_stage_sha",
+      "pass": true
+    },
+    {
+      "name": "actual_stage_root_whole",
+      "pass": true
+    },
+    {
+      "name": "actual_stage_root_binding",
+      "pass": true
+    },
+    {
+      "name": "stage_only_qualification",
+      "pass": true
+    },
+    {
+      "name": "fresh_fixed_roots",
+      "pass": true
+    },
+    {
+      "name": "current_receipt_validation_preserved",
+      "pass": true
+    },
+    {
+      "name": "clock_budgets_unchanged",
+      "pass": true
+    },
+    {
+      "name": "no_redundant_independent_controls_reads",
+      "pass": true
+    },
+    {
+      "name": "separate_fresh_GO_required",
+      "pass": true
+    }
+  ],
+  "scope": "pure V8 strict source/data verification only; no Python, Native, compiler or candidate function invocation"
+}

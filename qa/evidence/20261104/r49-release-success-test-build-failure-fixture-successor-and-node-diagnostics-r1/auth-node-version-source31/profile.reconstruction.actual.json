@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-profile-reconstruction-result.r1",
+  "source": {
+    "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+    "bytes": 150406,
+    "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+  },
+  "pureReconstructor": {
+    "blob": "ca2dd324ba60b34d1d28328c615e36d825ec21ec",
+    "bytes": 1568,
+    "sha256": "bee79c1552e42718e9dea86d660fd625780e7c333792c62f99585725fead424a"
+  },
+  "expectedOriginalActualSha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12",
+  "actual": {
+    "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+    "bytes": 6909,
+    "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+  },
+  "exactBodyEqual": true,
+  "PythonExecuted": false,
+  "NativeCallsAdded": 0
+}

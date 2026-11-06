@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.root.public-node-version-source-review.r1",
+  "tree": "82d50e15efc1508c052f8a750ed845d8ffdfc205",
+  "whole": {
+    "tree": "82d50e15efc1508c052f8a750ed845d8ffdfc205",
+    "files": 31,
+    "bytes": 965659,
+    "merkle": {
+      "root_sha": "82d50e15efc1508c052f8a750ed845d8ffdfc205",
+      "trees_verified": 1,
+      "leaf_count": 31
+    },
+    "whole": true
+  },
+  "rootAuthorChecksReproduced": 75,
+  "rootActualBindings": {
+    "all17CoreInputsUnchanged": true,
+    "startupPriorWholeExact": true,
+    "priorJournalExact": true,
+    "HomeControlOriginalManagerExact": true,
+    "profilePureReconstruction": true,
+    "profileOriginalCapturedExact": true,
+    "profileOriginalActualSHA": true,
+    "actualReleaseDeclarationExact": true,
+    "exactStdin": true
+  },
+  "source": {
+    "blob": "20eac10fb145c74da8915d114bafaf1575f745b8",
+    "bytes": 91024,
+    "sha256": "b131f14c11052bab67b667079c5d7f054d3ecc300514e9bdbd0d61b888700b34"
+  },
+  "exactRequest": {
+    "blob": "983e0a1699b05466ce4f29a4daa4b578d331d7d7",
+    "bytes": 92005,
+    "sha256": "85187418fc9b97294f5f9c38cc8c3488954ae44a3888a4e603ba2b62c25a7b67"
+  },
+  "journal": {
+    "blob": "dabdffa04433d6a5890ed033ffaf85d864924571",
+    "bytes": 19052,
+    "sha256": "98d079db2d1d2663dc455060d401e9a2b3bd1b87542375a902be7206d4a4de4f"
+  },
+  "nativeBinding": {
+    "sha256": "6aba329b66aede9a9899d03c05fd86902dbab595efd49110a053cf8904aeac07",
+    "native_fingerprint": "7690514956712599194"
+  },
+  "publicOnly": true,
+  "Native_calls": 0,
+  "previousPureRootReaderErrorPreserved": true,
+  "codeReview": {
+    "sameBinaryAndArg": "Only --version on the same pinned Node real path; one exact old test-profile prefix is the only argv difference.",
+    "environment": "Both arms have one exact five-key environment and identical new empty HOME/cwd/TMPDIR; no inherited Node/DYLD options.",
+    "ownership": "Original entire HomeControl and WNOWAIT owner are exact; Commands differs only in fixed env/cwd/argv and once guards.",
+    "deadline": "Original absolute35/45/60 limits; each child at most10, latestSTART+26 and9second cleanup reservation; unknown halts subsequent child admission.",
+    "output": "Version-only closed syntax128B; stderr length/empty only; no arbitrary output/hash export. Original65536 read/4096 acceptance overflow bound69632 remains explicit.",
+    "effect": "Create-only two public directories and one6909B profile copy; no old-root mutation or credential/SDK/provider operation.",
+    "qualification": "A known failed Node arm can complete the diagnostic; no business/SDK or historical cause qualification is automatic."
+  }
+}

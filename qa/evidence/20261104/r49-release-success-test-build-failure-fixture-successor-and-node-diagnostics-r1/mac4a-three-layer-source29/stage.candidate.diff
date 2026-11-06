@@ -1,0 +1,38 @@
+--- a/stage.candidate.py
++++ b/stage.candidate.py
+@@ -23,14 +23,14 @@
+ parser.add_argument('--canonical-bundle-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'mac'
+-ROOT = Path('__UNBOUND_NEW_STAGE_ROOT__')
++ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source')
+ OLD_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
+ OLD_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
+-COMMIT = None
+-TREE = None
++COMMIT = '4a49405b93c45ab1c25ecba11cde63a7ede20dce'
++TREE = 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'
+ PARENT = '5767739cd25e458ac052dc8d384019bab8688ae0'
+ ANCESTRY = (
+     (COMMIT, PARENT),
+@@ -406,7 +406,7 @@
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+           'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
+           'server_started': False, 'compiler_started': False, 'production_changed': False,
+-          'source_ref': None,
++          'source_ref': 'refs/heads/codex/heptabao-test-fixture-f02dd113-20261106',
+           'canonical_history_count': 3770, 'actual_build_qualification': False,
+           'stage_purpose': 'SOURCE_ONLY_NO_BUILD_CONTROLS',
+           'controls_published': False, 'started_ns': time.time_ns()}
+@@ -414,7 +414,7 @@
+ try:
+     stage_remaining()
+     result['external_volume_uuid'] = prewrite_volume_guard()
+-    canonical_path = ROOT.parent / '__UNBOUND_CANONICAL_BUNDLE_LEAF__'
++    canonical_path = ROOT.parent / 'canonical-hb-4a49405b-from576-20261106-r1.bundle'
+     stage_remaining()
+     assert not os.path.lexists(canonical_path)
+     create(canonical_path, canonical_raw)

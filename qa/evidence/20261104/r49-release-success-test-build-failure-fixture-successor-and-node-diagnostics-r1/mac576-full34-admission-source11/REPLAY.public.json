@@ -1,0 +1,8 @@
+{
+  "helpers": [
+    "strict_diff.original.js",
+    "verifier.source.js"
+  ],
+  "entry": "verifyMac576AdmissionFragment(files)",
+  "effects": "pure SOURCE text and exact groups only;no Python/controller/Native"
+}

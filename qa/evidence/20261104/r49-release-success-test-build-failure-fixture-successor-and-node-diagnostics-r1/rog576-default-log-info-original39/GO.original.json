@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.root.current576-default-compile-two-log-info-GO.r1",
+  "issuedAtUTC": "2026-11-06 22:51:09 UTC",
+  "authorization": "GO",
+  "scope": "build_logs_file_info_only",
+  "original_job": "1a1b2d90976-fc05-7fff",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "maximum_file_info_starts": 2,
+  "binary_read_authorized": false,
+  "exact_requests": [
+    {
+      "blob": "f847ac4d76b7192d43f68b13af9d4b0fc10c5713",
+      "bytes": 291,
+      "sha256": "ce34348ab93e1200a4a76df637e282adba0e21e6e0de594ed198759fc6962d20"
+    },
+    {
+      "blob": "cf6d37620cc467580e39a56fa2cb71ca1966e2bb",
+      "bytes": 291,
+      "sha256": "3ce3c471bbd43f01ea9033cd4cd6e02264648ec8602340f58ebdb43066dde677"
+    }
+  ],
+  "exactJournal": {
+    "blob": "c7534291129ec8fb51991b941b2a1d3c899c8c47",
+    "bytes": 35731,
+    "sha256": "a18de6c45898e0956df81933cf9fc0467b67b52bd857818348d786eb0e62fe37"
+  },
+  "sourceTree": "38f47d9ea3f36621a8bf23c3aff5905e434a696e",
+  "rootReview": {
+    "blob": "ffbca77fb67c31055158c88e6a1fdb7d672ebb38",
+    "bytes": 1680,
+    "sha256": "53975cb4b52e1608d4295114c157427b21ae209fa083980a9c54f1b1209d6492"
+  },
+  "sourceChecks": 54,
+  "actualBindingChecks": 9,
+  "closedState": {
+    "blob": "a9c8f6fe523e14b1238dc10aa1c7a42d69d64b02",
+    "bytes": 324965,
+    "sha256": "45643c6b9ed615b309b3500e03bdbefb44acd971e88fa59787c05c28c5990e89"
+  },
+  "actualReport": {
+    "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+    "bytes": 46828,
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+  },
+  "orderedFiles": [
+    {
+      "index": 0,
+      "stream": "stderr",
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stderr",
+      "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+      "maximumBytes": 4194304,
+      "request": {
+        "blob": "f847ac4d76b7192d43f68b13af9d4b0fc10c5713",
+        "bytes": 291,
+        "sha256": "ce34348ab93e1200a4a76df637e282adba0e21e6e0de594ed198759fc6962d20"
+      },
+      "bytes": null,
+      "version": null,
+      "full9": null,
+      "actualMetadataObserved": false
+    },
+    {
+      "index": 1,
+      "stream": "stdout",
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+      "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+      "maximumBytes": 4194304,
+      "request": {
+        "blob": "cf6d37620cc467580e39a56fa2cb71ca1966e2bb",
+        "bytes": 291,
+        "sha256": "3ce3c471bbd43f01ea9033cd4cd6e02264648ec8602340f58ebdb43066dde677"
+      },
+      "bytes": null,
+      "version": null,
+      "full9": null,
+      "actualMetadataObserved": false
+    }
+  ],
+  "budgets": {
+    "maximumStatusPerObserver": 8,
+    "maximumPagesPerObserver": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576,
+    "metadataMaxBytesPerFile": 4194304,
+    "statusAndPageCountEnforcement": "Exact root GO plus finite explicit caller schedule; these counters are not claimed to be internal journal gates."
+  },
+  "sequence": [
+    "Whole root GO; authorize_build_logs_info on the current closed slot.",
+    "Prepare exact stderr metadata request; whole request/intent/armed tree; return model boundary.",
+    "Invoke once, archive original SDK whole, accept; only returned operation status/payload up to exact limits.",
+    "Close the original metadata observer; require actual path/hash/owner/mode/nlink/version and finite size.",
+    "Then repeat the original serial chain once for stdout metadata; close and release B. No binary_read until a separate actual-version-bound SOURCE/GO."
+  ],
+  "conditions": {
+    "sameExistingSlot": true,
+    "noInitialize": true,
+    "noProcessStart": true,
+    "noCargo": true,
+    "noBody": true,
+    "noDirectoryScan": true,
+    "noMetadataRefresh": true,
+    "onlyNextAfterPriorObserverClosed": true,
+    "wholeSDKBeforeParse": true,
+    "maximumNativeCallOrFuture": 1,
+    "full9Lossless": true
+  },
+  "lane_allocation": {
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "noNewProcess": true,
+  "noCargo": true,
+  "noDirectoryScan": true,
+  "noMetadataRefresh": true,
+  "onFailure": "Retain original outcome or UNKNOWN and original request identifiers; no replay, rekey, fallback path or body read.",
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

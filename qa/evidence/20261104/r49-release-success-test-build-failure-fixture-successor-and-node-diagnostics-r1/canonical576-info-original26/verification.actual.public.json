@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.canonical576-info-original-chain-verification.v1",
+  "pass": true,
+  "check_count": 32,
+  "checks": [
+    {
+      "name": "exact_GO",
+      "pass": true
+    },
+    {
+      "name": "three_original_calls",
+      "pass": true
+    },
+    {
+      "name": "call_0_whole_request",
+      "pass": true
+    },
+    {
+      "name": "call_0_whole_SDK",
+      "pass": true
+    },
+    {
+      "name": "call_0_native_text",
+      "pass": true
+    },
+    {
+      "name": "call_0_same_GO_single_arm",
+      "pass": true
+    },
+    {
+      "name": "call_0_request_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_0_intent_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_0_armed_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_1_whole_request",
+      "pass": true
+    },
+    {
+      "name": "call_1_whole_SDK",
+      "pass": true
+    },
+    {
+      "name": "call_1_native_text",
+      "pass": true
+    },
+    {
+      "name": "call_1_same_GO_single_arm",
+      "pass": true
+    },
+    {
+      "name": "call_1_request_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_1_intent_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_1_armed_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_2_whole_request",
+      "pass": true
+    },
+    {
+      "name": "call_2_whole_SDK",
+      "pass": true
+    },
+    {
+      "name": "call_2_native_text",
+      "pass": true
+    },
+    {
+      "name": "call_2_same_GO_single_arm",
+      "pass": true
+    },
+    {
+      "name": "call_2_request_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_2_intent_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "call_2_armed_arm_leaf",
+      "pass": true
+    },
+    {
+      "name": "exact_original_admission_request",
+      "pass": true
+    },
+    {
+      "name": "original_admission_ID",
+      "pass": true
+    },
+    {
+      "name": "original_status_completed_inactive",
+      "pass": true
+    },
+    {
+      "name": "one_original_page_whole_EOF",
+      "pass": true
+    },
+    {
+      "name": "original_payload_native_complete",
+      "pass": true
+    },
+    {
+      "name": "actual_metadata_identity",
+      "pass": true
+    },
+    {
+      "name": "lossless_full9_exact_stage",
+      "pass": true
+    },
+    {
+      "name": "closed_original_context",
+      "pass": true
+    },
+    {
+      "name": "metadata_only_lane_released",
+      "pass": true
+    }
+  ],
+  "source_executed": false,
+  "new_Native_calls": 0
+}

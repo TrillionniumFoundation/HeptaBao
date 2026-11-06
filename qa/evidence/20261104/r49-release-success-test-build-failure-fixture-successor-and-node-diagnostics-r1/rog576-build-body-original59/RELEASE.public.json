@@ -1,0 +1,208 @@
+{
+  "schema": "heptabao.current576-build-failed-report-body-release.r1",
+  "job": "1a1b2d90976-fc05-7fff",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "NativeCall": 0,
+  "NativeFuture": 0,
+  "businessProcessTerminal": true,
+  "ownerRelease": true,
+  "paused": false,
+  "pending": null,
+  "activeObserver": null,
+  "originalCallCount": 56,
+  "originalObserverCount": 16,
+  "originalPageCount": 23,
+  "bodyCallCount": 10,
+  "bodyObserverCount": 1,
+  "bodyPageCount": 8,
+  "allCurrentCallsAccepted": true,
+  "allOriginalObserversCompletedInactive": true,
+  "originalSTARTCount": 1,
+  "body": {
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+    "version": "66306:33208049:46828:1794003951175308589:1794003951175308589",
+    "body": {
+      "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+      "bytes": 46828,
+      "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+    },
+    "originalOperation": "ce5414155a7064b71fbf18be463d9baf02ec0b6ed8e918b2e685cb14d908ac6e",
+    "metadataOperation": "cb2ea67ea2179e98073723441b12ca6f828ac09d9fe2842d779424e13ad9420b",
+    "originalPayload": {
+      "blob": "399e923015fbd798e178a3964658a7d41fbb4562",
+      "bytes": 62861,
+      "sha256": "8462efa8030eb5ebdbf8225fe3cb15f3ce2e7da8b6b4d499de08aee0ce157316"
+    },
+    "semanticQualification": false
+  },
+  "report": {
+    "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+    "bytes": 46828,
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+  },
+  "reportWholeArchive": "afc5bab30eca92ef25bd539f29641b646cd6dedf",
+  "originalState": {
+    "blob": "a9c8f6fe523e14b1238dc10aa1c7a42d69d64b02",
+    "bytes": 324965,
+    "sha256": "45643c6b9ed615b309b3500e03bdbefb44acd971e88fa59787c05c28c5990e89"
+  },
+  "originalBodyGO": {
+    "blob": "292e261eb3908b8c2691d74bad6ea785d8ad3503",
+    "bytes": 3053,
+    "sha256": "f5b1d6f70524800a2a94350077977e488f34444551b5e37e8d6ac1d5f1374567"
+  },
+  "actualFailure": {
+    "status": "failed",
+    "failureType": "AssertionError",
+    "failure": "reviewed libtest profile compilation failed",
+    "runtimeTestsStarted": false,
+    "groupResults": [],
+    "selectedUnique": 252,
+    "selectedProfileInstances": 280,
+    "compileShared": {
+      "cap_seconds": 3600,
+      "commands": [
+        {
+          "argv": [
+            "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "check",
+            "--release",
+            "--locked",
+            "--offline",
+            "-p",
+            "heptabao-server",
+            "--lib",
+            "--no-default-features",
+            "--message-format=json-render-diagnostics"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 63.47266892303014,
+          "exit_code": 0,
+          "label": "ordinary-no-default-check",
+          "outer_cap_seconds": 3599.999990110984,
+          "owned_pgid": 1612281,
+          "remaining": [],
+          "stderr_sha256": "12d7a87e1c882cc8ae55161abd811359cc2eecb5500b15ecbdc0dc929904b13d",
+          "stdout_sha256": "b384a8690006a8bd543c1bed8acc9804feccee0e26e375f430495cb9573d20f8",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--release",
+            "--locked",
+            "--offline",
+            "-p",
+            "heptabao-server",
+            "--lib",
+            "--no-run",
+            "--no-default-features",
+            "--features",
+            "native-v6-storage",
+            "--message-format=json-render-diagnostics"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 945.6726679090061,
+          "exit_code": 0,
+          "label": "file-libtest-build",
+          "outer_cap_seconds": 3536.514262106968,
+          "owned_pgid": 1614133,
+          "remaining": [],
+          "stderr_sha256": "62a76a3c75a762f2b64d41c2f4a2befc81419a46525419213db0784e8a5bc1a7",
+          "stdout_sha256": "ffca3c6b755c704656cb70c0129aa9e684c9067bc953ae30a0ef9f26c13d0ac5",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--release",
+            "--locked",
+            "--offline",
+            "-p",
+            "heptabao-server",
+            "--lib",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 51.4362011369667,
+          "exit_code": 101,
+          "label": "default-libtest-build",
+          "outer_cap_seconds": 2590.387622413982,
+          "owned_pgid": 1618977,
+          "remaining": [],
+          "stderr_sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+          "stdout_sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+          "timed_out": false
+        }
+      ],
+      "deadline_reset": false,
+      "started_monotonic": 333099.325813828,
+      "until_monotonic": 336699.325813828
+    },
+    "cleanup": [
+      {
+        "direct_child_reaped": true,
+        "exit_code": 101,
+        "label": "default-libtest-build",
+        "pid": 1618977,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "file-libtest-build",
+        "pid": 1614133,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "ordinary-no-default-check",
+        "pid": 1612281,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "normal-release-build",
+        "pid": 1587099,
+        "remaining": []
+      }
+    ]
+  },
+  "releaseSuccessPreserved": true,
+  "final280Qualified": false,
+  "artifactIndependentFull9Observed": false,
+  "priorGitArchiveUNKNOWNPreserved": {
+    "go": {
+      "blob": "564aeca0f8f4d6d12a0334f2341d6c5dd9e0b006",
+      "bytes": 2128,
+      "sha256": "b5bbe82128f8f8fb80e8f36591f5a84f7c91ce99f9425dcf9ef336dee2043514"
+    },
+    "newArchive": "9aaae07af202421229bc063c30b53a8d156e2ea4",
+    "before": {
+      "blob": "6f71ba0559184bf8f0e2e70d620ef8cd039d1e7c",
+      "bytes": 179536,
+      "sha256": "f4b55506a075d40ef0ed67fd3f03520a2c34c6f8757c2de5e3d1820914ac34a1"
+    },
+    "oldCreateExpectedTree": "5ecb3221ebad396fb9b7af067e7549d3294b2225",
+    "oldPhase": "sdk_git_archive_unresolved",
+    "oldArchiveFailure": "Error: git_create_returned_error_preserved",
+    "oldOuterFailure": {
+      "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+      "action": "git_readonly_reconcile",
+      "name": "Error",
+      "message": "original_expected_tree_not_observed",
+      "automaticRetry": false,
+      "newAdmissionAllowed": false,
+      "returnedNormally": true
+    },
+    "oldUnknownRetained": true,
+    "originalNativeCallNotRepeated": true
+  },
+  "logInfoBodyAuthorized": false,
+  "noNewBusinessCall": true
+}

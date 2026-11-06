@@ -1,0 +1,43 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "strict forward",
+      "pass": true
+    },
+    {
+      "name": "strict reverse",
+      "pass": true
+    },
+    {
+      "name": "four hunks",
+      "pass": true
+    },
+    {
+      "name": "expected full index",
+      "pass": true
+    },
+    {
+      "name": "actual bindings null",
+      "pass": true
+    },
+    {
+      "name": "no request/slot",
+      "pass": true
+    },
+    {
+      "name": "new bundle unbound",
+      "pass": true
+    },
+    {
+      "name": "old raw bundle hash absent",
+      "pass": true
+    },
+    {
+      "name": "normal counts unchanged",
+      "pass": true
+    }
+  ],
+  "mechanical_definitions": 20,
+  "runtime_calls": 0
+}

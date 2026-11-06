@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-5767739c-mac-source-only-a70bc4e2-result-info",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json"
+    }
+  }
+}

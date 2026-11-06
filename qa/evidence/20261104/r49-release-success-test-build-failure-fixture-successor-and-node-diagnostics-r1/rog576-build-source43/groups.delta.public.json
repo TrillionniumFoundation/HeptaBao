@@ -1,0 +1,196 @@
+{
+  "before": {
+    "blob": "8945c9f8f2565807601f8197b93be026ca4e875b",
+    "bytes": 33825,
+    "sha256": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
+  },
+  "after": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "oldCounts": {
+    "profiles": {
+      "file": 22,
+      "default": 229,
+      "ha-native-v6-peer-ingress": 17
+    },
+    "instances": 268,
+    "unique": 246
+  },
+  "newCounts": {
+    "profiles": {
+      "file": 28,
+      "default": 235,
+      "ha-native-v6-peer-ingress": 17
+    },
+    "instances": 280,
+    "unique": 252
+  },
+  "rows": [
+    {
+      "index": 0,
+      "before": "native-jwt-pki-file22",
+      "after": "native-jwt-pki-file28",
+      "removed": [
+        "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta"
+      ],
+      "added": [
+        "service::native_auth::jwt_tests::native_jwt_rejects_remote_and_bad_signature_without_candidate_delta",
+        "service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+        "service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+        "service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+        "service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+      ],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 1,
+      "before": "native-jwt-pki-default22",
+      "after": "native-jwt-pki-default28",
+      "removed": [
+        "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta"
+      ],
+      "added": [
+        "service::native_auth::jwt_tests::native_jwt_rejects_remote_and_bad_signature_without_candidate_delta",
+        "service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+        "service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+        "service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+        "service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+      ],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 2,
+      "before": "legacy-jwt-default67",
+      "after": "legacy-jwt-default67",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 3,
+      "before": "native-auth-identity-default69",
+      "after": "native-auth-identity-default69",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 4,
+      "before": "snapshot-body10",
+      "after": "snapshot-body10",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 5,
+      "before": "snapshot-peer7",
+      "after": "snapshot-peer7",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 6,
+      "before": "snapshot-actor2",
+      "after": "snapshot-actor2",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 7,
+      "before": "snapshot-wire4",
+      "after": "snapshot-wire4",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 8,
+      "before": "snapshot-service-audit4",
+      "after": "snapshot-service-audit4",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 9,
+      "before": "ssh25",
+      "after": "ssh25",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 10,
+      "before": "mount1",
+      "after": "mount1",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 11,
+      "before": "redirect5",
+      "after": "redirect5",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 12,
+      "before": "actor2",
+      "after": "actor2",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 13,
+      "before": "ordinary5",
+      "after": "ordinary5",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 14,
+      "before": "no_forward6",
+      "after": "no_forward6",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 15,
+      "before": "ingress_observer",
+      "after": "ingress_observer",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 16,
+      "before": "cold_h2",
+      "after": "cold_h2",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    },
+    {
+      "index": 17,
+      "before": "same_root_publication",
+      "after": "same_root_publication",
+      "removed": [],
+      "added": [],
+      "remainingOrderUnchanged": true
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "heptabao.c.default-libtest-minimal-fix-independent-source-checks.r1",
+  "pass": true,
+  "check_count": 30,
+  "checks": [
+    {
+      "name": "before whole 0",
+      "pass": true,
+      "evidence": {
+        "blob": "244a172794577d50bf52bbb986448f171d905fae",
+        "bytes": 4576,
+        "sha256": "5b1d932e1ca9ab49226cc9459ca1cadb8cf147abab797ed5d8c3f0dd876828cd"
+      }
+    },
+    {
+      "name": "after whole 0",
+      "pass": true,
+      "evidence": {
+        "blob": "432a89db6d9702bd5448134dadf28ad7f9bd654c",
+        "bytes": 4767,
+        "sha256": "d57744707e5179ae16725669f6ba8d421751dfdbebbf26296268692f610de0f1"
+      }
+    },
+    {
+      "name": "canonical 576 before 0",
+      "pass": true,
+      "evidence": {
+        "mode": "100644",
+        "blob": "244a172794577d50bf52bbb986448f171d905fae",
+        "bytes": 4576
+      }
+    },
+    {
+      "name": "diff whole 0",
+      "pass": true,
+      "evidence": {
+        "blob": "a3440d0bb6e32525945bf6ff30dae01a41caaa9a",
+        "bytes": 515,
+        "sha256": "10ddc625f8f436df2358b1d2fee1366e41509cc13b91535bb81d0b7623401535"
+      }
+    },
+    {
+      "name": "strict forward 0",
+      "pass": true,
+      "evidence": "crates/heptabao-server/src/ha_request_deadline_tests.rs"
+    },
+    {
+      "name": "strict reverse 0",
+      "pass": true,
+      "evidence": "crates/heptabao-server/src/ha_request_deadline_tests.rs"
+    },
+    {
+      "name": "hunks 0",
+      "pass": true,
+      "evidence": 1
+    },
+    {
+      "name": "function names 0",
+      "pass": true,
+      "evidence": [
+        "exchange",
+        "process",
+        "process_with_api",
+        "ha_block_on_propagates_the_original_deadline_and_drops_it_after_scope",
+        "drop"
+      ]
+    },
+    {
+      "name": "before whole 1",
+      "pass": true,
+      "evidence": {
+        "blob": "e6f1031dae7db7c6c09e63305d0a06f047437005",
+        "bytes": 8120,
+        "sha256": "41bd4c12c7fb55979c4f3bde6316353a0d5f6d510dd62f9650d8b1d64188e08d"
+      }
+    },
+    {
+      "name": "after whole 1",
+      "pass": true,
+      "evidence": {
+        "blob": "e861ef9860f25bb250791df7e493fd4a1fb49f63",
+        "bytes": 8343,
+        "sha256": "9ed84d5ace763a9746fc7f932de9c6c1d0d9a7fa8d2eb595eebc3fe70ad2eb62"
+      }
+    },
+    {
+      "name": "canonical 576 before 1",
+      "pass": true,
+      "evidence": {
+        "mode": "100644",
+        "blob": "e6f1031dae7db7c6c09e63305d0a06f047437005",
+        "bytes": 8120
+      }
+    },
+    {
+      "name": "diff whole 1",
+      "pass": true,
+      "evidence": {
+        "blob": "dfecb0116ef1d37e8b9508a138e5e2ce6a09759b",
+        "bytes": 598,
+        "sha256": "1d7797cbe5abf130c8aeae15e99e558c057a2311cd7d223355d16bd33bbfbe22"
+      }
+    },
+    {
+      "name": "strict forward 1",
+      "pass": true,
+      "evidence": "crates/heptabao-server/src/ha_snapshot_test_support.rs"
+    },
+    {
+      "name": "strict reverse 1",
+      "pass": true,
+      "evidence": "crates/heptabao-server/src/ha_snapshot_test_support.rs"
+    },
+    {
+      "name": "hunks 1",
+      "pass": true,
+      "evidence": 1
+    },
+    {
+      "name": "function names 1",
+      "pass": true,
+      "evidence": [
+        "fmt",
+        "exchange",
+        "new",
+        "uninitialized",
+        "build",
+        "configure_api_address",
+        "configure_cluster_address",
+        "block_quorum",
+        "isolate_all_peers",
+        "blocked_probes",
+        "drop",
+        "snapshot_test_record_usage"
+      ]
+    },
+    {
+      "name": "before whole 2",
+      "pass": true,
+      "evidence": {
+        "blob": "0c51b759c257d836adf521bea3d75b90af0b301f",
+        "bytes": 16080,
+        "sha256": "c0cdbd2a5951991b55ae2a93c22c6585c708f280c56f89d6ff105c0fd808448e"
+      }
+    },
+    {
+      "name": "after whole 2",
+      "pass": true,
+      "evidence": {
+        "blob": "7ca123003ff5740325c11b90dbb8445ba8d5455e",
+        "bytes": 16082,
+        "sha256": "01ee81d4a14cb93911fe596e37476e952acad02b6f0c31ae58a9a1bcdd4399ae"
+      }
+    },
+    {
+      "name": "canonical 576 before 2",
+      "pass": true,
+      "evidence": {
+        "mode": "100644",
+        "blob": "0c51b759c257d836adf521bea3d75b90af0b301f",
+        "bytes": 16080
+      }
+    },
+    {
+      "name": "diff whole 2",
+      "pass": true,
+      "evidence": {
+        "blob": "b0d19d199ebc63eb17ac03a1709d75c36deaad56",
+        "bytes": 832,
+        "sha256": "834ff89748c8de0e768ea8b603a4f29ee1afb7f509a224c6bcf6f22da38fa85e"
+      }
+    },
+    {
+      "name": "strict forward 2",
+      "pass": true,
+      "evidence": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs"
+    },
+    {
+      "name": "strict reverse 2",
+      "pass": true,
+      "evidence": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs"
+    },
+    {
+      "name": "hunks 2",
+      "pass": true,
+      "evidence": 2
+    },
+    {
+      "name": "function names 2",
+      "pass": true,
+      "evidence": [
+        "register_snapshot_handlers",
+        "count_calls",
+        "prepare_archive",
+        "finite_original_token",
+        "admit_forward",
+        "assert_private_lease_released",
+        "run_published_audit_veto",
+        "native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+        "native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+        "native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+        "run_unverified_attempt",
+        "native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+      ]
+    },
+    {
+      "name": "only gated empty fields 0",
+      "pass": true,
+      "evidence": {
+        "handler": "Arc<Mutex<Option<SnapshotForwardHandler>>> = Arc::new(Mutex::new(None))",
+        "pins": "BTreeMap<u64,Vec<[u8;32]>> = BTreeMap::new()"
+      }
+    },
+    {
+      "name": "original fixture native and listener absent 0",
+      "pass": true,
+      "evidence": "deadline.before.rs"
+    },
+    {
+      "name": "only gated empty fields 1",
+      "pass": true,
+      "evidence": {
+        "handler": "Arc<Mutex<Option<SnapshotForwardHandler>>> = Arc::new(Mutex::new(None))",
+        "pins": "BTreeMap<u64,Vec<[u8;32]>> = BTreeMap::new()"
+      }
+    },
+    {
+      "name": "original fixture native and listener absent 1",
+      "pass": true,
+      "evidence": "support.before.rs"
+    },
+    {
+      "name": "only two exact zero-length predicates",
+      "pass": true,
+      "evidence": "all remaining bytes unchanged, including deadlines, scope drops, reads and assertions"
+    },
+    {
+      "name": "two exact assertions retained",
+      "pass": true,
+      "evidence": 2
+    }
+  ],
+  "scope": "SOURCE_ONLY",
+  "rust_compiled": false,
+  "rust_tests_executed": false,
+  "native_calls": 0
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.canonical576-bundle-single-INFO-SOURCE.v1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+  },
+  "protocol": {
+    "baseline_source": {
+      "blob": "d86f10d12cc1303c8d5bd66ffde8423a03a3f576",
+      "bytes": 20597,
+      "sha256": "73d155888278543d0bcd9a029cbd2b20bfda05cfbd45b49a500b874e17f5960c"
+    },
+    "baseline_source_tree": "70d6c3f7a8a64521e1409daf48834fec8caac382",
+    "fresh_slot": "successor576_canonical_bundle_info_gitfirst_r1",
+    "source": {
+      "blob": "a0f43f0aa0789d7405f7ac1b00379a4b0ece8749",
+      "bytes": 20597,
+      "sha256": "11eca7b8cd6e7edf4750fc5bf40a28d8da116d59111b8894b716b42c1c1bf7ea"
+    },
+    "change": "Exactly3 top-level constants in1 strict hunk; all13 definitions and complete tail byte-identical. Standalone single-operation initialization, no manufactured job and no B context attachment."
+  },
+  "request": {
+    "blob": "f7aef4d88706b1cca3e66e6385a1776eafb1d914",
+    "bytes": 279,
+    "sha256": "5e0c4bc75fd3fb26f69248085142edbc9c95519a79720cd8a2610bf439bb5624"
+  },
+  "exact_operation": {
+    "idempotency_key": "heptabao-5767739c-canonical-bundle-info-rog-20261106-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle"
+      }
+    }
+  },
+  "stage_witness": {
+    "report": {
+      "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+      "bytes": 29748,
+      "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+    },
+    "field": "canonical_bundle",
+    "root_qualification": {
+      "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+      "bytes": 2941,
+      "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+    },
+    "full9": [
+      "66306",
+      "31358148",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "5766",
+      "1794000539740776688",
+      "1794000539740776688"
+    ],
+    "header": {
+      "header_sha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9",
+      "heads": [
+        [
+          "5767739cd25e458ac052dc8d384019bab8688ae0",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+      ],
+      "version": 2
+    },
+    "root_qualification_tree": "d3c0c006a351fe117dc2731a3711fa27cbb5e374"
+  },
+  "expected": {
+    "host": "rog",
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "bytes": 5766,
+    "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+    "full9": [
+      "66306",
+      "31358148",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "5766",
+      "1794000539740776688",
+      "1794000539740776688"
+    ]
+  },
+  "limits": {
+    "operation_status_total": 8,
+    "operation_result_total": 128,
+    "immutable_page_bytes": 8192,
+    "payload_bytes": 1048576,
+    "max_native_calls": 137,
+    "simultaneous_call_or_future": 1
+  },
+  "scope": {
+    "file_info_admissions": 1,
+    "process_start": 0,
+    "binary_read": 0,
+    "new_processes": 0,
+    "filesystem_writes": 0
+  },
+  "sequence": [
+    "Whole GO and exact request",
+    "Fresh initialize once after separate root GO",
+    "Externally whole request/intent/armed tree",
+    "Independent model boundary",
+    "Unique original operation_start",
+    "Whole original SDK before isError/native parse",
+    "Only returned original ID status and contiguous immutable pages",
+    "Whole payload before parsing metadata; exact reported full9/size/SHA match",
+    "Hold and hand off actual native version; no body within this scope"
+  ],
+  "actual_version": null,
+  "actual_body": null,
+  "new_native_calls": 0,
+  "scope_notes": [
+    "The canonical bundle identity is observed within the original576 producer stage report. This is not an independent INFO or transport claim.",
+    "Only one fixed file_info may be admitted after separate exact root GO. A body request will be derived only from the actual closed INFO version.",
+    "Old02b slot, its oneINFO/threeBODY operations and whole171016 bundle remain immutable and separate.",
+    "All raw SDKs and payloads are whole archived before parse. A Native error/unknown holds the exact original slot; no replacement key, automatic retry, B store attachment, or admission replay.",
+    "No process/Cargo/Mac filesystem write is present in this INFO scope. Root controls the single C lane."
+  ]
+}

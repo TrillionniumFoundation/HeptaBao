@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.mac576.actual-bundle-mechanical-binding-plan.v1",
+  "status": "SOURCE_ONLY_WAIT_ACTUAL_PRODUCER_AND_TRANSPORT",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106"
+  },
+  "original_stage_template": {
+    "tree": "a928d42c1558a0b48c40c10af6c76c63eae97a51",
+    "pin": {
+      "blob": "79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed",
+      "bytes": 23651,
+      "sha256": "7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"
+    },
+    "checks": 27,
+    "checks_repeated": false,
+    "source_and_all_original_guards_unchanged": true
+  },
+  "accepted_normal_successor": {
+    "tree": "66c0d39d1a8e6cdfea4af730bf053c95c70b8d4e",
+    "root_review": {
+      "blob": "d9453662d9e2e4ac556ab07ac852cee0fa4f9612",
+      "bytes": 966,
+      "sha256": "7711d49a8f9c71f3cceca822c3b7b5b30f101a87a44e06a2ffa3a772c5ba0c23"
+    },
+    "unique": 89,
+    "profile_executions": 117
+  },
+  "binder": {
+    "blob": "e353530f3a579d88554928d070790661fa720114",
+    "bytes": 6971,
+    "sha256": "bb79258cdd0357bcd56915c762eeafabb85bfca62715d8126e8d59ccb765f8a5"
+  },
+  "immutable_predecessor_binder": {
+    "blob": "43a1e30af8d02223e00237c2ed91318604597537",
+    "bytes": 4113,
+    "sha256": "e19412056f6cb3321b07b01bc562dabdcb18f2ff2dde85456b7a8d1b60a543b4"
+  },
+  "predecessor_binder_delta_view": {
+    "pin": {
+      "blob": "d0bb84c77abacb36bf6347bf3f7fa78e025b2b62",
+      "bytes": 4114,
+      "sha256": "3b50c863d41c73fa58dcd8d671147abb22956d34fdd758b7d5255004da297147"
+    },
+    "rule": "exact immutable original plus one terminal LF, solely because the existing strictDiff helper requires LF"
+  },
+  "immutable_journal": {
+    "blob": "0bcb0ae541da1865f788a26cdb4a884425c50cbd",
+    "bytes": 19047,
+    "sha256": "f74c58e06d949fe5e3aac9c9e7f33b3f68504ce9e6721bc59c3309c6a7c7424d"
+  },
+  "unchanged_helpers": {
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "correct_typed_binding": {
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    "strict_diff": {
+      "blob": "d667a66c20e20dac7241cff3a35fdda4d50f6f1a",
+      "bytes": 2209,
+      "sha256": "1c94876fa6a8ae89bf0f1b10164da0b1aff98f1400eefe322085429770c6c827"
+    }
+  },
+  "required_actual_inputs": {
+    "schema": "heptabao.mac-successor576.actual-bundle-bindings.v1",
+    "ready": false,
+    "candidate": {
+      "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+      "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+      "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    },
+    "producer": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+      "report": null,
+      "rootQualification": null
+    },
+    "bundle": {
+      "bytes": null,
+      "sha256": null,
+      "full9": null,
+      "version": null,
+      "headerSha256": null
+    },
+    "infoNative": null,
+    "infoOperation": null,
+    "bodyOperations": null,
+    "transport": null,
+    "transportRootQualification": null,
+    "base64": null
+  },
+  "ordered_binding": [
+    "Obtain the original producer stage full report and root qualification. Compare actual bundle path, bytes, SHA256, full9 strings, v2 header, sole02b prerequisite and576 HEAD. Stage-summary success alone does not fill these values.",
+    "After exact separate transport GO, preserve original fixed-path INFO/version/full9 and every original contiguous binary range to closure. Whole archive the actual canonical base64 and transport manifest before binding. No INFO/body call is granted by this SOURCE.",
+    "Fill only the explicit actual input table from these closed originals, preserving full9 nanoseconds as decimal strings. Record exact original report/info/transport/root qualification pins and original operation IDs. ready=true means pure binding inputs are complete, not Native authorization.",
+    "Call this one pure binder. It validates actual content/header, replaces exactly two stage None constants, forms the unchanged source-only carrier, refuses the complete262144-byte carrier cap, derives exact process request and correct typed digest/fingerprint, and replaces exactly three journal literals.",
+    "Whole archive the complete concrete packet once, then root reviews only new actual bindings, two constants, carrier/request/typed and journal3 literals. Existing template27 and source20 normal29 proofs remain independent and are not rerun as a new product result.",
+    "Only a separate exact root GO may initialize the new stage slot, externally arm and invoke the one start. Original300/90/180/360 and8KiB result pages/16KiB streams apply. UNKNOWN retains the original context and no replay is granted."
+  ],
+  "concrete_packet_contents": [
+    "stage.source.py",
+    "stage.actual-binding.diff",
+    "carrier.exact.json",
+    "request.exact.json",
+    "journal.source.js",
+    "journal.actual-binding.diff",
+    "BUNDLE.bindings.actual.public.json",
+    "producer-stage.original.json",
+    "INFO.native.original.json",
+    "BINARY-TRANSPORT.original.json",
+    "canonical.bundle.base64.original.txt",
+    "root-qualification.original.references.json",
+    "binder.source.js",
+    "PLAN.public.json",
+    "MANIFEST.public.json"
+  ],
+  "unchanged_budgets": {
+    "stage_seconds": 300,
+    "git_leaf_seconds": 90,
+    "clone_seconds": 180,
+    "outer_seconds": 360,
+    "complete_carrier_bytes": 262144,
+    "immutable_page_bytes": 8192,
+    "stream_bytes": 16384,
+    "original_payload_bytes": 1048576
+  },
+  "current_outputs": {
+    "bound_source": null,
+    "carrier": null,
+    "request": null,
+    "journal": null,
+    "typed": null,
+    "Native_slot_initialized": false,
+    "Native_GO": null
+  },
+  "boundaries": [
+    "No replacement of the already qualified02b source base; new576 fresh-root stage only.",
+    "No product commit/ref mutation, no Cargo, no controls publication, no old4e/02b runtime qualification inherited.",
+    "The pure binder checks content and reviewed reference consistency. It does not independently prove original Native closure; that remains the root's actual-chain review.",
+    "Normal/full34/LAN scopes remain separate; SOURCE11 normal61 text is historical and SOURCE20's89/117 controls are authoritative for the new Mac normal run."
+  ]
+}

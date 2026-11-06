@@ -1,0 +1,43 @@
+{
+  "entry": "verifyMac576BundleBindingPreparation",
+  "evaluate": [
+    {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    {
+      "blob": "d667a66c20e20dac7241cff3a35fdda4d50f6f1a",
+      "bytes": 2209,
+      "sha256": "1c94876fa6a8ae89bf0f1b10164da0b1aff98f1400eefe322085429770c6c827"
+    },
+    "binder.source.js",
+    "verifier.source.js"
+  ],
+  "input": {
+    "template": {
+      "pin": {
+        "blob": "79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed",
+        "bytes": 23651,
+        "sha256": "7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"
+      },
+      "tree": "a928d42c1558a0b48c40c10af6c76c63eae97a51"
+    },
+    "baseJournal": {
+      "blob": "0bcb0ae541da1865f788a26cdb4a884425c50cbd",
+      "bytes": 19047,
+      "sha256": "f74c58e06d949fe5e3aac9c9e7f33b3f68504ce9e6721bc59c3309c6a7c7424d"
+    },
+    "binder": "binder.source.js",
+    "originalBinder": "binder.original.js",
+    "beforeLF": "binder.before.LF-view.js",
+    "diff": "binder.strict.diff",
+    "bindings": "BINDINGS.unobserved.public.json"
+  },
+  "scope": "Pure source and fail-closed null-input checks only; no positive actual-bundle binding has run."
+}

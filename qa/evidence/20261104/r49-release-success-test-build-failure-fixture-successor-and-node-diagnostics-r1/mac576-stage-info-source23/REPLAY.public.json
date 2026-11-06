@@ -1,0 +1,10 @@
+{
+  "helpers": [
+    "pure_helpers.original.js",
+    "strict_diff.original.js",
+    "verifier.source.js"
+  ],
+  "entry": "await verifyMac576StageInfoSource(files)",
+  "argument": "flat original filename to exact UTF8 text map",
+  "effect": "Private in-memory fake archive only;no Native/Git/Python;actual existing slot remains untouched."
+}

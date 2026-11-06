@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.root.successor5767739.stage-report-body-review.r1",
+  "sourceTree": "a3c161eb60bb0846c92ba45ca789c069b2126171",
+  "sourceWhole": true,
+  "author45Reproduced": true,
+  "additionalBindings": {
+    "beforeIsActualINFOJournal": true,
+    "metadataIsActualWhole": true,
+    "actualINFOGO": true,
+    "sameClosedState": true
+  },
+  "actualINFOWholeTree": "bd06e25f0f8a3fc9583b52efc470a026e8ea225d",
+  "metadataQualified": true,
+  "bodyQualified": false,
+  "wholeReportBytes": 29748,
+  "wholeReportSHA256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662",
+  "wholeReportVersion": "66306:31358204:29748:1794000540708114035:1794000540708114035",
+  "originalJob": "1a1b2c397c4-fc05-7fa4",
+  "closedOriginalInfoScope": true
+}

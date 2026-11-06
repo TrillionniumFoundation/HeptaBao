@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.mac576-stage.original-transport-and-summary.v1",
+  "originalJob": {
+    "host": "mac",
+    "id": "1a1b2f48641-fc05-8042"
+  },
+  "candidateCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "candidateTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "originalCalls": 7,
+  "originalObservers": 2,
+  "immutablePages": 2,
+  "stdout": {
+    "blob": "afbd1f1685cabef24969a50d4b55da4b84f021a3",
+    "bytes": 378,
+    "sha256": "e5b0517c66baf0e63a1ae788b28e21660244196ab769fab5ba8eb54c8fa564cc"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminal": {
+    "exitCode": 0,
+    "succeeded": true,
+    "outputComplete": true,
+    "outputDurable": true,
+    "timedOut": false,
+    "cancelled": false
+  },
+  "observedSummary": {
+    "all_owned_stopped": true,
+    "compiler_started": false,
+    "result_path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "server_started": false,
+    "source_commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "source_tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "status": "prepared",
+    "within_new_stage_deadline": true
+  },
+  "closedState": {
+    "blob": "c1ce8e3901479c1c99784569d3ea29ada9f35869",
+    "bytes": 59491,
+    "sha256": "6bdb91838f2009cf45fb69a5dc2beab984b48f4ab894ef48ab0b93182d1b9bc1"
+  },
+  "current": {
+    "callsInFlight": 0,
+    "activeFutures": 0,
+    "pending": null,
+    "activeObserver": null,
+    "lane": "C0"
+  },
+  "qualification": {
+    "originalTransportAndSummary": true,
+    "detailedSourceReport": false,
+    "normal117": false,
+    "full34": false,
+    "LAN": false
+  },
+  "scope": "Original unique Mac source-only stage. This packet preserves raw SDK/native/envelope/page/request/intent/armed records; it does not reconstruct or replace any original call. No report INFO/BODY or Cargo call is present."
+}

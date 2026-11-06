@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.canonical576-info-source-verification.v1",
+  "pass": true,
+  "check_count": 18,
+  "checks": [
+    {
+      "name": "exact_predecessor_d86f",
+      "pass": true
+    },
+    {
+      "name": "exact_successor_source_a0f4",
+      "pass": true
+    },
+    {
+      "name": "one_strict_hunk",
+      "pass": true
+    },
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "only_three_constants_all_rest_equal",
+      "pass": true
+    },
+    {
+      "name": "all13_function_bodies_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "exact_original_producer_whole",
+      "pass": true
+    },
+    {
+      "name": "producer_actual576_and_parent02b",
+      "pass": true
+    },
+    {
+      "name": "lossless_exact_stage_full9",
+      "pass": true
+    },
+    {
+      "name": "stage_bytes_sha_path_exact",
+      "pass": true
+    },
+    {
+      "name": "v2_sole_prerequisite_head",
+      "pass": true
+    },
+    {
+      "name": "only_exact_fixed_INFO_request",
+      "pass": true
+    },
+    {
+      "name": "exact_request_pin",
+      "pass": true
+    },
+    {
+      "name": "new_fresh_slot_exact",
+      "pass": true
+    },
+    {
+      "name": "expected_constant_exact",
+      "pass": true
+    },
+    {
+      "name": "unchanged_limits",
+      "pass": true
+    },
+    {
+      "name": "no_BODY_or_process_scope",
+      "pass": true
+    }
+  ],
+  "Native_calls": 0,
+  "Git_calls": 0,
+  "candidate_executed": false
+}

@@ -1,0 +1,33 @@
+--- a/launcher.candidate.py
++++ b/launcher.candidate.py
+@@ -20,8 +20,8 @@
+ for name in ('commit', 'tree', 'stage-sha256', 'runner-sha256', 'groups-sha256', 'launcher-sha256', 'controls-sha256', 'controls-full9-json'):
+     parser.add_argument('--' + name, required=True)
+ args = parser.parse_args()
+-assert args.commit == '5767739cd25e458ac052dc8d384019bab8688ae0'
+-assert args.tree == '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
++assert args.commit == '4a49405b93c45ab1c25ecba11cde63a7ede20dce'
++assert args.tree == 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'
+ STAGE_EXPECTED_FULL9 = None
+ for name in ('commit', 'tree'):
+     assert re.fullmatch('[0-9a-f]{40}', getattr(args, name))
+@@ -30,7 +30,7 @@
+ 
+ if args.host == 'mac':
+     BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+-    STAGE_ROOT = BASE / 'hb-5767739c-src-20261106-r1'
++    STAGE_ROOT = BASE / 'hb-4a49405b-src-20261106-r1'
+     ROOT = STAGE_ROOT / 'normal-build-r1'
+     R9 = BASE / 'continuation-20261104-native-http-r9'
+     OLD = BASE / 'continuation-20261104-native-ssh-http-r8'
+@@ -311,8 +311,8 @@
+ assert stage['stage_purpose'] == 'SOURCE_ONLY_NO_BUILD_CONTROLS' and stage['controls_published'] is False
+ assert stage['full_strict_fsck_passed'] and stage['within_new_stage_deadline']
+ assert stage['full_worktree']['tracked_leaf_count'] == 3932
+-assert stage['full_worktree']['tracked_bytes'] == 62553540
+-assert stage['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'
++assert stage['full_worktree']['tracked_bytes'] == 62553956
++assert stage['full_worktree']['full_leaf_index_sha256'] == '7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d'
+ assert all(x['direct_child_reaped'] and not x['remaining'] and not x.get('cleanup_error_type') for x in stage['cleanup'])
+ controls_raw, controls_pin = read_bound(CONTROLS_RECEIPT, args.controls_sha256, 20000)
+ assert [str(x) for x in controls_pin['identity']] == json.loads(args.controls_full9_json)

@@ -1,0 +1,209 @@
+{
+  "schema": "heptabao.combined5767739.stage-report-info-source-verification.r1",
+  "ok": true,
+  "checks": 50,
+  "results": [
+    {
+      "name": "current_before_pin",
+      "pass": true
+    },
+    {
+      "name": "donor_source_pin",
+      "pass": true
+    },
+    {
+      "name": "donor_GO_pin",
+      "pass": true
+    },
+    {
+      "name": "exact_new_source_pin",
+      "pass": true
+    },
+    {
+      "name": "exact_new_request_pin",
+      "pass": true
+    },
+    {
+      "name": "current_forward_exact",
+      "pass": true
+    },
+    {
+      "name": "current_reverse_exact",
+      "pass": true
+    },
+    {
+      "name": "reverse_file_exact",
+      "pass": true
+    },
+    {
+      "name": "current_six_hunks",
+      "pass": true
+    },
+    {
+      "name": "donor_strict_both_directions",
+      "pass": true
+    },
+    {
+      "name": "seven_binding_groups",
+      "pass": true
+    },
+    {
+      "name": "literal_once_GF_SLOT",
+      "pass": true
+    },
+    {
+      "name": "literal_once_GF_REQUEST",
+      "pass": true
+    },
+    {
+      "name": "literal_once_report_path",
+      "pass": true
+    },
+    {
+      "name": "literal_once_info_request",
+      "pass": true
+    },
+    {
+      "name": "literal_once_prerequisites",
+      "pass": true
+    },
+    {
+      "name": "literal_once_original_job",
+      "pass": true
+    },
+    {
+      "name": "literal_once_key_prefix",
+      "pass": true
+    },
+    {
+      "name": "donor_logic_byte_unchanged",
+      "pass": true
+    },
+    {
+      "name": "only_one_new_function",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "one_metadata_scope",
+      "pass": true
+    },
+    {
+      "name": "fixed_request_shape",
+      "pass": true
+    },
+    {
+      "name": "fixed_host_path_key",
+      "pass": true
+    },
+    {
+      "name": "no_metadata_yet",
+      "pass": true
+    },
+    {
+      "name": "metadata_caps",
+      "pass": true
+    },
+    {
+      "name": "original_payload_caps",
+      "pass": true
+    },
+    {
+      "name": "only_literal_metadata_branch",
+      "pass": true
+    },
+    {
+      "name": "full9_decimal_tokens",
+      "pass": true
+    },
+    {
+      "name": "existing_context_closed",
+      "pass": true
+    },
+    {
+      "name": "same_job_native_results",
+      "pass": true
+    },
+    {
+      "name": "terminal_durable_zero",
+      "pass": true
+    },
+    {
+      "name": "summary_source_binding",
+      "pass": true
+    },
+    {
+      "name": "full_stream_sizes",
+      "pass": true
+    },
+    {
+      "name": "prerequisite_pin_0",
+      "pass": true
+    },
+    {
+      "name": "original_status_closed_0",
+      "pass": true
+    },
+    {
+      "name": "recorded_original_observer_0",
+      "pass": true
+    },
+    {
+      "name": "prerequisite_pin_1",
+      "pass": true
+    },
+    {
+      "name": "original_status_closed_1",
+      "pass": true
+    },
+    {
+      "name": "recorded_original_observer_1",
+      "pass": true
+    },
+    {
+      "name": "same_SDK_before_parse_body",
+      "pass": true
+    },
+    {
+      "name": "separate_GO_required",
+      "pass": true
+    },
+    {
+      "name": "no_new_execution_and_no_formatter",
+      "pass": true
+    }
+  ],
+  "scope": "pure V8 exact source/diff/prerequisite verification; candidate functions not invoked; no Native or Python",
+  "stageDetailedReportQualified": false
+}

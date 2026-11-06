@@ -1,0 +1,254 @@
+{
+  "schema": "heptabao.auth-node-crash-fixed-r4-original-release.r1",
+  "host": "mac",
+  "job": "1a1b2b3248a-fc05-7f5e",
+  "source": {
+    "blob": "6813e19bf3d6fed77d6f0705d8c10b22104af2cb",
+    "bytes": 37634,
+    "sha256": "9e758b73a9a487e7ffa19f2815583761e44d545f8e8a40467fb160de8871b612"
+  },
+  "request": {
+    "blob": "0d3d2ad6dd3c856b4179816671a011e805a8b6e7",
+    "bytes": 38683,
+    "sha256": "3d50ba16e276f11d97a52cfbd21664d7008d0a8e75f907be008af7923a53fcd8"
+  },
+  "GO": {
+    "blob": "c2e39fba3a81f1c7d8335f453cb9a0877abefa12",
+    "bytes": 18422,
+    "sha256": "2e21908d905eb32b9fbc22763e0d567c14889a5518113803c542a3740867cb9d"
+  },
+  "originalCalls": 11,
+  "returnedObservers": 2,
+  "immutablePages": 6,
+  "allCallsAccepted": true,
+  "allOriginalSDKsWhole": true,
+  "allObserversCompletedInactive": true,
+  "nativeCallInFlight": false,
+  "nativeFuturesActive": 0,
+  "activeObserver": null,
+  "pending": null,
+  "laneReleased": true,
+  "authority": {
+    "blob": "2478f4b3263c7a059e31bc133156596356163b8a",
+    "bytes": 733,
+    "sha256": "20b64a1f362b386df4515235c7798c79c805514ab5860542323134c943c07636"
+  },
+  "stdout": {
+    "blob": "14afbf5260919cfc3674d1a2bdfa2fffea06ad90",
+    "bytes": 12183,
+    "sha256": "492e7f7937d9d5145a2aeaf2550d809754704d9523790557af257961382472e7"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminal": {
+    "exitCode": 0,
+    "full": true,
+    "durable": true,
+    "confirmed": true
+  },
+  "classification": {
+    "observationComplete": true,
+    "outcomeUnknown": false,
+    "fixedCandidateName": "node-2026-11-07-033552.ips",
+    "noDirectoryEnumeration": true,
+    "wholeFixedFile": {
+      "basename": "node-2026-11-07-033552.ips",
+      "identity": [
+        "16777233",
+        "593533598",
+        "501",
+        "250",
+        "33152",
+        "1",
+        "6809",
+        "1793993752090245618",
+        "1793993752090848927"
+      ],
+      "wholeBodyHashExported": false,
+      "wholeBytesRead": 6809
+    },
+    "correlation": {
+      "crashType309": true,
+      "launchAndCaptureTimesTyped": true,
+      "metadataNameAbsentOrNode": true,
+      "parentIs51483": true,
+      "pidIs51494": true,
+      "procNameNode": true,
+      "procPathIsKnownNodePath": false,
+      "withinOriginalCorrelatedTimeWindow": true
+    },
+    "path": {
+      "absolute": true,
+      "basenameIsNode": true,
+      "boundedPrintableAscii": true,
+      "canonicalComponents": true,
+      "closedLiteralForm": "literal-homebrew-star-node",
+      "containsLiteralAsterisk": true,
+      "endsWithBinNode": false,
+      "equalsKnownAlias": false,
+      "equalsKnownReal": false,
+      "kernelImageOrFileContentQualified": false,
+      "literalAsteriskMeaningInferred": false,
+      "type": "string",
+      "underHomebrewPrefix": true,
+      "unknownPathOrHashExported": false
+    },
+    "matchedReportCount": 0,
+    "safeCrashProjectionCount": 1,
+    "exception": {
+      "numericHexCodes": "0x0000000000000000, 0x0000000000000000",
+      "signal": {
+        "known": true,
+        "present": true,
+        "value": "SIGABRT"
+      },
+      "type": {
+        "known": true,
+        "present": true,
+        "value": "EXC_CRASH"
+      }
+    },
+    "termination": {
+      "byPidEqualsOriginalParent": false,
+      "byPidEqualsTarget": false,
+      "byProc": {
+        "known": false,
+        "present": false,
+        "value": null
+      },
+      "codeDecimal": "2",
+      "flagsDecimal": "582",
+      "indicator": {
+        "known": false,
+        "present": false,
+        "value": null
+      },
+      "namespace": {
+        "knownInPreviousEnum": false,
+        "present": true,
+        "publicSyntaxQualified": false,
+        "semanticMeaningClaimed": false,
+        "type": "string",
+        "value": null
+      }
+    },
+    "diagnosticSlots": 29,
+    "presentDiagnosticSlots": 0,
+    "diagnosticStringCount": 0,
+    "diagnosticLineCount": 0,
+    "diagnosticLexicalOnly": {
+      "abortCalled": false,
+      "abortWithPayload": false,
+      "abortWithReason": false,
+      "architectureMismatch": false,
+      "codeSignature": false,
+      "dispatchDiagnostic": false,
+      "dynamicLoader": false,
+      "forkSafety": false,
+      "initializationFailure": false,
+      "jitOrExecutableMemory": false,
+      "libraryInitialization": false,
+      "lockOrSemaphore": false,
+      "missingLibrary": false,
+      "missingSymbol": false,
+      "permissionOrSandbox": false,
+      "pthreadDiagnostic": false,
+      "recursiveOrDeadlock": false,
+      "resourceExhaustion": false,
+      "runtimeAssertion": false,
+      "sandboxInitialization": false,
+      "threadCreation": false,
+      "uncaughtException": false
+    },
+    "publicApiTokens": [],
+    "publicErrnoTokens": [],
+    "publicMissingLibraries": [],
+    "crashCauseQualified": false,
+    "oldRuntimeProgressUnchanged": true
+  },
+  "ownClosure": {
+    "FDs": 7,
+    "iteratorAcquired": false,
+    "metadataCalls": 37,
+    "readCalls": 2,
+    "bodyBytesReadLocally": 6809,
+    "allOwnResourcesClosed": true,
+    "finalHeldNamedFencesPassed": true,
+    "handlersRestored": true,
+    "afterClosureDeadlineMet": true,
+    "outcomeUnknown": false
+  },
+  "historicalFailuresUnchanged": true,
+  "privateBodyOrHashExported": false,
+  "unknownProcPathExported": false,
+  "historicalManagedClosureClaimed": false,
+  "observers": [
+    {
+      "id": "b889431010bb4a4144ac6a95afe55ee60980c3e769251ed9192de6cd981fc922",
+      "tool": "process_status",
+      "payload": {
+        "blob": "8b8527cf3944e490595fb1bd9398314b960d6e09",
+        "bytes": 912,
+        "sha256": "b301d9339094da9ac92732476a681cb661438f864a9fc22836f235f61fc61027"
+      },
+      "payloadTree": "a47db963a0d30296bf96d48e9123807349dbb4c8",
+      "nativeText": {
+        "blob": "2478f4b3263c7a059e31bc133156596356163b8a",
+        "bytes": 733,
+        "sha256": "20b64a1f362b386df4515235c7798c79c805514ab5860542323134c943c07636"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735",
+      "tool": "process_read",
+      "payload": {
+        "blob": "f10484cc2e95547e7df011068e8d6e368addc7e4",
+        "bytes": 40844,
+        "sha256": "a05d25455f2373850b7f039a4ab074ba5bde60af84c137de2d244f9368fe3f7c"
+      },
+      "payloadTree": "c94df3f5f20951eed67167ca114a8c19409ff4e7",
+      "nativeText": {
+        "blob": "354a1eb0dcf9b78722ac6fd498b798bfb9a7ed5d",
+        "bytes": 38151,
+        "sha256": "3eb214f9793d655428e3db4f807bf24ee25331a0b795880d785e669d1b2e654b"
+      },
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "statuses": [
+    {
+      "callKey": "public-node-crash-fixed-r4-authority-01-status-01",
+      "SDK": {
+        "blob": "1d3fe3c8174717716676be328cbe9253109a7eef",
+        "bytes": 980,
+        "sha256": "cde2ea205916f7c54ccef838cfb190beb7f4ddc27e1ff5efffe2088f38896539"
+      },
+      "native": {
+        "blob": "90cb2b8bbd1b5e05a1a0933662c1289782724742",
+        "bytes": 805,
+        "sha256": "5ca9997cf966b68da3d252c9733e013ffc3341e6ccd89f772c5a3bc7831aaf7d"
+      },
+      "operation": "b889431010bb4a4144ac6a95afe55ee60980c3e769251ed9192de6cd981fc922"
+    },
+    {
+      "callKey": "public-node-crash-fixed-r4-streams-01-status-01",
+      "SDK": {
+        "blob": "51748b2d5507d6dbcd57b7f9825f6378a516da0f",
+        "bytes": 978,
+        "sha256": "61fcad61f50082f88129bfc727fb695299157e764fc3c5f19716dd7a0e5215a6"
+      },
+      "native": {
+        "blob": "cbd61040880e85460fe53aec574ce4317709316d",
+        "bytes": 803,
+        "sha256": "a725155af5c3322d04925876664001abc83e894589f4f5f499e2f19c27a64fb5"
+      },
+      "operation": "1aa5c12ae3c11dcbcbcba9e55b595b1f9f23343c3d9baf4d874cf65bee16d735"
+    }
+  ]
+}

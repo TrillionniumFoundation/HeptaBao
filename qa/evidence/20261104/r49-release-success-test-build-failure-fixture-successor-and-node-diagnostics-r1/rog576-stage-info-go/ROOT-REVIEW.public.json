@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root.successor5767739.stage-info-source-review.r1",
+  "sourceTree": "e0d8fde5ee52e2ac848549575274dc2796b2c615",
+  "whole": {
+    "tree": "e0d8fde5ee52e2ac848549575274dc2796b2c615",
+    "files": 23,
+    "bytes": 290446,
+    "merkle": {
+      "root_sha": "e0d8fde5ee52e2ac848549575274dc2796b2c615",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "authorChecksReproduced": 50,
+  "checks": {
+    "journal_before_is_actual_stage_source": true,
+    "STATE_is_actual_closed_state": true,
+    "authority_is_actual_whole_original": true,
+    "streams_is_actual_whole_original": true,
+    "same_actual_candidate": true
+  },
+  "originalStageTerminalTree": "a0cfc7dcb54f90b07684d63a55e58a90b4c3feed",
+  "originalTerminalQualified": true,
+  "originalDetailedReportQualified": false,
+  "originalStagesReplayed": 0,
+  "NativeCalls": 0,
+  "scope": "One metadata read of the already closed stage's fixed report"
+}

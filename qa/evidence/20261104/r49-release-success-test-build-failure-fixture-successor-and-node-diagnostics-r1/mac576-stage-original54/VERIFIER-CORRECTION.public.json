@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.mac576-stage.verifier-field-correction.v1",
+  "initialFailure": "Error: original_read_zero_offsets_and_cap",
+  "before": "requests[4].operation.arguments.max_bytes",
+  "after": "requests[4].operation.arguments.limit",
+  "evidence": "The original exact process_read request uses limit:16384. Correct only this offline verifier field selector; all original requests, SDK, Native results, state, and budget remain unchanged.",
+  "firstRevisionPreserved": "verifier.r1.original.js",
+  "noNativeCallOrCandidateExecution": true
+}

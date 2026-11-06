@@ -1,0 +1,7 @@
+# Original fixed-window Node log diagnosis
+
+This packet preserves the exact original nine Native calls, two completed/inactive observers and four immutable pages for mac/1a1b2e40a05-fc05-8023. The original process terminated with exit 0, full durable stdout of 5,588 bytes and empty stderr. Every original SDK is paired with its original request, pre-dispatch intent/armed checkpoint and original native text; original arm and SDK tree identities are retained. The pure verifier reassembles both immutable payloads and verifies every original offset, digest, SDK/whole binding and final stream EOF. Actual result: 275 checks passed, zero Native calls added.
+
+The log child returned exit 0 with 25 stdout bytes and no stderr. Its direct-child retained exit, reap and group-empty closure are recorded; all four application file descriptors closed. The projected log contains one object and zero admitted events. All nine defined field candidates are absent on that object. Its semantics remain unknown. This does not establish absence of relevant logs, a harmless header, a startup cause, original crash path correlation, or original business progress. No raw child log text or its hash is exported by the diagnostic.
+
+The A observation lane is released: zero active calls and futures. This does not change any historical managed or helper UNKNOWN. No Node, SDK, credential or business replay occurred. The next two-arm public Node --version comparison is a separate SOURCE proposal and is not executed by this packet.

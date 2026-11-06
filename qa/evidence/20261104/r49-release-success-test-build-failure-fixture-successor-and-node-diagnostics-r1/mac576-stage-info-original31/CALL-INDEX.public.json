@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.mac576-stage-info.original-chain.v1",
+  "rootGO": {
+    "blob": "a331c6278d4a539d67865f64db01aa27d9438f7a",
+    "bytes": 2786,
+    "sha256": "76d824566717fa085c634513e6679fe2a79b36d46f863c6069e5344bbae477c6"
+  },
+  "calls": [
+    {
+      "key": "c576mac-stage-result-info-admit-r1",
+      "index": 0,
+      "kind": "operation_start",
+      "files": {
+        "request": "call-00.request.original.json",
+        "intent": "call-00.intent.original.json",
+        "armed": "call-00.armed.original.json",
+        "sdk": "call-00.sdk.original.json",
+        "native": "call-00.native.original.json"
+      },
+      "request": {
+        "blob": "0c9a7c35ea5ec5fe421d9001e49990c916786980",
+        "bytes": 294,
+        "sha256": "cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03"
+      },
+      "sdk": {
+        "blob": "4f39679bbf53162dc73c401e47c63efe57a9f7be",
+        "bytes": 704,
+        "sha256": "64ee23938735420d2b9607d17a578ee4308450ee94b8bce4558d6fb868dca244"
+      },
+      "native": {
+        "blob": "2e4285f834f8de2f61c77a932a826ec17433ebce",
+        "bytes": 543,
+        "sha256": "2d06bfb7190e649b47b8fd5386c65499315ec38b3e6ac1353739e32ed0446ee0"
+      },
+      "armTree": "caab5cc6e1161f41640af123e72a975bac475872",
+      "sdkTree": "8502ada636680158c482dd1fd310ff9f804a79a0"
+    },
+    {
+      "key": "c576mac-stage-result-info-status0-r1",
+      "index": 1,
+      "kind": "operation_status",
+      "files": {
+        "request": "call-01.request.original.json",
+        "intent": "call-01.intent.original.json",
+        "armed": "call-01.armed.original.json",
+        "sdk": "call-01.sdk.original.json",
+        "native": "call-01.native.original.json"
+      },
+      "request": {
+        "blob": "84788dc2c45feb6fdd2e368e5b0efe3892452431",
+        "bytes": 89,
+        "sha256": "f6ccc5f2533adc11f5470a89918a06ed9fbe1888e3cb5abd3989782594f28b86"
+      },
+      "sdk": {
+        "blob": "beeca4ae56ce097dfb29deb7c66636a8fedca872",
+        "bytes": 975,
+        "sha256": "6f0ac0a65fa6cc0cbf7cb48d346661776bfb52e65d4f146b638ad2836e771baf"
+      },
+      "native": {
+        "blob": "47a650872f6a0ab6764f2c8222175965ac8d5c7d",
+        "bytes": 800,
+        "sha256": "37e3ab763ba5d6c0c0c074b229faad6f82050fd11357a50937626da1c79b69e7"
+      },
+      "armTree": "d50f2bf2e822f9033254230df43857101b80d05f",
+      "sdkTree": "2d5fd0388549fb67d934dc177488c90df06fd015"
+    },
+    {
+      "key": "c576mac-stage-result-info-page0-r1",
+      "index": 2,
+      "kind": "operation_result",
+      "files": {
+        "request": "call-02.request.original.json",
+        "intent": "call-02.intent.original.json",
+        "armed": "call-02.armed.original.json",
+        "sdk": "call-02.sdk.original.json",
+        "native": "call-02.native.original.json"
+      },
+      "request": {
+        "blob": "25718d84b4cdbc2cd8644566a5767778c27b43aa",
+        "bytes": 121,
+        "sha256": "6118d395cad1a3a6a07510a2449fa8a34697e8f81ab24ea481cc2464cdf232a9"
+      },
+      "sdk": {
+        "blob": "7160b70c69a27658ecdf167693211a3f83cf545d",
+        "bytes": 1660,
+        "sha256": "92f5cabef0d83064c271cd1b82ab5da98d842d3eedb023185f3ead74b05a3bd2"
+      },
+      "native": {
+        "blob": "852ba131d2fad5388551f1f2333f21dff5ea078b",
+        "bytes": 1489,
+        "sha256": "bfbd72b01b239a37fae5dd0e649dc5a32294a23394083d89ca6cf0d10d03c526"
+      },
+      "armTree": "edb33a5fa90ee31394a41520a66adef948983f7a",
+      "sdkTree": "7abc725468656d85364d71167330458be8bf4b5b"
+    }
+  ],
+  "observer": {
+    "id": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "tool": "file_info",
+    "payload": {
+      "blob": "3fd5b13752922c8f7be029febe23c6db09774852",
+      "bytes": 606,
+      "sha256": "caa7875896ecd34a3aca3708f6df3356aad6e86001a6278671319cb69e9b5c88"
+    },
+    "payloadTree": "73578858b9bd7f21bf05507245c6912974c23569",
+    "nativeText": {
+      "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+      "bytes": 489,
+      "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "priorStagePacket": "ad388ba56c2bdd498d0be6c57ac9cfec3327278e"
+}

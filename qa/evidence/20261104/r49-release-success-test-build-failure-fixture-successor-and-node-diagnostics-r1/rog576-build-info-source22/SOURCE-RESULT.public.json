@@ -1,0 +1,207 @@
+{
+  "schema": "heptabao.current576-build-info-source-checks.r1",
+  "passed": true,
+  "checks": 49,
+  "results": [
+    {
+      "name": "exact_literal_existing_slot",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_original_business_request",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_fixed_public_report",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_actual_original_closure",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_original_job",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_whole_stdout_extent",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_whole_stdout_sha",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_four_actual_public_lines",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_actual_terminal_line",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_candidate_commit",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_candidate_tree",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_actual_report_sha",
+      "passed": true
+    },
+    {
+      "name": "exact_literal_same_existing_observer_prefix",
+      "passed": true
+    },
+    {
+      "name": "donor_derivation",
+      "passed": true
+    },
+    {
+      "name": "donor_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "donor_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "original_journal_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "original_journal_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfState",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfPrepareOne",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfInvokePreparedOnce",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfAcceptArchivedSDK",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_gfRun",
+      "passed": true
+    },
+    {
+      "name": "actual_closed_boundary",
+      "passed": true
+    },
+    {
+      "name": "43_14_14_actual",
+      "passed": true
+    },
+    {
+      "name": "old_git_unknown_retained",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_report_request",
+      "passed": true
+    },
+    {
+      "name": "private_valid_scope",
+      "passed": true
+    },
+    {
+      "name": "attach_preserves_all_existing_state",
+      "passed": true
+    },
+    {
+      "name": "private_exact_info_accepted",
+      "passed": true
+    },
+    {
+      "name": "repeat_authorization_rejected",
+      "passed": true
+    },
+    {
+      "name": "old_scope_cannot_info",
+      "passed": true
+    },
+    {
+      "name": "once_marker_blocks_info",
+      "passed": true
+    },
+    {
+      "name": "rekey_rejected",
+      "passed": true
+    },
+    {
+      "name": "other_host_rejected",
+      "passed": true
+    },
+    {
+      "name": "other_path_rejected",
+      "passed": true
+    },
+    {
+      "name": "binary_read_rejected",
+      "passed": true
+    },
+    {
+      "name": "metadata_fixed_cap_mode_owner_links",
+      "passed": true
+    },
+    {
+      "name": "old_8k_and_1MiB_preserved",
+      "passed": true
+    },
+    {
+      "name": "report_sha_pin",
+      "passed": true
+    },
+    {
+      "name": "all_prior_native_pin_inputs",
+      "passed": true
+    },
+    {
+      "name": "no_live_context_or_tool_touched",
+      "passed": true
+    }
+  ],
+  "toolsCalled": 0,
+  "NativeCalls": 0,
+  "privateSyntheticGOOnly": true,
+  "liveContextModified": false
+}

@@ -1,0 +1,9 @@
+{
+  "entry": "verifyMac576StageInfoOriginalChain(files)",
+  "helpers": [
+    "pure_helpers.original.js"
+  ],
+  "files": "flat path -> exact text",
+  "result": "verification.actual.public.json",
+  "NativeCalls": 0
+}

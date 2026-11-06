@@ -1,0 +1,128 @@
+[
+  {
+    "index": 0,
+    "fileIndex": 0,
+    "stream": "stderr",
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stderr",
+    "bytes": 2146,
+    "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+    "version": "66306:33208046:2146:1794003951048308942:1794003951048308942",
+    "offset": 0,
+    "limit": 2146,
+    "eof": true,
+    "idempotencyKey": "heptabao-combined-5767739c-fresh-observe-r1-default-stderr-body0",
+    "request": {
+      "blob": "fbb427cad503f878d109b7d36536936004d81e90",
+      "bytes": 423,
+      "sha256": "c8a1923fbc65c9d7333b5f7f865a30bd4db9330beccfdbd938ae7a30fe9ee071"
+    }
+  },
+  {
+    "index": 1,
+    "fileIndex": 1,
+    "stream": "stdout",
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+    "version": "66306:33208045:383786:1794003951048308942:1794003951048308942",
+    "offset": 0,
+    "limit": 65536,
+    "eof": false,
+    "idempotencyKey": "heptabao-combined-5767739c-fresh-observe-r1-default-stdout-body0",
+    "request": {
+      "blob": "276a2a44f1f9e2731aaa13c157f1ee40d1db1182",
+      "bytes": 426,
+      "sha256": "d29242092aa493e8cbcc9f5cea239bba792b0e5cb8b127808354f0234d96abbc"
+    }
+  },
+  {
+    "index": 2,
+    "fileIndex": 1,
+    "stream": "stdout",
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+    "version": "66306:33208045:383786:1794003951048308942:1794003951048308942",
+    "offset": 65536,
+    "limit": 65536,
+    "eof": false,
+    "idempotencyKey": "heptabao-combined-5767739c-fresh-observe-r1-default-stdout-body1",
+    "request": {
+      "blob": "df3fd443426a9c68115dccdf6821d1898198b42f",
+      "bytes": 430,
+      "sha256": "36db9ead7e7d5acb1a0477127b3a3b88c29ec9d4cd7dfbfeeb5c16fdc50b0097"
+    }
+  },
+  {
+    "index": 3,
+    "fileIndex": 1,
+    "stream": "stdout",
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+    "version": "66306:33208045:383786:1794003951048308942:1794003951048308942",
+    "offset": 131072,
+    "limit": 65536,
+    "eof": false,
+    "idempotencyKey": "heptabao-combined-5767739c-fresh-observe-r1-default-stdout-body2",
+    "request": {
+      "blob": "041f4fe00f6df5684559455349ab026963581e5c",
+      "bytes": 431,
+      "sha256": "8ca2d43623bb197c95d38b09628d9d56cdff71e6281a39e202f47ef9992094ed"
+    }
+  },
+  {
+    "index": 4,
+    "fileIndex": 1,
+    "stream": "stdout",
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+    "version": "66306:33208045:383786:1794003951048308942:1794003951048308942",
+    "offset": 196608,
+    "limit": 65536,
+    "eof": false,
+    "idempotencyKey": "heptabao-combined-5767739c-fresh-observe-r1-default-stdout-body3",
+    "request": {
+      "blob": "31375959f977ec532d1b771b48f228747aa2ab8c",
+      "bytes": 431,
+      "sha256": "5c53c7982c52bf2dd37581cbf892fc6b5492fefc1d2668dd0c8a939a52844bb7"
+    }
+  },
+  {
+    "index": 5,
+    "fileIndex": 1,
+    "stream": "stdout",
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+    "version": "66306:33208045:383786:1794003951048308942:1794003951048308942",
+    "offset": 262144,
+    "limit": 65536,
+    "eof": false,
+    "idempotencyKey": "heptabao-combined-5767739c-fresh-observe-r1-default-stdout-body4",
+    "request": {
+      "blob": "25444b4f1c39b8d58854901a5b758dca4c3ced50",
+      "bytes": 431,
+      "sha256": "1fcbf495ca53c465cbc4efd0d64ed7b7bcefe0e29138e7d05b53304d8ab940c6"
+    }
+  },
+  {
+    "index": 6,
+    "fileIndex": 1,
+    "stream": "stdout",
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+    "version": "66306:33208045:383786:1794003951048308942:1794003951048308942",
+    "offset": 327680,
+    "limit": 56106,
+    "eof": true,
+    "idempotencyKey": "heptabao-combined-5767739c-fresh-observe-r1-default-stdout-body5",
+    "request": {
+      "blob": "d9cc32b6e79787ccf1074095e989a804d78e3d3e",
+      "bytes": 431,
+      "sha256": "76bc1f0b84766d6bb08a823081e15528e7bdb991390c46fe8c3de48ee6b0cbb1"
+    }
+  }
+]

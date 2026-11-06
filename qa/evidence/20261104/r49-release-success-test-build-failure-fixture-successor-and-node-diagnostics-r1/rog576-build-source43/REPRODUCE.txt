@@ -1,0 +1,1 @@
+Evaluate pure_helpers.js + strict_diff.js + correct_stdin_binding.js + SOURCE-VERIFIER.js; call verifyNext576FreshBuildSource(files). Candidate Python/journal functions must not execute. SOURCE-only; no Native.

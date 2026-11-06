@@ -1,0 +1,219 @@
+{
+  "schema": "heptabao.current576-build-report-body-source-checks.r1",
+  "passed": true,
+  "checks": 52,
+  "results": [
+    {
+      "name": "literal_existing_slot",
+      "passed": true
+    },
+    {
+      "name": "literal_original_business_request",
+      "passed": true
+    },
+    {
+      "name": "literal_fixed_public_report",
+      "passed": true
+    },
+    {
+      "name": "literal_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "literal_actual_original_closure",
+      "passed": true
+    },
+    {
+      "name": "literal_original_job",
+      "passed": true
+    },
+    {
+      "name": "literal_whole_stdout_extent",
+      "passed": true
+    },
+    {
+      "name": "literal_whole_stdout_sha",
+      "passed": true
+    },
+    {
+      "name": "literal_four_actual_public_lines",
+      "passed": true
+    },
+    {
+      "name": "literal_actual_terminal_line",
+      "passed": true
+    },
+    {
+      "name": "literal_candidate_commit",
+      "passed": true
+    },
+    {
+      "name": "literal_candidate_tree",
+      "passed": true
+    },
+    {
+      "name": "literal_actual_report_sha",
+      "passed": true
+    },
+    {
+      "name": "literal_same_existing_observer_prefix",
+      "passed": true
+    },
+    {
+      "name": "literal_single_exact_actual_range_comment",
+      "passed": true
+    },
+    {
+      "name": "literal_new_fixed_body_request",
+      "passed": true
+    },
+    {
+      "name": "literal_actual_whole_info_binding",
+      "passed": true
+    },
+    {
+      "name": "whole_donor_derivation",
+      "passed": true
+    },
+    {
+      "name": "strict_forward",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "donor_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "donor_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfAuthorizeStageResultInfoOnly",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfNeed",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfState",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfSave",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfAcceptArchivedSDK",
+      "passed": true
+    },
+    {
+      "name": "old_function_unchanged_gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "actual_info_pin",
+      "passed": true
+    },
+    {
+      "name": "actual_version_size_SHA",
+      "passed": true
+    },
+    {
+      "name": "actual_closed46_15",
+      "passed": true
+    },
+    {
+      "name": "old_git_unknown_kept",
+      "passed": true
+    },
+    {
+      "name": "actual_info_owner",
+      "passed": true
+    },
+    {
+      "name": "request_exact_range",
+      "passed": true
+    },
+    {
+      "name": "private_valid_body_GO",
+      "passed": true
+    },
+    {
+      "name": "only_body_go_added",
+      "passed": true
+    },
+    {
+      "name": "exact_private_body_request",
+      "passed": true
+    },
+    {
+      "name": "repeat_body_GO",
+      "passed": true
+    },
+    {
+      "name": "old_info_GO_cannot_read_body",
+      "passed": true
+    },
+    {
+      "name": "once_marker_no_replay",
+      "passed": true
+    },
+    {
+      "name": "different_key",
+      "passed": true
+    },
+    {
+      "name": "different_version",
+      "passed": true
+    },
+    {
+      "name": "different_offset",
+      "passed": true
+    },
+    {
+      "name": "different_limit",
+      "passed": true
+    },
+    {
+      "name": "different_path",
+      "passed": true
+    },
+    {
+      "name": "different_host",
+      "passed": true
+    },
+    {
+      "name": "single_range_whole_hash_and_eof",
+      "passed": true
+    },
+    {
+      "name": "raw_bytes_retained_before_semantics",
+      "passed": true
+    },
+    {
+      "name": "original8K_1MiB_bound",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "toolsCalled": 0,
+  "liveContextModified": false,
+  "privateSyntheticGOOnly": true
+}

@@ -1,0 +1,1 @@
+{"idempotency_key":"heptabao-combined-5767739c-fresh-observe-r1-report-body","operation":{"tool":"binary_read","arguments":{"host":"rog","path":"/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json","offset":0,"limit":46828,"expected_version":"66306:33208049:46828:1794003951175308589:1794003951175308589"}}}

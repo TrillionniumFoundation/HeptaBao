@@ -1,0 +1,238 @@
+{
+  "schema": "heptabao.mac.normal61-native28.source-plan.v1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "manifest": {
+      "blob": "d9d3fa89aecbdf276f8e22651559caa94b0ea518",
+      "bytes": 3876,
+      "sha256": "6d8a34410afcf535c20044bfa5e78d3d2d4115c6749f49baf8e37ef9e93256f5"
+    },
+    "runtime_qualification_inherited": false
+  },
+  "predecessors": {
+    "normal_controls_SOURCE_ONLY": "ed813dd7e3fc2f344737da2655e3af3ed69a3c2c",
+    "successor_source_stage_UNBOUND": "a928d42c1558a0b48c40c10af6c76c63eae97a51",
+    "full34_INTERFACE_ONLY": "e8ef2d41704440ea7fecfa7178ccb9a8dfadd9b1"
+  },
+  "source_pins": {
+    "runner": {
+      "blob": "9a0f5458310efdc457a40c2b1c79aa6d28ee12d3",
+      "bytes": 42977,
+      "sha256": "9ad6026ea175fbbeb52ad7ac68ec2f150d9a1bf4da08db7a36dc0d820df31913"
+    },
+    "launcher": {
+      "blob": "38ad48c4196b158e6c92d1843483399714ede1f3",
+      "bytes": 25832,
+      "sha256": "367c86cd52cfc373f99f23dac75cdf2f562010605f563b237559dafabd93a0d6"
+    },
+    "publisher": {
+      "blob": "be52e9db7c75af6f46a203484d550889315a2406",
+      "bytes": 8769,
+      "sha256": "f69474f33807a0a9a373de0e4b0923a1b8f89b14ce024244656742ac5c88246d"
+    },
+    "groups": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    },
+    "future_build_binder": {
+      "blob": "048316d05012774530bf2db26811711f658f77ca",
+      "bytes": 4706,
+      "sha256": "1289154d08ce13b532f6f7c44d6e2854f2b24cd4e03705d8e5b02067ab1789a6"
+    }
+  },
+  "inventory": {
+    "original61": {
+      "six_groups44": 44,
+      "ingress7": 7,
+      "cold_h2_9": 9,
+      "same_root_ABA1": 1,
+      "unique": 61,
+      "profile_executions": 61
+    },
+    "additional": {
+      "source_groups": {
+        "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+        "bytes": 35287,
+        "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+      },
+      "file28": 28,
+      "default28": 28,
+      "unique": 28,
+      "profile_executions": 56,
+      "new_batch_unique": 6,
+      "new_batch_profile_executions": 12,
+      "other_native_jwt": 20,
+      "pki_exact400": 2
+    },
+    "original61_intersection_with_native28": [],
+    "combined_unique": 89,
+    "combined_profile_executions": 117,
+    "profile_totals": {
+      "default": 89,
+      "file": 28
+    },
+    "not_included": "No legacy-JWT67, native-auth-identity69, separate HA-crate17 or unrelated snapshot tests are added to this Mac selection. Linux252/280 remains a separate plan."
+  },
+  "feature_proof": {
+    "cargo_manifest": {
+      "blob": "666dc6d056a8f653bb86ca5ba7ed89b229dfe228",
+      "bytes": 4796,
+      "sha256": "6464e7c760943ef3e973e1416ea91f469780261e28afb3c0a5267d62d7d06642"
+    },
+    "default_literal": "default = [\"native-v6-storage\", \"native-v6-ha\"]",
+    "B_reference_runner": {
+      "blob": "1c22f8a929080588f7c2a249aac2e86846ec3d79",
+      "bytes": 36247,
+      "sha256": "163ef3165868a1f0c9263f9458efb3555577f9e92aeb7dfeea7bff41eac77c24"
+    },
+    "default": {
+      "args": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "expected_features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "reuse": "Use only this run's retained default libtest after the original61 completes; its exact Cargo artifact features/profile and whole SHA are already verified by the original path. No old binary is reused."
+    },
+    "file": {
+      "args": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--no-run",
+        "--no-default-features",
+        "--features",
+        "native-v6-storage",
+        "--message-format=json-render-diagnostics"
+      ],
+      "expected_features": [
+        "native-v6-storage"
+      ],
+      "expected_profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": true
+      },
+      "copy": "Capture the unique current Cargo artifact, require build-finished success, copy to a new0500 retained-native-file-libtest, verify original/retained SHA."
+    },
+    "actual_Cargo_runs": 0,
+    "actual_libtests": null
+  },
+  "changes": [
+    {
+      "file": "runner",
+      "hunks": 5,
+      "changed": "Successor commit/tree, expanded groups envelope and explicit89/117 counts; append exactly the two requested native groups after all old61. File-profile build is the only new Cargo compile. Original release/default build, original61 execution block, all10 helpers and full failure/finally tail are retained byte-for-byte.",
+      "case_evidence": "For each of56 executions require exact--list=[name], then --exact --nocapture --test-threads=1, exit0/not-timeout and the original1-passed/0failed/0ignored summary. Capture partial rows before failure; final success requires both groups, unchanged retained binaries/source, and original cleanup."
+    },
+    {
+      "file": "launcher",
+      "hunks": 7,
+      "changed": "Bind successor source/count/index and explicit unobserved STAGE_EXPECTED_FULL9=None; parse the expanded groups envelope and exact publication receipt89/117. Keep all7 helpers, fresh target, original NB probe, original receipt rechecks, original same-PID exec and8280. Raise only runner read_bound40000->49152 because the new runner is42977B."
+    },
+    {
+      "file": "publisher",
+      "hunks": 6,
+      "changed": "Same three files, same five helpers, source-only compile/publication. Add the two fixed native group shapes and89/117 receipt fields. BINDING_READY=False and STAGE_EXPECTED=None block publication until actual successor stage is qualified. Recompute PINS after that sole actual stage binding."
+    },
+    {
+      "file": "groups",
+      "changed": "Only an explicit envelope around the exact old six groups plus verbatim root-native-jwt-pki-file28 and default28 entries. No name or expected test result is edited."
+    },
+    {
+      "file": "future_build_binder",
+      "hunks": 3,
+      "changed": "Reuse the existing original publisher-authority/whole-stdout/full9 binder; require successor commit/tree/new receipt schema and89/117 counts, then a new key prefix. timeout_seconds remains8280. Not executed, no request is produced."
+    }
+  ],
+  "budgets": {
+    "entire_build_seconds": 8280,
+    "clock": "The same launcher original monotonic origin is passed through same-PID exec. No reset or extension. Added work shares the original remaining8280 seconds.",
+    "original_release_seconds": 1800,
+    "original_default_libtest_compile_seconds": 1800,
+    "original6_groups_each_seconds": 600,
+    "original_ingress_group_seconds": 600,
+    "original_cold_h2_group_seconds": 600,
+    "original_ABA_group_seconds": 600,
+    "added_file_compile_seconds": 1800,
+    "added_native_file28_group_seconds": 600,
+    "added_native_default28_group_seconds": 600,
+    "each_added_exact_listing_seconds": 30,
+    "added_list_and_test_share_each_600_group": true,
+    "timeout_policy": "Clip added file compile and every added group/list/test to the original OUTER_UNTIL. Insufficient time fails; it does not increase a cap or trigger a retry.",
+    "cleanup_TERM_seconds": 5,
+    "cleanup_KILL_seconds": 5,
+    "publisher_outer_seconds": 60,
+    "publisher_stdin_bytes": 262144,
+    "publication_observer_caps_changed": false,
+    "build_observer_source_changes": false,
+    "read_caps": {
+      "runner_previous": 40000,
+      "runner_proposed": 49152,
+      "runner_actual_template_bytes": 42977,
+      "launcher_unchanged": 40000,
+      "groups_unchanged": 20000,
+      "stage_report_unchanged": 65536,
+      "controls_receipt_unchanged": 20000
+    },
+    "scope_note": "The only byte-cap change is the runner's single fixed read. All operation-result, stream, stdin and source-stage limits are unchanged; no additional observation is authorized."
+  },
+  "paths": {
+    "base": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "stageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source",
+    "stageReport": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "runRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1",
+    "control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/control",
+    "admission": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/build-control-r1",
+    "output": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+    "target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/target-normal-r1",
+    "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json"
+  },
+  "actual_binding_steps": [
+    "Wait for B's actual new02b->576 bundle and limited original transport, then run the separately approved Mac source-only stage. SOURCE11 stays unbound.",
+    "After actual successor Mac stage report/root qualification, replace launcher STAGE_EXPECTED_FULL9=None with the lossless9 strings, and publisher STAGE_EXPECTED=None with its exact bytes/SHA/full9.",
+    "Recompute launcher pin and the publisher's exact three PINS, change BINDING_READY only after the actual stage condition is qualified, and build the same bounded3-file+stage-body carrier.",
+    "Freeze exact publisher request/journal/slot and get its independent GO. Actual receipt is then bound by the supplied existing-shape future build binder; no fake actual receipt or job is allowed.",
+    "Get an exact Mac BUILD GO/target window before running. Whole actual results, artifact identities and117 executions are required for combined qualification."
+  ],
+  "full34_followup": {
+    "checks_unchanged": 31,
+    "logical_MiB_unchanged": 34,
+    "driver_unchanged": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+    "change": "The later wrapper must retain every original61 admission condition and additionally require actual native file28/default28 success with89/117 counts from this same run, all original cleanup and source/binary fences. Rebind the controller SHA and three whole actual normal reports; do not pass a combined failure as success because original61 completed.",
+    "actual_input_table": null,
+    "actual_prepare": null,
+    "actual_live": null
+  },
+  "source_review_only": {
+    "Python_compile": false,
+    "Rust_compile": false,
+    "Runtime": false,
+    "unit_tests_executed": false,
+    "product_cases_passed": 0
+  },
+  "note": "The root approved the runner49152 change as a SOURCE increment based on the earlier42785B draft. The final42977B adds the existing B-style build-finished-success gate; it remains below49152. Nothing was executed or published to a host."
+}

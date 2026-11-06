@@ -1,0 +1,43 @@
+   Compiling heptabao-server v0.1.0 (/home/qian-qi/hb-5767739c-src-20261106-r1/source/crates/heptabao-server)
+error[E0063]: missing fields `snapshot_forward_handler` and `snapshot_server_pins` in initializer of `ha::HaProcess`
+  --> crates/heptabao-server/src/ha_request_deadline_tests.rs:64:8
+   |
+64 |     Ok(HaProcess {
+   |        ^^^^^^^^^ missing `snapshot_forward_handler` and `snapshot_server_pins`
+
+error[E0063]: missing fields `snapshot_forward_handler` and `snapshot_server_pins` in initializer of `ha::HaProcess`
+   --> crates/heptabao-server/src/ha_snapshot_test_support.rs:124:48
+    |
+124 |             processes.push(Arc::new(Mutex::new(HaProcess {
+    |                                                ^^^^^^^^^ missing `snapshot_forward_handler` and `snapshot_server_pins`
+
+error[E0658]: use of unstable library feature `exact_size_is_empty`
+   --> crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs:157:42
+    |
+157 |     assert!(before.1.epoch_transitions().is_empty());
+    |                                          ^^^^^^^^
+    |
+    = note: see issue #35428 <https://github.com/rust-lang/rust/issues/35428> for more information
+
+error[E0658]: use of unstable library feature `exact_size_is_empty`
+   --> crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs:411:41
+    |
+411 |     assert!(after.1.epoch_transitions().is_empty());
+    |                                         ^^^^^^^^
+    |
+    = note: see issue #35428 <https://github.com/rust-lang/rust/issues/35428> for more information
+
+warning: variable does not need to be mutable
+   --> crates/heptabao-server/src/service_jwt_policy_tests.rs:298:9
+    |
+298 |     let mut f = f.restart()?;
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+Some errors have detailed explanations: E0063, E0658.
+For more information about an error, try `rustc --explain E0063`.
+warning: `heptabao-server` (lib test) generated 1 warning
+error: could not compile `heptabao-server` (lib test) due to 4 previous errors; 1 warning emitted

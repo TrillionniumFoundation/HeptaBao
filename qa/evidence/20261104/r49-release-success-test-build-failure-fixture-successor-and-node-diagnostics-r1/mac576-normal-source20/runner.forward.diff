@@ -1,0 +1,164 @@
+--- a/mac_normal_same_root_publication_build.py
++++ b/mac_normal_same_root_publication_build.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Build exact same-root publication source; retain 44/7/9 and add one real A-B-A regression."""
++"""Build exact Mac source; retain normal61 and add native JWT/PKI28 in default and file profiles."""
+ from pathlib import Path
+ import argparse
+ import hashlib
+@@ -24,8 +24,8 @@
+ OUTER_UNTIL = args.outer_started_monotonic + ORIGINAL_OUTER_SECONDS
+ assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before runner'
+ source, output = Path(args.source), Path(args.output)
+-DIAGNOSTIC_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
+-DIAGNOSTIC_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'
++DIAGNOSTIC_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
++DIAGNOSTIC_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+@@ -313,9 +313,13 @@
+ assert os.uname().sysname == 'Darwin' and os.uname().machine == 'arm64'
+ # Physical commit is pinned by the reviewed launcher and the clean-tree freeze below.
+ assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE
+-assert args.groups_sha256 == '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'
++assert args.groups_sha256 == '3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d'
+ assert sha(args.groups) == args.groups_sha256
+-groups = json.loads(Path(args.groups).read_text())
++group_plan = json.loads(Path(args.groups).read_text())
++assert set(group_plan) == {'schema', 'normal61_groups', 'native_jwt_pki_groups'}
++assert group_plan['schema'] == 'heptabao.mac.normal61-native-jwt-pki28-groups.v1'
++groups = group_plan['normal61_groups']
++native_groups = group_plan['native_jwt_pki_groups']
+ EXPECTED_GROUP_SHAPES = [('ssh25', 25), ('mount1', 1), ('redirect5', 5), ('actor2', 2), ('ordinary5', 5), ('no_forward6', 6)]
+ assert isinstance(groups, list) and groups and len(groups) == len(EXPECTED_GROUP_SHAPES)
+ assert [(g['label'], len(g['tests'])) for g in groups] == EXPECTED_GROUP_SHAPES
+@@ -333,16 +337,31 @@
+ assert len(set(all_names) | set(INGRESS_OBSERVER_TESTS) | set(COLD_H2_TESTS)) == 60
+ assert len(SAME_ROOT_PUBLICATION_TESTS) == len(set(SAME_ROOT_PUBLICATION_TESTS)) == 1
+ assert len(set(all_names) | set(INGRESS_OBSERVER_TESTS) | set(COLD_H2_TESTS) | set(SAME_ROOT_PUBLICATION_TESTS)) == 61
++assert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in native_groups] == [
++    ('native-jwt-pki-file28', 'file', 28), ('native-jwt-pki-default28', 'default', 28)]
++for group in native_groups:
++    assert set(group) == {'label', 'libtest_profile', 'tests', 'runtime_seconds'}
++    assert group['runtime_seconds'] == 600 and len(set(group['tests'])) == 28
++assert native_groups[0]['tests'] == native_groups[1]['tests']
++normal_names = set(all_names) | set(INGRESS_OBSERVER_TESTS) | set(COLD_H2_TESTS) | set(SAME_ROOT_PUBLICATION_TESTS)
++assert normal_names.isdisjoint(native_groups[0]['tests'])
++assert len(normal_names | set(native_groups[0]['tests'])) == 89
++assert 61 + sum(len(g['tests']) for g in native_groups) == 117
+ assert not output.exists() and not output.is_symlink()
+ before = freeze()
+ assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+ output.mkdir(mode=0o700)
+-intent = {'schema': 'heptabao.mac-normal-same-root-publication-exact-tests.v1', 'source_commit': args.commit,
++intent = {'schema': 'heptabao.mac-normal61-native-jwt-pki28-exact-tests.v1', 'source_commit': args.commit,
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+           'profile': profile, 'groups': groups, 'test_count': len(all_names),
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),
+           'production_changed': False, 'started_ns': time.time_ns(),
+-          'selected_test_total': 61, 'original_60_test_total': 60,
++          'selected_test_total': 117, 'selected_unique_test_total': 89,
++          'original_61_test_total': 61, 'original_60_test_total': 60,
++          'native_jwt_pki_groups': native_groups, 'additional_native_profile_executions': 56,
++          'additional_file_libtest_build_cap_seconds': 1800,
++          'additional_native_group_cap_seconds': 600,
++          'default_profile_reuses_this_run_normal_libtest': True,
+           'additional_test_counts': {'ingress_observer': 7, 'cold_h2': 9, 'same_root_publication': 1},
+           'original_outer_seconds': ORIGINAL_OUTER_SECONDS,
+           'launcher_started_monotonic': args.outer_started_monotonic,
+@@ -607,6 +626,93 @@
+         publication['elapsed_seconds'] = publication_completed - publication_started
+         publication['status'] = 'passed'
+         result['status'] = 'passed'
++
++    if result['status'] == 'passed':
++        bounded_remaining(OUTER_UNTIL)
++        result['original_61_status'] = 'passed_before_combined_cleanup'
++        result['status'] = 'failed'
++        native = {'status': 'failed', 'selected_unique_tests': 28,
++                  'selected_profile_executions': 56, 'groups': [],
++                  'default_reuses_same_run_verified_libtest': True}
++        result['native_jwt_pki'] = native
++        file_build = owned('native-file-build', [str(Path(args.toolchain) / 'cargo'), 'test',
++                           '--release', '--locked', '--offline', '-p', 'heptabao-server',
++                           '--lib', '--no-run', '--no-default-features', '--features',
++                           'native-v6-storage', '--message-format=json-render-diagnostics'],
++                           min(1800.0, bounded_remaining(OUTER_UNTIL)), deadline=OUTER_UNTIL)
++        native['file_build'] = file_build
++        assert file_build['exit_code'] == 0 and not file_build['timed_out']
++        file_events = []
++        file_build_finished = False
++        for line in (output / 'native-file-build.stdout').read_text().splitlines():
++            try:
++                event = json.loads(line)
++            except json.JSONDecodeError:
++                continue
++            if event.get('reason') == 'build-finished' and event.get('success') is True:
++                file_build_finished = True
++            if (event.get('reason') == 'compiler-artifact' and event.get('profile', {}).get('test')
++                    and event.get('target', {}).get('name') == 'heptabao_server' and event.get('executable')):
++                file_events.append(event)
++        assert file_build_finished and len(file_events) == 1
++        file_event = file_events[0]
++        assert sorted(file_event['features']) == ['native-v6-storage']
++        assert file_event['profile'] == artifact['profile']
++        file_original = Path(file_event['executable'])
++        assert file_original.is_file() and not file_original.is_symlink()
++        assert file_original.resolve().is_relative_to(Path(args.target).resolve())
++        file_sha = sha(file_original)
++        file_binary = output / 'retained-native-file-libtest'
++        with file_original.open('rb') as src, file_binary.open('xb') as dst:
++            shutil.copyfileobj(src, dst, 1024 * 1024)
++            dst.flush()
++            os.fsync(dst.fileno())
++        file_binary.chmod(0o500)
++        assert sha(file_binary) == file_sha == sha(file_original)
++        native['binaries'] = {'default': result['binary'],
++                              'file': {'path': str(file_binary), 'sha256': file_sha,
++                                       'bytes': file_binary.stat().st_size,
++                                       'features': file_event['features'], 'profile': file_event['profile']}}
++        for group in native_groups:
++            group_started = time.monotonic()
++            group_until = min(group_started + 600.0, OUTER_UNTIL)
++            item = {'label': group['label'], 'profile': group['libtest_profile'],
++                    'status': 'failed', 'actual_test_names': [], 'tests': []}
++            native['groups'].append(item)
++            target = native['binaries'][group['libtest_profile']]
++            actual_binary = Path(target['path'])
++            assert sha(actual_binary) == target['sha256'] and freeze() == before
++            for ordinal, name in enumerate(group['tests']):
++                label = group['label'] + '-' + str(ordinal)
++                listing = owned(label + '-list', [str(actual_binary), name, '--exact', '--list'],
++                                min(30.0, bounded_remaining(group_until)), deadline=group_until)
++                row = {'name': name, 'listing': listing}
++                item['tests'].append(row)
++                assert listing['exit_code'] == 0 and not listing['timed_out']
++                selected = [line[:-6] for line in (output / (label + '-list.stdout')).read_text().splitlines()
++                            if line.endswith(': test')]
++                assert selected == [name], 'exact native JWT/PKI testcase missing'
++                test = owned(label, [str(actual_binary), name, '--exact', '--nocapture', '--test-threads=1'],
++                             bounded_remaining(group_until), deadline=group_until)
++                row['tests'] = test
++                item['actual_test_names'].append(name)
++                assert test['exit_code'] == 0 and not test['timed_out']
++                summary = (output / (label + '.stdout')).read_text()
++                assert 'test result: ok. 1 passed; 0 failed; 0 ignored;' in summary
++                bounded_remaining(group_until)
++            assert item['actual_test_names'] == group['tests']
++            assert sha(actual_binary) == target['sha256'] and freeze() == before
++            bounded_remaining(group_until)
++            item.update(status='passed', elapsed_seconds=time.monotonic() - group_started)
++        native['all_retained_binaries_unchanged'] = all(sha(v['path']) == v['sha256'] for v in native['binaries'].values())
++        result['binary_unchanged'] = sha(binary) == binary_sha
++        result['release_artifacts_unchanged'] = all(sha(v['path']) == v['sha256'] for v in release_artifacts.values())
++        result['source_unchanged'] = freeze() == before
++        assert native['all_retained_binaries_unchanged'] and result['binary_unchanged']
++        assert result['release_artifacts_unchanged'] and result['source_unchanged']
++        bounded_remaining(OUTER_UNTIL)
++        native['status'] = 'passed'
++        result['status'] = 'passed'
+ except BaseException as error:
+     result['failure_type'] = type(error).__name__
+     result['failure'] = str(error)

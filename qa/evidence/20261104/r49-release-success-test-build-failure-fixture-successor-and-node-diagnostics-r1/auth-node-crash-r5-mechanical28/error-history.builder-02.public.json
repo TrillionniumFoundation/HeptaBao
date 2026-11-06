@@ -1,0 +1,6 @@
+{
+  "error": "Error: source_anchor_count:'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4'",
+  "stack": "Error: source_anchor_count:'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4'\n    at one (exec_main.mjs:1:538)\n    at exec_main.mjs:1:1047",
+  "NativeCallsAdded": 0,
+  "GitMutationsAdded": 0
+}

@@ -1,0 +1,10 @@
+{
+  "function": "verifyMac4aCandidateBinding",
+  "requires": [
+    "pure_helpers.original.js",
+    "strict_diff.whitespace-safe.js",
+    "verifier.source.js"
+  ],
+  "input": "flat packet text files",
+  "scope": "pure source checks only; no Python, product execution or Native"
+}

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-public-node-map-version-bc7e2592-streams-01",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b3119721-fc05-8091",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

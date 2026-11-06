@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.public-node-ignition-primary-sources.r1",
+  "reason": {
+    "url": "https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/reason.h",
+    "pin": {
+      "blob": "a8cdfc0cf87cb78ad04084e9374b65aa6d2db7ed",
+      "bytes": 14887,
+      "sha256": "9ebd75ba6afd899dc096f7cf6e82c391d38afbc29d5d2e14b3ce652e3873a6ec"
+    },
+    "findings": [
+      {
+        "line": 138,
+        "meaning": "OS_REASON_SANDBOX =25"
+      },
+      {
+        "line": 148,
+        "meaning": "OS_REASON_LIBIGNITION =35"
+      },
+      {
+        "lines": [
+          171,
+          172,
+          176,
+          179
+        ],
+        "meaning": "Four public flag bits add to582 (0x246); this does not define termination code2."
+      }
+    ]
+  },
+  "dyld": {
+    "url": "https://github.com/apple-oss-distributions/dyld/blob/main/dyld/DyldProcessConfig.cpp",
+    "pin": {
+      "blob": "fd2897555ae887e92433aa113bb3a27fc712d8eb",
+      "bytes": 122646,
+      "sha256": "904df8949879c2949598211cbff61d5a1e3dc8907acecc6f789e21d2cbade70e"
+    },
+    "findings": [
+      {
+        "lines": [
+          1107,
+          1126
+        ],
+        "meaning": "CacheFinder covers system/environment/cryptex shared-cache discovery."
+      },
+      {
+        "lines": [
+          1170,
+          1194
+        ],
+        "meaning": "SUPPORT_IGNITION branch constructs parameters and calls ignite."
+      },
+      {
+        "lines": [
+          1195,
+          1239
+        ],
+        "meaning": "Public returned-payload/result handling; no ignition_halt code2 mapping."
+      }
+    ],
+    "installed25G83ExactSourceProved": false,
+    "permissionRemedyDerived": false
+  },
+  "logActual": {
+    "help": {
+      "blob": "b9aa9171753f6746ada5ab639333d1e2091fb32e",
+      "bytes": 2246,
+      "sha256": "74d4578c6fd671200607673230f85fa546ce2f52cd7c34bd53a796657f82047c"
+    },
+    "metadata": {
+      "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+      "bytes": 411,
+      "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+    },
+    "rootHelpQualification": {
+      "blob": "7c584599c9d1275e06f1c91b27d80dd3c12ef6d3",
+      "bytes": 5996,
+      "sha256": "81320fbb2097411be4ef28931b7de964170925a6ee5dddbc80211da7140ea425"
+    },
+    "flags": [
+      "show",
+      "--start",
+      "--end",
+      "--style",
+      "ndjson",
+      "--predicate",
+      "--info",
+      "--debug",
+      "--no-pager"
+    ],
+    "newHelpInvocation": false
+  },
+  "applePredicate": {
+    "url": "https://developer.apple.com/videos/play/wwdc2022/10119/",
+    "section": "25:17 Provide a predicate to log show",
+    "retrievedSource": "turn91view0 / turn92view0",
+    "lines": [
+      490,
+      500
+    ],
+    "shortQuotedCode": "(process = \"apsd\" AND message contains[cd] \"CoreDataCloudKitDemo\") OR",
+    "supports": "Apple combines fixed-time log show with OR branches of process/message predicates; it does not qualify our future host result."
+  },
+  "predicateGuide": {
+    "url": "https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Predicates/AdditionalChapters/Introduction.html",
+    "retrievedSource": "turn91view1",
+    "supports": "Comparison/compound syntax and backend limitations, not arbitrary CLI field support."
+  },
+  "boundaries": "Only official sources support these inferences. Current main is not claimed to match25G83. Forum examples are excluded."
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "heptabao.mac576-stage-body.original-chain-index.v1",
+  "calls": [
+    {
+      "index": 0,
+      "key": "c576mac-stage-result-body-admit-r1",
+      "kind": "operation_start",
+      "files": {
+        "request": "call-00.request.original.json",
+        "intent": "call-00.intent.original.json",
+        "armed": "call-00.armed.original.json",
+        "sdk": "call-00.sdk.original.json",
+        "native": "call-00.native.original.json"
+      },
+      "request": {
+        "blob": "ead124398c9a04b8d8a76e205069e8f7e426a4d9",
+        "bytes": 437,
+        "sha256": "a1901018815188a9126b3365c95be3e8be56e280874651db6911aa9cc3708527"
+      },
+      "sdk": {
+        "blob": "4dea599d5c31ce8c4c0e45f16e21930e64f50879",
+        "bytes": 706,
+        "sha256": "4ca3cfd031295864d090d7b7c0f125b3aa25be070a8f0096ded65402d3304242"
+      },
+      "native": {
+        "blob": "97a99f97bbed8193adb68820e659b93233739b79",
+        "bytes": 545,
+        "sha256": "25f606c9cf70e06bf7971f25ef4346b93704dca8ab64ae1c705bb3fb31327758"
+      },
+      "armTree": "940404df672be8ee568bd294faaaaa0e28b081fa",
+      "sdkTree": "0fcfa0e87328c8cecea2036e0057bb32511c9414"
+    },
+    {
+      "index": 1,
+      "key": "c576mac-stage-result-body-status0-r1",
+      "kind": "operation_status",
+      "files": {
+        "request": "call-01.request.original.json",
+        "intent": "call-01.intent.original.json",
+        "armed": "call-01.armed.original.json",
+        "sdk": "call-01.sdk.original.json",
+        "native": "call-01.native.original.json"
+      },
+      "request": {
+        "blob": "89e744d42d66d4517ac53abaa1d118aace3e8da6",
+        "bytes": 89,
+        "sha256": "799bf84cff9080f8bd522757d995ff2ffd093f4f34a377118fa7fa461409a1bc"
+      },
+      "sdk": {
+        "blob": "ea3d81096f7d7ba84bd82d9fb6f4498204833eb2",
+        "bytes": 977,
+        "sha256": "e747468dca1e04a018c0b312709e3a71b315c8d6f802c2326878c73d696ce6ad"
+      },
+      "native": {
+        "blob": "df89c403e5cc61e4e88a23333e0cc0c71f822b4e",
+        "bytes": 802,
+        "sha256": "83fbe56bb1995db42b06c9a7fcd01420928cd2a13a081c25d58eced8cdc511fe"
+      },
+      "armTree": "11eb5ec7a5b46ac4e1972e9e7d1813a415d0eb4c",
+      "sdkTree": "13b074b6af681c6d5ae4e3b33a407ca80a6c1584"
+    },
+    {
+      "index": 2,
+      "key": "c576mac-stage-result-body-page0-r1",
+      "kind": "operation_result",
+      "files": {
+        "request": "call-02.request.original.json",
+        "intent": "call-02.intent.original.json",
+        "armed": "call-02.armed.original.json",
+        "sdk": "call-02.sdk.original.json",
+        "native": "call-02.native.original.json"
+      },
+      "request": {
+        "blob": "e1f75646e501b7624ca5b0f68b5b0ec893db6d8c",
+        "bytes": 121,
+        "sha256": "f4d2224060a1274af21ccb03253d61cb70a96b00c49d39a2d17637f321818a46"
+      },
+      "sdk": {
+        "blob": "102417a479e6a880c4031e82bfba2f7980368dc9",
+        "bytes": 11780,
+        "sha256": "2686857325ac6941bd83d6b2bd94684b214079814acd75123464a51287f3222b"
+      },
+      "native": {
+        "blob": "0cbb59e616c246c2130321a7bea1ebfba5a63b1b",
+        "bytes": 11609,
+        "sha256": "bc31d16ea791be173b221ac6f95266558e9bef02da8a9bac437879de9c4443f4"
+      },
+      "armTree": "656395d8a7854656b6f19f438c44694571b14a49",
+      "sdkTree": "37f956e3111c590bda7c31009e5b56d27f91a41a"
+    },
+    {
+      "index": 3,
+      "key": "c576mac-stage-result-body-page1-r1",
+      "kind": "operation_result",
+      "files": {
+        "request": "call-03.request.original.json",
+        "intent": "call-03.intent.original.json",
+        "armed": "call-03.armed.original.json",
+        "sdk": "call-03.sdk.original.json",
+        "native": "call-03.native.original.json"
+      },
+      "request": {
+        "blob": "ac60c9442b47f999fd369c1362ca73bc975a2755",
+        "bytes": 124,
+        "sha256": "7f2983cc7fb6fad5eef86eee83c6303613a21acd3b1d5e36fe79acb385bac822"
+      },
+      "sdk": {
+        "blob": "761d2aafe8971955d20f38f43d6d07de4c470042",
+        "bytes": 4155,
+        "sha256": "b25fc7b8d239949166c8a066597eb2642dc7533d9da4a9f4e8ded2a6880c7652"
+      },
+      "native": {
+        "blob": "468315766fcac4b91cc391640d23ac7a5c3f2368",
+        "bytes": 3984,
+        "sha256": "9984c06cd18a7de69e015c950697a55f2ba67cd60e4779052ed068409bbb8148"
+      },
+      "armTree": "e00839e2f0d5e9213d556a1bfa8c88fca0e8190c",
+      "sdkTree": "8f7900ae812dff694b59c5f8b7b399e05e2ee11b"
+    }
+  ],
+  "observer": {
+    "id": "3bd47e557d29824b0b7f5b9cf4a272b98cefdb16ed650c06da7d9881572808fa",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "0401b95e96bd5ac401795141278bec764a201b0b",
+      "bytes": 10663,
+      "sha256": "716c6df7d64468b32bd0ee6c3879e5d575241cfc27adf3e81b4d1ac45eb434d2"
+    },
+    "payloadTree": "a9d10fec029c36f3de46c86a00d71896a70e8a61",
+    "nativeText": {
+      "blob": "df9864666d14db3410c432d9fe195d45fd3d5e0c",
+      "bytes": 10560,
+      "sha256": "f4a5b2e8e5326425daaad681c4c03ed801fa21d61a61d3b163b77876d09178ac"
+    },
+    "pages": 2,
+    "completedInactive": true
+  },
+  "body": {
+    "pin": {
+      "blob": "f0855203bf885620f0c5deea089cc9a9e7b86460",
+      "bytes": 7665,
+      "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb"
+    },
+    "tree": "64cb076dcd78975855e6fdd62e64cdb86a2eb1ff",
+    "originalOperation": "3bd47e557d29824b0b7f5b9cf4a272b98cefdb16ed650c06da7d9881572808fa",
+    "infoOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "whole": true
+  },
+  "rootGO": {
+    "blob": "69da452a806d8ac630058128fd3c663de5db7aaa",
+    "bytes": 3150,
+    "sha256": "b3f57a8f85ac28cc7fa4f836dfcbedd36c2c2a8e3a331cb809c520649f58ce36"
+  },
+  "priorINFOpacket": "001d396a819ae89cd792e8d2683aaae50cc54d56",
+  "priorStagePacket": "ad388ba56c2bdd498d0be6c57ac9cfec3327278e"
+}

@@ -1,0 +1,1 @@
+function oldFunctionRange(src,n){const all=[...src.matchAll(/^(?:async )?function ([A-Za-z0-9_]+)/gm)],i=all.findIndex(x=>x[1]===n);return src.slice(all[i].index,i+1<all.length?all[i+1].index:src.length);}

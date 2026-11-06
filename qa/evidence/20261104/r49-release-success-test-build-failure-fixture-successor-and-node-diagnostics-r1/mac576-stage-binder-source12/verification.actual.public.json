@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.mac576.bundle-binding-preparation.source-check.v1",
+  "pass": true,
+  "check_count": 16,
+  "checks": [
+    {
+      "name": "immutable_stage_template_79c2",
+      "pass": true
+    },
+    {
+      "name": "immutable_previous_journal_0bcb",
+      "pass": true
+    },
+    {
+      "name": "immutable_previous_binder_43a1",
+      "pass": true
+    },
+    {
+      "name": "explicit_single_LF_before_view",
+      "pass": true
+    },
+    {
+      "name": "strict_delta_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_delta_reverse",
+      "pass": true
+    },
+    {
+      "name": "template_both_actual_constants_unbound",
+      "pass": true
+    },
+    {
+      "name": "exact576_candidate",
+      "pass": true
+    },
+    {
+      "name": "all_unobserved_bundle_fields_null",
+      "pass": true
+    },
+    {
+      "name": "fixed_producer_path",
+      "pass": true
+    },
+    {
+      "name": "only_two_source_literal_replacements",
+      "pass": true
+    },
+    {
+      "name": "only_three_journal_literal_replacements",
+      "pass": true
+    },
+    {
+      "name": "no_tool_or_storage_calls",
+      "pass": true
+    },
+    {
+      "name": "whole_carrier262144_and_outer360",
+      "pass": true
+    },
+    {
+      "name": "actual_binding_unresolved_rejects_before_output",
+      "pass": true
+    },
+    {
+      "name": "native_and_GO_flags_never_granted",
+      "pass": true
+    }
+  ],
+  "valid_actual_bundle_binding_executed": false,
+  "original_stage27_repeated": false,
+  "Native_calls": 0,
+  "Python_calls": 0,
+  "Git_calls": 0
+}

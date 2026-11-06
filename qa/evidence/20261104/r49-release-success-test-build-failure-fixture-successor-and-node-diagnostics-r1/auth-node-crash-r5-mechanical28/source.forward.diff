@@ -1,0 +1,185 @@
+--- a/source.before.original.py
++++ b/source.py
+@@ -279,10 +279,21 @@
+             'number' if type(value) is float else 'array' if type(value) is list else
+             'object' if type(value) is dict else 'other')
+ def namespace_field(value):
++    typed=type(value) is str
++    utf8_length=None
++    if typed:
++        try:utf8_length=len(value.encode('utf-8'))
++        except UnicodeEncodeError:pass
++    printable=bool(typed and (value=='' or value.isprintable()))
++    accepted=bool(printable and utf8_length is not None and utf8_length<=256)
++    old_known=bool(typed and value in ('DYLD','SIGNAL','CODESIGNING',
+-    accepted=bool(type(value) is str and re.fullmatch(r'[A-Z0-9_]{1,64}',value))
+-    old_known=bool(type(value) is str and value in ('DYLD','SIGNAL','CODESIGNING',
+         'SANDBOX','LIBSYSTEM','RUNNINGBOARD','WATCHDOG','ENDPOINTSECURITY','TCC'))
+     return {'present':value is not None,'type':json_kind(value),
++            'characterLength':len(value) if typed else None,'utf8Bytes':utf8_length,
++            'asciiOnly':value.isascii() if typed else None,
++            'printableWithoutControls':printable,
++            'trimClass':('not-string' if not typed else 'empty' if value=='' else
++                         'already-trimmed' if value==value.strip() else 'outer-whitespace'),
+             'publicSyntaxQualified':accepted,'knownInPreviousEnum':old_known,
+             'value':value if accepted else None,'semanticMeaningClaimed':False}
+ def diagnostic_slot(label,present,value):
+@@ -423,6 +434,132 @@
+             'arbitraryDictionaryKeysEnumerated':False,'freeFormDiagnosticTextExported':False,
+             'unknownSlotValuesOrTypesInterpreted':False,'causalConclusionClaimed':False,
+             'rawOrUnknownTextOrHashExported':False}
++def public_frame_image(value):
++    # Only a referenced image is inspected. This is public lexical mapping, not code admission.
++    obj=value if type(value) is dict else {}
++    name=obj.get('name');path=obj.get('path')
++    row={'type':json_kind(value),'nameType':json_kind(name),'pathType':json_kind(path),
++         'publicMapQualified':False,'publicBasename':None,'publicFamily':None,
++         'publicPathClass':None,'pathOrUnknownNameOrHashExported':False,
++         'fileContentOrExecutableIdentityQualified':False}
++    if type(path) is not str or not re.fullmatch(r'/[\x21-\x7e]{1,511}',path):
++        return row
++    parts=path.split('/')
++    if any(part in ('','.','..') for part in parts[1:]):return row
++    basename=parts[-1];family=None;category=None
++    node_forms=(NODE_REAL,NODE_ALIAS,'/opt/homebrew/*/node','/opt/homebrew/*/bin/node',
++        '/opt/homebrew/Cellar/node/*/bin/node','/opt/homebrew/Cellar/*/bin/node')
++    system_names=('libsystem_c.dylib','libsystem_kernel.dylib','libsystem_platform.dylib',
++        'libsystem_pthread.dylib','libsystem_sandbox.dylib','libsystem_secinit.dylib',
++        'libsystem_malloc.dylib','libsystem_trace.dylib','libsystem_blocks.dylib',
++        'libsystem_info.dylib','libsystem_notify.dylib','libsystem_darwin.dylib',
++        'libdispatch.dylib','libxpc.dylib','libdyld.dylib')
++    usr_names=('dyld','libc++abi.dylib','libc++.1.dylib','libSystem.B.dylib',
++        'libobjc.A.dylib','libsqlite3.dylib','libz.1.dylib')
++    frameworks=('CoreFoundation','Foundation','Security')
++    if path in node_forms and basename=='node':
++        family='node';category='fixed-node-path-form'
++    elif basename in system_names and path=='/usr/lib/system/'+basename:
++        family='system';category='usr-lib-system'
++    elif basename in usr_names and path=='/usr/lib/'+basename:
++        family='system';category='usr-lib'
++    elif basename in frameworks and path in (
++            '/System/Library/Frameworks/'+basename+'.framework/'+basename,
++            '/System/Library/Frameworks/'+basename+'.framework/Versions/A/'+basename,
++            '/System/Library/Frameworks/'+basename+'.framework/Versions/C/'+basename):
++        family='system';category='fixed-system-framework'
++    elif (re.fullmatch(r'/opt/homebrew/(?:Cellar|opt|lib)/[A-Za-z0-9_@.+/*-]{1,480}',path)
++          and re.fullmatch(r'lib(?:uv|node|sqlite3|icui18n|icuuc|icudata|cares|nghttp2|nghttp3|ngtcp2|crypto|ssl|z|zstd|brotlicommon|brotlidec|brotlienc|simdjson|simdutf|llhttp)(?:\.[0-9]{1,3}){0,3}\.dylib',basename)):
++        family='homebrew-public-library';category='fixed-homebrew-library-family'
++    if family is None:return row
++    if name is not None and (type(name) is not str or name!=basename):return row
++    row.update({'publicMapQualified':True,'publicBasename':basename,
++                'publicFamily':family,'publicPathClass':category})
++    return row
++
++def public_frame_symbol(value,image):
++    typed=type(value) is str
++    ascii_printable=bool(typed and re.fullmatch(r'[\x20-\x7e]{1,256}',value))
++    row={'type':json_kind(value),'characterLength':len(value) if typed else None,
++         'boundedPrintableAscii':ascii_printable,'publicGrammar':None,
++         'publicValue':None,'unknownValueOrHashExported':False}
++    if not ascii_printable or not image['publicMapQualified']:return row
++    # No quoted literals, slash/backslash paths, control text or address-form tokens.
++    if re.search(r'0x[0-9a-fA-F]+',value):return row
++    grammar=None
++    if re.fullmatch(r'[A-Za-z_$][A-Za-z0-9_.$]{0,255}',value):
++        grammar='public-image-c-identifier'
++    elif re.fullmatch(r'(?:node|v8|uv|std|cppgc|__cxxabiv1|dyld[234]?|mach_o|lsl)::[A-Za-z0-9_:, *&<>()~.$\[\]+=\-]{1,240}',value):
++        grammar='fixed-public-cpp-namespace'
++    elif re.fullmatch(r'operator (?:new|delete)(?:\[\])?\([A-Za-z0-9_:, *&<>()\[\]]{0,220}\)',value):
++        grammar='public-cpp-allocation-operator'
++    if grammar is not None:row.update({'publicGrammar':grammar,'publicValue':value})
++    return row
++
++def faulting_thread_projection(crash):
++    remaining()
++    threads=crash.get('threads');fault=crash.get('faultingThread')
++    row={'threadsType':json_kind(threads),
++         'threadCount':len(threads) if type(threads) is list else None,
++         'faultingIndexPresent':'faultingThread' in crash,'faultingIndexType':json_kind(fault),
++         'selectedIndex':None,'selectionBasis':None,'selectionQualified':False,
++         'selectedTriggeredPresent':False,'selectedTriggeredType':'null',
++         'selectedTriggeredValue':None,'disposition':'no-single-thread-selected',
++         'frameLimit':32,'frameCount':None,'framesVisited':0,'remainingFramesNotTraversed':None,
++         'boundedFramePrefix':False,'selectedThreadAllFramesVisited':False,
++         'frames':[],'referencedImageLookups':0,
++         'otherThreadObjectsVisited':0,'otherThreadsTraversed':False,
++         'unreferencedImagesTraversed':False,'addressesOrRegistersOrQueuesExported':False,
++         'rawThreadsOrUsedImagesExported':False,'unknownSymbolsOrPathsOrHashesExported':False,
++         'libraryFilesRead':False,'causalConclusionClaimed':False}
++    if type(threads) is not list:
++        row['disposition']='threads-not-array';return row
++    if type(fault) is int and 0<=fault<len(threads):
++        selected=fault;basis='faultingThread-direct-index'
++    elif 'faultingThread' not in crash and len(threads)==1:
++        only=threads[0]
++        if type(only) is not dict or only.get('triggered') is not True:
++            row['disposition']='sole-thread-not-triggered';return row
++        selected=0;basis='sole-thread-triggered'
++    else:
++        row['disposition']='faulting-index-missing-or-invalid';return row
++    thread=threads[selected]
++    row['selectedIndex']=selected;row['selectionBasis']=basis
++    if type(thread) is not dict:
++        row['disposition']='selected-thread-not-object';return row
++    triggered=thread.get('triggered')
++    row['selectedTriggeredPresent']='triggered' in thread
++    row['selectedTriggeredType']=json_kind(triggered)
++    row['selectedTriggeredValue']=triggered if type(triggered) is bool else None
++    if 'triggered' in thread and triggered is not True:
++        row['disposition']='selected-triggered-conflicts';return row
++    row['selectionQualified']=True
++    frames=thread.get('frames')
++    if type(frames) is not list:
++        row['disposition']='selected-frames-not-array';return row
++    row['frameCount']=len(frames)
++    row['remainingFramesNotTraversed']=max(0,len(frames)-32)
++    row['boundedFramePrefix']=len(frames)>32
++    row['selectedThreadAllFramesVisited']=len(frames)<=32
++    images=crash.get('usedImages')
++    for ordinal in range(min(len(frames),32)):
++        remaining()
++        frame=frames[ordinal]
++        obj=frame if type(frame) is dict else {}
++        index=obj.get('imageIndex')
++        valid=bool(type(index) is int and type(images) is list and 0<=index<len(images))
++        image=public_frame_image(images[index] if valid else None)
++        if valid:row['referencedImageLookups']+=1
++        row['frames'].append({'ordinal':ordinal,'frameType':json_kind(frame),
++            'imageIndexType':json_kind(index),'imageIndexInRange':valid,
++            'imageIndex':index if valid else None,'image':image,
++            'symbol':public_frame_symbol(obj.get('symbol'),image)})
++        row['framesVisited']+=1
++    row['disposition']=('selected-bounded-frame-prefix' if row['boundedFramePrefix']
++                        else 'selected-frames-projected')
++    remaining()
++    return row
++
+ def proc_path_projection(value):
+     # Exact string matches below are classification hypotheses, not wildcard expansion.
+     typed=type(value) is str
+@@ -526,13 +663,14 @@
+           'byPidEqualsTarget':termination.get('byPid')==TARGET_PID,
+           'byPidEqualsOriginalParent':termination.get('byPid')==TARGET_PARENT},
+        'dyldAndTerminationText':fixed_text_projection(crash,termination),
++       'faultingThreadPublicProjection':faulting_thread_projection(crash),
+        'fullCrashReportClassified':False,'causalConclusionClaimed':False,
++       'rawThreadsEnvironmentOrUsedImagesExported':False})
+-       'threadsEnvironmentOrUsedImagesExported':False})
+     return result
+ 
+ 
+ def main():
++    report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r5',
+-    report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4',
+       'ok':False,'observationComplete':False,'outcomeUnknown':False,
+       'directory':str(DIRECTORY),'targetPid':TARGET_PID,'targetParentPid':TARGET_PARENT,
+       'sourceJob':'mac/1a1b25c3c54-fc05-7db1',
+@@ -616,7 +754,7 @@
+         report['ok']=report['observationComplete']
+     raw=json.dumps(report,sort_keys=True,separators=(',',':'),ensure_ascii=True)+'\n'
+     if len(raw.encode('ascii'))>MAX_PUBLIC_BYTES:
++        report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r5','ok':False,
+-        report={'schema':'heptabao.mac-one-public-node-ips-fixed-file-projection.r4','ok':False,
+          'observationComplete':False,'outcomeUnknown':True,'error':{'type':'Refused','code':'public_report_cap'},
+          'allOwnResourcesClosed':report['allOwnResourcesClosed'],
+          'handlersRestored':handlers_restored,'rawIpsOrUnknownTextOrHashExported':False,

@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.root.C576-canonical-bundle-INFO.GO.r1",
+  "authorization": "GO",
+  "scope": "canonical_bundle_file_info_only",
+  "sourceTree": "587bd6ce945a8c74017c69ea40fb47d25fc8badb",
+  "sourceRootReview": {
+    "blob": "9bcc84a880e4d6503a4716663c970138c3a49a85",
+    "bytes": 439,
+    "sha256": "bfa9f3c28104c18727f99b7cd20c3ab7b6ba3172009d881b5e595aa39d0e5350"
+  },
+  "journal": {
+    "blob": "a0f43f0aa0789d7405f7ac1b00379a4b0ece8749",
+    "bytes": 20597,
+    "sha256": "11eca7b8cd6e7edf4750fc5bf40a28d8da116d59111b8894b716b42c1c1bf7ea"
+  },
+  "slot": "successor576_canonical_bundle_info_gitfirst_r1",
+  "exact_request": {
+    "blob": "f7aef4d88706b1cca3e66e6385a1776eafb1d914",
+    "bytes": 279,
+    "sha256": "5e0c4bc75fd3fb26f69248085142edbc9c95519a79720cd8a2610bf439bb5624"
+  },
+  "exact_operation": {
+    "idempotency_key": "heptabao-5767739c-canonical-bundle-info-rog-20261106-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle"
+      }
+    }
+  },
+  "expected": {
+    "host": "rog",
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "bytes": 5766,
+    "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+    "full9": [
+      "66306",
+      "31358148",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "5766",
+      "1794000539740776688",
+      "1794000539740776688"
+    ]
+  },
+  "stage_witness": {
+    "report": {
+      "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+      "bytes": 29748,
+      "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+    },
+    "field": "canonical_bundle",
+    "root_qualification": {
+      "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+      "bytes": 2941,
+      "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+    },
+    "full9": [
+      "66306",
+      "31358148",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "5766",
+      "1794000539740776688",
+      "1794000539740776688"
+    ],
+    "header": {
+      "header_sha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9",
+      "heads": [
+        [
+          "5767739cd25e458ac052dc8d384019bab8688ae0",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+      ],
+      "version": 2
+    },
+    "root_qualification_tree": "d3c0c006a351fe117dc2731a3711fa27cbb5e374"
+  },
+  "limits": {
+    "operation_status_total": 8,
+    "operation_result_total": 128,
+    "immutable_page_bytes": 8192,
+    "payload_bytes": 1048576,
+    "max_native_calls": 137,
+    "simultaneous_call_or_future": 1
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "freshInitializeOnce": true,
+  "rootLaneMaximum": 2,
+  "lane_allocation": {
+    "A": 0,
+    "B": 0,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "sequence": [
+    "Whole GO and exact request",
+    "Fresh initialize once after separate root GO",
+    "Externally whole request/intent/armed tree",
+    "Independent model boundary",
+    "Unique original operation_start",
+    "Whole original SDK before isError/native parse",
+    "Only returned original ID status and contiguous immutable pages",
+    "Whole payload before parsing metadata; exact reported full9/size/SHA match",
+    "Hold and hand off actual native version; no body within this scope"
+  ],
+  "onError": "Preserve original unknown/failure, no replacement or replay. Same returned original operation only; immutable Git read reconciliation preserves original dispatch history.",
+  "issuedAtUTC": "2026-11-06 21:49:35 UTC"
+}

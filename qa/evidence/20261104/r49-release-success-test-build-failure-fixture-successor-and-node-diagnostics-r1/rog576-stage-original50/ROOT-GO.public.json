@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.root.successor5767739-fresh-ROG-source-stage.GO.r1",
+  "lane": "B single Native lane",
+  "authorization": "User requested completing implementation and real Mac/Linux/LAN validation; one isolated source stage required for the reviewed candidate.",
+  "sourceTree": "f852b1189074d42c661b52e44d21fba0d0fc71cb",
+  "sourceRootQualification": {
+    "blob": "f041d5cd1980305a1ec5862b31ff9a546ef0f193",
+    "bytes": 860,
+    "sha256": "e82f4788e6f3a2d79c3f505b6ce88a3a2e017c806b304c017a686adf76f89bf3"
+  },
+  "candidateCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "candidateTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "exactRequest": {
+    "blob": "564433fa36fedb91ea45d694685cdb2c9067cc88",
+    "bytes": 112620,
+    "sha256": "1599f63a32179a77a2f8693596cc185217efeffa0a4836f5ca608be989c75c04"
+  },
+  "source": {
+    "blob": "6857eee5bc607f11417a88c1b9fece964f0261a5",
+    "bytes": 29601,
+    "sha256": "a1b67f5aeb968b173886217a26987c3ead111778158136bb036906faa488b35f"
+  },
+  "journal": {
+    "blob": "044505d0d1d6fdd977d437d4f4e829384ac3f5f7",
+    "bytes": 19047,
+    "sha256": "e1fb2de89c77a5a58807b239b26fc733b89f535d9498a8640f41a9ecbfec76a0"
+  },
+  "slot": "combined_5767739c_rog_source_gitfirst_r1",
+  "key": "heptabao-combined-5767739c-rog-source-20261106-r1-a1b67f5a",
+  "native_binding": {
+    "sha256": "ada1b397764974a7c473a13ec80458b71ae22aa6beacca496899a733542491bc",
+    "native_fingerprint": "12511478702917907623"
+  },
+  "host": "rog",
+  "freshRoot": "/home/qian-qi/hb-5767739c-src-20261106-r1",
+  "scope": "one unique process_start; original job process_status/process_read observations only under the unchanged journal",
+  "maxNativeLanes": 1,
+  "budgets": {
+    "stage": 300,
+    "gitLeaf": 90,
+    "clone": 180,
+    "outer": 360,
+    "term": 5,
+    "kill": 5,
+    "stdin": 262144,
+    "bundle": 4194304,
+    "eachLeaf": 2097152,
+    "totalTracked": 134217728,
+    "processRead": 16384,
+    "immutablePage": 8192,
+    "payload": 1048576,
+    "processStarts": 1,
+    "processStatusObservers": 64,
+    "processReadObservers": 129,
+    "perObserverStatusCalls": 8,
+    "perObserverImmutablePages": 128,
+    "originalStdoutBytes": 2097152,
+    "originalStderrBytes": 2097152
+  },
+  "required": {
+    "freshSlotInitializeOnlyOnce": true,
+    "wholeOriginalIntentBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "originalSDKWholeBeforeParse": true,
+    "sameOriginalJobOnly": true,
+    "oldSourceAndFailedObserverFences": true,
+    "allOwnedHelpersAndDescriptorsClosed": true,
+    "originalAuthorityAndFullStreamsRequired": true
+  },
+  "onError": "Preserve original UNKNOWN or failure; no replay or replacement. Only exact-SHA Git read reconciliation is routine; Native recovery needs its own concrete scope.",
+  "notIncluded": {
+    "reportFileInfoOrBody": false,
+    "bundleTransport": false,
+    "formatter": false,
+    "Cargo": false,
+    "productServer": false,
+    "credentials": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  },
+  "qualification": {
+    "stageSuccessNotAssumed": true,
+    "sourceFormatted": false,
+    "buildQualified": false,
+    "fullReplacementQualified": false
+  },
+  "issuedAtUTC": "2026-11-06 21:25:09 UTC",
+  "sourceAuthor94": {
+    "blob": "28d4ad842b6cce038d24967a9e02e02c44375249",
+    "bytes": 7583,
+    "sha256": "66b14561760dc8762672777e6a4408574e429073bb5bc79d25db74132d860fbc"
+  },
+  "readOnlyCloneBase": "/home/qian-qi/hb-02b90762-src-20261106-r1/source",
+  "preserved495Source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+  "expectedHistoryCount": 3769,
+  "expectedAncestryLinks": 17,
+  "expectedFullLeafCount": 3932,
+  "expectedTrackedBytes": 62553540,
+  "expectedFullLeafIndexSha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+  "expectedBundle": {
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "version": 2,
+    "prerequisites": [
+      "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    ],
+    "heads": [
+      [
+        "5767739cd25e458ac052dc8d384019bab8688ae0",
+        "HEAD"
+      ]
+    ],
+    "actualBytes": null,
+    "actualSHA256": null,
+    "actualFull9": null,
+    "bodyTransferred": false,
+    "maximumBytes": 4194304
+  },
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  }
+}

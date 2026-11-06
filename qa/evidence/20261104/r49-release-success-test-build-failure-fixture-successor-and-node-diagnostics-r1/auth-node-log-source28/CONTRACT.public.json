@@ -1,0 +1,275 @@
+{
+  "schema": "heptabao.mac-fixed-public-node-ignition-log-source.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "source": {
+    "blob": "f26070651527caa4a109b0d79f3b9933eaf16888",
+    "bytes": 59178,
+    "sha256": "f9b881531b251b82af5ac391496c42acccf0d693586e1b4884c3514c112466ac"
+  },
+  "request": {
+    "blob": "020e4305593675ee33832732285fe040ac8ca8a4",
+    "bytes": 60250,
+    "sha256": "49db683737213619243b41bcc6fa3c6fb174b56fdfa5e8cb377d9d5ef0d0d14f"
+  },
+  "journal": {
+    "blob": "7f26713584e287fc3b8bc5a7bec0d74ce366fd57",
+    "bytes": 19050,
+    "sha256": "28d6e2f89d9daeb008be409cd14c8d367c2649b21558810cb9a472833588e4f6"
+  },
+  "freshSlot": "owner_authbus_public_node_ignition_log_gitfirst_r1",
+  "observerPrefix": "heptabao-mac-public-node-ignition-f9b88153-",
+  "nativeState": {
+    "initialized": false,
+    "startSubmitted": false,
+    "activeCalls": 0,
+    "activeFutures": 0
+  },
+  "originalPublicNode": {
+    "job": "mac/1a1b25c3c54-fc05-7db1",
+    "pid": 51494,
+    "parentPid": 51483,
+    "inputBinding": {
+      "blob": "a53c7b76e77cc81ef31eadb06dc2acc45db86767",
+      "bytes": 5655,
+      "sha256": "ee6c4b20a2497433f2180a2b8affde10ee1160a913ea46be2d1c830bb4a514ab"
+    },
+    "actualCreatedMs": 1793993751636,
+    "actualTerminalMs": 1793993752149,
+    "actualLocalPsStart": "Sat Nov 7 03:35:52 2026",
+    "inheritedEnvironment": false,
+    "rerunPermitted": false
+  },
+  "actualR5": {
+    "rootQualification": {
+      "blob": "de29b917c40daccf50b156703666f1098e81ebc9",
+      "bytes": 2154,
+      "sha256": "5225945d684aaf984629176bba84206cfb53caffc1738ff5748574fc23027867"
+    },
+    "minimalTree": "c2893591836371f58d7cd1297844d14cc91fab2e",
+    "fullTree": "4a27344fe587b316b2238986b6237879a710ed9f",
+    "namespace": "<0x23>",
+    "code": "2",
+    "flags": "582",
+    "publicFrames": [
+      "__abort_with_payload",
+      "abort_with_payload_wrapper_internal",
+      "abort_with_reason",
+      "ignition_halt",
+      "boot_boot",
+      "ignite",
+      "dyld4::CacheFinder::CacheFinder(dyld4::ProcessConfig::Process const&, dyld4::ProcessConfig::Logging const&, dyld4::SyscallDelegate&)",
+      "dyld4::ProcessConfig::DyldCache::DyldCache(dyld4::ProcessConfig::Process&, dyld4::ProcessConfig::Security const&, dyld4::ProcessConfig::Logging const&, dyld4::SyscallDelegate&, lsl::Allocator&, dyld4::ProcessConfig const&)",
+      "dyld4::ProcessConfig::ProcessConfig(dyld4::KernelArgs const*, dyld4::SyscallDelegate&, lsl::Allocator&)",
+      "dyld4::start(dyld4::KernelArgs*, void*, void*, unsigned long long)::$_1::operator()() const",
+      "start"
+    ],
+    "pathQualified": false,
+    "causeQualified": false,
+    "oldPrivateBusinessProgressReclassified": false
+  },
+  "query": {
+    "argv": [
+      "/usr/bin/log",
+      "show",
+      "--start",
+      "2026-11-06 19:35:51+0000",
+      "--end",
+      "2026-11-06 19:35:53+0000",
+      "--style",
+      "ndjson",
+      "--predicate",
+      "(process = \"node\") OR ((process = \"kernel\" OR process = \"sandboxd\") AND message CONTAINS \"51494\")",
+      "--info",
+      "--debug",
+      "--no-pager"
+    ],
+    "oneLogChild": true,
+    "extraHelpCall": false,
+    "knownProcessMessagePredicate": true,
+    "unverifiedCliPidFieldUsed": false,
+    "nodeQuerySupersetRejectedUnlessNumericPidMatches": true,
+    "logTool": {
+      "path": "/usr/bin/log",
+      "version": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000",
+      "size": 807536,
+      "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+      "identity": [
+        "16777233",
+        "1152921500312572288",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "807536",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "metadataOriginal": {
+        "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+        "bytes": 411,
+        "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+      }
+    }
+  },
+  "time": {
+    "startUtc": "2026-11-06T19:35:51.000Z",
+    "endUtc": "2026-11-06T19:35:53.000Z",
+    "startUs": 1793993751000000,
+    "endUs": 1793993753000000,
+    "durationMs": 2000,
+    "derivation": "floor(original Native created_ms/1000) through ceil(original Native terminal_ms/1000).",
+    "observedLocalEquivalent": "2026-11-07 03:35:51..03:35:53 +0800",
+    "utcExplicitInArgv": true,
+    "machineTimezoneNotInferred": true,
+    "lateReportsOutsideWindowNotQueried": true
+  },
+  "budgets": {
+    "controllerSeconds": 45,
+    "childSeconds": 10,
+    "nativeSeconds": 60,
+    "applicationFds": 4,
+    "metadataCalls": 64,
+    "toolHashBytesCap": 8388608,
+    "toolReadCalls": 129,
+    "actualToolSize": 807536,
+    "acceptedCombinedLogStreams": 65536,
+    "rows": 64,
+    "utf8LineBytes": 8192,
+    "publicOutputBytes": 131072,
+    "perRowNumericContexts": 8,
+    "perRowSandboxDenials": 4,
+    "perRowResourceCandidates": 32,
+    "perRowPublicResources": 8,
+    "perResourceUtf8Bytes": 512,
+    "statusObservers": 8,
+    "streamObservers": 8,
+    "statusCallsPerObserver": 8,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192,
+    "pagesPerObserver": 128,
+    "originalPayloadMaximum": 1048576,
+    "toolInternalIoNotSyscallTraced": true,
+    "originalCommandsCleanupUnchanged": true,
+    "boundsFailNoTruncationOrRetry": true
+  },
+  "admission": {
+    "strictJson": "Complete UTF8 NDJSON; each line is an object; duplicate keys, nonfinite constants, malformed JSON and caps fail whole observation.",
+    "messages": "At least one eventMessage/message/composedMessage, all present values strings and equal.",
+    "process": "Every supplied process/processImagePath basename agrees and is node/kernel/sandboxd.",
+    "node": "At least one processID/processIdentifier/pid numeric candidate; all present candidates are exact integers 0..2147483647 and equal51494.",
+    "system": "kernel/sandboxd and a complete delimited node(51494) message subject.",
+    "time": "Timezone-bearing timestamp within exact two-second window.",
+    "allObjects": "Every ordinal has fixed-key presence/type and finite admission predicates; unknown records are rejected explicitly, never silently counted as harmless.",
+    "absenceCauseReapOrWholeLogQualification": false
+  },
+  "publicProjection": {
+    "vocabulary": "Fixed libignition/dyld/cache/cryptex/sandbox/permission/library/symbol/signing/memory/mach/thread/init/timeout lexical classes.",
+    "numbers": "Only bounded labeled errno/error/err/result/status/code/returned contexts. Only literal errno label is marked errno; termination code2 is never mapped.",
+    "sandbox": "At most4 fixed-subject deny records with bounded denial number, closed operation and typed public resource.",
+    "resources": {
+      "fixedInputs": {
+        "node_alias": "/opt/homebrew/bin/node",
+        "node_real": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+        "sandbox_exec": "/usr/bin/sandbox-exec",
+        "profile": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+        "script": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs",
+        "rows_module": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_auth_rows_cas_r1.mjs",
+        "cache_module": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_authbus_cache_cas_r1.mjs",
+        "working_directory": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial"
+      },
+      "systemPrefixes": [
+        "/System/Library/",
+        "/System/Cryptexes/OS/",
+        "/System/Volumes/Preboot/Cryptexes/OS/",
+        "/private/preboot/Cryptexes/OS/",
+        "/usr/lib/",
+        "/private/var/db/dyld/"
+      ],
+      "homebrewLibraryPrefixes": [
+        "/opt/homebrew/Cellar/",
+        "/opt/homebrew/lib/",
+        "/opt/homebrew/opt/"
+      ],
+      "grammar": "<=512 printable ASCII bytes, no UUID/empty/dot/dotdot components, <=16 components matching [A-Za-z0-9_+.,@-]{1,96}; dynamic Homebrew resource must end lib*.dylib. @rpath/lib*.dylib is separate.",
+      "mach": "Only parsed mach-lookup resource, com.apple.[A-Za-z][A-Za-z0-9_.-]{0,159}, no UUID/controls.",
+      "sysctl": "Only parsed sysctl-read resource, (hw|kern|vm|security).[A-Za-z][A-Za-z0-9_.]{0,127}.",
+      "identityOrContentQualification": false,
+      "resourceIo": false
+    },
+    "other": "Only redaction-marker/known-input booleans, relative timestamp and fixed-key type/shape.",
+    "unknownTextPathHashKeyOrRawMessageExported": false
+  },
+  "unchanged": {
+    "baselineSource": {
+      "blob": "300246fcfb141255e312239c19e1dad3e5dfd362",
+      "bytes": 58545,
+      "sha256": "398136a36d7d0a7842fa5ee7618a6f922038ba96c03179835efbd9859cc371d6"
+    },
+    "helperModules": [
+      {
+        "name": "mac_owned_unreaped_r1",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      {
+        "name": "mac_owned_commands_r1",
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      }
+    ],
+    "originalDefinitions": [
+      "need",
+      "sha",
+      "identity",
+      "remaining",
+      "public_error",
+      "load_helpers",
+      "metadata",
+      "admit_binding",
+      "open_fixed",
+      "verify_all",
+      "hash_tool",
+      "unique_log_object",
+      "log_timestamp_us",
+      "known_json_type",
+      "command_public",
+      "close_rows"
+    ],
+    "mainOnly": [
+      "schema literal",
+      "child label literal",
+      "projection function call"
+    ],
+    "journalOnly": [
+      "GF_SLOT",
+      "GF_REQUEST pin",
+      "observer key prefix"
+    ],
+    "sourceHunks": 7,
+    "sourceInverseHunks": 7,
+    "journalHunks": 2,
+    "journalInverseHunks": 2
+  },
+  "closure": {
+    "child": "Original retained WNOWAIT/Commands; known exit0/complete/empty stderr plus owned reap/group-empty per unchanged helper. A capture refusal remains UNKNOWN.",
+    "tool": "Actual held/named full9, wholeSHA and final fences; path exec is not atomic exec-by-FD.",
+    "output": "Original Commands stdout/stderr hashes removed; no raw child bytes exported.",
+    "oldScope": "No old label/PID action, no historical UNKNOWN upgrade."
+  },
+  "prohibited": [
+    "Node rerun",
+    "SDK/provider/credentials/private capsule",
+    "new service",
+    "sandbox/profile/permission/config changes",
+    "library file reads",
+    "query expansion/retry",
+    "history rewrite"
+  ],
+  "correctTypedNativeBinding": {
+    "sha256": null,
+    "fingerprint": null,
+    "note": "Root computes typed stdin from exact request; old pure helper stdin_text binding is not used."
+  }
+}

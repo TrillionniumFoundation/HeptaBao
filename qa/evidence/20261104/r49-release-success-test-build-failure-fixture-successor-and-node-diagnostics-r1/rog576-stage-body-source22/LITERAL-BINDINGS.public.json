@@ -1,0 +1,62 @@
+[
+  {
+    "name": "slot",
+    "before": "const GF_SLOT = \"combined_02b90762_rog_source_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"combined_5767739c_rog_source_gitfirst_r1\";",
+    "count": 1
+  },
+  {
+    "name": "start_request",
+    "before": "const GF_REQUEST = {blob:\"b2ce0ac862ac88e531650feea8847268403ce025\",\n bytes:111947,sha256:\"9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9\"};",
+    "after": "const GF_REQUEST = {blob:\"564433fa36fedb91ea45d694685cdb2c9067cc88\",\n bytes:112620,sha256:\"1599f63a32179a77a2f8693596cc185217efeffa0a4836f5ca608be989c75c04\"};",
+    "count": 1
+  },
+  {
+    "name": "report_path",
+    "before": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/hb-02b90762-src-20261106-r1/control/stage-result.public.json\";",
+    "after": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/hb-5767739c-src-20261106-r1/control/stage-result.public.json\";",
+    "count": 1
+  },
+  {
+    "name": "info_request",
+    "before": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"bb84f086bbf1f803ce8d3976d839b11931479893\",\"bytes\":272,\"sha256\":\"79ba2463190e4ddbd8625e99415baa35bc9fb03d59b5a93b1ede0df4575c97a5\"};",
+    "after": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"465eac22268d07804dcfd586d11037e2d6fab554\",\"bytes\":272,\"sha256\":\"1efe075ee88f65a028f4cea20774dbfe61432cb0624edfc668110131eda5bf5f\"};",
+    "count": 1
+  },
+  {
+    "name": "stage_prerequisites",
+    "before": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"bb870a554f6ac08aa000b2722e2cc6d60d9b5b94955dbc02731acbb72c0e1ab8\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"22f8bf9cfd362f1590ea36ad52b9ce3c496363c7\",\"bytes\":729,\"sha256\":\"37e9190a19bce6816c4d176138252a644cc873efc32abb6bc28a16490bf1f277\"}},{\"id\":\"e11198afc4a9091428ce55ee2d9562c6a8024245572bca828cf8d014fb2dff57\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"c72a796ace684bfd978c54469aeecd74f5118012\",\"bytes\":1396,\"sha256\":\"217b0f5dc14b6764c4f0b157fb747931f3d3fee903172b602a295d6d5e2a3319\"}}];",
+    "after": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"cb1d52213dab6705cf2ca544c43d453efc5f701cc282a4e4ce03e5b1e919b9f6\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"50509a0307e16ef7fda75fe856ffa7b14627fddd\",\"bytes\":729,\"sha256\":\"ac607383f4bcb471f6bafda6248764b8584c6febc1d01582273741dcac1ec00f\"}},{\"id\":\"a72240141eeba0ee4415aaec20ea82c729533dc19252c8a3b9e9e262b312e15e\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"e349ea82878c1c189d911ffabd8cf7fb3154a1aa\",\"bytes\":1396,\"sha256\":\"b3f04a7a9f6935a298d940598befda99c642c49cee5634634febadf42d93553c\"}}];",
+    "count": 1
+  },
+  {
+    "name": "job",
+    "before": "s.job===\"1a1b21f5945-fc05-7c77\"",
+    "after": "s.job===\"1a1b2c397c4-fc05-7fa4\"",
+    "count": 2
+  },
+  {
+    "name": "key_prefix",
+    "before": "/^heptabao-combined-02b90762-rog-source-observe-r1-/",
+    "after": "/^heptabao-combined-5767739c-rog-source-observe-r1-/",
+    "count": 1
+  },
+  {
+    "name": "range_comment",
+    "before": "Only this 28236-byte range",
+    "after": "Only this 29748-byte range",
+    "count": 1
+  },
+  {
+    "name": "body_request",
+    "before": "const GF_STAGE_BODY_REQUEST = {\"blob\":\"91917046afe568c4f94f7ca65a31a7dec8327cd7\",\"bytes\":405,\"sha256\":\"268e8e7e622441d225a65ead4bd0efb971e1181165a16f377b00b1aa3428e0ad\"};",
+    "after": "const GF_STAGE_BODY_REQUEST = {\"blob\":\"b9d658dabd01b233d992e6f56fcacbc12ca92657\",\"bytes\":405,\"sha256\":\"ec45ef03814156239bee93cd5e6de56d07752f9098001522c5ba745cbbece982\"};",
+    "count": 1
+  },
+  {
+    "name": "actual_expected",
+    "before": "const GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian-qi/hb-02b90762-src-20261106-r1/control/stage-result.public.json\",\"bytes\":28236,\"sha256\":\"76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83\",\"version\":\"66306:28477741:28236:1793989776858375923:1793989776858375923\",\"infoOperation\":\"45b233c3306a73913b4f70f7d326c3bff623f47d8909f45154f313f7889ceae7\",\"infoNative\":{\"blob\":\"4dabaf26c32eb013d54872159496e8cf21a787a1\",\"bytes\":462,\"sha256\":\"b8d01c7ec1b134c3c45819aba1bcdd50c77745889c17003fbf3d286c60863155\"}};",
+    "after": "const GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian-qi/hb-5767739c-src-20261106-r1/control/stage-result.public.json\",\"bytes\":29748,\"sha256\":\"ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662\",\"version\":\"66306:31358204:29748:1794000540708114035:1794000540708114035\",\"infoOperation\":\"b5919c7edbcb372ba080012ff3b5e52c112e810333986ba423b34aa6b9a7a79e\",\"infoNative\":{\"blob\":\"edde85e8e5b009982938abf33173b344ab3eade5\",\"bytes\":462,\"sha256\":\"3540177cbe4105baee12a595ad77ff19a1ab69569b8b9365db81c03545ff359a\"}};",
+    "count": 1
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.root.current576-failed-build-info-source-review.r1",
+  "tree": "d9898924910f628338eedc5e9b262a0af6cc7568",
+  "whole": {
+    "tree": "d9898924910f628338eedc5e9b262a0af6cc7568",
+    "files": 22,
+    "bytes": 477604,
+    "merkle": {
+      "root_sha": "d9898924910f628338eedc5e9b262a0af6cc7568",
+      "trees_verified": 1,
+      "leaf_count": 22
+    },
+    "whole": true
+  },
+  "authorChecksReproduced": 49,
+  "rootActualBindings": {
+    "terminalRootReviewed": true,
+    "releaseExact": true,
+    "stdoutExact": true,
+    "authorityExact": true,
+    "releaseObserverExact": true,
+    "lastStreamExact": true,
+    "journalBeforeExact": true,
+    "actualOriginalGO": true,
+    "reportSummarySHA": true
+  },
+  "terminalRootQualification": {
+    "blob": "83afd2bdc2e202e6cdf87f9753e1e2b424616b3c",
+    "bytes": 3195,
+    "sha256": "429a2d23317b3a76e20744374fd9e2a795c11c220c38dd6f7a2d60446c511fa2"
+  },
+  "actualFailureCauseStillUnknown": true,
+  "NativeCallsAdded": 0
+}

@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.root.successor576-mac-source-stage.GO.r1",
+  "issuedAtUTC": "2026-11-06 22:20:52 UTC",
+  "authorization": "User requested completing remaining blockers and real Mac/Linux/LAN validation; this is one isolated Mac source stage for the reviewed frozen candidate.",
+  "lane": "C single Native lane",
+  "sourceTree": "1107d5ca1f903219e083c6abf791336d04cc48da",
+  "sourceRootQualification": {
+    "blob": "9b60355710392b42de1c8074278cb46fb2f1018a",
+    "bytes": 1309,
+    "sha256": "3349d2b83c56acaa65048c2df9f14b69885cbcf896a111ed713a06dd5ed801ee"
+  },
+  "candidateCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "candidateTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "parentCommit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+  "exactRequest": {
+    "blob": "3b86e61a47028c1b5d8e23369ef336490dc6382b",
+    "bytes": 32676,
+    "sha256": "8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2"
+  },
+  "source": {
+    "blob": "57f978b5e6afc37e07577e803d72803a399e6887",
+    "bytes": 23713,
+    "sha256": "a70bc4e2234b709473f3fb2ae3fb279200011e9e3bc0da194d2972a554f114df"
+  },
+  "carrier": {
+    "blob": "f07869b53dec4249e2fd48c6e57a2e0a88badd2b",
+    "bytes": 7772,
+    "sha256": "94e495bd24e0a5ff4bdb2dcb970d10b169cb0aea6f04c3fca068e5ccf60734d8"
+  },
+  "journal": {
+    "blob": "9f29f42096f7d230210455cbfabfa7798a63fcd0",
+    "bytes": 19050,
+    "sha256": "c533a12a85ebc81bec9cfd1c39f5a43f7eef69f99df630f68ccbffde6048a0fc"
+  },
+  "slot": "successor576_mac_source_only_stage_gitfirst_r1",
+  "key": "heptabao-5767739c-mac-source-only-20261106-r1-a70bc4e2",
+  "native_binding": {
+    "sha256": "dae9bc16adfb96104073ba4a7571815b5aa6d153f961454d671b1e3a947b7d24",
+    "native_fingerprint": "15774345975436121616"
+  },
+  "host": "mac",
+  "freshRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1",
+  "readOnlyCloneBase": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source",
+  "requiredVolumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+  "canonicalBundle": {
+    "schema": "heptabao.mac-successor576.actual-bundle-bindings.v1",
+    "ready": true,
+    "candidate": {
+      "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+      "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+      "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    },
+    "producer": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+      "report": {
+        "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+        "bytes": 29748,
+        "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+      },
+      "rootQualification": {
+        "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+        "bytes": 2941,
+        "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+      }
+    },
+    "bundle": {
+      "bytes": 5766,
+      "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+      "full9": [
+        "66306",
+        "31358148",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "5766",
+        "1794000539740776688",
+        "1794000539740776688"
+      ],
+      "version": "66306:31358148:5766:1794000539740776688:1794000539740776688",
+      "headerSha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9"
+    },
+    "infoNative": {
+      "blob": "b40eebebed4155bff74279c2b1d06cb8e2dd181e",
+      "bytes": 472,
+      "sha256": "06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"
+    },
+    "infoOperation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+    "bodyOperations": [
+      "66156671a53584aade1ab361827dcd7714539359fcfc964e75af16d58fb3e4fc"
+    ],
+    "transport": {
+      "blob": "9fbaf8430240c8b767e40bd17b9b1ae932ea93e5",
+      "bytes": 869,
+      "sha256": "0f1d23c49bdf8e9254b84ab95f4bf7192c46d710bb8dc30d1392685b126f2290"
+    },
+    "transportRootQualification": {
+      "blob": "72cc86bbdbe09496c13865bb1d642d0423c873ba",
+      "bytes": 2340,
+      "sha256": "17426f94a2a78f325bd5e2e1c9340574860e99ba5b53aae2020cd55ca7e68eab"
+    },
+    "base64": {
+      "blob": "80317c9867cd6485b4a308e9d512de2d99d02c12",
+      "bytes": 7689,
+      "sha256": "bdbfecb000ed9119a5de46bd1e5ed5d986bb453a22f0fba841dc7cedb6571797"
+    }
+  },
+  "scope": "One unique process_start; same original job process_status/process_read only under the unchanged reviewed journal.",
+  "budgets": {
+    "stage": 300,
+    "gitLeaf": 90,
+    "clone": 180,
+    "outer": 360,
+    "term": 5,
+    "kill": 5,
+    "stdin": 262144,
+    "actualStdin": 7772,
+    "totalTracked": 134217728,
+    "processStarts": 1,
+    "processStatusObservers": 64,
+    "processReadObservers": 129,
+    "perObserverStatusCalls": 8,
+    "perObserverImmutablePages": 128,
+    "processRead": 16384,
+    "immutablePage": 8192,
+    "payload": 1048576,
+    "originalStdoutBytes": 2097152,
+    "originalStderrBytes": 2097152
+  },
+  "required": {
+    "freshSlotInitializeOnlyOnce": true,
+    "wholeOriginalIntentBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "originalSDKWholeBeforeParse": true,
+    "sameOriginalJobOnly": true,
+    "baseFrozenBeforeAndAfter": true,
+    "independentLocalCloneNoAlternatesOrHardlinks": true,
+    "allOwnedHelpersAndDescriptorsClosed": true,
+    "originalAuthorityAndFullStreamsRequired": true
+  },
+  "expected": {
+    "history": 3769,
+    "fullLeafCount": 3932,
+    "trackedBytes": 62553540,
+    "fullLeafIndexSHA256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423"
+  },
+  "onError": "Preserve original failure or UNKNOWN; no replay, replacement job, new key, or unreviewed Native recovery. Identical-SHA Git read reconciliation does not authorize a second Native dispatch.",
+  "notIncluded": {
+    "reportFileInfoOrBody": false,
+    "controlsPublication": false,
+    "Cargo": false,
+    "formatter": false,
+    "productServer": false,
+    "credentials": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  },
+  "qualification": {
+    "MacStageSuccessNotAssumed": true,
+    "normal117": false,
+    "full34": false,
+    "LAN": false,
+    "fullReplacement": false
+  },
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  }
+}

@@ -1,0 +1,30 @@
+[
+  [
+    "const GF_SLOT = \"final02b_mac_source_only_stage_gitfirst_r1\";",
+    "const GF_SLOT = \"successor576_mac_source_only_stage_gitfirst_r1\";"
+  ],
+  [
+    "const GF_REQUEST = {\"blob\":\"bd3f20cc6390cc8519265142cf2fb8624cf87008\",\"bytes\":254446,\"sha256\":\"21ca75b8e1ca736dd96f3e564a70e757dc487d758d216793af5b420c5d46c99e\"};",
+    "const GF_REQUEST = {\"blob\":\"3b86e61a47028c1b5d8e23369ef336490dc6382b\",\"bytes\":32676,\"sha256\":\"8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2\"};"
+  ],
+  [
+    "const GF_STAGE_RESULT_PATH = \"/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/control/stage-result.public.json\";",
+    "const GF_STAGE_RESULT_PATH = \"/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json\";"
+  ],
+  [
+    "const GF_STAGE_INFO_REQUEST = {\"blob\":\"c86913b26b9cd099b5e22d1c00285d74ba6c6db6\",\"bytes\":303,\"sha256\":\"526c709a592bc6f7014e88a775d6d13c8c02918c19122ff0bab0b29a999e283c\"};",
+    "const GF_STAGE_INFO_REQUEST = {\"blob\":\"0c9a7c35ea5ec5fe421d9001e49990c916786980\",\"bytes\":294,\"sha256\":\"cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03\"};"
+  ],
+  [
+    "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"d2da0ade8fb73ddc8ce70733c2aa9c9b98afcef410e80117c81dbdbaffff6735\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"3c0a55e37cca8e3992bb96788d79318afec949ea\",\"bytes\":729,\"sha256\":\"797ce9266b89c41200c81c7ad14acb5537a3adffd0d519b31c71135bfbea4552\"}},{\"id\":\"159a60d28de3f8427b562d226deb88bbb701d762b343d28ef8540b15b9abd3c0\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"7133c9c51156c30090818ac1d7c83571218c9e5b\",\"bytes\":1480,\"sha256\":\"7d9aa76a92780145374df6f2235d9f3b26450969c217663ca678a3d150594b32\"}}];",
+    "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"24996cdec21dd44779c9fac959650c6f2cb0d301928340729434ca3e82173560\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"f9084348857631a6581c8a866b4357ed022746f5\",\"bytes\":729,\"sha256\":\"8c5c94c4eac3a90288d73475e5e5e3f26d4b1eea636b56414e607a15011fae03\"}},{\"id\":\"0ebddadd7036f8130d22f5fa31736136c38447225792c1e80f43bc8f2ee17d2a\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"1f46ed412756d169c8b38885959705c96b6aca47\",\"bytes\":1480,\"sha256\":\"162de84f9b5f4ff5c1b6dc42a8ceca7cc730076eeb37404907ef2b3cccff42be\"}}];"
+  ],
+  [
+    "s.job===\"1a1b27f85d6-fc05-7e49\"",
+    "s.job===\"1a1b2f48641-fc05-8042\""
+  ],
+  [
+    "^heptabao-final02b-mac-source-only-ea096d7a-",
+    "^heptabao-5767739c-mac-source-only-a70bc4e2-"
+  ]
+]

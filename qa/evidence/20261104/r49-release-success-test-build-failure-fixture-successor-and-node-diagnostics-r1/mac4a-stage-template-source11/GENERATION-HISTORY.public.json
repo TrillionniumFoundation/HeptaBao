@@ -1,0 +1,10 @@
+[
+  {
+    "phase": "pure source generation",
+    "error": "SyntaxError: Octal escape sequences are not allowed in strict mode.",
+    "cause": "Unused row-prefix string used an octal-looking escape in a rejected JavaScript parse.",
+    "correction": "Remove unused row-prefix declaration; exact index replacements use separately concatenated NUL strings.",
+    "runtime_calls": 0,
+    "product_changed": false
+  }
+]

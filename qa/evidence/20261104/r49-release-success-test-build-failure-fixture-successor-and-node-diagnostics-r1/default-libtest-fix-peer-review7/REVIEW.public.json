@@ -1,0 +1,150 @@
+{
+  "schema": "heptabao.c.peer.current576-default-libtest-four-error-source-fix.r1",
+  "verdict": "NO_SOURCE_BLOCKER_FOUND_IN_EXACT_THREE_FILE_DELTA",
+  "scope": {
+    "base_commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "base_tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "source_packet": "2abb0dfb23270a94e882c2b0a4d7a6efe61cd039",
+    "proposal": {
+      "blob": "5cff599bb32ba254b0494d9abd0ac3cdb0a05dc4",
+      "bytes": 3856,
+      "sha256": "8a3641d96e58077f08fb1cd1faf76da5fd874154941085b4f54d170648f6059f"
+    },
+    "compiler_stderr": {
+      "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+      "bytes": 2146,
+      "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+    },
+    "native_calls": 0,
+    "rust_compile": false,
+    "rust_tests": false,
+    "product_mutations": false
+  },
+  "findings": [
+    {
+      "topic": "Field types and cfg",
+      "conclusion": "Both fields are native-v6-ha gated. Handler is Arc<Mutex<Option<SnapshotForwardHandler>>>; pins is BTreeMap<u64,Vec<[u8;32]>>. Both fixture additions match the exact fields and feature gates. Each full original file is recovered after removing only these four inserted lines.",
+      "evidence": [
+        {
+          "blob": "577f2e3234bac279dca98d09f74200ffc8653cb6",
+          "lines": [
+            688,
+            712
+          ]
+        },
+        {
+          "blob": "432a89db6d9702bd5448134dadf28ad7f9bd654c",
+          "lines": [
+            87,
+            98
+          ]
+        },
+        {
+          "blob": "e861ef9860f25bb250791df7e493fd4a1fb49f63",
+          "lines": [
+            142,
+            153
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Fixture capability remains disabled",
+      "conclusion": "Both original fixtures have native_v6=None and listener=None and explicitly make no TLS/listener claim. native_v6_enabled requires a node and Some(runtime) with enabled(). Registration and endpoint selection therefore remain rejected. Independently, dispatch rejects an absent callback with NotLeader, and endpoint lookup rejects a missing target pin entry; there is no pinless fallback in this path.",
+      "evidence": [
+        {
+          "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+          "lines": [
+            922,
+            927
+          ]
+        },
+        {
+          "blob": "553b70d33e329e7c71dd957f609b672d4e3ff7a5",
+          "lines": [
+            54,
+            58,
+            108,
+            122,
+            126,
+            151
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Production transport and fixtures unchanged outside initialization",
+      "conclusion": "No production source changes are present. Real startup still derives pins from parsed authenticated peer configuration and initializes an absent callback for later registration. The old unused-peer/router RPC paths, request deadlines, runtime construction and fixture Drop implementations remain byte-identical.",
+      "evidence": [
+        {
+          "blob": "577f2e3234bac279dca98d09f74200ffc8653cb6",
+          "lines": [
+            841,
+            852,
+            947,
+            948,
+            1337,
+            1339
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Zero-transition assertions retain meaning",
+      "conclusion": "selection returns a clone of the real verified committed NativeV6PublishedRoot. epoch_transitions returns restore_lineage.iter().map(...) as ExactSizeIterator + DoubleEndedIterator. Each newly obtained iterator is unconsumed; len()==0 checks exactly the same empty lineage condition without iterating the map or querying another root. assert_eq adds diagnostics only on failure.",
+      "evidence": [
+        {
+          "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+          "lines": [
+            121,
+            141
+          ]
+        },
+        {
+          "blob": "0f341b1260303a721ca2432a9cf7631c1fb86f78",
+          "lines": [
+            317,
+            325
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Assertion timing and strength unchanged",
+      "conclusion": "The first assertion remains after verified pre-request selection and before began/until/scope. The second remains after request completion, deadline assertion, drop(service), drop(scope), private lease release, verified post-request selection and full after==before. Only the two predicate statements changed; audit/HTTP/recovery/owner checks, test names and deadlines are unchanged.",
+      "evidence": [
+        {
+          "blob": "7ca123003ff5740325c11b90dbb8445ba8d5455e",
+          "lines": [
+            147,
+            166,
+            393,
+            411
+          ]
+        }
+      ]
+    }
+  ],
+  "independent_checks": {
+    "function": "verifyDefaultLibtestMinimalFix",
+    "pass": true,
+    "count": 30,
+    "strict_hunks": [
+      1,
+      1,
+      2
+    ],
+    "function_name_counts": [
+      5,
+      12,
+      12
+    ],
+    "scope": "whole identity, canonical before pins, strict forward/reverse, exact permitted replacements"
+  },
+  "limits": [
+    "This is source review, not a Rust compiler result or executed test qualification.",
+    "The four original compiler diagnostics remain historical evidence. A newly frozen successor must be compiled and run under its own authorized attempt.",
+    "No test is removed, renamed, disabled or counted as passed by this review."
+  ],
+  "checker_history": "Two pure reviewer mistakes are retained: gitBlobMeta field selection and inherited diff parser trimEnd dropping a final blank context line. Both were corrected solely in review code; candidate and original evidence bytes were not changed."
+}

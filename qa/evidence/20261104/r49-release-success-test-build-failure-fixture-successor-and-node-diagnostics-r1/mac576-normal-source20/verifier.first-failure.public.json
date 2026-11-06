@@ -1,0 +1,12 @@
+{
+  "phase": "pure_source_verifier",
+  "check": "original_release_default_compile_and_all61_block_exact",
+  "error": "Expected an extra separator LF even though exact selected blocks already include matching LF.",
+  "counts": {
+    "old": 16154,
+    "new": 16154
+  },
+  "source_modified": false,
+  "Native_calls": 0,
+  "Python_runs": 0
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.root.pure-review-assembly-error.r1",
+  "error": "ReferenceError: checks is not defined",
+  "phase": "Constructing ROOT-QUALIFICATION object after all21 pure checks succeeded, before archive helper invocation",
+  "correction": "Bind checks:ck instead of shorthand checks",
+  "GitMutations": 0,
+  "NativeCalls": 0,
+  "productChanges": 0,
+  "replay": 0
+}

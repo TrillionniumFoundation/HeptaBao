@@ -1,0 +1,204 @@
+{
+  "schema": "heptabao.x230576.minimum-source-and-full34-interface.v1",
+  "status": "SOURCE_ONLY_PARAMETER_MAPPING_NOT_EXECUTABLE",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "leaves": 3932,
+    "tracked_bytes": 62553540,
+    "full_index_sha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+    "history": 3769
+  },
+  "old_exact_sources": {
+    "GO": {
+      "blob": "0de9e52cff21d0827a584387e178559c73d93a04",
+      "bytes": 13197,
+      "sha256": "cf5a34ffe4bbe5280b934892945f23747a6ce67a1021eb53daf5bcc945bdc293"
+    },
+    "receiver": {
+      "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    },
+    "full34_wrapper": {
+      "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+      "bytes": 10142,
+      "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5"
+    },
+    "full34_request": {
+      "blob": "3839158cca7a7d543d8b277fc4df9f271d45ab83",
+      "bytes": 355,
+      "sha256": "235880f1326aa4d1848b2a9867c5915719c787bb9b58e90140b95838a7c49b69"
+    },
+    "canonical_driver": {
+      "blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "official_launcher": {
+      "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    }
+  },
+  "old_source_base": {
+    "host": "x230",
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+    "expected_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "expected_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "expected_history": 3763,
+    "expected_leaves": 3914,
+    "uid": 1000,
+    "system": [
+      "Linux",
+      "x86_64"
+    ],
+    "historical_import": "The old exact receiver cloned a standalone full4e bundle,removed its local origin and proved full history/materialized tracked blobs. It did not require an earlier X230 checkout.",
+    "historical_actual_root_tree": "174c2816524022fbb9b128e6ae2b12a66fafc312",
+    "fresh_current_presence": null,
+    "ancestry_source_reference": {
+      "blob": "b6a9190bc5856e42be2d8e750875675521ecf22d",
+      "bytes": 25130,
+      "sha256": "ea096d7a13c4501d4d39d7d953fb6fd35c49aad6051227884c06e179bc8db9fd"
+    },
+    "required_fresh_guard": "Require exact4e head/tree/clean/full independent local .git and495 ancestor before using it. Preserve before/after. No guessed ROG path,fallback clone,network fetch,reset or base mutation."
+  },
+  "proposed_new_paths": {
+    "source_root": "/home/qian/hb-5767739c-src-20261106-r1",
+    "source": "/home/qian/hb-5767739c-src-20261106-r1/source",
+    "full34_root": "/home/qian/hb-5767739c-full34-20261106-r1",
+    "artifacts": "/home/qian/hb-5767739c-full34-20261106-r1/artifacts",
+    "output": "/home/qian/hb-5767739c-full34-20261106-r1/evidence/full34-r1",
+    "fresh_absence": null
+  },
+  "two_bundle_source_option": {
+    "adopted": false,
+    "first": {
+      "prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "head": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "bytes": 171016,
+      "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800",
+      "base64": {
+        "blob": "aa2b5e2c231b7784603f8ccf621c405dacdeae08",
+        "bytes": 228025,
+        "sha256": "9d19b19a083ac1bbdfa3255dc2c2d140f146e1d2a463a677ba135169c11a529d"
+      },
+      "header": "# v2 git bundle\n-49503322c7f446e5eb41e7744f1fdbd7f1192ecc test: witness authenticated native state in NoForward HA regressions\n02b90762b3d6cc8699cc88bffb6f76cb1f07e270 HEAD\n\n",
+      "header_sha256": "bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5"
+    },
+    "second": {
+      "prerequisite": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "head": "5767739cd25e458ac052dc8d384019bab8688ae0",
+      "bytes": 5766,
+      "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+      "base64": {
+        "blob": "80317c9867cd6485b4a308e9d512de2d99d02c12",
+        "bytes": 7689,
+        "sha256": "bdbfecb000ed9119a5de46bd1e5ed5d986bb453a22f0fba841dc7cedb6571797"
+      },
+      "header": "# v2 git bundle\n-02b90762b3d6cc8699cc88bffb6f76cb1f07e270 fix(storage,auth): integrate streaming snapshots and JWT policy schema 147\n5767739cd25e458ac052dc8d384019bab8688ae0 HEAD\n\n",
+      "header_sha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9"
+    },
+    "combined_raw_bytes": 176782,
+    "complete_source_only_carrier_example": {
+      "schema": "heptabao.x230576.two-bundle-source-only-carrier.v1",
+      "keys": [
+        "schema",
+        "canonical_02b_base64",
+        "canonical_576_base64"
+      ],
+      "encoding": "JSON.stringify compact,canonical base64 values without their storage LF,one terminalLF",
+      "bytes": 235828,
+      "sha256": "746de82dd389c7fe3cd1a169c5ace88737b3d94c00cf953eef4c0be9b5d7e1b0",
+      "cap262144": true,
+      "computed_only_not_dispatched": true
+    },
+    "sequence": [
+      "Fresh fixed old-base identity/ancestry and new-root absence guards.",
+      "Create one independent --no-hardlinks local clone into the fresh owned root;no product process or compiler.",
+      "Verify the original171016-byte bundle's wholeSHA/v2sole495 prerequisite/02bHEAD;git bundle verify and import its02b HEAD into the clone.",
+      "Verify the original5766-byte bundle's wholeSHA/v2sole02b prerequisite/576HEAD;git bundle verify and import its576 HEAD into the same clone.",
+      "Checkout exact576 only in the new clone;strict fsck/root/history/parent/tree and3932 full materialized Git blobs/index20ff checks;owned new-source fsync/metadata closure.",
+      "Recheck oldbase and both exactbundle sources,then close original child/FD/receipt accounting within the unchanged ownerdeadline."
+    ],
+    "new_source_required": "The old receiver hardcodes an empty-prerequisite full bundle and7-artifact stream. Supporting readonly-base cloning andtwo exact incremental bundles is an explicit new source delta,not a three-literal relabel.",
+    "deadline_reference": {
+      "original_receiver_seconds": 300,
+      "original_clone_seconds": 90,
+      "original_git_seconds": 60,
+      "old_native_outer_seconds": 360
+    },
+    "controller": null,
+    "exact_request": null,
+    "GO": null
+  },
+  "retained_artifact_interface": {
+    "future_source_host": "rog",
+    "future_source_base": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1",
+    "release_stage_facts": {
+      "actual_scope": "original_stdout_release_phase_only",
+      "source_commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+      "server": {
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-server",
+        "bytes": 110492992,
+        "sha256": "af595a9b31537d6421f3069ad3d2657dfc88ebea2a2ba564f9cc009992bbef8d",
+        "full9": null,
+        "version": null
+      },
+      "seed": {
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-seed",
+        "bytes": 101923848,
+        "sha256": "64984b1ecc6d80a0599ae6bb7b93e51399f6b679244af55a163124a099790c84",
+        "full9": null,
+        "version": null
+      },
+      "native_blob": "5850bf4c3d57b6ecab857925c1f80baebdb7de0b",
+      "payload_tree": "355998793063d590820b956eb2d86e747a162f8d",
+      "whole_read_by_C": false,
+      "qualified_280": false
+    },
+    "actual_final_combined_report": null,
+    "actual_native_build_report": null,
+    "actual_normal_release_report": null,
+    "actual_groups": null,
+    "actual_binary_full9_version": null,
+    "actual_transfer_receipt": null,
+    "transfer_request": null,
+    "qualification_rule": "Use create-only transferred retainedserver and current actual252/280 build proof;new full34 source must bind final combinedresult,release/native receipts,exact groups andwhole transfer identity. An earlyrelease phase does not qualify runtime tests or final fences."
+  },
+  "full34_parameter_map": [
+    {
+      "field": "HEAD/TREE/REPO/ROOT/OUT/PIN",
+      "change": "Bind576/tree424 andnew independent source/artifact/evidence roots,current retainedbinary wholeSHA/full9. Keep all actualslots null until observed."
+    },
+    {
+      "field": "normal61_admission",
+      "change": "Replace old61-specific admission with explicit current18-group252unique/280execution report semantics and exact actual current controller/groups/feature-profile names. Preserve actual successful listings/tests,original child closure andend source/artifact fences;do not simply change a count."
+    },
+    {
+      "field": "native/release/combined/transfer receipt names and pins",
+      "change": "Bind to actual576 schemas and original report paths;the oldwrapper called normal-release-result result.public.json,so do not alias it to the currentcombined result accidentally."
+    },
+    {
+      "field": "source() andcanonical driver",
+      "change": "Require exact new576 Git HEAD/tree/clean,unchanged canonical49393 driver and20008 officiallauncher. Old X2304e source cannot satisfy this."
+    },
+    {
+      "field": "official2.7.1 binary/archive",
+      "change": "Keep known historical fixedX230 paths andfullSHA expectations;fresh existing verify_inputs/member/livehealth must succeed. No new inventory ordownload is proposed."
+    },
+    {
+      "field": "full34 body/status/cleanup",
+      "change": "Keep the original31 requiredchecks,34MiB=17x2097152,15-secondHTTP/360-secondmigration,4MiB JSON/128MiB archive,andouter1800. The wrapper has no internalsubprocess timeout;do not claimone."
+    }
+  ],
+  "current_actual": {
+    "source_on_X230_576": null,
+    "source_stage": null,
+    "binary_on_X230_576": null,
+    "full34": null,
+    "Native_calls": 0,
+    "product_changes": 0
+  }
+}

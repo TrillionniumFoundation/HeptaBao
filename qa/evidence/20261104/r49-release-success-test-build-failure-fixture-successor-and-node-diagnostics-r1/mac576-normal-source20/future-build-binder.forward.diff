@@ -1,0 +1,36 @@
+--- a/future-build-binder.js
++++ b/future-build-binder.js
+@@ -2,6 +2,7 @@
+  // Pure data binding only. Root must independently qualify these original observations and grant BUILD.
+  function need(v,m){if(!v)throw Error(m);}
+  function it(v){if(Number.isSafeInteger(v))return String(v);need(v&&Object.keys(v).join(",")==="$exactInteger"&&/^[0-9]+$/.test(v.$exactInteger),"lossless full9");return v.$exactInteger;}
++ need(input.commit==="5767739cd25e458ac052dc8d384019bab8688ae0"&&input.tree==="42477d622dcf96e1e2b0929fe9ecc6b7ba484740","frozen successor");
+  const authority=parseLosslessIntegers(input.authorityNativeRaw),streams=parseLosslessIntegers(input.streamsNativeRaw);
+  need(authority.job_id===streams.job_id&&authority.exit_code===0&&authority.output_complete===true
+   &&authority.output_durable===true&&authority.terminal_publication_confirmed===true
+@@ -12,11 +13,14 @@
+  need(bytes.length===streams.stdout.size&&streams.stdout.next_offset===bytes.length
+   &&bytes.map(x=>x.toString(16).padStart(2,"0")).join("")===streams.stdout.bytes_hex,"lossless full original stdout");
+  const result=parseLosslessIntegers(stdout),paths=input.paths;
+- need(result.schema==="heptabao.final-mac-normal61-controls-inert.v1"&&result.status==="prepared"
++ need(result.schema==="heptabao.mac-normal61-native-jwt-pki28-controls-inert.v1"&&result.status==="prepared"
+   &&result.source_commit===input.commit&&result.source_tree===input.tree
+   &&result.root_created===true&&result.control_created===true
+   &&result.source_executed===false&&result.compiler_started===false&&result.service_started===false
+-  &&result.python_compile_only===true&&result.normal_total_test_count===61,"exact inert publication");
++  &&result.python_compile_only===true&&result.normal_total_test_count===61
++  &&result.native_unique_test_count===28&&result.native_profile_execution_count===56
++  &&result.selected_unique_test_count===89&&result.selected_profile_execution_count===117
++  &&JSON.stringify(result.native_groups)===JSON.stringify([["native-jwt-pki-file28","file",28],["native-jwt-pki-default28","default",28]]),"exact inert publication");
+  const rows=new Map(result.files.map(r=>[r.path,r]));
+  need(result.files.length===3&&rows.size===3&&result.exact_test_count===44,"three controls and original groups");
+  for(const [name,expected]of Object.entries(input.controlPins)){
+@@ -41,7 +45,7 @@
+    "--runner-sha256",runner.sha256,"--groups-sha256",groups.sha256,"--launcher-sha256",launcher.sha256,
+    "--controls-sha256",receipt.sha256,"--controls-full9-json",JSON.stringify(full9)],
+   cwd:paths.base,timeout_seconds:8280,
+-  idempotency_key:"heptabao-final02b-mac-normal61-fresh-20261106-r1-"+launcher.sha256.slice(0,8)};
++  idempotency_key:"heptabao-5767739c-mac-normal61-native28-fresh-20261106-r1-"+launcher.sha256.slice(0,8)};
+  const requestRaw=JSON.stringify(q,null,2)+"\n";
+  return {requestRaw,request:gitBlobMeta(requestRaw),typed:processStartBinding(q),actualPublisherJob:authority.job_id,
+   actualReceipt:{path:receipt.path,bytes:receipt.bytes,sha256:receipt.sha256,full9},

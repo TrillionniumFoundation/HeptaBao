@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.successor576.Mac.stage-report-body.source.v1",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "slot": "successor576_mac_source_only_stage_gitfirst_r1",
+  "initialize": false,
+  "action": "authorize_stage_result_body",
+  "before": {
+    "blob": "7924dd1f2a728e9f917ef5a93877d96d786f03e1",
+    "bytes": 24087,
+    "sha256": "4805e14fef74a2ff7d9bc4e8bcf915d77fa55e608675bbccee7a4f6644ebc96e"
+  },
+  "after": {
+    "blob": "978c35dbc19e27bbb93564677c61883729cc6105",
+    "bytes": 29851,
+    "sha256": "f2179cfc87572e84b22334026a98bc5f5c22ef68b30cca78dafc795c70635cd7"
+  },
+  "diff": {
+    "blob": "490e01cebe8d070bae39b1ac012e0bc1877bafa0",
+    "bytes": 8989,
+    "sha256": "c565fb2ebdb6b7eb17a5523b578d22f490593ebd16cfef12722bf4cd8ffaaf56"
+  },
+  "exactRequest": {
+    "blob": "ead124398c9a04b8d8a76e205069e8f7e426a4d9",
+    "bytes": 437,
+    "sha256": "a1901018815188a9126b3365c95be3e8be56e280874651db6911aa9cc3708527"
+  },
+  "originalClosedINFOState": {
+    "blob": "6cacd6b522bd9e068fdd83f850c7efeafe342f3f",
+    "bytes": 71983,
+    "sha256": "204c5a55372cdae4a93af785bf87c5ab45534177b90f23579e856ad232c8d22e"
+  },
+  "metadata": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7665,
+    "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "full9": [
+      "16777244",
+      "72764004",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7665",
+      "1794003736370790810",
+      "1794003736370799227"
+    ],
+    "infoOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "infoNative": {
+      "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+      "bytes": 489,
+      "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+    }
+  },
+  "actualINFOminTree": "308fdf62f706e6ed33f4f85963acaca24b5bddd9",
+  "actualINFOrelease": {
+    "blob": "436257f21f3f4059ce2681614dcb7403502443b5",
+    "bytes": 2681,
+    "sha256": "9e472095dedc326ea144fb44aaa0c1395256b190507f9888c41d175eb898d70f"
+  },
+  "originalINFOGO": {
+    "blob": "a331c6278d4a539d67865f64db01aa27d9438f7a",
+    "bytes": 2786,
+    "sha256": "76d824566717fa085c634513e6679fe2a79b36d46f863c6069e5344bbae477c6"
+  },
+  "originalStageFullTree": "ad388ba56c2bdd498d0be6c57ac9cfec3327278e",
+  "qualifiedBodyBaseline": {
+    "tree": "f928b8c8970a01ef439942ca38c19d863ee9454b",
+    "source": {
+      "blob": "bdccb9101c0c5a59577cb9c24ff7343b028189d7",
+      "bytes": 29848,
+      "sha256": "fc9d8b014dd8911694a678cbef783f557040612c09cd4aceb1385f93cf3320b8"
+    },
+    "delta": {
+      "blob": "95c7866b9736227ce4b0f7811164acc058ee93dc",
+      "bytes": 8989,
+      "sha256": "722b93560d47e0e7af0282c4d6105b5d11d348089736dab458167bc7c7b6eed6"
+    }
+  },
+  "adaptation": "Apply the previously reviewed body logic to current INFO journal, then substitute exactly five fixed body binding literals. The seven INFO binding substitutions were already reviewed separately. No new mechanism.",
+  "changedExistingFunctions": [
+    "gfValidateRequest",
+    "gfPrepareOne",
+    "gfInvokePreparedOnce",
+    "gfCloseOriginalObserver",
+    "gfRun"
+  ],
+  "addedFunction": "gfAuthorizeStageResultBodyOnly",
+  "budgets": {
+    "binaryReadStarts": 1,
+    "binaryBytes": 7665,
+    "perRangeMaximum": 65536,
+    "statusQueriesPerOriginalObserver": 8,
+    "pagesPerOriginalObserver": 128,
+    "immutablePageBytes": 8192,
+    "originalPayloadBytes": 1048576,
+    "simultaneousCallsOrFutures": 1
+  },
+  "priorSevenPlusThreeCallsUnchanged": true,
+  "wholeBodyBeforeInterpretation": true,
+  "noNewMetadata": true,
+  "noNewProcess": true,
+  "noControlsOrCargo": true,
+  "bodyQualified": false,
+  "MacNormalAwaitingLinuxFailureDiagnosis": true,
+  "verification": {
+    "pass": true,
+    "checks": 37,
+    "scope": "Pure V8 only; private fake archive for actual new GO/arm selector and rejection edges, no Native/Git/Python or report read."
+  }
+}

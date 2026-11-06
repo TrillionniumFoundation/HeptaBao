@@ -1,0 +1,119 @@
+--- a/journal.js
++++ b/journal.js
+@@ -111,6 +111,45 @@
+    exactRequest:GF_STAGE_BODY_REQUEST,maximumBinaryReadStarts:1,wholeBytes:need.bytes};
+ }
+ 
++/* Two separately approved fixed original Cargo logs: metadata only.
++ * No process, byte-body read, directory enumeration, or metadata refresh. */
++const GF_BUILD_LOG_INFOS = [{"index":0,"stream":"stderr","path":"/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stderr","sha256":"db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8","maximumBytes":4194304,"request":{"blob":"f847ac4d76b7192d43f68b13af9d4b0fc10c5713","bytes":291,"sha256":"ce34348ab93e1200a4a76df637e282adba0e21e6e0de594ed198759fc6962d20"}},{"index":1,"stream":"stdout","path":"/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout","sha256":"b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97","maximumBytes":4194304,"request":{"blob":"cf6d37620cc467580e39a56fa2cb71ca1966e2bb","bytes":291,"sha256":"3ce3c471bbd43f01ea9033cd4cd6e02264648ec8602340f58ebdb43066dde677"}}];
++const GF_BUILD_FAILED_REPORT = {"blob":"5e0ef6debd1f5e502646a8e74f9b7129389a9403","bytes":46828,"sha256":"95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"};
++function gfAuthorizeBuildLogsInfoOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState();
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null && s.activeObserver===null
++  && s.job==="1a1b2d90976-fc05-7fff" && s.stageResultBodyGO?.whole===true
++  && s.stageResultBodyStarted===true && s.buildLogsInfoGO===undefined,
++  "closed_failed_report_before_fixed_log_infos");
++ gfNeed(s.stageResultBody?.originalOperation==="ce5414155a7064b71fbf18be463d9baf02ec0b6ed8e918b2e685cb14d908ac6e"
++  && s.completedObservers.some(o=>o.id===s.stageResultBody.originalOperation
++    && o.tool==="binary_read" && o.completedInactive===true)
++  && gfMetaEquals(load(GF_SLOT+":stage_result_body_original"),GF_BUILD_FAILED_REPORT),
++  "exact_original_failed_report_whole");
++ const report=parseLosslessIntegers(load(GF_SLOT+":stage_result_body_original"));
++ const failed=report.compile_shared?.commands?.[2];
++ gfNeed(report.status==="failed" && report.source_commit==="5767739cd25e458ac052dc8d384019bab8688ae0"
++  && report.source_tree==="42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
++  && report.normal_release_build?.exit_code===0 && report.normal_release_build.timed_out===false
++  && report.compile_shared.commands.length===3 && failed?.label==="default-libtest-build"
++  && failed.exit_code===101 && failed.timed_out===false
++  && report.runtime_tests_started===false && report.group_results.length===0
++  && GF_BUILD_LOG_INFOS.every(x=>failed[x.stream+"_sha256"]===x.sha256),
++  "original_actual_Cargo_failure_and_log_hashes");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++  && ![s.goPin.blob,s.stageResultInfoGO.pin.blob,s.stageResultBodyGO.pin.blob].includes(goPin.blob),
++  "separate_whole_fixed_logs_info_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="build_logs_file_info_only"
++  && g.original_job===s.job && g.maximum_file_info_starts===2 && g.binary_read_authorized===false
++  && JSON.stringify(g.exact_requests)===JSON.stringify(GF_BUILD_LOG_INFOS.map(x=>x.request)),
++  "exact_new_root_two_log_metadata_scope");
++ s.buildLogsInfoGO={pin:goPin,raw:goRaw,whole:true};
++ s.buildLogInfoNext=0;s.buildLogInfoCalled=0;s.buildLogInfos=[];
++ gfSave(s);
++ return {exactRequests:GF_BUILD_LOG_INFOS.map(x=>x.request),maximumFileInfoStarts:2,binaryReadAuthorized:false};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -153,7 +192,12 @@
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+     && a && a.host==="rog","same_original_host_only");
+-  if(op.tool==="binary_read") {
++  if(op.tool==="file_info" && s.buildLogsInfoGO?.whole===true) {
++   const need=GF_BUILD_LOG_INFOS[s.buildLogInfoNext];
++   gfNeed(need && s.buildLogInfoCalled===s.buildLogInfoNext
++    && gfMetaEquals(raw,need.request) && Object.keys(a).sort().join(",")==="host,path"
++    && a.path===need.path,"next_once_exact_fixed_log_metadata");
++  } else if(op.tool==="binary_read") {
+    gfNeed(s.stageResultBodyGO?.whole===true && s.stageResultBodyStarted!==true
+      && gfMetaEquals(raw,GF_STAGE_BODY_REQUEST)
+      && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
+@@ -195,7 +239,10 @@
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+   callKey,kind,request:requestPin,
+-  rootGo:((kind==="operation_start" && q.operation.tool==="binary_read")
++  rootGo:(s.buildLogsInfoGO?.whole===true
++    && ((kind==="operation_start" && q.operation.tool==="file_info")
++      || s.activeObserver?.tool==="file_info")) ? s.buildLogsInfoGO.pin
++    : ((kind==="operation_start" && q.operation.tool==="binary_read")
+     || s.activeObserver?.tool==="binary_read") ? s.stageResultBodyGO.pin
+     : ((kind==="operation_start" && q.operation.tool==="file_info")
+       || s.activeObserver?.tool==="file_info") ? s.stageResultInfoGO.pin : s.goPin,
+@@ -229,7 +276,10 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
+- if(c.kind==="operation_start" && q.operation.tool==="file_info")s.stageResultInfoStarted=true;
++ if(c.kind==="operation_start" && q.operation.tool==="file_info") {
++  if(s.buildLogsInfoGO?.whole===true)s.buildLogInfoCalled++;
++  else s.stageResultInfoStarted=true;
++ }
+  if(c.kind==="operation_start" && q.operation.tool==="binary_read")s.stageResultBodyStarted=true;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+@@ -356,7 +406,23 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  if(a.tool==="binary_read") {
++  if(a.tool==="file_info" && s.buildLogsInfoGO?.whole===true) {
++   const need=GF_BUILD_LOG_INFOS[s.buildLogInfoNext],md=v.metadata;
++   const parts=typeof v.version==="string"?v.version.split(":"):[];
++   gfNeed(need && s.buildLogInfoCalled===s.buildLogInfoNext+1
++    && v.path===need.path && a.request.operation.arguments.path===need.path
++    && Number.isSafeInteger(v.size) && v.size>0 && v.size<=need.maximumBytes
++    && v.sha256===need.sha256 && v.mode===384
++    && md?.metadata_platform==="linux" && md.mode===384
++    && md.uid===1000 && md.gid===1000 && md.link_count===1
++    && parts.length===5 && parts.every(x=>/^[0-9]+$/.test(x))
++    && parts[2]===String(v.size),"exact_original_log_metadata_and_version");
++   s.buildLogInfos.push({index:need.index,stream:need.stream,path:v.path,size:v.size,
++    sha256:v.sha256,version:v.version,nativeText:gitBlobMeta(nativeRaw),originalOperation:a.id,
++    full9Strings:[parts[0],parts[1],"1000","1000",String(32768|v.mode),"1",String(v.size),parts[3],parts[4]],
++    regularFileFromNativeFileInfoContract:true,binaryReadAuthorized:false});
++   s.buildLogInfoNext++;
++  } else if(a.tool==="binary_read") {
+    const need=GF_STAGE_BODY_EXPECTED;
+    gfNeed(v.path===need.path && v.version===need.version && v.size===need.bytes
+      && v.offset===0 && v.next_offset===need.bytes && v.eof===true
+@@ -471,6 +537,7 @@
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="authorize_stage_result_info")value=gfAuthorizeStageResultInfoOnly(args);
+   else if(action==="authorize_stage_result_body")value=gfAuthorizeStageResultBodyOnly(args);
++  else if(action==="authorize_build_logs_info")value=gfAuthorizeBuildLogsInfoOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

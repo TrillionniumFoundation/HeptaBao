@@ -1,0 +1,12 @@
+[
+  {
+    "kind": "pure_V8_source_syntax_before_evaluation",
+    "message": "SyntaxError: Unexpected token ')'",
+    "location": "counts projection extra closing parenthesis",
+    "candidateEvaluated": false,
+    "sourceStoredBeforeError": false,
+    "NativeCalled": false,
+    "GitMutationCalled": false,
+    "correction": "Replace counts projection with explicit pure loop; preserve exact source-edit plan."
+  }
+]

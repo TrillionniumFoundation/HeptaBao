@@ -1,0 +1,16 @@
+{
+  "authorization": "SOURCE_ONLY_REQUIRES_SEPARATE_ROOT_GO",
+  "requiredRuntimeGO": {
+    "authorization": "GO",
+    "scope": "stage_result_binary_read_only",
+    "original_job": "1a1b2f48641-fc05-8042",
+    "info_operation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "maximum_binary_read_starts": 1,
+    "immutable_page_bytes": 8192,
+    "exact_request": {
+      "blob": "ead124398c9a04b8d8a76e205069e8f7e426a4d9",
+      "bytes": 437,
+      "sha256": "a1901018815188a9126b3365c95be3e8be56e280874651db6911aa9cc3708527"
+    }
+  }
+}

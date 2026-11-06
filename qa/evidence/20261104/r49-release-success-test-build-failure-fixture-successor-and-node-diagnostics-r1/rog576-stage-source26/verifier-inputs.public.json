@@ -1,0 +1,228 @@
+{
+  "pins": {
+    "candidate.root.public.json": {
+      "blob": "d9d3fa89aecbdf276f8e22651559caa94b0ea518",
+      "bytes": 3876,
+      "sha256": "6d8a34410afcf535c20044bfa5e78d3d2d4115c6749f49baf8e37ef9e93256f5"
+    },
+    "base-stage.actual-root23.public.json": {
+      "blob": "6a64e5fec589abfeec7a05660e6edaddc780bdaf",
+      "bytes": 3658,
+      "sha256": "d722f322cd668f1c018ff0bc3ec143f2f7fb23f5119ae046a8f9e5982d58c646"
+    },
+    "base-stage.GO.public.json": {
+      "blob": "33b103c3f06905601ac8025cff9d1a154558a6cb",
+      "bytes": 3361,
+      "sha256": "3918de0c0ecd788f61e195879b1333b2f9f51adf4df7a7dd7d94d866adcf2aca"
+    },
+    "stager.before.py": {
+      "blob": "36c9681e90e19521a8f09d2fbfd88896e2b6d267",
+      "bytes": 28939,
+      "sha256": "3a0aa014e5292df423d5742743ac78db9374aba51044031dce85abfa39356c6a"
+    },
+    "stager.after.py": {
+      "blob": "6857eee5bc607f11417a88c1b9fece964f0261a5",
+      "bytes": 29601,
+      "sha256": "a1b67f5aeb968b173886217a26987c3ead111778158136bb036906faa488b35f"
+    },
+    "stager.forward.diff": {
+      "blob": "d6e9488b34ca896efe43b854cd7b0d3e25d5f17e",
+      "bytes": 7062,
+      "sha256": "00639d9cde88874e40bebdca2991e4146576cfc9f72446c53823702018aeacfe"
+    },
+    "stager.reverse.diff": {
+      "blob": "694e9ab6f3910e480671af71ef8a3dce5657f84c",
+      "bytes": 7062,
+      "sha256": "82f69debeaacafb7bccbfebeb45c497de2f3a6ea05b742703bf5a4dc8bf9374c"
+    },
+    "request.before.json": {
+      "blob": "b2ce0ac862ac88e531650feea8847268403ce025",
+      "bytes": 111947,
+      "sha256": "9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9"
+    },
+    "request.after.json": {
+      "blob": "564433fa36fedb91ea45d694685cdb2c9067cc88",
+      "bytes": 112620,
+      "sha256": "1599f63a32179a77a2f8693596cc185217efeffa0a4836f5ca608be989c75c04"
+    },
+    "carrier.stdin.original.json": {
+      "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+      "bytes": 79951,
+      "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77"
+    },
+    "journal.before.js": {
+      "blob": "54407e90a2917b521acf749859a2248c7e33b14d",
+      "bytes": 19047,
+      "sha256": "f1eede8bf6e8d745f3a1ee0ccf85158c7100c6698f3654f5f8bc34cb7e7b8a3b"
+    },
+    "journal.after.js": {
+      "blob": "044505d0d1d6fdd977d437d4f4e829384ac3f5f7",
+      "bytes": 19047,
+      "sha256": "e1fb2de89c77a5a58807b239b26fc733b89f535d9498a8640f41a9ecbfec76a0"
+    },
+    "journal.forward.diff": {
+      "blob": "05acd2f9983b0a8a90e428405ce5797a7e6c5f9b",
+      "bytes": 1335,
+      "sha256": "cf78c64c17b95cb499dc9ef7d269c08e383a6ef7fbe7ef90c54d1c1c5001aa5f"
+    },
+    "journal.reverse.diff": {
+      "blob": "5ad0dbe65de7044b6d32121787bbd9fdeff36b14",
+      "bytes": 1335,
+      "sha256": "0b99274ecb026f58e931dfb60aadf62135243ceddacccdbd05768194ab452cf8"
+    },
+    "stager.exact-edits.public.json": {
+      "blob": "eb06f13617c3818f8c8b16c19ea486b6d068f2f4",
+      "bytes": 4828,
+      "sha256": "2e9df5f1fa33abd467cee63cd9fd394bdb49854eee776c18f6eebcb8614b800b"
+    },
+    "journal.exact-edits.public.json": {
+      "blob": "3e297331eec3b1c3308727703521689362dd46fd",
+      "bytes": 783,
+      "sha256": "993ec065c1d913824cc6151c21c549f6f7208da48cc3146428623c765090e64b"
+    },
+    "pure.js": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "strict-diff.js": {
+      "blob": "f595a6490497f54ea2b533fcbb98cdb306583286",
+      "bytes": 3497,
+      "sha256": "c872292668150c3b22396b4d23f315a709ef5b35eb9a286ded9cf7bbe7fd51f5"
+    },
+    "typed-stdin.js": {
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    "archive-once.js": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "typed-binding.public.json": {
+      "blob": "607c01b9a33f3c71d3015b75ab05547e6c98d3c3",
+      "bytes": 376,
+      "sha256": "3080f0395b481487708a582b7530c24f961d1deef27195c384bdc3d68895d099"
+    },
+    "PLAN.public.json": {
+      "blob": "c20cc36426002192bc1e70f9f75801e6f877c7fa",
+      "bytes": 8054,
+      "sha256": "3bc70e1b33a5bd5e1bb048df83ac2b034528f0e567eb7e23d75f79fcac95624b"
+    }
+  },
+  "stagerEdits": [
+    {
+      "name": "fresh destination root",
+      "before": "ROOT = Path('/home/qian-qi/hb-02b90762-src-20261106-r1')",
+      "after": "ROOT = Path('/home/qian-qi/hb-5767739c-src-20261106-r1')"
+    },
+    {
+      "name": "retain old495 and add qualified clone base",
+      "before": "OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'",
+      "after": "OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'\nBASE = Path('/home/qian-qi/hb-02b90762-src-20261106-r1/source')\nBASE_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'\nBASE_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'"
+    },
+    {
+      "name": "candidate commit",
+      "before": "COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'\nTREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'",
+      "after": "COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'\nTREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'"
+    },
+    {
+      "name": "direct parent",
+      "before": "PARENT = '025b05a340de841b8161c1120344e86eae30eb97'",
+      "after": "PARENT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'"
+    },
+    {
+      "name": "prepend actual ancestry",
+      "before": "ANCESTRY = (\n",
+      "after": "ANCESTRY = (\n    ('5767739cd25e458ac052dc8d384019bab8688ae0', '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'),\n"
+    },
+    {
+      "name": "bundle exact prerequisite",
+      "before": "assert prerequisites == [OLD_COMMIT]",
+      "after": "assert prerequisites == [BASE_COMMIT]"
+    },
+    {
+      "name": "base symlink guard",
+      "before": "assert OLD.resolve(strict=True) == OLD",
+      "after": "assert OLD.resolve(strict=True) == OLD\nassert BASE.resolve(strict=True) == BASE"
+    },
+    {
+      "name": "reported history",
+      "before": "'canonical_history_count': 3768",
+      "after": "'canonical_history_count': 3769"
+    },
+    {
+      "name": "retain base source path",
+      "before": "'source_ref': None, 'source_fetch_argument': COMMIT,",
+      "after": "'source_ref': None, 'source_fetch_argument': COMMIT,\n          'clone_base_source': str(BASE),"
+    },
+    {
+      "name": "base before clone",
+      "before": "result['failed_observer_before'] = preserve_failed_observer()\n    owned('independent-local-clone',",
+      "after": "result['failed_observer_before'] = preserve_failed_observer()\n    result['clone_base_before'] = freeze(BASE)\n    assert result['clone_base_before'] == {'commit': BASE_COMMIT, 'tree': BASE_TREE, 'status': ''}\n    owned('independent-local-clone',"
+    },
+    {
+      "name": "clone qualified base only",
+      "before": "'--template=' + str(CONTROL / 'empty-template'), str(OLD), str(SOURCE)], 180)",
+      "after": "'--template=' + str(CONTROL / 'empty-template'), str(BASE), str(SOURCE)], 180)"
+    },
+    {
+      "name": "actual seventeen canonical links",
+      "before": "assert len(added) == 16 and set(added)",
+      "after": "assert len(added) == 17 and set(added)"
+    },
+    {
+      "name": "actual history count",
+      "before": "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3768'",
+      "after": "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3769'"
+    },
+    {
+      "name": "actual tracked bytes",
+      "before": "assert result['full_worktree']['tracked_bytes'] == 62537554",
+      "after": "assert result['full_worktree']['tracked_bytes'] == 62553540"
+    },
+    {
+      "name": "actual full leaf index",
+      "before": "assert result['full_worktree']['full_leaf_index_sha256'] == 'c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc'",
+      "after": "assert result['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'"
+    },
+    {
+      "name": "fresh one-parent bundle path",
+      "before": "canonical_path = CONTROL / 'canonical-hb-02b90762-from495.bundle'",
+      "after": "canonical_path = CONTROL / 'canonical-hb-5767739c-from02b.bundle'"
+    },
+    {
+      "name": "bundle excludes only actual base",
+      "before": "git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + OLD_COMMIT)",
+      "after": "git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + BASE_COMMIT)"
+    },
+    {
+      "name": "base after remains exact",
+      "before": "result['failed_observer_after'] = preserve_failed_observer()\n    assert result['failed_observer_after'] == result['failed_observer_before']",
+      "after": "result['failed_observer_after'] = preserve_failed_observer()\n    assert result['failed_observer_after'] == result['failed_observer_before']\n    result['clone_base_after'] = freeze(BASE)\n    assert result['clone_base_after'] == result['clone_base_before']"
+    },
+    {
+      "name": "only successful read-only base classification",
+      "before": "result.update(status='prepared', source_clean=True, old_source_unchanged=True,",
+      "after": "result.update(status='prepared', source_clean=True, old_source_unchanged=True,\n                  clone_base_unchanged=True,"
+    }
+  ],
+  "journalEdits": [
+    {
+      "name": "fresh slot",
+      "before": "const GF_SLOT = \"combined_02b90762_rog_source_gitfirst_r1\";",
+      "after": "const GF_SLOT = \"combined_5767739c_rog_source_gitfirst_r1\";"
+    },
+    {
+      "name": "exact new request",
+      "before": "const GF_REQUEST = {blob:\"b2ce0ac862ac88e531650feea8847268403ce025\",\n bytes:111947,sha256:\"9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9\"};",
+      "after": "const GF_REQUEST = {blob:\"564433fa36fedb91ea45d694685cdb2c9067cc88\",\n bytes:112620,sha256:\"1599f63a32179a77a2f8693596cc185217efeffa0a4836f5ca608be989c75c04\"};"
+    },
+    {
+      "name": "fixed observer namespace",
+      "before": "/^heptabao-combined-02b90762-rog-source-observe-r1-/",
+      "after": "/^heptabao-combined-5767739c-rog-source-observe-r1-/"
+    }
+  ]
+}

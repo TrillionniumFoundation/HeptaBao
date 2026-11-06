@@ -1,0 +1,97 @@
+[
+  {
+    "name": "fresh destination root",
+    "before": "ROOT = Path('/home/qian-qi/hb-02b90762-src-20261106-r1')",
+    "after": "ROOT = Path('/home/qian-qi/hb-5767739c-src-20261106-r1')"
+  },
+  {
+    "name": "retain old495 and add qualified clone base",
+    "before": "OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'",
+    "after": "OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'\nBASE = Path('/home/qian-qi/hb-02b90762-src-20261106-r1/source')\nBASE_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'\nBASE_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'"
+  },
+  {
+    "name": "candidate commit",
+    "before": "COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'\nTREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'",
+    "after": "COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'\nTREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'"
+  },
+  {
+    "name": "direct parent",
+    "before": "PARENT = '025b05a340de841b8161c1120344e86eae30eb97'",
+    "after": "PARENT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'"
+  },
+  {
+    "name": "prepend actual ancestry",
+    "before": "ANCESTRY = (\n",
+    "after": "ANCESTRY = (\n    ('5767739cd25e458ac052dc8d384019bab8688ae0', '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'),\n"
+  },
+  {
+    "name": "bundle exact prerequisite",
+    "before": "assert prerequisites == [OLD_COMMIT]",
+    "after": "assert prerequisites == [BASE_COMMIT]"
+  },
+  {
+    "name": "base symlink guard",
+    "before": "assert OLD.resolve(strict=True) == OLD",
+    "after": "assert OLD.resolve(strict=True) == OLD\nassert BASE.resolve(strict=True) == BASE"
+  },
+  {
+    "name": "reported history",
+    "before": "'canonical_history_count': 3768",
+    "after": "'canonical_history_count': 3769"
+  },
+  {
+    "name": "retain base source path",
+    "before": "'source_ref': None, 'source_fetch_argument': COMMIT,",
+    "after": "'source_ref': None, 'source_fetch_argument': COMMIT,\n          'clone_base_source': str(BASE),"
+  },
+  {
+    "name": "base before clone",
+    "before": "result['failed_observer_before'] = preserve_failed_observer()\n    owned('independent-local-clone',",
+    "after": "result['failed_observer_before'] = preserve_failed_observer()\n    result['clone_base_before'] = freeze(BASE)\n    assert result['clone_base_before'] == {'commit': BASE_COMMIT, 'tree': BASE_TREE, 'status': ''}\n    owned('independent-local-clone',"
+  },
+  {
+    "name": "clone qualified base only",
+    "before": "'--template=' + str(CONTROL / 'empty-template'), str(OLD), str(SOURCE)], 180)",
+    "after": "'--template=' + str(CONTROL / 'empty-template'), str(BASE), str(SOURCE)], 180)"
+  },
+  {
+    "name": "actual seventeen canonical links",
+    "before": "assert len(added) == 16 and set(added)",
+    "after": "assert len(added) == 17 and set(added)"
+  },
+  {
+    "name": "actual history count",
+    "before": "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3768'",
+    "after": "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3769'"
+  },
+  {
+    "name": "actual tracked bytes",
+    "before": "assert result['full_worktree']['tracked_bytes'] == 62537554",
+    "after": "assert result['full_worktree']['tracked_bytes'] == 62553540"
+  },
+  {
+    "name": "actual full leaf index",
+    "before": "assert result['full_worktree']['full_leaf_index_sha256'] == 'c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc'",
+    "after": "assert result['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'"
+  },
+  {
+    "name": "fresh one-parent bundle path",
+    "before": "canonical_path = CONTROL / 'canonical-hb-02b90762-from495.bundle'",
+    "after": "canonical_path = CONTROL / 'canonical-hb-5767739c-from02b.bundle'"
+  },
+  {
+    "name": "bundle excludes only actual base",
+    "before": "git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + OLD_COMMIT)",
+    "after": "git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + BASE_COMMIT)"
+  },
+  {
+    "name": "base after remains exact",
+    "before": "result['failed_observer_after'] = preserve_failed_observer()\n    assert result['failed_observer_after'] == result['failed_observer_before']",
+    "after": "result['failed_observer_after'] = preserve_failed_observer()\n    assert result['failed_observer_after'] == result['failed_observer_before']\n    result['clone_base_after'] = freeze(BASE)\n    assert result['clone_base_after'] == result['clone_base_before']"
+  },
+  {
+    "name": "only successful read-only base classification",
+    "before": "result.update(status='prepared', source_clean=True, old_source_unchanged=True,",
+    "after": "result.update(status='prepared', source_clean=True, old_source_unchanged=True,\n                  clone_base_unchanged=True,"
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.root.mac576-normal-source-review.r1",
+  "sourceTree": "66c0d39d1a8e6cdfea4af730bf053c95c70b8d4e",
+  "sourceWhole": true,
+  "author29Reproduced": true,
+  "candidateCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "candidateTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "CargoManifestActualLeaf": "666dc6d056a8f653bb86ca5ba7ed89b229dfe228",
+  "uniqueTests": 89,
+  "profileInstances": 117,
+  "original61Unchanged": true,
+  "nativeFile28AndDefault28ExactRootNames": true,
+  "currentRunDefaultArtifactBindingReviewed": true,
+  "oldArtifactsReused": false,
+  "totalDeadlineSeconds": 8280,
+  "runnerReadCap": {
+    "before": 40000,
+    "after": 49152,
+    "actualBytes": 42977,
+    "sourceIncrementAccepted": true
+  },
+  "allOtherCapsUnchanged": true,
+  "sourceChangesAccepted": true,
+  "actualStageReceipt": null,
+  "actualControlsReceipt": null,
+  "NativeGO": false,
+  "productQualified": false,
+  "RustRuns": 0,
+  "NativeCalls": 0
+}

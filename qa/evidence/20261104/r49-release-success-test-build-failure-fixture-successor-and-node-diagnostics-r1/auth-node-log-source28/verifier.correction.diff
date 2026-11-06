@@ -1,0 +1,13 @@
+--- a/verifier.first.js
++++ b/verifier.js
+@@ -56,8 +56,8 @@
+  check("new_stable_key",q.idempotency_key===c.observerPrefix+"20261106-r1");
+  const qa=JSON.parse(line(s,"QUERY_ARGV").slice("QUERY_ARGV = ".length));
+  check("query_exact_contract",JSON.stringify(qa)===JSON.stringify(c.query.argv));
++ check("fixed_query_process_predicate",qa[9]==='(process = "node") OR ((process = "kernel" OR process = "sandboxd") AND message CONTAINS "51494")');
++ check("fixed_query_flags",JSON.stringify(qa.slice(0,9))===JSON.stringify(["/usr/bin/log","show","--start","2026-11-06 19:35:51+0000","--end","2026-11-06 19:35:53+0000","--style","ndjson","--predicate"]));
+- check("fixed_query_process_predicate",qa[10]==='(process = "node") OR ((process = "kernel" OR process = "sandboxd") AND message CONTAINS "51494")');
+- check("fixed_query_flags",JSON.stringify(qa.slice(0,10))===JSON.stringify(["/usr/bin/log","show","--start","2026-11-06 19:35:51+0000","--end","2026-11-06 19:35:53+0000","--style","ndjson","--predicate"])===false);
+  check("query_one_vector_length",qa.length===13&&qa[8]==="--predicate"&&qa.at(-1)==="--no-pager");
+  check("query_exact_flags_order",JSON.stringify(qa)===JSON.stringify(["/usr/bin/log","show","--start","2026-11-06 19:35:51+0000","--end","2026-11-06 19:35:53+0000","--style","ndjson","--predicate",'(process = "node") OR ((process = "kernel" OR process = "sandboxd") AND message CONTAINS "51494")',"--info","--debug","--no-pager"]));
+  check("source_exact_pid",line(s,"FIXED_PID")==="FIXED_PID = 51494");

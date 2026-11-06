@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "public-node-crash-fixed-r5-streams-01-page-000000",
+  "kind": "operation_result",
+  "request": {
+    "blob": "b4d0a6044468bceeca416ca1464b08f1527e3fad",
+    "bytes": 107,
+    "sha256": "a1e9566818786f52e118cf4e45c51666115a33e5fb4ae07144285c1002950b41"
+  },
+  "rootGo": {
+    "blob": "06eef26e35180dc904a76cde95b32a0170098ca2",
+    "bytes": 23601,
+    "sha256": "dd6d3596e31119441096b5eb1491a9f2e15f215e6138122d204f02185b0f4b13"
+  },
+  "originalJob": "1a1b2c3d67e-fc05-7fa7",
+  "originalOperation": "59252e87e03e54295b53b5686399d43e1b7078e6bf5c8702f88264774c02a3ea",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

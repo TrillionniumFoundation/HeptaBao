@@ -1,0 +1,43 @@
+--- a/publisher.py
++++ b/publisher.py
+@@ -16,21 +16,21 @@
+ assert BINDING_READY, 'final formatted source and build control pins are not yet bound'
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi')
+-BASE = PARENT / 'hb-02b90762-controls-20261106-r2'
++BASE = PARENT / 'hb-5767739c-controls-20261106-r1'
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "native_jwt_build.py": [
+-        36247,
+-        "163ef3165868a1f0c9263f9458efb3555577f9e92aeb7dfeea7bff41eac77c24"
++        36346,
++        "b02b398a3dfe1ab2f57a6ab70056c2b4aa58f4e221644513187f991d80654166"
+     ],
+     "launch_native_jwt_build.py": [
+         39650,
+-        "80c1f6303f9327f6f70284923016f5770f7c3b16a0da02b4eb20f13d1b02b2f4"
++        "0f2419c1f9fb1ad10219b2c184108338693161200d74c2f0065311f7b394da3b"
+     ],
+     "jwt-test-groups.public.json": [
+-        33825,
+-        "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786"
++        35287,
++        "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+     ]
+ }
+ 
+@@ -141,9 +141,9 @@
+ assert time.monotonic() < JOINT_UNTIL
+ argv = ['/usr/bin/python3', '-I', '-S', '-B', str(BASE / 'launch_native_jwt_build.py'),
+         '--host', 'rog',
+-        '--commit', '02b90762b3d6cc8699cc88bffb6f76cb1f07e270',
+-        '--tree', '9781e9615ac5fb068d217241c74bb54bf87942cf',
+-        '--stage-sha256', '76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83',
++        '--commit', '5767739cd25e458ac052dc8d384019bab8688ae0',
++        '--tree', '42477d622dcf96e1e2b0929fe9ecc6b7ba484740',
++        '--stage-sha256', 'ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662',
+         '--runner-sha256', PINS['native_jwt_build.py'][1],
+         '--groups-sha256', PINS['jwt-test-groups.public.json'][1],
+         '--controls-sha256', sha(raw),

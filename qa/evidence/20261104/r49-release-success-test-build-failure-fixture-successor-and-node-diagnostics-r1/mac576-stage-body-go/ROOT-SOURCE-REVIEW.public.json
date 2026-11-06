@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.root.mac576-stage-body-source-review.r1",
+  "sourceTree": "8e89cbe999677b63ca5a61505d256ade566c06b6",
+  "whole": {
+    "tree": "8e89cbe999677b63ca5a61505d256ade566c06b6",
+    "files": 19,
+    "bytes": 180505,
+    "merkle": {
+      "root_sha": "8e89cbe999677b63ca5a61505d256ade566c06b6",
+      "trees_verified": 1,
+      "leaf_count": 19
+    },
+    "whole": true
+  },
+  "sourceChecksReproduced": 37,
+  "actualBindings": {
+    "metadataExact": true,
+    "stateExact": true,
+    "beforeExact": true,
+    "infoQualified": true
+  },
+  "INFOactualTree": "308fdf62f706e6ed33f4f85963acaca24b5bddd9",
+  "INFOactualChecks": {
+    "actualGOExact": true,
+    "actualMetadataWhole": true,
+    "actualFixedReport": true,
+    "actualMetadata": true,
+    "versionExact": true,
+    "oneOriginalOperation": true,
+    "originalStatusClosed": true,
+    "old7CallsExact": true,
+    "old2ObserversExact": true,
+    "calls10Observers3": true,
+    "noOwned": true,
+    "releaseClosed": true
+  },
+  "originalStageFullTree": "ad388ba56c2bdd498d0be6c57ac9cfec3327278e",
+  "originalStageChecks": 124,
+  "NativeCallsAdded": 0
+}

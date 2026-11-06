@@ -1,0 +1,81 @@
+--- a/mac-successor-stage.template.py
++++ b/mac-successor-stage.template.py
+@@ -23,17 +23,17 @@
+ parser.add_argument('--canonical-bundle-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'mac'
+-ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1')
++ROOT = Path('__UNBOUND_NEW_STAGE_ROOT__')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+-OLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source')
+-OLD_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
+-OLD_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'
+-COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
+-TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
+-PARENT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
++OLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source')
++OLD_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
++OLD_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
++COMMIT = None
++TREE = None
++PARENT = '5767739cd25e458ac052dc8d384019bab8688ae0'
+ ANCESTRY = (
+-    ('5767739cd25e458ac052dc8d384019bab8688ae0', '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'),
++    (COMMIT, PARENT),
+ )
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+@@ -389,8 +389,8 @@
+ assert data['schema'] == 'heptabao.final-mac-source-only-carrier.v1'
+ assert isinstance(data['canonical_bundle_base64'], str)
+ canonical_raw = base64.b64decode(data['canonical_bundle_base64'], validate=True)
+-CANONICAL_BUNDLE_BYTES = 5766
+-CANONICAL_BUNDLE_SHA256 = '0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a'
++CANONICAL_BUNDLE_BYTES = None
++CANONICAL_BUNDLE_SHA256 = None
+ assert isinstance(CANONICAL_BUNDLE_BYTES, int), 'actual ROG bundle binding unresolved'
+ assert isinstance(CANONICAL_BUNDLE_SHA256, str), 'actual ROG bundle binding unresolved'
+ assert args.canonical_bundle_bytes == CANONICAL_BUNDLE_BYTES
+@@ -406,15 +406,15 @@
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+           'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
+           'server_started': False, 'compiler_started': False, 'production_changed': False,
+-          'source_ref': 'refs/heads/codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106',
+-          'canonical_history_count': 3769, 'actual_build_qualification': False,
++          'source_ref': None,
++          'canonical_history_count': 3770, 'actual_build_qualification': False,
+           'stage_purpose': 'SOURCE_ONLY_NO_BUILD_CONTROLS',
+           'controls_published': False, 'started_ns': time.time_ns()}
+ before = None
+ try:
+     stage_remaining()
+     result['external_volume_uuid'] = prewrite_volume_guard()
+-    canonical_path = ROOT.parent / 'canonical-hb-5767739c-from02b-20261106-r1.bundle'
++    canonical_path = ROOT.parent / '__UNBOUND_CANONICAL_BUNDLE_LEAF__'
+     stage_remaining()
+     assert not os.path.lexists(canonical_path)
+     create(canonical_path, canonical_raw)
+@@ -470,17 +470,17 @@
+         assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit
+     added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()
+     assert len(added) == 1 and set(added) == {row[0] for row in ANCESTRY}
+-    result['new_commits_since_actual_02b'] = added
+-    assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3768'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3769'
++    result['new_commits_since_actual_576'] = added
++    assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3769'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3770'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62553540
+-    assert result['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'
++    assert result['full_worktree']['tracked_bytes'] == 62553956
++    assert result['full_worktree']['full_leaf_index_sha256'] == '7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     result['old_source_after'] = freeze(OLD)
+     assert result['old_source_after'] == before

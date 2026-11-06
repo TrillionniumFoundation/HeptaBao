@@ -1,0 +1,88 @@
+--- a/publish_mac_normal_controls.py
++++ b/publish_mac_normal_controls.py
+@@ -1,21 +1,21 @@
+ #!/usr/bin/env python3
+-"""Publish exact Mac normal61 controls only; never run launcher, Cargo or products."""
++"""Publish exact Mac normal61 plus native JWT/PKI28 controls only; never execute them."""
+ from pathlib import Path
+ import base64, hashlib, json, os, stat, sys, time
+ 
+ os.umask(0o077)
+-PARENT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1")
++PARENT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1")
+ ROOT = PARENT / 'normal-build-r1'
+ BASE = ROOT / 'control'
+ BINDING_READY = False
+ STAGE_REPORT = PARENT / 'control/stage-result.public.json'
+-STAGE_EXPECTED = {"bytes":10558,"sha256":"7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9","full9":["16777244","72756440","501","20","33152","1","10558","1793996068500746233","1793996068500755233"]}
+-COMMIT = "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+-TREE = "9781e9615ac5fb068d217241c74bb54bf87942cf"
++STAGE_EXPECTED = None
++COMMIT = "5767739cd25e458ac052dc8d384019bab8688ae0"
++TREE = "42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
+ created_root = False
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+-PINS = {"mac_normal_same_root_publication_build.py":[36056,"34e942a97c9c21cd1c5afa694271725d83e9eab1a138722f3c2f03249ef7c201"],"launch_normal_same_root_publication.py":[24701,"8b4d08055422008055691fa2009a2f35fe69c85b87268e7c50a5fcf0cd457a5c"],"normal-test-groups.public.json":[6249,"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"]}
++PINS = {"mac_normal_same_root_publication_build.py":[42977,"9ad6026ea175fbbeb52ad7ac68ec2f150d9a1bf4da08db7a36dc0d820df31913"],"launch_normal_same_root_publication.py":[25832,"367c86cd52cfc373f99f23dac75cdf2f562010605f563b237559dafabd93a0d6"],"normal-test-groups.public.json":[13725,"3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"]}
+ def sha(raw):
+     return hashlib.sha256(raw).hexdigest()
+ def ident(s):
+@@ -74,7 +74,7 @@
+     sync_dir()
+     return {'path': str(destination), 'publication': publication, **exact(destination, raw)}
+ 
+-assert BINDING_READY is True
++assert BINDING_READY is True and STAGE_EXPECTED is not None
+ assert all(type(length) is int and length > 0 and isinstance(digest, str) and len(digest) == 64 and all(c in '0123456789abcdef' for c in digest) for length, digest in PINS.values())
+ assert (os.uname().sysname, os.uname().machine) == ('Darwin', 'arm64')
+ assert os.getuid() == os.geteuid() and PARENT.resolve(strict=True) == PARENT
+@@ -82,7 +82,7 @@
+ assert not os.path.lexists(ROOT)
+ assert not os.path.lexists(BASE)
+ assert not os.path.lexists(RECEIPT)
+-result = {'schema': 'heptabao.final-mac-normal61-controls-inert.v1', 'status': 'failed',
++result = {'schema': 'heptabao.mac-normal61-native-jwt-pki28-controls-inert.v1', 'status': 'failed',
+           'started_ns': time.time_ns(), 'files': [], 'source_executed': False,
+           'source_commit': COMMIT, 'source_tree': TREE,
+           'target_scope': 'fresh-create-only-owned-no-historical-runtime-inheritance',
+@@ -92,7 +92,7 @@
+     incoming = sys.stdin.buffer.read(262145)
+     assert 0 < len(incoming) <= 262144
+     payload = json.loads(incoming)
+-    assert set(payload) == {'schema', 'files', 'source_stage_base64'} and payload['schema'] == 'heptabao.final-mac-normal61-controls-inputs.v1'
++    assert set(payload) == {'schema', 'files', 'source_stage_base64'} and payload['schema'] == 'heptabao.mac-normal61-native-jwt-pki28-controls-inputs.v1'
+     assert set(payload['files']) == set(PINS)
+     decoded = {}
+     for name, (length, digest) in PINS.items():
+@@ -102,9 +102,17 @@
+             compile(raw, name, 'exec')
+         else:
+             assert name == 'normal-test-groups.public.json'
+-            groups = json.loads(raw)
++            group_plan = json.loads(raw)
++            assert set(group_plan) == {'schema', 'normal61_groups', 'native_jwt_pki_groups'}
++            assert group_plan['schema'] == 'heptabao.mac.normal61-native-jwt-pki28-groups.v1'
++            groups = group_plan['normal61_groups']
++            native_groups = group_plan['native_jwt_pki_groups']
+             assert [[g['label'], len(g['tests'])] for g in groups] == [['ssh25', 25], ['mount1', 1], ['redirect5', 5], ['actor2', 2], ['ordinary5', 5], ['no_forward6', 6]]
+             assert all(g['runtime_seconds'] == 600 for g in groups)
++            assert [[g['label'], g['libtest_profile'], len(g['tests'])] for g in native_groups] == [
++                ['native-jwt-pki-file28', 'file', 28], ['native-jwt-pki-default28', 'default', 28]]
++            assert all(g['runtime_seconds'] == 600 and len(set(g['tests'])) == 28 for g in native_groups)
++            assert native_groups[0]['tests'] == native_groups[1]['tests']
+         decoded[name] = raw
+     stage_raw = base64.b64decode(payload['source_stage_base64'], validate=True)
+     assert len(stage_raw) == STAGE_EXPECTED['bytes'] and sha(stage_raw) == STAGE_EXPECTED['sha256']
+@@ -122,6 +130,11 @@
+     result['exact_test_count'] = sum(len(g['tests']) for g in groups)
+     assert result['exact_test_count'] == 44
+     result['normal_total_test_count'] = 61
++    result['native_groups'] = [[g['label'], g['libtest_profile'], len(g['tests'])] for g in native_groups]
++    result['native_unique_test_count'] = 28
++    result['native_profile_execution_count'] = 56
++    result['selected_unique_test_count'] = 89
++    result['selected_profile_execution_count'] = 117
+     ROOT.mkdir(mode=0o700)
+     created_root = True
+     parent_fd = os.open(PARENT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)

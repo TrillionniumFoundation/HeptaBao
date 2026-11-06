@@ -1,0 +1,227 @@
+{
+  "schema": "heptabao.current576-default-compile-loginfo-source-checks.r1",
+  "status": "passed",
+  "checkCount": 54,
+  "checks": [
+    {
+      "name": "exact_body_journal_before",
+      "ok": true
+    },
+    {
+      "name": "exact_logs_info_journal_after",
+      "ok": true
+    },
+    {
+      "name": "strict_forward_six_hunks",
+      "ok": true
+    },
+    {
+      "name": "strict_reverse_six_hunks",
+      "ok": true
+    },
+    {
+      "name": "six_changes_only",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_5",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_6",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_7",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_8",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_9",
+      "ok": true
+    },
+    {
+      "name": "unique_edit_10",
+      "ok": true
+    },
+    {
+      "name": "whole_reconstruction",
+      "ok": true
+    },
+    {
+      "name": "actual_report_whole_pin",
+      "ok": true
+    },
+    {
+      "name": "known_actual_default_profile_compile_failure_not_test_failure",
+      "ok": true
+    },
+    {
+      "name": "prior_two_compile_profiles_success",
+      "ok": true
+    },
+    {
+      "name": "four_original_direct_children_closed",
+      "ok": true
+    },
+    {
+      "name": "exact_runner_owned_log_path_construction",
+      "ok": true
+    },
+    {
+      "name": "two_fixed_ordered_logs",
+      "ok": true
+    },
+    {
+      "name": "exact_request_stderr",
+      "ok": true
+    },
+    {
+      "name": "metadata_only_stderr",
+      "ok": true
+    },
+    {
+      "name": "fixed_path_stderr",
+      "ok": true
+    },
+    {
+      "name": "actual_report_SHA_and_finite_cap_stderr",
+      "ok": true
+    },
+    {
+      "name": "exact_request_stdout",
+      "ok": true
+    },
+    {
+      "name": "metadata_only_stdout",
+      "ok": true
+    },
+    {
+      "name": "fixed_path_stdout",
+      "ok": true
+    },
+    {
+      "name": "actual_report_SHA_and_finite_cap_stdout",
+      "ok": true
+    },
+    {
+      "name": "closed_existing_original_context",
+      "ok": true
+    },
+    {
+      "name": "retain56originalCalls",
+      "ok": true
+    },
+    {
+      "name": "retain16closedObservers",
+      "ok": true
+    },
+    {
+      "name": "retain_original_Git_UNKNOWN_and_exact_recovery",
+      "ok": true
+    },
+    {
+      "name": "retain23originalPayloadPages",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_accept_status_pages_identical",
+      "ok": true
+    },
+    {
+      "name": "original_8KiB_page_and_1MiB_payload_limits",
+      "ok": true
+    },
+    {
+      "name": "metadata_whole_SHA_owner_mode_gate",
+      "ok": true
+    },
+    {
+      "name": "lossless_version_gate",
+      "ok": true
+    },
+    {
+      "name": "private_first_info_allowed_no_native",
+      "ok": true
+    },
+    {
+      "name": "reject_second_before_first_closed",
+      "ok": true
+    },
+    {
+      "name": "reject_first_replay_after_called",
+      "ok": true
+    },
+    {
+      "name": "private_second_only_after_first_closed",
+      "ok": true
+    },
+    {
+      "name": "reject_old_first_after_advance",
+      "ok": true
+    },
+    {
+      "name": "reject_third_metadata",
+      "ok": true
+    },
+    {
+      "name": "reject_reauthorization",
+      "ok": true
+    },
+    {
+      "name": "reject_paused",
+      "ok": true
+    },
+    {
+      "name": "reject_pending",
+      "ok": true
+    },
+    {
+      "name": "reject_activeObserver",
+      "ok": true
+    },
+    {
+      "name": "reject_inflight",
+      "ok": true
+    },
+    {
+      "name": "reject_wrongJob",
+      "ok": true
+    },
+    {
+      "name": "reject_wrongBodyOperation",
+      "ok": true
+    },
+    {
+      "name": "reject_wrong_scope",
+      "ok": true
+    },
+    {
+      "name": "reject_body_permission",
+      "ok": true
+    },
+    {
+      "name": "reject_wrong_GO_requests",
+      "ok": true
+    },
+    {
+      "name": "reject_body_replay",
+      "ok": true
+    },
+    {
+      "name": "reject_other_path",
+      "ok": true
+    },
+    {
+      "name": "actual_state_input_not_mutated",
+      "ok": true
+    }
+  ],
+  "runtimeCalls": 0,
+  "onlyPrivateClonedStateUsed": true,
+  "actualFailurePreserved": true,
+  "productQualified": false
+}

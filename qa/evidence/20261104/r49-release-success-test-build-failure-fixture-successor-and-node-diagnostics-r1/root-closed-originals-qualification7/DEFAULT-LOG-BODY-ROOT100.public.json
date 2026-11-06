@@ -1,0 +1,436 @@
+{
+  "result": {
+    "schema": "heptabao.root.default-libtest-original-two-logs-body.r1",
+    "passed": true,
+    "checkCount": 100,
+    "checks": [
+      {
+        "name": "exact original BODY GO bytes",
+        "passed": true
+      },
+      {
+        "name": "release STATE pin",
+        "passed": true
+      },
+      {
+        "name": "112 accepted original calls",
+        "passed": true
+      },
+      {
+        "name": "25 closed original observers",
+        "passed": true
+      },
+      {
+        "name": "no current call future or pending",
+        "passed": true
+      },
+      {
+        "name": "no rerun",
+        "passed": true
+      },
+      {
+        "name": "exact 7 new ranges completed",
+        "passed": true
+      },
+      {
+        "name": "old unknown preserved",
+        "passed": true
+      },
+      {
+        "name": "old INFO calls preserved",
+        "passed": true
+      },
+      {
+        "name": "range 0 original payload pin",
+        "passed": true
+      },
+      {
+        "name": "range 0 payload text shape",
+        "passed": true
+      },
+      {
+        "name": "range 0 native text pin",
+        "passed": true
+      },
+      {
+        "name": "range 0 actual fixed path version",
+        "passed": true
+      },
+      {
+        "name": "range 0 offset length next EOF",
+        "passed": true
+      },
+      {
+        "name": "range 0 chunk SHA",
+        "passed": true
+      },
+      {
+        "name": "range 0 state admitted same bytes",
+        "passed": true
+      },
+      {
+        "name": "range 0 accepted exact once start",
+        "passed": true
+      },
+      {
+        "name": "range 0 original status pins",
+        "passed": true
+      },
+      {
+        "name": "range 0 original SDK status matches",
+        "passed": true
+      },
+      {
+        "name": "range 0 original observer inactive",
+        "passed": true
+      },
+      {
+        "name": "range 0 sequential stream bytes",
+        "passed": true
+      },
+      {
+        "name": "range 1 original payload pin",
+        "passed": true
+      },
+      {
+        "name": "range 1 payload text shape",
+        "passed": true
+      },
+      {
+        "name": "range 1 native text pin",
+        "passed": true
+      },
+      {
+        "name": "range 1 actual fixed path version",
+        "passed": true
+      },
+      {
+        "name": "range 1 offset length next EOF",
+        "passed": true
+      },
+      {
+        "name": "range 1 chunk SHA",
+        "passed": true
+      },
+      {
+        "name": "range 1 state admitted same bytes",
+        "passed": true
+      },
+      {
+        "name": "range 1 accepted exact once start",
+        "passed": true
+      },
+      {
+        "name": "range 1 original status pins",
+        "passed": true
+      },
+      {
+        "name": "range 1 original SDK status matches",
+        "passed": true
+      },
+      {
+        "name": "range 1 original observer inactive",
+        "passed": true
+      },
+      {
+        "name": "range 1 sequential stream bytes",
+        "passed": true
+      },
+      {
+        "name": "range 2 original payload pin",
+        "passed": true
+      },
+      {
+        "name": "range 2 payload text shape",
+        "passed": true
+      },
+      {
+        "name": "range 2 native text pin",
+        "passed": true
+      },
+      {
+        "name": "range 2 actual fixed path version",
+        "passed": true
+      },
+      {
+        "name": "range 2 offset length next EOF",
+        "passed": true
+      },
+      {
+        "name": "range 2 chunk SHA",
+        "passed": true
+      },
+      {
+        "name": "range 2 state admitted same bytes",
+        "passed": true
+      },
+      {
+        "name": "range 2 accepted exact once start",
+        "passed": true
+      },
+      {
+        "name": "range 2 original status pins",
+        "passed": true
+      },
+      {
+        "name": "range 2 original SDK status matches",
+        "passed": true
+      },
+      {
+        "name": "range 2 original observer inactive",
+        "passed": true
+      },
+      {
+        "name": "range 2 sequential stream bytes",
+        "passed": true
+      },
+      {
+        "name": "range 3 original payload pin",
+        "passed": true
+      },
+      {
+        "name": "range 3 payload text shape",
+        "passed": true
+      },
+      {
+        "name": "range 3 native text pin",
+        "passed": true
+      },
+      {
+        "name": "range 3 actual fixed path version",
+        "passed": true
+      },
+      {
+        "name": "range 3 offset length next EOF",
+        "passed": true
+      },
+      {
+        "name": "range 3 chunk SHA",
+        "passed": true
+      },
+      {
+        "name": "range 3 state admitted same bytes",
+        "passed": true
+      },
+      {
+        "name": "range 3 accepted exact once start",
+        "passed": true
+      },
+      {
+        "name": "range 3 original status pins",
+        "passed": true
+      },
+      {
+        "name": "range 3 original SDK status matches",
+        "passed": true
+      },
+      {
+        "name": "range 3 original observer inactive",
+        "passed": true
+      },
+      {
+        "name": "range 3 sequential stream bytes",
+        "passed": true
+      },
+      {
+        "name": "range 4 original payload pin",
+        "passed": true
+      },
+      {
+        "name": "range 4 payload text shape",
+        "passed": true
+      },
+      {
+        "name": "range 4 native text pin",
+        "passed": true
+      },
+      {
+        "name": "range 4 actual fixed path version",
+        "passed": true
+      },
+      {
+        "name": "range 4 offset length next EOF",
+        "passed": true
+      },
+      {
+        "name": "range 4 chunk SHA",
+        "passed": true
+      },
+      {
+        "name": "range 4 state admitted same bytes",
+        "passed": true
+      },
+      {
+        "name": "range 4 accepted exact once start",
+        "passed": true
+      },
+      {
+        "name": "range 4 original status pins",
+        "passed": true
+      },
+      {
+        "name": "range 4 original SDK status matches",
+        "passed": true
+      },
+      {
+        "name": "range 4 original observer inactive",
+        "passed": true
+      },
+      {
+        "name": "range 4 sequential stream bytes",
+        "passed": true
+      },
+      {
+        "name": "range 5 original payload pin",
+        "passed": true
+      },
+      {
+        "name": "range 5 payload text shape",
+        "passed": true
+      },
+      {
+        "name": "range 5 native text pin",
+        "passed": true
+      },
+      {
+        "name": "range 5 actual fixed path version",
+        "passed": true
+      },
+      {
+        "name": "range 5 offset length next EOF",
+        "passed": true
+      },
+      {
+        "name": "range 5 chunk SHA",
+        "passed": true
+      },
+      {
+        "name": "range 5 state admitted same bytes",
+        "passed": true
+      },
+      {
+        "name": "range 5 accepted exact once start",
+        "passed": true
+      },
+      {
+        "name": "range 5 original status pins",
+        "passed": true
+      },
+      {
+        "name": "range 5 original SDK status matches",
+        "passed": true
+      },
+      {
+        "name": "range 5 original observer inactive",
+        "passed": true
+      },
+      {
+        "name": "range 5 sequential stream bytes",
+        "passed": true
+      },
+      {
+        "name": "range 6 original payload pin",
+        "passed": true
+      },
+      {
+        "name": "range 6 payload text shape",
+        "passed": true
+      },
+      {
+        "name": "range 6 native text pin",
+        "passed": true
+      },
+      {
+        "name": "range 6 actual fixed path version",
+        "passed": true
+      },
+      {
+        "name": "range 6 offset length next EOF",
+        "passed": true
+      },
+      {
+        "name": "range 6 chunk SHA",
+        "passed": true
+      },
+      {
+        "name": "range 6 state admitted same bytes",
+        "passed": true
+      },
+      {
+        "name": "range 6 accepted exact once start",
+        "passed": true
+      },
+      {
+        "name": "range 6 original status pins",
+        "passed": true
+      },
+      {
+        "name": "range 6 original SDK status matches",
+        "passed": true
+      },
+      {
+        "name": "range 6 original observer inactive",
+        "passed": true
+      },
+      {
+        "name": "range 6 sequential stream bytes",
+        "passed": true
+      },
+      {
+        "name": "stderr whole decoded exact original",
+        "passed": true
+      },
+      {
+        "name": "stderr whole SHA matches actual report",
+        "passed": true
+      },
+      {
+        "name": "stderr final archive exact meta",
+        "passed": true
+      },
+      {
+        "name": "stdout whole decoded exact original",
+        "passed": true
+      },
+      {
+        "name": "stdout whole SHA matches actual report",
+        "passed": true
+      },
+      {
+        "name": "stdout final archive exact meta",
+        "passed": true
+      },
+      {
+        "name": "failure terminal actual",
+        "passed": true
+      }
+    ],
+    "originalCounts": {
+      "calls": 112,
+      "observers": 25,
+      "pages": 61
+    },
+    "newCounts": {
+      "calls": 50,
+      "observers": 7,
+      "pages": 36
+    },
+    "allSevenOriginalPayloadsAndStatusSDKWhole": true,
+    "allNewCallSDKIndependentlyRead": false,
+    "sourceJournalAndStateAccepted": true,
+    "laneReleased": true,
+    "oldUnknownPreserved": true,
+    "NativeCallsAdded": 0
+  },
+  "audit": {
+    "tree": "4a1b220f07f74f20991c2c03ad35f8bbd16fc096",
+    "files": 29,
+    "bytes": 1444747,
+    "merkle": {
+      "root_sha": "4a1b220f07f74f20991c2c03ad35f8bbd16fc096",
+      "trees_verified": 1,
+      "leaf_count": 29
+    },
+    "whole": true
+  }
+}

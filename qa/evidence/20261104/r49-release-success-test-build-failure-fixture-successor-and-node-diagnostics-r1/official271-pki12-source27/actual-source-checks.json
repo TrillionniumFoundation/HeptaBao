@@ -1,0 +1,326 @@
+{
+  "schema": "heptabao.official271-strict-pki12-source-checks.r1",
+  "passed": true,
+  "checks": 79,
+  "results": [
+    {
+      "name": "exact_edit_scope_doc",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_fresh_root",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_fixed_port",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_run_id",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_payload_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_payload_sha",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_fixed_nine_inputs",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_exact_twelve_observed_requests",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_source_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_fd_count_reduced",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_pki_locals",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_input_schema",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_nine_published_sources",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_acceptance_import",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_exact_acceptance_origin",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_owner_label",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_stage_label",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_same_owner_exact_pki12_and_original_cleanup",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_exact_twelve_closure",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_report_schemas",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_report_public_pki_fields",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_terminal_denominator",
+      "passed": true
+    },
+    {
+      "name": "entry_full_derivation",
+      "passed": true
+    },
+    {
+      "name": "entry_forward_strict",
+      "passed": true
+    },
+    {
+      "name": "entry_reverse_strict",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_EntryFailure",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_need",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_check_deadline",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_full9",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_snapshot_artifacts",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_write_exact",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_signal_pending",
+      "passed": true
+    },
+    {
+      "name": "entry_unchanged_closed_fds",
+      "passed": true
+    },
+    {
+      "name": "payload_schema",
+      "passed": true
+    },
+    {
+      "name": "nine_exact_ordered_inputs",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/qa/openbao-acceptance/owned_process.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/qa/openbao-acceptance/owned_process.py",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/qa/openbao-acceptance/official_openbao_launcher.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/qa/openbao-acceptance/official_openbao_launcher.py",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/qa/openbao-acceptance/bao_http.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/qa/openbao-acceptance/bao_http.py",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/qa/openbao-acceptance/raw_status_observer.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/qa/openbao-acceptance/raw_status_observer.py",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/qa/openbao-acceptance/acceptance.py",
+      "passed": true
+    },
+    {
+      "name": "current_acceptance_whole",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/qa/openbao-acceptance/current_record_component.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/qa/openbao-acceptance/current_record_component.py",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/clients/python/heptabao/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/clients/python/heptabao/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/clients/python/heptabao/transport.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/clients/python/heptabao/transport.py",
+      "passed": true
+    },
+    {
+      "name": "input_whole_source/clients/python/heptabao/consistency.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_donor_source/clients/python/heptabao/consistency.py",
+      "passed": true
+    },
+    {
+      "name": "source_total",
+      "passed": true
+    },
+    {
+      "name": "payload_bound",
+      "passed": true
+    },
+    {
+      "name": "request_exact_scope",
+      "passed": true
+    },
+    {
+      "name": "request_original_transport_shape",
+      "passed": true
+    },
+    {
+      "name": "request_whole_inline_source",
+      "passed": true
+    },
+    {
+      "name": "request_unique_fresh_key",
+      "passed": true
+    },
+    {
+      "name": "correct_stdin_native_binding",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_60",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_61",
+      "passed": true
+    },
+    {
+      "name": "exact_edit_62",
+      "passed": true
+    },
+    {
+      "name": "journal_derivation",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_strict",
+      "passed": true
+    },
+    {
+      "name": "journal_reverse_strict",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_request",
+      "passed": true
+    },
+    {
+      "name": "journal_fresh_slot",
+      "passed": true
+    },
+    {
+      "name": "original_deadline_and_cleanup",
+      "passed": true
+    },
+    {
+      "name": "same_official_launcher_once",
+      "passed": true
+    },
+    {
+      "name": "http15_and_original_owner_clock",
+      "passed": true
+    },
+    {
+      "name": "strict_original_suite_once",
+      "passed": true
+    },
+    {
+      "name": "two_exact400_expectations",
+      "passed": true
+    },
+    {
+      "name": "preserved_suite_cleanup_and_partial",
+      "passed": true
+    },
+    {
+      "name": "twelve_wire_cap",
+      "passed": true
+    },
+    {
+      "name": "no_old_acl_reexecution",
+      "passed": true
+    },
+    {
+      "name": "fixed_resource_limits",
+      "passed": true
+    },
+    {
+      "name": "report_not_parity",
+      "passed": true
+    },
+    {
+      "name": "fresh_root_and_port",
+      "passed": true
+    }
+  ],
+  "pythonExecuted": false,
+  "runtimeCalls": 0,
+  "productCasePasses": 0
+}

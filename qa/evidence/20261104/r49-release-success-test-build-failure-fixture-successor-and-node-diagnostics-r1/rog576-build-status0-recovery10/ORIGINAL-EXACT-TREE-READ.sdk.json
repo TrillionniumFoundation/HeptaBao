@@ -1,0 +1,18 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "GitHub API error 422: {\"message\":\"Invalid object requested. SHA must identify a commit or a tree.\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#get-a-tree\",\"status\":\"422\"}"
+    }
+  ],
+  "structuredContent": {
+    "error": "GitHub API error 422: {\"message\":\"Invalid object requested. SHA must identify a commit or a tree.\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#get-a-tree\",\"status\":\"422\"}",
+    "error_code": "INVALID_ARGUMENT",
+    "error_data": {
+      "message": "Invalid object requested. SHA must identify a commit or a tree.",
+      "documentation_url": "https://docs.github.com/rest/git/trees#get-a-tree",
+      "status": "422"
+    }
+  },
+  "isError": true
+}

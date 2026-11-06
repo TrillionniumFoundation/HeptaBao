@@ -1,0 +1,74 @@
+[
+  [
+    "ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1')",
+    "ROOT = Path('__UNBOUND_NEW_STAGE_ROOT__')"
+  ],
+  [
+    "OLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source')",
+    "OLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source')"
+  ],
+  [
+    "OLD_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'",
+    "OLD_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'"
+  ],
+  [
+    "OLD_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'",
+    "OLD_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'"
+  ],
+  [
+    "\nCOMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'\n",
+    "\nCOMMIT = None\n"
+  ],
+  [
+    "\nTREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'\n",
+    "\nTREE = None\n"
+  ],
+  [
+    "PARENT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'",
+    "PARENT = '5767739cd25e458ac052dc8d384019bab8688ae0'"
+  ],
+  [
+    "    ('5767739cd25e458ac052dc8d384019bab8688ae0', '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'),",
+    "    (COMMIT, PARENT),"
+  ],
+  [
+    "CANONICAL_BUNDLE_BYTES = 5766\n",
+    "CANONICAL_BUNDLE_BYTES = None\n"
+  ],
+  [
+    "CANONICAL_BUNDLE_SHA256 = '0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a'\n",
+    "CANONICAL_BUNDLE_SHA256 = None\n"
+  ],
+  [
+    "'source_ref': 'refs/heads/codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106'",
+    "'source_ref': None"
+  ],
+  [
+    "'canonical_history_count': 3769",
+    "'canonical_history_count': 3770"
+  ],
+  [
+    "canonical_path = ROOT.parent / 'canonical-hb-5767739c-from02b-20261106-r1.bundle'",
+    "canonical_path = ROOT.parent / '__UNBOUND_CANONICAL_BUNDLE_LEAF__'"
+  ],
+  [
+    "result['new_commits_since_actual_02b'] = added",
+    "result['new_commits_since_actual_576'] = added"
+  ],
+  [
+    "git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3768'",
+    "git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3769'"
+  ],
+  [
+    "git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3769'",
+    "git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3770'"
+  ],
+  [
+    "result['full_worktree']['tracked_bytes'] == 62553540",
+    "result['full_worktree']['tracked_bytes'] == 62553956"
+  ],
+  [
+    "result['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'",
+    "result['full_worktree']['full_leaf_index_sha256'] == '7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d'"
+  ]
+]

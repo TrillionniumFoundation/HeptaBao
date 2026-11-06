@@ -1,0 +1,132 @@
+{
+  "value": {
+    "schema": "heptabao.root.mac-successor-stage-template-source-qualification.r1",
+    "sourceTree": "fc255357c0c0da9dd491e04d3858795fcc4df0ea",
+    "checks": [
+      {
+        "name": "unique data replacement 0",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 1",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 2",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 3",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 4",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 5",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 6",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 7",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 8",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 9",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 10",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 11",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 12",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 13",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 14",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 15",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 16",
+        "pass": true
+      },
+      {
+        "name": "unique data replacement 17",
+        "pass": true
+      },
+      {
+        "name": "all 18 replacements reproduce exact template",
+        "pass": true
+      },
+      {
+        "name": "strict forward",
+        "pass": true
+      },
+      {
+        "name": "strict reverse",
+        "pass": true
+      },
+      {
+        "name": "four hunks",
+        "pass": true
+      },
+      {
+        "name": "20 exact function definitions",
+        "pass": true
+      },
+      {
+        "name": "finally complete terminal tail exact",
+        "pass": true
+      },
+      {
+        "name": "full actual candidate index equality",
+        "pass": true
+      },
+      {
+        "name": "actual Mac base report equality",
+        "pass": true
+      },
+      {
+        "name": "candidate bundle and call remain unbound",
+        "pass": true
+      }
+    ],
+    "checkCount": 27,
+    "pass": true,
+    "sourceOnly": true,
+    "nativeCalls": 0,
+    "PythonRuns": 0
+  },
+  "audit": {
+    "tree": "fc255357c0c0da9dd491e04d3858795fcc4df0ea",
+    "files": 11,
+    "bytes": 527917,
+    "merkle": {
+      "root_sha": "fc255357c0c0da9dd491e04d3858795fcc4df0ea",
+      "trees_verified": 1,
+      "leaf_count": 11
+    },
+    "whole": true
+  }
+}

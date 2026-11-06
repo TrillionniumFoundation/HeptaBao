@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.root.current576-default-compile-loginfo-review.r1",
+  "issuedAtUTC": "2026-11-06 22:51:09 UTC",
+  "sourceTree": "38f47d9ea3f36621a8bf23c3aff5905e434a696e",
+  "whole": {
+    "tree": "38f47d9ea3f36621a8bf23c3aff5905e434a696e",
+    "files": 25,
+    "bytes": 592363,
+    "merkle": {
+      "root_sha": "38f47d9ea3f36621a8bf23c3aff5905e434a696e",
+      "trees_verified": 1,
+      "leaf_count": 25
+    },
+    "whole": true
+  },
+  "sourceChecks": 54,
+  "actualBindings": {
+    "current_state_exact": true,
+    "actual_report_exact": true,
+    "owner_release_exact": true,
+    "original_BODY_GO_exact": true,
+    "before_journal_exact": true,
+    "executed_runner_pin": true,
+    "executed_launcher_pin": true,
+    "prior_root_qualified": true,
+    "whole_package": true
+  },
+  "failedReportRootChecks": 24,
+  "logPathProvenance": {
+    "runner": {
+      "blob": "6499b982ec8562bc52c22416f6eaf7979e1050bc",
+      "bytes": 36346,
+      "sha256": "b02b398a3dfe1ab2f57a6ab70056c2b4aa58f4e221644513187f991d80654166"
+    },
+    "launcher": {
+      "blob": "2309dee7ade1fd52dde88cace75be58717a2ff72",
+      "bytes": 39650,
+      "sha256": "0f2419c1f9fb1ad10219b2c184108338693161200d74c2f0065311f7b394da3b"
+    },
+    "runnerOutputArgument": "source, output = Path(args.source), Path(args.output)",
+    "launcherOutput": "ROOT / 'build-tests-r1'",
+    "ownedConstruction": "output / (label + '.stdout') and output / (label + '.stderr')",
+    "actualFailedLabel": "default-libtest-build",
+    "sourcePathFieldInReport": false,
+    "logSizeFieldInReport": false,
+    "contentHashesFromActualReport": true
+  },
+  "metadataNotYetObserved": true,
+  "NativeCallsPerformed": 0
+}

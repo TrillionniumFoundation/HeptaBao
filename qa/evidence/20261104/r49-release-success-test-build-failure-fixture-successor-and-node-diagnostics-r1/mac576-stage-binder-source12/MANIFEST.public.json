@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.source-flat-manifest.v1",
+  "status": "SOURCE_ONLY",
+  "files": [
+    {
+      "path": "binder.original.js",
+      "blob": "43a1e30af8d02223e00237c2ed91318604597537",
+      "bytes": 4113,
+      "sha256": "e19412056f6cb3321b07b01bc562dabdcb18f2ff2dde85456b7a8d1b60a543b4"
+    },
+    {
+      "path": "binder.before.LF-view.js",
+      "blob": "d0bb84c77abacb36bf6347bf3f7fa78e025b2b62",
+      "bytes": 4114,
+      "sha256": "3b50c863d41c73fa58dcd8d671147abb22956d34fdd758b7d5255004da297147"
+    },
+    {
+      "path": "binder.source.js",
+      "blob": "e353530f3a579d88554928d070790661fa720114",
+      "bytes": 6971,
+      "sha256": "bb79258cdd0357bcd56915c762eeafabb85bfca62715d8126e8d59ccb765f8a5"
+    },
+    {
+      "path": "binder.strict.diff",
+      "blob": "2eccdd6fd69bcf6e5903ed9301800a99ef809edf",
+      "bytes": 10842,
+      "sha256": "5425c4c5208caa332e091790df77e45162790fb8211051fc9891c31b4d55636b"
+    },
+    {
+      "path": "BINDINGS.unobserved.public.json",
+      "blob": "0acc60cd102009187c345324a6bd65187758c0c0",
+      "bytes": 746,
+      "sha256": "3416ff66ea2e8c49ccea16faf8d2a29552fd68ff69daffd96a17db731213cb1f"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "5b9f104e7611f7321782ab4daa39307683889f51",
+      "bytes": 6668,
+      "sha256": "e4fefcd10824654f440f6e8c5585e359dbd2e90de150738bb5bba5405b85d058"
+    },
+    {
+      "path": "verifier.source.js",
+      "blob": "df52a259f73be9ded0c7a8ed4c56441f82d0394c",
+      "bytes": 2852,
+      "sha256": "1ba7bfc14a0486b2d6e4cc98dd943e6765ef1f44eefa1aafda7c8e3be2f0fc03"
+    },
+    {
+      "path": "verification.actual.public.json",
+      "blob": "d3960a961b171b4879d96fca032844911bb51e82",
+      "bytes": 1558,
+      "sha256": "e9383da072568b2ebab37899f2c5b30e68f8c6467206f49926968e9471e925ef"
+    },
+    {
+      "path": "REPLAY.public.json",
+      "blob": "e119b40b68dc2e659399db12762994f1ad48ef93",
+      "bytes": 1447,
+      "sha256": "e3d60cb2624dd064d0255feaf057d42fe5786da2d38478785cb53e9550cec084"
+    },
+    {
+      "path": "GENERATION-HISTORY.public.json",
+      "blob": "0050131c16ca76adf632bf88a1ad3c82f181bf78",
+      "bytes": 524,
+      "sha256": "c157ac5e7c002b38aa74c5751320d16f118552acee4dbccb4ef9889546aa741f"
+    },
+    {
+      "path": "README.md",
+      "blob": "3d9cacfbe17f9c36110cadb2edad96583686460f",
+      "bytes": 1273,
+      "sha256": "7343d93063192e90055478aa36b6eeb82978f76376311daec282f0178b4da9ca"
+    }
+  ],
+  "Native_calls": 0,
+  "Cargo_runs": 0
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.pure-source-replay.v1",
+  "helpers": [
+    "pure_helpers.original.js",
+    "process_start_binding.correct.js",
+    "strict_diff.original.js",
+    "binder.source.js",
+    "verifier.source.js"
+  ],
+  "entry": "verifyMac576BoundStageSource(files)",
+  "argument": "flat path-to-exact-UTF8-text map for this packet",
+  "effects": "No Native, Git, Python, source-stage, Cargo, or product execution.",
+  "old_source27_repeated": false
+}

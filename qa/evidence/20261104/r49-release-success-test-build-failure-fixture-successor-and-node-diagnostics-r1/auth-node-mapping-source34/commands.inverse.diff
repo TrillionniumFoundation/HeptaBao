@@ -1,0 +1,15 @@
+--- a/commands.after
++++ b/commands.before
+@@ -12,9 +12,9 @@
+ 
+ 
+ # Fixed public comparison only; no inherited environment and no script argument.
++VERSION_CWD="/Users/qianqi/heptabao-public-node-version-20261106-r1-empty"
++VERSION_ENV={"PATH":"/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin","LANG":"C","LC_ALL":"C","HOME":"/Users/qianqi/heptabao-public-node-version-20261106-r1-empty","TMPDIR":"/Users/qianqi/heptabao-public-node-version-20261106-r1-empty"}
++VERSION_ARGV={"restricted-version":["/usr/bin/sandbox-exec","-f","/Users/qianqi/heptabao-public-node-version-20261106-r1-control/consumer.sb","/opt/homebrew/Cellar/node/25.9.0_1/bin/node","--version"],"baseline-version":["/opt/homebrew/Cellar/node/25.9.0_1/bin/node","--version"]}
+-VERSION_CWD="/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty"
+-VERSION_ENV={"PATH":"/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin","LANG":"C","LC_ALL":"C","HOME":"/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty","TMPDIR":"/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty"}
+-VERSION_ARGV={"restricted-version":["/usr/bin/sandbox-exec","-f","/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control/consumer.sb","/opt/homebrew/Cellar/node/25.9.0_1/bin/node","--version"],"baseline-version":["/opt/homebrew/Cellar/node/25.9.0_1/bin/node","--version"]}
+ 
+ class CommandRefused(RuntimeError):pass
+ def need(value,code):

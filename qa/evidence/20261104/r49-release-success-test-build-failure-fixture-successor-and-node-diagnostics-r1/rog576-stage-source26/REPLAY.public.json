@@ -1,0 +1,11 @@
+{
+  "concat": [
+    "pure.js",
+    "strict-diff.js",
+    "typed-stdin.js",
+    "verifier.js"
+  ],
+  "call": "verifyNext576StageSource(JSON.parse(files['verifier-inputs.public.json']), files)",
+  "candidatePythonMustNotRun": true,
+  "NativeMustNotRun": true
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.root.pure-source-inspection-error.r1",
+  "error": "module format",
+  "cause": "Root module extractor accepted only the base64 JSON-literal form before inspecting the original reviewed log source's literal form.",
+  "phase": "pure V8 reader before source review result, Git mutation or Native dispatch",
+  "Native_calls": 0,
+  "sourceChanged": false
+}

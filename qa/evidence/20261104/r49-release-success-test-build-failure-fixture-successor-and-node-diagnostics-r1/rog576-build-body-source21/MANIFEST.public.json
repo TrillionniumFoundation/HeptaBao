@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.source-manifest.r1",
+  "entries": [
+    {
+      "path": "PLAN.public.json",
+      "blob": "3baf1acca137211792864d3e3c89a4b86716e4ef",
+      "bytes": 3001,
+      "sha256": "2982cfac7c146978dd2cfcfd76917d26bb1e294942e064c6ecf9c62b0cf90013"
+    },
+    {
+      "path": "journal.before.js",
+      "blob": "7e2f29ccc85f9c111e2886d129ea5c4560c43a37",
+      "bytes": 26173,
+      "sha256": "ef550736faceaf12138a4ecba98874667e4653eb9b7a10815a7e5a922374934d"
+    },
+    {
+      "path": "donor.body-journal.js",
+      "blob": "61ed09d9cb4839d493ad6d52ae7965f62596a01b",
+      "bytes": 29541,
+      "sha256": "75aec84e808c030ae53abf0215c400305f217ea3b316ec1fa9519e8ce11abd42"
+    },
+    {
+      "path": "journal.after.js",
+      "blob": "b9b8de99e474bcdb5fc6740ad7b8a1ea90d89ef6",
+      "bytes": 30537,
+      "sha256": "24cbdb68aa9ed8be75de923c4832fef8aa77a2485d02a97196d798d9dbfbccdb"
+    },
+    {
+      "path": "journal.forward.diff",
+      "blob": "a83dd58f09b851b2942fbda6cc52bcc1191fe6d0",
+      "bytes": 7051,
+      "sha256": "9978051027104566ced0ef7f233fd00cf1dbc329e1a6cfd3721851b9d1408556"
+    },
+    {
+      "path": "journal.reverse.diff",
+      "blob": "2abf96165ef3ccb47c54144e96b477ac529bd461",
+      "bytes": 7051,
+      "sha256": "6ea7fe31fcf3cc5a05dc465ca3e4c1aba3ad27c2e0e1a926231016bc64ceb5e3"
+    },
+    {
+      "path": "donor.forward.diff",
+      "blob": "2beeeb3e90c7bc56689227796f14dfcf08d2c827",
+      "bytes": 10076,
+      "sha256": "c7966c16927e5373c631e8f19b609077cdad0ade771b823c1ea3eb91095210ae"
+    },
+    {
+      "path": "donor.reverse.diff",
+      "blob": "54ca889824bf08d9eca24ad0f945b8e664ec9aa0",
+      "bytes": 10076,
+      "sha256": "9c22a182a2945e6859983b8b4c14f23212657968fe5316585215f953a3e0ca9b"
+    },
+    {
+      "path": "LITERAL-BINDINGS.public.json",
+      "blob": "1c603301f495db8175e8df7361508bfb1f15ac2e",
+      "bytes": 7606,
+      "sha256": "1161a57d64eb8e0c760bce58cd865cb1499f7dac9429d94a1c2267cd9e83c0bd"
+    },
+    {
+      "path": "request.exact.json",
+      "blob": "201efd07a150f7e3aa7384209cefa3368348fb5b",
+      "bytes": 336,
+      "sha256": "de1143488f34b5a05be74cc64bb187166f9c1c0db56bf179ba2b2ca420f36fde"
+    },
+    {
+      "path": "actual.INFO.native.json",
+      "blob": "570abe6a64a14c8f702a61cd517093f761834c9a",
+      "bytes": 468,
+      "sha256": "be12f8bb38e926c8d81e0d1ba275e4883c613e99ff8bce0a8d63cd6ffe598601"
+    },
+    {
+      "path": "actual.STATE.original.json",
+      "blob": "a96aa9d874ca89a3116602db0b9d2ca1d7ad177b",
+      "bytes": 295135,
+      "sha256": "69e9e646f8bb4a46a7692b8be1e8de08e1054e55ca191230a31330950c838037"
+    },
+    {
+      "path": "actual.INFO.RELEASE.public.json",
+      "blob": "fdf023fe5ecc9021b0db9dea83d8fc544a07d8a4",
+      "bytes": 4480,
+      "sha256": "0a452767b44a338a657109c4a612885abfad625803f1690979eed6aa3b2f20e6"
+    },
+    {
+      "path": "pure_helpers.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "git_archive_once.js",
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    {
+      "path": "strict_diff.js",
+      "blob": "f595a6490497f54ea2b533fcbb98cdb306583286",
+      "bytes": 3497,
+      "sha256": "c872292668150c3b22396b4d23f315a709ef5b35eb9a286ded9cf7bbe7fd51f5"
+    },
+    {
+      "path": "SOURCE-VERIFIER.js",
+      "blob": "ff531a2b77294bd533c3e12fae9bd5e049b1d1d0",
+      "bytes": 4724,
+      "sha256": "3ed0e41173749caaf2495ba495a438f073341fa2cd9600cae2aaddececfc8e17"
+    },
+    {
+      "path": "SOURCE-RESULT.public.json",
+      "blob": "1cecd1d61e48cc4876526e80660b93b3ebadcf69",
+      "bytes": 4283,
+      "sha256": "5d9df7cbe4727551f6c41ad08ef44fe979ac53d5ec1ede807c7215e75fd85445"
+    },
+    {
+      "path": "recompute.js",
+      "blob": "15ba0ca6388d3dbb6332d0675b16b51eb953aee5",
+      "bytes": 550,
+      "sha256": "a81d2ef47bc0182440268d01a2c420f7267d3830832ba5b84cc45d919a14755f"
+    },
+    {
+      "path": "native-binary-read.contract.json",
+      "blob": "9405642da5782b47a1e699c995198662cd4e59e1",
+      "bytes": 1146,
+      "sha256": "a2525185bce7edda25740a734073a351b015fa443160cdaf67ea514057a232c8"
+    }
+  ],
+  "NativeCalls": 0
+}

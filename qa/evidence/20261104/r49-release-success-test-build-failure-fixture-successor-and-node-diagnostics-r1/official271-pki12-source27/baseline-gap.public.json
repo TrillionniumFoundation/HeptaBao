@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.strict-pki12-baseline-gap.r1",
+  "originalSummary": "db965ea9374ddcb7b76c5d21a89036ba9a5d6125",
+  "rootReview": "661060e634ee99e2c67c1403f1344a062fd76ee2",
+  "namesSameAsCurrent12": true,
+  "unrecoverableFromSummary": {
+    "pki.lease_expire_lookup": "rejected_after_ttl",
+    "pki.revoked_lease_absent": "rejected_400_or_404"
+  },
+  "priorExpectedStatusList": [
+    400,
+    404
+  ],
+  "otherTenStatusesNumeric": true,
+  "claim": "No actual strict twelve-case official numeric baseline is inferred from those normalized strings.",
+  "retainedOfficial23": "5ebf2743de2e5e96a68c042d80e37f0921cb021e",
+  "official23RolePayloadOnlyOmittedPolicies": true
+}

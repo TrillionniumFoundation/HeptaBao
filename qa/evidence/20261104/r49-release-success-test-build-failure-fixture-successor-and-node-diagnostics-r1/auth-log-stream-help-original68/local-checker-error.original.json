@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.local-checker-error.r1",
+  "stage": "extra_GO_tree_audit",
+  "errorType": "TypeError",
+  "message": "rows is not iterable",
+  "cause": "Called gitTreeAudit with rows as first argument, but helper expects tree SHA then rows.",
+  "NativeCalls": 0,
+  "slotInitialized": false,
+  "originalGOOrSourceChanged": false
+}

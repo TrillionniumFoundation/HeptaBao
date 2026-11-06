@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.current576-failed-build-fixed-info-source.r1",
+  "state": "SOURCE_ONLY",
+  "authorization": false,
+  "scope": "build_result_file_info_only",
+  "original_job": "1a1b2d90976-fc05-7fff",
+  "existingSlot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "initializeForbidden": true,
+  "journal": {
+    "blob": "7e2f29ccc85f9c111e2886d129ea5c4560c43a37",
+    "bytes": 26173,
+    "sha256": "ef550736faceaf12138a4ecba98874667e4653eb9b7a10815a7e5a922374934d"
+  },
+  "exact_request": {
+    "blob": "8069ed61b56112eb670d41aff81066c4554152d5",
+    "bytes": 227,
+    "sha256": "48dc80cd6e5ae5da31df7bac0915542ba27f026f835772544ed93a50f2aa516e"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "reportPath": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+  "expectedSHA256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639",
+  "metadata": {
+    "maximumBytes": 4194304,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "links": 1,
+    "platform": "linux",
+    "versionFromActualINFOOnly": true
+  },
+  "observations": {
+    "maximumStatusCalls": 8,
+    "maximumImmutablePages": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576,
+    "oneCallOrFuture": true
+  },
+  "terminalProof": {
+    "minimalTree": "ea9eb2081dfccc1aadd6616b4b5e16a8c7d27332",
+    "release": {
+      "blob": "09c3b2599b9edd60a21006fd02af25e51024d2e7",
+      "bytes": 21804,
+      "sha256": "d8e5a4464005642b33d9bc88905266536e794c687980a444422f49c60441781e"
+    },
+    "state": {
+      "blob": "2716c76bf67767ce53d3bf681db1b0bde61fadbb",
+      "bytes": 282946,
+      "sha256": "125f484b5747bd68cdd4a267c581268eb6e36167b20ff6ba0536d550d1c79b33"
+    },
+    "stdout": {
+      "blob": "7db39a96d49f9a21ee5b5793741b8606dc52fb0e",
+      "bytes": 3707,
+      "sha256": "1303094bd399ea2bec2ea148fb147da4777255fc5116e9fe9a3faafb44fb5172"
+    },
+    "prerequisites": [
+      {
+        "id": "772814f1351e54d5797a44c3a56add38a8378dbc3944023c757fad82bf011527",
+        "tool": "process_status",
+        "nativeText": {
+          "blob": "bb8c059a1f8d53774b616a508a6217fc2699359f",
+          "bytes": 728,
+          "sha256": "8bc3ab47193437a3a61b4b8df3ccc546ef8753511d0cb4e4b5f86df9fc30627d"
+        }
+      },
+      {
+        "id": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88",
+        "tool": "process_read",
+        "nativeText": {
+          "blob": "0fcf42fb3d7208e2c20be6e9d0db12e0134a008b",
+          "bytes": 6440,
+          "sha256": "18a789cadab12aa52b3c2714bbd184ab954f83a524c681ef63d065163d2906ee"
+        }
+      },
+      {
+        "id": "461b3092964e7cb149905a79143bbc626890fc6c980b7b0e9dd442aa13feefa8",
+        "tool": "process_read",
+        "nativeText": {
+          "blob": "c5042a86ec32bb02bb44e98c46c080b0e5d8376c",
+          "bytes": 326,
+          "sha256": "8faa717c4775c8787c6671f9918fb7fea2d54bf6fb8a2a6554a36a0b77289a5d"
+        }
+      },
+      {
+        "id": "89aa336fc6ced09db40c932af2999042f14edf59b26962fb25008f5bf30056b3",
+        "tool": "process_read",
+        "nativeText": {
+          "blob": "5850bf4c3d57b6ecab857925c1f80baebdb7de0b",
+          "bytes": 4376,
+          "sha256": "9286b820e1789c6a5978e4f909323483ebe95ce671f53c4604b465e23e1d9844"
+        }
+      },
+      {
+        "id": "473b9bbece624dd1a45dc00e9ba2fb96075f4b8ffd6608670e12bf314bc8efaf",
+        "tool": "process_read",
+        "nativeText": {
+          "blob": "711d46431fe77b9469f5eb1495ef87e17ece61bf",
+          "bytes": 326,
+          "sha256": "1491f1fd3e84507c03545b02b0c8dee06c31115ff0386bb95b960d1f442c8a19"
+        }
+      },
+      {
+        "id": "001b3b129f9386dc04fd6998d647734b40944e265cd34decb71495f2fc1520ba",
+        "tool": "process_read",
+        "nativeText": {
+          "blob": "711d46431fe77b9469f5eb1495ef87e17ece61bf",
+          "bytes": 326,
+          "sha256": "1491f1fd3e84507c03545b02b0c8dee06c31115ff0386bb95b960d1f442c8a19"
+        }
+      },
+      {
+        "id": "9b54607739383b9a4729c17120002fd5cc26505fa9d3bbcb5c21a57e4e39a64c",
+        "tool": "process_read",
+        "nativeText": {
+          "blob": "fa574837c1ad55354d6606796595d220f57f2107",
+          "bytes": 1536,
+          "sha256": "d58103ffc76691abd4c1fb9d0809d09fed926488f450b4e646756f20a178c612"
+        }
+      }
+    ]
+  },
+  "originalFailurePreserved": {
+    "exit1": true,
+    "product280ResultKnown": false,
+    "releaseSuccessRetained": true,
+    "oldGitArchiveUnknown": true,
+    "originalRecoveryGO": "564aeca0f8f4d6d12a0334f2341d6c5dd9e0b006"
+  },
+  "derivation": {
+    "donor": {
+      "blob": "9f3983788920c9087c607132772d72d2a380c9b8",
+      "bytes": 25177,
+      "sha256": "2385858f083dbd4e09599c55d51ff345a811ae614c85de70ddfc97b45e3afaea"
+    },
+    "actualExisting": {
+      "blob": "f64f88c90fddb0199d5a866ee70742255d62127d",
+      "bytes": 19043,
+      "sha256": "f9e05317f95b7d1a4fc3a90d8dc50aeba80809e7c941c79c2aaf6562e21fdc78"
+    },
+    "literalEdits": 14,
+    "donorHunks": 4,
+    "actualExistingHunks": 6
+  },
+  "execution": [
+    "Whole exact root INFO GO.",
+    "Load helpers and this journal against the existing slot; never initialize.",
+    "gfRun authorize_stage_result_info with exact root whole GO.",
+    "gfRun prepare original fixed file_info once; arm external whole.",
+    "Cross model boundary; gfRun invoke then accept; original SDK whole before parse.",
+    "Only original returned operation; max8 status, then original contiguous8192 pages; full payload whole before parse; close observer.",
+    "Preserve original failed build, GitUNKNOWN and recovery history. Metadata size/version/full9 actual only; BODY awaits separate exact source/GO."
+  ],
+  "recompute": "Evaluate pure_helpers.js + strict_diff.js + SOURCE-VERIFIER.js; call verify576BuildInfoSource(make576BuildInfoInput(texts)).",
+  "NativeCalls": 0,
+  "PythonOrRustExecuted": false
+}

@@ -1,0 +1,13 @@
+--- a/stage.actual-bundle-binding.py
++++ b/stage.actual-bundle-binding.py
+@@ -389,8 +389,8 @@
+ assert data['schema'] == 'heptabao.final-mac-source-only-carrier.v1'
+ assert isinstance(data['canonical_bundle_base64'], str)
+ canonical_raw = base64.b64decode(data['canonical_bundle_base64'], validate=True)
+-CANONICAL_BUNDLE_BYTES = None
+-CANONICAL_BUNDLE_SHA256 = None
++CANONICAL_BUNDLE_BYTES = 5766
++CANONICAL_BUNDLE_SHA256 = '0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a'
+ assert isinstance(CANONICAL_BUNDLE_BYTES, int), 'actual ROG bundle binding unresolved'
+ assert isinstance(CANONICAL_BUNDLE_SHA256, str), 'actual ROG bundle binding unresolved'
+ assert args.canonical_bundle_bytes == CANONICAL_BUNDLE_BYTES

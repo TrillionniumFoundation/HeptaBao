@@ -1,0 +1,91 @@
+{
+  "authorization": "GO",
+  "scope": "stage_result_binary_read_only",
+  "original_job": "1a1b2f48641-fc05-8042",
+  "info_operation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+  "maximum_binary_read_starts": 1,
+  "immutable_page_bytes": 8192,
+  "exact_request": {
+    "blob": "ead124398c9a04b8d8a76e205069e8f7e426a4d9",
+    "bytes": 437,
+    "sha256": "a1901018815188a9126b3365c95be3e8be56e280874651db6911aa9cc3708527"
+  },
+  "schema": "heptabao.root.mac576-stage-single-body.GO.r1",
+  "issuedAtUTC": "2026-11-06 22:43:08 UTC",
+  "sourceTree": "8e89cbe999677b63ca5a61505d256ade566c06b6",
+  "rootSourceReview": {
+    "blob": "5599d598eb5da77784bd2695639c9e55a1458240",
+    "bytes": 1123,
+    "sha256": "6f98b442335f41af3c447180472bbe034cd98638b7cf55d7ea61513cd604a2dc"
+  },
+  "journal": {
+    "blob": "978c35dbc19e27bbb93564677c61883729cc6105",
+    "bytes": 29851,
+    "sha256": "f2179cfc87572e84b22334026a98bc5f5c22ef68b30cca78dafc795c70635cd7"
+  },
+  "slot": "successor576_mac_source_only_stage_gitfirst_r1",
+  "existingClosedState": {
+    "blob": "6cacd6b522bd9e068fdd83f850c7efeafe342f3f",
+    "bytes": 71983,
+    "sha256": "204c5a55372cdae4a93af785bf87c5ab45534177b90f23579e856ad232c8d22e"
+  },
+  "expectedReport": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7665,
+    "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "full9": [
+      "16777244",
+      "72764004",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7665",
+      "1794003736370790810",
+      "1794003736370799227"
+    ],
+    "infoOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "infoNative": {
+      "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+      "bytes": 489,
+      "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+    }
+  },
+  "budgets": {
+    "binaryReadStarts": 1,
+    "binaryBytes": 7665,
+    "perRangeMaximum": 65536,
+    "statusQueriesPerOriginalObserver": 8,
+    "pagesPerOriginalObserver": 128,
+    "immutablePageBytes": 8192,
+    "originalPayloadBytes": 1048576,
+    "simultaneousCallsOrFutures": 1
+  },
+  "durableProtocol": {
+    "existingSlotAttachOnly": true,
+    "old10Calls3ObserversPreserved": true,
+    "wholeIntentAndArmedBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "eachNewIntentUsesBodyGO": true,
+    "originalSDKWholeBeforeParse": true,
+    "oneOriginalReturnedOperationOnly": true,
+    "wholePayloadThenInactiveClosure": true,
+    "decodedBodyWholeArchiveBeforeSemanticParse": true
+  },
+  "onError": "Preserve failure or UNKNOWN; no replay, rekey, metadata refresh, new process, alternate path or widened range.",
+  "MacNormalAwaitingLinuxFailureDiagnosis": true,
+  "controlsAuthorized": false,
+  "CargoAuthorized": false,
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

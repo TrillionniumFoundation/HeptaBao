@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "c576mac-stage-result-body-admit-r1",
+  "kind": "operation_start",
+  "request": {
+    "blob": "ead124398c9a04b8d8a76e205069e8f7e426a4d9",
+    "bytes": 437,
+    "sha256": "a1901018815188a9126b3365c95be3e8be56e280874651db6911aa9cc3708527"
+  },
+  "rootGo": {
+    "blob": "69da452a806d8ac630058128fd3c663de5db7aaa",
+    "bytes": 3150,
+    "sha256": "b3f57a8f85ac28cc7fa4f836dfcbedd36c2c2a8e3a331cb809c520649f58ce36"
+  },
+  "originalJob": "1a1b2f48641-fc05-8042",
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

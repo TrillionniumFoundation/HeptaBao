@@ -1,0 +1,9 @@
+{
+  "entry": "verifyMac576StageBodyOriginalChain(files)",
+  "helpers": [
+    "pure_helpers.original.js"
+  ],
+  "expected": "verification.actual.public.json",
+  "input": "flat original file map",
+  "NativeCalls": 0
+}

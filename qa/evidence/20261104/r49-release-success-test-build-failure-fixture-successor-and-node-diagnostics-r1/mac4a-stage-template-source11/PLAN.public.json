@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.mac.default-libtest-fix.minimum-source-stage-adaptation.r1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "source_before": {
+    "blob": "57f978b5e6afc37e07577e803d72803a399e6887",
+    "bytes": 23713,
+    "sha256": "a70bc4e2234b709473f3fb2ae3fb279200011e9e3bc0da194d2972a554f114df"
+  },
+  "template": {
+    "blob": "fda1af9a4e2b46e302b7cea5a0114a011afb094c",
+    "bytes": 23380,
+    "sha256": "3f600d921915bf2cfdea0311be87ea70f373dd6a5f8fd708dad7b5aeee4516a0"
+  },
+  "strict_diff": {
+    "blob": "1e7812c7bd606263aa0d6f603ceba6b75a86505b",
+    "bytes": 4717,
+    "sha256": "6dbf097f38d878764ab9950f7c69044fd47540dfef95306d41b0bd22bb9f9f4c"
+  },
+  "old_original_GO": "1a8e8424b14962df0c3d49b67a0b549f6a1abf58",
+  "candidate_patch": {
+    "source_packet": "2abb0dfb23270a94e882c2b0a4d7a6efe61cd039",
+    "proposal": "5cff599bb32ba254b0494d9abd0ac3cdb0a05dc4",
+    "independent_peer": "0960ed97f7e411c99aeb59c56cfc95ab0cf1ec81"
+  },
+  "changes": {
+    "data_replacements": 18,
+    "hunks": 4,
+    "all20_function_definitions_unchanged": true,
+    "failure_finally_terminal_tail_unchanged": true,
+    "base_changed_to_actual_mac576": true,
+    "candidate_and_bundle_unbound": true
+  },
+  "source_budget": {
+    "stage_seconds": 300,
+    "git_leaf_seconds": 90,
+    "clone_seconds": 180,
+    "outer_seconds": 360,
+    "carrier_bytes": 262144,
+    "tracked_worktree_bytes": 134217728,
+    "volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+  },
+  "normal_budget_unchanged": {
+    "outer_seconds": 8280,
+    "release_seconds": 1800,
+    "default_libtest_seconds": 1800,
+    "file_libtest_seconds": 1800,
+    "family_seconds": 600,
+    "listing_seconds": 30,
+    "TERM_seconds": 5,
+    "KILL_seconds": 5,
+    "runner_read_cap": 49152
+  },
+  "source_binding_steps": [
+    "Take the actually frozen root candidate commit/tree/branch/manifest and validate exact three after leaves against the expected index. Root is the only product commit/ref writer.",
+    "Use B's actual from576 canonical bundle report, independent fixed INFO and complete binary transport. No previous from02b bundle can satisfy the new prerequisite/head relation.",
+    "Fill only ROOT marker, COMMIT=None, TREE=None, source_ref=None, canonical-leaf marker and the two None bundle constants. ANCESTRY uses the bound COMMIT and fixed PARENT. Bind complete carrier <=262144 and correct typed request, then mechanical new slot/key/request literals in the existing journal.",
+    "Present the exact source/request/carrier/journal and actual evidence for a distinct stage GO. This package contains no request and authorizes no call.",
+    "After actual new Mac stage closure and detailed report acceptance, mechanically bind the reviewed normal89/117 publisher/launcher/runner to the new candidate and actual stage receipt. Keep the exact groups and budgets. Do not start Mac Cargo on known failed576.",
+    "Use successful actual new normal117 and real retained artifacts to bind the existing full34 admission and complete fresh wrapper; old02b/576/4e results remain historical."
+  ],
+  "unbound_source_behavior": "Template contains named path markers solely for mechanical replacement and None candidate/bundle fields. Existing None bundle assertions occur before any child launch or new path write; it is not an executable request and was not compiled or run.",
+  "process_ownership": "The original owned-child/start/wait/TERM/KILL/group check and full finally remain exact. The previous31-direct-child observation is historical; the new actual count and closure must come from the new stage.",
+  "old_evidence_unchanged": true
+}

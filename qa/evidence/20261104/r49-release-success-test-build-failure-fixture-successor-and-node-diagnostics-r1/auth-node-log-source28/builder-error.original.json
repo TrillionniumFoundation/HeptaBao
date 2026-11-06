@@ -1,0 +1,11 @@
+{
+  "stage": "pure-contract-builder-before-any-mutation",
+  "name": "TypeError",
+  "message": "Cannot read properties of null (reading '1')",
+  "at": "exec_main.mjs:7:111",
+  "cause": "Module-literal extractor incorrectly required the line to end in )); original line has validate=True in b64decode.",
+  "candidateChanged": false,
+  "NativeCalls": 0,
+  "GitMutations": 0,
+  "sourcePreserved": true
+}

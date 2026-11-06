@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.root.ROG5767739.fresh-build-source-review.r1",
+  "sourceTree": "f01b58b8833bc83c78c7f538187859f7bc9bb8c4",
+  "whole": {
+    "tree": "f01b58b8833bc83c78c7f538187859f7bc9bb8c4",
+    "files": 43,
+    "bytes": 796656,
+    "merkle": {
+      "root_sha": "f01b58b8833bc83c78c7f538187859f7bc9bb8c4",
+      "trees_verified": 1,
+      "leaf_count": 43
+    },
+    "whole": true
+  },
+  "author156ExactlyReproduced": true,
+  "actualBindings": {
+    "candidateManifestActual": true,
+    "groupsActual": true,
+    "actualStageBody": true,
+    "actualStageQualification": true,
+    "actualStageRelease": true,
+    "actualStageInfo": true,
+    "typedHelperExact": true,
+    "independentTypedBinding": true,
+    "actualReviewedPrior_runner": true,
+    "actualReviewedPrior_launcher": true,
+    "actualReviewedPrior_publisher": true,
+    "actualReviewedPrior_journal": true
+  },
+  "typed": {
+    "sha256": "3adf47933cd4a0ae4240093c37b868631a3fbe613c0db744972f92e369623b04",
+    "native_fingerprint": "4242188071712628910"
+  },
+  "changesReviewed": [
+    "Frozen source and isolated controls/target identity bindings",
+    "Root exact252 unique/280 profile matrix, first two profiles gain6 batch cases each and rename one previous mixed rejection test; other16 groups unchanged",
+    "Only groups dedicated read bound33825 to35287; launcher39650/runner36346 stay within40000",
+    "Original publication60/sharedtotal12000/release1800/compiles3600/families600/list30/cleanup5+5 unchanged",
+    "Three journal literal bindings; exact whole original request/SDK/observer protocol unchanged"
+  ],
+  "freshCompileAuthorizedOnlyBySeparateGO": true,
+  "previousCompilerFailurePreserved": true,
+  "sourceFormatted": false,
+  "currentBuildQualified": false,
+  "NativeCalls": 0
+}

@@ -1,0 +1,41 @@
+usage: log show [options] <archive>
+   or: log show [options]
+
+description:
+    Show the contents of the system log datastore or a log archive.
+    Output contains only default level messages unless --info and/or
+    --debug are specified.
+
+options:
+    --[no-]backtrace              Control whether backtraces are shown
+    --[no-]debug                  Control whether "Debug" events are shown
+    --[no-]info                   Control whether "Info" events are shown
+    --[no-]loss                   Control whether message loss events are shown
+    --[no-]signpost               Control whether signposts are shown
+    --color <mode>                Control color output (valid: auto, always, none)
+    --directory <directory>       Display events from the given directory path
+    --end <date>                  Display events up to the given end date
+    --last <num>[m|h|d] | boot    Display recent events up to the given limit
+    --[no-]pager                  Paginate output using less.
+    --predicate <predicate>       Filter events using the given predicate
+    --process <pid> | <process>   Filter events using the specified process
+    --realtime                    Annotate output with "Real-Time" if the process uses the RT Logging system
+    --source                      Annotate output with source file and line-number
+    --start <date>                Display events from the given start date
+    --style <style>               Output format (valid: default, syslog, json, ndjson, compact)
+    --timezone local | <tz>       Use the given timezone when displaying event timestamps
+    --mach-continuous-time        Print mach continuous time timestamps rather than walltime
+    --unreliable                  Annotate output with whether the log was emitted unreliably
+
+valid time formats:
+    'Y-M-D H:m:s+zzzz', 'Y-M-D H:m:s', 'Y-M-D', '@unixtime'
+
+predicate usage:
+    Filter predicates follow the NSPredicate format described at:
+    https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Predicates/AdditionalChapters/Introduction.html
+
+    For predicate field/type details, see `log help predicates`.
+
+shorthand usage: 
+    Shorthand is converted to a predicate. For details, see `log help shorthand`.
+

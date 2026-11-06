@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.pure-v8-source-execution.r1",
+  "interface": "verifyPublicNodeIgnitionLogSource(files)",
+  "environment": "functions.exec pure V8; exact flat files map plus gitBlobMeta/unb64/utf8Text/strictApplySource",
+  "actualExecuted": true,
+  "passed": true,
+  "checkCount": 97,
+  "source": {
+    "blob": "f26070651527caa4a109b0d79f3b9933eaf16888",
+    "bytes": 59178,
+    "sha256": "f9b881531b251b82af5ac391496c42acccf0d693586e1b4884c3514c112466ac"
+  },
+  "request": {
+    "blob": "020e4305593675ee33832732285fe040ac8ca8a4",
+    "bytes": 60250,
+    "sha256": "49db683737213619243b41bcc6fa3c6fb174b56fdfa5e8cb377d9d5ef0d0d14f"
+  },
+  "journal": {
+    "blob": "7f26713584e287fc3b8bc5a7bec0d74ce366fd57",
+    "bytes": 19050,
+    "sha256": "28d6e2f89d9daeb008be409cd14c8d367c2649b21558810cb9a472833588e4f6"
+  },
+  "verifier": {
+    "blob": "5a6c71e336b8c41f11ad4a984f6779ea257b95f1",
+    "bytes": 11628,
+    "sha256": "d61de5dbac3d57601faee8d75b15e4e426ff6e91448d3a6065abaeb47c50b407"
+  },
+  "result": {
+    "blob": "aa21e9441b6a7804309f79610151f2a0fdb06de2",
+    "bytes": 8100,
+    "sha256": "b251cf97eeaa138c8bf42fefc70977771feccd9fa6d60cd8e9cdfb0e96609b7b"
+  },
+  "correctedLocalChecks": {
+    "firstResult": {
+      "blob": "e4e60035998b2616fa01b321933d378000969c4a",
+      "bytes": 8186,
+      "sha256": "85eb5c53f02ae5a857e06c36e3c6f339fc8aad958058478ae5bcb0ba52a96e27"
+    },
+    "firstVerifier": {
+      "blob": "2796df94a25042ad9853675b677f946c395489ff",
+      "bytes": 11638,
+      "sha256": "5e80182649aeb08ecdc1436079f918ad519aadfb5ca85a64b31c8856ec919092"
+    },
+    "diff": {
+      "blob": "950e752824ff556b0a22e9cc5a01421d5243c96d",
+      "bytes": 1525,
+      "sha256": "ce82507c1f94a272c6fffd9632d0552ee94ff4a37f23e9534a1008c87a853a0f"
+    },
+    "changes": "Correct predicate argv index10 to9; replace a mismatched prefix comparison with exact nine-element prefix equality. Candidate/request/journal bytes unchanged."
+  },
+  "contractBuilderError": {
+    "blob": "d6b6f33bb236a994e2fdeeab76e0423949644882",
+    "bytes": 400,
+    "sha256": "9588029ee81e58d35e3914f372355a55c0f750a5954cf84d258bcc70f08b2a37"
+  },
+  "noPythonOrCandidateOrHelperExecution": true,
+  "noNativeCalls": true,
+  "noSlotInitialization": true,
+  "sourceExecutionPassNotClaimed": true
+}

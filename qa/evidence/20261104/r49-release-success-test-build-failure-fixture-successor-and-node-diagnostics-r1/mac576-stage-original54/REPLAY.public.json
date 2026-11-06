@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.mac576-stage.original-chain-offline-replay.v1",
+  "entry": "verifyMac576StageOriginalChain(files)",
+  "source": "verifier.source.js",
+  "pureHelpers": [
+    "pure_helpers.original.js",
+    "process_start_binding.correct.js"
+  ],
+  "input": "Flat packet file map path -> exact UTF-8 content; the verifier does not use store, local files, or tools.",
+  "expectedResult": "verification.actual.public.json",
+  "observedChecks": 124,
+  "originalChain": "7 calls / 2 returned observers / 2 immutable payload pages; no INFO or body in this stage packet.",
+  "limitations": "Transport/terminal/complete stdout summary only. Detailed stage report and all build/product tests remain pending."
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "name": "commit",
+    "before": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "after": "5767739cd25e458ac052dc8d384019bab8688ae0"
+  },
+  {
+    "name": "tree",
+    "before": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "after": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
+  },
+  {
+    "name": "groups_sha",
+    "before": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786",
+    "after": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  {
+    "name": "group_shapes",
+    "before": "(\"native-jwt-pki-file22\", \"file\", 22), (\"native-jwt-pki-default22\", \"default\", 22)",
+    "after": "(\"native-jwt-pki-file28\", \"file\", 28), (\"native-jwt-pki-default28\", \"default\", 28)"
+  },
+  {
+    "name": "jwt_pki_instances",
+    "before": "assert sum(len(g['tests']) for g in groups[:4]) == 180",
+    "after": "assert sum(len(g['tests']) for g in groups[:4]) == 192"
+  },
+  {
+    "name": "jwt_pki_unique",
+    "before": "assert len({n for g in groups[:4] for n in g['tests']}) == 158",
+    "after": "assert len({n for g in groups[:4] for n in g['tests']}) == 164"
+  },
+  {
+    "name": "doc",
+    "before": "run 246 unique cases in 268 profile instances",
+    "after": "run 252 unique cases in 280 profile instances"
+  },
+  {
+    "name": "fresh_target",
+    "before": "/home/qian-qi/hb-02b90762-controls-20261106-r2/cargo-target-r1",
+    "after": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1"
+  },
+  {
+    "name": "same_names",
+    "before": "same twenty-two source names in both feature profiles",
+    "after": "same twenty-eight source names in both feature profiles"
+  },
+  {
+    "name": "expected_total",
+    "before": "assert len(all_cases) == 268 and len(set(all_cases)) == 246",
+    "after": "assert len(all_cases) == 280 and len(set(all_cases)) == 252"
+  },
+  {
+    "name": "declared_unique",
+    "before": "'groups': groups, 'test_count': 246",
+    "after": "'groups': groups, 'test_count': 252"
+  },
+  {
+    "name": "selected_totals",
+    "before": "'selected_unique_test_total': 246, 'selected_profile_instance_total': 268",
+    "after": "'selected_unique_test_total': 252, 'selected_profile_instance_total': 280"
+  },
+  {
+    "name": "batch_delta",
+    "before": "'jwt_policy_delta_unique_test_total': 9, 'jwt_policy_delta_profile_instance_total': 14,",
+    "after": "'jwt_policy_delta_unique_test_total': 9, 'jwt_policy_delta_profile_instance_total': 14,\n           'jwt_batch_delta_unique_test_total': 6, 'jwt_batch_delta_profile_instance_total': 12,"
+  },
+  {
+    "name": "actual_total",
+    "before": "assert len(actual_cases) == 268 and len(set(actual_cases)) == 246",
+    "after": "assert len(actual_cases) == 280 and len(set(actual_cases)) == 252"
+  },
+  {
+    "name": "actual_unique",
+    "before": "result['actual_unique_test_total'] = 246",
+    "after": "result['actual_unique_test_total'] = 252"
+  },
+  {
+    "name": "actual_instances",
+    "before": "result['actual_profile_instance_total'] = 268",
+    "after": "result['actual_profile_instance_total'] = 280"
+  }
+]

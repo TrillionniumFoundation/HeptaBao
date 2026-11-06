@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.root.C576-canonical-bundle-one-body.GO.r1",
+  "authorization": "GO",
+  "scope": "canonical_bundle_binary_read_ranges_only",
+  "sourceTree": "7e819bebdb4210b176f1e9c9aad7f30b725655fa",
+  "journal": {
+    "blob": "45b5e9adc11936acae8b594cd09b525b5a8973b7",
+    "bytes": 28428,
+    "sha256": "17c23f367815a0a6d192fa00e535f09c14497346a3c01ee8af6b6f0553496732"
+  },
+  "slot": "successor576_canonical_bundle_info_gitfirst_r1",
+  "initialize": false,
+  "action": "authorize_bundle_body",
+  "info_operation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+  "originalInfoNative": {
+    "blob": "b40eebebed4155bff74279c2b1d06cb8e2dd181e",
+    "bytes": 472,
+    "sha256": "06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"
+  },
+  "originalInfoState": {
+    "blob": "a416295e4d2cfdc04472dce2de46e88f26b9afcb",
+    "bytes": 13657,
+    "sha256": "083198ac169456a6e52922257621154dfaf8dd5cc909f7956f3763d5a61e70ca"
+  },
+  "rootSourceQualification": {
+    "blob": "e8ff8b1c906b4355a19e089c87d2be8662bc0b3d",
+    "bytes": 542,
+    "sha256": "c46a016f970033c2a2a18a4a2fa8c3cc93e5663a4d225e96efb5191411cf52d7"
+  },
+  "maximum_binary_read_starts": 1,
+  "immutable_body_page_bytes": 16384,
+  "fixed_bundle": {
+    "host": "rog",
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "bytes": 5766,
+    "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+    "full9": [
+      "66306",
+      "31358148",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "5766",
+      "1794000539740776688",
+      "1794000539740776688"
+    ],
+    "version": "66306:31358148:5766:1794000539740776688:1794000539740776688",
+    "infoOperation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+    "infoNative": {
+      "blob": "b40eebebed4155bff74279c2b1d06cb8e2dd181e",
+      "bytes": 472,
+      "sha256": "06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"
+    }
+  },
+  "exact_requests": [
+    {
+      "blob": "530ad6743ca62e2bac32dde64447080dd54f4d48",
+      "bytes": 411,
+      "sha256": "7b877028a74f181f2068e608883fa508c3fb8b173299246ba29f4ee8aa3e4066"
+    }
+  ],
+  "ranges": [
+    {
+      "offset": 0,
+      "limit": 5766,
+      "request": {
+        "blob": "530ad6743ca62e2bac32dde64447080dd54f4d48",
+        "bytes": 411,
+        "sha256": "7b877028a74f181f2068e608883fa508c3fb8b173299246ba29f4ee8aa3e4066"
+      }
+    }
+  ],
+  "limits": {
+    "binary_read_starts": 1,
+    "offset": 0,
+    "bytes": 5766,
+    "binary_range_cap": 65536,
+    "body_page_bytes": 16384,
+    "existing_INFO_page_bytes": 8192,
+    "status_calls_per_body": 8,
+    "pages_per_body": 128,
+    "payload_bytes_per_body": 1048576,
+    "simultaneous_calls_or_futures": 1,
+    "carrier_bytes_for_later_Mac_stage": 262144
+  },
+  "noFileInfoRefresh": true,
+  "process_start_authorized": false,
+  "MacWritesAuthorized": false,
+  "compilerAuthorized": false,
+  "wholeArmBeforeDispatch": true,
+  "modelBoundaryBeforeDispatch": true,
+  "originalSDKWholeBeforeParse": true,
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "onError": "Preserve original UNKNOWN/failure and original immutable bytes. No reinitialize, new key, range, version, path or read retry. Follow only the unique original operation within existing bounds.",
+  "issuedAtUTC": "2026-11-06 21:59:27 UTC"
+}

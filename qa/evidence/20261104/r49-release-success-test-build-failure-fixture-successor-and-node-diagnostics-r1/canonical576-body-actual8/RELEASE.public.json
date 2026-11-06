@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.C576-canonical-bundle-transport-release.v1",
+  "Native_calls_inflight": 0,
+  "owned_futures_active": 0,
+  "pending": null,
+  "paused": false,
+  "activeObserver": null,
+  "total_original_calls": 6,
+  "total_original_observers": 2,
+  "total_original_pages": 2,
+  "new_body_calls": 3,
+  "new_body_pages": 1,
+  "info_operation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+  "body_operation": "66156671a53584aade1ab361827dcd7714539359fcfc964e75af16d58fb3e4fc",
+  "original_status_sdk": {
+    "blob": "6e739c6d9fe7f7ddd067409db34eebb23001c093",
+    "bytes": 977,
+    "sha256": "74db8b688eb70affcfb8347db6ff0ae420b16a71e5e8af4918f9b37e0843352f"
+  },
+  "original_body_payload": {
+    "blob": "c286be1848b273b26e9c171c9d592697cdbb83db",
+    "bytes": 8112,
+    "sha256": "49d3282897203f57367460dc620c86ad9a713311158a9b25f1099ce9eb410cde"
+  },
+  "body": {
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "version": "66306:31358148:5766:1794000539740776688:1794000539740776688",
+    "binaryBytes": 5766,
+    "binarySHA256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+    "encodedFile": {
+      "blob": "80317c9867cd6485b4a308e9d512de2d99d02c12",
+      "bytes": 7689,
+      "sha256": "bdbfecb000ed9119a5de46bd1e5ed5d986bb453a22f0fba841dc7cedb6571797"
+    },
+    "wholeTree": "d8635238d1160e1145fb50ca241583c9d26bd60e",
+    "originalOperations": [
+      "66156671a53584aade1ab361827dcd7714539359fcfc964e75af16d58fb3e4fc"
+    ],
+    "metadataOperation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+    "bodyObserved": true,
+    "macPublished": false
+  },
+  "header_sha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9",
+  "Mac_writes": 0,
+  "Cargo_runs": 0,
+  "Mac_stage_GO": null,
+  "old_INFO_state": {
+    "blob": "a416295e4d2cfdc04472dce2de46e88f26b9afcb",
+    "bytes": 13657,
+    "sha256": "083198ac169456a6e52922257621154dfaf8dd5cc909f7956f3763d5a61e70ca"
+  },
+  "old_INFO_calls_unchanged": true
+}

@@ -1,0 +1,97 @@
+[
+  {
+    "name": "commit",
+    "before": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "after": "5767739cd25e458ac052dc8d384019bab8688ae0"
+  },
+  {
+    "name": "tree",
+    "before": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "after": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
+  },
+  {
+    "name": "groups_sha",
+    "before": "7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786",
+    "after": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  {
+    "name": "group_shapes",
+    "before": "(\"native-jwt-pki-file22\", \"file\", 22), (\"native-jwt-pki-default22\", \"default\", 22)",
+    "after": "(\"native-jwt-pki-file28\", \"file\", 28), (\"native-jwt-pki-default28\", \"default\", 28)"
+  },
+  {
+    "name": "jwt_pki_instances",
+    "before": "assert sum(len(g['tests']) for g in groups[:4]) == 180",
+    "after": "assert sum(len(g['tests']) for g in groups[:4]) == 192"
+  },
+  {
+    "name": "jwt_pki_unique",
+    "before": "assert len({n for g in groups[:4] for n in g['tests']}) == 158",
+    "after": "assert len({n for g in groups[:4] for n in g['tests']}) == 164"
+  },
+  {
+    "name": "doc",
+    "before": "exact 246/268 matrix",
+    "after": "exact 252/280 matrix"
+  },
+  {
+    "name": "source_root",
+    "before": "/home/qian-qi/hb-02b90762-src-20261106-r1",
+    "after": "/home/qian-qi/hb-5767739c-src-20261106-r1"
+  },
+  {
+    "name": "control_root",
+    "before": "ROOT = Path('/home/qian-qi/hb-02b90762-controls-20261106-r2')",
+    "after": "ROOT = Path('/home/qian-qi/hb-5767739c-controls-20261106-r1')"
+  },
+  {
+    "name": "target_root",
+    "before": "TARGET = Path('/home/qian-qi/hb-02b90762-controls-20261106-r2/cargo-target-r1')",
+    "after": "TARGET = Path('/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1')"
+  },
+  {
+    "name": "index_sha",
+    "before": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc",
+    "after": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423"
+  },
+  {
+    "name": "tracked_bytes",
+    "before": "'tracked_bytes': 62537554",
+    "after": "'tracked_bytes': 62553540"
+  },
+  {
+    "name": "groups_bound",
+    "before": "args.groups_sha256, 33825)",
+    "after": "args.groups_sha256, 35287)"
+  },
+  {
+    "name": "all_instances",
+    "before": "assert sum(len(g['tests']) for g in groups) == 268",
+    "after": "assert sum(len(g['tests']) for g in groups) == 280"
+  },
+  {
+    "name": "all_unique",
+    "before": "for name in g['tests']}) == 246",
+    "after": "for name in g['tests']}) == 252"
+  },
+  {
+    "name": "admission_totals",
+    "before": "unique_test_count=246, profile_instance_test_count=268",
+    "after": "unique_test_count=252, profile_instance_test_count=280"
+  },
+  {
+    "name": "admission_jwt_pki",
+    "before": "selected_jwt_pki_unique=158, selected_jwt_pki_instances=180",
+    "after": "selected_jwt_pki_unique=164, selected_jwt_pki_instances=192"
+  },
+  {
+    "name": "admission_jwt",
+    "before": "new_jwt_test_names=20, new_jwt_profile_instances=40",
+    "after": "new_jwt_test_names=26, new_jwt_profile_instances=52"
+  },
+  {
+    "name": "summary_totals",
+    "before": "'unique_test_count': 246, 'profile_instance_test_count': 268",
+    "after": "'unique_test_count': 252, 'profile_instance_test_count': 280"
+  }
+]

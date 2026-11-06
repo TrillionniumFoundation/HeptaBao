@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.mac576-stage-result-info.original-release.v1",
+  "originalJob": {
+    "host": "mac",
+    "id": "1a1b2f48641-fc05-8042"
+  },
+  "rootGO": {
+    "blob": "a331c6278d4a539d67865f64db01aa27d9438f7a",
+    "bytes": 2786,
+    "sha256": "76d824566717fa085c634513e6679fe2a79b36d46f863c6069e5344bbae477c6"
+  },
+  "request": {
+    "blob": "0c9a7c35ea5ec5fe421d9001e49990c916786980",
+    "bytes": 294,
+    "sha256": "cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03"
+  },
+  "originalObserver": {
+    "id": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "tool": "file_info",
+    "payload": {
+      "blob": "3fd5b13752922c8f7be029febe23c6db09774852",
+      "bytes": 606,
+      "sha256": "caa7875896ecd34a3aca3708f6df3356aad6e86001a6278671319cb69e9b5c88"
+    },
+    "payloadTree": "73578858b9bd7f21bf05507245c6912974c23569",
+    "nativeText": {
+      "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+      "bytes": 489,
+      "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "metadata": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "size": 7665,
+    "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "nativeText": {
+      "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+      "bytes": 489,
+      "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+    },
+    "originalOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "metadataPlatform": "darwin",
+    "groupObservedFromOriginalMetadata": true,
+    "full9Strings": [
+      "16777244",
+      "72764004",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7665",
+      "1794003736370790810",
+      "1794003736370799227"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "originalStageCallsUnchanged": 7,
+  "originalStageObserversUnchanged": 2,
+  "newCalls": 3,
+  "newObservers": 1,
+  "newImmutablePages": 1,
+  "totalCalls": 10,
+  "totalObservers": 3,
+  "current": {
+    "pending": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "activeFutures": 0,
+    "laneReleased": true
+  },
+  "closedState": {
+    "blob": "6cacd6b522bd9e068fdd83f850c7efeafe342f3f",
+    "bytes": 71983,
+    "sha256": "204c5a55372cdae4a93af785bf87c5ab45534177b90f23579e856ad232c8d22e"
+  },
+  "bodyRead": false,
+  "normal117": false,
+  "full34": false,
+  "LAN": false
+}

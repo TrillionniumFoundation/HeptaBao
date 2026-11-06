@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.combined5767739.stage-report-body-source.r1",
+  "authorization": "SOURCE_ONLY_NOT_GO",
+  "scope": "stage_result_binary_read_only",
+  "original_job": "1a1b2c397c4-fc05-7fa4",
+  "original_slot": "combined_5767739c_rog_source_gitfirst_r1",
+  "attach_existing_context_only": true,
+  "initialize_allowed": false,
+  "journal": {
+    "blob": "5d74cdef5db802aa3accefdde721f2ea26c3906a",
+    "bytes": 28216,
+    "sha256": "fab8f8444248eccf346f5eee6b9726e42bd4a2be62ff5cee7ff8033dd2b05803"
+  },
+  "exact_request": {
+    "blob": "b9d658dabd01b233d992e6f56fcacbc12ca92657",
+    "bytes": 405,
+    "sha256": "ec45ef03814156239bee93cd5e6de56d07752f9098001522c5ba745cbbece982"
+  },
+  "expected_report": {
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 29748,
+    "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662",
+    "version": "66306:31358204:29748:1794000540708114035:1794000540708114035",
+    "infoOperation": "b5919c7edbcb372ba080012ff3b5e52c112e810333986ba423b34aa6b9a7a79e",
+    "infoNative": {
+      "blob": "edde85e8e5b009982938abf33173b344ab3eade5",
+      "bytes": 462,
+      "sha256": "3540177cbe4105baee12a595ad77ff19a1ab69569b8b9365db81c03545ff359a"
+    }
+  },
+  "maximum_binary_read_starts": 1,
+  "maximum_original_status_calls": 8,
+  "maximum_original_immutable_pages": 128,
+  "limits": {
+    "offset": 0,
+    "limit": 29748,
+    "maximum_native_chunk_bytes": 65536,
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576
+  },
+  "info_actual_packet": "bd06e25f0f8a3fc9583b52efc470a026e8ea225d",
+  "info_source_packet": "e0d8fde5ee52e2ac848549575274dc2796b2c615",
+  "info_operation": "b5919c7edbcb372ba080012ff3b5e52c112e810333986ba423b34aa6b9a7a79e",
+  "actual_body": null,
+  "body_started": false,
+  "semantic_report_qualification": false,
+  "source_formatted": false,
+  "product_qualification": false,
+  "old_failures_preserved": true,
+  "sequence": [
+    "Whole separate BODY exact GO; authorize_stage_result_body on the existing closed slot; never initialize.",
+    "Whole exact request/intent/arm, then cross the model boundary and invoke once.",
+    "Original SDK whole before parse. Only original operation status and 8192 contiguous immutable pages, full payload SHA/EOF/inactive.",
+    "Exact binary path/version/size/offset0/next29748/eof and decoded whole SHA required.",
+    "Archive decoded original report whole before semantic parse or qualification, then release lane."
+  ],
+  "excludes": [
+    "INFO refresh",
+    "alternate path or range",
+    "process_start",
+    "formatter",
+    "Cargo",
+    "product run",
+    "retry",
+    "rekey",
+    "reinitialize"
+  ],
+  "detail_report_root_qualification": false
+}

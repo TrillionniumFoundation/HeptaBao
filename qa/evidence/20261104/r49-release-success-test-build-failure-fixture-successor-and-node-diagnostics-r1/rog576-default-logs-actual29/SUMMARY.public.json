@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.default-libtest-original-logs.summary.r1",
+  "job": "1a1b2d90976-fc05-7fff",
+  "stdout": {
+    "blob": "9af7a5c589aa5c86077082afdd0145291f7515e1",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97"
+  },
+  "stderr": {
+    "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+    "bytes": 2146,
+    "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+  },
+  "nonEmptyLines": 442,
+  "parsedEvents": 442,
+  "unparsedLines": [],
+  "reasons": {
+    "compiler-artifact": 396,
+    "build-script-executed": 45,
+    "build-finished": 1
+  },
+  "diagnostics": [],
+  "buildFinished": [
+    {
+      "reason": "build-finished",
+      "success": false
+    }
+  ],
+  "actualTestsExecuted": 0,
+  "normalReleasePhasePassed": true,
+  "finalBuildQualified": false,
+  "noRerun": true
+}

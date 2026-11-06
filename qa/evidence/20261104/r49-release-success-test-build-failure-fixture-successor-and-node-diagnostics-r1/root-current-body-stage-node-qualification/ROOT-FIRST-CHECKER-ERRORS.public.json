@@ -1,0 +1,18 @@
+[
+  {
+    "error": "new10_calls_accepted",
+    "causeUnconfirmed": false,
+    "NativeCallsPerformed": 0,
+    "sourceChanged": false,
+    "resolution": "Index records include key, original state call objects do not. All other fields compared exactly.",
+    "correctedChecks": 24
+  },
+  {
+    "error": "TypeError reading index.calls[0]",
+    "cause": "Used full59 manifest index as if it had the minimum10 call-index schema.",
+    "NativeCallsPerformed": 0,
+    "originalEvidenceChanged": false,
+    "resolution": "Used already-whole minimum10 call-index and checked all full59 original bytes against it.",
+    "correctedChecks": 86
+  }
+]

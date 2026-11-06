@@ -1,0 +1,16 @@
+{
+  "entry": "verifyMacStageBodySource",
+  "arguments": {
+    "pure": "pure_helpers.original.js",
+    "strict": "strict_diff.original.js",
+    "before": "journal.before.js",
+    "after": "journal.after.js",
+    "diff": "journal.strict.diff",
+    "stateRaw": "STATE.info-closed.original.json",
+    "need": {
+      "parseJSON": "NEED.public.json"
+    },
+    "requestRaw": "request.exact.json",
+    "nativeRaw": "metadata.original.json"
+  }
+}

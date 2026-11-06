@@ -1,0 +1,324 @@
+{
+  "schema": "heptabao.node-bounded-mapping-source-pure-review.r1",
+  "passed": true,
+  "checkCount": 78,
+  "checks": [
+    {
+      "name": "base/source",
+      "passed": true
+    },
+    {
+      "name": "binding/source",
+      "passed": true
+    },
+    {
+      "name": "binding/exactRequest",
+      "passed": true
+    },
+    {
+      "name": "binding/journal",
+      "passed": true
+    },
+    {
+      "name": "source/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "source/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "source/hunks",
+      "passed": true
+    },
+    {
+      "name": "commands/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "commands/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "commands/hunks",
+      "passed": true
+    },
+    {
+      "name": "profile/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "profile/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "profile/hunks",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "journal/hunks",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/critical",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/need",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/interrupt",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/remaining",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/sha",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/encoded",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/error_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/public_command",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/load_modules",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/version_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/comparison_projection",
+      "passed": true
+    },
+    {
+      "name": "inputs/audit-exact",
+      "passed": true
+    },
+    {
+      "name": "inputs/whole-four",
+      "passed": true
+    },
+    {
+      "name": "inputs/alias-whole",
+      "passed": true
+    },
+    {
+      "name": "home/class-unchanged",
+      "passed": true
+    },
+    {
+      "name": "home/class-whole",
+      "passed": true
+    },
+    {
+      "name": "home/only-profile-byte-caps",
+      "passed": true
+    },
+    {
+      "name": "modules/exact-two",
+      "passed": true
+    },
+    {
+      "name": "modules/unreaped-all-byte-equal",
+      "passed": true
+    },
+    {
+      "name": "commands/embedded",
+      "passed": true
+    },
+    {
+      "name": "commands/metadata",
+      "passed": true
+    },
+    {
+      "name": "commands/only-two-root-literals",
+      "passed": true
+    },
+    {
+      "name": "profile/sole-addition",
+      "passed": true
+    },
+    {
+      "name": "profile/original-whole",
+      "passed": true
+    },
+    {
+      "name": "profile/one-rule-bytes",
+      "passed": true
+    },
+    {
+      "name": "profile/new-bytes",
+      "passed": true
+    },
+    {
+      "name": "profile/embedded",
+      "passed": true
+    },
+    {
+      "name": "profile/embedded-original-pin",
+      "passed": true
+    },
+    {
+      "name": "profile/embedded-addition",
+      "passed": true
+    },
+    {
+      "name": "profile/contract",
+      "passed": true
+    },
+    {
+      "name": "profile/only-mapping-not-read-write-network",
+      "passed": true
+    },
+    {
+      "name": "profile/existing-read-roots",
+      "passed": true
+    },
+    {
+      "name": "budgets/only-102-public-profile-byte-delta",
+      "passed": true
+    },
+    {
+      "name": "main/whole-two-arm-work-loop-identical",
+      "passed": true
+    },
+    {
+      "name": "main/whole-original-finally-identical",
+      "passed": true
+    },
+    {
+      "name": "errors/only-two-fixed-new-codes",
+      "passed": true
+    },
+    {
+      "name": "main/prefix-fence-before-new-copy",
+      "passed": true
+    },
+    {
+      "name": "request/fixed-original-wrapper",
+      "passed": true
+    },
+    {
+      "name": "request/whole-stdin",
+      "passed": true
+    },
+    {
+      "name": "request/no-stdin-text",
+      "passed": true
+    },
+    {
+      "name": "request/fresh-exact-key",
+      "passed": true
+    },
+    {
+      "name": "journal/only-fresh-slot-request-prefix",
+      "passed": true
+    },
+    {
+      "name": "argv/exact-new-bound",
+      "passed": true
+    },
+    {
+      "name": "env/exact-new-bound",
+      "passed": true
+    },
+    {
+      "name": "argv/no-profile-baseline-still-only-version",
+      "passed": true
+    },
+    {
+      "name": "argv/restricted-fixed-prefix",
+      "passed": true
+    },
+    {
+      "name": "env/five-closed-keys",
+      "passed": true
+    },
+    {
+      "name": "scope/no-sdk-cause-elevation",
+      "passed": true
+    },
+    {
+      "name": "actual/prior-original-stdout",
+      "passed": true
+    },
+    {
+      "name": "actual/prior-original-release",
+      "passed": true
+    },
+    {
+      "name": "actual/prior-two-arm-differential",
+      "passed": true
+    },
+    {
+      "name": "primary/whole/DyldDelegates.cpp",
+      "passed": true
+    },
+    {
+      "name": "primary/whole/Loader.cpp",
+      "passed": true
+    },
+    {
+      "name": "primary/whole/com.apple.WebProcess.sb.in",
+      "passed": true
+    },
+    {
+      "name": "primary/whole/common.sb",
+      "passed": true
+    },
+    {
+      "name": "primary/whole/node.cc",
+      "passed": true
+    },
+    {
+      "name": "primary/no-current-os-or-denial-claim",
+      "passed": true
+    },
+    {
+      "name": "primary/operation-separation",
+      "passed": true
+    },
+    {
+      "name": "primary/node-version-before-v8",
+      "passed": true
+    },
+    {
+      "name": "source-only/not-dispatched",
+      "passed": true
+    },
+    {
+      "name": "linux/no-issuer-inheritance",
+      "passed": true
+    }
+  ],
+  "NativeCallsAdded": 0,
+  "PythonOrNodeExecuted": false,
+  "existingProfileModified": false,
+  "specificRuleCauseProved": false,
+  "rootRuntimeGORequired": true
+}

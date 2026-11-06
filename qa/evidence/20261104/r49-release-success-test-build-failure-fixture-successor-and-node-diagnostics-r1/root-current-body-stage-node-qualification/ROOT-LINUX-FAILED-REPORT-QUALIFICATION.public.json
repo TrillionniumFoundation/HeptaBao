@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.root.current576-failed-build-report-qualification.r1",
+  "pass": true,
+  "check_count": 24,
+  "checks": [
+    "original_body_GO_exact",
+    "old46_calls_unchanged",
+    "old15_observers_unchanged",
+    "same_original_job",
+    "same_original_metadata",
+    "closed_lane",
+    "new10_calls_accepted",
+    "body_shape",
+    "GO_request_exact",
+    "original_body_status_inactive",
+    "status_request_same_ID",
+    "whole_payload_envelope",
+    "actual_metadata_exact",
+    "decoded_body_exact",
+    "observer_completed",
+    "prior_unknown_history_preserved",
+    "report_candidate",
+    "failure_is_test_compilation",
+    "release_success",
+    "three_compile_outcomes",
+    "runtime_not_started",
+    "all_direct_children_closed",
+    "deadlines_not_reset",
+    "release_state"
+  ],
+  "report": {
+    "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+    "bytes": 46828,
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+  },
+  "actual": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "status": "failed",
+    "normalReleaseCompiled": true,
+    "ordinaryNoDefaultCheck": true,
+    "fileLibtestCompiled": true,
+    "defaultLibtestCompiled": false,
+    "defaultLibtestExit": 101,
+    "runtimeTestsStarted": false,
+    "runtimeTestsExecuted": 0,
+    "HACompileReached": false
+  },
+  "rustErrorCauseQualified": false,
+  "laneReleased": true,
+  "NativeCallsPerformed": 0,
+  "firstPureCheckerCorrection": "Index rows have an additional key property; compare only the original state fields. No source or Native change."
+}

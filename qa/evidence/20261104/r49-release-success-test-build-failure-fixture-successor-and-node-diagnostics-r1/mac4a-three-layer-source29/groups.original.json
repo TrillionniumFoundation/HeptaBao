@@ -1,0 +1,169 @@
+{
+  "schema": "heptabao.mac.normal61-native-jwt-pki28-groups.v1",
+  "normal61_groups": [
+    {
+      "exact": false,
+      "filter": "native_ssh_",
+      "label": "ssh25",
+      "runtime_seconds": 600,
+      "tests": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ]
+    },
+    {
+      "exact": true,
+      "filter": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+      "label": "mount1",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "http::snapshot::redirect_tests::",
+      "label": "redirect5",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "lossless_export_parallel_worker_",
+      "label": "actor2",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "http::response_coalescing_tests::",
+      "label": "ordinary5",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+        "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+        "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "no_forward271_",
+      "label": "no_forward6",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+        "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+        "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+      ]
+    }
+  ],
+  "native_jwt_pki_groups": [
+    {
+      "label": "native-jwt-pki-file28",
+      "libtest_profile": "file",
+      "tests": [
+        "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_rejects_remote_and_bad_signature_without_candidate_delta",
+        "service::native_auth::jwt_tests::native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list",
+        "service::native_auth::jwt_tests::native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor",
+        "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+        "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+        "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+        "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+        "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+        "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+        "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+        "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+        "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+        "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+        "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph",
+        "service::native_auth::jwt_tests::native_jwt_empty_role_policies_and_no_default_flag_survive_real_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_no_default_policy_weak_bool_updates_are_atomic_and_persist",
+        "service::native_auth::jwt_tests::native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactively_renewed",
+        "service::native_auth::pki_tests::native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold",
+        "service::native_auth::pki_tests::native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold",
+        "service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+        "service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+        "service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+        "service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+      ],
+      "runtime_seconds": 600
+    },
+    {
+      "label": "native-jwt-pki-default28",
+      "libtest_profile": "default",
+      "tests": [
+        "service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_rejects_remote_and_bad_signature_without_candidate_delta",
+        "service::native_auth::jwt_tests::native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list",
+        "service::native_auth::jwt_tests::native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor",
+        "service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+        "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+        "service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+        "service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+        "service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+        "service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+        "service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+        "service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+        "service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+        "service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+        "service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph",
+        "service::native_auth::jwt_tests::native_jwt_empty_role_policies_and_no_default_flag_survive_real_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_no_default_policy_weak_bool_updates_are_atomic_and_persist",
+        "service::native_auth::jwt_tests::native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactively_renewed",
+        "service::native_auth::pki_tests::native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold",
+        "service::native_auth::pki_tests::native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold",
+        "service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+        "service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+        "service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+        "service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+      ],
+      "runtime_seconds": 600
+    }
+  ]
+}

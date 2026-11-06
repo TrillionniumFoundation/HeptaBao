@@ -1,0 +1,37 @@
+{
+  "authorization": "GO_REQUIRES_SEPARATE_ROOT_WHOLE",
+  "scope": "stage_result_file_info_only",
+  "original_job": "1a1b2f48641-fc05-8042",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "0c9a7c35ea5ec5fe421d9001e49990c916786980",
+    "bytes": 294,
+    "sha256": "cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03"
+  },
+  "metadata_guard": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "max_bytes": 65536,
+    "mode": 384,
+    "uid": 501,
+    "link_count": 1,
+    "gid": null,
+    "metadata_platform": null
+  },
+  "observation": {
+    "status_per_observer": 8,
+    "pages_per_observer": 128,
+    "immutable_page_bytes": 8192,
+    "payload_bytes": 1048576,
+    "simultaneous_call_or_future": 1
+  },
+  "not_authorized": [
+    "process_start",
+    "initialize_existing_slot",
+    "binary_read",
+    "another_path",
+    "controls_publication",
+    "Cargo"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.combined5767739.stage-report-body-references.r1",
+  "before": {
+    "blob": "3338ea8993faeca5b061c6921f4d70ca3c14410e",
+    "bytes": 23858,
+    "sha256": "bcd8e2da56c085ca11606233eefb15fd75f6ab47d6dda7062accc7fdd3daa497"
+  },
+  "donor": {
+    "blob": "c54541d53f5417e37975ada98f629e1b051e6e62",
+    "bytes": 28216,
+    "sha256": "faa0177d086450f8590f02b338b11f1b7e847689fde970f99e3687d2d31049ea"
+  },
+  "donorGO": {
+    "blob": "5a8a80c1fe8aa578b1ad422bb2f4bdc1b309625a",
+    "bytes": 3217,
+    "sha256": "07c2576b9d7c403675f33cd1d7420bf2fe818a11ce2805b5392310a4996e3cf5"
+  },
+  "currentInfoGO": {
+    "blob": "79416157e74385e29e66d9433990c5fed8026e6d",
+    "bytes": 4236,
+    "sha256": "3a511ea8f40e7423ef055f08ea7a376b7806a66438165c4b494a3c0493f03fdb"
+  },
+  "sourceCandidateCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "sourceCandidateTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "info_actual_packet": "bd06e25f0f8a3fc9583b52efc470a026e8ea225d",
+  "info_state_original": {
+    "path": "STATE.original.json",
+    "blob": "4dc2200a5d802f0f07bd6ebc5ee11528eb3a38de",
+    "bytes": 155246,
+    "sha256": "fd3020515fc132ea2aa61e1042ef6e1e6a18c7946ca25daee0da1c5d6e8378a3",
+    "whole": true
+  },
+  "donorQualificationNotInherited": true,
+  "sourceTaskNativeCalls": 0,
+  "oldCheckerFailureBelongsToDonorOnly": true
+}

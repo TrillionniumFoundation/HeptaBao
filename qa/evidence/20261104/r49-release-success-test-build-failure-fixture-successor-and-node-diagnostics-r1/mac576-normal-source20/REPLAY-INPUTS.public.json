@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.mac.normal61-native28.replay-inputs.v1",
+  "function": "verifyMacNormalNative28Source",
+  "helpers": {
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "strict_diff": {
+      "blob": "d667a66c20e20dac7241cff3a35fdda4d50f6f1a",
+      "bytes": 2209,
+      "sha256": "1c94876fa6a8ae89bf0f1b10164da0b1aff98f1400eefe322085429770c6c827"
+    }
+  },
+  "fields": {
+    "runnerBefore": {
+      "blob": "3d0f7c4354c64cefe3d382e25922601c660739a1",
+      "bytes": 36056,
+      "sha256": "34e942a97c9c21cd1c5afa694271725d83e9eab1a138722f3c2f03249ef7c201",
+      "parse_as_json": false
+    },
+    "runnerAfter": {
+      "blob": "9a0f5458310efdc457a40c2b1c79aa6d28ee12d3",
+      "bytes": 42977,
+      "sha256": "9ad6026ea175fbbeb52ad7ac68ec2f150d9a1bf4da08db7a36dc0d820df31913",
+      "parse_as_json": false
+    },
+    "runnerDiff": {
+      "blob": "ca9308a000c80298f5a36a18e23fbfda7239ff3e",
+      "bytes": 10825,
+      "sha256": "552c53031538084c72f479daecd236469a28027117804b97b5de16f671155848",
+      "parse_as_json": false
+    },
+    "launcherBefore": {
+      "blob": "62493294ff820caa6f3f50fd8e7237e23c8cab4e",
+      "bytes": 24701,
+      "sha256": "8b4d08055422008055691fa2009a2f35fe69c85b87268e7c50a5fcf0cd457a5c",
+      "parse_as_json": false
+    },
+    "launcherAfter": {
+      "blob": "38ad48c4196b158e6c92d1843483399714ede1f3",
+      "bytes": 25832,
+      "sha256": "367c86cd52cfc373f99f23dac75cdf2f562010605f563b237559dafabd93a0d6",
+      "parse_as_json": false
+    },
+    "launcherDiff": {
+      "blob": "7a833e86f9e02be58e976475387ce72438b3ac72",
+      "bytes": 6292,
+      "sha256": "e469d4c0982b213deece13ba67e2848eb02d47543653e87de43572f3a303fb8b",
+      "parse_as_json": false
+    },
+    "publisherBefore": {
+      "blob": "6ec947be99deca2b2eaddec96a152e88a7d40e80",
+      "bytes": 7919,
+      "sha256": "0f51611a086972ded5bf87ba7a4f3eb0f5389569fad8da53956e660abc832ecb",
+      "parse_as_json": false
+    },
+    "publisherAfter": {
+      "blob": "be52e9db7c75af6f46a203484d550889315a2406",
+      "bytes": 8769,
+      "sha256": "f69474f33807a0a9a373de0e4b0923a1b8f89b14ce024244656742ac5c88246d",
+      "parse_as_json": false
+    },
+    "publisherDiff": {
+      "blob": "4fcc1a150fac287d0b727d625f5fa3a66d0b6020",
+      "bytes": 5659,
+      "sha256": "e7c3f5ba619a0cc83f83fcbc72b779ea9117adc0d4ee9ee85e71061048b6354f",
+      "parse_as_json": false
+    },
+    "oldGroupsRaw": {
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "parse_as_json": false
+    },
+    "groupsRaw": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d",
+      "parse_as_json": false
+    },
+    "rootGroupsRaw": {
+      "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+      "bytes": 35287,
+      "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df",
+      "parse_as_json": false
+    },
+    "cargoRaw": {
+      "blob": "666dc6d056a8f653bb86ca5ba7ed89b229dfe228",
+      "bytes": 4796,
+      "sha256": "6464e7c760943ef3e973e1416ea91f469780261e28afb3c0a5267d62d7d06642",
+      "parse_as_json": false
+    },
+    "binding": {
+      "blob": "2d286bb0a6360f48202b31fa17d30173a71b6308",
+      "bytes": 2231,
+      "sha256": "8311d05fb56d5137dca57b59923f75d6f3410345af54897f960d42625f73f80b",
+      "parse_as_json": true
+    },
+    "binderBefore": {
+      "blob": "d2c655c8ad41b50d73c11cf410630d3458ec8517",
+      "bytes": 4230,
+      "sha256": "18ff4cc050d7c0b79135774569f870cec573dfd541cfcff3aef0283ba049eeb6",
+      "parse_as_json": false
+    },
+    "binderAfter": {
+      "blob": "048316d05012774530bf2db26811711f658f77ca",
+      "bytes": 4706,
+      "sha256": "1289154d08ce13b532f6f7c44d6e2854f2b24cd4e03705d8e5b02067ab1789a6",
+      "parse_as_json": false
+    },
+    "binderDiff": {
+      "blob": "dd5b837735e0b46c03fffb7b6737b08c9ce3ddb3",
+      "bytes": 3074,
+      "sha256": "dc0bcca5fe989690b90beac88612642d44e236d1ba4811a90c03fcbe74504a31",
+      "parse_as_json": false
+    }
+  },
+  "old_SOURCE_tree": "ed813dd7e3fc2f344737da2655e3af3ed69a3c2c",
+  "root_groups_packet": "f74d33fc97820415c8f62c5bebc7718f0d5376b6",
+  "B_profile_source": {
+    "blob": "1c22f8a929080588f7c2a249aac2e86846ec3d79",
+    "bytes": 36247,
+    "sha256": "163ef3165868a1f0c9263f9458efb3555577f9e92aeb7dfeea7bff41eac77c24"
+  },
+  "no_host_execution": true,
+  "note": "Read immutable exact UTF-8 fields. Only binding is parsed as JSON. Before files and unchanged large originals are referenced rather than re-published."
+}

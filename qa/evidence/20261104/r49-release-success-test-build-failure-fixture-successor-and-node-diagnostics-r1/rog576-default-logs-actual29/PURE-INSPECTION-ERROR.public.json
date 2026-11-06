@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.pure-inspection-error.r1",
+  "error": "ReferenceError: utf8 is not defined",
+  "location": "post-prepare pure stage-request inspection; eval helper alias only",
+  "previousNativeCall": "c576-fresh-build-r1-default-log-r5-p4",
+  "previousNativePhase": "accepted",
+  "alreadyArmed": "c576-fresh-build-r1-default-log-r5-p5",
+  "currentPending": "c576-fresh-build-r1-default-log-r5-p5",
+  "currentPhase": "armed_whole",
+  "currentCalled": false,
+  "NativeReplay": false,
+  "stateMutatedByInspection": false,
+  "correction": "Use gitBlobMeta(...).bytes; no Native call or arm is repeated."
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.public-log-stream-help-original-release.r1",
+  "job": {
+    "host": "mac",
+    "id": "1a1b322d357-fc05-80b9"
+  },
+  "originalGO": {
+    "blob": "e67eb0cac18f8c0a8451fae0f938293f28bf0742",
+    "bytes": 8430,
+    "sha256": "3fe5cd8c17e4936d4b8ec2306c972224b81d6d0dc6f4330dd2f6eb81bf02954a"
+  },
+  "exactRequest": {
+    "blob": "8a7c894d24f5066e645fbb4a180e525c634bc525",
+    "bytes": 45403,
+    "sha256": "fca6fb58992ee6b1e8ff00e7ffe886c831cfa2736ec2014543d78a7825e0ea9d"
+  },
+  "status": "COMPLETE_PUBLIC_HELP_ONLY",
+  "NativeCalls": 9,
+  "originalObservers": [
+    {
+      "id": "f45ab1dde42d8991e09166dd93014dff72d8fe231efa94f02f042180d5a4721d",
+      "tool": "process_status",
+      "payload": {
+        "blob": "7aaa46c2682c1474f9415b54802e4b3888b34174",
+        "bytes": 910,
+        "sha256": "07076c8b150b76ad8154ed1de248609b28a1e8db2da6d0d2e4d0977a206ce0b6"
+      },
+      "payloadTree": "8bd2e2d0a2138bd3c4b3d7e260e2b4ce09cef41e",
+      "nativeText": {
+        "blob": "04c305380c10c32d4ec12d272be53ab392e9f93e",
+        "bytes": 731,
+        "sha256": "a4a8b5b726e87ac0add6b504dd130ad44ff292f3c8377d022610f0ac401420aa"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "fea0767215f3d7fd947a87898f2090ebd866c16065f43f3738db258e66b7f76e",
+      "tool": "process_read",
+      "payload": {
+        "blob": "4092a476eb7a1a2c9e55946de9d1559c9340af71",
+        "bytes": 16728,
+        "sha256": "e1394b21161ddaa3370cb5dbe5aa442c9a791d65cd3ac455dffb02b627441f00"
+      },
+      "payloadTree": "ad1686c8f2b517b53c3ff4c3c7c20cf5b38265b2",
+      "nativeText": {
+        "blob": "3005485a12e5833183a8b038444aa691a0d22a88",
+        "bytes": 15801,
+        "sha256": "107d2485188f4fc2ea0b7c8f7c4d68cd3b02fd12bfef2453b7e56fcbc5f38c61"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "immutablePages": 4,
+  "authority": {
+    "state": "succeeded",
+    "exit": 0,
+    "full": true,
+    "durable": true,
+    "terminalConfirmed": true,
+    "stdout": {
+      "seen": 5028,
+      "stored": 5028
+    },
+    "stderr": {
+      "seen": 0,
+      "stored": 0
+    }
+  },
+  "stdout": {
+    "blob": "bd910af9d69d42ca4416f26cc5462d4785bab341",
+    "bytes": 5028,
+    "sha256": "46b769a0dec069759799eb57fc553d59a4c63d0556667d862fbc615c45b4db19"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "streamsEOF": {
+    "stdout": true,
+    "stderr": true,
+    "nextStdout": 5028,
+    "nextStderr": 0
+  },
+  "actualHelp": {
+    "argv": [
+      "/usr/bin/log",
+      "help",
+      "stream"
+    ],
+    "exit": 64,
+    "sourceStream": "stderr",
+    "bytes": 1684,
+    "sha256": "7dab64f70c9f470dd78aa7176e9b1c2599f210a54b576865e4d2f7705bfe9184",
+    "fullASCIIFormatAdmitted": true
+  },
+  "closure": {
+    "applicationFDs": 4,
+    "allApplicationDescriptorsClosed": true,
+    "ownedPrimaryHelpChildren": 1,
+    "allOwnedHelpChildrenClosed": true,
+    "allOwnedCommandsStopped": true,
+    "outcomeUnknown": false,
+    "deadlineMetAfterClosure": true,
+    "pendingSignalAfterRestore": null,
+    "closeErrors": [],
+    "signalRestoreErrors": []
+  },
+  "lane": {
+    "A": 0,
+    "activeRuntimeCall": false,
+    "knownFuture": false,
+    "activeObserver": null,
+    "pending": null,
+    "paused": false
+  },
+  "noReplay": true,
+  "logQueryExecuted": false,
+  "NodeExecuted": false,
+  "sdkExecuted": false,
+  "startupCauseQualified": false,
+  "historicalLineageClosureQualified": false,
+  "localCheckerHistory": {
+    "initialTreeAuditArgumentTypeErrorPreserved": true,
+    "correctedPureInvocationOnly": true,
+    "noNativeReissue": true
+  },
+  "nextStep": "Use this observed stream syntax in a separately reviewed live-denial SOURCE. No live log or Node permission is granted by this release."
+}

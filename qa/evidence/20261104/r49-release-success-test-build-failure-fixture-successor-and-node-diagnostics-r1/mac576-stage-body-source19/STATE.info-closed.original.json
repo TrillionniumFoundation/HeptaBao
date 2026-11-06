@@ -1,0 +1,803 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root.successor576-mac-source-stage.GO.r1\",\n  \"issuedAtUTC\": \"2026-11-06 22:20:52 UTC\",\n  \"authorization\": \"User requested completing remaining blockers and real Mac/Linux/LAN validation; this is one isolated Mac source stage for the reviewed frozen candidate.\",\n  \"lane\": \"C single Native lane\",\n  \"sourceTree\": \"1107d5ca1f903219e083c6abf791336d04cc48da\",\n  \"sourceRootQualification\": {\n    \"blob\": \"9b60355710392b42de1c8074278cb46fb2f1018a\",\n    \"bytes\": 1309,\n    \"sha256\": \"3349d2b83c56acaa65048c2df9f14b69885cbcf896a111ed713a06dd5ed801ee\"\n  },\n  \"candidateCommit\": \"5767739cd25e458ac052dc8d384019bab8688ae0\",\n  \"candidateTree\": \"42477d622dcf96e1e2b0929fe9ecc6b7ba484740\",\n  \"parentCommit\": \"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\",\n  \"exactRequest\": {\n    \"blob\": \"3b86e61a47028c1b5d8e23369ef336490dc6382b\",\n    \"bytes\": 32676,\n    \"sha256\": \"8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2\"\n  },\n  \"source\": {\n    \"blob\": \"57f978b5e6afc37e07577e803d72803a399e6887\",\n    \"bytes\": 23713,\n    \"sha256\": \"a70bc4e2234b709473f3fb2ae3fb279200011e9e3bc0da194d2972a554f114df\"\n  },\n  \"carrier\": {\n    \"blob\": \"f07869b53dec4249e2fd48c6e57a2e0a88badd2b\",\n    \"bytes\": 7772,\n    \"sha256\": \"94e495bd24e0a5ff4bdb2dcb970d10b169cb0aea6f04c3fca068e5ccf60734d8\"\n  },\n  \"journal\": {\n    \"blob\": \"9f29f42096f7d230210455cbfabfa7798a63fcd0\",\n    \"bytes\": 19050,\n    \"sha256\": \"c533a12a85ebc81bec9cfd1c39f5a43f7eef69f99df630f68ccbffde6048a0fc\"\n  },\n  \"slot\": \"successor576_mac_source_only_stage_gitfirst_r1\",\n  \"key\": \"heptabao-5767739c-mac-source-only-20261106-r1-a70bc4e2\",\n  \"native_binding\": {\n    \"sha256\": \"dae9bc16adfb96104073ba4a7571815b5aa6d153f961454d671b1e3a947b7d24\",\n    \"native_fingerprint\": \"15774345975436121616\"\n  },\n  \"host\": \"mac\",\n  \"freshRoot\": \"/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1\",\n  \"readOnlyCloneBase\": \"/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source\",\n  \"requiredVolumeUUID\": \"FB804D1B-24CB-4D6E-AEA7-A9E180807758\",\n  \"canonicalBundle\": {\n    \"schema\": \"heptabao.mac-successor576.actual-bundle-bindings.v1\",\n    \"ready\": true,\n    \"candidate\": {\n      \"commit\": \"5767739cd25e458ac052dc8d384019bab8688ae0\",\n      \"tree\": \"42477d622dcf96e1e2b0929fe9ecc6b7ba484740\",\n      \"parent\": \"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\"\n    },\n    \"producer\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle\",\n      \"report\": {\n        \"blob\": \"f2b99e2c118f4066e99f6f926427ca67cd61d1b2\",\n        \"bytes\": 29748,\n        \"sha256\": \"ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662\"\n      },\n      \"rootQualification\": {\n        \"blob\": \"85a51c6822278e590be623c323f19d86d0f82bb0\",\n        \"bytes\": 2941,\n        \"sha256\": \"809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6\"\n      }\n    },\n    \"bundle\": {\n      \"bytes\": 5766,\n      \"sha256\": \"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a\",\n      \"full9\": [\n        \"66306\",\n        \"31358148\",\n        \"1000\",\n        \"1000\",\n        \"33152\",\n        \"1\",\n        \"5766\",\n        \"1794000539740776688\",\n        \"1794000539740776688\"\n      ],\n      \"version\": \"66306:31358148:5766:1794000539740776688:1794000539740776688\",\n      \"headerSha256\": \"5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9\"\n    },\n    \"infoNative\": {\n      \"blob\": \"b40eebebed4155bff74279c2b1d06cb8e2dd181e\",\n      \"bytes\": 472,\n      \"sha256\": \"06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8\"\n    },\n    \"infoOperation\": \"eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b\",\n    \"bodyOperations\": [\n      \"66156671a53584aade1ab361827dcd7714539359fcfc964e75af16d58fb3e4fc\"\n    ],\n    \"transport\": {\n      \"blob\": \"9fbaf8430240c8b767e40bd17b9b1ae932ea93e5\",\n      \"bytes\": 869,\n      \"sha256\": \"0f1d23c49bdf8e9254b84ab95f4bf7192c46d710bb8dc30d1392685b126f2290\"\n    },\n    \"transportRootQualification\": {\n      \"blob\": \"72cc86bbdbe09496c13865bb1d642d0423c873ba\",\n      \"bytes\": 2340,\n      \"sha256\": \"17426f94a2a78f325bd5e2e1c9340574860e99ba5b53aae2020cd55ca7e68eab\"\n    },\n    \"base64\": {\n      \"blob\": \"80317c9867cd6485b4a308e9d512de2d99d02c12\",\n      \"bytes\": 7689,\n      \"sha256\": \"bdbfecb000ed9119a5de46bd1e5ed5d986bb453a22f0fba841dc7cedb6571797\"\n    }\n  },\n  \"scope\": \"One unique process_start; same original job process_status/process_read only under the unchanged reviewed journal.\",\n  \"budgets\": {\n    \"stage\": 300,\n    \"gitLeaf\": 90,\n    \"clone\": 180,\n    \"outer\": 360,\n    \"term\": 5,\n    \"kill\": 5,\n    \"stdin\": 262144,\n    \"actualStdin\": 7772,\n    \"totalTracked\": 134217728,\n    \"processStarts\": 1,\n    \"processStatusObservers\": 64,\n    \"processReadObservers\": 129,\n    \"perObserverStatusCalls\": 8,\n    \"perObserverImmutablePages\": 128,\n    \"processRead\": 16384,\n    \"immutablePage\": 8192,\n    \"payload\": 1048576,\n    \"originalStdoutBytes\": 2097152,\n    \"originalStderrBytes\": 2097152\n  },\n  \"required\": {\n    \"freshSlotInitializeOnlyOnce\": true,\n    \"wholeOriginalIntentBeforeDispatch\": true,\n    \"modelBoundaryBeforeDispatch\": true,\n    \"originalSDKWholeBeforeParse\": true,\n    \"sameOriginalJobOnly\": true,\n    \"baseFrozenBeforeAndAfter\": true,\n    \"independentLocalCloneNoAlternatesOrHardlinks\": true,\n    \"allOwnedHelpersAndDescriptorsClosed\": true,\n    \"originalAuthorityAndFullStreamsRequired\": true\n  },\n  \"expected\": {\n    \"history\": 3769,\n    \"fullLeafCount\": 3932,\n    \"trackedBytes\": 62553540,\n    \"fullLeafIndexSHA256\": \"20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423\"\n  },\n  \"onError\": \"Preserve original failure or UNKNOWN; no replay, replacement job, new key, or unreviewed Native recovery. Identical-SHA Git read reconciliation does not authorize a second Native dispatch.\",\n  \"notIncluded\": {\n    \"reportFileInfoOrBody\": false,\n    \"controlsPublication\": false,\n    \"Cargo\": false,\n    \"formatter\": false,\n    \"productServer\": false,\n    \"credentials\": false,\n    \"productionCutover\": false,\n    \"legacyCleanup\": false\n  },\n  \"qualification\": {\n    \"MacStageSuccessNotAssumed\": true,\n    \"normal117\": false,\n    \"full34\": false,\n    \"LAN\": false,\n    \"fullReplacement\": false\n  },\n  \"lane_allocation\": {\n    \"A\": 0,\n    \"B\": 1,\n    \"C\": 1,\n    \"root\": 0,\n    \"maximum\": 2\n  }\n}\n",
+  "goPin": {
+    "blob": "1a8e8424b14962df0c3d49b67a0b549f6a1abf58",
+    "bytes": 6318,
+    "sha256": "3ff1cb3b1c4c68d996ee5dd8904a8f0cccdc49ef9c09be11169aa485fc05e21f"
+  },
+  "digest": "dae9bc16adfb96104073ba4a7571815b5aa6d153f961454d671b1e3a947b7d24",
+  "fingerprint": "15774345975436121616",
+  "job": "1a1b2f48641-fc05-8042",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "c576mac-stage-start-r1": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/bin/python3\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"-c\",\n    \"#!/usr/bin/env python3\\n\\\"\\\"\\\"Create one independent exact final MAC checkout from a source-only carrier; no Cargo or product.\\\"\\\"\\\"\\nfrom pathlib import Path, PurePosixPath\\nimport argparse\\nimport base64\\nimport hashlib\\nimport json\\nimport os\\nimport plistlib\\nimport signal\\nimport stat\\nimport subprocess\\nimport sys\\nimport time\\n\\nos.umask(0o077)\\nSTARTED = time.monotonic()\\nSTAGE_SECONDS = 300.0\\nparser = argparse.ArgumentParser()\\nparser.add_argument('--self-sha256', required=True)\\nparser.add_argument('--carrier-sha256', required=True)\\nparser.add_argument('--canonical-bundle-bytes', required=True, type=int)\\nparser.add_argument('--canonical-bundle-sha256', required=True)\\nargs = parser.parse_args()\\nargs.host = 'mac'\\nROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1')\\nSOURCE = ROOT / 'source'\\nCONTROL = ROOT / 'control'\\nOLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source')\\nOLD_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'\\nOLD_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'\\nCOMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'\\nTREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'\\nPARENT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'\\nANCESTRY = (\\n    ('5767739cd25e458ac052dc8d384019bab8688ae0', '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'),\\n)\\nROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'\\nORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'\\n\\n\\nchildren = []\\nprotected = 0\\npending_signal = None\\ncreated_control = False\\nprewrite_guard_record = None\\n\\nclass Cancelled(BaseException):\\n    pass\\n\\n\\ndef on_signal(signum, _frame):\\n    global pending_signal\\n    pending_signal = signum\\n    if not protected:\\n        raise Cancelled()\\n\\n\\nfor signum in (signal.SIGINT, signal.SIGTERM):\\n    signal.signal(signum, on_signal)\\n\\n\\ndef digest(raw):\\n    return hashlib.sha256(raw).hexdigest()\\n\\n\\ndef blob(raw):\\n    return hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\\\\0' + raw).hexdigest()\\n\\n\\ndef identity(info):\\n    return (info.st_dev, info.st_ino, info.st_uid, info.st_gid, info.st_mode,\\n            info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)\\n\\n\\ndef stable_read(path, limit, expected_size=None, expected_sha=None):\\n    assert path.resolve(strict=True) == path\\n    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)\\n    try:\\n        before = os.fstat(fd)\\n        assert stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()\\n        assert before.st_nlink == 1 and 0 <= before.st_size <= limit\\n        chunks, count = [], 0\\n        while True:\\n            part = os.read(fd, min(1024 * 1024, limit + 1 - count))\\n            if not part:\\n                break\\n            chunks.append(part)\\n            count += len(part)\\n            assert count <= limit\\n        raw = b''.join(chunks)\\n        assert count == before.st_size\\n        assert identity(before) == identity(os.fstat(fd)) == identity(path.lstat())\\n        if expected_size is not None:\\n            assert count == expected_size\\n        if expected_sha is not None:\\n            assert digest(raw) == expected_sha\\n        return raw\\n    finally:\\n        os.close(fd)\\n\\n\\ndef fsync_dir(path):\\n    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\\n    try:\\n        os.fsync(fd)\\n    finally:\\n        os.close(fd)\\n\\n\\ndef create(path, raw, mode=0o600):\\n    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, mode)\\n    with os.fdopen(fd, 'wb') as out:\\n        out.write(raw)\\n        out.flush()\\n        os.fchmod(out.fileno(), mode)\\n        os.fsync(out.fileno())\\n\\n\\ndef public(path, value):\\n    create(path, (json.dumps(value, indent=2, sort_keys=True) + '\\\\n').encode())\\n    fsync_dir(path.parent)\\n\\n\\ndef group_members(pgid):\\n    raw = subprocess.check_output(\\n        ['/bin/ps', '-axo', 'pid=,ppid=,pgid=,stat='], text=True, timeout=10)\\n    result = []\\n    for line in raw.splitlines():\\n        values = line.split()\\n        if len(values) >= 4 and int(values[2]) == pgid:\\n            result.append({'pid': int(values[0]), 'ppid': int(values[1]),\\n                           'pgid': int(values[2]), 'state': values[3]})\\n    return result\\n\\n\\ndef stop_owned(process):\\n    # Signal only while the original direct child has not been reaped.\\n    if process.poll() is None:\\n        try:\\n            os.killpg(process.pid, signal.SIGTERM)\\n        except ProcessLookupError:\\n            pass\\n        try:\\n            process.wait(timeout=5)\\n        except subprocess.TimeoutExpired:\\n            try:\\n                os.killpg(process.pid, signal.SIGKILL)\\n            except ProcessLookupError:\\n                pass\\n            process.wait(timeout=5)\\n    # A residual group after reap is a failure, never authority to signal it.\\n    return group_members(process.pid)\\n\\n\\nenvironment = dict(os.environ)\\nenvironment.update({'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': '/dev/null',\\n                    'GIT_TERMINAL_PROMPT': '0', 'GIT_OPTIONAL_LOCKS': '0',\\n                    'LANG': 'C', 'LC_ALL': 'C', 'GIT_NO_LAZY_FETCH': '1',\\n                    'GIT_NO_REPLACE_OBJECTS': '1',\\n                    'GIT_ALLOW_PROTOCOL': 'file' if args.host == 'mac' else 'file:https'})\\nfor key in list(environment):\\n    if key in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_OBJECT_DIRECTORY',\\n               'GIT_ALTERNATE_OBJECT_DIRECTORIES', 'GIT_CONFIG_COUNT') or key.startswith('GIT_CONFIG_KEY_') or key.startswith('GIT_CONFIG_VALUE_'):\\n        environment.pop(key)\\n\\n\\ndef owned(label, argv, limit=90, cwd=None):\\n    global protected\\n    prefix = '%03d-%s' % (len(children), label)\\n    stdout_path = CONTROL / (prefix + '.stdout')\\n    stderr_path = CONTROL / (prefix + '.stderr')\\n    start = time.monotonic()\\n    timed_out = False\\n    with stdout_path.open('xb') as out, stderr_path.open('xb') as err:\\n        protected += 1\\n        try:\\n            process = subprocess.Popen(argv, cwd=cwd, env=environment,\\n                                       stdin=subprocess.DEVNULL, stdout=out,\\n                                       stderr=err, start_new_session=True)\\n            children.append((prefix, process))\\n        finally:\\n            protected -= 1\\n        if pending_signal is not None:\\n            raise Cancelled()\\n        try:\\n            code = process.wait(timeout=limit)\\n        except subprocess.TimeoutExpired:\\n            timed_out = True\\n            stop_owned(process)\\n            code = process.returncode\\n        finally:\\n            if process.poll() is None:\\n                stop_owned(process)\\n            out.flush()\\n            err.flush()\\n            os.fsync(out.fileno())\\n            os.fsync(err.fileno())\\n    remaining = group_members(process.pid)\\n    receipt = {'argv': argv, 'exit_code': code, 'timed_out': timed_out,\\n               'elapsed_seconds': time.monotonic() - start, 'limit_seconds': limit,\\n               'pid': process.pid, 'direct_child_reaped': process.returncode is not None,\\n               'remaining': remaining, 'stdout_sha256': digest(stdout_path.read_bytes()),\\n               'stderr_sha256': digest(stderr_path.read_bytes())}\\n    public(CONTROL / (prefix + '.public.json'), receipt)\\n    assert code == 0 and not timed_out and not remaining, 'owned command failed: ' + label\\n    return stdout_path.read_bytes()\\n\\n\\ndef git(path, *command):\\n    return owned('git-' + command[0], ['/usr/bin/git', '-c', 'gc.auto=0',\\n        '-c', 'maintenance.auto=false', '-c', 'core.hooksPath=' + str(CONTROL / 'empty-hooks'),\\n        '-c', 'core.fsmonitor=false', '-c', 'log.showSignature=false',\\n        '-c', 'protocol.allow=never', '-c', 'protocol.file.allow=always',\\n        '-c', 'protocol.https.allow=' + ('never' if args.host == 'mac' else 'always'),\\n        '-C', str(path), *command])\\n\\n\\n\\n\\ndef stage_remaining():\\n    value = STAGE_SECONDS - (time.monotonic() - STARTED)\\n    assert value > 0, 'source stage absolute deadline'\\n    return value\\n\\n\\n# All original owned-child lifecycle code above is retained byte for byte.\\n# Clamp each new source command to its existing leaf limit and this stage budget.\\noriginal_owned = owned\\ndef owned(label, argv, limit=90, cwd=None):\\n    return original_owned(label, argv, min(limit, stage_remaining()), cwd)\\n\\n\\ndef freeze(path):\\n    return {'commit': git(path, 'rev-parse', 'HEAD').decode().strip(),\\n            'tree': git(path, 'rev-parse', 'HEAD^{tree}').decode().strip(),\\n            'status': git(path, 'status', '--porcelain=v1', '--untracked-files=all').decode()}\\n\\n\\n\\n\\ndef walk_error(error):\\n    raise error\\n\\n\\ndef independent_git():\\n    assert git(SOURCE, 'rev-parse', '--absolute-git-dir').decode().strip() == str(SOURCE / '.git')\\n    common = Path(git(SOURCE, 'rev-parse', '--git-common-dir').decode().strip())\\n    common = common if common.is_absolute() else SOURCE / common\\n    assert common.resolve(strict=True) == SOURCE / '.git'\\n    assert not os.path.lexists(SOURCE / '.git/objects/info/alternates')\\n    count = 0\\n    for directory, dirs, names in os.walk(SOURCE / '.git/objects', followlinks=False, onerror=walk_error):\\n        stage_remaining()\\n        for name in dirs:\\n            p = Path(directory) / name\\n            info = p.lstat()\\n            assert stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode) and info.st_uid == os.getuid()\\n        for name in names:\\n            p = Path(directory) / name\\n            info = p.lstat()\\n            assert stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1\\n            assert not name.endswith('.promisor')\\n            count += 1\\n    assert count > 0\\n    return {'independent_git_directory': True, 'no_alternates': True,\\n            'no_shared_object_links': True, 'object_files_checked': count}\\n\\n\\ndef verify_full_worktree():\\n    raw = git(SOURCE, 'ls-tree', '-r', '-z', '--full-tree', 'HEAD')\\n    entries = []\\n    for item in raw.split(b'\\\\0'):\\n        if not item:\\n            continue\\n        head, relative_raw = item.split(b'\\\\t', 1)\\n        mode, kind, object_id = head.decode().split()\\n        relative = relative_raw.decode('utf-8')\\n        p = PurePosixPath(relative)\\n        assert kind == 'blob' and mode in ('100644', '100755')\\n        assert not p.is_absolute() and '..' not in p.parts and str(p) == relative\\n        entries.append((relative, mode, object_id))\\n    assert len(entries) == 3932 and len({x[0] for x in entries}) == 3932\\n    indexed = []\\n    for item in git(SOURCE, 'ls-files', '--stage', '-z').split(b'\\\\0'):\\n        if not item:\\n            continue\\n        head, path = item.split(b'\\\\t', 1)\\n        mode, object_id, stage = head.decode().split()\\n        assert stage == '0'\\n        indexed.append((path.decode('utf-8'), mode, object_id))\\n    assert sorted(indexed) == sorted(entries)\\n    total, proof = 0, hashlib.sha256()\\n    for relative, mode, object_id in entries:\\n        stage_remaining()\\n        path = SOURCE / relative\\n        assert path.resolve(strict=True) == path\\n        content = stable_read(path, 2 * 1024 * 1024)\\n        info = path.lstat()\\n        assert bool(info.st_mode & 0o111) == (mode == '100755')\\n        assert not info.st_mode & 0o022\\n        assert blob(content) == object_id\\n        total += len(content)\\n        assert total <= 128 * 1024 * 1024\\n        proof.update((relative + '\\\\0' + mode + '\\\\0' + object_id + '\\\\0' + str(len(content)) + '\\\\n').encode())\\n    runtime = stable_read(SOURCE / 'crates/heptabao-server/src/ha_native_v6_runtime.rs',\\n                          65536, 61623,\\n                          '5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a')\\n    assert blob(runtime) == '3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3'\\n    stage_remaining()\\n    return {'tracked_leaf_count': len(entries), 'tracked_bytes': total,\\n            'full_leaf_index_sha256': proof.hexdigest(), 'index_matches_tree': True,\\n            'all_tracked_worktree_blobs_and_modes_match': True}\\n\\n\\n\\ndef canonical_bundle_header(raw):\\n    end = raw.find(b'\\\\n\\\\n', 0, 65536)\\n    assert end > 0 and raw[end + 2:end + 6] == b'PACK'\\n    lines = raw[:end].split(b'\\\\n')\\n    assert lines.pop(0) == b'# v2 git bundle'\\n    prerequisites, heads = [], []\\n    for line in lines:\\n        if line.startswith(b'-'):\\n            object_id, separator, _message = line[1:].partition(b' ')\\n            assert separator\\n            prerequisites.append(object_id.decode('ascii'))\\n        else:\\n            object_id, separator, name = line.partition(b' ')\\n            assert separator\\n            heads.append([object_id.decode('ascii'), name.decode('ascii')])\\n    assert prerequisites == [OLD_COMMIT]\\n    assert heads == [[COMMIT, 'HEAD']]\\n    return {'version': 2, 'prerequisites': prerequisites, 'heads': heads,\\n            'header_sha256': digest(raw[:end + 2])}\\n\\ndef prewrite_volume_guard():\\n    # Original diskutil 30-second cap, with the same protected Popen/owned group.\\n    # No path on the candidate volume is written until its exact UUID is known.\\n    global protected, prewrite_guard_record\\n    argv = ['/usr/sbin/diskutil', 'info', '-plist', '/Volumes/T5']\\n    prefix = '%03d-t5-volume-identity' % len(children)\\n    start = time.monotonic()\\n    timed_out = False\\n    stage_remaining()\\n    protected += 1\\n    try:\\n        process = subprocess.Popen(argv, env=environment, stdin=subprocess.DEVNULL,\\n                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,\\n                                   start_new_session=True)\\n        children.append((prefix, process))\\n    finally:\\n        protected -= 1\\n    if pending_signal is not None:\\n        raise Cancelled()\\n    try:\\n        out, err = process.communicate(timeout=min(30, stage_remaining()))\\n    except subprocess.TimeoutExpired:\\n        timed_out = True\\n        stop_owned(process)\\n        out, err = process.communicate(timeout=5)\\n    finally:\\n        if process.poll() is None:\\n            stop_owned(process)\\n    remaining = group_members(process.pid)\\n    assert len(out) <= 65536 and len(err) <= 65536\\n    receipt = {'argv': argv, 'exit_code': process.returncode, 'timed_out': timed_out,\\n               'elapsed_seconds': time.monotonic() - start, 'limit_seconds': 30,\\n               'pid': process.pid, 'direct_child_reaped': process.returncode is not None,\\n               'remaining': remaining, 'stdout_sha256': digest(out), 'stderr_sha256': digest(err)}\\n    prewrite_guard_record = (prefix, out, err, receipt)\\n    assert process.returncode == 0 and not timed_out and not remaining\\n    info = plistlib.loads(out)\\n    assert info.get('VolumeUUID') == 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'\\n    stage_remaining()\\n    return info['VolumeUUID']\\n\\n\\nassert (os.uname().sysname, os.uname().machine, os.getuid()) == ('Darwin', 'arm64', 501)\\nassert ROOT.parent.resolve(strict=True) == ROOT.parent and ROOT.parent.stat().st_uid == os.getuid()\\nassert OLD.resolve(strict=True) == OLD\\nsource_index = sys.orig_argv.index('-c') + 1\\nself_source = sys.orig_argv[source_index]\\nassert digest(self_source.encode()) == args.self_sha256\\ncarrier = sys.stdin.buffer.read(262145)\\nassert len(carrier) <= 262144 and digest(carrier) == args.carrier_sha256\\ndata = json.loads(carrier)\\nassert set(data) == {'schema', 'canonical_bundle_base64'}\\nassert data['schema'] == 'heptabao.final-mac-source-only-carrier.v1'\\nassert isinstance(data['canonical_bundle_base64'], str)\\ncanonical_raw = base64.b64decode(data['canonical_bundle_base64'], validate=True)\\nCANONICAL_BUNDLE_BYTES = 5766\\nCANONICAL_BUNDLE_SHA256 = '0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a'\\nassert isinstance(CANONICAL_BUNDLE_BYTES, int), 'actual ROG bundle binding unresolved'\\nassert isinstance(CANONICAL_BUNDLE_SHA256, str), 'actual ROG bundle binding unresolved'\\nassert args.canonical_bundle_bytes == CANONICAL_BUNDLE_BYTES\\nassert args.canonical_bundle_sha256 == CANONICAL_BUNDLE_SHA256\\nassert len(canonical_raw) == args.canonical_bundle_bytes\\nassert digest(canonical_raw) == args.canonical_bundle_sha256\\ncanonical_header = canonical_bundle_header(canonical_raw)\\nassert not os.path.lexists(ROOT)\\nresult = {'schema': 'heptabao.final-mac-source-only-stage.v1', 'status': 'failed',\\n          'source_commit': COMMIT, 'source_tree': TREE, 'sole_parent': PARENT,\\n          'root': str(ROOT), 'source': str(SOURCE), 'host': 'mac',\\n          'stager_sha256': args.self_sha256, 'carrier_sha256': args.carrier_sha256,\\n          'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,\\n          'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,\\n          'server_started': False, 'compiler_started': False, 'production_changed': False,\\n          'source_ref': 'refs/heads/codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106',\\n          'canonical_history_count': 3769, 'actual_build_qualification': False,\\n          'stage_purpose': 'SOURCE_ONLY_NO_BUILD_CONTROLS',\\n          'controls_published': False, 'started_ns': time.time_ns()}\\nbefore = None\\ntry:\\n    stage_remaining()\\n    result['external_volume_uuid'] = prewrite_volume_guard()\\n    canonical_path = ROOT.parent / 'canonical-hb-5767739c-from02b-20261106-r1.bundle'\\n    stage_remaining()\\n    assert not os.path.lexists(canonical_path)\\n    create(canonical_path, canonical_raw)\\n    fsync_dir(ROOT.parent)\\n    assert stable_read(canonical_path, 4 * 1024 * 1024,\\n                       args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw\\n    canonical_identity = identity(canonical_path.lstat())\\n    assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600\\n    result['canonical_bundle_published_after_volume_guard'] = True\\n    stage_remaining()\\n    ROOT.mkdir(mode=0o700)\\n    CONTROL.mkdir(mode=0o700)\\n    created_control = True\\n    (CONTROL / 'empty-hooks').mkdir(mode=0o700)\\n    (CONTROL / 'empty-template').mkdir(mode=0o700)\\n    create(CONTROL / 'stage_source_same_root_publication.py', self_source.encode())\\n    fsync_dir(CONTROL)\\n    fsync_dir(ROOT)\\n    fsync_dir(ROOT.parent)\\n    if prewrite_guard_record is not None:\\n        prefix, out, err, receipt = prewrite_guard_record\\n        create(CONTROL / (prefix + '.stdout'), out)\\n        create(CONTROL / (prefix + '.stderr'), err)\\n        public(CONTROL / (prefix + '.public.json'), receipt)\\n    public(CONTROL / 'stage-intent.public.json', result)\\n    before = freeze(OLD)\\n    assert before == {'commit': OLD_COMMIT, 'tree': OLD_TREE, 'status': ''}\\n    result['old_source_before'] = before\\n    owned('independent-local-clone',\\n          ['/usr/bin/git', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false',\\n           '-c', 'core.hooksPath=' + str(CONTROL / 'empty-hooks'),\\n           '-c', 'protocol.allow=never', '-c', 'protocol.file.allow=always',\\n           'clone', '--no-hardlinks', '--dissociate', '--no-checkout',\\n           '--template=' + str(CONTROL / 'empty-template'), str(OLD), str(SOURCE)], 180)\\n    git(SOURCE, 'remote', 'set-url', 'origin', ORIGIN)\\n    assert git(SOURCE, 'remote', 'get-url', 'origin').decode().strip() == ORIGIN\\n    assert identity(canonical_path.lstat()) == canonical_identity\\n    assert stable_read(canonical_path, 4 * 1024 * 1024,\\n                       args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw\\n    git(SOURCE, 'bundle', 'verify', str(canonical_path))\\n    assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == COMMIT + ' HEAD'\\n    git(SOURCE, '-c', 'fetch.fsckObjects=true', '-c', 'transfer.fsckObjects=true',\\n        'fetch', '--no-tags', '--no-recurse-submodules', '--no-write-fetch-head', str(canonical_path), 'HEAD')\\n    assert identity(canonical_path.lstat()) == canonical_identity\\n    assert stable_read(canonical_path, 4 * 1024 * 1024,\\n                       args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw\\n    result['canonical_bundle'] = {'path': str(canonical_path), 'bytes': len(canonical_raw),\\n                                  'sha256': digest(canonical_raw), 'header': canonical_header,\\n                                  'identity': list(canonical_identity),\\n                                  'public_network_import_required_on_mac': False}\\n    assert git(SOURCE, 'rev-parse', COMMIT + '^{tree}').decode().strip() == TREE\\n    for child_commit, parent_commit in ANCESTRY:\\n        assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit\\n    added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()\\n    assert len(added) == 1 and set(added) == {row[0] for row in ANCESTRY}\\n    result['new_commits_since_actual_02b'] = added\\n    assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3768'\\n    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3769'\\n    assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT\\n    git(SOURCE, 'checkout', '--detach', COMMIT)\\n    assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}\\n    git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)\\n    result.update(independent_git())\\n    result['full_worktree'] = verify_full_worktree()\\n    assert result['full_worktree']['tracked_bytes'] == 62553540\\n    assert result['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'\\n    assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}\\n    result['old_source_after'] = freeze(OLD)\\n    assert result['old_source_after'] == before\\n    stage_remaining()\\n    result.update(status='prepared', source_clean=True, old_source_unchanged=True,\\n                  public_network_fetch_used=False, full_strict_fsck_passed=True)\\nexcept BaseException as error:\\n    result['error_type'] = type(error).__name__\\n    # All raw Git stderr remains in new private files; no exception text is published.\\nfinally:\\n    signal.signal(signal.SIGTERM, signal.SIG_IGN)\\n    signal.signal(signal.SIGINT, signal.SIG_IGN)\\n    cleanup = []\\n    for label, process in reversed(children):\\n        try:\\n            remaining_group = stop_owned(process)\\n            cleanup.append({'label': label, 'pid': process.pid, 'exit_code': process.returncode,\\n                            'direct_child_reaped': process.returncode is not None,\\n                            'remaining': remaining_group})\\n        except BaseException as error:\\n            cleanup.append({'label': label, 'pid': process.pid,\\n                            'direct_child_reaped': process.returncode is not None,\\n                            'remaining': None, 'cleanup_error_type': type(error).__name__})\\n    result['cleanup'] = cleanup\\n    if pending_signal is not None or any(x.get('cleanup_error_type') or x['remaining'] or not x['direct_child_reaped'] for x in cleanup):\\n        result['status'] = 'failed'\\n    result['elapsed_seconds_after_cleanup'] = time.monotonic() - STARTED\\n    result['within_new_stage_deadline'] = result['elapsed_seconds_after_cleanup'] < STAGE_SECONDS\\n    if not result['within_new_stage_deadline']:\\n        result['status'] = 'failed'\\n    result['terminal_ns'] = time.time_ns()\\n    if created_control:\\n        public(CONTROL / 'stage-result.public.json', result)\\n    print(json.dumps({'status': result['status'], 'source_commit': COMMIT, 'source_tree': TREE,\\n                      'result_path': str(CONTROL / 'stage-result.public.json') if created_control else None,\\n                      'all_owned_stopped': all(not x.get('cleanup_error_type') and not x['remaining'] and x['direct_child_reaped'] for x in cleanup),\\n                      'within_new_stage_deadline': time.monotonic() - STARTED < STAGE_SECONDS,\\n                      'server_started': False, 'compiler_started': False}, sort_keys=True), flush=True)\\nraise SystemExit(0 if result['status'] == 'prepared' and time.monotonic() - STARTED < STAGE_SECONDS else 1)\\n\",\n    \"--self-sha256\",\n    \"a70bc4e2234b709473f3fb2ae3fb279200011e9e3bc0da194d2972a554f114df\",\n    \"--carrier-sha256\",\n    \"94e495bd24e0a5ff4bdb2dcb970d10b169cb0aea6f04c3fca068e5ccf60734d8\",\n    \"--canonical-bundle-bytes\",\n    \"5766\",\n    \"--canonical-bundle-sha256\",\n    \"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a\"\n  ],\n  \"cwd\": \"/Volumes/T5/hepta-vnext-recovery-20261013\",\n  \"stdin\": \"{\\\"schema\\\":\\\"heptabao.final-mac-source-only-carrier.v1\\\",\\\"canonical_bundle_base64\\\":\\\"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\\\"}\\n\",\n  \"timeout_seconds\": 360,\n  \"idempotency_key\": \"heptabao-5767739c-mac-source-only-20261106-r1-a70bc4e2\"\n}\n",
+      "requestPin": {
+        "blob": "3b86e61a47028c1b5d8e23369ef336490dc6382b",
+        "bytes": 32676,
+        "sha256": "8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "6e97e4a53a731445eda4c6e77308a114d5e263b2",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "f5ad3411aea554c3e562ff1052e08cdba50aae18",
+            "bytes": 830,
+            "sha256": "84af083ec1314131b04cf1700044699891c76e6076448060e124199dd766bb05",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "4ceffe5432a984c3b312ccdc592055a1548c1eef",
+            "bytes": 693,
+            "sha256": "e0c5cb88c23c2282de62c576a9569724f9737bff61163ae5fdabbb4c48d4412a",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "3b86e61a47028c1b5d8e23369ef336490dc6382b",
+            "bytes": 32676,
+            "sha256": "8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 34199,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "07e2709dd86bf2e0212dbf3f0a8f4da078e5358c",
+        "bytes": 26581,
+        "sha256": "73f34eb7cffe90634a292bb65be8687c8bb23b3ae1bc2d958746b84a159f627e"
+      },
+      "sdkArchive": {
+        "tree": "e75af04212fb8fdf9a9392f97f810aa9ef4e2bcb",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "07e2709dd86bf2e0212dbf3f0a8f4da078e5358c",
+            "bytes": 26581,
+            "sha256": "73f34eb7cffe90634a292bb65be8687c8bb23b3ae1bc2d958746b84a159f627e",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 26581,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "13f193c5ca6cc4c2f7ad333c78a23bc9c04a0576",
+        "bytes": 25746,
+        "sha256": "83e25a8dec2f92c087fd71c5840fa566c914ef5bc952f7eac199bd12a2fc25ff"
+      }
+    },
+    "c576mac-stage-authority0-admit-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b2f48641-fc05-8042\"\n    }\n  },\n  \"idempotency_key\": \"heptabao-5767739c-mac-source-only-a70bc4e2-authority0\"\n}\n",
+      "requestPin": {
+        "blob": "903139476548b062992961ded5936e5f7b1d8646",
+        "bytes": 219,
+        "sha256": "6ffcba4a56f70b35387d078ce74b9b934787ed0d751fb14accf0efc5833d5cd0"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "c9e10ba9f820a5d1ab51de1bc59f421a96f9ed00",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "00a3143767169e056cc224f934a79e9b49d8cc97",
+            "bytes": 860,
+            "sha256": "5b591f7ce725d782c56ab9b5942ad67270c4d3c9fdf5d5aee907dc560527e77c",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "6d006536c229316a9bdade5c509c4c3f75eb85f9",
+            "bytes": 723,
+            "sha256": "6a668ec5269169a284895292f9afb33dddcfbdf35cb8401ceff4fa7398a78a75",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "903139476548b062992961ded5936e5f7b1d8646",
+            "bytes": 219,
+            "sha256": "6ffcba4a56f70b35387d078ce74b9b934787ed0d751fb14accf0efc5833d5cd0",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1802,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "cf91776cbac566b4cd19c75fa95c88c108a421f7",
+        "bytes": 709,
+        "sha256": "7a67f51fdb46bacfb0887a223351d54d3305c1c01cef947dade991ab5034f1d9"
+      },
+      "sdkArchive": {
+        "tree": "89e2be5d5fe2b07fe04738ee0d69274aceede561",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "cf91776cbac566b4cd19c75fa95c88c108a421f7",
+            "bytes": 709,
+            "sha256": "7a67f51fdb46bacfb0887a223351d54d3305c1c01cef947dade991ab5034f1d9",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "72b817cf505b72e84198cd35cdc2ac35cd697878",
+        "bytes": 548,
+        "sha256": "b59325ed7e2e924bd25f0f0ad59891c5908bd612321b096db7825e566b749b24"
+      }
+    },
+    "c576mac-stage-authority0-status0-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"24996cdec21dd44779c9fac959650c6f2cb0d301928340729434ca3e82173560\"\n}\n",
+      "requestPin": {
+        "blob": "09f7fb58e2d7724559611a5efd0d0f4452620707",
+        "bytes": 89,
+        "sha256": "895299b4795464c72917ffcb89e21d1507ed15080f0aa8b7cf449cf92a362a65"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "a03991b7b4e8b0efd7df619e87eb92d17e7660a6",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "559e85c5de1ba34323f4ca2731bc143a671a12ac",
+            "bytes": 924,
+            "sha256": "45b7dcb7486f5075bfaf297708328c6bfe6dd19400c748569893ea88a672d504",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "433546a5eb0cb3099a4b0395c5606fa4c03acbfb",
+            "bytes": 787,
+            "sha256": "5037e0f882c08f14bd6391a2fe615d46ede05a9c0954494064be5baaf211e2a9",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "09f7fb58e2d7724559611a5efd0d0f4452620707",
+            "bytes": 89,
+            "sha256": "895299b4795464c72917ffcb89e21d1507ed15080f0aa8b7cf449cf92a362a65",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1800,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "feea4a5cb7ed667afbb391ef89a2874f588c46f9",
+        "bytes": 980,
+        "sha256": "17ed67a80e5ee094a03a53937f55074de496384e5d99832a759039e7afa22966"
+      },
+      "sdkArchive": {
+        "tree": "8087eda6a975386953ec9f1cc68ab7fdb4fa437e",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "feea4a5cb7ed667afbb391ef89a2874f588c46f9",
+            "bytes": 980,
+            "sha256": "17ed67a80e5ee094a03a53937f55074de496384e5d99832a759039e7afa22966",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a565904d6685304dce1a8843ebaf382779d3069f",
+        "bytes": 805,
+        "sha256": "4f4e5f2db3c9be5a08d8763ccfcd2dcb3bb3423f56d143051a24840b3089b7c4"
+      }
+    },
+    "c576mac-stage-authority0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"24996cdec21dd44779c9fac959650c6f2cb0d301928340729434ca3e82173560\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "d6257c861a78a9142892282e06204dddd2f3f902",
+        "bytes": 121,
+        "sha256": "01d07449065d9b36365cfb83497ce480b663349b9c44f260f47a4e608724f2ef"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "40a9682a6a41a4ba00eea00ab6a78b9709a0826c",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5b84bc68a765589560c7579b2301f43bb47b5697",
+            "bytes": 923,
+            "sha256": "c9d2dc9fbc5f211205a6655c74a03bb428a0306c172a78952dc94235d8b63821",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "0d5313e07831d08d24b30f37e4bad307505e1a31",
+            "bytes": 786,
+            "sha256": "89a6af74fb85b4c7f217e890197eeeadf22e7f1eb67770ff63e6f8aff13cac92",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "d6257c861a78a9142892282e06204dddd2f3f902",
+            "bytes": 121,
+            "sha256": "01d07449065d9b36365cfb83497ce480b663349b9c44f260f47a4e608724f2ef",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1830,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "f6e4f4b7d772d399ea4961082b9a885b243bd490",
+        "bytes": 2064,
+        "sha256": "fad8d039c487b678965f92bf122f0ee26408d0856a5af04f92e56f643da27ea1"
+      },
+      "sdkArchive": {
+        "tree": "48fbd8ff1a8021c91c4ed9d0fa303d83a0bdd1ee",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "f6e4f4b7d772d399ea4961082b9a885b243bd490",
+            "bytes": 2064,
+            "sha256": "fad8d039c487b678965f92bf122f0ee26408d0856a5af04f92e56f643da27ea1",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2064,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a4f3e49057df30b38889d881aa55f4a2c0303139",
+        "bytes": 1893,
+        "sha256": "e5e2a3cde1b6ee207894003d2f82364a6cbf9fff2715ed9855b3ecb3b3f20066"
+      }
+    },
+    "c576mac-stage-streams0-admit-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1b2f48641-fc05-8042\",\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0,\n      \"limit\": 16384\n    }\n  },\n  \"idempotency_key\": \"heptabao-5767739c-mac-source-only-a70bc4e2-streams0\"\n}\n",
+      "requestPin": {
+        "blob": "ae0b75db559bec46245a0d551f1e822dbfa4c679",
+        "bytes": 289,
+        "sha256": "8c61f123daf76df2b19f5dd187763ecf307e462a72331402a535e26f52008b9b"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ed83b235f7ba9f4b620a41eb9c3aacacad10581a",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "d06e8855d63834318b9f90bacdd52776bb89d5be",
+            "bytes": 858,
+            "sha256": "53608327600bc6d1192cfab737ae6bda46644922d32822493a80e57d97d9503f",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "6ac249701eb6a797d920d281a0356d35b56ae763",
+            "bytes": 721,
+            "sha256": "601cf2e88b5ea1e179e4523f600173ad4ee3c997c1c0efb66d5b01001678b67a",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "ae0b75db559bec46245a0d551f1e822dbfa4c679",
+            "bytes": 289,
+            "sha256": "8c61f123daf76df2b19f5dd187763ecf307e462a72331402a535e26f52008b9b",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1868,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "2ef83c0617d90b772bacbd184539dc7fbfd4c640",
+        "bytes": 707,
+        "sha256": "0a52828d204895fe708e6918fc7c30bd844341da99fdcfca0245dc996825bc02"
+      },
+      "sdkArchive": {
+        "tree": "26c09aa8e32703a56cdabfd2f103163dc6c4c525",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "2ef83c0617d90b772bacbd184539dc7fbfd4c640",
+            "bytes": 707,
+            "sha256": "0a52828d204895fe708e6918fc7c30bd844341da99fdcfca0245dc996825bc02",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "ed5f6f1e82aebacee98f60c0a04eceed62151713",
+        "bytes": 546,
+        "sha256": "4988bc61ff327a1385a90ed4107c712b4a31a570f8c848ceaaee704e8b64eb76"
+      }
+    },
+    "c576mac-stage-streams0-status0-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"0ebddadd7036f8130d22f5fa31736136c38447225792c1e80f43bc8f2ee17d2a\"\n}\n",
+      "requestPin": {
+        "blob": "1e93a011c1e2f7b220f4ec2423475c57b1c49ee3",
+        "bytes": 89,
+        "sha256": "ddf94cdc991480806329559c52937f40d049268fbf0df7305772e1b72262d138"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "224f4ab583b0b06b3e4d6e88dae51892c461cd68",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "81699a603872e04c4d0d43a6a5b5eaf84b2bed0f",
+            "bytes": 922,
+            "sha256": "069062ef51829f908d826fe83efec9beb5ed11feb0d6e1c6fd12aa2504b23ecd",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "7c2abba4e81e3842475f736895b194108b4092a6",
+            "bytes": 785,
+            "sha256": "47d9bd709e8bc1c13915a8bf698364c4db429e45a63bec8e1ed07c8281ef34ec",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "1e93a011c1e2f7b220f4ec2423475c57b1c49ee3",
+            "bytes": 89,
+            "sha256": "ddf94cdc991480806329559c52937f40d049268fbf0df7305772e1b72262d138",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1796,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "e3ecd6654c7c5b5b156ad219420a107456ab88d4",
+        "bytes": 978,
+        "sha256": "e182416139ad4b7fbbcaa54fb91d3b6808a5c4bd9733974eb90d0a38ae1a6a0c"
+      },
+      "sdkArchive": {
+        "tree": "228f55a39c497b109267fc905d36a2b4cb21c5e7",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "e3ecd6654c7c5b5b156ad219420a107456ab88d4",
+            "bytes": 978,
+            "sha256": "e182416139ad4b7fbbcaa54fb91d3b6808a5c4bd9733974eb90d0a38ae1a6a0c",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "bd1dcb4d041e76f7970f453da990c0f6e96d35fc",
+        "bytes": 803,
+        "sha256": "6a52a45e570cf223edbd1819bb00db93cf55e7ea7110c649584d7d018283d6bb"
+      }
+    },
+    "c576mac-stage-streams0-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"0ebddadd7036f8130d22f5fa31736136c38447225792c1e80f43bc8f2ee17d2a\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "c18e6ac50326e1ca1a43b7724ea4b32d0fde9e23",
+        "bytes": 121,
+        "sha256": "e51d3bbd773ce1ac860000579529979b7cc8286ed410381d84cd1cee89ffee20"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f1a7c438c3bc456edb1be5917233f709c28a747f",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "18c1135399377d4336fe465ec899fd5e55796f6f",
+            "bytes": 921,
+            "sha256": "2a04c89f344275e3a78692b40ad62e5dbef7e5c78cc0cbd04d737ee29dffcf7e",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "266d2e300f76c05c3058bd90c601a99b6759fc4b",
+            "bytes": 784,
+            "sha256": "58f2144a155d97712cb72805974f7ae49051d24fc071b8e83ed7bf8ed5674e65",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "c18e6ac50326e1ca1a43b7724ea4b32d0fde9e23",
+            "bytes": 121,
+            "sha256": "e51d3bbd773ce1ac860000579529979b7cc8286ed410381d84cd1cee89ffee20",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1826,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "7ce6fd0d73953d081edb0e6b6a347b4c1c14646a",
+        "bytes": 3082,
+        "sha256": "d8ec511b7dfb44a3cb5d7155a1ee885c3454155a3db3e54c9845940c305d83ed"
+      },
+      "sdkArchive": {
+        "tree": "737f4fcf935991ef06aa47ca58d506e2a79664a0",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "7ce6fd0d73953d081edb0e6b6a347b4c1c14646a",
+            "bytes": 3082,
+            "sha256": "d8ec511b7dfb44a3cb5d7155a1ee885c3454155a3db3e54c9845940c305d83ed",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 3082,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "45efef37a9a4b67a0e43c9bd273465178ea94341",
+        "bytes": 2911,
+        "sha256": "e6d8987fe3ebc6adcd23725322b18256bb39266beeb10762fef23937fa3517c5"
+      }
+    },
+    "c576mac-stage-result-info-admit-r1": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-5767739c-mac-source-only-a70bc4e2-result-info\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "0c9a7c35ea5ec5fe421d9001e49990c916786980",
+        "bytes": 294,
+        "sha256": "cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "caab5cc6e1161f41640af123e72a975bac475872",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "cf6fb40687d0951986c26b8da1fe362f4a35c649",
+            "bytes": 861,
+            "sha256": "651bcc429b0c0b2cd0fc96a62f4e4abbb8fb4437f6b2d0800c209f06f9b3c1f7",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "04bf1a94cc814d906c62a3cc6ad8bb998a066d59",
+            "bytes": 724,
+            "sha256": "4f03d45c4c493560adcc7d1cd8d56ab97babfec97adb60b1d45eb4f9ec1a2663",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "0c9a7c35ea5ec5fe421d9001e49990c916786980",
+            "bytes": 294,
+            "sha256": "cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1879,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "4f39679bbf53162dc73c401e47c63efe57a9f7be",
+        "bytes": 704,
+        "sha256": "64ee23938735420d2b9607d17a578ee4308450ee94b8bce4558d6fb868dca244"
+      },
+      "sdkArchive": {
+        "tree": "8502ada636680158c482dd1fd310ff9f804a79a0",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "4f39679bbf53162dc73c401e47c63efe57a9f7be",
+            "bytes": 704,
+            "sha256": "64ee23938735420d2b9607d17a578ee4308450ee94b8bce4558d6fb868dca244",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 704,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "2e4285f834f8de2f61c77a932a826ec17433ebce",
+        "bytes": 543,
+        "sha256": "2d06bfb7190e649b47b8fd5386c65499315ec38b3e6ac1353739e32ed0446ee0"
+      }
+    },
+    "c576mac-stage-result-info-status0-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627\"\n}\n",
+      "requestPin": {
+        "blob": "84788dc2c45feb6fdd2e368e5b0efe3892452431",
+        "bytes": 89,
+        "sha256": "f6ccc5f2533adc11f5470a89918a06ed9fbe1888e3cb5abd3989782594f28b86"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "d50f2bf2e822f9033254230df43857101b80d05f",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "9f73d4ad144a6fcd51801504678875fd3b0e28ab",
+            "bytes": 925,
+            "sha256": "786db2490cbc86482031a62c90f0684ddac66cd95c952ccf736c300db17943fa",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "a8245f79c913474dbb69708314ef84c5e63edcce",
+            "bytes": 788,
+            "sha256": "85d2aa497e86ca1fa9dc50c6d5aa1b9aa73e5815a14fd32597f675c23eac65f6",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "84788dc2c45feb6fdd2e368e5b0efe3892452431",
+            "bytes": 89,
+            "sha256": "f6ccc5f2533adc11f5470a89918a06ed9fbe1888e3cb5abd3989782594f28b86",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1802,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "beeca4ae56ce097dfb29deb7c66636a8fedca872",
+        "bytes": 975,
+        "sha256": "6f0ac0a65fa6cc0cbf7cb48d346661776bfb52e65d4f146b638ad2836e771baf"
+      },
+      "sdkArchive": {
+        "tree": "2d5fd0388549fb67d934dc177488c90df06fd015",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "beeca4ae56ce097dfb29deb7c66636a8fedca872",
+            "bytes": 975,
+            "sha256": "6f0ac0a65fa6cc0cbf7cb48d346661776bfb52e65d4f146b638ad2836e771baf",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 975,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "47a650872f6a0ab6764f2c8222175965ac8d5c7d",
+        "bytes": 800,
+        "sha256": "37e3ab763ba5d6c0c0c074b229faad6f82050fd11357a50937626da1c79b69e7"
+      }
+    },
+    "c576mac-stage-result-info-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "25718d84b4cdbc2cd8644566a5767778c27b43aa",
+        "bytes": 121,
+        "sha256": "6118d395cad1a3a6a07510a2449fa8a34697e8f81ab24ea481cc2464cdf232a9"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "edb33a5fa90ee31394a41520a66adef948983f7a",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "cfbaa0ffd83eda11369ef3e717f575944f813a31",
+            "bytes": 924,
+            "sha256": "844b12b0d241ee5d394ef05c37a8e776df0b1c88cde3205dd3a9d4c3a1e8b2f4",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "f5cfb0bda663cce5fc2f3c29fb9be3f7ee4cd9d8",
+            "bytes": 787,
+            "sha256": "1d14048131b61cf02bf73566127bb5ef03a3a845f91d4dd83cde7ad785c0aad1",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "25718d84b4cdbc2cd8644566a5767778c27b43aa",
+            "bytes": 121,
+            "sha256": "6118d395cad1a3a6a07510a2449fa8a34697e8f81ab24ea481cc2464cdf232a9",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1832,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "7160b70c69a27658ecdf167693211a3f83cf545d",
+        "bytes": 1660,
+        "sha256": "92f5cabef0d83064c271cd1b82ab5da98d842d3eedb023185f3ead74b05a3bd2"
+      },
+      "sdkArchive": {
+        "tree": "7abc725468656d85364d71167330458be8bf4b5b",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "7160b70c69a27658ecdf167693211a3f83cf545d",
+            "bytes": 1660,
+            "sha256": "92f5cabef0d83064c271cd1b82ab5da98d842d3eedb023185f3ead74b05a3bd2",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1660,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "852ba131d2fad5388551f1f2333f21dff5ea078b",
+        "bytes": 1489,
+        "sha256": "bfbd72b01b239a37fae5dd0e649dc5a32294a23394083d89ca6cf0d10d03c526"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "24996cdec21dd44779c9fac959650c6f2cb0d301928340729434ca3e82173560",
+      "tool": "process_status",
+      "payload": {
+        "blob": "6d12034d98b359b99680932ccc7889699ef873f3",
+        "bytes": 908,
+        "sha256": "298e73f9f9254470730afcdbe22d7e2cb19afc9fb694ccf6f529460508649812"
+      },
+      "payloadTree": "dbd26c10283afa7fabaf50b38cb3c7d165e68f2f",
+      "nativeText": {
+        "blob": "f9084348857631a6581c8a866b4357ed022746f5",
+        "bytes": 729,
+        "sha256": "8c5c94c4eac3a90288d73475e5e5e3f26d4b1eea636b56414e607a15011fae03"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "0ebddadd7036f8130d22f5fa31736136c38447225792c1e80f43bc8f2ee17d2a",
+      "tool": "process_read",
+      "payload": {
+        "blob": "6aa1852a705cc7ae918293ca73239b11edb6944e",
+        "bytes": 1669,
+        "sha256": "0623356465c8ae04c52175052e667b00633edfae6e304d4af06841bb034008cc"
+      },
+      "payloadTree": "858d48ac22a5409c75a79e2e746f9180dd81a1fc",
+      "nativeText": {
+        "blob": "1f46ed412756d169c8b38885959705c96b6aca47",
+        "bytes": 1480,
+        "sha256": "162de84f9b5f4ff5c1b6dc42a8ceca7cc730076eeb37404907ef2b3cccff42be"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+      "tool": "file_info",
+      "payload": {
+        "blob": "3fd5b13752922c8f7be029febe23c6db09774852",
+        "bytes": 606,
+        "sha256": "caa7875896ecd34a3aca3708f6df3356aad6e86001a6278671319cb69e9b5c88"
+      },
+      "payloadTree": "73578858b9bd7f21bf05507245c6912974c23569",
+      "nativeText": {
+        "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+        "bytes": 489,
+        "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 378,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true,
+  "stageResultInfoGO": {
+    "pin": {
+      "blob": "a331c6278d4a539d67865f64db01aa27d9438f7a",
+      "bytes": 2786,
+      "sha256": "76d824566717fa085c634513e6679fe2a79b36d46f863c6069e5344bbae477c6"
+    },
+    "raw": "{\n  \"authorization\": \"GO\",\n  \"scope\": \"stage_result_file_info_only\",\n  \"original_job\": \"1a1b2f48641-fc05-8042\",\n  \"maximum_file_info_starts\": 1,\n  \"binary_read_authorized\": false,\n  \"exact_request\": {\n    \"blob\": \"0c9a7c35ea5ec5fe421d9001e49990c916786980\",\n    \"bytes\": 294,\n    \"sha256\": \"cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03\"\n  },\n  \"metadata_guard\": {\n    \"host\": \"mac\",\n    \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json\",\n    \"max_bytes\": 65536,\n    \"mode\": 384,\n    \"uid\": 501,\n    \"link_count\": 1,\n    \"gid\": null,\n    \"metadata_platform\": null\n  },\n  \"observation\": {\n    \"status_per_observer\": 8,\n    \"pages_per_observer\": 128,\n    \"immutable_page_bytes\": 8192,\n    \"payload_bytes\": 1048576,\n    \"simultaneous_call_or_future\": 1\n  },\n  \"not_authorized\": [\n    \"process_start\",\n    \"initialize_existing_slot\",\n    \"binary_read\",\n    \"another_path\",\n    \"controls_publication\",\n    \"Cargo\"\n  ],\n  \"schema\": \"heptabao.root.mac576-source-stage-file-info.GO.r1\",\n  \"issuedAtUTC\": \"2026-11-06 22:37:38 UTC\",\n  \"sourceTree\": \"22bf8a9865ccf828921fbe63703f1877aa00a86f\",\n  \"journal\": {\n    \"blob\": \"7924dd1f2a728e9f917ef5a93877d96d786f03e1\",\n    \"bytes\": 24087,\n    \"sha256\": \"4805e14fef74a2ff7d9bc4e8bcf915d77fa55e608675bbccee7a4f6644ebc96e\"\n  },\n  \"slot\": \"successor576_mac_source_only_stage_gitfirst_r1\",\n  \"rootSourceReview\": {\n    \"blob\": \"6378b549f84a1eeb1b362d6981d1fb485939db2e\",\n    \"bytes\": 1364,\n    \"sha256\": \"23a10db6d1afff1908f41b26adaffaa779751262cf9e953baaec53c05df1feca\"\n  },\n  \"originalState\": {\n    \"blob\": \"c1ce8e3901479c1c99784569d3ea29ada9f35869\",\n    \"bytes\": 59491,\n    \"sha256\": \"6bdb91838f2009cf45fb69a5dc2beab984b48f4ab894ef48ab0b93182d1b9bc1\"\n  },\n  \"durableProtocol\": {\n    \"existingSlotAttachOnly\": true,\n    \"old7CallsAnd2ObserversPreserved\": true,\n    \"wholeIntentAndArmedBeforeDispatch\": true,\n    \"modelBoundaryBeforeDispatch\": true,\n    \"eachNewIntentUsesInfoGO\": true,\n    \"originalSDKWholeBeforeParse\": true,\n    \"returnedOriginalOperationOnly\": true,\n    \"wholePayloadAndInactiveClosure\": true\n  },\n  \"onError\": \"Preserve failure or UNKNOWN; do not replay, rekey, restart, initialize the slot or expand to another path. BODY is separate.\",\n  \"expectedActualMetadata\": {\n    \"size\": null,\n    \"sha256\": null,\n    \"version\": null,\n    \"full9\": null\n  },\n  \"lane_allocation\": {\n    \"A\": 1,\n    \"B\": 0,\n    \"C\": 1,\n    \"root\": 0,\n    \"maximum\": 2\n  },\n  \"currentLinuxBuild\": {\n    \"terminal\": \"failed exit1\",\n    \"reportBodyPending\": true,\n    \"MacNormalAwaitingSpecificFailure\": true\n  },\n  \"normal117Qualified\": false,\n  \"full34Qualified\": false,\n  \"LANQualified\": false,\n  \"fullReplacement\": false,\n  \"productionCutover\": false,\n  \"legacyCleanup\": false\n}\n",
+    "whole": true
+  },
+  "stageResultInfoStarted": true,
+  "stageResultInfo": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "size": 7665,
+    "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "nativeText": {
+      "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+      "bytes": 489,
+      "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+    },
+    "originalOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "metadataPlatform": "darwin",
+    "groupObservedFromOriginalMetadata": true,
+    "full9Strings": [
+      "16777244",
+      "72764004",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7665",
+      "1794003736370790810",
+      "1794003736370799227"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.mac576-stage-minimal-manifest.v1",
+  "files": [
+    {
+      "path": "RELEASE.public.json",
+      "blob": "62b5da406ff37cc4a316e6c05c263cd73c1ab61a",
+      "bytes": 3386,
+      "sha256": "f28bc9d791ad41e0d71f1ae04c15e5c714c3511e084da470626961363a60311f"
+    },
+    {
+      "path": "ACK.sdk.original.json",
+      "blob": "07e2709dd86bf2e0212dbf3f0a8f4da078e5358c",
+      "bytes": 26581,
+      "sha256": "73f34eb7cffe90634a292bb65be8687c8bb23b3ae1bc2d958746b84a159f627e"
+    },
+    {
+      "path": "authority.native.original.json",
+      "blob": "f9084348857631a6581c8a866b4357ed022746f5",
+      "bytes": 729,
+      "sha256": "8c5c94c4eac3a90288d73475e5e5e3f26d4b1eea636b56414e607a15011fae03"
+    },
+    {
+      "path": "authority.status.sdk.original.json",
+      "blob": "feea4a5cb7ed667afbb391ef89a2874f588c46f9",
+      "bytes": 980,
+      "sha256": "17ed67a80e5ee094a03a53937f55074de496384e5d99832a759039e7afa22966"
+    },
+    {
+      "path": "streams.native.original.json",
+      "blob": "1f46ed412756d169c8b38885959705c96b6aca47",
+      "bytes": 1480,
+      "sha256": "162de84f9b5f4ff5c1b6dc42a8ceca7cc730076eeb37404907ef2b3cccff42be"
+    },
+    {
+      "path": "streams.status.sdk.original.json",
+      "blob": "e3ecd6654c7c5b5b156ad219420a107456ab88d4",
+      "bytes": 978,
+      "sha256": "e182416139ad4b7fbbcaa54fb91d3b6808a5c4bd9733974eb90d0a38ae1a6a0c"
+    },
+    {
+      "path": "stdout.original.txt",
+      "blob": "afbd1f1685cabef24969a50d4b55da4b84f021a3",
+      "bytes": 378,
+      "sha256": "e5b0517c66baf0e63a1ae788b28e21660244196ab769fab5ba8eb54c8fa564cc"
+    }
+  ],
+  "manifest_excluded": true
+}

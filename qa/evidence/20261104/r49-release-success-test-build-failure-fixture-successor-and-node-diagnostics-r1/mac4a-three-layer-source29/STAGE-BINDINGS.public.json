@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.mac4a49405b.source-stage-candidate-bindings.v1",
+  "status": "CANDIDATE_BOUND_BUNDLE_UNOBSERVED",
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "branch": "codex/heptabao-test-fixture-f02dd113-20261106",
+    "leaves": 3932,
+    "trackedBytes": 62553956,
+    "indexSha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "history": 3770,
+    "manifest": {
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    }
+  },
+  "sourceTemplate": {
+    "blob": "33d304b409630c9e2e87c5d24dd44b04e905ec29",
+    "bytes": 23568,
+    "sha256": "a4a9fd066c134625695740eff14a21e1dd65ce2e95db82a0c20a2860fda42489"
+  },
+  "readonlyBase": {
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source",
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "report": {
+      "blob": "f0855203bf885620f0c5deea089cc9a9e7b86460",
+      "bytes": 7665,
+      "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb"
+    },
+    "historicalPresenceOnly": true,
+    "revalidateInsideStage": true
+  },
+  "plannedPaths": {
+    "macStageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+    "macCanonicalLeaf": "canonical-hb-4a49405b-from576-20261106-r1.bundle",
+    "producerExpectedPath": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+    "producerPathIsActual": false
+  },
+  "actualBundle": {
+    "producerReport": null,
+    "producerQualification": null,
+    "path": null,
+    "bytes": null,
+    "sha256": null,
+    "headerSha256": null,
+    "full9": null,
+    "version": null,
+    "base64": null,
+    "transport": null,
+    "transportQualification": null
+  },
+  "requiredBundle": {
+    "version": 2,
+    "prerequisites": [
+      "5767739cd25e458ac052dc8d384019bab8688ae0"
+    ],
+    "heads": [
+      [
+        "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+        "HEAD"
+      ]
+    ]
+  },
+  "budget": {
+    "stage": 300,
+    "clone": 180,
+    "git": 90,
+    "outer": 360,
+    "stdinCarrierBytes": 262144,
+    "trackedWorktreeBytes": 134217728
+  },
+  "actual": {
+    "boundSource": null,
+    "carrier": null,
+    "exactRequest": null,
+    "journal": null,
+    "runtimeSlot": null,
+    "key": null,
+    "GO": null,
+    "report": null,
+    "qualified": false,
+    "Native_calls": 0
+  }
+}

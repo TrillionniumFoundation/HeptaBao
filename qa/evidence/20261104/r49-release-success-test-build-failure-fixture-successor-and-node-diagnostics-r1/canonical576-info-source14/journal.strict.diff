@@ -1,0 +1,15 @@
+--- a/canonical576-single-info.gitfirst.js
++++ b/canonical576-single-info.gitfirst.js
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "final02b_canonical_bundle_info_gitfirst_r1";
+-const GF_REQUEST = {"blob":"429cb0d4ef8259e254dc38ccd3793804c5ce40e2","bytes":279,"sha256":"c4ad51752a2ea63d51b893c953e93780ed18d830b4ca2c8b1610282e68c4552d"};
+-const GF_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-02b90762-src-20261106-r1/control/canonical-hb-02b90762-from495.bundle","bytes":171016,"sha256":"069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800","full9":["66306","28477674","1000","1000","33152","1","171016","1793989775788602563","1793989775789602574"]};
++const GF_SLOT = "successor576_canonical_bundle_info_gitfirst_r1";
++const GF_REQUEST = {"blob":"f7aef4d88706b1cca3e66e6385a1776eafb1d914","bytes":279,"sha256":"5e0c4bc75fd3fb26f69248085142edbc9c95519a79720cd8a2610bf439bb5624"};
++const GF_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle","bytes":5766,"sha256":"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a","full9":["66306","31358148","1000","1000","33152","1","5766","1794000539740776688","1794000539740776688"]};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {

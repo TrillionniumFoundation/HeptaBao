@@ -1,0 +1,193 @@
+{
+  "schema": "heptabao.mac4a49405b.full34-and-LAN-candidate-binding.v1",
+  "status": "SOURCE_ONLY_FUNCTION_FRAGMENT_NO_EXECUTABLE_REQUEST",
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "manifest": {
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    }
+  },
+  "full34_baseline": {
+    "wrapper": {
+      "blob": "4456a595b83a6355c2df41c82f9727fd13dc7b72",
+      "bytes": 20538,
+      "sha256": "29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a"
+    },
+    "driver": {
+      "blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "driver_in_current_tree": true,
+    "official_launcher": {
+      "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    "old_root177": "4fbf398eb5d7eb45e43c8a80746c98f153148cb7",
+    "old_root193": "a827cac7c79e833d4dc56d29bba490dc873c15fa",
+    "old_qualification_inherited": false
+  },
+  "current_normal": {
+    "source_tree": null,
+    "root_source_review": {
+      "blob": "d9453662d9e2e4ac556ab07ac852cee0fa4f9612",
+      "bytes": 966,
+      "sha256": "7711d49a8f9c71f3cceca822c3b7b5b30f101a87a44e06a2ffa3a772c5ba0c23"
+    },
+    "runner": {
+      "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+      "bytes": 42977,
+      "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+    },
+    "groups": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    },
+    "selected_unique_tests": 89,
+    "selected_profile_executions": 117,
+    "original61_unchanged": true,
+    "native_unique28_each_file_default": true,
+    "actual_result": null,
+    "actual_native_build": null,
+    "actual_release": null,
+    "actual_retained_binary": null,
+    "actual_publication_receipt": null,
+    "actual_source_stage": null,
+    "predecessor_source_tree": "66c0d39d1a8e6cdfea4af730bf053c95c70b8d4e",
+    "root_source_review_scope": "Original normal89/117 mechanism only; new candidate data-binding review pending."
+  },
+  "fragment": {
+    "before": {
+      "blob": "1cdd95aaf8cb352b9347a8c0ef44581716ebf0b6",
+      "bytes": 13740,
+      "sha256": "cd71b72bd9fcb76d54060fc0b186b2de8df91c0bdc21a7853f3f78d3cbdb462a"
+    },
+    "after": {
+      "blob": "51ef5a5cf49282405265760713f9639678b8240e",
+      "bytes": 13740,
+      "sha256": "1654f32a1eb610c3c9bf8c1f20da4599fd5cd3204a0f88b51988b5683868b2af"
+    },
+    "strict_diff": {
+      "blob": "3c341a684f1b5243c5cc1a2d36db23d338210f08",
+      "bytes": 688,
+      "sha256": "a8990bd541c0666355cdc8e132ca49aedcdb2d91f11e4dad04c6d28d10ebe551"
+    },
+    "function_name": "normal61_admission",
+    "name_retained_for_existing_call_graph": true,
+    "scope": "Only the expected current runner whole SHA changed; original full34 driver, Owner, HTTP/status/state comparisons and teardown unchanged.",
+    "predecessor": {
+      "blob": "1cdd95aaf8cb352b9347a8c0ef44581716ebf0b6",
+      "bytes": 13740,
+      "sha256": "cd71b72bd9fcb76d54060fc0b186b2de8df91c0bdc21a7853f3f78d3cbdb462a"
+    },
+    "historical_normal61_before": {
+      "blob": "b84e3f3a1983004361067326c2d3b013d952f2a0",
+      "bytes": 4421,
+      "sha256": "ecd76908d8f4ab82682368b129e012725a4905a1cee7af986f2eaf0f318a5399"
+    }
+  },
+  "future_paths": {
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/source",
+    "product": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+    "control_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-full34-20261106-r1",
+    "work_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-full34-20261106-r1/actual-r1",
+    "fresh_existence": null
+  },
+  "additional_actual_prerequisites": [
+    "Successful current Mac result117 plus exact current native-build and normal-release reports;full original child cleanup and final source/binary fences.",
+    "Current retained server full bytes/SHA and independently observed file identity/version. Normal source stage alone is insufficient.",
+    "Fresh fixed6 full34 input role table,including exact system Git special nlink handling and actual Mac Python owner;historical official/tool values remain expectations.",
+    "Whole actual prepare receipt and separate live GO;all wrapper top-level actual slots remain null until supplied."
+  ],
+  "preserved_full34": {
+    "required_checks": [
+      "official_271_pins_and_live_identity",
+      "two_distinct_owned_processes",
+      "source_api_oracle_captured",
+      "source_retained_deleted_destroyed_seeded",
+      "source_metadata_cas_seeded",
+      "source_cold_restart_exact",
+      "target_pristine_before_import",
+      "source_export_once",
+      "source_raw_history_exact",
+      "exported_soft_deleted_payload_preserved",
+      "source_unchanged_after_export",
+      "target_import_once",
+      "target_active_native_v6",
+      "target_full_history_exact",
+      "target_storage_full_history_exact",
+      "target_cold_restart_exact",
+      "target_storage_cold_history_exact",
+      "snapshot_download",
+      "post_snapshot_mutation_once",
+      "snapshot_restore_once",
+      "restored_cold_history_exact",
+      "restored_storage_history_exact",
+      "soft_deleted_payload_undelete_exact",
+      "destroyed_payload_remains_absent",
+      "data_cas_denied_without_effect",
+      "metadata_cas_denied_without_effect",
+      "metadata_cas_success_counter_exact",
+      "source_unchanged_after_target_mutations",
+      "source_and_binary_unchanged",
+      "owned_processes_stopped",
+      "report_excludes_runtime_credentials"
+    ],
+    "required_check_count": 31,
+    "keys": 17,
+    "value_bytes": 2097152,
+    "logical_bytes": 35651584,
+    "http_seconds": 15,
+    "migration_seconds": 360,
+    "json_bytes": 4194304,
+    "archive_bytes": 134217728,
+    "readonly_prepare_seconds": 60,
+    "readonly_prepare_outer_seconds": 90,
+    "native_outer_seconds": 1800,
+    "run_subprocess_internal_timeout": null
+  },
+  "LAN_admission": {
+    "historical_98_plus12_not_current": true,
+    "current_mac_required_normal": {
+      "unique": 89,
+      "executions": 117,
+      "actual": null
+    },
+    "current_linux_required_build": {
+      "unique": 252,
+      "executions": 280,
+      "actual": null
+    },
+    "new_binary_full9_version": null,
+    "current_candidate_LAN": false,
+    "existing_machine_preflight_reference": {
+      "result": {
+        "blob": "95dec2462f5857683d597f188d8fb50f7d3a95b1",
+        "bytes": 99645,
+        "sha256": "c0b8b275f59bb29adc33570c069379e9eb7dbd046f0cef9b5142f408eccea5a2"
+      },
+      "approved_models": {
+        "blob": "08aa017004f53e47becacb8a27588571d0658254",
+        "bytes": 1855,
+        "sha256": "92d3049a93e35b8a6debe36c4258dade4ce92d7bace217577348f2c5f24704ad"
+      }
+    },
+    "boundary": "Existing dual-route machine preflight is a historical bounded identity check,not fresh candidate process evidence. The old readonly build probe's release checks do not independently establish117/280;bind root current build qualifications explicitly. Reuse known host mapping and only the planned fixed fixture inputs,not another inventory."
+  },
+  "execution": {
+    "Native_calls": 0,
+    "Python_runs": 0,
+    "fixture_runs": 0,
+    "Cargo_runs": 0,
+    "full_wrapper": null,
+    "prepare_request": null,
+    "live_request": null,
+    "product_change": false
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.root.combined-stage-body-GO.r1",
+  "authorization": "GO",
+  "scope": "stage_result_binary_read_only",
+  "time_utc": "2026-11-06 18:58:41 UTC",
+  "original_job": "1a1b21f5945-fc05-7c77",
+  "original_slot": "combined_02b90762_rog_source_gitfirst_r1",
+  "attach_existing_context_only": true,
+  "initialize_allowed": false,
+  "source_packet": {
+    "tree": "d61d82f69fcfde72f223dfc733668a0dc9465b66",
+    "whole": true
+  },
+  "journal": {
+    "blob": "c54541d53f5417e37975ada98f629e1b051e6e62",
+    "bytes": 28216,
+    "sha256": "faa0177d086450f8590f02b338b11f1b7e847689fde970f99e3687d2d31049ea"
+  },
+  "exact_request": {
+    "blob": "91917046afe568c4f94f7ca65a31a7dec8327cd7",
+    "bytes": 405,
+    "sha256": "268e8e7e622441d225a65ead4bd0efb971e1181165a16f377b00b1aa3428e0ad"
+  },
+  "info_operation": "45b233c3306a73913b4f70f7d326c3bff623f47d8909f45154f313f7889ceae7",
+  "expected_report": {
+    "path": "/home/qian-qi/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 28236,
+    "sha256": "76ace6137f5a25f508a6ece69d7dac460689cd1d782cd9e0f6ce72811a267b83",
+    "version": "66306:28477741:28236:1793989776858375923:1793989776858375923",
+    "infoOperation": "45b233c3306a73913b4f70f7d326c3bff623f47d8909f45154f313f7889ceae7",
+    "infoNative": {
+      "blob": "4dabaf26c32eb013d54872159496e8cf21a787a1",
+      "bytes": 462,
+      "sha256": "b8d01c7ec1b134c3c45819aba1bcdd50c77745889c17003fbf3d286c60863155"
+    }
+  },
+  "metadata_full9_strings": [
+    "66306",
+    "28477741",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "28236",
+    "1793989776858375923",
+    "1793989776858375923"
+  ],
+  "root_qualification": {
+    "blob": "b47f9276f26416fd261f76cb06ab353fb5439818",
+    "bytes": 1328,
+    "sha256": "465d7b566fc1c71393bf221ca34c35d873ada1b1cfd8d2147458c7b6705ac8e7"
+  },
+  "reproduced_source46": {
+    "blob": "48ac88f494c2a951ece9813f369d9d1c7ce59c44",
+    "bytes": 3869,
+    "sha256": "51b7ba394782771a2b0badb53590703d11963c9b794306f7564907dc0d5bbb36"
+  },
+  "maximum_binary_read_starts": 1,
+  "maximum_original_status_calls": 8,
+  "maximum_original_immutable_pages": 128,
+  "limits": {
+    "offset": 0,
+    "limit": 28236,
+    "maximum_native_chunk_bytes": 65536,
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576
+  },
+  "sequence": [
+    "Whole separate BODY exact GO; authorize_stage_result_body on the existing closed slot; never initialize.",
+    "Whole exact request/intent/arm, then cross the model boundary and invoke once.",
+    "Original SDK whole before parse. Only original operation status and 8192 contiguous immutable pages, full payload SHA/EOF/inactive.",
+    "Exact binary path/version/size/offset0/next28236/eof and decoded whole SHA required.",
+    "Archive decoded original report whole before semantic parse or qualification, then release lane."
+  ],
+  "excludes": [
+    "INFO refresh",
+    "alternate path or range",
+    "process_start",
+    "formatter",
+    "Cargo",
+    "product run",
+    "retry",
+    "rekey",
+    "reinitialize"
+  ],
+  "process_start_authorized": false,
+  "build_authorized": false,
+  "semantic_report_qualification": false,
+  "old_failures_preserved": true,
+  "global_native_lane_limit": 2
+}

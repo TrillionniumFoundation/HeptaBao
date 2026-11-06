@@ -1,0 +1,128 @@
+{
+  "schema": "heptabao.mac.normal61-native28.source-verification.v1",
+  "pass": true,
+  "check_count": 29,
+  "checks": [
+    {
+      "name": "runner_strict_forward",
+      "pass": true
+    },
+    {
+      "name": "runner_strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "runner_all_original_helpers_identical",
+      "pass": true
+    },
+    {
+      "name": "launcher_strict_forward",
+      "pass": true
+    },
+    {
+      "name": "launcher_strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "launcher_all_original_helpers_identical",
+      "pass": true
+    },
+    {
+      "name": "publisher_strict_forward",
+      "pass": true
+    },
+    {
+      "name": "publisher_strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "publisher_all_original_helpers_identical",
+      "pass": true
+    },
+    {
+      "name": "original_release_default_compile_and_all61_block_exact",
+      "pass": true
+    },
+    {
+      "name": "original_failure_cleanup_and_deadline_tail_exact",
+      "pass": true
+    },
+    {
+      "name": "exact_original_six_groups_retained",
+      "pass": true
+    },
+    {
+      "name": "two_native_groups_verbatim_root_selection",
+      "pass": true
+    },
+    {
+      "name": "original61_distinct",
+      "pass": true
+    },
+    {
+      "name": "native28_same_names_both_profiles",
+      "pass": true
+    },
+    {
+      "name": "89unique117profile_no_overlap",
+      "pass": true
+    },
+    {
+      "name": "six_new_batch_functions_twelve_executions",
+      "pass": true
+    },
+    {
+      "name": "default_feature_proof",
+      "pass": true
+    },
+    {
+      "name": "same_run_default_binary_reuse_and_file_profile",
+      "pass": true
+    },
+    {
+      "name": "new_file_build_finished_required",
+      "pass": true
+    },
+    {
+      "name": "original8280_not_reset",
+      "pass": true
+    },
+    {
+      "name": "new_compile_and_groups_clamped_to_original_deadline",
+      "pass": true
+    },
+    {
+      "name": "new_exact_actual_execution_checks",
+      "pass": true
+    },
+    {
+      "name": "runner_read_cap_explicit_and_sufficient",
+      "pass": true
+    },
+    {
+      "name": "publisher_pins_match_three_exact_templates",
+      "pass": true
+    },
+    {
+      "name": "publication_unbound_until_real_stage",
+      "pass": true
+    },
+    {
+      "name": "new_receipt_and_launcher_counts_agree",
+      "pass": true
+    },
+    {
+      "name": "future_binder_strict_roundtrip",
+      "pass": true
+    },
+    {
+      "name": "future_binder_keeps8280_and_actual_receipt_scope",
+      "pass": true
+    }
+  ],
+  "source_only": true,
+  "Python_runs": 0,
+  "Rust_runs": 0,
+  "Native_calls": 0,
+  "product_cases_passed": 0
+}

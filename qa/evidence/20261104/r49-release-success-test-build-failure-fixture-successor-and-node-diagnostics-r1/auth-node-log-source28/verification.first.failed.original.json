@@ -1,0 +1,419 @@
+{
+  "schema": "heptabao.pure-node-ignition-log-source-review.r1",
+  "passed": false,
+  "check_count": 97,
+  "checks": [
+    {
+      "name": "baseline_full_pin",
+      "passed": true
+    },
+    {
+      "name": "source_full_pin",
+      "passed": true
+    },
+    {
+      "name": "request_full_pin",
+      "passed": true
+    },
+    {
+      "name": "journal_full_pin",
+      "passed": true
+    },
+    {
+      "name": "forward_exact",
+      "passed": true
+    },
+    {
+      "name": "inverse_exact",
+      "passed": true
+    },
+    {
+      "name": "forward_7_hunks",
+      "passed": true
+    },
+    {
+      "name": "inverse_7_hunks",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_inverse_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_2_hunks",
+      "passed": true
+    },
+    {
+      "name": "journal_inverse_2_hunks",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:need",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:sha",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:identity",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:remaining",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:public_error",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:load_helpers",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:metadata",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:admit_binding",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:open_fixed",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:verify_all",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:hash_tool",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:unique_log_object",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:log_timestamp_us",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:known_json_type",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:command_public",
+      "passed": true
+    },
+    {
+      "name": "definition_exact:close_rows",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:BINDING_READY",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:LOG_BINDING",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:LOG_PATH",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:PYTHON",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:START",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:UNTIL",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_LOG_ROWS",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_LOG_LINE",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_CODE_BYTES",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_READ_CALLS",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_METADATA",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_FD_ROWS",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_LOG_STREAM",
+      "passed": true
+    },
+    {
+      "name": "constant_exact:MAX_PUBLIC_OUTPUT",
+      "passed": true
+    },
+    {
+      "name": "whole_modules_literal_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_module_parser",
+      "passed": true
+    },
+    {
+      "name": "two_original_module_names",
+      "passed": true
+    },
+    {
+      "name": "embedded_module_whole:mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "embedded_module_whole:mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "main_only_three_substitutions",
+      "passed": true
+    },
+    {
+      "name": "journal_request_pin_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_three_bindings_only",
+      "passed": true
+    },
+    {
+      "name": "request_stdin_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_request_fields",
+      "passed": true
+    },
+    {
+      "name": "fixed_request_host_python",
+      "passed": true
+    },
+    {
+      "name": "fixed_request_args_cwd_timeout",
+      "passed": true
+    },
+    {
+      "name": "new_stable_key",
+      "passed": true
+    },
+    {
+      "name": "query_exact_contract",
+      "passed": true
+    },
+    {
+      "name": "fixed_query_process_predicate",
+      "passed": false
+    },
+    {
+      "name": "fixed_query_flags",
+      "passed": true
+    },
+    {
+      "name": "query_one_vector_length",
+      "passed": true
+    },
+    {
+      "name": "query_exact_flags_order",
+      "passed": true
+    },
+    {
+      "name": "source_exact_pid",
+      "passed": true
+    },
+    {
+      "name": "outward_exact_time",
+      "passed": true
+    },
+    {
+      "name": "UTC_arg_time_exact",
+      "passed": true
+    },
+    {
+      "name": "new_four_projectors_present",
+      "passed": true
+    },
+    {
+      "name": "strict_before_projection",
+      "passed": true
+    },
+    {
+      "name": "complete_row_caps",
+      "passed": true
+    },
+    {
+      "name": "requires_zero_full_stderr_empty",
+      "passed": true
+    },
+    {
+      "name": "all_ordinals_explicit",
+      "passed": true
+    },
+    {
+      "name": "typed_pid_gate",
+      "passed": true
+    },
+    {
+      "name": "direct_or_system_subject",
+      "passed": true
+    },
+    {
+      "name": "time_gate_required",
+      "passed": true
+    },
+    {
+      "name": "unknown_no_projection",
+      "passed": true
+    },
+    {
+      "name": "code_not_errno",
+      "passed": true
+    },
+    {
+      "name": "resource_context_separated",
+      "passed": true
+    },
+    {
+      "name": "public_resource_caps_no_uuid",
+      "passed": true
+    },
+    {
+      "name": "only_recognized_resources_exported",
+      "passed": true
+    },
+    {
+      "name": "no_io_in_new_projectors",
+      "passed": true
+    },
+    {
+      "name": "unknown_raw_or_hash_not_exported",
+      "passed": true
+    },
+    {
+      "name": "cause_history_qualifications_false",
+      "passed": true
+    },
+    {
+      "name": "absence_and_unknown_boundaries",
+      "passed": true
+    },
+    {
+      "name": "help_all_argv_flags",
+      "passed": true
+    },
+    {
+      "name": "help_whole_pin",
+      "passed": true
+    },
+    {
+      "name": "log_metadata_whole_pin",
+      "passed": true
+    },
+    {
+      "name": "old_help_root_whole_pin",
+      "passed": true
+    },
+    {
+      "name": "actual_log_binding_source",
+      "passed": true
+    },
+    {
+      "name": "actual_log_binding_807536",
+      "passed": true
+    },
+    {
+      "name": "root_R5_actual16_whole",
+      "passed": true
+    },
+    {
+      "name": "root_R5_all_16",
+      "passed": true
+    },
+    {
+      "name": "R5_actual_namespace_exact",
+      "passed": true
+    },
+    {
+      "name": "R5_path_not_qualified",
+      "passed": true
+    },
+    {
+      "name": "R5_11_frames",
+      "passed": true
+    },
+    {
+      "name": "R5_original_time_binding",
+      "passed": true
+    },
+    {
+      "name": "public_input_binding_whole",
+      "passed": true
+    },
+    {
+      "name": "public_input_job_env",
+      "passed": true
+    },
+    {
+      "name": "all_new_native_state_zero",
+      "passed": true
+    },
+    {
+      "name": "typed_binding_not_fake_old_helper",
+      "passed": true
+    },
+    {
+      "name": "pure_builder_error_retained",
+      "passed": true
+    }
+  ],
+  "failed": [
+    {
+      "name": "fixed_query_process_predicate",
+      "passed": false
+    }
+  ],
+  "source": {
+    "blob": "f26070651527caa4a109b0d79f3b9933eaf16888",
+    "bytes": 59178,
+    "sha256": "f9b881531b251b82af5ac391496c42acccf0d693586e1b4884c3514c112466ac"
+  },
+  "request": {
+    "blob": "020e4305593675ee33832732285fe040ac8ca8a4",
+    "bytes": 60250,
+    "sha256": "49db683737213619243b41bcc6fa3c6fb174b56fdfa5e8cb377d9d5ef0d0d14f"
+  },
+  "journal": {
+    "blob": "7f26713584e287fc3b8bc5a7bec0d74ce366fd57",
+    "bytes": 19050,
+    "sha256": "28d6e2f89d9daeb008be409cd14c8d367c2649b21558810cb9a472833588e4f6"
+  },
+  "NativeCalls": 0,
+  "PythonExecutions": 0,
+  "sourceOnly": true
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.mac576.admission-interface-manifest.v1",
+  "files": [
+    {
+      "path": "admission.before.py",
+      "blob": "b84e3f3a1983004361067326c2d3b013d952f2a0",
+      "bytes": 4421,
+      "sha256": "ecd76908d8f4ab82682368b129e012725a4905a1cee7af986f2eaf0f318a5399"
+    },
+    {
+      "path": "admission.after.py",
+      "blob": "1cdd95aaf8cb352b9347a8c0ef44581716ebf0b6",
+      "bytes": 13740,
+      "sha256": "cd71b72bd9fcb76d54060fc0b186b2de8df91c0bdc21a7853f3f78d3cbdb462a"
+    },
+    {
+      "path": "admission.strict.diff",
+      "blob": "96d9ac39ae65e5651790c8b8bfe95a8753f85100",
+      "bytes": 13108,
+      "sha256": "fae2312e4f7bf304a3bc8efcc5efa3632902c6588e77eb27d0a59d7f4b987728"
+    },
+    {
+      "path": "groups.original.json",
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    },
+    {
+      "path": "INTERFACE.public.json",
+      "blob": "69a13e669e8a273d71d8b7cb5ff75bdb8259ef77",
+      "bytes": 7097,
+      "sha256": "5ab2d3a960e5e814d2ae0e22b8fa195caefc2dcf98548ccfda35f65891ab6874"
+    },
+    {
+      "path": "verifier.source.js",
+      "blob": "a300fabc9cf4100a9eb593de896c4eb07ab850ab",
+      "bytes": 2938,
+      "sha256": "15c09037000b4722441cabb419ae6d427c7c7617ef19c2eb8f7fd2f6e7b4f262"
+    },
+    {
+      "path": "strict_diff.original.js",
+      "blob": "d667a66c20e20dac7241cff3a35fdda4d50f6f1a",
+      "bytes": 2209,
+      "sha256": "1c94876fa6a8ae89bf0f1b10164da0b1aff98f1400eefe322085429770c6c827"
+    },
+    {
+      "path": "verification.actual.public.json",
+      "blob": "155d92a2ec28de59cf2d811f425916a7fa31677b",
+      "bytes": 1178,
+      "sha256": "286948a4a4c3296c3afe65f06299c8a99b69bc766026774e87ff988bf994cb19"
+    },
+    {
+      "path": "REPLAY.public.json",
+      "blob": "bfa4a6b425c18ae4cee038eb27489b1e3f48d70c",
+      "bytes": 213,
+      "sha256": "1d504a721dde4cd0ce8d3fe1fe93d8163014ec3089bcb8499d3bdfd2c4659e4d"
+    },
+    {
+      "path": "README.md",
+      "blob": "4cd27601508a21ac6e85c06565008dc869f20490",
+      "bytes": 715,
+      "sha256": "32f258e694156dd5e2e735f47578b2b5bfcc7df40a3067c3f3d861c70e4d0ce7"
+    }
+  ],
+  "manifest_excluded": true
+}

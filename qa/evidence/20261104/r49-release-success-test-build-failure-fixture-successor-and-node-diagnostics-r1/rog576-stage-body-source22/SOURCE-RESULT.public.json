@@ -1,0 +1,192 @@
+{
+  "schema": "heptabao.combined5767739.stage-report-body-source-verification.r1",
+  "ok": true,
+  "checks": 45,
+  "results": [
+    {
+      "name": "exact_pin_journal.before.js",
+      "pass": true
+    },
+    {
+      "name": "exact_pin_journal.after.js",
+      "pass": true
+    },
+    {
+      "name": "exact_pin_donor.body-journal.js",
+      "pass": true
+    },
+    {
+      "name": "exact_pin_donor.body-GO.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin_request.exact.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin_actual.info.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "strict_donor",
+      "pass": true
+    },
+    {
+      "name": "six_current_three_donor_hunks",
+      "pass": true
+    },
+    {
+      "name": "ten_groups_eleven_literals",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_slot",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_start_request",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_report_path",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_info_request",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_stage_prerequisites",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_job",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_key_prefix",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_range_comment",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_body_request",
+      "pass": true
+    },
+    {
+      "name": "exact_literal_count_actual_expected",
+      "pass": true
+    },
+    {
+      "name": "donor_logic_unchanged",
+      "pass": true
+    },
+    {
+      "name": "one_new_body_authorizer",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfAuthorizeStageResultInfoOnly",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "closed_existing_context",
+      "pass": true
+    },
+    {
+      "name": "closed_original_metadata",
+      "pass": true
+    },
+    {
+      "name": "actual_metadata_identity",
+      "pass": true
+    },
+    {
+      "name": "lossless_metadata_version",
+      "pass": true
+    },
+    {
+      "name": "request_closed_shape",
+      "pass": true
+    },
+    {
+      "name": "fixed_request",
+      "pass": true
+    },
+    {
+      "name": "original_caps",
+      "pass": true
+    },
+    {
+      "name": "separate_exact_body_GO",
+      "pass": true
+    },
+    {
+      "name": "once_marker_before_native",
+      "pass": true
+    },
+    {
+      "name": "full_extent_SHA",
+      "pass": true
+    },
+    {
+      "name": "whole_decode_before_semantics",
+      "pass": true
+    },
+    {
+      "name": "donor_checker_history_not_current_candidate",
+      "pass": true
+    },
+    {
+      "name": "no_execution_or_body_claim",
+      "pass": true
+    }
+  ],
+  "pureV8": true,
+  "candidateFunctionsInvoked": false,
+  "NativeCalls": 0,
+  "RustOrPythonRun": false,
+  "semanticReportQualification": false
+}

@@ -1,0 +1,564 @@
+{
+  "schema": "heptabao.public-node-version-profile-comparison-original-release.r1",
+  "host": "mac",
+  "job": "1a1b2feebf1-fc05-8067",
+  "GO": {
+    "blob": "be3fda34d624811838bfd20bfe3fe018c90f7213",
+    "bytes": 17618,
+    "sha256": "8fcd3db2db26e5a86117b2b0435673a5a19f6d14538c369ba72ebb7893596901"
+  },
+  "source": {
+    "blob": "20eac10fb145c74da8915d114bafaf1575f745b8",
+    "bytes": 91024,
+    "sha256": "b131f14c11052bab67b667079c5d7f054d3ecc300514e9bdbd0d61b888700b34"
+  },
+  "request": {
+    "blob": "983e0a1699b05466ce4f29a4daa4b578d331d7d7",
+    "bytes": 92005,
+    "sha256": "85187418fc9b97294f5f9c38cc8c3488954ae44a3888a4e603ba2b62c25a7b67"
+  },
+  "journal": {
+    "blob": "dabdffa04433d6a5890ed033ffaf85d864924571",
+    "bytes": 19052,
+    "sha256": "98d079db2d1d2663dc455060d401e9a2b3bd1b87542375a902be7206d4a4de4f"
+  },
+  "originalCallCount": 11,
+  "originalObserverCount": 2,
+  "immutablePageCount": 6,
+  "originalAuthority": {
+    "blob": "27e77eb9847c2a926e70bdc85ddb77be58d18368",
+    "bytes": 733,
+    "sha256": "747325a496ab47ca4384d462e9e4ff946585804cc75b3d7bde5b40fc9a10eae9"
+  },
+  "stdout": {
+    "blob": "78cd8bf07cd5ad277bed942eb61819ace932716e",
+    "bytes": 11541,
+    "sha256": "9b80b771febdca6c9434779056248639b49c2acc545e2a1df186c4529b7432c3"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "authority": {
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "stdoutSeen": 11541,
+    "stdoutStored": 11541,
+    "stderrSeen": 0,
+    "stderrStored": 0,
+    "stdoutEof": true,
+    "stderrEof": true
+  },
+  "originalObservers": [
+    {
+      "id": "b590e555e8cfffa815b1ec8e347c08e60d75e6301a588a28758123a475107d61",
+      "tool": "process_status",
+      "payload": {
+        "blob": "9f70223b31589b3e9931f99ac022ec17ad1a873e",
+        "bytes": 912,
+        "sha256": "00dba72e8d0f1e0a1091a73c9f12714095e20df67c0ef0f27004c57ea599767f"
+      },
+      "payloadTree": "912bd9dde596fe56a7b97c12491c0992cf070370",
+      "nativeText": {
+        "blob": "27e77eb9847c2a926e70bdc85ddb77be58d18368",
+        "bytes": 733,
+        "sha256": "747325a496ab47ca4384d462e9e4ff946585804cc75b3d7bde5b40fc9a10eae9"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "f3ea2320bcb3b3d01e4b96b4bfeb66c4b3a2f3511542dcbf548beb41d16aa2a5",
+      "tool": "process_read",
+      "payload": {
+        "blob": "269d26d354b40d188ed3f6a7d9112ba52c3e0dfe",
+        "bytes": 38744,
+        "sha256": "5ef204a9fa63e473f8af51f6837e546de4fe57eb6d433e258e7e4618fbb5ed9d"
+      },
+      "payloadTree": "e2d2d1334305c44a9163f9cfdd07433ae444d5f5",
+      "nativeText": {
+        "blob": "a59ba48d6d26753d6136d2e1b9deda07f6237cc3",
+        "bytes": 36167,
+        "sha256": "74238e096d55f7a913a0530655eebe5226b39da918378fc966346a1b6d751ffa"
+      },
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "originalStatuses": [
+    {
+      "callKey": "node-version-r1-status-01-poll-01",
+      "blob": "d993bf69ea3b1a061d181c35c2590fbefbdd53a6",
+      "bytes": 805,
+      "sha256": "b2ce31a4f07ce536fdb4028783e39627cd732b99857dfcacd9159e6e8dc6add2"
+    },
+    {
+      "callKey": "node-version-r1-streams-01-poll-01",
+      "blob": "e0e5df57ca474efa97fc0b0a8e8e3b4a0993fcfc",
+      "bytes": 803,
+      "sha256": "5efad6d2c58de64406be36026c98c40f07fb007d56f8577a54926f2b858d78eb"
+    }
+  ],
+  "currentNativeState": {
+    "activeCalls": 0,
+    "activeFutures": 0,
+    "pendingCall": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "nextStdout": 11541,
+    "nextStderr": 0,
+    "laneReleased": true,
+    "originalStartNotReplayed": true
+  },
+  "actualDiagnostic": {
+    "ok": true,
+    "observationComplete": true,
+    "bothVersionArmsSucceeded": false,
+    "outcomeUnknown": false,
+    "comparison": "baseline-version-ok-restricted-sigabrt",
+    "arms": [
+      {
+        "label": "restricted-version",
+        "testProfileApplied": true,
+        "pid": 11162,
+        "knownExitCode": -6,
+        "stdout": {
+          "bytes": 0,
+          "publicVersionSyntax": false,
+          "unknownTextOrHashExported": false,
+          "value": null
+        },
+        "stderrBytes": 0,
+        "completeBeforeDeadline": true,
+        "streamsClosed": true,
+        "outcomeUnknown": false,
+        "custody": {
+          "captured_exit": null,
+          "ps": {
+            "pgid": 11162,
+            "pid": 11162,
+            "ppid": 11160,
+            "start": "Sat Nov  7 06:33:41 2026    ",
+            "uid": 501
+          },
+          "sid_observed_while_live": 11162
+        },
+        "retainedExit": {
+          "code": 2,
+          "pid": 11162,
+          "signo": 20,
+          "status": 6
+        },
+        "directChildReaped": true,
+        "groupEmptyBeforeReap": true,
+        "groupEmptyAfterReap": true,
+        "signals": [],
+        "postReapSignalSent": false
+      },
+      {
+        "label": "baseline-version",
+        "testProfileApplied": false,
+        "pid": 11171,
+        "knownExitCode": 0,
+        "stdout": {
+          "bytes": 8,
+          "publicVersionSyntax": true,
+          "unknownTextOrHashExported": false,
+          "value": "v25.9.0"
+        },
+        "stderrBytes": 0,
+        "completeBeforeDeadline": true,
+        "streamsClosed": true,
+        "outcomeUnknown": false,
+        "custody": {
+          "captured_exit": null,
+          "ps": {
+            "pgid": 11171,
+            "pid": 11171,
+            "ppid": 11160,
+            "start": "Sat Nov  7 06:33:41 2026    ",
+            "uid": 501
+          },
+          "sid_observed_while_live": 11171
+        },
+        "retainedExit": {
+          "code": 1,
+          "pid": 11171,
+          "signo": 20,
+          "status": 0
+        },
+        "directChildReaped": true,
+        "groupEmptyBeforeReap": true,
+        "groupEmptyAfterReap": true,
+        "signals": [],
+        "postReapSignalSent": false
+      }
+    ],
+    "sameEnvironmentAndCwd": true,
+    "profileBytesUnchanged": true,
+    "profileActual": {
+      "bytes": 6909,
+      "identity": [
+        "16777233",
+        "593591711",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "6909",
+        "1794004421162461048",
+        "1794004421162461048"
+      ],
+      "path": "/Users/qianqi/heptabao-public-node-version-20261106-r1-control/consumer.sb",
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    },
+    "baselineWithoutTestProfileQualifiesSDK": false,
+    "originalAbortCauseProved": false,
+    "businessQualificationClaimed": false,
+    "historicalOutcomeRewritten": false,
+    "interpretation": "For this new public --version comparison, the restricted invocation aborted while the matched no-test-profile baseline returned the version. The specific rule or underlying mechanism has not been identified; old business progress, cause, and SDK/credential qualification remain unproved."
+  },
+  "ownClosure": {
+    "applicationDescriptors": 14,
+    "allApplicationDescriptorsClosed": true,
+    "inputs": {
+      "allReturnedInputFdsClosed": true,
+      "closeErrors": [],
+      "fixedInputCount": 4,
+      "metadataCalls": 74,
+      "readBytes": 375824,
+      "readCalls": 12,
+      "returnedFdLedger": {
+        "attempts": 4,
+        "knownNoReturnErrors": 0,
+        "pending": 0,
+        "registered": 4,
+        "registrationUnknown": false
+      }
+    },
+    "homeResources": [
+      {
+        "closeError": null,
+        "closure": {
+          "allFiniteLeavesClosed": true,
+          "allReturnedDescriptorsClosed": true,
+          "closeErrors": [],
+          "counts": {
+            "metadata": 70,
+            "readBytes": 0,
+            "readCalls": 0,
+            "writeBytes": 0,
+            "writeCalls": 0
+          },
+          "currentRootFull9UpdatedOnlyAfterOwnExclusiveCreate": true,
+          "currentRootIdentity": [
+            "16777233",
+            "593591712",
+            "501",
+            "20",
+            "16832",
+            "2",
+            "64",
+            "1794004421164304470",
+            "1794004421164304470"
+          ],
+          "descriptorScope": "returned HomeControl application descriptors only",
+          "directoryContentsExhaustivelyInventoried": false,
+          "effectUnknown": false,
+          "fdRows": [
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 11,
+              "identity": [
+                "16777233",
+                "2",
+                "0",
+                "0",
+                "16877",
+                "22",
+                "704",
+                "1786589515000000000",
+                "1786589515000000000"
+              ],
+              "kind": "shared_parent",
+              "path": "/"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 12,
+              "identity": [
+                "16777233",
+                "18326",
+                "0",
+                "80",
+                "16877",
+                "6",
+                "192",
+                "1790904461743063380",
+                "1790904461743063380"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 13,
+              "identity": [
+                "16777233",
+                "6929812",
+                "501",
+                "20",
+                "16877",
+                "382",
+                "12224",
+                "1794004421162324506",
+                "1794004421162324506"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users/qianqi"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 14,
+              "identity": [
+                "16777233",
+                "593591712",
+                "501",
+                "20",
+                "16832",
+                "2",
+                "64",
+                "1794004421164304470",
+                "1794004421164304470"
+              ],
+              "kind": "owned_root",
+              "path": "/Users/qianqi/heptabao-public-node-version-20261106-r1-empty"
+            }
+          ],
+          "initComplete": true,
+          "initStarted": true,
+          "interpreterAndDynamicLoaderInternalFdsNotEnumerated": true,
+          "lastOwnCreateRootObservation": null,
+          "openAttempts": 4,
+          "openPending": 0,
+          "path": "/Users/qianqi/heptabao-public-node-version-20261106-r1-empty",
+          "privateCredentialPlansMovedHere": false,
+          "registrationUnknown": false,
+          "rootCreated": true,
+          "rootCreationAttempted": true,
+          "schema": "heptabao.mac-owned-home-control-closure.r1",
+          "sharedParentsUseFirst5ObjectIdentity": true
+        },
+        "finalFencePassed": true,
+        "initializationCompleted": true,
+        "initializationStarted": true,
+        "name": "empty",
+        "root": "/Users/qianqi/heptabao-public-node-version-20261106-r1-empty"
+      },
+      {
+        "closeError": null,
+        "closure": {
+          "allFiniteLeavesClosed": true,
+          "allReturnedDescriptorsClosed": true,
+          "closeErrors": [],
+          "counts": {
+            "metadata": 109,
+            "readBytes": 6909,
+            "readCalls": 2,
+            "writeBytes": 6909,
+            "writeCalls": 1
+          },
+          "currentRootFull9UpdatedOnlyAfterOwnExclusiveCreate": true,
+          "currentRootIdentity": [
+            "16777233",
+            "593591710",
+            "501",
+            "20",
+            "16832",
+            "3",
+            "96",
+            "1794004421162423798",
+            "1794004421162423798"
+          ],
+          "descriptorScope": "returned HomeControl application descriptors only",
+          "directoryContentsExhaustivelyInventoried": false,
+          "effectUnknown": false,
+          "fdRows": [
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 7,
+              "identity": [
+                "16777233",
+                "2",
+                "0",
+                "0",
+                "16877",
+                "22",
+                "704",
+                "1786589515000000000",
+                "1786589515000000000"
+              ],
+              "kind": "shared_parent",
+              "path": "/"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 8,
+              "identity": [
+                "16777233",
+                "18326",
+                "0",
+                "80",
+                "16877",
+                "6",
+                "192",
+                "1790904461743063380",
+                "1790904461743063380"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 9,
+              "identity": [
+                "16777233",
+                "6929812",
+                "501",
+                "20",
+                "16877",
+                "381",
+                "12192",
+                "1794004282904041911",
+                "1794004282904041911"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users/qianqi"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 10,
+              "identity": [
+                "16777233",
+                "593591710",
+                "501",
+                "20",
+                "16832",
+                "2",
+                "64",
+                "1794004421162319256",
+                "1794004421162319256"
+              ],
+              "kind": "owned_root",
+              "path": "/Users/qianqi/heptabao-public-node-version-20261106-r1-control"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 11,
+              "kind": "write",
+              "path": "/Users/qianqi/heptabao-public-node-version-20261106-r1-control/consumer.sb"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 11,
+              "kind": "read",
+              "path": "/Users/qianqi/heptabao-public-node-version-20261106-r1-control/consumer.sb"
+            }
+          ],
+          "initComplete": true,
+          "initStarted": true,
+          "interpreterAndDynamicLoaderInternalFdsNotEnumerated": true,
+          "lastOwnCreateRootObservation": {
+            "beforeFull9": [
+              "16777233",
+              "593591710",
+              "501",
+              "20",
+              "16832",
+              "2",
+              "64",
+              "1794004421162319256",
+              "1794004421162319256"
+            ],
+            "currentFull9": [
+              "16777233",
+              "593591710",
+              "501",
+              "20",
+              "16832",
+              "3",
+              "96",
+              "1794004421162423798",
+              "1794004421162423798"
+            ],
+            "fieldEqualToBefore": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false
+            ],
+            "heldNamedFull9Equal": true,
+            "namedFull9": [
+              "16777233",
+              "593591710",
+              "501",
+              "20",
+              "16832",
+              "3",
+              "96",
+              "1794004421162423798",
+              "1794004421162423798"
+            ],
+            "sameRootObjectFirst5": true
+          },
+          "openAttempts": 6,
+          "openPending": 0,
+          "path": "/Users/qianqi/heptabao-public-node-version-20261106-r1-control",
+          "privateCredentialPlansMovedHere": false,
+          "registrationUnknown": false,
+          "rootCreated": true,
+          "rootCreationAttempted": true,
+          "schema": "heptabao.mac-owned-home-control-closure.r1",
+          "sharedParentsUseFirst5ObjectIdentity": true
+        },
+        "finalFencePassed": true,
+        "initializationCompleted": true,
+        "initializationStarted": true,
+        "name": "control",
+        "root": "/Users/qianqi/heptabao-public-node-version-20261106-r1-control"
+      }
+    ],
+    "allOwnedCommandsStopped": true,
+    "unknownCommandCount": 0,
+    "allFixedHeldNamedFencesPassed": true,
+    "handlersRestored": true,
+    "pendingSignalObserved": false,
+    "deadlineMetAfterClosure": true,
+    "elapsedSeconds": 0.1172417919151485
+  },
+  "historicalManagedOrHelperUnknownUpgraded": false,
+  "NodePublicVersionOnly": true,
+  "SDKOrCredentialOrBusinessRerun": false,
+  "allAuthorizationConsumed": true,
+  "additionalNativeAuthorized": false
+}

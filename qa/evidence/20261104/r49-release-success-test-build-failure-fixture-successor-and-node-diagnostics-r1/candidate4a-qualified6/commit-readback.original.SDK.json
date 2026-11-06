@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\"node_id\":\"C_kwDOUGncwNoAKDRhNDk0MDViOTNjNDVhYjFjMjVlY2JhMTFjZGU2M2E3ZWRlMjBkY2U\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T23:05:56Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T23:05:56Z\"},\"tree\":{\"sha\":\"f02dd113d208d79f5275005dc65a5e8aecd0e9d3\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/f02dd113d208d79f5275005dc65a5e8aecd0e9d3\"},\"message\":\"Fix default-profile HA fixture and snapshot audit test compilation\\n\\nInitialize the two native-v6-ha snapshot fields in the existing listener-free HA test fixtures. Keep the callback absent and the peer-pin map empty. Replace two unstable ExactSizeIterator::is_empty assertions with equivalent stable zero-length assertions.\\n\\nRepairs the four actual default libtest compiler errors from 5767739c. Production code, test names, assertions, deadlines, dependencies and the 252/280 selected test plan are otherwise unchanged. This source commit is not a runtime qualification.\",\"parents\":[{\"sha\":\"5767739cd25e458ac052dc8d384019bab8688ae0\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5767739cd25e458ac052dc8d384019bab8688ae0\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/5767739cd25e458ac052dc8d384019bab8688ae0\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "display_title": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "structuredContent": {
+      "title": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+      "content": "{\"sha\":\"4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\"node_id\":\"C_kwDOUGncwNoAKDRhNDk0MDViOTNjNDVhYjFjMjVlY2JhMTFjZGU2M2E3ZWRlMjBkY2U\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T23:05:56Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T23:05:56Z\"},\"tree\":{\"sha\":\"f02dd113d208d79f5275005dc65a5e8aecd0e9d3\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/f02dd113d208d79f5275005dc65a5e8aecd0e9d3\"},\"message\":\"Fix default-profile HA fixture and snapshot audit test compilation\\n\\nInitialize the two native-v6-ha snapshot fields in the existing listener-free HA test fixtures. Keep the callback absent and the peer-pin map empty. Replace two unstable ExactSizeIterator::is_empty assertions with equivalent stable zero-length assertions.\\n\\nRepairs the four actual default libtest compiler errors from 5767739c. Production code, test names, assertions, deadlines, dependencies and the 252/280 selected test plan are otherwise unchanged. This source commit is not a runtime qualification.\",\"parents\":[{\"sha\":\"5767739cd25e458ac052dc8d384019bab8688ae0\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5767739cd25e458ac052dc8d384019bab8688ae0\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/5767739cd25e458ac052dc8d384019bab8688ae0\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/4a49405b93c45ab1c25ecba11cde63a7ede20dce"
+    }
+  },
+  "isError": false
+}

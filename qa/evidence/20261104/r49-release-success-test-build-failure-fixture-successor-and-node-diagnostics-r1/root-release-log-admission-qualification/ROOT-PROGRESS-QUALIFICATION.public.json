@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.root.r49-observed-release-and-fixed-log-progress.r1",
+  "candidate": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "release": {
+    "actualTree": "2d17efd12b74732335f9be984e4b8dfb744f2f7c",
+    "originalDeclaration": {
+      "blob": "c20ec0280e1c17fc402125e9981c137a0ef201bb",
+      "bytes": 1317,
+      "sha256": "87df601a22aedf560087e3525ca3aa4a4700338cc70cf92eaf22dba0820003de"
+    },
+    "checks": {
+      "parentPayloadOriginal": true,
+      "originalBuildJob": true,
+      "originalStdoutText": true,
+      "declaredReleasePhase": true,
+      "sourceExact": true,
+      "artifactNames": true,
+      "featuresAndProfile": true
+    },
+    "phase": "normal-production-release-built",
+    "artifacts": {
+      "heptabao-server": {
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-server",
+        "sha256": "af595a9b31537d6421f3069ad3d2657dfc88ebea2a2ba564f9cc009992bbef8d",
+        "bytes": 110492992,
+        "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-server",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false
+      },
+      "heptabao-seed": {
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-seed",
+        "sha256": "64984b1ecc6d80a0599ae6bb7b93e51399f6b679244af55a163124a099790c84",
+        "bytes": 101923848,
+        "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-seed",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false
+      }
+    },
+    "finalBuildQualified": false,
+    "artifactFull9Observed": false,
+    "all280Passed": false
+  },
+  "AuthPublicLog": {
+    "actualTree": "c9483fb5f71a319871dfa78d36aa7ab21c4aedc0",
+    "wholeAudit": {
+      "tree": "c9483fb5f71a319871dfa78d36aa7ab21c4aedc0",
+      "files": 65,
+      "bytes": 511839,
+      "merkle": {
+        "root_sha": "c9483fb5f71a319871dfa78d36aa7ab21c4aedc0",
+        "trees_verified": 1,
+        "leaf_count": 65
+      },
+      "whole": true
+    },
+    "originalChainChecks": 275,
+    "exactAuthorResult": true,
+    "job": "mac/1a1b2e40a05-fc05-8023",
+    "processExit": 0,
+    "originalCalls": 9,
+    "observers": 2,
+    "immutablePages": 4,
+    "allOwnedClosed": true,
+    "observedObjects": 1,
+    "admittedEvents": 0,
+    "rejectedUnknownObjects": 1,
+    "startupCauseQualified": false,
+    "actualBusinessProgressQualified": false,
+    "historicalUnknownPreserved": true
+  },
+  "MacFull34AdmissionSource": {
+    "tree": "d54c2e26fbc402074f91a2c671aae856c41486b6",
+    "wholeAudit": {
+      "tree": "d54c2e26fbc402074f91a2c671aae856c41486b6",
+      "files": 11,
+      "bytes": 61585,
+      "merkle": {
+        "root_sha": "d54c2e26fbc402074f91a2c671aae856c41486b6",
+        "trees_verified": 1,
+        "leaf_count": 11
+      },
+      "whole": true
+    },
+    "rootChecks": 13,
+    "exactActualGroups": true,
+    "sourceOnly": true,
+    "runtime": false
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "NativeCallsAdded": 0
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.root.C576-status0-archive-recovery-review.r1",
+  "packet": {
+    "tree": "9aaae07af202421229bc063c30b53a8d156e2ea4",
+    "files": 10,
+    "bytes": 187920,
+    "merkle": {
+      "root_sha": "9aaae07af202421229bc063c30b53a8d156e2ea4",
+      "trees_verified": 1,
+      "leaf_count": 10
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "597723230d1f5e6e2aa57362a249dde9a3941caf",
+    "bytes": 2224,
+    "sha256": "fc91c57e3622a6ecc6ed72f7be32c16e96a36a2d032d5fb8afd6001df4896e23"
+  },
+  "checks": {
+    "exactBefore": true,
+    "exactOriginalSDK": true,
+    "exactRequest": true,
+    "actualBuildJob": true,
+    "onlyPendingOriginalCall": true,
+    "sameOriginalOperation": true,
+    "originalSdkBound": true,
+    "newEvidenceWhole": true,
+    "originalStatusCompletedInactive": true,
+    "originalGitErrorPreserved": true,
+    "originalReadsPreserved": true,
+    "sourceIsExact": true,
+    "originalUnknownExplicit": true
+  },
+  "onlyTransitions": [
+    "attach new whole evidence archive to original call",
+    "phase sdk_git_archive_unresolved to sdk_whole_uninterpreted",
+    "paused false after all exact input checks",
+    "append recovery history preserving old phase/archiveFailure/outerFailure"
+  ],
+  "noCallsFlagsKeysOrCountersReset": true,
+  "oldGitCreateUnknownRetained": true,
+  "newNativeCalls": 0
+}

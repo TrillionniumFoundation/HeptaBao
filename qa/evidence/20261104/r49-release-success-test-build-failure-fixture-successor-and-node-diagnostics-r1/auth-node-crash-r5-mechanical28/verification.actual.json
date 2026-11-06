@@ -1,0 +1,383 @@
+{
+  "schema": "heptabao.fixed-crash-r5-source-mechanical-checks.r1",
+  "passed": true,
+  "checkCount": 93,
+  "checks": [
+    {
+      "name": "core-whole/source.before.original.py",
+      "passed": true
+    },
+    {
+      "name": "core-whole/source.py",
+      "passed": true
+    },
+    {
+      "name": "core-whole/source.forward.diff",
+      "passed": true
+    },
+    {
+      "name": "core-whole/source.inverse.diff",
+      "passed": true
+    },
+    {
+      "name": "core-whole/request.exact.json",
+      "passed": true
+    },
+    {
+      "name": "core-whole/journal.before.original.js",
+      "passed": true
+    },
+    {
+      "name": "core-whole/journal.js",
+      "passed": true
+    },
+    {
+      "name": "core-whole/journal.forward.diff",
+      "passed": true
+    },
+    {
+      "name": "core-whole/journal.inverse.diff",
+      "passed": true
+    },
+    {
+      "name": "core-whole/CONTRACT.public.json",
+      "passed": true
+    },
+    {
+      "name": "core-whole/prior-R4.stdout.original.json",
+      "passed": true
+    },
+    {
+      "name": "core-whole/prior-R4.release.original.json",
+      "passed": true
+    },
+    {
+      "name": "core-whole/public-node-startup.original.mjs",
+      "passed": true
+    },
+    {
+      "name": "core-whole/public-probe.actual.stdout.original.json",
+      "passed": true
+    },
+    {
+      "name": "core-whole/PUBLIC_INPUTS_BINDING.public.json",
+      "passed": true
+    },
+    {
+      "name": "core-whole/README.md",
+      "passed": true
+    },
+    {
+      "name": "base/R4-source",
+      "passed": true
+    },
+    {
+      "name": "patch/source-forward",
+      "passed": true
+    },
+    {
+      "name": "patch/source-forward/hunks",
+      "passed": true
+    },
+    {
+      "name": "patch/source-inverse",
+      "passed": true
+    },
+    {
+      "name": "patch/source-inverse/hunks",
+      "passed": true
+    },
+    {
+      "name": "patch/journal-forward",
+      "passed": true
+    },
+    {
+      "name": "patch/journal-forward/hunks",
+      "passed": true
+    },
+    {
+      "name": "patch/journal-inverse",
+      "passed": true
+    },
+    {
+      "name": "patch/journal-inverse/hunks",
+      "passed": true
+    },
+    {
+      "name": "source/three-new-projection-functions",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/need",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/critical",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/interrupt",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/remaining",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/error_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/date_epoch_seconds",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/name_allowed",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/crash_time",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/exact_pairs",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/reject_constant",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/bounded_integer",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/enum_field",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/json_kind",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/diagnostic_slot",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/fixed_os",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/library_line",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/fixed_text_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged-function/proc_path_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged/constants-signals",
+      "passed": true
+    },
+    {
+      "name": "unchanged/seven-plus-path-gates-and-body-parser",
+      "passed": true
+    },
+    {
+      "name": "unchanged/main-custody-and-fallback",
+      "passed": true
+    },
+    {
+      "name": "request/source",
+      "passed": true
+    },
+    {
+      "name": "request/contract-pin",
+      "passed": true
+    },
+    {
+      "name": "source/contract-pin",
+      "passed": true
+    },
+    {
+      "name": "journal/contract-pin",
+      "passed": true
+    },
+    {
+      "name": "request/fixed-fields",
+      "passed": true
+    },
+    {
+      "name": "request/stable-key",
+      "passed": true
+    },
+    {
+      "name": "journal/request-pin-literal",
+      "passed": true
+    },
+    {
+      "name": "journal/request-pins",
+      "passed": true
+    },
+    {
+      "name": "journal/only-three-bound-literals",
+      "passed": true
+    },
+    {
+      "name": "namespace/256-utf8-no-control",
+      "passed": true
+    },
+    {
+      "name": "namespace/type-length-ascii-trim",
+      "passed": true
+    },
+    {
+      "name": "namespace/no-new-closed-enum-gate",
+      "passed": true
+    },
+    {
+      "name": "stack/direct-typed-index",
+      "passed": true
+    },
+    {
+      "name": "stack/sole-thread-only-fallback",
+      "passed": true
+    },
+    {
+      "name": "stack/triggered-conflict-refuses",
+      "passed": true
+    },
+    {
+      "name": "stack/32-prefix-honesty",
+      "passed": true
+    },
+    {
+      "name": "stack/shared-deadline",
+      "passed": true
+    },
+    {
+      "name": "stack/no-other-thread-or-image-loop",
+      "passed": true
+    },
+    {
+      "name": "stack/no-address-register-fields",
+      "passed": true
+    },
+    {
+      "name": "stack/no-new-IO",
+      "passed": true
+    },
+    {
+      "name": "image/fixed-dyld-path",
+      "passed": true
+    },
+    {
+      "name": "image/name-crosscheck",
+      "passed": true
+    },
+    {
+      "name": "image/no-content-qualification",
+      "passed": true
+    },
+    {
+      "name": "symbol/mapped-image-required",
+      "passed": true
+    },
+    {
+      "name": "symbol/address-token-rejected",
+      "passed": true
+    },
+    {
+      "name": "symbol/bounded-public-families",
+      "passed": true
+    },
+    {
+      "name": "contract/unchanged-IO",
+      "passed": true
+    },
+    {
+      "name": "contract/original-observation-bounds",
+      "passed": true
+    },
+    {
+      "name": "public-input/original-source",
+      "passed": true
+    },
+    {
+      "name": "public-input/original-actual",
+      "passed": true
+    },
+    {
+      "name": "public-input/explicit-env-cwd-argv",
+      "passed": true
+    },
+    {
+      "name": "public-input/environment-seven",
+      "passed": true
+    },
+    {
+      "name": "public-input/env-not-inherited",
+      "passed": true
+    },
+    {
+      "name": "public-input/fixed-literal-found",
+      "passed": true
+    },
+    {
+      "name": "public-input/marker-original",
+      "passed": true
+    },
+    {
+      "name": "public-input/marker-pin",
+      "passed": true
+    },
+    {
+      "name": "public-input/actual-file/marker",
+      "passed": true
+    },
+    {
+      "name": "public-input/bytes-sha/marker",
+      "passed": true
+    },
+    {
+      "name": "public-input/actual-file/rows",
+      "passed": true
+    },
+    {
+      "name": "public-input/bytes-sha/rows",
+      "passed": true
+    },
+    {
+      "name": "public-input/actual-file/cache",
+      "passed": true
+    },
+    {
+      "name": "public-input/bytes-sha/cache",
+      "passed": true
+    },
+    {
+      "name": "prior/R4-whole",
+      "passed": true
+    },
+    {
+      "name": "prior/R4-original-limit-fact",
+      "passed": true
+    },
+    {
+      "name": "prior/no-host-cause-presumed",
+      "passed": true
+    }
+  ],
+  "execution": "pure V8 whole/strict diff/source text/provenance comparison only; not Python or projector execution",
+  "NativeCallsAdded": 0,
+  "privateIPSRead": false,
+  "freshSlotInitialized": false
+}

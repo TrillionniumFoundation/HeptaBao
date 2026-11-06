@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.x230.two-bundle-source-only-stage.plan.v1",
+  "status": "SOURCE_ONLY_NO_GO_CURRENT576_BINDING_EXAMPLE",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "leaves": 3932,
+    "tracked_bytes": 62553540,
+    "full_index_sha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+    "history": 3769
+  },
+  "futureProductSuccessor": null,
+  "actualFinalLinuxBuildQualified": false,
+  "actualX230BasePresence": null,
+  "actualX230Stage": null,
+  "sourceTemplate": {
+    "blob": "d40b9565ddc74b93caf150fad29c612f7160c8c8",
+    "bytes": 27734,
+    "sha256": "431932d2bd1ea268887d9ce2f22a34a9a12dd3814b872efe1401df5d6c255cb7"
+  },
+  "exactCurrentSource": {
+    "blob": "1d8e5c07d42e5c512fae9a679409ba23076f5652",
+    "bytes": 30059,
+    "sha256": "ca8b18c6b13d937c81b1b5032206e28a6b3ff0ea4918ae259d37e103446f937a"
+  },
+  "binder": {
+    "blob": "5ee4b7696af740666382c8af80d31aba37343b4e",
+    "bytes": 3117,
+    "sha256": "75fd681504517961fe4d41628793f2b9f6d47b51e4daba91036a6d8babe6332f"
+  },
+  "exactCurrentRequest": {
+    "blob": "120f3b43845840cb37f74548aa7ac0b821dc1201",
+    "bytes": 267126,
+    "sha256": "631e361705d295d460c627f16dc79f4922b1ca342a6dc59552db1d84a22b081b"
+  },
+  "typed": {
+    "sha256": "49378ec0219d23f0b2725c46b6c67df8843e21249f178b2db9c663f98acbe341",
+    "native_fingerprint": "5275842444336636912",
+    "canonical_bytes": 267038
+  },
+  "bindings": {
+    "blob": "7665a5ec5c8d060d7bee430521fcc8355fce779f",
+    "bytes": 2487,
+    "sha256": "5eda922e2d3ba08cfe968e106265061aa18552994b3d8f95e1b55a7582ceae84"
+  },
+  "carrier": {
+    "blob": "79d6845b1826171788333c906e77faf02ac02bb6",
+    "bytes": 235828,
+    "sha256": "746de82dd389c7fe3cd1a169c5ace88737b3d94c00cf953eef4c0be9b5d7e1b0"
+  },
+  "carrierCap": 262144,
+  "actualStdinBytes": 235828,
+  "actualRequestEnvelopeBytes": 267126,
+  "transportFacts": {
+    "first": {
+      "binaryBytes": 171016,
+      "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800",
+      "base64Blob": "aa2b5e2c231b7784603f8ccf621c405dacdeae08",
+      "rootQualification": "6b95f49c60c5a7441668cb0edb43ea2769d0c606"
+    },
+    "second": {
+      "binaryBytes": 5766,
+      "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+      "base64Blob": "80317c9867cd6485b4a308e9d512de2d99d02c12",
+      "rootQualification": "72cc86bbdbe09496c13865bb1d642d0423c873ba"
+    }
+  },
+  "baselineReceiver": {
+    "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+    "bytes": 30791,
+    "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471",
+    "historicalGO": "0de9e52cff21d0827a584387e178559c73d93a04",
+    "previousInterface": "90546d1e6fdafe6801e4946176963129ff8397cc"
+  },
+  "purpose": "Fresh independent source-only checkout using the historical fixed X230 4e local repository as a read-only base. No product binary or old build receipt is transferred or executed.",
+  "minimumChanges": [
+    "Replace old seven-artifact/full-bundle input with one whole-pinned bounded JSON carrier containing two exact incremental bundles.",
+    "Keep fixed X230 base path and verify its exact 4e head/tree/clean independent repository, full count and 495 ancestry before creating the new root; no guessed origin or fallback.",
+    "Clone locally with --no-hardlinks into the new root; remove only the new clone's origin. Sequentially verify/import 495→02b and 02b→current target, then checkout exact target.",
+    "Retain 20 complete original helpers and original child cleanup/deadline block; add a protected once-close ledger only for the two newly written bundle descriptors.",
+    "Extend the original complete materialization check with exact tracked-byte and full-index SHA constraints; only the newly owned source tree is walked/fsynced.",
+    "Remove the old normal61/native-release receipt validators because this operation has no product binary scope; all runtime qualification remains false.",
+    "Publish one create-only source-stage report in control/stage-result.public.json and one compact post-finally stdout summary."
+  ],
+  "retainedOriginalHelpers": 20,
+  "totalFunctions": 25,
+  "strictSourceHunks": 9,
+  "fixedPaths": {
+    "readOnlyBase": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+    "newRoot": "/home/qian/hb-5767739c-src-20261106-r1",
+    "newSource": "/home/qian/hb-5767739c-src-20261106-r1/source",
+    "newControl": "/home/qian/hb-5767739c-src-20261106-r1/control",
+    "newArtifacts": "/home/qian/hb-5767739c-src-20261106-r1/artifacts",
+    "futureReport": "/home/qian/hb-5767739c-src-20261106-r1/control/stage-result.public.json"
+  },
+  "originalBudgets": {
+    "stageSeconds": 300,
+    "cloneSeconds": 90,
+    "gitCommandSeconds": 60,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "processSnapshotSeconds": 5,
+    "commandStdoutAndStderrBytesEach": 2097152
+  },
+  "newInputCaps": {
+    "stdinBytes": 262144,
+    "bundleBytesTotalMaximum": 262144,
+    "actualBundleBytesTotal": 176782,
+    "readWriteChunkBytes": 65536,
+    "trackedSingleFileBytes": 2097152,
+    "trackedTotalBytes": 134217728,
+    "reportBytes": 1048576,
+    "filesExactly": 2
+  },
+  "sourceOnlyGuard": {
+    "NativeExecuted": false,
+    "PythonCompiled": false,
+    "PythonExecuted": false,
+    "controlsPublished": false,
+    "CargoStarted": false,
+    "productTestsStarted": false,
+    "full34Qualified": false,
+    "LANQualified": false
+  },
+  "futureBindingRule": "Keep the controller template fixed. If the product requires a successor, bind a newly frozen candidate/index/history and the actual 02b→successor bundle/header/carrier in a new source packet; do not relabel this 576 request or reuse its key.",
+  "independentRequiredFollowup": "Root source review and exact one-start GO; actual original job closure and report INFO/BODY; separate binary/build admission for full34. None of these follow from this source packet.",
+  "sourceVerification": {
+    "checks": 45,
+    "pass": true,
+    "scope": "Pure V8, strict forward/reverse diff, unchanged helper byte comparisons and pure binder rejection checks. Not Python compilation or runtime proof."
+  }
+}

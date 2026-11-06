@@ -1,0 +1,247 @@
+{
+  "schema": "heptabao.fixed-public-log-stream-help-source.r1",
+  "state": "SOURCE_ONLY_NOT_INITIALIZED_NOT_SUBMITTED",
+  "GO": null,
+  "NativeSubmitted": 0,
+  "purpose": "Acquire the exact installed log stream help as the necessary command-syntax input for a separately reviewed bounded live sandbox-denial observation. This request does not stream logs or launch Node.",
+  "source": {
+    "blob": "84a2d90a6b32adf39495ea8f238e933907df365f",
+    "bytes": 44702,
+    "sha256": "0753ca3587f8e090081cce1292918037790bc083d0db272cfbe70889c88cb6b8"
+  },
+  "exactRequest": {
+    "blob": "8a7c894d24f5066e645fbb4a180e525c634bc525",
+    "bytes": 45403,
+    "sha256": "fca6fb58992ee6b1e8ff00e7ffe886c831cfa2736ec2014543d78a7825e0ea9d"
+  },
+  "journal": {
+    "blob": "768c37a2594b2f247444e07c720bf1074b40bb0e",
+    "bytes": 19064,
+    "sha256": "128ed0a4ee03a59ad4e9c746d3aadc59dcb39173bce656d646532bd8adf30287"
+  },
+  "slot": "owner_authbus_public_log_stream_help_gitfirst_r1",
+  "observerKeyPrefix": "heptabao-mac-public-log-stream-help-0753ca35-",
+  "before": {
+    "source": {
+      "blob": "5bbd852c3b8c49a3cc18a0dc716fe123f33c3726",
+      "bytes": 44719,
+      "sha256": "aed2df85d5e22ef9933fe342e981426e2fc5817d81212ee4b17987a0b563ae35"
+    },
+    "request": {
+      "blob": "af792bef88805ced91bbe214f753695c503463b5",
+      "bytes": 45429,
+      "sha256": "18d59fb7864c32dcd046f4eb96d732384be5b0ce862b703116de0c1d569f6e4d"
+    },
+    "journal": {
+      "blob": "25897aa7bab94445998d9fdd73ed07cb4a9ef151",
+      "bytes": 19054,
+      "sha256": "1f7f65f549d08d935e45e3c884e844435dafb3de16b41bd57e155c5c36effab8"
+    },
+    "originalHelpGO": {
+      "blob": "7022f38d01407c76023dd3db5c0cc6339a356def",
+      "bytes": 6757,
+      "sha256": "78eb19d7d20a5f74106aa538fe6e786071c66dc27438d36025a33cef3efa97e2"
+    }
+  },
+  "exactChildArgv": [
+    "/usr/bin/log",
+    "help",
+    "stream"
+  ],
+  "maximumPrimaryChildren": 1,
+  "knownToolBinding": {
+    "path": "/usr/bin/log",
+    "version": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000",
+    "size": 807536,
+    "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "identity": [
+      "16777233",
+      "1152921500312572288",
+      "0",
+      "0",
+      "33261",
+      "1",
+      "807536",
+      "1786589515000000000",
+      "1786589515000000000"
+    ],
+    "metadataOriginal": {
+      "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+      "bytes": 411,
+      "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+    }
+  },
+  "codeAndMetadataScope": {
+    "parentPaths": [
+      "/",
+      "/usr",
+      "/usr/bin"
+    ],
+    "target": "/usr/bin/log",
+    "applicationFDs": 4,
+    "wholeCode807536BytesBeforeChild": true,
+    "full9HeldAndNamedBeforeAfter": true,
+    "execByPathNotAtomicExecByFd": true,
+    "noDirectoryEnumeration": true,
+    "noFileWrites": true
+  },
+  "budgets": {
+    "sharedSeconds": 45,
+    "helpChildSeconds": 10,
+    "processStartSeconds": 60,
+    "cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "metadata": 64,
+    "wholeReadByteCap": 8388608,
+    "wholeReadCalls": 129,
+    "helpAcceptedBytes": 65536,
+    "originalPipeReadChunk": 65536,
+    "originalPipeReturnedBeforeOverflowRefusal": 131072,
+    "publicOutputBytes": 131072,
+    "maxStatusObservers": 8,
+    "maxReadObservers": 8,
+    "maxStatusPerObserver": 8,
+    "processReadBytes": 16384,
+    "immutablePageBytes": 8192,
+    "maxPagesPerObserver": 128,
+    "maxOriginalPayloadBytes": 1048576
+  },
+  "helpAdmission": {
+    "protocols": [
+      {
+        "exit": 0,
+        "chosen": "stdout",
+        "otherMustBeEmpty": true
+      },
+      {
+        "exit": 64,
+        "chosen": "stderr",
+        "otherMustBeEmpty": true
+      }
+    ],
+    "requiresKnownOwnedChildComplete": true,
+    "format": "complete ASCII help with anchored usage: log stream header and both exact --predicate/--style option tokens; only then export full public help text and SHA",
+    "nonMatchingOrUnknownOutput": "no raw text/hash export; preserve error/UNKNOWN"
+  },
+  "mechanical": {
+    "sourceEdits": [
+      {
+        "old": "one identity-bound /usr/bin/log help show, no log query.",
+        "next": "one identity-bound /usr/bin/log help stream, no log query.",
+        "count": 1
+      },
+      {
+        "old": "Actual LOG_BINDING is absent until the exact file_info original closes and is bound.",
+        "next": "LOG_BINDING preserves the already observed public whole executable identity.",
+        "count": 1
+      },
+      {
+        "old": "HELP_ARGV = [LOG_PATH, 'help', 'show']",
+        "next": "HELP_ARGV = [LOG_PATH, 'help', 'stream']",
+        "count": 1
+      },
+      {
+        "old": "log[ \\t]+show(?:",
+        "next": "log[ \\t]+stream(?:",
+        "count": 1
+      },
+      {
+        "old": "fixed_show_help_heading",
+        "next": "fixed_stream_help_heading",
+        "count": 1
+      },
+      {
+        "old": "('--start', '--end', '--predicate', '--style')",
+        "next": "('--predicate', '--style')",
+        "count": 1
+      },
+      {
+        "old": "required_show_help_options_observed",
+        "next": "required_stream_help_options_observed",
+        "count": 1
+      },
+      {
+        "old": "heptabao.mac-owned-log-help-protocol.r2",
+        "next": "heptabao.mac-public-log-stream-help.r1",
+        "count": 1
+      },
+      {
+        "old": "fixed-public-log-help-show",
+        "next": "fixed-public-log-help-stream",
+        "count": 1
+      }
+    ],
+    "sourceForwardHunks": 5,
+    "sourceInverseHunks": 5,
+    "journalForwardHunks": 2,
+    "journalInverseHunks": 2,
+    "embeddedTwoHelpersByteExact": true,
+    "inputGuardAndFinallyByteExact": true,
+    "noCandidateModuleExecuted": true
+  },
+  "pendingLiveDiagnostic": {
+    "notAuthorized": true,
+    "exactStreamFlagsStillRequireActualHelp": true,
+    "maximumPrimaryChildren": 2,
+    "nodeOnlyVersion": true,
+    "profile": "original 6909B profile, unchanged; mapping alternative already known insufficient",
+    "mustObserveBeforeNode": true,
+    "normalLogLaunchNotSubscriptionAttestation": true,
+    "noDeniesDoesNotProveNoDenial": true,
+    "onlyExactNewNodePIDAndMeasuredWindowPublicProjection": true,
+    "unmatchedRawAndHashesNeverPublished": true
+  },
+  "excluded": [
+    "live log query",
+    "log configuration or privacy setting change",
+    "Node or SDK launch",
+    "credentials, provider, private capsule or plans",
+    "old profile/root modification",
+    "managed old process signal or cleanup",
+    "business qualification or cause claim",
+    "replay/new key after UNKNOWN"
+  ],
+  "sourceOnlyScope": "This packet changes help subcommand and help protocol heading/tokens, plus identity labels; preserves original owner, cleanup, FD, deadline and executable qualification mechanics.",
+  "issuedAtUTC": "2026-11-06 23:07:20 UTC",
+  "authorization": "User authorized resolving the remaining AuthBus blockers. This is one bounded public command-syntax prerequisite for the proposed live diagnostic.",
+  "lane": "A single Native lane",
+  "sourceTree": "2e11a356f00cac7514a3de427e29c1de319b50b9",
+  "rootSourceReview": {
+    "blob": "b85bc9118dc2decb45bd5f4b7cb880dfabd826b1",
+    "bytes": 784,
+    "sha256": "c9e20ffea285c026e11fa5ca2bd65de8f04e292927d5a68ce516d79b27e3ce9e"
+  },
+  "sourceChecks": 43,
+  "native_binding": {
+    "sha256": "fee852109bdc445a1ed22fcd7162fc3f9051437775f790f310d204f6bbc3dbea",
+    "native_fingerprint": "18368021311518426202"
+  },
+  "key": "heptabao-mac-public-log-stream-help-0753ca35-20261106-r1",
+  "processStarts": 1,
+  "scope": "Exactly one fixed Python owner and at most one /usr/bin/log help stream child; only that new original job's status and streams.",
+  "durableProtocol": {
+    "freshSlotOnce": true,
+    "wholeIntentAndArmedBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "originalSDKWholeBeforeParse": true,
+    "oneOriginalJobOnly": true,
+    "wholeOriginalAuthorityAndStreamsRequired": true,
+    "originalChildrenAndFdsMustClose": true,
+    "noReplayAfterUnknown": true
+  },
+  "onFailure": "Preserve the exact original outcome or UNKNOWN. No retry, replacement key/job, log query, Node launch or SDK execution is authorized.",
+  "lane_allocation": {
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

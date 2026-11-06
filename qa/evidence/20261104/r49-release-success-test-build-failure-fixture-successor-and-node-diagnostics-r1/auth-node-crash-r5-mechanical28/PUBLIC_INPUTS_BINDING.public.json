@@ -1,0 +1,133 @@
+{
+  "schema": "heptabao.fixed-public-node-inputs-provenance.r1",
+  "originalPublicProbeJob": "mac/1a1b25c3c54-fc05-7db1",
+  "source": {
+    "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+    "bytes": 150406,
+    "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+  },
+  "request": {
+    "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+    "bytes": 151322,
+    "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+  },
+  "actualStdout": {
+    "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+    "bytes": 9930,
+    "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+  },
+  "actualAuthority": {
+    "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+    "bytes": 731,
+    "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+  },
+  "actualWholeTree": "73e04ba4466bcdd042bff9c776c2c607c7150057",
+  "argv": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+    "/opt/homebrew/bin/node",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial",
+  "explicitEnvironment": {
+    "HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home",
+    "OPENCLAW_CONFIG_PATH": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/openclaw.json",
+    "OPENCLAW_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home",
+    "OPENCLAW_OAUTH_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/oauth",
+    "OPENCLAW_STATE_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state",
+    "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/tmp"
+  },
+  "environmentInheritance": false,
+  "environmentSourceLine": "child_env={...} passed as env=child_env to subprocess.Popen; only the seven public fixed path/environment values listed here.",
+  "markerSource": {
+    "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+    "bytes": 1052,
+    "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+  },
+  "publicModuleSources": {
+    "rows": {
+      "blob": "408959d22873855f79f28570c611d24db44005cd",
+      "bytes": 3108,
+      "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+    },
+    "cache": {
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    }
+  },
+  "actualCreatedPublicFiles": [
+    {
+      "bytes": 1052,
+      "identity": [
+        "16777244",
+        "72751133",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1052",
+        "1793993752046025997",
+        "1793993752046034789"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs",
+      "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+    },
+    {
+      "bytes": 3108,
+      "identity": [
+        "16777244",
+        "72751134",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3108",
+        "1793993752046284547",
+        "1793993752046290588"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_auth_rows_cas_r1.mjs",
+      "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+    },
+    {
+      "bytes": 6846,
+      "identity": [
+        "16777244",
+        "72751135",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "6846",
+        "1793993752046969359",
+        "1793993752046976526"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_authbus_cache_cas_r1.mjs",
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    {
+      "bytes": 6909,
+      "identity": [
+        "16777244",
+        "72751136",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "6909",
+        "1793993752047449790",
+        "1793993752047457623"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    }
+  ],
+  "profileSha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12",
+  "inputSourceExtraction": "The three public texts are decoded without execution from the exact source PUBLIC_FILES base64-JSON literal; each SHA/length equals the original actual held readback receipt.",
+  "sourceAuthorizationBasis": "Root expressly authorizes the fixed termination.namespace field and bounded public frames from this public-only Node child. No credential, private plan, database method, provider, CAS function, SDK or network call appears in the marker script; it dynamically imports only the eleven exact listed modules. An empty marker channel does not establish how far the child executed.",
+  "currentReadDoesNotExecuteTheseInputs": true,
+  "originalMarkerAbsenceDoesNotProveNoJs": true,
+  "actualNodeAbortDoesNotReclassifyOldRuntime": true
+}

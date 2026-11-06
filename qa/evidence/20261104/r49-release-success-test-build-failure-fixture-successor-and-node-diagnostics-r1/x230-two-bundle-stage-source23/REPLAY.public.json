@@ -1,0 +1,27 @@
+{
+  "entry": "verifyX230TwoBundleStageSource",
+  "arguments": {
+    "pure": "pure_helpers.original.js",
+    "correct": "process_start_binding.correct.js",
+    "strict": "strict_diff.original.js",
+    "before": "receiver.baseline.original.py",
+    "after": "stage.current576.source.py",
+    "diff": "stage.strict.diff",
+    "originalFinally": "original.finally-child-cleanup.py",
+    "binder": "binder.source.js",
+    "bindingInput": {
+      "template": "stage.template.py",
+      "binding": {
+        "parseJSON": "BINDING.current576.public.json"
+      },
+      "acceptedCandidate": {
+        "parseJSON": "ACCEPTED-CANDIDATE.public.json"
+      },
+      "carrier": "carrier.current576.exact.json"
+    },
+    "requestRaw": "request.current576.exact.json",
+    "typed": {
+      "parseJSON": "TYPED.current576.public.json"
+    }
+  }
+}

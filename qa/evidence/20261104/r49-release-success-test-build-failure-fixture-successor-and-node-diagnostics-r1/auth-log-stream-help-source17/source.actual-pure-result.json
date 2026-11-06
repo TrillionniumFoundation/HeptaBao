@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.fixed-stream-help-mechanical-source-checks.r1",
+  "passed": true,
+  "checkCount": 43,
+  "checks": [
+    {
+      "name": "before/source-pin",
+      "passed": true
+    },
+    {
+      "name": "after/source-pin",
+      "passed": true
+    },
+    {
+      "name": "source/forward-strict",
+      "passed": true
+    },
+    {
+      "name": "source/inverse-strict",
+      "passed": true
+    },
+    {
+      "name": "journal/forward-strict",
+      "passed": true
+    },
+    {
+      "name": "journal/inverse-strict",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/one identity-bound /usr/bin/log help show, no log query.",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/Actual LOG_BINDING is absent until the exact file_info original closes and is bound.",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/HELP_ARGV = [LOG_PATH, 'help', 'show']",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/log[ \\t]+show(?:",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/fixed_show_help_heading",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/('--start', '--end', '--predicate', '--style')",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/required_show_help_options_observed",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/heptabao.mac-owned-log-help-protocol.r2",
+      "passed": true
+    },
+    {
+      "name": "source/edit-once/fixed-public-log-help-show",
+      "passed": true
+    },
+    {
+      "name": "source/only-declared-edits",
+      "passed": true
+    },
+    {
+      "name": "modules/whole-encoded-two-helpers",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/need",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/sha",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/remaining",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/public_error",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/load_helpers",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/metadata",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/admit_binding",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/open_fixed",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/verify_all",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/hash_tool",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/command_public",
+      "passed": true
+    },
+    {
+      "name": "unchanged-definition/close_rows",
+      "passed": true
+    },
+    {
+      "name": "finally/whole",
+      "passed": true
+    },
+    {
+      "name": "request/source",
+      "passed": true
+    },
+    {
+      "name": "request/pin",
+      "passed": true
+    },
+    {
+      "name": "request/fixed-inputs",
+      "passed": true
+    },
+    {
+      "name": "request/key",
+      "passed": true
+    },
+    {
+      "name": "request/stdin-only",
+      "passed": true
+    },
+    {
+      "name": "journal/pin",
+      "passed": true
+    },
+    {
+      "name": "journal/only-three-bindings",
+      "passed": true
+    },
+    {
+      "name": "help/stream-only",
+      "passed": true
+    },
+    {
+      "name": "help/exact-two-options",
+      "passed": true
+    },
+    {
+      "name": "help/original-exit-protocol",
+      "passed": true
+    },
+    {
+      "name": "contract/budgets",
+      "passed": true
+    },
+    {
+      "name": "contract/zero-native",
+      "passed": true
+    }
+  ],
+  "executedPython": false,
+  "NativeCalls": 0,
+  "scope": "Exact mechanical changes and preserved owner/resource contract only"
+}

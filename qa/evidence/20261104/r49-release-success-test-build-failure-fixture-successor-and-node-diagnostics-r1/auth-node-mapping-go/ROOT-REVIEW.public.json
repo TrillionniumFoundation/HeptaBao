@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.root.public-node-bounded-map-source-review.r1",
+  "issuedAtUTC": "2026-11-06 22:50:54 UTC",
+  "sourceTree": "fdc47c6db9f33214e867aac59e23de5a5c3535f7",
+  "wholePackage": {
+    "tree": "fdc47c6db9f33214e867aac59e23de5a5c3535f7",
+    "files": 34,
+    "bytes": 1061854,
+    "merkle": {
+      "root_sha": "fdc47c6db9f33214e867aac59e23de5a5c3535f7",
+      "trees_verified": 1,
+      "leaf_count": 34
+    },
+    "whole": true
+  },
+  "sourceChecks": 78,
+  "actualBindingChecks": {
+    "original_source_exact": true,
+    "original_contract_exact": true,
+    "original_journal_exact": true,
+    "actual_stdout_exact": true,
+    "actual_release_exact": true,
+    "source_request_exact": true,
+    "prior_lane_released": true,
+    "all_source_checks": true,
+    "full_package_whole": true
+  },
+  "priorComparisonOriginalChecks": 356,
+  "singlePermissionClassDelta": "(allow file-map-executable (subpath \"/System\") (subpath \"/usr/lib\") (subpath \"/opt/homebrew/Cellar\"))\n",
+  "profileOnlyByteCapDelta": 102,
+  "allOtherBudgetsOriginal": true,
+  "actualRuleDenialNotObserved": true,
+  "SDKQualified": false,
+  "historicalUnknownRetained": true,
+  "NativeCallsPerformed": 0
+}

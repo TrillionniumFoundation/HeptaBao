@@ -1,0 +1,21 @@
+{
+  "entry": "verify576CanonicalBodySource",
+  "evaluate": [
+    "pure_helpers.original.js",
+    "strict_diff.original.js",
+    "verifier.source.js"
+  ],
+  "input": {
+    "before": "journal.reviewed-BODY.before.js",
+    "infoSource": "journal.current-INFO.before.js",
+    "after": "journal.source.js",
+    "diff": "journal.from-reviewed-BODY.diff",
+    "infoDiff": "journal.from-current-INFO.diff",
+    "edits": "literal-edits.public.json",
+    "requestRaw": "request.exact.json",
+    "infoNativeRaw": "INFO.native.original.json",
+    "infoStateRaw": "INFO.STATE.closed.original.json",
+    "plan": "PLAN.public.json"
+  },
+  "scope": "Pure SOURCE and exact original INFO inputs. Journal not executed; no new Native."
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.root.mac576-source-stage-info-review.r1",
+  "sourceTree": "22bf8a9865ccf828921fbe63703f1877aa00a86f",
+  "whole": {
+    "tree": "22bf8a9865ccf828921fbe63703f1877aa00a86f",
+    "files": 23,
+    "bytes": 187146,
+    "merkle": {
+      "root_sha": "22bf8a9865ccf828921fbe63703f1877aa00a86f",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "sourceChecksReproduced": 24,
+  "actualBindings": {
+    "actualPriorGO": true,
+    "actualRelease": true,
+    "actualAuthority": true,
+    "actualStreams": true,
+    "actualStdout": true,
+    "currentJournalExact": true,
+    "rootTerminalQualified": true
+  },
+  "terminalChecks": {
+    "startExact": true,
+    "rootGoExact": true,
+    "originalJob": true,
+    "authorityTerminal": true,
+    "allOriginalOutput": true,
+    "noOutputLoss": true,
+    "byteTotals": true,
+    "stdoutComplete": true,
+    "observerClosure": true,
+    "noOwned": true,
+    "expectedOriginalCounts": true,
+    "summaryCandidate": true,
+    "sourceOnlyPrepared": true,
+    "fixedReportPath": true,
+    "stdoutOriginalStreamExact": true,
+    "stderrOriginalStreamEmpty": true
+  },
+  "terminalQualification": {
+    "blob": "83afd2bdc2e202e6cdf87f9753e1e2b424616b3c",
+    "bytes": 3195,
+    "sha256": "429a2d23317b3a76e20744374fd9e2a795c11c220c38dd6f7a2d60446c511fa2"
+  },
+  "NativeCallsAdded": 0
+}

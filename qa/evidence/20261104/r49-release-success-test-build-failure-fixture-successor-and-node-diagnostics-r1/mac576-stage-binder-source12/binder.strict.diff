@@ -1,0 +1,137 @@
+--- a/stage-bundle-binder.js
++++ b/stage-bundle-binder.js
+@@ -1,48 +1,94 @@
+-function bindFinalMacSourceOnlyStage({source,canonicalBase64Text,transportRaw,baseJournal}) {
+- const sourceExpected={"blob":"b6a9190bc5856e42be2d8e750875675521ecf22d","bytes":25130,"sha256":"ea096d7a13c4501d4d39d7d953fb6fd35c49aad6051227884c06e179bc8db9fd"};
+- const sourcePin=gitBlobMeta(source);
+- if(JSON.stringify(sourcePin)!==JSON.stringify(sourceExpected))throw Error("exact_reviewed_stager_source");
+- if(typeof canonicalBase64Text!=="string"||!canonicalBase64Text.endsWith("\n")
+-   ||canonicalBase64Text.slice(0,-1).includes("\n")||canonicalBase64Text.includes("\r"))
+-   throw Error("one_canonical_base64_line");
++/* SOURCE ONLY. Mechanically bind the two reviewed None constants and the
++ * existing three journal literals after the exact original bundle transport.
++ * This pure function neither fetches evidence nor calls Native or Git.
++ * The caller/root must first qualify the producer + INFO + body chains.
++ */
++function bindMac576SourceOnlyStage({sourceTemplate,canonicalBase64Text,transportRaw,bindings,baseJournal}) {
++ const need=(value,code)=>{if(!value)throw Error(code);};
++ const samePin=(raw,pin)=>pin&&JSON.stringify(gitBlobMeta(raw))===JSON.stringify(pin);
++ const isPin=pin=>pin&&/^[0-9a-f]{40}$/.test(pin.blob)&&Number.isSafeInteger(pin.bytes)&&pin.bytes>0&&/^[0-9a-f]{64}$/.test(pin.sha256);
++ const templatePin={"blob":"79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed","bytes":23651,"sha256":"7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"};
++ const journalPin={"blob":"0bcb0ae541da1865f788a26cdb4a884425c50cbd","bytes":19047,"sha256":"f74c58e06d949fe5e3aac9c9e7f33b3f68504ce9e6721bc59c3309c6a7c7424d"};
++ need(samePin(sourceTemplate,templatePin)&&samePin(baseJournal,journalPin),"exact_reviewed_stage_and_journal");
++ need(bindings?.schema==="heptabao.mac-successor576.actual-bundle-bindings.v1"
++   &&bindings.ready===true,"actual_bundle_binding_unresolved");
++ const c=bindings.candidate,b=bindings.bundle;
++ need(c?.commit==="5767739cd25e458ac052dc8d384019bab8688ae0"
++   &&c.tree==="42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
++   &&c.parent==="02b90762b3d6cc8699cc88bffb6f76cb1f07e270","one_actual_candidate");
++ need(bindings.producer?.host==="rog"
++   &&bindings.producer.path==="/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle"
++   &&isPin(bindings.producer.report)&&isPin(bindings.producer.rootQualification)
++   &&isPin(bindings.infoNative)&&isPin(bindings.transportRootQualification),"reviewed_actual_evidence_references_required");
++ need(b&&Number.isSafeInteger(b.bytes)&&b.bytes>0&&b.bytes<=4*1024*1024
++   &&/^[0-9a-f]{64}$/.test(b.sha256)&&/^[0-9a-f]{64}$/.test(b.headerSha256)
++   &&Array.isArray(b.full9)&&b.full9.length===9
++   &&b.full9.every(x=>typeof x==="string"&&/^(0|[1-9][0-9]*)$/.test(x))
++   &&b.full9[6]===String(b.bytes)
++   &&b.version===[b.full9[0],b.full9[1],b.full9[6],b.full9[7],b.full9[8]].join(":"),
++   "actual_lossless_full9_version");
++ need(/^[a-f0-9]{64}$/.test(bindings.infoOperation)
++   &&Array.isArray(bindings.bodyOperations)&&bindings.bodyOperations.length>0
++   &&new Set(bindings.bodyOperations).size===bindings.bodyOperations.length
++   &&bindings.bodyOperations.every(id=>/^[a-f0-9]{64}$/.test(id)),
++   "original_closed_operation_references");
++ need(isPin(bindings.transport)&&isPin(bindings.base64)
++   &&samePin(transportRaw,bindings.transport)&&samePin(canonicalBase64Text,bindings.base64),
++   "whole_actual_transport_and_base64");
++ need(typeof canonicalBase64Text==="string"&&canonicalBase64Text.length<=262144
++   &&canonicalBase64Text.endsWith("\n")&&!canonicalBase64Text.slice(0,-1).includes("\n")
++   &&!canonicalBase64Text.includes("\r"),"one_canonical_base64_line");
+  const raw=unb64(canonicalBase64Text.slice(0,-1));
+- if(raw.length!==171016 || sha256Latin1(byteString(raw))!=="069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800"
+-   ||encodeBase64Bytes(raw)+"\n"!==canonicalBase64Text)throw Error("whole_actual_bundle_bytes");
+- const t=JSON.parse(transportRaw),encodedPin=gitBlobMeta(canonicalBase64Text);
+- if(t.schema!=="heptabao.canonical-source-bundle-base64-transport.v1"
+-   ||t.encoding!=="base64-with-one-terminal-LF"||t.native_binary_body_observed!==true
+-   ||t.path!=="/home/qian-qi/hb-02b90762-src-20261106-r1/control/canonical-hb-02b90762-from495.bundle"
+-   ||t.version!=="66306:28477674:171016:1793989775788602563:1793989775789602574"
+-   ||t.binary_bytes!==raw.length||t.binary_sha256!=="069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800"
+-   ||JSON.stringify(t.encoded_file)!==JSON.stringify(encodedPin)
+-   ||t.info_operation!=="f157e690beab5b5213992c56db5edee70be14ed8954e1c3045cc012d104ffbb3"
+-   ||!Array.isArray(t.original_operations)||t.original_operations.length!==3
+-   ||new Set(t.original_operations).size!==3||!t.original_operations.every(id=>/^[a-f0-9]{64}$/.test(id)))
+-   throw Error("actual_transport_manifest_binding");
+- const marker=byteString(raw.slice(0,65536)).indexOf("\n\n");
+- if(marker<=0||byteString(raw.slice(marker+2,marker+6))!=="PACK"
+-   ||sha256Latin1(byteString(raw.slice(0,marker+2)))!=="bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5")
+-   throw Error("actual_v2_header_identity");
+- const carrier=JSON.stringify({schema:"heptabao.final-mac-source-only-carrier.v1",canonical_bundle_base64:canonicalBase64Text.slice(0,-1)})+"\n";
+- const carrierPin=gitBlobMeta(carrier);
+- if(carrierPin.bytes>262144)throw Error("original_carrier_cap");
++ need(raw.length===b.bytes&&sha256Latin1(byteString(raw))===b.sha256
++   &&encodeBase64Bytes(raw)+"\n"===canonicalBase64Text,"whole_actual_bundle_bytes");
++ const t=JSON.parse(transportRaw);
++ need(t.schema==="heptabao.canonical-source-bundle-base64-transport.v1"
++   &&t.encoding==="base64-with-one-terminal-LF"&&t.native_binary_body_observed===true
++   &&t.path===bindings.producer.path&&t.version===b.version
++   &&t.binary_bytes===b.bytes&&t.binary_sha256===b.sha256
++   &&JSON.stringify(t.encoded_file)===JSON.stringify(bindings.base64)
++   &&t.info_operation===bindings.infoOperation
++   &&JSON.stringify(t.original_operations)===JSON.stringify(bindings.bodyOperations),
++   "exact_actual_transport_manifest");
++ const prefix=byteString(raw.slice(0,65536)),marker=prefix.indexOf("\n\n");
++ need(marker>0&&byteString(raw.slice(marker+2,marker+6))==="PACK"
++   &&sha256Latin1(byteString(raw.slice(0,marker+2)))===b.headerSha256,"actual_v2_header_whole");
++ const lines=prefix.slice(0,marker).split("\n");
++ need(lines.length===3&&lines[0]==="# v2 git bundle"
++   &&lines[1].startsWith("-"+c.parent+" ")
++   &&lines[2]===c.commit+" HEAD","sole02b_prerequisite_and576_HEAD");
++ let source=sourceTemplate;
++ function oneSource(a,z){need(source.split(a).length===2,"one_exact_source_binding");source=source.replace(a,z);}
++ oneSource("CANONICAL_BUNDLE_BYTES = None\n","CANONICAL_BUNDLE_BYTES = "+b.bytes+"\n");
++ oneSource("CANONICAL_BUNDLE_SHA256 = None\n","CANONICAL_BUNDLE_SHA256 = '"+b.sha256+"'\n");
++ const sourcePin=gitBlobMeta(source);
++ const sourceDiff=strictDiff(sourceTemplate,source,"stage.actual-bundle-binding.py");
++ need(applyStrict(sourceTemplate,sourceDiff)===source&&applyStrict(source,sourceDiff,true)===sourceTemplate,
++   "exact_two_constant_bidirectional_diff");
++ const carrier=JSON.stringify({schema:"heptabao.final-mac-source-only-carrier.v1",
++   canonical_bundle_base64:canonicalBase64Text.slice(0,-1)})+"\n",carrierPin=gitBlobMeta(carrier);
++ need(carrierPin.bytes<=262144,"original_complete_carrier_cap");
++ const keyPrefix="heptabao-5767739c-mac-source-only-";
+  const q={host:"mac",executable:"/opt/homebrew/bin/python3",
+    args:["-I","-S","-B","-c",source,"--self-sha256",sourcePin.sha256,
+-     "--carrier-sha256",carrierPin.sha256,"--canonical-bundle-bytes","171016",
+-     "--canonical-bundle-sha256","069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800"],
++     "--carrier-sha256",carrierPin.sha256,"--canonical-bundle-bytes",String(b.bytes),
++     "--canonical-bundle-sha256",b.sha256],
+    cwd:"/Volumes/T5/hepta-vnext-recovery-20261013",stdin:carrier,timeout_seconds:360,
+-   idempotency_key:"heptabao-final02b-mac-source-only-20261106-r1-"+sourcePin.sha256.slice(0,8)};
++   idempotency_key:keyPrefix+"20261106-r1-"+sourcePin.sha256.slice(0,8)};
+  const requestRaw=JSON.stringify(q,null,2)+"\n",requestPin=gitBlobMeta(requestRaw),binding=processStartBinding(q);
+  let journal=baseJournal;
+- function one(a,b){if(journal.split(a).length!==2)throw Error("one_exact_journal_binding");journal=journal.replace(a,b);}
+- one('const GF_SLOT = "owner_launchd_gitfirst_r1";',
+-     'const GF_SLOT = "final02b_mac_source_only_stage_gitfirst_r1";');
+- one('const GF_REQUEST = {blob:"d14f62155b86924edd5632673d2e73832f7b0af5",\n bytes:76816,sha256:"ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"};',
+-     "const GF_REQUEST = "+JSON.stringify(requestPin)+";");
+- one("^heptabao-mac-owned-launchd-readonly-e573407b-","^heptabao-final02b-mac-source-only-"+sourcePin.sha256.slice(0,8)+"-");
+- const diff=strictDiff(baseJournal,journal,"mac-source-only.gitfirst.js");
+- if(applyStrict(baseJournal,diff)!==journal||applyStrict(journal,diff,true)!==baseJournal)throw Error("exact_journal_bidirectional_diff");
+- return {sourcePin,carrier,carrierPin,requestRaw,requestPin,journal,journalPin:gitBlobMeta(journal),journalDiff:diff,
+-   typed:{sha256:binding.sha256,native_fingerprint:binding.native_fingerprint,canonical_bytes:gitBlobMeta(binding.canonical).bytes},
++ function oneJournal(a,z){need(journal.split(a).length===2,"one_exact_journal_binding");journal=journal.replace(a,z);}
++ oneJournal('const GF_SLOT = "final02b_mac_source_only_stage_gitfirst_r1";',
++   'const GF_SLOT = "successor576_mac_source_only_stage_gitfirst_r1";');
++ oneJournal('const GF_REQUEST = {"blob":"bd3f20cc6390cc8519265142cf2fb8624cf87008","bytes":254446,"sha256":"21ca75b8e1ca736dd96f3e564a70e757dc487d758d216793af5b420c5d46c99e"};',
++   "const GF_REQUEST = "+JSON.stringify(requestPin)+";");
++ oneJournal("^heptabao-final02b-mac-source-only-ea096d7a-","^"+keyPrefix+sourcePin.sha256.slice(0,8)+"-");
++ const journalDiff=strictDiff(baseJournal,journal,"stage.gitfirst.actual-binding.js");
++ need(applyStrict(baseJournal,journalDiff)===journal&&applyStrict(journal,journalDiff,true)===baseJournal,
++   "exact_three_journal_literals_bidirectional_diff");
++ return {source,sourcePin,sourceDiff,carrier,carrierPin,requestRaw,requestPin,journal,
++   journalPin:gitBlobMeta(journal),journalDiff,bindingsPin:gitBlobMeta(JSON.stringify(bindings,null,2)+"\n"),
++   typed:{sha256:binding.sha256,native_fingerprint:binding.native_fingerprint,
++     canonical_bytes:gitBlobMeta(binding.canonical).bytes},
+    NativeExecuted:false,MacStageGO:null};
+ }

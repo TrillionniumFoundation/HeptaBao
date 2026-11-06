@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-public-log-stream-help-0753ca35-status-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b322d357-fc05-80b9"
+    }
+  }
+}

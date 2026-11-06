@@ -1,0 +1,1 @@
+{"all_owned_stopped": true, "compiler_started": false, "result_path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/stage-result.public.json", "server_started": false, "source_commit": "5767739cd25e458ac052dc8d384019bab8688ae0", "source_tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740", "status": "prepared", "within_new_stage_deadline": true}

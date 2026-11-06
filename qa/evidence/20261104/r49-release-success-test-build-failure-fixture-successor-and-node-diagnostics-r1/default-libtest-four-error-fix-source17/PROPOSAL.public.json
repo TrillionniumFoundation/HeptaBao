@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.root.current576-default-libtest-four-error-source-fix.r1",
+  "baseCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "baseTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "actualDiagnostic": {
+    "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+    "bytes": 2146,
+    "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+  },
+  "errors": {
+    "E0063": 2,
+    "E0658": 2
+  },
+  "changes": [
+    {
+      "path": "crates/heptabao-server/src/ha_request_deadline_tests.rs",
+      "before": {
+        "blob": "244a172794577d50bf52bbb986448f171d905fae",
+        "bytes": 4576,
+        "sha256": "5b1d932e1ca9ab49226cc9459ca1cadb8cf147abab797ed5d8c3f0dd876828cd"
+      },
+      "after": {
+        "blob": "432a89db6d9702bd5448134dadf28ad7f9bd654c",
+        "bytes": 4767,
+        "sha256": "d57744707e5179ae16725669f6ba8d421751dfdbebbf26296268692f610de0f1"
+      },
+      "forward": {
+        "blob": "a3440d0bb6e32525945bf6ff30dae01a41caaa9a",
+        "bytes": 515,
+        "sha256": "10ddc625f8f436df2358b1d2fee1366e41509cc13b91535bb81d0b7623401535"
+      },
+      "reverse": {
+        "blob": "4eec8c828849e9a81786cf9ee8de4893c574ddf6",
+        "bytes": 515,
+        "sha256": "63a8589da16c1e2a1780359bd484cbde76becf7da7babcf0a4cc807820f957e0"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_test_support.rs",
+      "before": {
+        "blob": "e6f1031dae7db7c6c09e63305d0a06f047437005",
+        "bytes": 8120,
+        "sha256": "41bd4c12c7fb55979c4f3bde6316353a0d5f6d510dd62f9650d8b1d64188e08d"
+      },
+      "after": {
+        "blob": "e861ef9860f25bb250791df7e493fd4a1fb49f63",
+        "bytes": 8343,
+        "sha256": "9ed84d5ace763a9746fc7f932de9c6c1d0d9a7fa8d2eb595eebc3fe70ad2eb62"
+      },
+      "forward": {
+        "blob": "dfecb0116ef1d37e8b9508a138e5e2ce6a09759b",
+        "bytes": 598,
+        "sha256": "1d7797cbe5abf130c8aeae15e99e558c057a2311cd7d223355d16bd33bbfbe22"
+      },
+      "reverse": {
+        "blob": "451549710e41d30202b3c05699cc9e1ef2379939",
+        "bytes": 598,
+        "sha256": "970a74fa995d6dfcf9d3cd81b33407f232da6704d87c4af7b20781eba14ffef5"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+      "before": {
+        "blob": "0c51b759c257d836adf521bea3d75b90af0b301f",
+        "bytes": 16080,
+        "sha256": "c0cdbd2a5951991b55ae2a93c22c6585c708f280c56f89d6ff105c0fd808448e"
+      },
+      "after": {
+        "blob": "7ca123003ff5740325c11b90dbb8445ba8d5455e",
+        "bytes": 16082,
+        "sha256": "01ee81d4a14cb93911fe596e37476e952acad02b6f0c31ae58a9a1bcdd4399ae"
+      },
+      "forward": {
+        "blob": "b0d19d199ebc63eb17ac03a1709d75c36deaad56",
+        "bytes": 832,
+        "sha256": "834ff89748c8de0e768ea8b603a4f29ee1afb7f509a224c6bcf6f22da38fa85e"
+      },
+      "reverse": {
+        "blob": "bf546c11db5f5c642eda8408933ae73932e2072a",
+        "bytes": 832,
+        "sha256": "f3a81b168b8e5b2139ef5a6bbbc6233d48b2e641ccd28f88059d5bfe0f8c35b0"
+      },
+      "hunks": 2
+    }
+  ],
+  "productionCodeChanged": false,
+  "fixtureMeaning": "Both original helper fixtures lack a listener and native V6 backend; initialize the feature-gated callback to absent and the peer-pin map empty. Production construction and authenticated server pins are unchanged.",
+  "assertionMeaning": "Both before/after epoch transition iterators must still contain exactly zero entries; use the stable exact-size len API without consuming the iterator.",
+  "testNamesChanged": false,
+  "newTestsAdded": false,
+  "testsDisabled": false,
+  "featureGatesPreserved": true,
+  "warningsAltered": false,
+  "strictForwardReversePassed": true,
+  "runtimeTestsExecuted": 0,
+  "CargoRun": false,
+  "independentReview": null,
+  "fullReplacement": false
+}

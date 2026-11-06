@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.mac576-stage-body.original-release.v1",
+  "originalJob": {
+    "host": "mac",
+    "id": "1a1b2f48641-fc05-8042"
+  },
+  "rootGO": {
+    "blob": "69da452a806d8ac630058128fd3c663de5db7aaa",
+    "bytes": 3150,
+    "sha256": "b3f57a8f85ac28cc7fa4f836dfcbedd36c2c2a8e3a331cb809c520649f58ce36"
+  },
+  "request": {
+    "blob": "ead124398c9a04b8d8a76e205069e8f7e426a4d9",
+    "bytes": 437,
+    "sha256": "a1901018815188a9126b3365c95be3e8be56e280874651db6911aa9cc3708527"
+  },
+  "body": {
+    "pin": {
+      "blob": "f0855203bf885620f0c5deea089cc9a9e7b86460",
+      "bytes": 7665,
+      "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb"
+    },
+    "tree": "64cb076dcd78975855e6fdd62e64cdb86a2eb1ff",
+    "originalOperation": "3bd47e557d29824b0b7f5b9cf4a272b98cefdb16ed650c06da7d9881572808fa",
+    "infoOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "whole": true
+  },
+  "observer": {
+    "id": "3bd47e557d29824b0b7f5b9cf4a272b98cefdb16ed650c06da7d9881572808fa",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "0401b95e96bd5ac401795141278bec764a201b0b",
+      "bytes": 10663,
+      "sha256": "716c6df7d64468b32bd0ee6c3879e5d575241cfc27adf3e81b4d1ac45eb434d2"
+    },
+    "payloadTree": "a9d10fec029c36f3de46c86a00d71896a70e8a61",
+    "nativeText": {
+      "blob": "df9864666d14db3410c432d9fe195d45fd3d5e0c",
+      "bytes": 10560,
+      "sha256": "f4a5b2e8e5326425daaad681c4c03ed801fa21d61a61d3b163b77876d09178ac"
+    },
+    "pages": 2,
+    "completedInactive": true
+  },
+  "originalNewCalls": 4,
+  "newImmutablePages": 2,
+  "totalCalls": 14,
+  "totalObservers": 4,
+  "prior10CallsAnd3ObserversUnchanged": true,
+  "current": {
+    "pending": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "activeFutures": 0,
+    "laneReleased": true
+  },
+  "closedState": {
+    "blob": "8d95f80103482864ae69b78f5faeb6345f053a1a",
+    "bytes": 87192,
+    "sha256": "5eb87fffb99b08d12eebd5be12817d6578711196e7960674f523584b7219a14c"
+  },
+  "normal117": false,
+  "full34": false,
+  "LAN": false,
+  "CargoStarted": false
+}

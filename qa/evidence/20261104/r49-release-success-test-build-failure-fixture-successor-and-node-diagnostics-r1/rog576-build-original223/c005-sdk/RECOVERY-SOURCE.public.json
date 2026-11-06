@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.c576.original-status-sdk-archive-recovery.source.r1",
+  "scope": "pure_Git_archive_then_accept_one_already_returned_original_SDK",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "job": "1a1b2d90976-fc05-7fff",
+  "callKey": "c576-fresh-build-r1-streams0-status0",
+  "originalOperation": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88",
+  "originalRequest": {
+    "blob": "6fd259c8556e789f0e4b1129d45e66fcf9b09087",
+    "bytes": 83,
+    "sha256": "53ae1665d2ff8cd283ffaee2836111381953e6a2e65ca43d3946e618902debc7"
+  },
+  "originalArm": "15149fae616175b0cd6bc5b82f536fbc5df2dff1",
+  "beforeState": {
+    "blob": "6f71ba0559184bf8f0e2e70d620ef8cd039d1e7c",
+    "bytes": 179536,
+    "sha256": "f4b55506a075d40ef0ed67fd3f03520a2c34c6f8757c2de5e3d1820914ac34a1"
+  },
+  "originalSDK": {
+    "blob": "b2459cf511bae4559b0941fb079048009c308d68",
+    "bytes": 978,
+    "sha256": "9403d021b20de9704d0511835b3a2253e68dedacfbf17fb996b1bec5569369ef"
+  },
+  "oldCreateExpectedTree": "5ecb3221ebad396fb9b7af067e7549d3294b2225",
+  "oldCreateOutcome": "UNKNOWN_retained",
+  "treeRead": "422_not_proof_of_prior_mutation_absence",
+  "blobRead": "404_not_proof_of_prior_mutation_absence",
+  "NativeStatusAlreadyCalled": true,
+  "NativeSDKAlreadyReturned": true,
+  "NativeSDKNotYetAccepted": true,
+  "newNativeCalls": 0,
+  "newOriginalArchiveCreateRetries": 0,
+  "plannedNewEvidenceArchiveCreates": 1,
+  "requiresNewRootGOForStateRecovery": true,
+  "originalJournalUnchanged": true,
+  "allowedRecoveryChanges": [
+    "calls[callKey].sdkArchive = exact_new_whole_archive",
+    "calls[callKey].phase = sdk_whole_uninterpreted",
+    "paused = false",
+    "append explicit recovery reference"
+  ],
+  "prohibited": [
+    "invoke original status again",
+    "recreate old archive",
+    "reset called flag",
+    "initialize slot",
+    "change job/key/request/counters",
+    "erase old failure history"
+  ]
+}

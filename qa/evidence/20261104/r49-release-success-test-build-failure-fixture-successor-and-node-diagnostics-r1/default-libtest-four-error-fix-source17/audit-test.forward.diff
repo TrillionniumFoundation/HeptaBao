@@ -1,0 +1,20 @@
+--- a/crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs
++++ b/crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs
+@@ -154,7 +154,7 @@
+     let counts = register_snapshot_handlers(&pipeline, None)?;
+     let before = selection(&pipeline, leader, migration_source)?;
+     assert_eq!(before.0, 0);
+-    assert!(before.1.epoch_transitions().is_empty());
++    assert_eq!(before.1.epoch_transitions().len(), 0);
+     let fault_node = if point == test_faults::Point::SourceAfterFinalizer {
+         leader
+     } else {
+@@ -408,7 +408,7 @@
+     let after = selection(&pipeline, leader, migration_source)?;
+     assert_eq!(after, before);
+     assert_eq!(after.0, 0);
+-    assert!(after.1.epoch_transitions().is_empty());
++    assert_eq!(after.1.epoch_transitions().len(), 0);
+     Ok(())
+ }
+ 

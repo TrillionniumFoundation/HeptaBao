@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.mac576-stage-body.actual.v1",
+  "originalJob": "1a1b2f48641-fc05-8042",
+  "originalNewCalls": 4,
+  "newOriginalObservers": 1,
+  "immutablePages": 2,
+  "priorOriginalCallsUnchanged": 10,
+  "priorOriginalObserversUnchanged": 3,
+  "body": {
+    "pin": {
+      "blob": "f0855203bf885620f0c5deea089cc9a9e7b86460",
+      "bytes": 7665,
+      "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb"
+    },
+    "tree": "64cb076dcd78975855e6fdd62e64cdb86a2eb1ff",
+    "originalOperation": "3bd47e557d29824b0b7f5b9cf4a272b98cefdb16ed650c06da7d9881572808fa",
+    "infoOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "whole": true
+  },
+  "metadata": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7665,
+    "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb",
+    "version": "16777244:72764004:7665:1794003736370790810:1794003736370799227",
+    "full9": [
+      "16777244",
+      "72764004",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7665",
+      "1794003736370790810",
+      "1794003736370799227"
+    ],
+    "infoOperation": "a4d0d706264a5853d56306d21b1666527a5670a115edc5fd20d8405d000ff627",
+    "infoNative": {
+      "blob": "ec05c33e18e1c76c1b7bf75fa718fa66dc69c3c2",
+      "bytes": 489,
+      "sha256": "9ec4cfed1e9da8aa6766264b18af751f1ef1555cf3b9d39ea29304c5048fee6d"
+    }
+  },
+  "sourceStageOnly": true,
+  "normal117": false,
+  "full34": false,
+  "LAN": false,
+  "CargoStarted": false
+}

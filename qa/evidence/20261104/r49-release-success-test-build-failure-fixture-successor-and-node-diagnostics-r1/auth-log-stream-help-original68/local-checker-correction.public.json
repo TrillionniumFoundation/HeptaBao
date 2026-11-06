@@ -1,0 +1,3 @@
+{
+  "correction": "gitTreeAudit expects one tree object containing sha/tree/truncated; source and GO unchanged, no Native invocation or slot initialization occurred during the failed check."
+}

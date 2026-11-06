@@ -1,0 +1,957 @@
+{
+  "schema": "heptabao.replacement-checkpoint.r49",
+  "cutoff_UTC": "2026-11-06 23:21:45 UTC",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "productionClientCutovers": 0,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "previousCheckpoint": {
+    "commit": "e07d835dcb201221c8e5f87194de7aae129967ee",
+    "tree": "74247b3283ec121070c7ac4fb29fa7301a1301ee",
+    "prefix": "qa/evidence/20261104/r48-compiler-fix-native-jwt-batch-successor-and-mac-stage-r1"
+  },
+  "candidate": {
+    "schema": "heptabao.root.default-libtest-fixture-fix.candidate.r1",
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "branch": "codex/heptabao-test-fixture-f02dd113-20261106",
+    "leafCount": 3932,
+    "trackedBytes": 62553956,
+    "fullLeafIndexSha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "changedFiles": [
+      {
+        "path": "crates/heptabao-server/src/ha_request_deadline_tests.rs",
+        "before": {
+          "blob": "244a172794577d50bf52bbb986448f171d905fae",
+          "bytes": 4576,
+          "sha256": "5b1d932e1ca9ab49226cc9459ca1cadb8cf147abab797ed5d8c3f0dd876828cd"
+        },
+        "after": {
+          "blob": "432a89db6d9702bd5448134dadf28ad7f9bd654c",
+          "bytes": 4767,
+          "sha256": "d57744707e5179ae16725669f6ba8d421751dfdbebbf26296268692f610de0f1"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/ha_snapshot_test_support.rs",
+        "before": {
+          "blob": "e6f1031dae7db7c6c09e63305d0a06f047437005",
+          "bytes": 8120,
+          "sha256": "41bd4c12c7fb55979c4f3bde6316353a0d5f6d510dd62f9650d8b1d64188e08d"
+        },
+        "after": {
+          "blob": "e861ef9860f25bb250791df7e493fd4a1fb49f63",
+          "bytes": 8343,
+          "sha256": "9ed84d5ace763a9746fc7f932de9c6c1d0d9a7fa8d2eb595eebc3fe70ad2eb62"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+        "before": {
+          "blob": "0c51b759c257d836adf521bea3d75b90af0b301f",
+          "bytes": 16080,
+          "sha256": "c0cdbd2a5951991b55ae2a93c22c6585c708f280c56f89d6ff105c0fd808448e"
+        },
+        "after": {
+          "blob": "7ca123003ff5740325c11b90dbb8445ba8d5455e",
+          "bytes": 16082,
+          "sha256": "01ee81d4a14cb93911fe596e37476e952acad02b6f0c31ae58a9a1bcdd4399ae"
+        }
+      }
+    ],
+    "unchangedLeafCount": 3929,
+    "productionCodeUnchangedFromParent": true,
+    "baseFullLeafIndexReproduced": true,
+    "wholeRecursiveTree": true,
+    "rootAndAllSubtreesMerkleVerified": true,
+    "subtreeCount": 358,
+    "baseHistoryCount": 3769,
+    "expectedHistoryCount": 3770,
+    "sourceProposals": {
+      "defaultLibtestFix": "2abb0dfb23270a94e882c2b0a4d7a6efe61cd039",
+      "inheritedNativeJWTBatch": "8234672429914b80e03f7c1f0c3f70cd325cd5cb"
+    },
+    "independentReview": {
+      "tree": "0960ed97f7e411c99aeb59c56cfc95ab0cf1ec81",
+      "report": {
+        "blob": "1d03979f939af57267b32340c6d38f0f548c5eef",
+        "bytes": 5690,
+        "sha256": "1577cc21731a932a7b255caf709c888eb3efeb393476e5bbe44480abe23d9508"
+      },
+      "checks": 30,
+      "rootReproduced": true,
+      "actualFieldAndIteratorDefinitionsRead": true
+    },
+    "testPlan": {
+      "pin": {
+        "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+        "bytes": 35287,
+        "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+      },
+      "uniqueTests": 252,
+      "instances": 280,
+      "profiles": {
+        "file": 28,
+        "default": 235,
+        "ha-native-v6-peer-ingress": 17
+      },
+      "groups": 18,
+      "unchangedFromParent": true
+    },
+    "knownParentBuild": {
+      "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+      "normalReleasePassed": true,
+      "defaultLibtestBuildExitCode": 101,
+      "diagnostics": {
+        "E0063": 2,
+        "E0658": 2
+      },
+      "runtimeTestsStarted": false,
+      "report": {
+        "path": "REPORT.original.json",
+        "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+        "bytes": 46828,
+        "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+      }
+    },
+    "precheckPlanned": {
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--profile",
+        "test",
+        "--message-format=json-render-diagnostics"
+      ],
+      "boundToActualCandidate": false,
+      "releasePhaseAbsoluteSeconds": 1800,
+      "precheckMaxSeconds": 300,
+      "doesNotReplaceLinkOrRuntime": true
+    },
+    "runtimeTestsExecuted": 0,
+    "RustCompiled": false,
+    "normalReleaseCompiled": false,
+    "formatted": false,
+    "platformsQualified": [],
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false,
+    "nativeStagesQualified": false,
+    "sourceFixProposal": {
+      "tree": "2abb0dfb23270a94e882c2b0a4d7a6efe61cd039",
+      "independentReview": "0960ed97f7e411c99aeb59c56cfc95ab0cf1ec81",
+      "rootPeerChecks": 30,
+      "commitCreated": true,
+      "branchReadback": true
+    },
+    "RustCompiledMeaning": "False for this exact successor. Parent576 normal release success is historical and is not inherited."
+  },
+  "priorCandidateBuild": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "job": "rog/1a1b282ded0-fc05-7e57",
+    "normalReleaseExitCode": 101,
+    "elapsedSeconds": 360.1929270219989,
+    "timedOut": false,
+    "directChildReaped": true,
+    "remainingChildren": [],
+    "runtimeTestsExecuted": 0,
+    "errorCodes": {
+      "E0599": 9,
+      "E0277": 2
+    },
+    "actualReport": {
+      "blob": "3749276afcc6e1ead912370e9626dc3645c111df",
+      "bytes": 40591,
+      "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4"
+    },
+    "stderr": {
+      "blob": "01ad767ff659ea7f5d7ccfcb9d73d01cc7b03a31",
+      "bytes": 20639,
+      "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc"
+    },
+    "fix": "Nine Service-only calls now use existing lock_until and original deadlines; actual compilation of the successor still required.",
+    "e0277Resolved": true,
+    "stdout": {
+      "lines": 442,
+      "reasons": {
+        "compiler-artifact": 396,
+        "build-script-executed": 45,
+        "build-finished": 1
+      },
+      "buildFinished": [
+        {
+          "reason": "build-finished",
+          "success": false
+        }
+      ],
+      "allJSON": true,
+      "pin": {
+        "path": "stdout.original.txt",
+        "blob": "54c14319f1502d7f5c78783a48465af2aafd4cb1",
+        "bytes": 384182,
+        "sha256": "9fc6bdccb931b4cf5febb609921cb849a74e56920869dd4e2988bcebde9d0948"
+      }
+    },
+    "originalChainClosure": {
+      "callTotal": 88,
+      "observerTotal": 17,
+      "pageTotal": 53,
+      "currentNativeCalls": 0,
+      "currentOwnedFutures": 0,
+      "currentOwnedProcess": 0,
+      "pending": null,
+      "activeObserver": null,
+      "releaseTree": "e5ec86e39658d6fbb9ae3e1b1170171c5a5de718",
+      "fullStateTree": "f3441297c94fc3869e204bd41f6df809575cc85e"
+    },
+    "e0277ResolvedInSuccessorNormalRelease": true,
+    "e0277ResolutionEvidence": {
+      "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+      "phase": "normal-release-build",
+      "exitCode": 0,
+      "report": {
+        "path": "REPORT.original.json",
+        "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+        "bytes": 46828,
+        "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+      }
+    }
+  },
+  "MacPriorCandidateStage": {
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "sourceQualified": true,
+    "T5UUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "report": {
+      "blob": "a148ebe5d4d729f4a1a76fd18e7a2e25b68a571d",
+      "bytes": 10558,
+      "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9"
+    },
+    "rootQualification": {
+      "blob": "91614d1f693343c6772302930a10b5f1c792d21e",
+      "bytes": 1353,
+      "sha256": "3e51bf9631201bcb4d67709e6ed98c2202e5d4f668126534dd3bf914362aebb4"
+    },
+    "children": {
+      "count": 46,
+      "allExit0": true,
+      "allReaped": true,
+      "remaining": []
+    },
+    "compilerStarted": false,
+    "serverStarted": false,
+    "successorQualificationInherited": false
+  },
+  "AuthBus": {
+    "priorPublicNodeCrash": {
+      "job": "mac/1a1b25c3c54-fc05-7db1",
+      "pid": 51494,
+      "parent": 51483,
+      "finalReturnCode": -6,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "SDKOrCredentialOrProviderCalled": false,
+      "crashCauseQualified": false
+    },
+    "fixedReportProjectionR3": {
+      "tree": "89b14ba62dc988fc7ff08ee931e0391407d3b9a1",
+      "safeFieldsAdmitted": true,
+      "originalPathPredicate": false,
+      "fullOriginalChildMatch": false,
+      "closedLiteralPathForm": "/opt/homebrew/*/node",
+      "literalAsteriskMeaningInferred": false,
+      "exception": "EXC_CRASH/SIGABRT",
+      "termination": {
+        "code": "2",
+        "flags": "582",
+        "namespacePresent": true,
+        "namespaceKnown": false,
+        "namespaceValue": null
+      },
+      "causeQualified": false
+    },
+    "R4": {
+      "GO": {
+        "blob": "c2e39fba3a81f1c7d8335f453cb9a0877abefa12",
+        "bytes": 18422,
+        "sha256": "2e21908d905eb32b9fbc22763e0d567c14889a5518113803c542a3740867cb9d"
+      },
+      "sourceTree": "6431d5535301bc39b6eaafd7697ae29c81652843",
+      "actualTree": "a49ff0c382f7c2f50b9b2bd79717a29619837623",
+      "job": "mac/1a1b2b3248a-fc05-7f5e",
+      "exitCode": 0,
+      "full": true,
+      "durable": true,
+      "confirmed": true,
+      "allOriginalObserversClosed": true,
+      "originalCalls": 11,
+      "observers": 2,
+      "pages": 6,
+      "stdoutBytes": 12183,
+      "namespace": {
+        "type": "string",
+        "present": true,
+        "publicSyntaxQualified": false,
+        "value": null
+      },
+      "all29DiagnosticSlotsAbsent": true,
+      "diagnosticStringCount": 0,
+      "publicApiTokens": [],
+      "publicErrnoTokens": [],
+      "causeQualified": false,
+      "newNodeProcessStarted": false,
+      "SDKOrCredentialOrProviderCalled": false
+    },
+    "newTrustedIssuerRuntimeQualified": false,
+    "AppRoleTLSKVPolicyRenewRevokeQualified": false,
+    "priorPrivateRuntimeProgressUnknownPreserved": true,
+    "ROGEnabledFalsePreserved": true,
+    "next": "Prepare the fixed live-denial SOURCE using actual stream --level/--style ndjson/--timeout/--predicate syntax; preserve original Node profile and bounded public projection.",
+    "fixedR5": {
+      "tree": "4a27344fe587b316b2238986b6237879a710ed9f",
+      "wholeAtRoot": true,
+      "terminationNamespace": "<0x23>",
+      "numericNamespace": 35,
+      "publicXNUName": "OS_REASON_LIBIGNITION",
+      "codeMeaningUnknown": true,
+      "specificRuleCauseQualified": false,
+      "pathCorrelationPassed": false
+    },
+    "fixedLog": {
+      "tree": "c9483fb5f71a319871dfa78d36aa7ab21c4aedc0",
+      "wholeAtRoot": true,
+      "originalRootChecks": 275,
+      "admittedEvents": 0,
+      "unknownObjects": 1,
+      "exactCauseQualified": false
+    },
+    "publicVersionComparison": {
+      "tree": "3504e0990166a307f38a749c0e868ee117287e2d",
+      "wholeAtRoot": true,
+      "originalRootChecks": 356,
+      "job": "mac/1a1b2feebf1-fc05-8067",
+      "restrictedExit": -6,
+      "baselineExit": 0,
+      "baselineVersion": "v25.9.0",
+      "sameBinaryEnvironmentCwd": true,
+      "originalChildrenAnd14FdsClosed": true,
+      "profileAssociationObserved": true,
+      "specificRuleCauseQualified": false,
+      "SDKQualified": false
+    },
+    "mappingHypothesis": {
+      "sourceTree": "fdc47c6db9f33214e867aac59e23de5a5c3535f7",
+      "sourceChecks": 78,
+      "rootActualBindings": 9,
+      "GO": {
+        "blob": "6953b1403e971e4674a3b3680fb56e022153028d",
+        "bytes": 22499,
+        "sha256": "dedf82843329f7680c2c9a1cc9be21539dec70f28e5d62fe7c68b8da3f2b7eb9"
+      },
+      "job": "mac/1a1b3119721-fc05-8091",
+      "state": "completed known negative result",
+      "onlyNewPermissionClass": "file-map-executable",
+      "paths": [
+        "/System",
+        "/usr/lib",
+        "/opt/homebrew/Cellar"
+      ],
+      "profileAdditionBytes": 102,
+      "SDKQualified": false,
+      "actualTree": "2e19fc679d12a540b53c5b89670b6379572167fd",
+      "wholeAtRoot": true,
+      "originalRootChecks": 359,
+      "restrictedExit": -6,
+      "baselineExit": 0,
+      "baselineVersion": "v25.9.0",
+      "twoChildrenAnd14ApplicationFdsClosed": true,
+      "profileAdditionSufficient": false,
+      "crashRuleCauseQualified": false
+    },
+    "logStreamHelp": {
+      "sourceTree": "2e11a356f00cac7514a3de427e29c1de319b50b9",
+      "rootSourceChecks": 43,
+      "GO": {
+        "blob": "e67eb0cac18f8c0a8451fae0f938293f28bf0742",
+        "bytes": 8430,
+        "sha256": "3fe5cd8c17e4936d4b8ec2306c972224b81d6d0dc6f4330dd2f6eb81bf02954a"
+      },
+      "job": "mac/1a1b322d357-fc05-80b9",
+      "originalStartObserved": true,
+      "terminalQualified": true,
+      "scope": "public command usage only; no log query, Node, SDK or credentials",
+      "actualMinimumTree": "26b7797c966721e82ef2a933907e149bc61f2ddb",
+      "rootMinimumChecks": 21,
+      "help": {
+        "blob": "86cbdf5723f13a86db8af7efe21315e0d69c26a0",
+        "bytes": 1684,
+        "sha256": "7dab64f70c9f470dd78aa7176e9b1c2599f210a54b576865e4d2f7705bfe9184"
+      },
+      "childExit": 64,
+      "sourceStream": "stderr",
+      "allOwnedClosed": true,
+      "fullOriginalChainRootPending": false,
+      "fullOriginalTree": "977d3eda11e4bf646b6aa1fe83704a8054481e17",
+      "rootOriginalChecks": 281,
+      "calls": 9,
+      "observers": 2,
+      "pages": 4
+    }
+  },
+  "LAN": {
+    "routes": 6,
+    "hosts": [
+      "mac",
+      "rog",
+      "pocket4"
+    ],
+    "nativeSSHIdentityPairsEqual": true,
+    "distinctHostnamesAndBoots": true,
+    "exactKernelModelLabelsApproved": true,
+    "hardwareAttestation": false,
+    "portsReserved": false,
+    "originalCalls": 46,
+    "originalObservers": 12,
+    "originalPages": 16,
+    "rootOriginalChecks": 1048,
+    "finalCandidateBinaryQualified": false,
+    "finalLANFailureElectionReadIndexPersistenceRestartQualified": false,
+    "successorRuntimeQualified": false
+  },
+  "X230": {
+    "exactContainer": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+    "image": "ghcr.io/openbao/openbao:2.7.1",
+    "networkMode": "none",
+    "restartPolicy": "no",
+    "serverLiteralArgument": true,
+    "devLiteralArgument": true,
+    "networkRoleActualTree": "6a8371fdaf2e7130d65e704071ebdd39ca60b351",
+    "noOtherClientsOrInstancesClaimed": false,
+    "successorRuntimeQualified": false,
+    "sourceStagePreparation": {
+      "tree": "b4cc37bfde4c036f1ad5dbc7cf5678916517583d",
+      "sourceOnly": true,
+      "PythonRun": false,
+      "twoBundleImportMechanism": true,
+      "current576BindingIsExample": true,
+      "futureCandidateBinding": null
+    }
+  },
+  "finiteMigrationScope": {
+    "registeredHosts": [
+      "mac",
+      "rog",
+      "pocket4",
+      "x230"
+    ],
+    "closedForPlanning": true,
+    "unregisteredManualPathsAreNotAnAddedGate": true,
+    "reopenOnlyNewObservedRelevantClientConfigOrRestore": true,
+    "currentClientCutovers": 0,
+    "backupRestorationCompleted": false
+  },
+  "historicalBaseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "MacFormal34MiB": 31,
+    "X230Formal34MiB": 31,
+    "MacNormal": 61,
+    "ROGNormal": 61,
+    "LANHA": 98,
+    "independentColdRestart": 12,
+    "oldX230Comparison": {
+      "profiles": 69,
+      "exact": 67,
+      "normalizedPKI": 2
+    },
+    "notInheritedByCandidate": true
+  },
+  "remainingGates": [
+    "Execute the identified 4a49405b successor: fresh source stage, default-libtest precheck within the existing 1800-second release phase, normal release and original 252/280 runtime matrix; then strict HTTP PKI12 and actual OpenBao 2.7.1 candidate comparison.",
+    "Repeat same-candidate formal34MiB migration/recovery on Mac and X230; run real Mac/ROG/Pocket4 leader loss, election, quorum, ReadIndex, persistence and restart.",
+    "Resolve actual public Node crash, then establish a new trusted AuthBus issuer without J3160 and verify actual SDK AppRole/TLS/KV/Policy/renew/revoke.",
+    "Each registered client must complete real credential read/write, restart and rollback; verify registered backups by restore before its cutover.",
+    "Only after all client and backup migration gates remove obsolete services, binaries and regenerable assets; retain the latest qualified HeptaBao service."
+  ],
+  "knownProductGaps": [
+    "Native local JWT batch is present and normal-release-compiled in current576; six added runtime tests remain unexecuted because default libtest compilation failed.",
+    "Remote JWKS/OIDC/Kubernetes/MFA/SDK nonroot and previously recorded Database/Kubernetes/RabbitMQ/admin/seal/root/rekey/ACME/EAB/plugin capabilities remain unqualified.",
+    "Old CLI snapshot B04/B05 failures remain retained; the source and nine-lock fixes require current leader/standby runtime evidence."
+  ],
+  "maximumNativeLanes": 2,
+  "activeNativeJobsAtCutoff": [],
+  "ownedNativeFuturesAtCutoff": 0,
+  "publication": {
+    "evidenceOnly": true,
+    "productionChanged": false,
+    "branch": "codex/heptabao-validation-20261104",
+    "prefix": "qa/evidence/20261104/r49-release-success-test-build-failure-fixture-successor-and-node-diagnostics-r1"
+  },
+  "ownerLaneStateAtCutoff": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "root": 0
+  },
+  "currentSourceOnlyWork": {
+    "Mac": {
+      "normal89Unique117InstancesSource": "66c0d39d1a8e6cdfea4af730bf053c95c70b8d4e",
+      "normalRuntimeQualified": false,
+      "full34AdmissionSource": "d54c2e26fbc402074f91a2c671aae856c41486b6",
+      "full34RuntimeQualified": false,
+      "holdUntilCurrentCandidateCompiles": true,
+      "successorStageTemplate": {
+        "tree": "fc255357c0c0da9dd491e04d3858795fcc4df0ea",
+        "rootChecks": 27,
+        "baseCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+        "candidate": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+        "actualBundle": null,
+        "actualStage": null
+      },
+      "candidateDataBinding": {
+        "tree": "f7942d13d97acc6e66733ed1ff424876c0b2b097",
+        "rootChecks": 44,
+        "actualCandidateBound": true,
+        "actualBundle": null,
+        "actualStage": null,
+        "actualControlsReceipt": null,
+        "actualBinary": null,
+        "NativeRuns": 0
+      }
+    },
+    "OpenBao271StrictPKI12": {
+      "source": "6952142f531c0bcf1ae59f7382b65cebec723703",
+      "rootChecks": 79,
+      "actualBindingChecks": 4,
+      "runtimeQualified": false
+    },
+    "X230": {
+      "tree": "b4cc37bfde4c036f1ad5dbc7cf5678916517583d",
+      "sourceOnly": true,
+      "PythonRun": false,
+      "twoBundleImportMechanism": true,
+      "current576BindingIsExample": true,
+      "futureCandidateBinding": null,
+      "mechanismRootChecks": 45,
+      "additionalRootBindings": 3
+    },
+    "testFixtureFixSuccessor": {
+      "candidateManifest": {
+        "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+        "bytes": 4223,
+        "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+      },
+      "qualificationTree": "54f3e65c705e7a9a7014557e2884472da9596424",
+      "newNativeStage": false,
+      "newBuild": false
+    }
+  },
+  "previousCandidate576": {
+    "schema": "heptabao.root.snapshot-lock-native-jwt-batch.candidate.r1",
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+    "leafCount": 3932,
+    "trackedBytes": 62553540,
+    "fullLeafIndexSha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+    "changedFiles": [
+      {
+        "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+        "before": {
+          "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+          "bytes": 19107,
+          "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+        },
+        "after": {
+          "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+          "bytes": 21936,
+          "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_auth.rs",
+        "before": {
+          "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+          "bytes": 143153,
+          "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165"
+        },
+        "after": {
+          "blob": "2b344d01edbe52e0fc4241b79461c50db2cf7fd5",
+          "bytes": 143838,
+          "sha256": "7a7b5a2aaa4bd185b4499ce31927a145a6a014a401e95031f26e7212c453a882"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+        "before": {
+          "blob": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+          "bytes": 49655,
+          "sha256": "d909c5fa2fe1044e49372b9168619feed28968d48d34fa9af111e39fc31f056a"
+        },
+        "after": {
+          "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+          "bytes": 61884,
+          "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+        "before": {
+          "blob": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+          "bytes": 20232,
+          "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f"
+        },
+        "after": {
+          "blob": "ab70d9abc8abda8d605f055ba0eaeda74d369803",
+          "bytes": 20359,
+          "sha256": "e53ba84411f23c8c822d8a4f546dbead8bc643097de419a7e70c5eac99015d58"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+        "before": {
+          "blob": "7178177f6156cce780c7044721ed53120c86a563",
+          "bytes": 19516,
+          "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73"
+        },
+        "after": {
+          "blob": "a360aa111114da8aa16827de528839ca8eb90eec",
+          "bytes": 19632,
+          "sha256": "bc7e833e0faced417249756c78e546e955271b6ed25da1d3dbfbdff2bf56ef76"
+        }
+      }
+    ],
+    "baseFullLeafIndexReproduced": true,
+    "wholeRecursiveTree": true,
+    "rootAndAllSubtreesMerkleVerified": true,
+    "baseHistoryCount": 3768,
+    "expectedHistoryCount": 3769,
+    "sourceProposals": {
+      "jwtBatchR2": "8234672429914b80e03f7c1f0c3f70cd325cd5cb",
+      "serviceLocks": "3e506b922c214561c9dd22678354b55dcff38fc1"
+    },
+    "independentReview": {
+      "productionTree": "a33e59aa868b10282b5d4e28404d80a67b1a6704",
+      "testCorrectionConfirmedByC": true,
+      "testCorrectionTree": "cc078b497102e43d8c7bca3e6fa085566df29c8f"
+    },
+    "testPlan": {
+      "pin": {
+        "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+        "bytes": 35287,
+        "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+      },
+      "uniqueTests": 252,
+      "instances": 280,
+      "profiles": {
+        "file": 28,
+        "default": 235,
+        "ha-native-v6-peer-ingress": 17
+      },
+      "groups": 18
+    },
+    "runtimeTestsExecuted": 0,
+    "RustCompiled": false,
+    "formatted": false,
+    "platformsQualified": [],
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false,
+    "RustCompiledMeaning": "Whole candidate profile compilation remains failed; normal production release separately passed.",
+    "normalReleaseCompiled": true,
+    "ordinaryNoDefaultCheckPassed": true,
+    "fileLibtestCompiled": true,
+    "defaultLibtestCompiled": false,
+    "HALibtestCompilationReached": false,
+    "normalReleaseArtifacts": {
+      "heptabao-seed": {
+        "bytes": 101923848,
+        "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-seed",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "fresh": false,
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-seed",
+        "profile": {
+          "debug_assertions": true,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": true,
+          "test": false
+        },
+        "sha256": "64984b1ecc6d80a0599ae6bb7b93e51399f6b679244af55a163124a099790c84"
+      },
+      "heptabao-server": {
+        "bytes": 110492992,
+        "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-server",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "fresh": false,
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-server",
+        "profile": {
+          "debug_assertions": true,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": true,
+          "test": false
+        },
+        "sha256": "af595a9b31537d6421f3069ad3d2657dfc88ebea2a2ba564f9cc009992bbef8d"
+      }
+    },
+    "currentBuild": {
+      "job": "rog/1a1b2d90976-fc05-7fff",
+      "wholeBuildStatus": "failed",
+      "failedPhase": "default-libtest-build",
+      "failedExitCode": 101,
+      "timedOut": false,
+      "rustErrorCauseQualified": true,
+      "report": {
+        "path": "REPORT.original.json",
+        "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+        "bytes": 46828,
+        "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+      },
+      "releasePhase": {
+        "argv": [
+          "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "build",
+          "--release",
+          "--locked",
+          "--offline",
+          "-p",
+          "heptabao-server",
+          "--bin",
+          "heptabao-server",
+          "--bin",
+          "heptabao-seed",
+          "--message-format=json-render-diagnostics"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 957.4755637519993,
+        "exit_code": 0,
+        "label": "normal-release-build",
+        "outer_cap_seconds": 1800,
+        "owned_pgid": 1587099,
+        "remaining": [],
+        "stderr_sha256": "ea0e297e1e71f795fdf43bf50fe9bdeb50f64245df84b2f8d520fb22a4411777",
+        "stdout_sha256": "ae578fec1091dd5164215f099b17fa14c822a9af87b5fddfc1457cc1dfca6c96",
+        "timed_out": false
+      },
+      "compileShared": {
+        "cap_seconds": 3600,
+        "commands": [
+          {
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "check",
+              "--release",
+              "--locked",
+              "--offline",
+              "-p",
+              "heptabao-server",
+              "--lib",
+              "--no-default-features",
+              "--message-format=json-render-diagnostics"
+            ],
+            "direct_child_reaped": true,
+            "elapsed_seconds": 63.47266892303014,
+            "exit_code": 0,
+            "label": "ordinary-no-default-check",
+            "outer_cap_seconds": 3599.999990110984,
+            "owned_pgid": 1612281,
+            "remaining": [],
+            "stderr_sha256": "12d7a87e1c882cc8ae55161abd811359cc2eecb5500b15ecbdc0dc929904b13d",
+            "stdout_sha256": "b384a8690006a8bd543c1bed8acc9804feccee0e26e375f430495cb9573d20f8",
+            "timed_out": false
+          },
+          {
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "test",
+              "--release",
+              "--locked",
+              "--offline",
+              "-p",
+              "heptabao-server",
+              "--lib",
+              "--no-run",
+              "--no-default-features",
+              "--features",
+              "native-v6-storage",
+              "--message-format=json-render-diagnostics"
+            ],
+            "direct_child_reaped": true,
+            "elapsed_seconds": 945.6726679090061,
+            "exit_code": 0,
+            "label": "file-libtest-build",
+            "outer_cap_seconds": 3536.514262106968,
+            "owned_pgid": 1614133,
+            "remaining": [],
+            "stderr_sha256": "62a76a3c75a762f2b64d41c2f4a2befc81419a46525419213db0784e8a5bc1a7",
+            "stdout_sha256": "ffca3c6b755c704656cb70c0129aa9e684c9067bc953ae30a0ef9f26c13d0ac5",
+            "timed_out": false
+          },
+          {
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "test",
+              "--release",
+              "--locked",
+              "--offline",
+              "-p",
+              "heptabao-server",
+              "--lib",
+              "--no-run",
+              "--message-format=json-render-diagnostics"
+            ],
+            "direct_child_reaped": true,
+            "elapsed_seconds": 51.4362011369667,
+            "exit_code": 101,
+            "label": "default-libtest-build",
+            "outer_cap_seconds": 2590.387622413982,
+            "owned_pgid": 1618977,
+            "remaining": [],
+            "stderr_sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+            "stdout_sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+            "timed_out": false
+          }
+        ],
+        "deadline_reset": false,
+        "started_monotonic": 333099.325813828,
+        "until_monotonic": 336699.325813828
+      },
+      "cleanup": [
+        {
+          "direct_child_reaped": true,
+          "exit_code": 101,
+          "label": "default-libtest-build",
+          "pid": 1618977,
+          "remaining": []
+        },
+        {
+          "direct_child_reaped": true,
+          "exit_code": 0,
+          "label": "file-libtest-build",
+          "pid": 1614133,
+          "remaining": []
+        },
+        {
+          "direct_child_reaped": true,
+          "exit_code": 0,
+          "label": "ordinary-no-default-check",
+          "pid": 1612281,
+          "remaining": []
+        },
+        {
+          "direct_child_reaped": true,
+          "exit_code": 0,
+          "label": "normal-release-build",
+          "pid": 1587099,
+          "remaining": []
+        }
+      ],
+      "rootReportChecks": 24,
+      "rootBodyOriginalChecks": 86,
+      "fullOriginalBuildTree": "58aab3b55ce2da0af097b6e1f7194ffca40fcb83",
+      "fullOriginalBuildWholeAtRoot": true,
+      "rustErrors": {
+        "E0063": 2,
+        "E0658": 2
+      },
+      "originalStderr": {
+        "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+        "bytes": 2146,
+        "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+      },
+      "defaultLibtestLogs": {
+        "infoTree": "63d99149227a85c052f26d6bd1d3cea9f452646c",
+        "rootInfoChecks": 42,
+        "stderr": {
+          "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+          "bytes": 2146,
+          "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+        },
+        "stdoutWholePending": false,
+        "bodySource": "47d81137b67b6363b5b71f35a7071252eaeba7e0",
+        "bodyGO": {
+          "blob": "cf782b9fb7f21d1b0794fc081568e0331d45f713",
+          "bytes": 11069,
+          "sha256": "75f53554ed67a05f723b1c2dd834a429a2f431942732119e48b019305f415938"
+        },
+        "stdout": {
+          "path": "stdout.original.txt",
+          "blob": "9af7a5c589aa5c86077082afdd0145291f7515e1",
+          "bytes": 383786,
+          "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97"
+        },
+        "bodyActualTree": "4a1b220f07f74f20991c2c03ad35f8bbd16fc096",
+        "rootBodyChecks": 100,
+        "closure": {
+          "originalCalls": 112,
+          "originalObservers": 25,
+          "originalPages": 61,
+          "newCalls": 50,
+          "newObservers": 7,
+          "newPages": 36,
+          "currentNativeCall": 0,
+          "currentOwnedFuture": 0,
+          "pending": null,
+          "activeObserver": null,
+          "noReplay": true,
+          "oldGitUnknownPreserved": true
+        },
+        "stdoutSemantic": {
+          "lines": 442,
+          "compilerArtifacts": 396,
+          "buildScriptExecuted": 45,
+          "buildFinishedSuccess": false,
+          "compilerMessages": 0
+        }
+      }
+    },
+    "currentStage": {
+      "ROG": {
+        "qualified": true,
+        "report": {
+          "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+          "bytes": 29748,
+          "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+        }
+      },
+      "Mac": {
+        "qualified": true,
+        "report": {
+          "blob": "f0855203bf885620f0c5deea089cc9a9e7b86460",
+          "bytes": 7665,
+          "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb"
+        },
+        "root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1",
+        "volumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+        "sourceClean": true,
+        "children": 31,
+        "allChildrenReaped": true,
+        "compilerStarted": false
+      }
+    },
+    "sourceFixProposal": {
+      "tree": "2abb0dfb23270a94e882c2b0a4d7a6efe61cd039",
+      "changes": 3,
+      "productionCodeChanged": false,
+      "independentReview": "0960ed97f7e411c99aeb59c56cfc95ab0cf1ec81",
+      "compiled": false,
+      "rootChecks": 30,
+      "successorCommit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce"
+    }
+  }
+}

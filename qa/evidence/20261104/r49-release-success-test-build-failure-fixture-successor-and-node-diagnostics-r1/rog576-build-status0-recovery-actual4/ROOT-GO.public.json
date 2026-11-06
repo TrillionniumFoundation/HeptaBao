@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.root.C576-status0-original-SDK-archive-recovery.GO.r1",
+  "authorization": "GO",
+  "scope": "c576_status0_original_sdk_archive_recovery",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "callKey": "c576-fresh-build-r1-streams0-status0",
+  "originalJob": "1a1b2d90976-fc05-7fff",
+  "originalOperation": "72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88",
+  "originalSDK": {
+    "blob": "b2459cf511bae4559b0941fb079048009c308d68",
+    "bytes": 978,
+    "sha256": "9403d021b20de9704d0511835b3a2253e68dedacfbf17fb996b1bec5569369ef"
+  },
+  "originalRequest": {
+    "blob": "6fd259c8556e789f0e4b1129d45e66fcf9b09087",
+    "bytes": 83,
+    "sha256": "53ae1665d2ff8cd283ffaee2836111381953e6a2e65ca43d3946e618902debc7"
+  },
+  "beforeState": {
+    "blob": "6f71ba0559184bf8f0e2e70d620ef8cd039d1e7c",
+    "bytes": 179536,
+    "sha256": "f4b55506a075d40ef0ed67fd3f03520a2c34c6f8757c2de5e3d1820914ac34a1"
+  },
+  "newArchiveTree": "9aaae07af202421229bc063c30b53a8d156e2ea4",
+  "recoverySource": {
+    "blob": "597723230d1f5e6e2aa57362a249dde9a3941caf",
+    "bytes": 2224,
+    "sha256": "fc91c57e3622a6ecc6ed72f7be32c16e96a36a2d032d5fb8afd6001df4896e23"
+  },
+  "rootReview": {
+    "blob": "65235bf2a061e08a8d0eecfbb5ea0ab521076b26",
+    "bytes": 1342,
+    "sha256": "e4bfefc9de41997a5a836df9d4fc3d9271ef1ca94f75349f0c990d96bf69c435"
+  },
+  "newNativeCalls": 0,
+  "originalNativeCallReplayAllowed": false,
+  "oldGitCreateReplayAllowed": false,
+  "oldGitCreateOutcome": "UNKNOWN_retained",
+  "reinitializeAllowed": false,
+  "continuation": "Apply only the exact state repair; run the unchanged gfAcceptArchivedSDK for the already returned original SDK. Further same-original-operation immutable page reads remain under original BUILD GO and unchanged counters/budgets.",
+  "originalBuildGO": {
+    "blob": "52da1321f8ba34cdb52d20551b6aad64a02b85e8",
+    "bytes": 6619,
+    "sha256": "ab09905e2ed3b6a27b6bdab559853558a2f92dfbd39b1b7b8db1e49d39c46562"
+  },
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "issuedAtUTC": "2026-11-06 22:00:40 UTC"
+}

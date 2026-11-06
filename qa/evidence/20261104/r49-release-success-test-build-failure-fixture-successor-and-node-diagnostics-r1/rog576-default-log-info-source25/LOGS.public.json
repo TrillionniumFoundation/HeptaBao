@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.current576-default-compile-log-path-source.r1",
+  "report": {
+    "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+    "bytes": 46828,
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+  },
+  "reportPhase": {
+    "argv": [
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--lib",
+      "--no-run",
+      "--message-format=json-render-diagnostics"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 51.4362011369667,
+    "exit_code": 101,
+    "label": "default-libtest-build",
+    "outer_cap_seconds": 2590.387622413982,
+    "owned_pgid": 1618977,
+    "remaining": [],
+    "stderr_sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+    "stdout_sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+    "timed_out": false
+  },
+  "files": [
+    {
+      "index": 0,
+      "stream": "stderr",
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stderr",
+      "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+      "maximumBytes": 4194304,
+      "request": {
+        "blob": "f847ac4d76b7192d43f68b13af9d4b0fc10c5713",
+        "bytes": 291,
+        "sha256": "ce34348ab93e1200a4a76df637e282adba0e21e6e0de594ed198759fc6962d20"
+      },
+      "bytes": null,
+      "version": null,
+      "full9": null,
+      "actualMetadataObserved": false
+    },
+    {
+      "index": 1,
+      "stream": "stdout",
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+      "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+      "maximumBytes": 4194304,
+      "request": {
+        "blob": "cf6d37620cc467580e39a56fa2cb71ca1966e2bb",
+        "bytes": 291,
+        "sha256": "3ce3c471bbd43f01ea9033cd4cd6e02264648ec8602340f58ebdb43066dde677"
+      },
+      "bytes": null,
+      "version": null,
+      "full9": null,
+      "actualMetadataObserved": false
+    }
+  ],
+  "bytesAbsentInOriginalReport": true,
+  "pathDerivedFromExactExecutedRunner": true,
+  "actualMetadataAndBodyQualification": false
+}

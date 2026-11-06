@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.root.current576-failed-build-body-review.r1",
+  "sourceTree": "6b36041bda37330ea8cad409aeed9934bbb06041",
+  "whole": {
+    "tree": "6b36041bda37330ea8cad409aeed9934bbb06041",
+    "files": 21,
+    "bytes": 462729,
+    "merkle": {
+      "root_sha": "6b36041bda37330ea8cad409aeed9934bbb06041",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "sourceChecksReproduced": 52,
+  "actualBindings": {
+    "INFOoriginalExact": true,
+    "INFOreleaseExact": true,
+    "STATEexact": true,
+    "beforeJournalExact": true,
+    "rootMetadataQualified": true
+  },
+  "INFOactualTree": "a12f23d2967c0bc65a3afa4184eef255d9fe74bd",
+  "INFOactualChecks": {
+    "GOExact": true,
+    "payloadOriginalExact": true,
+    "payloadComplete": true,
+    "fixedMeta": true,
+    "fixedPath": true,
+    "versionExact": true,
+    "statusClosed": true,
+    "actualCallCounts": true,
+    "old43Unchanged": true,
+    "old14Unchanged": true,
+    "noOwned": true,
+    "oldFailurePreserved": true,
+    "originalStartUnique": true,
+    "originalPageWhole": true,
+    "threeArmsCurrentGO": true
+  },
+  "actualINFO": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639",
+    "size": 46828,
+    "version": "66306:33208049:46828:1794003951175308589:1794003951175308589"
+  },
+  "bodyNotRead": true,
+  "failureCauseQualified": false,
+  "NativeCallsAdded": 0
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.fixed-stream-help-primary-basis.r1",
+  "refs": [
+    {
+      "url": "https://devstreaming-cdn.apple.com/videos/wwdc/2016/721wh2etddp4ghxhpcg/721/721_unified_logging_and_activity_tracing.pdf",
+      "webRef": "turn105view0",
+      "title": "Unified Logging and Activity Tracing, WWDC 2016 session 721",
+      "claim": "The log CLI supports live streaming and a predicate; this does not qualify stream-specific flags on the present binary.",
+      "quotedExcerpt": "$ log stream --predicate 'eventMessage contains \"my message\"'"
+    }
+  ],
+  "currentToolMetadata": {
+    "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+    "bytes": 411,
+    "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+  },
+  "priorHelpGo": {
+    "blob": "7022f38d01407c76023dd3db5c0cc6339a356def",
+    "bytes": 6757,
+    "sha256": "78eb19d7d20a5f74106aa538fe6e786071c66dc27438d36025a33cef3efa97e2"
+  },
+  "actualStreamHelp": null,
+  "sourceOnly": true
+}

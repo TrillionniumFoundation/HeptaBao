@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-public-node-version-b131f14c-status-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b2feebf1-fc05-8067"
+    }
+  }
+}

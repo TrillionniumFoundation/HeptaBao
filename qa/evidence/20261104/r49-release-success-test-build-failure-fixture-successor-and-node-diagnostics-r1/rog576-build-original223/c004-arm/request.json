@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-combined-5767739c-fresh-observe-r1-streams0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b2d90976-fc05-7fff",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

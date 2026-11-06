@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.x230576.interface-evidence-check.v1",
+  "pass": true,
+  "check_count": 10,
+  "checks": [
+    {
+      "name": "old_receiver_empty_prerequisite",
+      "pass": true
+    },
+    {
+      "name": "old_receiver_local_only_git",
+      "pass": true
+    },
+    {
+      "name": "old_receiver_independent_clone",
+      "pass": true
+    },
+    {
+      "name": "first_whole_bundle",
+      "pass": true
+    },
+    {
+      "name": "second_whole_bundle",
+      "pass": true
+    },
+    {
+      "name": "exact_bundle_chain",
+      "pass": true
+    },
+    {
+      "name": "complete_carrier_example_cap",
+      "pass": true
+    },
+    {
+      "name": "original_full34_admission_is_old61",
+      "pass": true
+    },
+    {
+      "name": "same_driver_and31",
+      "pass": true
+    },
+    {
+      "name": "actual_unresolved",
+      "pass": true
+    }
+  ],
+  "Native_calls": 0,
+  "scope": "Original source andalready-transportedpublicbundle content only;no proposedcontroller orGitimport execution."
+}

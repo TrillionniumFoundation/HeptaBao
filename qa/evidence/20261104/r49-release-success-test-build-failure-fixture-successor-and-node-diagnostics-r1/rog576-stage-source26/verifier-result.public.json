@@ -1,0 +1,389 @@
+{
+  "schema": "next576-source-stage-verifier-r1",
+  "ok": true,
+  "total": 94,
+  "checks": [
+    {
+      "name": "whole candidate.root.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole base-stage.actual-root23.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole base-stage.GO.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole stager.before.py",
+      "pass": true
+    },
+    {
+      "name": "whole stager.after.py",
+      "pass": true
+    },
+    {
+      "name": "whole stager.forward.diff",
+      "pass": true
+    },
+    {
+      "name": "whole stager.reverse.diff",
+      "pass": true
+    },
+    {
+      "name": "whole request.before.json",
+      "pass": true
+    },
+    {
+      "name": "whole request.after.json",
+      "pass": true
+    },
+    {
+      "name": "whole carrier.stdin.original.json",
+      "pass": true
+    },
+    {
+      "name": "whole journal.before.js",
+      "pass": true
+    },
+    {
+      "name": "whole journal.after.js",
+      "pass": true
+    },
+    {
+      "name": "whole journal.forward.diff",
+      "pass": true
+    },
+    {
+      "name": "whole journal.reverse.diff",
+      "pass": true
+    },
+    {
+      "name": "whole stager.exact-edits.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole journal.exact-edits.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole pure.js",
+      "pass": true
+    },
+    {
+      "name": "whole strict-diff.js",
+      "pass": true
+    },
+    {
+      "name": "whole typed-stdin.js",
+      "pass": true
+    },
+    {
+      "name": "whole archive-once.js",
+      "pass": true
+    },
+    {
+      "name": "whole typed-binding.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole PLAN.public.json",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit fresh destination root",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit retain old495 and add qualified clone base",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit candidate commit",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit direct parent",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit prepend actual ancestry",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit bundle exact prerequisite",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit base symlink guard",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit reported history",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit retain base source path",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit base before clone",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit clone qualified base only",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit actual seventeen canonical links",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit actual history count",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit actual tracked bytes",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit actual full leaf index",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit fresh one-parent bundle path",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit bundle excludes only actual base",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit base after remains exact",
+      "pass": true
+    },
+    {
+      "name": "unique stage edit only successful read-only base classification",
+      "pass": true
+    },
+    {
+      "name": "exact full stage derivation",
+      "pass": true
+    },
+    {
+      "name": "unique journal edit fresh slot",
+      "pass": true
+    },
+    {
+      "name": "unique journal edit exact new request",
+      "pass": true
+    },
+    {
+      "name": "unique journal edit fixed observer namespace",
+      "pass": true
+    },
+    {
+      "name": "exact journal derivation",
+      "pass": true
+    },
+    {
+      "name": "stager forward",
+      "pass": true
+    },
+    {
+      "name": "stager reverse",
+      "pass": true
+    },
+    {
+      "name": "stager reverse file",
+      "pass": true
+    },
+    {
+      "name": "journal forward",
+      "pass": true
+    },
+    {
+      "name": "journal reverse",
+      "pass": true
+    },
+    {
+      "name": "journal reverse file",
+      "pass": true
+    },
+    {
+      "name": "twenty original defs",
+      "pass": true
+    },
+    {
+      "name": "def 0 on_signal",
+      "pass": true
+    },
+    {
+      "name": "def 1 digest",
+      "pass": true
+    },
+    {
+      "name": "def 2 blob",
+      "pass": true
+    },
+    {
+      "name": "def 3 identity",
+      "pass": true
+    },
+    {
+      "name": "def 4 stable_read",
+      "pass": true
+    },
+    {
+      "name": "def 5 fsync_dir",
+      "pass": true
+    },
+    {
+      "name": "def 6 create",
+      "pass": true
+    },
+    {
+      "name": "def 7 public",
+      "pass": true
+    },
+    {
+      "name": "def 8 group_members",
+      "pass": true
+    },
+    {
+      "name": "def 9 stop_owned",
+      "pass": true
+    },
+    {
+      "name": "def 10 owned",
+      "pass": true
+    },
+    {
+      "name": "def 11 git",
+      "pass": true
+    },
+    {
+      "name": "def 12 stage_remaining",
+      "pass": true
+    },
+    {
+      "name": "def 13 owned",
+      "pass": true
+    },
+    {
+      "name": "def 14 freeze",
+      "pass": true
+    },
+    {
+      "name": "def 15 preserve_failed_observer",
+      "pass": true
+    },
+    {
+      "name": "def 16 walk_error",
+      "pass": true
+    },
+    {
+      "name": "def 17 independent_git",
+      "pass": true
+    },
+    {
+      "name": "def 18 verify_full_worktree",
+      "pass": true
+    },
+    {
+      "name": "def 19 canonical_bundle_header",
+      "pass": true
+    },
+    {
+      "name": "fresh candidate actual root",
+      "pass": true
+    },
+    {
+      "name": "3932 current leaves bytes index",
+      "pass": true
+    },
+    {
+      "name": "17 links",
+      "pass": true
+    },
+    {
+      "name": "history3769",
+      "pass": true
+    },
+    {
+      "name": "old495 binding retained",
+      "pass": true
+    },
+    {
+      "name": "fresh clone base exact",
+      "pass": true
+    },
+    {
+      "name": "base before exact",
+      "pass": true
+    },
+    {
+      "name": "base after exact",
+      "pass": true
+    },
+    {
+      "name": "one exact BASE bundle prerequisite",
+      "pass": true
+    },
+    {
+      "name": "fresh path create-only retained",
+      "pass": true
+    },
+    {
+      "name": "retained stage absolute budget",
+      "pass": true
+    },
+    {
+      "name": "old payload exact whole",
+      "pass": true
+    },
+    {
+      "name": "only request source/hash/key changes",
+      "pass": true
+    },
+    {
+      "name": "real inline argv and SHA",
+      "pass": true
+    },
+    {
+      "name": "outer360 unchanged",
+      "pass": true
+    },
+    {
+      "name": "typed native binding",
+      "pass": true
+    },
+    {
+      "name": "journal exact request identity",
+      "pass": true
+    },
+    {
+      "name": "fresh slot namespace",
+      "pass": true
+    },
+    {
+      "name": "no implicit current test qualification",
+      "pass": true
+    },
+    {
+      "name": "no actual bundle metadata invented",
+      "pass": true
+    },
+    {
+      "name": "all original observer budgets unchanged",
+      "pass": true
+    }
+  ],
+  "sourceOnly": true,
+  "nativeCalls": 0,
+  "PythonExecuted": false,
+  "actualStagePassed": false,
+  "actualBuildPassed": false,
+  "scope": "19 named source edits/7 hunks; 3 journal bindings/2 hunks; 19 defs byte-identical and one prerequisite literal"
+}

@@ -1,0 +1,309 @@
+{
+  "schema": "heptabao.combined5767739.fresh-target-joint-build-source.r1",
+  "status": "SOURCE_ONLY",
+  "authorization": "NOT_GO",
+  "NativeCalls": 0,
+  "initializeCalled": false,
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "source": "/home/qian-qi/hb-5767739c-src-20261106-r1/source",
+    "sourceFormatted": false
+  },
+  "controlRoot": "/home/qian-qi/hb-5767739c-controls-20261106-r1",
+  "target": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1",
+  "sourceRootUnchanged": true,
+  "oldControlRootUnchanged": "/home/qian-qi/hb-02b90762-controls-20261106-r2",
+  "newSlot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "exactRequest": {
+    "blob": "43b4a12ca91aa73e60e90b30b6a5884b969b82a9",
+    "bytes": 155691,
+    "sha256": "9a3b483d4b36206a21984882c0abc63dda539fb866354f0e5bfff6ebb18767e7"
+  },
+  "typed": {
+    "sha256": "3adf47933cd4a0ae4240093c37b868631a3fbe613c0db744972f92e369623b04",
+    "native_fingerprint": "4242188071712628910"
+  },
+  "journal": {
+    "blob": "f64f88c90fddb0199d5a866ee70742255d62127d",
+    "bytes": 19043,
+    "sha256": "f9e05317f95b7d1a4fc3a90d8dc50aeba80809e7c941c79c2aaf6562e21fdc78"
+  },
+  "publisher": {
+    "blob": "1a360dc6a9e28de8f5acfdddda8416f86692f5ee",
+    "bytes": 6643,
+    "sha256": "b02e250edf978169197e8de2bb6a3228a70e26b10995cb8af73110f9855f253c"
+  },
+  "launcher": {
+    "blob": "2309dee7ade1fd52dde88cace75be58717a2ff72",
+    "bytes": 39650,
+    "sha256": "0f2419c1f9fb1ad10219b2c184108338693161200d74c2f0065311f7b394da3b"
+  },
+  "runner": {
+    "blob": "6499b982ec8562bc52c22416f6eaf7979e1050bc",
+    "bytes": 36346,
+    "sha256": "b02b398a3dfe1ab2f57a6ab70056c2b4aa58f4e221644513187f991d80654166"
+  },
+  "groups": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "stdin": {
+    "blob": "e4855ad4b588e27e0e052f0b3697db0aa398180f",
+    "bytes": 148575,
+    "sha256": "6ee30b372f4942b30a9a0d4f4437ab18663063ca3947ca3d5b9039113210a3bb"
+  },
+  "journalLiteralChanges": [
+    {
+      "name": "slot",
+      "before": "const GF_SLOT = \"combined_02b90762_fresh_build_gitfirst_r2\";",
+      "after": "const GF_SLOT = \"combined_5767739c_fresh_build_gitfirst_r1\";"
+    },
+    {
+      "name": "request_pin",
+      "before": "const GF_REQUEST = {blob:\"dc8f695b48db595fd84d438ee1d240679c0a936c\",\n bytes:153606,sha256:\"042ceb19df239ee4febd6eda9ea84fb1693fe5bdda9bda92ab94e8fe5374dce9\"};",
+      "after": "const GF_REQUEST = {blob:\"43b4a12ca91aa73e60e90b30b6a5884b969b82a9\",\n bytes:155691,sha256:\"9a3b483d4b36206a21984882c0abc63dda539fb866354f0e5bfff6ebb18767e7\"};"
+    },
+    {
+      "name": "observer_prefix",
+      "before": "/^heptabao-combined-02b90762-fresh-observe-r2-/",
+      "after": "/^heptabao-combined-5767739c-fresh-observe-r1-/"
+    }
+  ],
+  "failureEvidence": {
+    "candidate": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "job": "1a1b282ded0-fc05-7e57",
+    "tree": "d360a3c0b3fbe51be1834e9364a9162f4f306abf",
+    "report": {
+      "blob": "3749276afcc6e1ead912370e9626dc3645c111df",
+      "bytes": 40591,
+      "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4"
+    },
+    "stderr": {
+      "blob": "01ad767ff659ea7f5d7ccfcb9d73d01cc7b03a31",
+      "bytes": 20639,
+      "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc"
+    },
+    "normalReleaseExitCode": 101,
+    "runtimeTests": 0,
+    "diagnostic": "9 E0599 Service lock_for_request calls; 2 E0277 may be cascading but unconfirmed until new compilation",
+    "replay": false
+  },
+  "metadataEvidence": {
+    "tree": "52782b301184359bfd169af49bda93c1af969f74",
+    "report": {
+      "blob": "858622888dba9af61bdd557b85879dad673af7b4",
+      "bytes": 59736,
+      "sha256": "47ea247da0a38c51468821bbcd8c34800ebf9c27790b5968e09141b53f799972"
+    },
+    "job": "1a1b266df76-fc05-7de7",
+    "scope": 121,
+    "metadataOnly": true,
+    "missingOldTarget": true,
+    "runnerHistoricalMissingLeaves": 6,
+    "notProofOfDeletionOrMove": true
+  },
+  "originalStageQualification": {
+    "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+    "bytes": 2941,
+    "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+  },
+  "runtimeQualificationInherited": false,
+  "independentNativeControlsMetadataPlanned": false,
+  "independentNativeControlBodiesPlanned": false,
+  "jointSequence": [
+    "One separately approved process_start runs the inline publisher; new root must be absent.",
+    "From publisher monotonic entry: original 60-second publication cap; no children. Exact three source bytes compile-only, create-only publication, fsync and whole before/after/name identity checks, actual receipt publish+whole.",
+    "One same-PID exec to launcher carrying actual receipt SHA, publisher PID and original clock. Launcher entry itself must be before publication60 and within total12000.",
+    "Launcher verifies actual stage/source, current controls/receipt full9+whole SHA; new target must be absent, created relative to held new controls root, empty/owner/mode/named identity checked; actual first5 passed to runner.",
+    "Same-PID exec to runner; no clock reset. Before any rustc/Cargo: target actual identity, current cargo/rustc exact metadata then whole hash+stable full9; Cargo-home object; offline contents not claimed qualified.",
+    "Original normal release, ordinary feature compile, three libtests and all 18 groups with only the separately frozen first-two-group local-batch delta; other16 groups exact; original result and owned cleanup paths.",
+    "Only original returned job status/full bounded streams. No output file reads under this source proposal; result metadata/body is separate."
+  ],
+  "budgets": {
+    "outerSeconds": 12000,
+    "releaseSeconds": 1800,
+    "allCompileGatesSharedSeconds": 3600,
+    "perFamilySeconds": 600,
+    "listSeconds": 30,
+    "cleanupTermSeconds": 5,
+    "cleanupKillSeconds": 5,
+    "publicationPhaseSeconds": 60,
+    "publicationCountsAgainstOuter": true,
+    "publicationHardTimeoutExit": 124,
+    "publisherInputBytes": 262144,
+    "launcherBytes": 40000,
+    "runnerBytes": 40000
+  },
+  "compileGates": {
+    "ordinaryNoDefaultCheck": 1,
+    "libtestProfiles": [
+      "file",
+      "default",
+      "ha-native-v6-peer-ingress"
+    ],
+    "totalWithinSharedDeadline": 4
+  },
+  "denominators": {
+    "uniqueNames": 252,
+    "profileInstances": 280,
+    "families": 18,
+    "fileProfileInstances": 28,
+    "defaultProfileInstances": 235,
+    "haPeerIngressProfileInstances": 17,
+    "snapshotLowLevel": 23,
+    "snapshotServiceRegressions": 4,
+    "normal61": 61,
+    "localNativeJwtBatchNewUnique": 6,
+    "localNativeJwtBatchNewInstances": 12
+  },
+  "originalObservationScope": {
+    "note": "These numeric observation counts are new explicit limits of this GO. The original33b GO did not specify total status/read counts; the original worker/compile/test/cleanup deadlines and per-read/page limits stay unchanged.",
+    "maximumProcessStatusObservers": 256,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutableResultPagesPerObserver": 128,
+    "immutableResultPageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "streamBytesPerRead": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyReturnedOriginalJob": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "contiguousOriginalStreamOffsets": true,
+    "completeEachObserverBeforeNext": true,
+    "noAutomaticRetry": true
+  },
+  "noOldTargetIO": true,
+  "noOldTargetLockIO": true,
+  "noOldArtifactIOInNewBuild": true,
+  "originalHistoricalFunctionsAndTablesRetained": true,
+  "targetAdmission": {
+    "fixedChild": "cargo-target-r1",
+    "createdOnlyAfterCurrentControls": true,
+    "parentHeldFd": true,
+    "full9AtCreation": true,
+    "actualFirst5CarriedAcrossExec": true,
+    "parentOwnMkdirComparison": "first5 before/after, full9 held-vs-named after",
+    "retainedTargetFdsAcrossExec": false,
+    "onceCloseBeforeExec": true,
+    "lifetimeFlockClaimed": false,
+    "rootSoleCargoWindowRequired": true
+  },
+  "toolReadScope": {
+    "roles": [
+      "cargo",
+      "rustc"
+    ],
+    "firstMetadataBound": true,
+    "readWholeInSameRunner": true,
+    "previousIndependentToolSHA": false,
+    "maxBytes": [
+      40688400,
+      645016
+    ],
+    "perReadBytes": 1048576,
+    "noMetadataOrBodyRPC": true,
+    "cargoHomeContentsRead": false
+  },
+  "publicationTimeoutSemantics": "The publication phase has no subprocesses; SIGALRM os._exit(124) stops that process within its 60-second phase. OS closes FDs; a timeout may leave only its create-only partial root/temps. It is never retried or treated as successful publication; no Cargo starts. Timer is disabled immediately before same-PID exec, and launcher rejects entry after60.",
+  "removedExecutionGates": [
+    "old TARGET existence/inode and shared .cargo-lock/holders probe",
+    "launcher old r8/r9/r10/observer/early-cache host revalidations",
+    "runner two preserve_prior_df026 call sites"
+  ],
+  "preserved": [
+    "all original helper definitions and historical tables",
+    "stage original failed-observer immutable report references",
+    "original failure/effect/UNKNOWN evidence",
+    "candidate unformatted fact",
+    "global test contracts and phase/owned cleanup budgets"
+  ],
+  "outputPaths": {
+    "controlsReceipt": "/home/qian-qi/hb-5767739c-controls-20261106-r1/inert-stage.result.public.json",
+    "admission": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-control-r1/launch-preflight.public.json",
+    "buildResult": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json"
+  },
+  "sourcePreparationErrorsPreserved": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "limitations": [
+    "No compile/run of these Python candidates during this SOURCE preparation.",
+    "The candidate's nine explicit Service deadline-lock call fixes and local Native JWT batch extension are source reviewed; actual new compilation and tests still required.",
+    "Current cargo/rustc whole SHA and full9 are verified in the admitted runner before its first rustc/Cargo subprocess; Cargo-home first5 retained and offline contents not prequalified.",
+    "Independent new target; no historical cache speed or product pass inherited.",
+    "Only the exact 252/280 matrix is proposed; official23/strict HTTP12/full34/LAN/comparison69 product gates require separate current-candidate work.",
+    "No formatter added. Old02b errors, all previous UNKNOWNs and source history remain."
+  ],
+  "key": "heptabao-combined-5767739c-fresh-build-20261106-r1-b02e250e",
+  "before": {
+    "publisher": {
+      "blob": "9a27a1fe3729143429255d0dcc9535aa520be922",
+      "bytes": 6643,
+      "sha256": "7c527d690a182bd0d26b0dbc472928c207281008a1efb4ec0dc50f6a389ecd06"
+    },
+    "launcher": {
+      "blob": "d0309e99161a2150b58141cde25a23541fcaea26",
+      "bytes": 39650,
+      "sha256": "80c1f6303f9327f6f70284923016f5770f7c3b16a0da02b4eb20f13d1b02b2f4"
+    },
+    "runner": {
+      "blob": "1c22f8a929080588f7c2a249aac2e86846ec3d79",
+      "bytes": 36247,
+      "sha256": "163ef3165868a1f0c9263f9458efb3555577f9e92aeb7dfeea7bff41eac77c24"
+    },
+    "journal": {
+      "blob": "c4d7c4802791561c363e9db10dc84ad1bec96a2c",
+      "bytes": 19043,
+      "sha256": "484ec335cb42454cc9dc430680491b469b7ba6818c1ae33876077f68b27a3009"
+    }
+  },
+  "historicalInitialFailureEvidence": {
+    "tree": "55ace66fb7c0d963385fd481f8088cb920d22546",
+    "job": "1a1b2580881-fc05-7da1",
+    "stderr": {
+      "blob": "7300e23e4242e96cbc29487ee289b9d7c098f136",
+      "bytes": 613,
+      "sha256": "95d2fb8549a5bd9b488c3f1250f9cdc9e38975087e558b044eec067bedd62b98"
+    },
+    "phase": "original launcher at TARGET.resolve before current source/control read or ADMISSION/lock/Cargo",
+    "replay": false
+  },
+  "actualStageReport": {
+    "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+    "bytes": 29748,
+    "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+  },
+  "actualStageWholeTree": "190455f7104859ba5df1c39180105a3e5d9b14c7",
+  "actualStageMinPacket": "02409a7e4318002dd0a24bc985f197c748a83c22",
+  "actualStageInfoPacket": "bd06e25f0f8a3fc9583b52efc470a026e8ea225d",
+  "rootStageQualificationPendingAtSourceCutoff": false,
+  "newLocalBatchCases": [
+    "service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+    "service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+    "service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+    "service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+    "service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+    "service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+  ],
+  "testSourceGroups": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "candidateRootProof": {
+    "blob": "d9d3fa89aecbdf276f8e22651559caa94b0ea518",
+    "bytes": 3876,
+    "sha256": "6d8a34410afcf535c20044bfa5e78d3d2d4115c6749f49baf8e37ef9e93256f5"
+  },
+  "buildQualified": false,
+  "localNativeJwtBatchSourceExtended": true,
+  "localNativeJwtBatchRuntimeQualified": false,
+  "distributedNativeJwtQualified": false,
+  "requiredFollowup": [
+    "current-candidate official ACL23 and strict HTTP12",
+    "current-candidate X230 34MiB/restore",
+    "current-candidate LAN/Pocket consumers"
+  ],
+  "sourceStageRootQualified": true
+}

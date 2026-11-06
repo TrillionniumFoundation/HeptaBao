@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.mac-successor576.actual-bundle-bindings.v1",
+  "ready": true,
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+  },
+  "producer": {
+    "host": "rog",
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "report": {
+      "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+      "bytes": 29748,
+      "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+    },
+    "rootQualification": {
+      "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+      "bytes": 2941,
+      "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+    }
+  },
+  "bundle": {
+    "bytes": 5766,
+    "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+    "full9": [
+      "66306",
+      "31358148",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "5766",
+      "1794000539740776688",
+      "1794000539740776688"
+    ],
+    "version": "66306:31358148:5766:1794000539740776688:1794000539740776688",
+    "headerSha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9"
+  },
+  "infoNative": {
+    "blob": "b40eebebed4155bff74279c2b1d06cb8e2dd181e",
+    "bytes": 472,
+    "sha256": "06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"
+  },
+  "infoOperation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+  "bodyOperations": [
+    "66156671a53584aade1ab361827dcd7714539359fcfc964e75af16d58fb3e4fc"
+  ],
+  "transport": {
+    "blob": "9fbaf8430240c8b767e40bd17b9b1ae932ea93e5",
+    "bytes": 869,
+    "sha256": "0f1d23c49bdf8e9254b84ab95f4bf7192c46d710bb8dc30d1392685b126f2290"
+  },
+  "transportRootQualification": {
+    "blob": "72cc86bbdbe09496c13865bb1d642d0423c873ba",
+    "bytes": 2340,
+    "sha256": "17426f94a2a78f325bd5e2e1c9340574860e99ba5b53aae2020cd55ca7e68eab"
+  },
+  "base64": {
+    "blob": "80317c9867cd6485b4a308e9d512de2d99d02c12",
+    "bytes": 7689,
+    "sha256": "bdbfecb000ed9119a5de46bd1e5ed5d986bb453a22f0fba841dc7cedb6571797"
+  }
+}

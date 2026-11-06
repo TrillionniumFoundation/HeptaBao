@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.mac576-stage-fixed-INFO-SOURCE.v1",
+  "status": "SOURCE_ONLY_NO_GO",
+  "baseline": {
+    "blob": "8d25ff1cfea6172e3728addfd9ffb5bb1e96b4e1",
+    "bytes": 24084,
+    "sha256": "a1ae560ac511116ec61a612a13f4b76e9c0b581ce2271791b233cbf5b2d2bb48"
+  },
+  "baseline_SOURCE22": "c25d17e478e11d11e620106b06e0fb815cbc2fae",
+  "baseline_GO": {
+    "blob": "785c98e66170b71b0a121ef554db8efb012d6f16",
+    "bytes": 4381,
+    "sha256": "c1bd94a351a60afb7b3e6219a9605eb8c52afe87b34f907e28d05e92aca21c84"
+  },
+  "current_stage_journal": {
+    "blob": "9f29f42096f7d230210455cbfabfa7798a63fcd0",
+    "bytes": 19050,
+    "sha256": "c533a12a85ebc81bec9cfd1c39f5a43f7eef69f99df630f68ccbffde6048a0fc"
+  },
+  "source": {
+    "blob": "7924dd1f2a728e9f917ef5a93877d96d786f03e1",
+    "bytes": 24087,
+    "sha256": "4805e14fef74a2ff7d9bc4e8bcf915d77fa55e608675bbccee7a4f6644ebc96e"
+  },
+  "exact_request": {
+    "blob": "0c9a7c35ea5ec5fe421d9001e49990c916786980",
+    "bytes": 294,
+    "sha256": "cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03"
+  },
+  "original_job": "1a1b2f48641-fc05-8042",
+  "slot": "successor576_mac_source_only_stage_gitfirst_r1",
+  "original_stage_GO": {
+    "blob": "1a8e8424b14962df0c3d49b67a0b549f6a1abf58",
+    "bytes": 6318,
+    "sha256": "3ff1cb3b1c4c68d996ee5dd8904a8f0cccdc49ef9c09be11169aa485fc05e21f"
+  },
+  "actual_minimum_packet": "5c7b7eaedfcde2b07f9f0d8ae8a1342fc863ea45",
+  "prerequisites": [
+    {
+      "id": "24996cdec21dd44779c9fac959650c6f2cb0d301928340729434ca3e82173560",
+      "tool": "process_status",
+      "payload": {
+        "blob": "6d12034d98b359b99680932ccc7889699ef873f3",
+        "bytes": 908,
+        "sha256": "298e73f9f9254470730afcdbe22d7e2cb19afc9fb694ccf6f529460508649812"
+      },
+      "payloadTree": "dbd26c10283afa7fabaf50b38cb3c7d165e68f2f",
+      "nativeText": {
+        "blob": "f9084348857631a6581c8a866b4357ed022746f5",
+        "bytes": 729,
+        "sha256": "8c5c94c4eac3a90288d73475e5e5e3f26d4b1eea636b56414e607a15011fae03"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "0ebddadd7036f8130d22f5fa31736136c38447225792c1e80f43bc8f2ee17d2a",
+      "tool": "process_read",
+      "payload": {
+        "blob": "6aa1852a705cc7ae918293ca73239b11edb6944e",
+        "bytes": 1669,
+        "sha256": "0623356465c8ae04c52175052e667b00633edfae6e304d4af06841bb034008cc"
+      },
+      "payloadTree": "858d48ac22a5409c75a79e2e746f9180dd81a1fc",
+      "nativeText": {
+        "blob": "1f46ed412756d169c8b38885959705c96b6aca47",
+        "bytes": 1480,
+        "sha256": "162de84f9b5f4ff5c1b6dc42a8ceca7cc730076eeb37404907ef2b3cccff42be"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "original_native_calls": 7,
+  "new_native_operation_maximum": 1,
+  "original_state_pin": {
+    "blob": "c1ce8e3901479c1c99784569d3ea29ada9f35869",
+    "bytes": 59491,
+    "sha256": "6bdb91838f2009cf45fb69a5dc2beab984b48f4ab894ef48ab0b93182d1b9bc1"
+  },
+  "actual_size": null,
+  "actual_sha256": null,
+  "actual_version": null,
+  "actual_full9": null,
+  "metadata_identity_rationale": "The unchanged qualified Mac metadata branch requires uid501,regular mode0600,nlink1,positive size<=65536,full SHA anddecimal version. It records actual gid andmetadata_platform;the prior report'sgid20/darwin is not substituted for this new observation.",
+  "baseline_delta": {
+    "literal_sites": 7,
+    "strict_hunks": 2,
+    "metadata_guards_unchanged": true
+  },
+  "current_stage_delta": {
+    "strict_hunks": 6,
+    "adds_only_fixed_INFO_branch": true
+  },
+  "budgets": {
+    "status_per_observer": 8,
+    "pages_per_observer": 128,
+    "immutable_page_bytes": 8192,
+    "payload_bytes": 1048576,
+    "simultaneous_call_or_future": 1
+  },
+  "body_authorized": false,
+  "controls_published": false,
+  "Cargo_authorized": false,
+  "history_preserved": "Original7 calls and2 closed observers stay byte-value exact. Authorize attaches once to the closed slot;new INFO/status/page arms reference the separately validated INFO GO."
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.current576-build-report-info-release.r1",
+  "job": "1a1b2d90976-fc05-7fff",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "newCalls": 3,
+  "allCalls": 46,
+  "completedObservers": 15,
+  "pages": 15,
+  "oneInfoStarted": true,
+  "currentInfo": {
+    "id": "cb2ea67ea2179e98073723441b12ca6f828ac09d9fe2842d779424e13ad9420b",
+    "tool": "file_info",
+    "payload": {
+      "blob": "2549f1825a965f5265b2b186b35111828a7bd820",
+      "bytes": 585,
+      "sha256": "84f28c70cae034205f2684a128cb02bde0ed1bef611b3f5f9ae2380cac69dde3"
+    },
+    "payloadTree": "4c045e5b9849bf71094d9f71c1ca748c5c606673",
+    "nativeText": {
+      "blob": "570abe6a64a14c8f702a61cd517093f761834c9a",
+      "bytes": 468,
+      "sha256": "be12f8bb38e926c8d81e0d1ba275e4883c613e99ff8bce0a8d63cd6ffe598601"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual": {
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+    "size": 46828,
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639",
+    "version": "66306:33208049:46828:1794003951175308589:1794003951175308589",
+    "nativeText": {
+      "blob": "570abe6a64a14c8f702a61cd517093f761834c9a",
+      "bytes": 468,
+      "sha256": "be12f8bb38e926c8d81e0d1ba275e4883c613e99ff8bce0a8d63cd6ffe598601"
+    },
+    "originalOperation": "cb2ea67ea2179e98073723441b12ca6f828ac09d9fe2842d779424e13ad9420b",
+    "full9Strings": [
+      "66306",
+      "33208049",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "46828",
+      "1794003951175308589",
+      "1794003951175308589"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "allNewCallsAccepted": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "ownerRelease": true,
+  "NativeCall": 0,
+  "NativeFuture": 0,
+  "binaryReadAuthorized": false,
+  "oldGitUnknownRetained": true,
+  "callRows": [
+    {
+      "key": "c576-fresh-build-r1-report-info-start",
+      "kind": "operation_start",
+      "request": {
+        "blob": "8069ed61b56112eb670d41aff81066c4554152d5",
+        "bytes": 227,
+        "sha256": "48dc80cd6e5ae5da31df7bac0915542ba27f026f835772544ed93a50f2aa516e"
+      },
+      "armTree": "6ce3111ddeb933eb2859a682f2b74585ef76e214",
+      "SDK": {
+        "blob": "4a5cd492f1a1b1206c8844c2a5fd6c8b37f671a1",
+        "bytes": 704,
+        "sha256": "7839fb439de8eb80216df2c7a87e8ff922f9066202965d9f75a4bac43efdc11a"
+      },
+      "SDKTree": "bfbfe6844a8f910413112c0c210cb963ed9a4afd",
+      "native": {
+        "blob": "9837842244cdb71f78a19391056ea2ff549beb69",
+        "bytes": 543,
+        "sha256": "9395cae6011a62eac50a8036d30267b9adf53ec86cbe34d081140d7f761d129e"
+      },
+      "phase": "accepted"
+    },
+    {
+      "key": "c576-fresh-build-r1-report-info-status0",
+      "kind": "operation_status",
+      "request": {
+        "blob": "f8cdb7d35df1d1107bc91bae75233d4653a206c5",
+        "bytes": 83,
+        "sha256": "7c62efa680761fa8a43d797ff872c5f73b14b5412cfc0e81146563e3f7f84224"
+      },
+      "armTree": "85ccd09f52e8166e78e7dd022cb33b04edc41cbd",
+      "SDK": {
+        "blob": "139510eabc9bb07a369a0707c6f30f3cab22d973",
+        "bytes": 975,
+        "sha256": "19cf243d90fd6e7a1a37adba8db26b1177675471551fb45c8f4281493e7129a8"
+      },
+      "SDKTree": "b58058418f715817779524fde63bf365a660594e",
+      "native": {
+        "blob": "3a38e3d2522729f4dd40c8aab8f306532a536069",
+        "bytes": 800,
+        "sha256": "b1057662ea1dd091ab6503d3ec2b48faa2578a38fe580ab6591f4b25e85ee5f0"
+      },
+      "phase": "accepted"
+    },
+    {
+      "key": "c576-fresh-build-r1-report-info-p0",
+      "kind": "operation_result",
+      "request": {
+        "blob": "f035102118be44e1373e28d7c189ee622baa629c",
+        "bytes": 107,
+        "sha256": "03ec4a26c5218724cb758ea218d88e5a49e66a80e2b23e5339953f084b1db872"
+      },
+      "armTree": "d4209ae9a7f5f73f7adb51026c0f7663b94c84aa",
+      "SDK": {
+        "blob": "8f410f8975959689c926b351e706c6053b469613",
+        "bytes": 1632,
+        "sha256": "c77e51fa553e05d0f831254bbb0283804da27055ed644e17ebcdb138f5ca5184"
+      },
+      "SDKTree": "491260d176b49dafbfdb0a1c20fd0082d571925f",
+      "native": {
+        "blob": "762ac1f3de8c0020e5d005d40d456086fd0d8d80",
+        "bytes": 1461,
+        "sha256": "66d04e9be91a9aeea989341b810a0f96f4f48f9bb3358c24f61387c7706e7f84"
+      },
+      "phase": "accepted"
+    }
+  ]
+}

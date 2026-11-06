@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.root.public-log-stream-help-minimum-actual.r1",
+  "audit": {
+    "tree": "26b7797c966721e82ef2a933907e149bc61f2ddb",
+    "files": 9,
+    "bytes": 37253,
+    "merkle": {
+      "root_sha": "26b7797c966721e82ef2a933907e149bc61f2ddb",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "GO exact root bytes",
+      "pass": true
+    },
+    {
+      "name": "job correlation",
+      "pass": true
+    },
+    {
+      "name": "parent successful durable full terminal",
+      "pass": true
+    },
+    {
+      "name": "stdout exact text",
+      "pass": true
+    },
+    {
+      "name": "stdout exact hex",
+      "pass": true
+    },
+    {
+      "name": "stdout full EOF",
+      "pass": true
+    },
+    {
+      "name": "stderr exact text",
+      "pass": true
+    },
+    {
+      "name": "stderr exact hex",
+      "pass": true
+    },
+    {
+      "name": "stderr full EOF",
+      "pass": true
+    },
+    {
+      "name": "authority original observer completed inactive",
+      "pass": true
+    },
+    {
+      "name": "streams original observer completed inactive",
+      "pass": true
+    },
+    {
+      "name": "only exact public help argv",
+      "pass": true
+    },
+    {
+      "name": "help accepted exact 64 stderr shape",
+      "pass": true
+    },
+    {
+      "name": "whole actual help hash",
+      "pass": true
+    },
+    {
+      "name": "four application descriptors closed",
+      "pass": true
+    },
+    {
+      "name": "primary child reclaimed group empty",
+      "pass": true
+    },
+    {
+      "name": "no uncertainty and no signal",
+      "pass": true
+    },
+    {
+      "name": "known executable whole exact",
+      "pass": true
+    },
+    {
+      "name": "budget and closure unchanged",
+      "pass": true
+    },
+    {
+      "name": "no business or logs executed",
+      "pass": true
+    },
+    {
+      "name": "owner released",
+      "pass": true
+    }
+  ],
+  "checkCount": 21,
+  "pass": true,
+  "fullOriginalCallChainReplayed": false,
+  "scope": "whole terminal report, exact streams, original observer closures and fixed public help only",
+  "publicHelp": {
+    "blob": "86cbdf5723f13a86db8af7efe21315e0d69c26a0",
+    "bytes": 1684,
+    "sha256": "7dab64f70c9f470dd78aa7176e9b1c2599f210a54b576865e4d2f7705bfe9184"
+  },
+  "job": "mac/1a1b322d357-fc05-80b9",
+  "laneReleased": true
+}

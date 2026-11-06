@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.mac576.bound-source-verification.v1",
+  "pass": true,
+  "check_count": 20,
+  "checks": [
+    {
+      "name": "original_reviewed_binder_unchanged",
+      "pass": true
+    },
+    {
+      "name": "exact_original_binder_source",
+      "pass": true
+    },
+    {
+      "name": "exact_original_binder_sourceDiff",
+      "pass": true
+    },
+    {
+      "name": "exact_original_binder_carrier",
+      "pass": true
+    },
+    {
+      "name": "exact_original_binder_requestRaw",
+      "pass": true
+    },
+    {
+      "name": "exact_original_binder_journal",
+      "pass": true
+    },
+    {
+      "name": "exact_original_binder_journalDiff",
+      "pass": true
+    },
+    {
+      "name": "exact_bound_typed",
+      "pass": true
+    },
+    {
+      "name": "original_actual_whole_producer-stage.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_actual_whole_INFO.native.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_actual_whole_root-producer-qualification.original.json",
+      "pass": true
+    },
+    {
+      "name": "original_actual_whole_root-transport-qualification.original.json",
+      "pass": true
+    },
+    {
+      "name": "root_qualified_actual_transport",
+      "pass": true
+    },
+    {
+      "name": "root_qualified_actual_producer",
+      "pass": true
+    },
+    {
+      "name": "exact_two_source_constants_only",
+      "pass": true
+    },
+    {
+      "name": "fixed_host_and_fresh_root",
+      "pass": true
+    },
+    {
+      "name": "one_exact_inline_source_and_stdin",
+      "pass": true
+    },
+    {
+      "name": "original_budget_carrier",
+      "pass": true
+    },
+    {
+      "name": "source_only_null_runtime",
+      "pass": true
+    },
+    {
+      "name": "successor_normal_matrix_reference",
+      "pass": true
+    }
+  ],
+  "Native_calls": 0,
+  "Python_runs": 0,
+  "old_template_27_repeated": false
+}

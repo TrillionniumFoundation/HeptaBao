@@ -1,0 +1,17 @@
+[
+  {
+    "name": "fresh slot",
+    "before": "const GF_SLOT = \"combined_02b90762_rog_source_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"combined_5767739c_rog_source_gitfirst_r1\";"
+  },
+  {
+    "name": "exact new request",
+    "before": "const GF_REQUEST = {blob:\"b2ce0ac862ac88e531650feea8847268403ce025\",\n bytes:111947,sha256:\"9a6003c2fb09cefc190f883c2d9ed7fbc285bc50d9fdf09bc0b2ca1346b215a9\"};",
+    "after": "const GF_REQUEST = {blob:\"564433fa36fedb91ea45d694685cdb2c9067cc88\",\n bytes:112620,sha256:\"1599f63a32179a77a2f8693596cc185217efeffa0a4836f5ca608be989c75c04\"};"
+  },
+  {
+    "name": "fixed observer namespace",
+    "before": "/^heptabao-combined-02b90762-rog-source-observe-r1-/",
+    "after": "/^heptabao-combined-5767739c-rog-source-observe-r1-/"
+  }
+]

@@ -1,0 +1,207 @@
+{
+  "schema": "heptabao.linux576-authbus-new-trust-source-binding-interface.source.r1",
+  "state": "SOURCE_ONLY_NO_SERVICE_OR_CREDENTIAL_ACTION",
+  "expectedSourceCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "expectedSourceTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "actualPhaseDeclaration": {
+    "pin": {
+      "blob": "c20ec0280e1c17fc402125e9981c137a0ef201bb",
+      "bytes": 1317,
+      "sha256": "87df601a22aedf560087e3525ca3aa4a4700338cc70cf92eaf22dba0820003de"
+    },
+    "originalMinimalTree": "2d17efd12b74732335f9be984e4b8dfb744f2f7c",
+    "phase": "normal-production-release-built",
+    "server": {
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-server",
+      "sha256": "af595a9b31537d6421f3069ad3d2657dfc88ebea2a2ba564f9cc009992bbef8d",
+      "bytes": 110492992,
+      "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "fresh": false
+    },
+    "seed": {
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-seed",
+      "sha256": "64984b1ecc6d80a0599ae6bb7b93e51399f6b679244af55a163124a099790c84",
+      "bytes": 101923848,
+      "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "fresh": false
+    },
+    "receiptShaReportedNotReadBack": "005b5e9849d111e0a78f491bac43fb08bfaa617bedaa02c00077c9da78cca0ea"
+  },
+  "notYetBound": {
+    "finalBuildReport": null,
+    "finalBuildQualification": null,
+    "serverNativeFileInfoFull9": null,
+    "serverNativeFileInfoVersion": null,
+    "serverCurrentWholeIdentity": null,
+    "serverActualVersionOutput": null,
+    "nativeBuildReceiptWhole": null,
+    "linuxOwnerSource": null,
+    "newGeneration": null,
+    "newOwnedRoot": null,
+    "reservedEndpoint": null,
+    "tlsServerIdentity": null,
+    "issuerServiceInstance": null,
+    "privateCredentialCustody": null,
+    "actualSdkConsumerInstance": null
+  },
+  "originalConcreteInterface": {
+    "outerSource": {
+      "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+      "bytes": 73918,
+      "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+    },
+    "materializerSource": {
+      "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+      "bytes": 25973,
+      "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+    },
+    "functions": [
+      "bootstrap_api(client, guard, docs, secrets)",
+      "Materializer.materialize(document, plugin_config=..., managed_profiles=..., runtime=..., source_pins=..., qa_pins=..., port=..., server_certificate_sha256=...)",
+      "token_lifecycle_before(client, guard, phase, secrets)",
+      "token_lifecycle(client, phase, before)",
+      "canonical_and_inbox(client, docs, phases)"
+    ],
+    "pluginOverridesOnly": [
+      "address",
+      "caFile",
+      "roleIdFile",
+      "secretIdFile"
+    ],
+    "originalFiveAgents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "fullConfigProviderModelAndFlagsChangeAuthorized": false,
+    "issuerApi": [
+      [
+        "POST",
+        "sys/init",
+        "fresh owned server only; recovery token/key private"
+      ],
+      [
+        "POST",
+        "sys/unseal",
+        "same actual server and private returned key"
+      ],
+      [
+        "POST",
+        "sys/mounts/openclaw-auth",
+        "kv version 2"
+      ],
+      [
+        "POST",
+        "sys/auth/approle",
+        "approle"
+      ],
+      [
+        "POST",
+        "sys/storage/native-v6/activate",
+        "same explicit original fixture path"
+      ],
+      [
+        "GET",
+        "sys/internal/capacity",
+        "actual reader format 2"
+      ],
+      [
+        "POST",
+        "openclaw-auth/data/<fixed document>",
+        "CAS 0 followed by exact version 1 whole readback"
+      ],
+      [
+        "PUT",
+        "sys/policies/acl/mac-five-current",
+        "exact original read/inbox/self-token rights"
+      ],
+      [
+        "POST",
+        "auth/approle/role/mac-five-current",
+        "token TTL 180, max TTL 600, secret TTL 1200; original role semantics"
+      ],
+      [
+        "GET",
+        "auth/approle/role/mac-five-current/role-id",
+        "value private"
+      ],
+      [
+        "POST",
+        "auth/approle/role/mac-five-current/secret-id",
+        "value private"
+      ]
+    ],
+    "credentialFilesLogical": [
+      "credentials-consumer/ca.crt",
+      "credentials-consumer/role_id",
+      "credentials-consumer/secret_id"
+    ],
+    "rootRecoveryLogical": "outer-native-r1/recovery.private.json",
+    "sameTokenProof": {
+      "prePostLookup": true,
+      "samePresentedCredential": true,
+      "sameAccessorAndCreationTime": true,
+      "renewRequestEmptyJson": true,
+      "expiryDeltaMustBePositive": true,
+      "http200AloneInsufficient": true,
+      "maxTtl600": true,
+      "noSleepOrRetry": true,
+      "revoke204ThenDenied403": true
+    },
+    "unchangedRequiredApplicationResults": [
+      "real selected harness must equal same active registry object and match owner/root/code pins",
+      "real AppRole login and trusted TLS peer",
+      "exact canonical KV + inbox policy separation, denied unassigned profile",
+      "two initial/cold processes with same owned issuer data and observed restart/unseal",
+      "five actual consumers with unchanged full config/models/flags",
+      "same-token expiry extension and revoke/denied evidence",
+      "two exact inverses/rollback and all owned resource closure"
+    ]
+  },
+  "futureAdmissionSequence": [
+    "final actual 576 build and stable exact server file binding; no old4e808 qualification transfer",
+    "bind an already-approved Linux foreground owner and fresh isolated root/port/TLS source; no Mac launchd code assumed portable",
+    "separate actual Linux issuer API proof may proceed independently of Mac Node loader",
+    "only private custody handles/paths and public peer/code digests cross the trust-source interface; no root token, unseal key, role_id, secret_id, auth token or credential body in public output",
+    "full actual SDK/AppRole/TLS/KV/Policy/renew/revoke/restart/inverse remains pending until all consumer-side conditions also hold"
+  ],
+  "reachabilityAndTls": {
+    "route": null,
+    "listenerAddress": null,
+    "caWholePin": null,
+    "certificateSan": null,
+    "peerSha256": null,
+    "loopbackClientCannotBeSilentlyReusedForRemoteIssuer": true,
+    "noPortOrFirewallOrScopeChangeAuthorized": true
+  },
+  "noOldPrivateCapsuleRead": true,
+  "noProductionCutover": true,
+  "noAutomaticNewInventory": true,
+  "macVersionComparisonIsSeparate": true
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.root.C576-bundle-body-source-review.r1",
+  "sourceTree": "7e819bebdb4210b176f1e9c9aad7f30b725655fa",
+  "sourceWhole": true,
+  "source31ExactlyReproduced": true,
+  "originalInfo32ExactlyReproduced": true,
+  "actualBindings": {
+    "infoSource": true,
+    "infoNative": true,
+    "infoState": true,
+    "priorWhole32": true
+  },
+  "oneBinaryRange": true,
+  "actualVersionBound": true,
+  "exactOriginalClosedState": true,
+  "binaryPreservedAsBase64": true,
+  "sourceChangesOnlyTwelveLiterals": true,
+  "NativeCalls": 0
+}

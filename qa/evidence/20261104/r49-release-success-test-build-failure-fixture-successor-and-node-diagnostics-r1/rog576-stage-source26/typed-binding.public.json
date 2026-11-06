@@ -1,0 +1,11 @@
+{
+  "sha256": "ada1b397764974a7c473a13ec80458b71ae22aa6beacca496899a733542491bc",
+  "native_fingerprint": "12511478702917907623",
+  "canonical": {
+    "blob": "dc7b3a11fe296750e90cf399cc9bd26b24f24c25",
+    "bytes": 112533,
+    "sha256": "ada1b397764974a7c473a13ec80458b71ae22aa6beacca496899a733542491bc"
+  },
+  "input": "request.after.json",
+  "usesActualStdinField": true
+}

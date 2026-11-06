@@ -1,0 +1,566 @@
+{
+  "schema": "heptabao.public-node-version-mapping-comparison-original-release.r1",
+  "host": "mac",
+  "job": "1a1b3119721-fc05-8091",
+  "GO": {
+    "blob": "6953b1403e971e4674a3b3680fb56e022153028d",
+    "bytes": 22499,
+    "sha256": "dedf82843329f7680c2c9a1cc9be21539dec70f28e5d62fe7c68b8da3f2b7eb9"
+  },
+  "source": {
+    "blob": "d5eb83cfa9d6508467b85bafd0e3ab8c251c7e45",
+    "bytes": 92066,
+    "sha256": "bc7e259228661eb470c4e6cf86a94953940796b8b03df746258a665488912552"
+  },
+  "request": {
+    "blob": "d9277bf54c0330ee0f64a1451d2af141b60204c2",
+    "bytes": 93089,
+    "sha256": "dcacaffaad36f49a778a2d41c59e7e26f7ccd6a5d110d58089bb4984ff4c897a"
+  },
+  "journal": {
+    "blob": "d3f54199b5c50acbe49e86beacb34b310599f368",
+    "bytes": 19060,
+    "sha256": "84b5aadb2071100eb2444c02480cc7342c3bf365f1dbe2d5e8236995421e71d4"
+  },
+  "originalCallCount": 11,
+  "originalObserverCount": 2,
+  "immutablePageCount": 6,
+  "originalAuthority": {
+    "blob": "9ce594c0f2dee0e429409c8109f360c5bda18760",
+    "bytes": 733,
+    "sha256": "ffdd24e4c035f04802949357ba16d2a7808a0ef47e46874a953ac8c8ae4fe60d"
+  },
+  "stdout": {
+    "blob": "5e6f91998739d9e47f7403c0b3fbdf79032d3ce5",
+    "bytes": 11876,
+    "sha256": "da07042a1a1b7318975f198d6334da3910d23d029d404a99421a34ccb80b26cf"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "authority": {
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "stdoutSeen": 11876,
+    "stdoutStored": 11876,
+    "stderrSeen": 0,
+    "stderrStored": 0,
+    "stdoutEof": true,
+    "stderrEof": true
+  },
+  "originalObservers": [
+    {
+      "id": "d922292632665b79cc3a5cdd3ce5e186c89246b9de07d0841916f795e4b1cb3b",
+      "tool": "process_status",
+      "payload": {
+        "blob": "8463d103cd33270b8c1c8bbfe572fcf680ed7b5b",
+        "bytes": 912,
+        "sha256": "919934e3f88cdf570adc1a76f908882bc2c904ab1c4495c0fd225c515f294267"
+      },
+      "payloadTree": "bae71650c9dd711ed4f25ca3f69a3bd686c76817",
+      "nativeText": {
+        "blob": "9ce594c0f2dee0e429409c8109f360c5bda18760",
+        "bytes": 733,
+        "sha256": "ffdd24e4c035f04802949357ba16d2a7808a0ef47e46874a953ac8c8ae4fe60d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "040999d878e29dbacbfe84fa2a348f0f86fc61a73427c464229af24de0bc75f2",
+      "tool": "process_read",
+      "payload": {
+        "blob": "40ff55cea7140b2020d66bd5efc9e2310c54db39",
+        "bytes": 39818,
+        "sha256": "d28f7fe31a3dac8dbfeafa2e084dde493030ea63a86ffcba2ee28ac05080d08f"
+      },
+      "payloadTree": "dfdc6a7e7c7922076eea895a0e2a72091600efb0",
+      "nativeText": {
+        "blob": "200597b83a66ac42559c523e0a0e735a574549e7",
+        "bytes": 37195,
+        "sha256": "6dca16660f64c4d4c8bba43064f7ac137eaf8ebb71c528d8afde8f2d36642ea1"
+      },
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "originalStatuses": [
+    {
+      "callKey": "node-map-version-r1-status-01-poll-01",
+      "blob": "5933a6155181c0ae17d24d8ab3d2fbea25975bf1",
+      "bytes": 805,
+      "sha256": "7855e1ead3d1e3fbf21eac3fe07c37873b6115cbe08b9fb8698b760efb28133d"
+    },
+    {
+      "callKey": "node-map-version-r1-streams-01-poll-01",
+      "blob": "c56606bfe76b6e260273ce3cbd40247aecb6219d",
+      "bytes": 803,
+      "sha256": "57c015ae346a6e2065d7c170534e8133eafb370b72cc6d71a0541957dd17f1b9"
+    }
+  ],
+  "currentNativeState": {
+    "activeCalls": 0,
+    "activeFutures": 0,
+    "pendingCall": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "nextStdout": 11876,
+    "nextStderr": 0,
+    "laneReleased": true,
+    "originalStartNotReplayed": true
+  },
+  "actualDiagnostic": {
+    "ok": true,
+    "observationComplete": true,
+    "bothVersionArmsSucceeded": false,
+    "outcomeUnknown": false,
+    "comparison": "baseline-version-ok-restricted-sigabrt",
+    "arms": [
+      {
+        "label": "restricted-version",
+        "testProfileApplied": true,
+        "pid": 15566,
+        "knownExitCode": -6,
+        "stdout": {
+          "bytes": 0,
+          "publicVersionSyntax": false,
+          "unknownTextOrHashExported": false,
+          "value": null
+        },
+        "stderrBytes": 0,
+        "completeBeforeDeadline": true,
+        "streamsClosed": true,
+        "outcomeUnknown": false,
+        "custody": {
+          "captured_exit": null,
+          "ps": {
+            "pgid": 15566,
+            "pid": 15566,
+            "ppid": 15564,
+            "start": "Sat Nov  7 06:53:57 2026    ",
+            "uid": 501
+          },
+          "sid_observed_while_live": 15566
+        },
+        "retainedExit": {
+          "code": 2,
+          "pid": 15566,
+          "signo": 20,
+          "status": 6
+        },
+        "directChildReaped": true,
+        "groupEmptyBeforeReap": true,
+        "groupEmptyAfterReap": true,
+        "signals": [],
+        "postReapSignalSent": false
+      },
+      {
+        "label": "baseline-version",
+        "testProfileApplied": false,
+        "pid": 15575,
+        "knownExitCode": 0,
+        "stdout": {
+          "bytes": 8,
+          "publicVersionSyntax": true,
+          "unknownTextOrHashExported": false,
+          "value": "v25.9.0"
+        },
+        "stderrBytes": 0,
+        "completeBeforeDeadline": true,
+        "streamsClosed": true,
+        "outcomeUnknown": false,
+        "custody": {
+          "captured_exit": null,
+          "ps": {
+            "pgid": 15575,
+            "pid": 15575,
+            "ppid": 15564,
+            "start": "Sat Nov  7 06:53:57 2026    ",
+            "uid": 501
+          },
+          "sid_observed_while_live": 15575
+        },
+        "retainedExit": {
+          "code": 1,
+          "pid": 15575,
+          "signo": 20,
+          "status": 0
+        },
+        "directChildReaped": true,
+        "groupEmptyBeforeReap": true,
+        "groupEmptyAfterReap": true,
+        "signals": [],
+        "postReapSignalSent": false
+      }
+    ],
+    "sameEnvironmentAndCwd": true,
+    "originalProfilePrefixUnchanged": true,
+    "diagnosticProfileOnlyAddition": "(allow file-map-executable (subpath \"/System\") (subpath \"/usr/lib\") (subpath \"/opt/homebrew/Cellar\"))\n",
+    "profileActual": {
+      "bytes": 7011,
+      "identity": [
+        "16777233",
+        "593596859",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7011",
+        "1794005637118125361",
+        "1794005637118125361"
+      ],
+      "path": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control/consumer.sb",
+      "sha256": "87e8a1bb04e36524a350420fce46f1a051bc05b967058fc79a5990c7929a8d30"
+    },
+    "baselineWithoutTestProfileQualifiesSDK": false,
+    "mappingProfileSuccessDoesNotQualifySDK": true,
+    "originalAbortCauseProved": false,
+    "businessQualificationClaimed": false,
+    "historicalOutcomeRewritten": false,
+    "interpretation": "The one bounded file-map-executable addition did not remove the SIGABRT in this new public --version invocation; the matched baseline still returned v25.9.0. This negative result does not establish the precise denied operation, the current abort stack, old private-business progress, or SDK/credential qualification. No further rule or runtime admission is implied."
+  },
+  "ownClosure": {
+    "applicationDescriptors": 14,
+    "allApplicationDescriptorsClosed": true,
+    "inputs": {
+      "allReturnedInputFdsClosed": true,
+      "closeErrors": [],
+      "fixedInputCount": 4,
+      "metadataCalls": 74,
+      "readBytes": 375824,
+      "readCalls": 12,
+      "returnedFdLedger": {
+        "attempts": 4,
+        "knownNoReturnErrors": 0,
+        "pending": 0,
+        "registered": 4,
+        "registrationUnknown": false
+      }
+    },
+    "homeResources": [
+      {
+        "closeError": null,
+        "closure": {
+          "allFiniteLeavesClosed": true,
+          "allReturnedDescriptorsClosed": true,
+          "closeErrors": [],
+          "counts": {
+            "metadata": 70,
+            "readBytes": 0,
+            "readCalls": 0,
+            "writeBytes": 0,
+            "writeCalls": 0
+          },
+          "currentRootFull9UpdatedOnlyAfterOwnExclusiveCreate": true,
+          "currentRootIdentity": [
+            "16777233",
+            "593596860",
+            "501",
+            "20",
+            "16832",
+            "2",
+            "64",
+            "1794005637120020207",
+            "1794005637120020207"
+          ],
+          "descriptorScope": "returned HomeControl application descriptors only",
+          "directoryContentsExhaustivelyInventoried": false,
+          "effectUnknown": false,
+          "fdRows": [
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 11,
+              "identity": [
+                "16777233",
+                "2",
+                "0",
+                "0",
+                "16877",
+                "22",
+                "704",
+                "1786589515000000000",
+                "1786589515000000000"
+              ],
+              "kind": "shared_parent",
+              "path": "/"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 12,
+              "identity": [
+                "16777233",
+                "18326",
+                "0",
+                "80",
+                "16877",
+                "6",
+                "192",
+                "1790904461743063380",
+                "1790904461743063380"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 13,
+              "identity": [
+                "16777233",
+                "6929812",
+                "501",
+                "20",
+                "16877",
+                "387",
+                "12384",
+                "1794005637117984193",
+                "1794005637117984193"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users/qianqi"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 14,
+              "identity": [
+                "16777233",
+                "593596860",
+                "501",
+                "20",
+                "16832",
+                "2",
+                "64",
+                "1794005637120020207",
+                "1794005637120020207"
+              ],
+              "kind": "owned_root",
+              "path": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty"
+            }
+          ],
+          "initComplete": true,
+          "initStarted": true,
+          "interpreterAndDynamicLoaderInternalFdsNotEnumerated": true,
+          "lastOwnCreateRootObservation": null,
+          "openAttempts": 4,
+          "openPending": 0,
+          "path": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty",
+          "privateCredentialPlansMovedHere": false,
+          "registrationUnknown": false,
+          "rootCreated": true,
+          "rootCreationAttempted": true,
+          "schema": "heptabao.mac-owned-home-control-closure.r1",
+          "sharedParentsUseFirst5ObjectIdentity": true
+        },
+        "finalFencePassed": true,
+        "initializationCompleted": true,
+        "initializationStarted": true,
+        "name": "empty",
+        "root": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty"
+      },
+      {
+        "closeError": null,
+        "closure": {
+          "allFiniteLeavesClosed": true,
+          "allReturnedDescriptorsClosed": true,
+          "closeErrors": [],
+          "counts": {
+            "metadata": 109,
+            "readBytes": 7011,
+            "readCalls": 2,
+            "writeBytes": 7011,
+            "writeCalls": 1
+          },
+          "currentRootFull9UpdatedOnlyAfterOwnExclusiveCreate": true,
+          "currentRootIdentity": [
+            "16777233",
+            "593596858",
+            "501",
+            "20",
+            "16832",
+            "3",
+            "96",
+            "1794005637118087027",
+            "1794005637118087027"
+          ],
+          "descriptorScope": "returned HomeControl application descriptors only",
+          "directoryContentsExhaustivelyInventoried": false,
+          "effectUnknown": false,
+          "fdRows": [
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 7,
+              "identity": [
+                "16777233",
+                "2",
+                "0",
+                "0",
+                "16877",
+                "22",
+                "704",
+                "1786589515000000000",
+                "1786589515000000000"
+              ],
+              "kind": "shared_parent",
+              "path": "/"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 8,
+              "identity": [
+                "16777233",
+                "18326",
+                "0",
+                "80",
+                "16877",
+                "6",
+                "192",
+                "1790904461743063380",
+                "1790904461743063380"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 9,
+              "identity": [
+                "16777233",
+                "6929812",
+                "501",
+                "20",
+                "16877",
+                "386",
+                "12352",
+                "1794005506308381241",
+                "1794005506308381241"
+              ],
+              "kind": "shared_parent",
+              "path": "/Users/qianqi"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 10,
+              "identity": [
+                "16777233",
+                "593596858",
+                "501",
+                "20",
+                "16832",
+                "2",
+                "64",
+                "1794005637117976109",
+                "1794005637117976109"
+              ],
+              "kind": "owned_root",
+              "path": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 11,
+              "kind": "write",
+              "path": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control/consumer.sb"
+            },
+            {
+              "closeAttempted": true,
+              "closed": true,
+              "fd": 11,
+              "kind": "read",
+              "path": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control/consumer.sb"
+            }
+          ],
+          "initComplete": true,
+          "initStarted": true,
+          "interpreterAndDynamicLoaderInternalFdsNotEnumerated": true,
+          "lastOwnCreateRootObservation": {
+            "beforeFull9": [
+              "16777233",
+              "593596858",
+              "501",
+              "20",
+              "16832",
+              "2",
+              "64",
+              "1794005637117976109",
+              "1794005637117976109"
+            ],
+            "currentFull9": [
+              "16777233",
+              "593596858",
+              "501",
+              "20",
+              "16832",
+              "3",
+              "96",
+              "1794005637118087027",
+              "1794005637118087027"
+            ],
+            "fieldEqualToBefore": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false
+            ],
+            "heldNamedFull9Equal": true,
+            "namedFull9": [
+              "16777233",
+              "593596858",
+              "501",
+              "20",
+              "16832",
+              "3",
+              "96",
+              "1794005637118087027",
+              "1794005637118087027"
+            ],
+            "sameRootObjectFirst5": true
+          },
+          "openAttempts": 6,
+          "openPending": 0,
+          "path": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control",
+          "privateCredentialPlansMovedHere": false,
+          "registrationUnknown": false,
+          "rootCreated": true,
+          "rootCreationAttempted": true,
+          "schema": "heptabao.mac-owned-home-control-closure.r1",
+          "sharedParentsUseFirst5ObjectIdentity": true
+        },
+        "finalFencePassed": true,
+        "initializationCompleted": true,
+        "initializationStarted": true,
+        "name": "control",
+        "root": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control"
+      }
+    ],
+    "allOwnedCommandsStopped": true,
+    "unknownCommandCount": 0,
+    "allFixedHeldNamedFencesPassed": true,
+    "handlersRestored": true,
+    "pendingSignalObserved": false,
+    "deadlineMetAfterClosure": true,
+    "elapsedSeconds": 0.11380791710689664
+  },
+  "historicalManagedOrHelperUnknownUpgraded": false,
+  "NodePublicVersionOnly": true,
+  "SDKOrCredentialOrBusinessRerun": false,
+  "allAuthorizationConsumed": true,
+  "additionalNativeAuthorized": false
+}

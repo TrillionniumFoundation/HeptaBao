@@ -1,0 +1,606 @@
+{
+  "schema": "heptabao.auth-node-crash-fixed-r5-original-release.r1",
+  "host": "mac",
+  "job": "1a1b2c3d67e-fc05-7fa7",
+  "source": {
+    "blob": "3639e0f664eb87e5323048607eb01a15278655d1",
+    "bytes": 45782,
+    "sha256": "bc7efad5f0a04328a5fb76954a9bd1575c9e7921c0d809498de8a1e38c9caa05"
+  },
+  "request": {
+    "blob": "353fbb9eb8d93d18b3f9d21a2af39e839deaa5f5",
+    "bytes": 47036,
+    "sha256": "4afbc62b119e9e75f7f73687df424ca13ee1012d4dadc2d71b63bf61c55f6c2b"
+  },
+  "GO": {
+    "blob": "06eef26e35180dc904a76cde95b32a0170098ca2",
+    "bytes": 23601,
+    "sha256": "dd6d3596e31119441096b5eb1491a9f2e15f215e6138122d204f02185b0f4b13"
+  },
+  "originalCalls": 17,
+  "returnedObservers": 3,
+  "immutablePages": 10,
+  "allCallsAccepted": true,
+  "allOriginalSDKsWhole": true,
+  "allObserversCompletedInactive": true,
+  "nativeCallInFlight": false,
+  "nativeFuturesActive": 0,
+  "activeObserver": null,
+  "pending": null,
+  "laneReleased": true,
+  "authority": {
+    "blob": "1b9b1a843653690f064cade8fa7b23ff95e3fb80",
+    "bytes": 733,
+    "sha256": "80925e35b08882a2af5c7ae7239bb284b280af1fe496c4f74dbeb59dfa6424f3"
+  },
+  "stdout": {
+    "blob": "78a51d1d7e02049783d4d441f8e01ea67e29c255",
+    "bytes": 19642,
+    "sha256": "fbd5fa1699b6f0f4b88e143b4fa691c99f2c54f9d0637385a4423bfbdb4a5042"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminal": {
+    "exitCode": 0,
+    "full": true,
+    "durable": true,
+    "confirmed": true
+  },
+  "classification": {
+    "observationComplete": true,
+    "outcomeUnknown": false,
+    "fixedCandidateName": "node-2026-11-07-033552.ips",
+    "noDirectoryEnumeration": true,
+    "wholeFixedFile": {
+      "basename": "node-2026-11-07-033552.ips",
+      "identity": [
+        "16777233",
+        "593533598",
+        "501",
+        "250",
+        "33152",
+        "1",
+        "6809",
+        "1793993752090245618",
+        "1793993752090848927"
+      ],
+      "wholeBodyHashExported": false,
+      "wholeBytesRead": 6809
+    },
+    "correlation": {
+      "crashType309": true,
+      "launchAndCaptureTimesTyped": true,
+      "metadataNameAbsentOrNode": true,
+      "parentIs51483": true,
+      "pidIs51494": true,
+      "procNameNode": true,
+      "procPathIsKnownNodePath": false,
+      "withinOriginalCorrelatedTimeWindow": true
+    },
+    "path": {
+      "absolute": true,
+      "basenameIsNode": true,
+      "boundedPrintableAscii": true,
+      "canonicalComponents": true,
+      "closedLiteralForm": "literal-homebrew-star-node",
+      "containsLiteralAsterisk": true,
+      "endsWithBinNode": false,
+      "equalsKnownAlias": false,
+      "equalsKnownReal": false,
+      "kernelImageOrFileContentQualified": false,
+      "literalAsteriskMeaningInferred": false,
+      "type": "string",
+      "underHomebrewPrefix": true,
+      "unknownPathOrHashExported": false
+    },
+    "matchedReportCount": 0,
+    "safeCrashProjectionCount": 1,
+    "exception": {
+      "numericHexCodes": "0x0000000000000000, 0x0000000000000000",
+      "signal": {
+        "known": true,
+        "present": true,
+        "value": "SIGABRT"
+      },
+      "type": {
+        "known": true,
+        "present": true,
+        "value": "EXC_CRASH"
+      }
+    },
+    "termination": {
+      "byPidEqualsOriginalParent": false,
+      "byPidEqualsTarget": false,
+      "byProc": {
+        "known": false,
+        "present": false,
+        "value": null
+      },
+      "codeDecimal": "2",
+      "flagsDecimal": "582",
+      "indicator": {
+        "known": false,
+        "present": false,
+        "value": null
+      },
+      "namespace": {
+        "asciiOnly": true,
+        "characterLength": 6,
+        "knownInPreviousEnum": false,
+        "present": true,
+        "printableWithoutControls": true,
+        "publicSyntaxQualified": true,
+        "semanticMeaningClaimed": false,
+        "trimClass": "already-trimmed",
+        "type": "string",
+        "utf8Bytes": 6,
+        "value": "<0x23>"
+      }
+    },
+    "faultingThreadPublicProjection": {
+      "addressesOrRegistersOrQueuesExported": false,
+      "boundedFramePrefix": false,
+      "causalConclusionClaimed": false,
+      "disposition": "selected-frames-projected",
+      "faultingIndexPresent": true,
+      "faultingIndexType": "integer",
+      "frameCount": 11,
+      "frameLimit": 32,
+      "frames": [
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 0,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 20,
+            "publicGrammar": "public-image-c-identifier",
+            "publicValue": "__abort_with_payload",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 1,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 35,
+            "publicGrammar": "public-image-c-identifier",
+            "publicValue": "abort_with_payload_wrapper_internal",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 2,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 17,
+            "publicGrammar": "public-image-c-identifier",
+            "publicValue": "abort_with_reason",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 3,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 13,
+            "publicGrammar": "public-image-c-identifier",
+            "publicValue": "ignition_halt",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 4,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 9,
+            "publicGrammar": "public-image-c-identifier",
+            "publicValue": "boot_boot",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 5,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 6,
+            "publicGrammar": "public-image-c-identifier",
+            "publicValue": "ignite",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 6,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 132,
+            "publicGrammar": "fixed-public-cpp-namespace",
+            "publicValue": "dyld4::CacheFinder::CacheFinder(dyld4::ProcessConfig::Process const&, dyld4::ProcessConfig::Logging const&, dyld4::SyscallDelegate&)",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 7,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 222,
+            "publicGrammar": "fixed-public-cpp-namespace",
+            "publicValue": "dyld4::ProcessConfig::DyldCache::DyldCache(dyld4::ProcessConfig::Process&, dyld4::ProcessConfig::Security const&, dyld4::ProcessConfig::Logging const&, dyld4::SyscallDelegate&, lsl::Allocator&, dyld4::ProcessConfig const&)",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 8,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 103,
+            "publicGrammar": "fixed-public-cpp-namespace",
+            "publicValue": "dyld4::ProcessConfig::ProcessConfig(dyld4::KernelArgs const*, dyld4::SyscallDelegate&, lsl::Allocator&)",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 9,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 91,
+            "publicGrammar": "fixed-public-cpp-namespace",
+            "publicValue": "dyld4::start(dyld4::KernelArgs*, void*, void*, unsigned long long)::$_1::operator()() const",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        },
+        {
+          "frameType": "object",
+          "image": {
+            "fileContentOrExecutableIdentityQualified": false,
+            "nameType": "string",
+            "pathOrUnknownNameOrHashExported": false,
+            "pathType": "string",
+            "publicBasename": "dyld",
+            "publicFamily": "system",
+            "publicMapQualified": true,
+            "publicPathClass": "usr-lib",
+            "type": "object"
+          },
+          "imageIndex": 1,
+          "imageIndexInRange": true,
+          "imageIndexType": "integer",
+          "ordinal": 10,
+          "symbol": {
+            "boundedPrintableAscii": true,
+            "characterLength": 5,
+            "publicGrammar": "public-image-c-identifier",
+            "publicValue": "start",
+            "type": "string",
+            "unknownValueOrHashExported": false
+          }
+        }
+      ],
+      "framesVisited": 11,
+      "libraryFilesRead": false,
+      "otherThreadObjectsVisited": 0,
+      "otherThreadsTraversed": false,
+      "rawThreadsOrUsedImagesExported": false,
+      "referencedImageLookups": 11,
+      "remainingFramesNotTraversed": 0,
+      "selectedIndex": 0,
+      "selectedThreadAllFramesVisited": true,
+      "selectedTriggeredPresent": true,
+      "selectedTriggeredType": "boolean",
+      "selectedTriggeredValue": true,
+      "selectionBasis": "faultingThread-direct-index",
+      "selectionQualified": true,
+      "threadCount": 1,
+      "threadsType": "array",
+      "unknownSymbolsOrPathsOrHashesExported": false,
+      "unreferencedImagesTraversed": false
+    },
+    "diagnosticSlots": 29,
+    "presentDiagnosticSlots": 0,
+    "diagnosticStringCount": 0,
+    "diagnosticLineCount": 0,
+    "diagnosticLexicalOnly": {
+      "abortCalled": false,
+      "abortWithPayload": false,
+      "abortWithReason": false,
+      "architectureMismatch": false,
+      "codeSignature": false,
+      "dispatchDiagnostic": false,
+      "dynamicLoader": false,
+      "forkSafety": false,
+      "initializationFailure": false,
+      "jitOrExecutableMemory": false,
+      "libraryInitialization": false,
+      "lockOrSemaphore": false,
+      "missingLibrary": false,
+      "missingSymbol": false,
+      "permissionOrSandbox": false,
+      "pthreadDiagnostic": false,
+      "recursiveOrDeadlock": false,
+      "resourceExhaustion": false,
+      "runtimeAssertion": false,
+      "sandboxInitialization": false,
+      "threadCreation": false,
+      "uncaughtException": false
+    },
+    "publicApiTokens": [],
+    "publicErrnoTokens": [],
+    "publicMissingLibraries": [],
+    "crashCauseQualified": false,
+    "oldRuntimeProgressUnchanged": true
+  },
+  "ownClosure": {
+    "FDs": 7,
+    "iteratorAcquired": false,
+    "metadataCalls": 37,
+    "readCalls": 2,
+    "bodyBytesReadLocally": 6809,
+    "allOwnResourcesClosed": true,
+    "finalHeldNamedFencesPassed": true,
+    "handlersRestored": true,
+    "afterClosureDeadlineMet": true,
+    "outcomeUnknown": false
+  },
+  "historicalFailuresUnchanged": true,
+  "privateBodyOrHashExported": false,
+  "unknownProcPathExported": false,
+  "historicalManagedClosureClaimed": false,
+  "observers": [
+    {
+      "id": "5fd7a2263ce8ad169c8e01ba409242b7f28b7965246af3f093b7195cebda1709",
+      "tool": "process_status",
+      "payload": {
+        "blob": "64b796cd9a66e49d87a11f6ce7b11d4d03182426",
+        "bytes": 912,
+        "sha256": "bef1af105dfa8bb74498cbbe7394ba37b773ace9abb9fb284f0ac0b00c8f03ca"
+      },
+      "payloadTree": "9c357b3f14c64a963b434ec3b53041e655c50d42",
+      "nativeText": {
+        "blob": "1b9b1a843653690f064cade8fa7b23ff95e3fb80",
+        "bytes": 733,
+        "sha256": "80925e35b08882a2af5c7ae7239bb284b280af1fe496c4f74dbeb59dfa6424f3"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "59252e87e03e54295b53b5686399d43e1b7078e6bf5c8702f88264774c02a3ea",
+      "tool": "process_read",
+      "payload": {
+        "blob": "2b4a0b4ccc18a15bacda0a34437d8b40ee096d28",
+        "bytes": 54775,
+        "sha256": "1041168d34dbef6885c2a516e0bddfbb53f8666063f250df87412f069729e4a9"
+      },
+      "payloadTree": "c64e86ea53c37371f43fa0dd2390d076fc074911",
+      "nativeText": {
+        "blob": "d067ff2b15e5dba507724fd7a9fdc1f00f2e3f6a",
+        "bytes": 51197,
+        "sha256": "8d0ca9c1863c348e0e808c79c615a33d91c9bfd68dc04aa330d244ea89a437db"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "ec06bb09a104206a321cee441ad60bf69b403bec175fd23f61112ab02a188b9c",
+      "tool": "process_read",
+      "payload": {
+        "blob": "6901dfb0620d1af0632184a45828bb33779095d7",
+        "bytes": 11334,
+        "sha256": "67ab17cecd173f94b4691d877a789045e71f70beb023ebdaa2066901559c33ca"
+      },
+      "payloadTree": "6c17396756bce747c684395df25b71be0d2c698b",
+      "nativeText": {
+        "blob": "4879b6f06227a4b069cab47a9fd3343b26a90bf0",
+        "bytes": 10467,
+        "sha256": "adcac923305610f8e725f0db2cfbfb7aefda095cf7d6d48b2a03e1c7e09b3692"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "statuses": [
+    {
+      "callKey": "public-node-crash-fixed-r5-authority-01-status-01",
+      "SDK": {
+        "blob": "c0f5700e405c613a33149cfce5951571850613c5",
+        "bytes": 980,
+        "sha256": "2c0056e507cfd6df4d79d2aed1b2580e86583cac1cfd175eb990d6ef04cbe12c"
+      },
+      "native": {
+        "blob": "ab6293f91ee9c9907d23f412869afbdd3ded5f1c",
+        "bytes": 805,
+        "sha256": "27b2683a7fb291ba554cdcf972719eb4cdfad5704b2405fb0ccd568119029b22"
+      },
+      "operation": "5fd7a2263ce8ad169c8e01ba409242b7f28b7965246af3f093b7195cebda1709"
+    },
+    {
+      "callKey": "public-node-crash-fixed-r5-streams-01-status-01",
+      "SDK": {
+        "blob": "b94427f82533cdb97ef6cadb983a63cd6b37b27d",
+        "bytes": 978,
+        "sha256": "b2eec14b7b485d420385e5c671adfc207b047847191c88b6ac5614671731afde"
+      },
+      "native": {
+        "blob": "1c457e2c9263c1ad41870010c1fa029e54c34fd6",
+        "bytes": 803,
+        "sha256": "2905c06a3374a3ab49098a349402d114d3c76c577bbf9c1833e95d981ac33665"
+      },
+      "operation": "59252e87e03e54295b53b5686399d43e1b7078e6bf5c8702f88264774c02a3ea"
+    },
+    {
+      "callKey": "public-node-crash-fixed-r5-streams-02-status-01",
+      "SDK": {
+        "blob": "ed7cac801c6f59234dd67c691e6aa4950c768241",
+        "bytes": 978,
+        "sha256": "9db0f7cded79b15b8525f81b4a741ad79ad5ba0cd2db283d5def2bc38c1ce629"
+      },
+      "native": {
+        "blob": "a1893b9d243c47a89772f5651e0b872c1e5d103c",
+        "bytes": 803,
+        "sha256": "aaada954f6c7a9682d5030e1882f44c9c793cbcad36a4cf71a52d546d07397d4"
+      },
+      "operation": "ec06bb09a104206a321cee441ad60bf69b403bec175fd23f61112ab02a188b9c"
+    }
+  ]
+}

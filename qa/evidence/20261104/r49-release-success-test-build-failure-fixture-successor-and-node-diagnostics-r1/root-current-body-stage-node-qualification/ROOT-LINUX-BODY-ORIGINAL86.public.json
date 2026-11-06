@@ -1,0 +1,354 @@
+{
+  "schema": "heptabao.current576-report-body-byte-checks.r1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "request_0",
+      "ok": true
+    },
+    {
+      "name": "SDK_0",
+      "ok": true
+    },
+    {
+      "name": "native_0",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_0",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_0",
+      "ok": true
+    },
+    {
+      "name": "request_1",
+      "ok": true
+    },
+    {
+      "name": "SDK_1",
+      "ok": true
+    },
+    {
+      "name": "native_1",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_1",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_1",
+      "ok": true
+    },
+    {
+      "name": "request_2",
+      "ok": true
+    },
+    {
+      "name": "SDK_2",
+      "ok": true
+    },
+    {
+      "name": "native_2",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_2",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_2",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_2",
+      "ok": true
+    },
+    {
+      "name": "page_extent_2",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_2",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_2",
+      "ok": true
+    },
+    {
+      "name": "request_3",
+      "ok": true
+    },
+    {
+      "name": "SDK_3",
+      "ok": true
+    },
+    {
+      "name": "native_3",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_3",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_3",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_3",
+      "ok": true
+    },
+    {
+      "name": "page_extent_3",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_3",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_3",
+      "ok": true
+    },
+    {
+      "name": "request_4",
+      "ok": true
+    },
+    {
+      "name": "SDK_4",
+      "ok": true
+    },
+    {
+      "name": "native_4",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_4",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_4",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_4",
+      "ok": true
+    },
+    {
+      "name": "page_extent_4",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_4",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_4",
+      "ok": true
+    },
+    {
+      "name": "request_5",
+      "ok": true
+    },
+    {
+      "name": "SDK_5",
+      "ok": true
+    },
+    {
+      "name": "native_5",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_5",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_5",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_5",
+      "ok": true
+    },
+    {
+      "name": "page_extent_5",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_5",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_5",
+      "ok": true
+    },
+    {
+      "name": "request_6",
+      "ok": true
+    },
+    {
+      "name": "SDK_6",
+      "ok": true
+    },
+    {
+      "name": "native_6",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_6",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_6",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_6",
+      "ok": true
+    },
+    {
+      "name": "page_extent_6",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_6",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_6",
+      "ok": true
+    },
+    {
+      "name": "request_7",
+      "ok": true
+    },
+    {
+      "name": "SDK_7",
+      "ok": true
+    },
+    {
+      "name": "native_7",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_7",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_7",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_7",
+      "ok": true
+    },
+    {
+      "name": "page_extent_7",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_7",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_7",
+      "ok": true
+    },
+    {
+      "name": "request_8",
+      "ok": true
+    },
+    {
+      "name": "SDK_8",
+      "ok": true
+    },
+    {
+      "name": "native_8",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_8",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_8",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_8",
+      "ok": true
+    },
+    {
+      "name": "page_extent_8",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_8",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_8",
+      "ok": true
+    },
+    {
+      "name": "request_9",
+      "ok": true
+    },
+    {
+      "name": "SDK_9",
+      "ok": true
+    },
+    {
+      "name": "native_9",
+      "ok": true
+    },
+    {
+      "name": "original_SDK_native_9",
+      "ok": true
+    },
+    {
+      "name": "original_call_accepted_9",
+      "ok": true
+    },
+    {
+      "name": "same_original_operation_9",
+      "ok": true
+    },
+    {
+      "name": "page_extent_9",
+      "ok": true
+    },
+    {
+      "name": "payload_identity_9",
+      "ok": true
+    },
+    {
+      "name": "actual_EOF_9",
+      "ok": true
+    },
+    {
+      "name": "whole_original_payload_from8pages",
+      "ok": true
+    },
+    {
+      "name": "original_envelope_native_text",
+      "ok": true
+    },
+    {
+      "name": "whole_decoded_report_original",
+      "ok": true
+    },
+    {
+      "name": "original_report_actual_extent_version",
+      "ok": true
+    }
+  ],
+  "checkCount": 86,
+  "runtimeCalls": 0,
+  "businessRepeated": false,
+  "productQualification": false
+}

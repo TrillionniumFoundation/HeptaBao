@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.pure-source-checker-local-failure.r1",
+  "error": "Error: unchanged_gfAuthorizeStageResultInfoOnly",
+  "sourceOrNativeChanged": false,
+  "nativeCalls": 0,
+  "rootCause": "The pure function-range extractor included newly inserted comments/constants before the next function; the unchanged authorization function body itself had no diff.",
+  "correction": "Terminate each known top-level function at its own unindented closing brace, not at the next function declaration.",
+  "originalCandidate": {
+    "blob": "c54541d53f5417e37975ada98f629e1b051e6e62",
+    "bytes": 28216,
+    "sha256": "faa0177d086450f8590f02b338b11f1b7e847689fde970f99e3687d2d31049ea"
+  },
+  "originalFailureReproduced": true,
+  "oldExtractorSource": {
+    "blob": "2dabb45b6ab645ffa0a3ab1313ddcec7c97f0ad5",
+    "bytes": 206,
+    "sha256": "a0a9d18cb978ad5e44f2fa63ab0f8be57a8b3677f09363388d321915a9f49528"
+  },
+  "oldExtractorFileIsExactFailingAlgorithmOnly": true,
+  "fullFailedVerifierRetainedInToolHistory": true,
+  "originalCandidateUnchanged": {
+    "blob": "c54541d53f5417e37975ada98f629e1b051e6e62",
+    "bytes": 28216,
+    "sha256": "faa0177d086450f8590f02b338b11f1b7e847689fde970f99e3687d2d31049ea"
+  }
+}

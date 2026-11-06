@@ -1,0 +1,103 @@
+{
+  "result": {
+    "schema": "heptabao.x230-two-bundle-source-static-verification.v1",
+    "pass": true,
+    "check_count": 45,
+    "checks": [
+      "strict source forward",
+      "strict source reverse",
+      "unchanged original helper on_signal",
+      "unchanged original helper digest",
+      "unchanged original helper identity",
+      "unchanged original helper remaining",
+      "unchanged original helper stable",
+      "unchanged original helper fsync_dir",
+      "unchanged original helper create",
+      "unchanged original helper public",
+      "unchanged original helper process_snapshot",
+      "unchanged original helper group_members",
+      "unchanged original helper stop_active",
+      "unchanged original helper stop_owned",
+      "unchanged original helper persist_command",
+      "unchanged original helper owned_argv",
+      "unchanged original helper owned",
+      "unchanged original helper git",
+      "unchanged original helper freeze",
+      "unchanged original helper read_file",
+      "unchanged original helper prove_canonical",
+      "unchanged original helper recheck_artifacts",
+      "original final child cleanup retained",
+      "explicit removed product receipt qualifications",
+      "fixed original time ceilings",
+      "original network prohibition retained",
+      "local base has no invented origin requirement",
+      "base and ancestor before fresh root writes",
+      "two verified sequential imports before checkout",
+      "base before and after no fallback",
+      "bounded exact carrier and whole binary binding",
+      "new input FD ledger precedes acquisition",
+      "new input close once critical",
+      "bounded writes and same FD whole readback",
+      "failure retains partial scope and conservative closure",
+      "current full materialized index and bytes gate",
+      "mechanical template binding exact",
+      "only fixed x230 process proposal",
+      "whole stdin distinct from request size",
+      "candidate frozen current576 no actual qualification",
+      "pure binder refuses carrier_bytes",
+      "pure binder refuses root",
+      "pure binder refuses first_prerequisite",
+      "pure binder refuses second_binary_SHA",
+      "pure binder refuses candidate"
+    ],
+    "unchangedOriginalHelpers": 20,
+    "originalFunctions": 27,
+    "currentFunctions": 25,
+    "removedFunctions": [
+      "need",
+      "verify_normal61",
+      "verify_receipts"
+    ],
+    "newFunction": "read_carrier",
+    "sourceHunks": 9,
+    "source": {
+      "blob": "1d8e5c07d42e5c512fae9a679409ba23076f5652",
+      "bytes": 30059,
+      "sha256": "ca8b18c6b13d937c81b1b5032206e28a6b3ff0ea4918ae259d37e103446f937a"
+    },
+    "request": {
+      "blob": "120f3b43845840cb37f74548aa7ac0b821dc1201",
+      "bytes": 267126,
+      "sha256": "631e361705d295d460c627f16dc79f4922b1ca342a6dc59552db1d84a22b081b"
+    },
+    "carrier": {
+      "blob": "79d6845b1826171788333c906e77faf02ac02bb6",
+      "bytes": 235828,
+      "sha256": "746de82dd389c7fe3cd1a169c5ace88737b3d94c00cf953eef4c0be9b5d7e1b0"
+    },
+    "NativeCalls": 0,
+    "PythonCompiled": false,
+    "PythonExecuted": false,
+    "actualBasePresence": null,
+    "X230StageQualified": false,
+    "full34Qualified": false,
+    "scope": "Pure V8 bindings, strict diff, full retained helper comparison and static control flow checks only; no Python/runtime safety proof or host observation."
+  },
+  "checks": {
+    "baselineReceiverExact": true,
+    "candidateCommit": true,
+    "sourceOnly": true
+  },
+  "audit": {
+    "tree": "b4cc37bfde4c036f1ad5dbc7cf5678916517583d",
+    "files": 23,
+    "bytes": 672315,
+    "merkle": {
+      "root_sha": "b4cc37bfde4c036f1ad5dbc7cf5678916517583d",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "firstLookupCorrectionPreserved": true
+}

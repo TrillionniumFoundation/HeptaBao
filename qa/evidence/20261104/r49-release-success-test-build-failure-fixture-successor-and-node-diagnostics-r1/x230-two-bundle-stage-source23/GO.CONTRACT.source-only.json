@@ -1,0 +1,27 @@
+{
+  "authorization": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "candidate": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "exactRequest": {
+    "blob": "120f3b43845840cb37f74548aa7ac0b821dc1201",
+    "bytes": 267126,
+    "sha256": "631e361705d295d460c627f16dc79f4922b1ca342a6dc59552db1d84a22b081b"
+  },
+  "host": "x230",
+  "oneSourceOnlyStart": 1,
+  "originalBudgetSeconds": 300,
+  "outerSeconds": 360,
+  "originalJob": null,
+  "journal": null,
+  "rootGO": null,
+  "notAuthorized": [
+    "product_binary_transfer",
+    "controls_publication",
+    "Cargo",
+    "full34",
+    "LAN",
+    "other_host",
+    "fallback_source",
+    "network_fetch",
+    "old_source_mutation"
+  ]
+}

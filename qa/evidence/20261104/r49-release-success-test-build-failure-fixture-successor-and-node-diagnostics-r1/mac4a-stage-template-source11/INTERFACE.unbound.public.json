@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.mac.default-libtest-fix.unbound-stage-interface.r1",
+  "readiness": "SOURCE_ONLY_UNBOUND",
+  "base": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source",
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "history": 3769,
+    "actual_report": {
+      "blob": "f0855203bf885620f0c5deea089cc9a9e7b86460",
+      "bytes": 7665,
+      "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb"
+    },
+    "original_closed_body_packet": "9c413ac76d36d93ddc15c8ad5f0a15a038376654",
+    "root_qualification": "Root explicitly qualified the original stage after independent INFO46 and BODY58; separate root qualification blob not supplied in C context.",
+    "source_revalidation": "Original exact freeze before/after and independent local clone, no current presence inherited."
+  },
+  "expected_candidate": {
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "leaves": 3932,
+    "tracked_bytes": 62553956,
+    "index_sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "history": 3770,
+    "index": {
+      "blob": "4767ced1fa8bcb3d6efc1cf3d678ce6d75b2dd1c",
+      "bytes": 453838,
+      "sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d"
+    },
+    "scope": "Expected three-leaf substitution only; not a created commit or runtime result."
+  },
+  "actual_candidate": {
+    "commit": null,
+    "tree": null,
+    "branch": null,
+    "manifest": null
+  },
+  "actual_bundle": {
+    "producer_report": null,
+    "producer_root_qualification": null,
+    "path": null,
+    "bytes": null,
+    "sha256": null,
+    "full9": null,
+    "version": null,
+    "header_sha256": null,
+    "base64": null,
+    "transport_manifest": null,
+    "transport_root_qualification": null,
+    "required_prerequisite": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "required_head": null
+  },
+  "stage": {
+    "source_root": null,
+    "canonical_leaf": null,
+    "exact_source": null,
+    "carrier": null,
+    "exact_request": null,
+    "journal": null,
+    "runtime_slot": null,
+    "key": null,
+    "GO": null,
+    "actual_report": null
+  },
+  "normal": {
+    "unique_tests": 89,
+    "profile_executions": 117,
+    "groups": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    },
+    "source_template_packet": "66c0d39d1a8e6cdfea4af730bf053c95c70b8d4e",
+    "new_candidate_runner": null,
+    "new_launcher": null,
+    "new_controls_publisher": null,
+    "actual_controls_receipt": null,
+    "exact_build_request": null,
+    "runtime_slot": null,
+    "actual_artifacts": null,
+    "actual117": null
+  },
+  "full34": {
+    "admission_template_packet": "d54c2e26fbc402074f91a2c671aae856c41486b6",
+    "required_checks": 31,
+    "logical_bytes": 35651584,
+    "driver": {
+      "blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "new_full_wrapper": null,
+    "new_input_identities": null,
+    "actual_prepare": null,
+    "actual_live": null
+  },
+  "actual": {
+    "native_calls": 0,
+    "python_runs": 0,
+    "cargo_runs": 0,
+    "stage_qualified": false,
+    "normal117_qualified": false,
+    "full34_qualified": false
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.current576-build-report-single-body-source.r1",
+  "state": "SOURCE_ONLY",
+  "authorization": false,
+  "scope": "build_result_binary_read_only",
+  "original_job": "1a1b2d90976-fc05-7fff",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "initializeForbidden": true,
+  "info_operation": "cb2ea67ea2179e98073723441b12ca6f828ac09d9fe2842d779424e13ad9420b",
+  "maximum_binary_read_starts": 1,
+  "exact_request": {
+    "blob": "201efd07a150f7e3aa7384209cefa3368348fb5b",
+    "bytes": 336,
+    "sha256": "de1143488f34b5a05be74cc64bb187166f9c1c0db56bf179ba2b2ca420f36fde"
+  },
+  "exactJournal": {
+    "blob": "b9b8de99e474bcdb5fc6740ad7b8a1ea90d89ef6",
+    "bytes": 30537,
+    "sha256": "24cbdb68aa9ed8be75de923c4832fef8aa77a2485d02a97196d798d9dbfbccdb"
+  },
+  "exactClosedState": {
+    "blob": "a96aa9d874ca89a3116602db0b9d2ca1d7ad177b",
+    "bytes": 295135,
+    "sha256": "69e9e646f8bb4a46a7692b8be1e8de08e1054e55ca191230a31330950c838037"
+  },
+  "metadataPacket": "a12f23d2967c0bc65a3afa4184eef255d9fe74bd",
+  "expectedReport": {
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+    "bytes": 46828,
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639",
+    "version": "66306:33208049:46828:1794003951175308589:1794003951175308589",
+    "infoOperation": "cb2ea67ea2179e98073723441b12ca6f828ac09d9fe2842d779424e13ad9420b",
+    "infoNative": {
+      "blob": "570abe6a64a14c8f702a61cd517093f761834c9a",
+      "bytes": 468,
+      "sha256": "be12f8bb38e926c8d81e0d1ba275e4883c613e99ff8bce0a8d63cd6ffe598601"
+    }
+  },
+  "budgets": {
+    "statusCalls": 8,
+    "pages": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576,
+    "bodyBytes": 46828
+  },
+  "delta": {
+    "existingInfoToBodyHunks": 6,
+    "donorBindingHunks": 5,
+    "donorLiterals": 17
+  },
+  "conditions": {
+    "attachExistingSlot": true,
+    "noInitialize": true,
+    "decodedOriginalBodyWholeArchiveBeforeJSONParse": true,
+    "oneCallOrFuture": true,
+    "noOtherPathOrRange": true,
+    "noProcessStart": true,
+    "noNewCargo": true
+  },
+  "qualification": {
+    "sourceChecks": 52,
+    "product280Passed": false,
+    "originalReleaseSuccessPreserved": true,
+    "oldGitUnknownPreserved": true,
+    "actualErrorPhaseNotYetRead": true
+  },
+  "sequence": [
+    "Whole exact GO then gfRun authorize_stage_result_body against current slot.",
+    "gfRun prepare exact bound binary request; external whole arm then model boundary.",
+    "invoke once; original SDK whole before accept.",
+    "Only original returned operation, max8 status and128 contiguous8192 pages.",
+    "close_observer; independently archive decoded stage_result_body_original whole and verify actual46828/SHA before JSON semantic parse.",
+    "Release original observer and report concrete failure; never rerun Cargo."
+  ],
+  "recompute": "Evaluate pure_helpers.js + strict_diff.js + SOURCE-VERIFIER.js, then verify576BuildBodySource(make576BuildBodyInput(texts))."
+}

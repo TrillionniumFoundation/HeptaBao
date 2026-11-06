@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.root.current576-failed-build-single-body.GO.r1",
+  "authorization": "GO",
+  "issuedAtUTC": "2026-11-06 22:41:20 UTC",
+  "scope": "build_result_binary_read_only",
+  "original_job": "1a1b2d90976-fc05-7fff",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "info_operation": "cb2ea67ea2179e98073723441b12ca6f828ac09d9fe2842d779424e13ad9420b",
+  "maximum_binary_read_starts": 1,
+  "exact_request": {
+    "blob": "201efd07a150f7e3aa7384209cefa3368348fb5b",
+    "bytes": 336,
+    "sha256": "de1143488f34b5a05be74cc64bb187166f9c1c0db56bf179ba2b2ca420f36fde"
+  },
+  "journal": {
+    "blob": "b9b8de99e474bcdb5fc6740ad7b8a1ea90d89ef6",
+    "bytes": 30537,
+    "sha256": "24cbdb68aa9ed8be75de923c4832fef8aa77a2485d02a97196d798d9dbfbccdb"
+  },
+  "sourceTree": "6b36041bda37330ea8cad409aeed9934bbb06041",
+  "rootSourceReview": {
+    "blob": "c84bf777927fa8b6ee5e3ea6432b797efdbf9eec",
+    "bytes": 1792,
+    "sha256": "45715c847640e973373f3a58442bcc14f99569715f4a10906c9565f0e5af517f"
+  },
+  "existingClosedState": {
+    "blob": "a96aa9d874ca89a3116602db0b9d2ca1d7ad177b",
+    "bytes": 295135,
+    "sha256": "69e9e646f8bb4a46a7692b8be1e8de08e1054e55ca191230a31330950c838037"
+  },
+  "expectedReport": {
+    "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+    "bytes": 46828,
+    "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639",
+    "version": "66306:33208049:46828:1794003951175308589:1794003951175308589",
+    "infoOperation": "cb2ea67ea2179e98073723441b12ca6f828ac09d9fe2842d779424e13ad9420b",
+    "infoNative": {
+      "blob": "570abe6a64a14c8f702a61cd517093f761834c9a",
+      "bytes": 468,
+      "sha256": "be12f8bb38e926c8d81e0d1ba275e4883c613e99ff8bce0a8d63cd6ffe598601"
+    }
+  },
+  "budgets": {
+    "statusCalls": 8,
+    "pages": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576,
+    "bodyBytes": 46828
+  },
+  "conditions": {
+    "attachExistingSlot": true,
+    "noInitialize": true,
+    "decodedOriginalBodyWholeArchiveBeforeJSONParse": true,
+    "oneCallOrFuture": true,
+    "noOtherPathOrRange": true,
+    "noProcessStart": true,
+    "noNewCargo": true
+  },
+  "durableProtocol": {
+    "existingSlotAttachOnly": true,
+    "old46Calls15ObserversPreserved": true,
+    "wholeIntentAndArmedBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "eachNewIntentUsesBodyGO": true,
+    "originalSDKWholeBeforeParse": true,
+    "oneOriginalReturnedOperationOnly": true,
+    "wholePayloadThenInactiveClosure": true,
+    "decodedBodyWholeArchiveBeforeSemanticParse": true
+  },
+  "onFailure": "Preserve original failure or UNKNOWN. No replay, replacement job, new key, metadata refresh, widened range, or another file. No Cargo rerun.",
+  "currentProduct": {
+    "normalReleaseObserved": true,
+    "whole280Qualified": false,
+    "actualFailureCause": null
+  },
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

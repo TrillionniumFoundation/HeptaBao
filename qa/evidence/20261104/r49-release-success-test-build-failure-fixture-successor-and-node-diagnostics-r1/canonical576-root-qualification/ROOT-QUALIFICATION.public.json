@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.root.C576-canonical-bundle-transport-qualification.r1",
+  "minimalWholeTree": "57710cd090df482811fc168953640b3fa333d004",
+  "originalINFOWholeTree": "1d737927115b7dd2469fb8f54598d58cf5f3731b",
+  "originalBodyWholeTransportTree": "d8635238d1160e1145fb50ca241583c9d26bd60e",
+  "bodyGO": {
+    "blob": "21a12ed25f48100c83ec290250c1f1eb21e841c5",
+    "bytes": 3435,
+    "sha256": "a7533d13e6d66e8d2964d11a0d2fb5974108992f78263e1aeacf69df54634ef3"
+  },
+  "checks": {
+    "binaryWholeBytes": true,
+    "binaryWholeSHA": true,
+    "canonicalBase64Format": true,
+    "encodedPin": true,
+    "headerV2": true,
+    "solePrerequisite": true,
+    "soleHead": true,
+    "headerSHA": true,
+    "uniqueBodyAdmission": true,
+    "originalStatusClosed": true,
+    "payloadWholePin": true,
+    "payloadComplete": true,
+    "bodyExtent": true,
+    "bodyVersionAndPath": true,
+    "bodyExactEncodedAndSHA": true,
+    "transportChain": true,
+    "closedLane": true,
+    "priorInfoNative": true,
+    "notMacPublication": true
+  },
+  "qualified": true,
+  "binaryBytes": 5766,
+  "binarySHA256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+  "encodedFile": {
+    "blob": "80317c9867cd6485b4a308e9d512de2d99d02c12",
+    "bytes": 7689,
+    "sha256": "bdbfecb000ed9119a5de46bd1e5ed5d986bb453a22f0fba841dc7cedb6571797"
+  },
+  "transportManifest": {
+    "blob": "9fbaf8430240c8b767e40bd17b9b1ae932ea93e5",
+    "bytes": 869,
+    "sha256": "0f1d23c49bdf8e9254b84ab95f4bf7192c46d710bb8dc30d1392685b126f2290"
+  },
+  "version": "66306:31358148:5766:1794000539740776688:1794000539740776688",
+  "full9": [
+    "66306",
+    "31358148",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "5766",
+    "1794000539740776688",
+    "1794000539740776688"
+  ],
+  "header": {
+    "version": 2,
+    "prerequisites": [
+      "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    ],
+    "heads": [
+      [
+        "5767739cd25e458ac052dc8d384019bab8688ae0",
+        "HEAD"
+      ]
+    ],
+    "header_sha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9"
+  },
+  "originalBodyOperation": "66156671a53584aade1ab361827dcd7714539359fcfc964e75af16d58fb3e4fc",
+  "originalINFOOperation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+  "CReleased": true,
+  "MacStageQualified": false,
+  "buildQualified": false
+}

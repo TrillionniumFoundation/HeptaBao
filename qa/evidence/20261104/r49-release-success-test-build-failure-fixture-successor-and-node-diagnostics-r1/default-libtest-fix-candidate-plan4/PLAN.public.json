@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.root.default-libtest-fix-candidate-tree-plan.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "baseCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "baseTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "baseIndexSHA256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+  "sourceProposalTree": "2abb0dfb23270a94e882c2b0a4d7a6efe61cd039",
+  "sourceOnly": true,
+  "expectedTree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+  "leafCount": 3932,
+  "trackedBytes": 62553956,
+  "fullIndexSHA256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+  "historyCount": 3770,
+  "changes": [
+    {
+      "path": "crates/heptabao-server/src/ha_request_deadline_tests.rs",
+      "before": {
+        "blob": "244a172794577d50bf52bbb986448f171d905fae",
+        "bytes": 4576,
+        "sha256": "5b1d932e1ca9ab49226cc9459ca1cadb8cf147abab797ed5d8c3f0dd876828cd"
+      },
+      "after": {
+        "blob": "432a89db6d9702bd5448134dadf28ad7f9bd654c",
+        "bytes": 4767,
+        "sha256": "d57744707e5179ae16725669f6ba8d421751dfdbebbf26296268692f610de0f1"
+      },
+      "forward": {
+        "blob": "a3440d0bb6e32525945bf6ff30dae01a41caaa9a",
+        "bytes": 515,
+        "sha256": "10ddc625f8f436df2358b1d2fee1366e41509cc13b91535bb81d0b7623401535"
+      },
+      "reverse": {
+        "blob": "4eec8c828849e9a81786cf9ee8de4893c574ddf6",
+        "bytes": 515,
+        "sha256": "63a8589da16c1e2a1780359bd484cbde76becf7da7babcf0a4cc807820f957e0"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_test_support.rs",
+      "before": {
+        "blob": "e6f1031dae7db7c6c09e63305d0a06f047437005",
+        "bytes": 8120,
+        "sha256": "41bd4c12c7fb55979c4f3bde6316353a0d5f6d510dd62f9650d8b1d64188e08d"
+      },
+      "after": {
+        "blob": "e861ef9860f25bb250791df7e493fd4a1fb49f63",
+        "bytes": 8343,
+        "sha256": "9ed84d5ace763a9746fc7f932de9c6c1d0d9a7fa8d2eb595eebc3fe70ad2eb62"
+      },
+      "forward": {
+        "blob": "dfecb0116ef1d37e8b9508a138e5e2ce6a09759b",
+        "bytes": 598,
+        "sha256": "1d7797cbe5abf130c8aeae15e99e558c057a2311cd7d223355d16bd33bbfbe22"
+      },
+      "reverse": {
+        "blob": "451549710e41d30202b3c05699cc9e1ef2379939",
+        "bytes": 598,
+        "sha256": "970a74fa995d6dfcf9d3cd81b33407f232da6704d87c4af7b20781eba14ffef5"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+      "before": {
+        "blob": "0c51b759c257d836adf521bea3d75b90af0b301f",
+        "bytes": 16080,
+        "sha256": "c0cdbd2a5951991b55ae2a93c22c6585c708f280c56f89d6ff105c0fd808448e"
+      },
+      "after": {
+        "blob": "7ca123003ff5740325c11b90dbb8445ba8d5455e",
+        "bytes": 16082,
+        "sha256": "01ee81d4a14cb93911fe596e37476e952acad02b6f0c31ae58a9a1bcdd4399ae"
+      },
+      "forward": {
+        "blob": "b0d19d199ebc63eb17ac03a1709d75c36deaad56",
+        "bytes": 832,
+        "sha256": "834ff89748c8de0e768ea8b603a4f29ee1afb7f509a224c6bcf6f22da38fa85e"
+      },
+      "reverse": {
+        "blob": "bf546c11db5f5c642eda8408933ae73932e2072a",
+        "bytes": 832,
+        "sha256": "f3a81b168b8e5b2139ef5a6bbbc6233d48b2e641ccd28f88059d5bfe0f8c35b0"
+      },
+      "hunks": 2
+    }
+  ],
+  "unchangedLeafCount": 3929,
+  "baseTreeMerkleNodes": 358,
+  "expectedTreeMerkleNodes": 358,
+  "testPlanUnchanged": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "productionSourceChanged": false,
+  "peerReviewPending": false,
+  "treeCreated": false,
+  "commitCreated": false,
+  "branchCreated": false,
+  "peerReviewTree": "0960ed97f7e411c99aeb59c56cfc95ab0cf1ec81",
+  "peerReview": {
+    "blob": "1d03979f939af57267b32340c6d38f0f548c5eef",
+    "bytes": 5690,
+    "sha256": "1577cc21731a932a7b255caf709c888eb3efeb393476e5bbe44480abe23d9508"
+  },
+  "peerChecks": 30,
+  "branch": "codex/heptabao-test-fixture-f02dd113-20261106"
+}

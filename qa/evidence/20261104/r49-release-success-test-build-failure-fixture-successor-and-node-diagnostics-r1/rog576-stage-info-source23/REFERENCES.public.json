@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.combined5767739.stage-report-info-references.r1",
+  "source26": "f852b1189074d42c661b52e44d21fba0d0fc71cb",
+  "stageGO": {
+    "blob": "a1e57addcddaa6f7162395096b3999aa7dfdc6c1",
+    "bytes": 4393,
+    "sha256": "a5fab9a4db704ed39033877cb834041f170e883a47d3a99aa8ade86950d5b00b"
+  },
+  "stageExactRequest": {
+    "blob": "564433fa36fedb91ea45d694685cdb2c9067cc88",
+    "bytes": 112620,
+    "sha256": "1599f63a32179a77a2f8693596cc185217efeffa0a4836f5ca608be989c75c04"
+  },
+  "currentStageJournal": {
+    "blob": "044505d0d1d6fdd977d437d4f4e829384ac3f5f7",
+    "bytes": 19047,
+    "sha256": "e1fb2de89c77a5a58807b239b26fc733b89f535d9498a8640f41a9ecbfec76a0"
+  },
+  "donorInfoJournal": {
+    "blob": "eeb0a097f38ad9892e66e478f47b2b067680c597",
+    "bytes": 23858,
+    "sha256": "0742497cb574b1c352177072c4356a50d3e6a86422521f993fe7a27ee4415c64"
+  },
+  "donorInfoGO": {
+    "blob": "157730697c7d1b6891737741c8a1c2a0373dc49d",
+    "bytes": 11643,
+    "sha256": "a3108cd25bada3626689da34fe5428a204acc3fd0c905b5eeb5c47ebd1c68779"
+  },
+  "actualFullPacket": "ba86f693820f5758553c45716ab9975ee00082f4",
+  "actualReleasePacket": "a0cfc7dcb54f90b07684d63a55e58a90b4c3feed",
+  "sourceCandidateCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "sourceCandidateTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "donor_actual_qualification_not_inherited": true,
+  "readiness_for_new_metadata": false,
+  "all_native_calls_in_this_source_task": 0
+}

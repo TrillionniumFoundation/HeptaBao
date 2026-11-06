@@ -1,0 +1,17 @@
+{
+  "entry": "verify576CanonicalInfoSource",
+  "evaluate": [
+    "pure_helpers.original.js",
+    "strict_diff.original.js",
+    "verifier.source.js"
+  ],
+  "input": {
+    "before": "journal.before.js",
+    "after": "journal.source.js",
+    "diff": "journal.strict.diff",
+    "requestRaw": "request.exact.json",
+    "reportRaw": "stage-report.original.json",
+    "plan": "PLAN.public.json"
+  },
+  "scope": "Pure source comparison only. Journal/Native/author baseline checker not executed."
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.source-generation-history.v1",
+  "error": {
+    "stage": "pure_strict_diff",
+    "message": "LF required",
+    "cause": "Existing immutable 4113-byte binder has no terminal LF; strictDiff requires both inputs to end with LF.",
+    "sourceCandidateChanged": false,
+    "NativeCalls": 0,
+    "GitMutations": 0
+  },
+  "resolution": "The delta uses a separately pinned LF-normalized before view, exactly original + one LF; immutable original is retained. No Python or candidate function was executed."
+}

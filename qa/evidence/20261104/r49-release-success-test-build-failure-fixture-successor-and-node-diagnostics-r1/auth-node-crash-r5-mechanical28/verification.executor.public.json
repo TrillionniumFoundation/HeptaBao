@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.auth-crash-r5-source-supplement-executor.r1",
+  "sourceCore": "e90f52817cbcf4f41a5c7b9094e386334744f7bc",
+  "interface": "verifyFixedCrashR5Source(files, publicProbeSource)",
+  "verifier": {
+    "blob": "0cd8a2c3007edf156926a8c907a4b2475c5da009",
+    "bytes": 9485,
+    "sha256": "e5d8550b57526051392c42e8ed6097601760e09ba9b91576c9d195a0c52f3d04"
+  },
+  "result": {
+    "blob": "f89df9afae141446715051b1ca3c3863ec1911b9",
+    "bytes": 7830,
+    "sha256": "d4dd0b4b3c00601eeec729693f3020eb0043ce3374a1c5b6f3b110e3befcb9c5"
+  },
+  "actualChecks": 93,
+  "helpers": [
+    {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "blob": "b7bf282bd4029dd599946752a9ad544a28ce14d6",
+      "bytes": 2034,
+      "sha256": "4b08bfdde9075267947758067627fde5e561f11b40ad0e3ea3f6c13afa376916"
+    }
+  ],
+  "publicProbeSource": {
+    "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+    "bytes": 150406,
+    "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+  },
+  "inputFileMap": [
+    "source.before.original.py",
+    "source.py",
+    "source.forward.diff",
+    "source.inverse.diff",
+    "request.exact.json",
+    "journal.before.original.js",
+    "journal.js",
+    "journal.forward.diff",
+    "journal.inverse.diff",
+    "CONTRACT.public.json",
+    "prior-R4.stdout.original.json",
+    "prior-R4.release.original.json",
+    "public-node-startup.original.mjs",
+    "public-probe.actual.stdout.original.json",
+    "PUBLIC_INPUTS_BINDING.public.json",
+    "README.md",
+    "source-core.manifest.original.json"
+  ],
+  "rootAlreadyIndependentlyReviewedCore": true,
+  "executionScope": "previously completed pure V8 source/provenance comparison, before R5 Native invocation; no Python/projector execution",
+  "newNativeCalls": 0
+}

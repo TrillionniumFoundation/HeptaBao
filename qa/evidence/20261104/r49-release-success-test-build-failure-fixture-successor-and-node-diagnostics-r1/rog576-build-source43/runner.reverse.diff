@@ -1,0 +1,91 @@
+--- a/runner.py
++++ b/runner.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Build one admitted combined source and run 252 unique cases in 280 profile instances."""
++"""Build one admitted combined source and run 246 unique cases in 268 profile instances."""
+ from pathlib import Path
+ import argparse
+ import hashlib
+@@ -27,8 +27,8 @@
+ OUTER_UNTIL = args.outer_started_monotonic + ORIGINAL_OUTER_SECONDS
+ assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before runner'
+ source, output = Path(args.source), Path(args.output)
+-DIAGNOSTIC_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
+-DIAGNOSTIC_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
++DIAGNOSTIC_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
++DIAGNOSTIC_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'
+ children = []
+ protected = 0
+ pending_signal = None
+@@ -103,7 +103,7 @@
+ 
+ def fresh_target_pin():
+     path = Path(args.target)
+-    assert path == Path('/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1')
++    assert path == Path('/home/qian-qi/hb-02b90762-controls-20261106-r2/cargo-target-r1')
+     assert path.parent == Path(__file__).resolve(strict=True).parent
+     assert path.resolve(strict=True) == path
+     info = path.lstat()
+@@ -343,13 +343,13 @@
+ # Physical commit is pinned by the reviewed launcher and the clean-tree freeze below.
+ assert isinstance(DIAGNOSTIC_COMMIT, str) and isinstance(DIAGNOSTIC_TREE, str), 'diagnostic source identity unresolved'
+ assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE
+-assert args.groups_sha256 == '617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df'
++assert args.groups_sha256 == '7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786'
+ assert sha(args.groups) == args.groups_sha256
+ groups = json.loads(Path(args.groups).read_text())
+ PROFILE_CRATES = {'file': 'heptabao-server', 'default': 'heptabao-server',
+                   'ha-native-v6-peer-ingress': 'heptabao-ha-service'}
+ EXPECTED_GROUP_SHAPES = [
+-    ("native-jwt-pki-file28", "file", 28), ("native-jwt-pki-default28", "default", 28),
++    ("native-jwt-pki-file22", "file", 22), ("native-jwt-pki-default22", "default", 22),
+     ("legacy-jwt-default67", "default", 67), ("native-auth-identity-default69", "default", 69),
+     ("snapshot-body10", "ha-native-v6-peer-ingress", 10), ("snapshot-peer7", "ha-native-v6-peer-ingress", 7),
+     ("snapshot-actor2", "default", 2), ("snapshot-wire4", "default", 4),
+@@ -367,10 +367,10 @@
+     assert all(isinstance(n, str) and n for n in group['tests'])
+     assert group['label'].replace('-', '').replace('_', '').isalnum()
+     all_cases.extend((PROFILE_CRATES[group['libtest_profile']], n) for n in group['tests'])
+-assert groups[0]['tests'] == groups[1]['tests'], 'same twenty-eight source names in both feature profiles'
+-assert len(all_cases) == 280 and len(set(all_cases)) == 252
+-assert sum(len(g['tests']) for g in groups[:4]) == 192
+-assert len({n for g in groups[:4] for n in g['tests']}) == 164
++assert groups[0]['tests'] == groups[1]['tests'], 'same twenty-two source names in both feature profiles'
++assert len(all_cases) == 268 and len(set(all_cases)) == 246
++assert sum(len(g['tests']) for g in groups[:4]) == 180
++assert len({n for g in groups[:4] for n in g['tests']}) == 158
+ assert sum(len(g['tests']) for g in groups[4:9]) == 27
+ assert sum(len(g['tests']) for g in groups[9:]) == 61
+ assert not output.exists() and not output.is_symlink()
+@@ -379,13 +379,12 @@
+ output.mkdir(mode=0o700)
+ intent = {'schema': 'heptabao.combined-snapshot-jwt-pki-build-regression.v1', 'source_commit': args.commit,
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+-          'profile': profile, 'groups': groups, 'test_count': 252,
++          'profile': profile, 'groups': groups, 'test_count': 246,
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),
+           'production_changed': False, 'started_ns': time.time_ns(),
+-          'selected_unique_test_total': 252, 'selected_profile_instance_total': 280,
++          'selected_unique_test_total': 246, 'selected_profile_instance_total': 268,
+           'baseline_c_unique_test_total': 149, 'baseline_c_profile_instance_total': 166,
+           'jwt_policy_delta_unique_test_total': 9, 'jwt_policy_delta_profile_instance_total': 14,
+-           'jwt_batch_delta_unique_test_total': 6, 'jwt_batch_delta_profile_instance_total': 12,
+           'baseline_c_added_unique_test_total': 17, 'baseline_c_existing_unique_test_total': 132,
+           'baseline_native_jwt_pki_fixture_backend': 'FileV6',
+           'snapshot_low_level_component_total': 23, 'snapshot_service_regression_total': 4,
+@@ -599,11 +598,11 @@
+     result['release_artifacts_unchanged'] = all(sha(v['path']) == v['sha256'] for v in release_artifacts.values())
+     result['source_unchanged'] = freeze() == before
+     actual_cases = [(family['crate'], name) for family in result['group_results'] for name in family['actual_test_names']]
+-    assert len(actual_cases) == 280 and len(set(actual_cases)) == 252
++    assert len(actual_cases) == 268 and len(set(actual_cases)) == 246
+     assert result['binaries_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
+     assert len(result['group_results']) == 18 and all(g['status'] == 'passed' for g in result['group_results'])
+-    result['actual_unique_test_total'] = 252
+-    result['actual_profile_instance_total'] = 280
++    result['actual_unique_test_total'] = 246
++    result['actual_profile_instance_total'] = 268
+     result['status'] = 'passed'
+ except BaseException as error:
+     result['failure_type'] = type(error).__name__

@@ -1,0 +1,12 @@
+{
+  "stage": "minimal-release pure assembly before any write/archive",
+  "originalError": "Error: authority incomplete at exec_main.mjs:7:188",
+  "incorrectPredicates": [
+    "a.value.log_bytes.stdout!==19642",
+    "a.value.log_bytes.stderr!==0"
+  ],
+  "correction": "actual Native schema uses log_bytes.<stream>.seen and .stored; require both exact",
+  "nativeCalls": 0,
+  "gitMutationCalls": 0,
+  "originalsChanged": false
+}

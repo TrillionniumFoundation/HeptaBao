@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.root.fixed-log-stream-help-source-review.r1",
+  "issuedAtUTC": "2026-11-06 23:07:20 UTC",
+  "sourceTree": "2e11a356f00cac7514a3de427e29c1de319b50b9",
+  "whole": {
+    "tree": "2e11a356f00cac7514a3de427e29c1de319b50b9",
+    "files": 17,
+    "bytes": 276032,
+    "merkle": {
+      "root_sha": "2e11a356f00cac7514a3de427e29c1de319b50b9",
+      "trees_verified": 1,
+      "leaf_count": 17
+    },
+    "whole": true
+  },
+  "sourceChecks": 43,
+  "mechanicalSourceHunks": 5,
+  "journalHunks": 2,
+  "unchangedOwnerAndFinally": true,
+  "onlyChildArgv": [
+    "/usr/bin/log",
+    "help",
+    "stream"
+  ],
+  "previousMappingNegativeRootChecks": 359,
+  "previousALaneReleased": true,
+  "logQueryAuthorized": false,
+  "NodeAuthorized": false,
+  "NativeCallsPerformed": 0
+}

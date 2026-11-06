@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.public-node-ignition-fixed-log-original-release.r1",
+  "host": "mac",
+  "job": "1a1b2e40a05-fc05-8023",
+  "GO": {
+    "blob": "f8c0b5d7c79d68a2f5acd66802e8967f7036ee25",
+    "bytes": 10350,
+    "sha256": "1af9964a574a0816b67ea7d31aa3ad6b329f7b0b057b65ef8bd32781e750d128"
+  },
+  "source": {
+    "blob": "f26070651527caa4a109b0d79f3b9933eaf16888",
+    "bytes": 59178,
+    "sha256": "f9b881531b251b82af5ac391496c42acccf0d693586e1b4884c3514c112466ac"
+  },
+  "request": {
+    "blob": "020e4305593675ee33832732285fe040ac8ca8a4",
+    "bytes": 60250,
+    "sha256": "49db683737213619243b41bcc6fa3c6fb174b56fdfa5e8cb377d9d5ef0d0d14f"
+  },
+  "journal": {
+    "blob": "7f26713584e287fc3b8bc5a7bec0d74ce366fd57",
+    "bytes": 19050,
+    "sha256": "28d6e2f89d9daeb008be409cd14c8d367c2649b21558810cb9a472833588e4f6"
+  },
+  "originalCallCount": 9,
+  "originalObserverCount": 2,
+  "immutablePageCount": 4,
+  "originalAuthority": {
+    "blob": "3262a1e121a40ad0fd852428b4e22553340e3c14",
+    "bytes": 731,
+    "sha256": "75090953912dfc555500b57edc5e9b0b5045566badb8632c7cd4c4fa65c31d07"
+  },
+  "stdout": {
+    "blob": "5966bedd4adce3e0dc12ac3d26c1280ab6c97c22",
+    "bytes": 5588,
+    "sha256": "71594fae5203a35c10c54de55e0ea04f821db4616935ae0db591fccc6b716f09"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "authority": {
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "stdoutSeen": 5588,
+    "stdoutStored": 5588,
+    "stderrSeen": 0,
+    "stderrStored": 0,
+    "stdoutEof": true,
+    "stderrEof": true
+  },
+  "originalObservers": [
+    {
+      "id": "fcf4a8f1c3d12c8a58a4ef6d378ac1c099cadc0edbf223ecb6fc4767374055aa",
+      "tool": "process_status",
+      "payload": {
+        "blob": "4ffc5e505d6e9cc98a877142839efd7770342f06",
+        "bytes": 910,
+        "sha256": "ef0e9b59c8ea63f1b32186c61d06a7010193491f3cccb296c72ba61edaedfb75"
+      },
+      "payloadTree": "d2da35ee5386e1e3ebfb9e74606c969c116f9b07",
+      "nativeText": {
+        "blob": "3262a1e121a40ad0fd852428b4e22553340e3c14",
+        "bytes": 731,
+        "sha256": "75090953912dfc555500b57edc5e9b0b5045566badb8632c7cd4c4fa65c31d07"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "3cca0580f552e0745a50bd09ec0966efc845eadee26364dbfa1533bfc3cc39e9",
+      "tool": "process_read",
+      "payload": {
+        "blob": "1f971b43dcf9f0b19a394c0c49d55bd75ca2ef42",
+        "bytes": 19041,
+        "sha256": "f8ea75e9ad0a12d1430e7d5ec907f630aa3cd3e01c15eb99e7ce81a7d7d23869"
+      },
+      "payloadTree": "a9abfe204ab743aaf3a3ad1ff8f7ba5b906c9514",
+      "nativeText": {
+        "blob": "ae27d3d54fa0f176b706be52ccd3bf72ee95e2fd",
+        "bytes": 17692,
+        "sha256": "f6ff4fe277f95d1225396d63815131eb482c246b48aff5aea82953fe3a4f70a5"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "originalStatuses": [
+    {
+      "callKey": "node-ignition-log-r1-status-01-poll-01",
+      "blob": "5bf2a2ad202d16ba4689f277f7a22b68822b9ecb",
+      "bytes": 805,
+      "sha256": "270968c91f4d4d0bf034949649c308e23e6bd8af05ebae9f8c916fd648a69146"
+    },
+    {
+      "callKey": "node-ignition-log-r1-streams-01-poll-01",
+      "blob": "4d89e309c9cbba9a58fd0376804997e8d8b4ad0b",
+      "bytes": 803,
+      "sha256": "ac49e3a48a12f8a8a7c236c30ed55eab8aa232889c82c9d63bea9df97fb9ba28"
+    }
+  ],
+  "currentNativeState": {
+    "activeCalls": 0,
+    "activeFutures": 0,
+    "pendingCall": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "nextStdout": 5588,
+    "nextStderr": 0,
+    "laneReleased": true,
+    "originalStartNotReplayed": true
+  },
+  "actualDiagnostic": {
+    "ok": true,
+    "outcomeUnknown": false,
+    "originalFixedPid": 51494,
+    "windowMilliseconds": 2000,
+    "observedObjects": 1,
+    "admittedEvents": 0,
+    "rejectedUnknownObjects": 1,
+    "knownFieldsAllAbsent": true,
+    "logChildRawStdoutBytes": 25,
+    "logChildRawStderrBytes": 0,
+    "rawChildTextOrHashExported": false,
+    "unknownObjectMeaning": "Not classified; not asserted to be a header/statistics/harmless record or proof of absence.",
+    "causeQualified": false,
+    "crashPathQualified": false,
+    "businessProgressQualified": false
+  },
+  "ownClosure": {
+    "applicationDescriptors": 4,
+    "allApplicationDescriptorsClosed": true,
+    "allOwnedLogChildrenClosed": true,
+    "directChildPid": 5094,
+    "directChildReaped": true,
+    "retainedExit": {
+      "code": 1,
+      "pid": 5094,
+      "signo": 20,
+      "status": 0
+    },
+    "groupEmptyAfterReap": true,
+    "childKnownExitCode": 0,
+    "childOutcomeUnknown": false,
+    "commandUnknownCount": 0,
+    "closeErrors": [],
+    "signalRestoreErrors": [],
+    "pendingSignal": null,
+    "deadlineMetAfterClosure": true,
+    "elapsedSeconds": 1.2717639999464154,
+    "budget": {
+      "codeBytesReturned": 807536,
+      "codeReadCalls": 14,
+      "metadata": 40
+    }
+  },
+  "historicalManagedOrHelperUnknownUpgraded": false,
+  "NodeOrSdkOrCredentialOrBusinessRerun": false,
+  "allAuthorizationConsumed": true,
+  "additionalNativeAuthorized": false
+}

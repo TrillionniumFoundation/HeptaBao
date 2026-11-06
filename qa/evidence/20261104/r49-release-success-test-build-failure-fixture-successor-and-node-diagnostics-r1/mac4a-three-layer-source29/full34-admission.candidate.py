@@ -1,0 +1,79 @@
+def normal61_admission():
+ need(BINDING_READY is True,'normal61_and_local_prerequisite_bindings_unresolved')
+ need(all(isinstance(x,str) and len(x)==64 and all(c in '0123456789abcdef' for c in x)
+          for x in (NORMAL61_SHA,NORMAL_NATIVE_SHA,NORMAL_RELEASE_SHA)),
+      'exact_actual_provenance_pins_required')
+ actual=PRODUCT/'result.public.json'
+ need(sha(actual)==NORMAL61_SHA,'combined_normal61_whole_pin')
+ n=json.loads(actual.read_bytes())
+ need(n.get('schema')=='heptabao.mac-normal61-native-jwt-pki28-exact-tests.v1'
+      and n.get('source_commit')==HEAD and n.get('source_tree')==TREE
+      and n.get('controller_sha256')=='9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22'
+      and n.get('status')=='passed' and n.get('test_count')==44
+      and n.get('selected_test_total')==117 and n.get('selected_unique_test_total')==89
+      and n.get('original_61_test_total')==61
+      and n.get('original_61_status')=='passed_before_combined_cleanup'
+      and n.get('normal_default_features') is True
+      and n.get('fixture_features')==[] and n.get('original_44_status')=='passed'
+      and n.get('original_44_and_ingress_7_status')=='passed'
+      and n.get('original_60_status')=='passed' and n.get('original_60_test_total')==60
+      and n.get('additional_test_counts')=={'ingress_observer':7,'cold_h2':9,'same_root_publication':1}
+      and n.get('source_unchanged') is True and n.get('binary_unchanged') is True
+      and n.get('release_artifacts_unchanged') is True,'exact_current_normal117_qualification')
+ for key,names in (
+     ('ingress_observer_regression',["service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result","ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata","ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates","ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results","ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"]),
+     ('cold_h2_regression',["service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity","service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results","service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file","http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context","http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work","http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result","http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture","http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context","http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"])):
+  group=n.get(key,{})
+  need(group.get('status')=='passed' and group.get('test_count')==len(names)
+       and group.get('actual_test_names')==names and group.get('clamped_to_original_outer_deadline') is True,
+       'exact_separate_normal_regression')
+ same=n.get('same_root_publication_regression',{})
+ need(same.get('schema')=='heptabao.normal-same-root-publication-regression.v1'
+      and same.get('status')=='passed' and same.get('test_count')==1
+      and same.get('actual_test_names')==['service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors']
+      and same.get('original_44_7_9_denominators_unchanged') is True
+      and same.get('clamped_to_original_outer_deadline') is True
+      and same.get('new_total_group_cap_seconds')==600,
+      'independent_same_root_publication_regression')
+ need(n.get('groups_sha256')=='3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d'
+      and n.get('additional_native_profile_executions')==56
+      and n.get('additional_file_libtest_build_cap_seconds')==1800
+      and n.get('additional_native_group_cap_seconds')==600
+      and n.get('default_profile_reuses_this_run_normal_libtest') is True
+      and n.get('original_outer_seconds')==8280,'current_native28_selection_and_budget')
+ expected_groups=json.loads("[{\"label\":\"native-jwt-pki-file28\",\"libtest_profile\":\"file\",\"tests\":[\"service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_rejects_remote_and_bad_signature_without_candidate_delta\",\"service::native_auth::jwt_tests::native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list\",\"service::native_auth::jwt_tests::native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor\",\"service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh\",\"service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic\",\"service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root\",\"service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback\",\"service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required\",\"service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound\",\"service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof\",\"service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation\",\"service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes\",\"service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions\",\"service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph\",\"service::native_auth::jwt_tests::native_jwt_empty_role_policies_and_no_default_flag_survive_real_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_no_default_policy_weak_bool_updates_are_atomic_and_persist\",\"service::native_auth::jwt_tests::native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactively_renewed\",\"service::native_auth::pki_tests::native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold\",\"service::native_auth::pki_tests::native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold\",\"service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state\",\"service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity\",\"service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits\",\"service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root\"],\"runtime_seconds\":600},{\"label\":\"native-jwt-pki-default28\",\"libtest_profile\":\"default\",\"tests\":[\"service::native_auth::jwt_tests::native_jwt_local_service_token_identity_renewal_and_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_rejects_remote_and_bad_signature_without_candidate_delta\",\"service::native_auth::jwt_tests::native_jwt_role_management_uses_source_create_update_and_delete_after_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_collection_read_is_authorized_before_unsupported_and_list_stays_list\",\"service::native_auth::jwt_tests::native_jwt_config_update_without_sudo_persists_and_rejects_read_only_actor\",\"service::native_auth::jwt_tests::native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh\",\"service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic\",\"service::native_auth::jwt_tests::native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root\",\"service::native_auth::jwt_tests::native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback\",\"service::native_auth::jwt_tests::native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required\",\"service::native_auth::jwt_tests::native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound\",\"service::native_auth::jwt_tests::native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof\",\"service::native_auth::jwt_tests::native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation\",\"service::native_auth::jwt_tests::native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes\",\"service::native_auth::jwt_tests::native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions\",\"service::native_auth::jwt_tests::native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph\",\"service::native_auth::jwt_tests::native_jwt_empty_role_policies_and_no_default_flag_survive_real_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_no_default_policy_weak_bool_updates_are_atomic_and_persist\",\"service::native_auth::jwt_tests::native_jwt_root_role_configuration_is_stored_but_never_issued_or_retroactively_renewed\",\"service::native_auth::pki_tests::native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold\",\"service::native_auth::pki_tests::native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold\",\"service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state\",\"service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity\",\"service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits\",\"service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen\",\"service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root\"],\"runtime_seconds\":600}]")
+ need(n.get('native_jwt_pki_groups')==expected_groups,'exact_native28_names_both_profiles')
+ native=n.get('native_jwt_pki',{})
+ need(native.get('status')=='passed' and native.get('selected_unique_tests')==28
+      and native.get('selected_profile_executions')==56
+      and native.get('default_reuses_same_run_verified_libtest') is True
+      and native.get('all_retained_binaries_unchanged') is True,'complete_native28_actual_success')
+ build=native.get('file_build',{})
+ need(build.get('exit_code')==0 and build.get('timed_out') is False,'native_file_libtest_actual_build')
+ binaries=native.get('binaries',{})
+ need(set(binaries)=={'default','file'} and binaries['default']==n.get('binary'),
+      'native_default_is_this_same_run_original61_libtest')
+ need(sorted(binaries['default'].get('features',[]))==['default','native-v6-ha','native-v6-storage']
+      and sorted(binaries['file'].get('features',[]))==['native-v6-storage']
+      and binaries['file'].get('profile')==binaries['default'].get('profile'),
+      'native_default_and_file_feature_profile_separation')
+ actual_groups=native.get('groups')
+ need(isinstance(actual_groups,list) and len(actual_groups)==2,'two_actual_native28_groups')
+ for expected,group in zip(expected_groups,actual_groups):
+  need(group.get('label')==expected['label'] and group.get('profile')==expected['libtest_profile']
+       and group.get('status')=='passed' and group.get('actual_test_names')==expected['tests'],
+       'native_group_exact_profile_and_28_names')
+  rows=group.get('tests')
+  need(isinstance(rows,list) and len(rows)==28,'native28_actual_exact_row_count')
+  for expected_name,row in zip(expected['tests'],rows):
+   listing=row.get('listing',{});test=row.get('tests',{})
+   need(row.get('name')==expected_name and listing.get('exit_code')==0
+        and listing.get('timed_out') is False and test.get('exit_code')==0
+        and test.get('timed_out') is False,'native28_each_exact_listing_and_test_passed')
+ cleanup=n.get('cleanup')
+ need(isinstance(cleanup,list) and cleanup and all(
+      row.get('exit_code')==0 and row.get('direct_child_reaped') is True
+      and row.get('remaining')==[] and not row.get('cleanup_error_type') for row in cleanup),
+      'normal_all_children_terminal')
+ return NORMAL61_SHA
+

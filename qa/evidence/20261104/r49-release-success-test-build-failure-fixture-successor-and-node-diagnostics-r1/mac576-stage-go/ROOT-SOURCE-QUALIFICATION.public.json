@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.root.mac576-bound-source-review.r1",
+  "sourceTree": "1107d5ca1f903219e083c6abf791336d04cc48da",
+  "whole": {
+    "tree": "1107d5ca1f903219e083c6abf791336d04cc48da",
+    "files": 27,
+    "bytes": 220443,
+    "merkle": {
+      "root_sha": "1107d5ca1f903219e083c6abf791336d04cc48da",
+      "trees_verified": 1,
+      "leaf_count": 27
+    },
+    "whole": true
+  },
+  "authorChecksReproduced": 20,
+  "actualBindingChecks": {
+    "templateReviewed27": true,
+    "source27Passed": true,
+    "bundleWholeBytes": true,
+    "transportManifestExact": true,
+    "producerQualificationExact": true,
+    "transportQualificationExact": true,
+    "INFOActualExact": true,
+    "producerActualExact": true,
+    "typedIndependent": true
+  },
+  "templateChecksPreviouslyReproduced": 27,
+  "templateQualificationStore": "r49_Mac576_stage_SOURCE27_reproduced",
+  "boundRequest": {
+    "blob": "3b86e61a47028c1b5d8e23369ef336490dc6382b",
+    "bytes": 32676,
+    "sha256": "8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2"
+  },
+  "nativeBinding": {
+    "sha256": "dae9bc16adfb96104073ba4a7571815b5aa6d153f961454d671b1e3a947b7d24",
+    "native_fingerprint": "15774345975436121616"
+  },
+  "stageQualified": false,
+  "controlsPublished": false,
+  "buildQualified": false,
+  "Native_calls": 0
+}

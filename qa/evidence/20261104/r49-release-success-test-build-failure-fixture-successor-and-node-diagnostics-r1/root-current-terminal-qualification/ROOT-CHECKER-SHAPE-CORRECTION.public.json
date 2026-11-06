@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.root.terminal-checker-shape-correction.r1",
+  "originalChecks": {
+    "originalJob": false,
+    "succeededReleaseRetained": true,
+    "terminalFailure": true,
+    "allOutput": true,
+    "noLostLogs": true,
+    "stdoutWhole": true,
+    "stderrEmpty": true,
+    "fourActualDeclarations": true,
+    "exactFinalCandidate": true,
+    "reportBound": true,
+    "actualCleanup": true,
+    "all14StatusClosed": true,
+    "same14IDs": true,
+    "reportedAllAccepted": true,
+    "noOwned": true,
+    "priorUnknownPreserved": true,
+    "noPrematureQualification": true
+  },
+  "correction": "RELEASE.job is the original job ID string, not an object with id. Correct equality uses release.job directly and the independently whole START native job ID.",
+  "candidateSourceChanged": false,
+  "NativeCallsAdded": 0
+}

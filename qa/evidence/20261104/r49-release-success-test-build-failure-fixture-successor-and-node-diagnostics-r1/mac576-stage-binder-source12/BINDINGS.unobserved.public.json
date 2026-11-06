@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.mac-successor576.actual-bundle-bindings.v1",
+  "ready": false,
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+  },
+  "producer": {
+    "host": "rog",
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "report": null,
+    "rootQualification": null
+  },
+  "bundle": {
+    "bytes": null,
+    "sha256": null,
+    "full9": null,
+    "version": null,
+    "headerSha256": null
+  },
+  "infoNative": null,
+  "infoOperation": null,
+  "bodyOperations": null,
+  "transport": null,
+  "transportRootQualification": null,
+  "base64": null
+}

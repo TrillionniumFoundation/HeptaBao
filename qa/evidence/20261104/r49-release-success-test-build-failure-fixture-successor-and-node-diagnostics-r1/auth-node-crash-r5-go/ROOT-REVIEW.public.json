@@ -1,0 +1,242 @@
+{
+  "schema": "heptabao.root.fixed-public-crash-R5-source-review.r1",
+  "sourceTree": "e90f52817cbcf4f41a5c7b9094e386334744f7bc",
+  "checks": [
+    {
+      "name": "source.py exact pin",
+      "pass": true
+    },
+    {
+      "name": "request.exact.json exact pin",
+      "pass": true
+    },
+    {
+      "name": "journal.js exact pin",
+      "pass": true
+    },
+    {
+      "name": "exact prior admitted source",
+      "pass": true
+    },
+    {
+      "name": "exact prior admitted journal",
+      "pass": true
+    },
+    {
+      "name": "source.py strict forward",
+      "pass": true
+    },
+    {
+      "name": "source.py strict inverse",
+      "pass": true
+    },
+    {
+      "name": "journal.js strict forward",
+      "pass": true
+    },
+    {
+      "name": "journal.js strict inverse",
+      "pass": true
+    },
+    {
+      "name": "Unchanged need",
+      "pass": true
+    },
+    {
+      "name": "Unchanged critical",
+      "pass": true
+    },
+    {
+      "name": "Unchanged interrupt",
+      "pass": true
+    },
+    {
+      "name": "Unchanged remaining",
+      "pass": true
+    },
+    {
+      "name": "Unchanged identity",
+      "pass": true
+    },
+    {
+      "name": "Unchanged SignalFacade.critical",
+      "pass": true
+    },
+    {
+      "name": "Unchanged error_projection",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.__init__",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.meta",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.open_fd",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.close_one",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.close",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.named",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.open_chain",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.close_scan",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.read_one",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.verify_all",
+      "pass": true
+    },
+    {
+      "name": "Unchanged CrashIO.public",
+      "pass": true
+    },
+    {
+      "name": "Unchanged date_epoch_seconds",
+      "pass": true
+    },
+    {
+      "name": "Unchanged name_allowed",
+      "pass": true
+    },
+    {
+      "name": "Unchanged crash_time",
+      "pass": true
+    },
+    {
+      "name": "Unchanged exact_pairs",
+      "pass": true
+    },
+    {
+      "name": "Unchanged reject_constant",
+      "pass": true
+    },
+    {
+      "name": "Unchanged bounded_integer",
+      "pass": true
+    },
+    {
+      "name": "Unchanged enum_field",
+      "pass": true
+    },
+    {
+      "name": "Unchanged json_kind",
+      "pass": true
+    },
+    {
+      "name": "Unchanged diagnostic_slot",
+      "pass": true
+    },
+    {
+      "name": "Unchanged fixed_os",
+      "pass": true
+    },
+    {
+      "name": "Unchanged library_line",
+      "pass": true
+    },
+    {
+      "name": "Unchanged fixed_text_projection",
+      "pass": true
+    },
+    {
+      "name": "Unchanged proc_path_projection",
+      "pass": true
+    },
+    {
+      "name": "only three added functions",
+      "pass": true
+    },
+    {
+      "name": "main schema only",
+      "pass": true
+    },
+    {
+      "name": "original complete crash gate unchanged",
+      "pass": true
+    },
+    {
+      "name": "same request envelope and actual stdin",
+      "pass": true
+    },
+    {
+      "name": "journal only exact slot request prefix",
+      "pass": true
+    },
+    {
+      "name": "original R4 actual stdout",
+      "pass": true
+    },
+    {
+      "name": "original R4 actual release",
+      "pass": true
+    },
+    {
+      "name": "public marker exact actual source",
+      "pass": true
+    },
+    {
+      "name": "original public child report exact",
+      "pass": true
+    },
+    {
+      "name": "exact fixed file/time/path scope retained",
+      "pass": true
+    },
+    {
+      "name": "all original runtime and observer budgets retained",
+      "pass": true
+    },
+    {
+      "name": "namespace bounded printable original field",
+      "pass": true
+    },
+    {
+      "name": "one direct thread and at most32 frames",
+      "pass": true
+    },
+    {
+      "name": "only directly referenced public images",
+      "pass": true
+    },
+    {
+      "name": "no new IO in projection functions",
+      "pass": true
+    },
+    {
+      "name": "symbol bound fixed grammar no quoted paths",
+      "pass": true
+    }
+  ],
+  "checkCount": 56,
+  "conclusion": "Bounded actual OS namespace and at most32 public-image-qualified symbols from one directly selected crashed thread. All original file/IO/deadline/correlation/path/observer/closure fences remain. No new child or business action.",
+  "reviewedNewFunctions": [
+    "namespace_field",
+    "public_frame_image",
+    "public_frame_symbol",
+    "faulting_thread_projection"
+  ],
+  "independentPrimaryReference": "d3bc88be70ebd01641586d5e1976a0f8f913325e",
+  "primarySourceDoesNotPrefillOrProveActualNamespaceOrCause": true,
+  "NativeCalls": 0,
+  "PythonExecuted": false
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.canonical576-info-actual.v1",
+  "original_operation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+  "calls": 3,
+  "pages": 1,
+  "closed": true,
+  "payload": {
+    "blob": "1d7e7492a7b7d9aa6c958853504b518910c5f4e3",
+    "bytes": 589,
+    "sha256": "c15f82ae949bce23f7a334ac499e10ad318a6f66ea25a82a10822f24c83fb31c"
+  },
+  "native": {
+    "blob": "b40eebebed4155bff74279c2b1d06cb8e2dd181e",
+    "bytes": 472,
+    "sha256": "06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"
+  },
+  "info": {
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "bytes": 5766,
+    "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+    "version": "66306:31358148:5766:1794000539740776688:1794000539740776688",
+    "derivedFull9": [
+      "66306",
+      "31358148",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "5766",
+      "1794000539740776688",
+      "1794000539740776688"
+    ],
+    "full9ModeDerivation": "S_IFREG | permission_mode",
+    "nativeText": {
+      "blob": "b40eebebed4155bff74279c2b1d06cb8e2dd181e",
+      "bytes": 472,
+      "sha256": "06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"
+    },
+    "bodyObserved": false
+  },
+  "GO": {
+    "blob": "1899d302ebd3e63f20a9e496bd6b9518d2bb6a07",
+    "bytes": 3784,
+    "sha256": "c0d066fc5f5f8dbd741cc15247a1a1f984b2f34b10155689abfaef78144c22e4"
+  },
+  "source": {
+    "blob": "a0f43f0aa0789d7405f7ac1b00379a4b0ece8749",
+    "bytes": 20597,
+    "sha256": "11eca7b8cd6e7edf4750fc5bf40a28d8da116d59111b8894b716b42c1c1bf7ea"
+  },
+  "request": {
+    "blob": "f7aef4d88706b1cca3e66e6385a1776eafb1d914",
+    "bytes": 279,
+    "sha256": "5e0c4bc75fd3fb26f69248085142edbc9c95519a79720cd8a2610bf439bb5624"
+  },
+  "state": {
+    "blob": "a416295e4d2cfdc04472dce2de46e88f26b9afcb",
+    "bytes": 13657,
+    "sha256": "083198ac169456a6e52922257621154dfaf8dd5cc909f7956f3763d5a61e70ca"
+  },
+  "body_observed": false,
+  "mac_published": false
+}

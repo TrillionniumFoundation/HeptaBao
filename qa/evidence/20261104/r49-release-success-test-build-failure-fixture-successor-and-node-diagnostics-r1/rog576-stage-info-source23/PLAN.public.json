@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.combined5767739.stage-report-info-source.r1",
+  "authorization": "SOURCE_ONLY_NOT_GO",
+  "scope": "stage_result_file_info_only",
+  "original_job": "1a1b2c397c4-fc05-7fa4",
+  "existing_slot": "combined_5767739c_rog_source_gitfirst_r1",
+  "attach_existing_context_only": true,
+  "initialize_allowed": false,
+  "exact_request": {
+    "blob": "465eac22268d07804dcfd586d11037e2d6fab554",
+    "bytes": 272,
+    "sha256": "1efe075ee88f65a028f4cea20774dbfe61432cb0624edfc668110131eda5bf5f"
+  },
+  "journal": {
+    "blob": "3338ea8993faeca5b061c6921f4d70ca3c14410e",
+    "bytes": 23858,
+    "sha256": "bcd8e2da56c085ca11606233eefb15fd75f6ab47d6dda7062accc7fdd3daa497"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "maximum_original_status_calls": 8,
+  "maximum_original_immutable_pages": 128,
+  "immutable_page_bytes": 8192,
+  "maximum_original_payload_bytes": 1048576,
+  "metadata_gate": {
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "size_min": 1,
+    "size_max": 65536,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "metadata_platform": "linux",
+    "whole_sha256_required": true,
+    "version_five_decimal_fields": true,
+    "full9_lossless_decimal_strings": true,
+    "regular_file_from_native_file_info_contract": true
+  },
+  "original_prerequisites": [
+    {
+      "id": "cb1d52213dab6705cf2ca544c43d453efc5f701cc282a4e4ce03e5b1e919b9f6",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "50509a0307e16ef7fda75fe856ffa7b14627fddd",
+        "bytes": 729,
+        "sha256": "ac607383f4bcb471f6bafda6248764b8584c6febc1d01582273741dcac1ec00f"
+      }
+    },
+    {
+      "id": "a72240141eeba0ee4415aaec20ea82c729533dc19252c8a3b9e9e262b312e15e",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "e349ea82878c1c189d911ffabd8cf7fb3154a1aa",
+        "bytes": 1396,
+        "sha256": "b3f04a7a9f6935a298d940598befda99c642c49cee5634634febadf42d93553c"
+      }
+    }
+  ],
+  "original_terminal_full_packet": {
+    "tree": "ba86f693820f5758553c45716ab9975ee00082f4",
+    "count": 50,
+    "bytes": 639395,
+    "whole": true
+  },
+  "original_minimal_release_packet": {
+    "tree": "a0cfc7dcb54f90b07684d63a55e58a90b4c3feed",
+    "whole": true
+  },
+  "root_terminal_qualification": null,
+  "root_terminal_qualification_null_reason": "Root review pending at this SOURCE cutoff; exact original7call/2observer closure is whole.",
+  "root_detail_report_qualification": false,
+  "actual_metadata": null,
+  "actual_body": null,
+  "next": "Only after actual INFO whole closed and a separate exact root BODY GO may a version-bound report body be read.",
+  "historical_failures_preserved": true,
+  "source_formatted": false,
+  "product_qualification": false,
+  "execution_budgets_unchanged": {
+    "stage": 300,
+    "git": 90,
+    "clone": 180,
+    "outer": 360,
+    "cleanup_term": 5,
+    "cleanup_kill": 5
+  },
+  "sequence": [
+    "Read exact separate INFO GO whole.",
+    "Attach the existing closed slot; authorize_stage_result_info; never initialize.",
+    "Prepare one exact request with a whole external three-leaf arm.",
+    "Cross a model boundary; invoke once; archive returned SDK whole before parse.",
+    "Follow only that original operation with bounded status and 8192-byte immutable payload pages; each original request and SDK gets immutable archival.",
+    "Whole payload before semantic checks; require fixed path, SHA, version, size and Linux identity gates.",
+    "Close the original observer and release; no binary_read or build authorization."
+  ]
+}

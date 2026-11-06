@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.root.public-node-ignition-log-source-review.r1",
+  "sourceTree": "c8d073de6a7f67919b3144e581cca053559f1c7a",
+  "whole": {
+    "tree": "c8d073de6a7f67919b3144e581cca053559f1c7a",
+    "files": 28,
+    "bytes": 452730,
+    "merkle": {
+      "root_sha": "c8d073de6a7f67919b3144e581cca053559f1c7a",
+      "trees_verified": 1,
+      "leaf_count": 28
+    },
+    "whole": true
+  },
+  "source97ExactlyReproduced": true,
+  "actualBindings": {
+    "rootR5Qualification": true,
+    "actualR5Output": true,
+    "priorR5JournalExact": true,
+    "publicInputsPreviouslyWhole": true,
+    "exactStdin": true,
+    "fixedReadOnlyTimeScope": true
+  },
+  "independentTypedBinding": {
+    "sha256": "e9a3eb2dea0009cea9ca2feca9bc9c0173b19a656eaace13420210250e2928ec",
+    "native_fingerprint": "16835558414472972750"
+  },
+  "reviewed": "Fixed two-second original PID window, explicit per-row subject/time gates, four bounded public projectors, no IO in projectors, exact original owner/Commands and16 helpers, unchanged45/10/60 and output/FD/observer bounds",
+  "code2NotAssumedErrno": true,
+  "diagnosticOutcomeUnobserved": true,
+  "rootCauseUnproved": true,
+  "NativeCalls": 0
+}

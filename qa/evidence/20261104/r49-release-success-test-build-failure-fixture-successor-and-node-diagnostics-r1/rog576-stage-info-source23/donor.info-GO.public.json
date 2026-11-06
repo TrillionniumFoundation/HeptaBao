@@ -1,0 +1,290 @@
+{
+  "schema": "heptabao.root.combined02b90762.stage-info-GO.r1",
+  "authorization": "GO",
+  "scope": "stage_result_file_info_only",
+  "original_job": "1a1b21f5945-fc05-7c77",
+  "host": "rog",
+  "existing_slot": "combined_02b90762_rog_source_gitfirst_r1",
+  "attach_existing_context_only": true,
+  "initialize_allowed": false,
+  "source_packet": {
+    "tree": {
+      "sha": "2d30cc7a3e4c52f64027aa4af84c09d052fbecc9",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/2d30cc7a3e4c52f64027aa4af84c09d052fbecc9",
+      "tree": [
+        {
+          "path": "LITERAL-BINDINGS.public.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd88b9e6010a30d98817836cb1189c61858d0f07",
+          "size": 2699,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/bd88b9e6010a30d98817836cb1189c61858d0f07"
+        },
+        {
+          "path": "MANIFEST.public.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6d14dc1d7460fdb13158320a72b144eea4504c55",
+          "size": 4852,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/6d14dc1d7460fdb13158320a72b144eea4504c55"
+        },
+        {
+          "path": "PLAN.public.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6364f325bcf4d66e5b6d98575f1f2d5057d2cedd",
+          "size": 3672,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/6364f325bcf4d66e5b6d98575f1f2d5057d2cedd"
+        },
+        {
+          "path": "REFERENCES.public.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5caeb9f1c7b5d80a461925fd193009e4d9f059e4",
+          "size": 1464,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/5caeb9f1c7b5d80a461925fd193009e4d9f059e4"
+        },
+        {
+          "path": "SOURCE-RESULT.public.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7449a3d6068f90147b771f184c2cc44cd5e7a1b1",
+          "size": 3975,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/7449a3d6068f90147b771f184c2cc44cd5e7a1b1"
+        },
+        {
+          "path": "SOURCE-VERIFIER.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "741cde309a8b0b620849ef8f699d255dd5abb74d",
+          "size": 6589,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/741cde309a8b0b620849ef8f699d255dd5abb74d"
+        },
+        {
+          "path": "actual.STATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f7fd7f7205bbfc17a5e290f5a3e834a628d07205",
+          "size": 139661,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/f7fd7f7205bbfc17a5e290f5a3e834a628d07205"
+        },
+        {
+          "path": "actual.authority.native.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "22f8bf9cfd362f1590ea36ad52b9ce3c496363c7",
+          "size": 729,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/22f8bf9cfd362f1590ea36ad52b9ce3c496363c7"
+        },
+        {
+          "path": "actual.authority.status.sdk.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "279157663d592d6c2cf61ae7d3a46b8fe80f1300",
+          "size": 980,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/279157663d592d6c2cf61ae7d3a46b8fe80f1300"
+        },
+        {
+          "path": "actual.streams.native.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c72a796ace684bfd978c54469aeecd74f5118012",
+          "size": 1396,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/c72a796ace684bfd978c54469aeecd74f5118012"
+        },
+        {
+          "path": "actual.streams.status.sdk.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "680c2301c550545e46517b64df69fb5c41d369fc",
+          "size": 978,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/680c2301c550545e46517b64df69fb5c41d369fc"
+        },
+        {
+          "path": "donor.info-GO.public.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b717351864c7e5a19b43bf028bb52f914cde2ed",
+          "size": 3228,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/4b717351864c7e5a19b43bf028bb52f914cde2ed"
+        },
+        {
+          "path": "donor.info-journal.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "981f77201755b7d3635043b93b6696e45fb6335b",
+          "size": 23894,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/981f77201755b7d3635043b93b6696e45fb6335b"
+        },
+        {
+          "path": "donor.literal-only.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2cb5e44b4e61b7876f051c0e9c0a9c487b82f41a",
+          "size": 4233,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/2cb5e44b4e61b7876f051c0e9c0a9c487b82f41a"
+        },
+        {
+          "path": "git_archive_once.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b093fdbf655511f7db94be2d95555606141bbb42",
+          "size": 5957,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b093fdbf655511f7db94be2d95555606141bbb42"
+        },
+        {
+          "path": "journal.after.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "eeb0a097f38ad9892e66e478f47b2b067680c597",
+          "size": 23858,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/eeb0a097f38ad9892e66e478f47b2b067680c597"
+        },
+        {
+          "path": "journal.before.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "54407e90a2917b521acf749859a2248c7e33b14d",
+          "size": 19047,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/54407e90a2917b521acf749859a2248c7e33b14d"
+        },
+        {
+          "path": "journal.forward.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "aba060c82ef4d81dc417d735333c34a908476b6e",
+          "size": 7745,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/aba060c82ef4d81dc417d735333c34a908476b6e"
+        },
+        {
+          "path": "journal.reverse.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6563edcebdc3a121dea1f7ac32d88cead90d4e98",
+          "size": 7745,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/6563edcebdc3a121dea1f7ac32d88cead90d4e98"
+        },
+        {
+          "path": "native-tools.contract.public.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ff2529ccf763c65ce747d70ae5082b90e956f3db",
+          "size": 7691,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/ff2529ccf763c65ce747d70ae5082b90e956f3db"
+        },
+        {
+          "path": "pure_helpers.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b6890e8b7217c546bec073dcb04988fc37652721",
+          "size": 6685,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b6890e8b7217c546bec073dcb04988fc37652721"
+        },
+        {
+          "path": "request.exact.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bb84f086bbf1f803ce8d3976d839b11931479893",
+          "size": 272,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/bb84f086bbf1f803ce8d3976d839b11931479893"
+        },
+        {
+          "path": "strict_diff.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f595a6490497f54ea2b533fcbb98cdb306583286",
+          "size": 3497,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/f595a6490497f54ea2b533fcbb98cdb306583286"
+        }
+      ],
+      "truncated": false
+    },
+    "whole": true
+  },
+  "journal": {
+    "blob": "eeb0a097f38ad9892e66e478f47b2b067680c597",
+    "bytes": 23858,
+    "sha256": "0742497cb574b1c352177072c4356a50d3e6a86422521f993fe7a27ee4415c64"
+  },
+  "exact_request": {
+    "blob": "bb84f086bbf1f803ce8d3976d839b11931479893",
+    "bytes": 272,
+    "sha256": "79ba2463190e4ddbd8625e99415baa35bc9fb03d59b5a93b1ede0df4575c97a5"
+  },
+  "root_qualification": {
+    "blob": "c8f1934da702b77966ff85cac9d841495281bba0",
+    "bytes": 18666,
+    "sha256": "5448a0628d91069ad8564a88adf0301ab896ddb6c7504ecf4d5d70573380d58b"
+  },
+  "original_terminal_full_packet": {
+    "tree": "c8bc9813637b63dde3cd409f84163c6d033bfd2b",
+    "count": 50,
+    "bytes": 401050,
+    "whole": true
+  },
+  "reproduced_original_terminal74": {
+    "blob": "a8789f36734f12892738d1d9c8a1208a77062cda",
+    "bytes": 7579,
+    "sha256": "58158513053a4e86caf350561d71a9128dc537b452edb98fbb24549e0bc0b7af"
+  },
+  "reproduced_source51": {
+    "blob": "7449a3d6068f90147b771f184c2cc44cd5e7a1b1",
+    "bytes": 3975,
+    "sha256": "ab5d1b5ab44cb75dbc281588c00d4412ff8c620baf77f01e40589e32474dbff2"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "maximum_original_status_calls": 8,
+  "maximum_original_immutable_pages": 128,
+  "immutable_page_bytes": 8192,
+  "maximum_original_payload_bytes": 1048576,
+  "metadata_gate": {
+    "path": "/home/qian-qi/hb-02b90762-src-20261106-r1/control/stage-result.public.json",
+    "size_min": 1,
+    "size_max": 65536,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "metadata_platform": "linux",
+    "whole_sha256_required": true,
+    "version_five_decimal_fields": true,
+    "full9_lossless_decimal_strings": true,
+    "regular_file_from_native_file_info_contract": true
+  },
+  "original_prerequisites": [
+    {
+      "id": "bb870a554f6ac08aa000b2722e2cc6d60d9b5b94955dbc02731acbb72c0e1ab8",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "22f8bf9cfd362f1590ea36ad52b9ce3c496363c7",
+        "bytes": 729,
+        "sha256": "37e9190a19bce6816c4d176138252a644cc873efc32abb6bc28a16490bf1f277"
+      }
+    },
+    {
+      "id": "e11198afc4a9091428ce55ee2d9562c6a8024245572bca828cf8d014fb2dff57",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "c72a796ace684bfd978c54469aeecd74f5118012",
+        "bytes": 1396,
+        "sha256": "217b0f5dc14b6764c4f0b157fb747931f3d3fee903172b602a295d6d5e2a3319"
+      }
+    }
+  ],
+  "sequence": [
+    "Read exact separate INFO GO whole.",
+    "Attach the existing closed slot; authorize_stage_result_info; never initialize.",
+    "Prepare one exact request with a whole external three-leaf arm.",
+    "Cross a model boundary; invoke once; archive returned SDK whole before parse.",
+    "Follow only that original operation with bounded status and 8192-byte immutable payload pages; each original request and SDK gets immutable archival.",
+    "Whole payload before semantic checks; require fixed path, SHA, version, size and Linux identity gates.",
+    "Close the original observer and release; no binary_read or build authorization."
+  ],
+  "detail_report_qualification": false,
+  "product_qualification": false,
+  "old_failures_preserved": true,
+  "native_concurrency_maximum": 2,
+  "time_utc": "2026-11-06 18:52:00 UTC"
+}

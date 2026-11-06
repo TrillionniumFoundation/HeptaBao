@@ -1,0 +1,68 @@
+--- a/canonical576-body-from-reviewed-body.js
++++ b/canonical576-body-from-reviewed-body.js
+@@ -5,14 +5,14 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "final02b_canonical_bundle_info_gitfirst_r1";
+-const GF_REQUEST = {"blob":"429cb0d4ef8259e254dc38ccd3793804c5ce40e2","bytes":279,"sha256":"c4ad51752a2ea63d51b893c953e93780ed18d830b4ca2c8b1610282e68c4552d"};
+-const GF_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-02b90762-src-20261106-r1/control/canonical-hb-02b90762-from495.bundle","bytes":171016,"sha256":"069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800","full9":["66306","28477674","1000","1000","33152","1","171016","1793989775788602563","1793989775789602574"]};
++const GF_SLOT = "successor576_canonical_bundle_info_gitfirst_r1";
++const GF_REQUEST = {"blob":"f7aef4d88706b1cca3e66e6385a1776eafb1d914","bytes":279,"sha256":"5e0c4bc75fd3fb26f69248085142edbc9c95519a79720cd8a2610bf439bb5624"};
++const GF_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle","bytes":5766,"sha256":"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a","full9":["66306","31358148","1000","1000","33152","1","5766","1794000539740776688","1794000539740776688"]};
+ 
+ /* Separate BODY GO attaches to the one closed INFO scope. No new job or INFO. */
+-const GF_BUNDLE_BODY_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-02b90762-src-20261106-r1/control/canonical-hb-02b90762-from495.bundle","bytes":171016,"sha256":"069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800","full9":["66306","28477674","1000","1000","33152","1","171016","1793989775788602563","1793989775789602574"],"version":"66306:28477674:171016:1793989775788602563:1793989775789602574","infoOperation":"f157e690beab5b5213992c56db5edee70be14ed8954e1c3045cc012d104ffbb3","infoNative":{"blob":"f27793ad94a4df3ca036e4eaa539c121b1561bec","bytes":476,"sha256":"b1d33ee9f46309bdb047b9924c69dc821faf03a6b51648b487292de2b6d4e32f"}};
+-const GF_BUNDLE_BODY_RANGES = [{"offset":0,"limit":65536,"request":{"blob":"4dd5a19d7bbbb8f4f2746bab049d52689b125953","bytes":416,"sha256":"d0fe9e21232d08c94ca99e1b309eb332937ad3ba401f528c45dddb2810680ec8"}},{"offset":65536,"limit":65536,"request":{"blob":"6e14df7f8b569c0a064b521a54fce4f2e36d47e8","bytes":420,"sha256":"612996e9d831deecfc662802a2e9a8c20fd09f6a1978667aad7f19acf1bb5f91"}},{"offset":131072,"limit":39944,"request":{"blob":"0dad30d4564de62c9efbd184673fe2c3462d983c","bytes":421,"sha256":"17d761f38bc61994b48f7a643ad2452fdfdaefe340f810535f7b65c7525ef2ae"}}];
+-const GF_BUNDLE_INFO_STATE = {"blob":"314effb42cc097e237a7eb7c2b1f00aa744c4c3d","bytes":13791,"sha256":"41e09c83865aa06cea89df3cd7739bee3cdfbb467520b933a8fe83592cd89543"};
++const GF_BUNDLE_BODY_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle","bytes":5766,"sha256":"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a","full9":["66306","31358148","1000","1000","33152","1","5766","1794000539740776688","1794000539740776688"],"version":"66306:31358148:5766:1794000539740776688:1794000539740776688","infoOperation":"eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b","infoNative":{"blob":"b40eebebed4155bff74279c2b1d06cb8e2dd181e","bytes":472,"sha256":"06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"}};
++const GF_BUNDLE_BODY_RANGES = [{"offset":0,"limit":5766,"request":{"blob":"530ad6743ca62e2bac32dde64447080dd54f4d48","bytes":411,"sha256":"7b877028a74f181f2068e608883fa508c3fb8b173299246ba29f4ee8aa3e4066"}}];
++const GF_BUNDLE_INFO_STATE = {"blob":"a416295e4d2cfdc04472dce2de46e88f26b9afcb","bytes":13657,"sha256":"083198ac169456a6e52922257621154dfaf8dd5cc909f7956f3763d5a61e70ca"};
+ const GF_BUNDLE_BODY_PAGE_BYTES = 16384;
+ 
+ function gfAuthorizeCanonicalBundleBodyOnly({goRaw,goPin,goWholeReadback}) {
+@@ -27,14 +27,14 @@
+    && goPin.blob!==s.goPin.blob,"separate_whole_bundle_body_GO");
+  const g=JSON.parse(goRaw);
+  gfNeed(g.authorization==="GO" && g.scope==="canonical_bundle_binary_read_ranges_only"
+-   && g.info_operation===need.infoOperation && g.maximum_binary_read_starts===3
++   && g.info_operation===need.infoOperation && g.maximum_binary_read_starts===1
+    && g.immutable_body_page_bytes===GF_BUNDLE_BODY_PAGE_BYTES
+    && g.fixed_bundle?.path===need.path && g.fixed_bundle?.bytes===need.bytes
+    && g.fixed_bundle?.sha256===need.sha256 && g.fixed_bundle?.version===need.version
+-   && Array.isArray(g.exact_requests) && g.exact_requests.length===3
++   && Array.isArray(g.exact_requests) && g.exact_requests.length===1
+    && GF_BUNDLE_BODY_RANGES.every((x,j)=>g.exact_requests[j]?.blob===x.request.blob
+      && g.exact_requests[j]?.bytes===x.request.bytes
+-     && g.exact_requests[j]?.sha256===x.request.sha256),"exact_new_root_three_range_scope");
++     && g.exact_requests[j]?.sha256===x.request.sha256),"exact_new_root_one_range_scope");
+  const prior=s.completedObservers.find(o=>o.id===need.infoOperation),info=s.bundleInfo;
+  gfNeed(prior?.completedInactive===true && prior.tool==="file_info"
+    && prior.nativeText.blob===need.infoNative.blob
+@@ -46,7 +46,7 @@
+  s.bundleBodyGO={pin:goPin,raw:goRaw,whole:true};
+  s.bundleBodyStarted=0;s.bundleBodyRanges=[];
+  gfSave(s);
+- return {originalJob:null,infoOperation:need.infoOperation,maximumBinaryReadStarts:3,
++ return {originalJob:null,infoOperation:need.infoOperation,maximumBinaryReadStarts:1,
+    exactRequests:GF_BUNDLE_BODY_RANGES,wholeBytes:need.bytes,bodyPageBytes:GF_BUNDLE_BODY_PAGE_BYTES};
+ }
+ 
+@@ -309,7 +309,7 @@
+    // never decode the PACK as UTF-8 or claim a text blob is the binary object.
+    const encodedRaw=v.data_base64+"\n",encodedPin=gitBlobMeta(encodedRaw);
+    const encodedArchive=await archiveFlatPublicTextsOnce({
+-    key:"final02b-canonical-bundle-chunk-"+index+"-r1",
++    key:"successor576-canonical-bundle-chunk-"+index+"-r1",
+     repository:"TrillionniumFoundation/HeptaBao",
+     texts:{"chunk.original.base64.txt":encodedRaw}});
+    const row={offset:range.offset,limit:range.limit,next:v.next_offset,
+@@ -332,7 +332,7 @@
+       original_operations:ranges.map(x=>x.originalOperation),info_operation:need.infoOperation,
+       native_binary_body_observed:true,mac_published:false,product_executed:false};
+     const wholeArchive=await archiveFlatPublicTextsOnce({
+-     key:"final02b-canonical-source-bundle-whole-r1",repository:"TrillionniumFoundation/HeptaBao",
++     key:"successor576-canonical-source-bundle-whole-r1",repository:"TrillionniumFoundation/HeptaBao",
+      texts:{"canonical.bundle.base64.txt":wholeBase64,
+        "BINARY-TRANSPORT.public.json":JSON.stringify(transport,null,2)+"\n"}});
+     store(GF_SLOT+":canonical_bundle_base64_original",wholeBase64);

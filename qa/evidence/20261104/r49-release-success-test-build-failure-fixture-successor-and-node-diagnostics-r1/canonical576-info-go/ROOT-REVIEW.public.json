@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.root.C576-bundle-INFO-source-review.r1",
+  "sourceTree": "587bd6ce945a8c74017c69ea40fb47d25fc8badb",
+  "sourceWhole": true,
+  "author18ExactlyReproduced": true,
+  "actualStageReportExact": true,
+  "actualRootStageQualificationExact": true,
+  "onlyThreeConstantsChanged": true,
+  "all13FunctionBodiesUnchanged": true,
+  "closedToolScope": "one file_info fixed path",
+  "metadataActual": null,
+  "bodyActual": null
+}

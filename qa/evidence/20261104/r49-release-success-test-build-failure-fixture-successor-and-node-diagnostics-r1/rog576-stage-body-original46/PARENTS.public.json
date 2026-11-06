@@ -1,0 +1,135 @@
+[
+  {
+    "key": "c576-stage-r1-report-body-start",
+    "parent": {
+      "blob": "f43414bbc0e096b0029c75558eeb3033b80e4723",
+      "bytes": 706,
+      "sha256": "a3566e0f8fedffbfe6fb0cab5d2ce5c0e35a9b3d2dff49ae6dc67e0bfd156e3c"
+    },
+    "child": {
+      "blob": "9d07b96c5b6e192cf656becd70c24142b789ccf2",
+      "bytes": 545,
+      "sha256": "10e7baaa335361901b351656f57c4b3a2d61612a6aae0284c6f8e8a986525ba8"
+    },
+    "extraction": "JSON.parse(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "key": "c576-stage-r1-report-body-status0",
+    "parent": {
+      "blob": "f6f7dabc2b01018bc8c7439463e6cdcfd4018375",
+      "bytes": 977,
+      "sha256": "29162652293d67c95f08e738a04b4f672d5b78e75bc6c7d0538ab0b9dc5540df"
+    },
+    "child": {
+      "blob": "3b6c82d9441c599c426daa9a7ca4a0e9f1a87fd7",
+      "bytes": 802,
+      "sha256": "92d7c9fee51949a67e2030d480c16e7e34be7d7664bb9febc53634437ffd45fa"
+    },
+    "extraction": "JSON.parse(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "key": "c576-stage-r1-report-body-p0",
+    "parent": {
+      "blob": "6f17cfc4e46d87ceab5ff191a7aab86a5598baf7",
+      "bytes": 11780,
+      "sha256": "88e6ba9739abf678d7c8d3476abe156eb47620a952195041cfe95299128f1f43"
+    },
+    "child": {
+      "blob": "d1377980f212775ff78c3035358728ae643f3056",
+      "bytes": 11609,
+      "sha256": "13a1a8a6857578824dd7f0eaa538ed09f45d11a8728f17a3c73bcdcb0abd45f8"
+    },
+    "extraction": "JSON.parse(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "key": "c576-stage-r1-report-body-p1",
+    "parent": {
+      "blob": "433cfa13f8f25ef34dfc109b1f7195c6a29f59f6",
+      "bytes": 11784,
+      "sha256": "fab8836036ba17f7530e7f10bc317a4c2d5da51223f03fec6def001cdf4b4abf"
+    },
+    "child": {
+      "blob": "bb778413550fbc69dbce1c29706f888e5486e261",
+      "bytes": 11613,
+      "sha256": "31d369e9a58404df0460e58d4cbbd2769a8ff4eaaf3514c2c39a7700f84694cf"
+    },
+    "extraction": "JSON.parse(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "key": "c576-stage-r1-report-body-p2",
+    "parent": {
+      "blob": "7493a9a1ed147793566b9d210be40948b6c05b41",
+      "bytes": 11785,
+      "sha256": "b5d4b37057a82f79a67af5814751cce3897f817675460b2697802a0b55b9db8b"
+    },
+    "child": {
+      "blob": "293d76548a384bd446b116656845d66093810c94",
+      "bytes": 11614,
+      "sha256": "60c7592af2dc2012d0f246727ae33e34e1b256ba5f4395bb5bf9f19e918f1945"
+    },
+    "extraction": "JSON.parse(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "key": "c576-stage-r1-report-body-p3",
+    "parent": {
+      "blob": "030388d6db55f8aa66b213fce7e5a87e8edb3c6f",
+      "bytes": 11785,
+      "sha256": "811f5767d1e85f593b3ee6f3d5a93dbb4fff64faadfa07d7e8d3cc9520596e96"
+    },
+    "child": {
+      "blob": "8bc5fa6760bc973b56e721f9fabd2e4a4a322b56",
+      "bytes": 11614,
+      "sha256": "44dc0e395e13de1b1dda529b71a46018353a88af010714fede184bd4aecc6b6f"
+    },
+    "extraction": "JSON.parse(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "key": "c576-stage-r1-report-body-p4",
+    "parent": {
+      "blob": "6e1ef1b575918e95f64d0b7b5d09f429cae2ebc0",
+      "bytes": 10608,
+      "sha256": "7f9bced3f78f9a9414ceae5833968c45d729ea93fb6e469112eef169cf0cfa44"
+    },
+    "child": {
+      "blob": "dd5fce4459548dc308ba69d6bc74a6293ece5155",
+      "bytes": 10437,
+      "sha256": "902931e9abd9c2e24d5f932c57a7013af99759464fa25a1ee7f5e798c5c2a444"
+    },
+    "extraction": "JSON.parse(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "parent": {
+      "blob": "0709282e664004902eff1a9f209699a73beacffc",
+      "bytes": 40079,
+      "sha256": "56353a3c169bb830ed4c1873decc92f2f8cc76a891d92b91eb37c87f25fec57a"
+    },
+    "child": {
+      "blob": "d2bd152732d0054f14720cf2c5bdcf59d53a318f",
+      "bytes": 39976,
+      "sha256": "00afe3ad4f9b5b25052e1f69ab5ef69336cbba4ac898587c5715594a6e523ea3"
+    },
+    "extraction": "parseLosslessIntegers(parent).content[0].text",
+    "childIncluded": true
+  },
+  {
+    "parent": {
+      "blob": "d2bd152732d0054f14720cf2c5bdcf59d53a318f",
+      "bytes": 39976,
+      "sha256": "00afe3ad4f9b5b25052e1f69ab5ef69336cbba4ac898587c5715594a6e523ea3"
+    },
+    "child": {
+      "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+      "bytes": 29748,
+      "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+    },
+    "extraction": "base64 decode data_base64, whole SHA, then strict UTF8",
+    "childIncluded": true
+  }
+]

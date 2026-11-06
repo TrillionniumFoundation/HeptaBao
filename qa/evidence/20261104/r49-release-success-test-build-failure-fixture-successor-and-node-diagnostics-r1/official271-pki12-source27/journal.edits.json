@@ -1,0 +1,14 @@
+[
+  {
+    "before": "const GF_SLOT = \"official271_x230_acl23_oracle_gitfirst_r2\";",
+    "after": "const GF_SLOT = \"official271_x230_pki12_oracle_gitfirst_r1\";"
+  },
+  {
+    "before": "{\"blob\":\"e2a92c388ec7167f14b33cc9c2a03d82aae3bda4\",\"bytes\":164759,\"sha256\":\"9ea5802b1ed39410eb2e83d5d7bebd6dfe44812271ac53da47863b884214f190\"}",
+    "after": "{\"blob\":\"ecc21302bb94a0b40b856577371cd11d826c6f57\",\"bytes\":171446,\"sha256\":\"f8678baebc997e19b8770609b52a7ffad8248e7f9ff94dc947e83f60fd4f7377\"}"
+  },
+  {
+    "before": "heptabao-official271-x230-acl23-oracle-observe-r2-",
+    "after": "heptabao-official271-x230-pki12-oracle-observe-r1-"
+  }
+]

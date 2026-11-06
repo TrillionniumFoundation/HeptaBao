@@ -1,0 +1,626 @@
+{
+  "schema": "heptabao.mac-fixed-node-crash-public-namespace-single-stack-source.r5",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "source": {
+    "blob": "3639e0f664eb87e5323048607eb01a15278655d1",
+    "bytes": 45782,
+    "sha256": "bc7efad5f0a04328a5fb76954a9bd1575c9e7921c0d809498de8a1e38c9caa05"
+  },
+  "request": {
+    "blob": "353fbb9eb8d93d18b3f9d21a2af39e839deaa5f5",
+    "bytes": 47036,
+    "sha256": "4afbc62b119e9e75f7f73687df424ca13ee1012d4dadc2d71b63bf61c55f6c2b"
+  },
+  "journal": {
+    "blob": "1f359daac41581ede707507903a3c1f4a67024d0",
+    "bytes": 19051,
+    "sha256": "d6209021399a7c1b29d0571db08032cb1f65012c7f2ecf6648978423c7e93212"
+  },
+  "freshSlot": "owner_authbus_public_node_crash_fixed_file_gitfirst_r5",
+  "prefix": "heptabao-mac-public-node-crash-bc7efad5-",
+  "NativeCalls": 0,
+  "evidence": {
+    "originalPublicNode": {
+      "freshJob": "mac/1a1b25c3c54-fc05-7db1",
+      "actualWholeTree": "73e04ba4466bcdd042bff9c776c2c607c7150057",
+      "stdout": {
+        "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+        "bytes": 9930,
+        "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+      },
+      "authority": {
+        "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+        "bytes": 731,
+        "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+      },
+      "startSDK": {
+        "blob": "1c8c67d1e1fd29cf453967197edc731673d2dc2d",
+        "bytes": 1420,
+        "sha256": "6f1a8879903640df8523c81b4ab73630e88b357e060820ea1281693391acb57b"
+      },
+      "pid": 51494,
+      "parent": 51483,
+      "pgid": 51494,
+      "uid": 501,
+      "psStartLocal": "Sat Nov 7 03:35:52 2026",
+      "childFinalReturnCode": -6,
+      "retainedExitCode": 2,
+      "retainedExitStatus": 6,
+      "oldRuntimeProgressUnknown": true,
+      "publicInputsBinding": {
+        "blob": "a53c7b76e77cc81ef31eadb06dc2acc45db86767",
+        "bytes": 5655,
+        "sha256": "ee6c4b20a2497433f2180a2b8affde10ee1160a913ea46be2d1c830bb4a514ab"
+      },
+      "markerSource": {
+        "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+        "bytes": 1052,
+        "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+      },
+      "source": {
+        "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+        "bytes": 150406,
+        "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+      },
+      "request": {
+        "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+        "bytes": 151322,
+        "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+      }
+    },
+    "priorReaderActual": {
+      "job": "1a1b2b3248a-fc05-7f5e",
+      "minTree": "2ef5339b33bf67eb665209990114f2e63699457c",
+      "fullTree": "a49ff0c382f7c2f50b9b2bd79717a29619837623",
+      "stdout": {
+        "blob": "14afbf5260919cfc3674d1a2bdfa2fffea06ad90",
+        "bytes": 12183,
+        "sha256": "492e7f7937d9d5145a2aeaf2550d809754704d9523790557af257961382472e7"
+      },
+      "release": {
+        "blob": "248593421026f6f765172a045e43bcd391e25e15",
+        "bytes": 7845,
+        "sha256": "13cc3e5e0794b0911fb5e30f9306eca99ced9484c567997651a52876dbc21df4"
+      },
+      "observedEightPredicates": {
+        "crashType309": true,
+        "launchAndCaptureTimesTyped": true,
+        "metadataNameAbsentOrNode": true,
+        "parentIs51483": true,
+        "pidIs51494": true,
+        "procNameNode": true,
+        "procPathIsKnownNodePath": false,
+        "withinOriginalCorrelatedTimeWindow": true
+      },
+      "namespaceType": "string",
+      "namespaceUppercaseSyntaxQualified": false,
+      "namespaceRawNotObservedByAssistant": true,
+      "diagnosticSlots": 29,
+      "presentDiagnosticSlots": 0,
+      "oldOutputNeverReclassified": true
+    }
+  },
+  "scope": {
+    "fixedPath": "/Users/qianqi/Library/Logs/DiagnosticReports/node-2026-11-07-033552.ips",
+    "fixedBasename": "node-2026-11-07-033552.ips",
+    "fixedFull9": [
+      "16777233",
+      "593533598",
+      "501",
+      "250",
+      "33152",
+      "1",
+      "6809",
+      "1793993752090245618",
+      "1793993752090848927"
+    ],
+    "regularUid501Mode0600Nlink1": true,
+    "full9RequiredBeforeOpenAndHeldNamedBeforeAfterReadAndFinal": true,
+    "directoryException": {
+      "path": "/Users/qianqi/Library/Logs/DiagnosticReports",
+      "identity5": [
+        "16777233",
+        "565199774",
+        "501",
+        "250",
+        "16888"
+      ],
+      "modeOctal": "0o40770",
+      "fiveAncestorsOriginalGuardUnchanged": true,
+      "perInvocationCurrentHeldNamedFull9Unchanged": true,
+      "groupWritableDirectoryNotWholeReportTrust": true,
+      "noPermissionChange": true
+    },
+    "noDirectoryEnumeration": true,
+    "scanMethodRemoved": true,
+    "dormantIteratorClosureAndEmptyLedgerUnchanged": true,
+    "noRecursion": true,
+    "noFallback": true,
+    "noBodyHashExported": true,
+    "sameBytesAsPriorReadClaimed": false,
+    "wholeMeansCurrent6809BytesAndEOFWithFull9FencesNotPreviousBodyHash": true,
+    "driftOrMissingStopsWithoutFallback": true,
+    "pathChain": [
+      "/",
+      "/Users",
+      "/Users/qianqi",
+      "/Users/qianqi/Library",
+      "/Users/qianqi/Library/Logs",
+      "/Users/qianqi/Library/Logs/DiagnosticReports"
+    ]
+  },
+  "timeBinding": {
+    "originalNativeCreatedMs": 1793993751636,
+    "originalNativeTerminalMs": 1793993752149,
+    "utcStart": "2026-11-06T19:35:51.636Z",
+    "utcTerminal": "2026-11-06T19:35:52.149Z",
+    "actualLocalPsStart": "Sat Nov 7 03:35:52 2026",
+    "offsetIsObservedConventionNotMachineTimezoneQualification": true,
+    "filenameWindowOnly": "derived original interval plus/minus120seconds, accepting UTC or observed local +08:00 filename clock",
+    "reportCorrelationWindowNs": [
+      "1793993749636000000",
+      "1793993754149000000"
+    ],
+    "reportCorrelationMarginMs": 2000,
+    "requiresBothProcLaunchAndCaptureTime": true,
+    "requiredTimeOrdering": "lower <= procLaunch <= captureTime <= upper",
+    "metadataTimestampNotUsedAsCrashTime": true,
+    "fileMtimeNotUsedAsCrashTime": true
+  },
+  "budgets": {
+    "workSeconds": 5,
+    "afterClosureSeconds": 8,
+    "NativeOuterSeconds": 60,
+    "readCalls": 36,
+    "metadataCalls": 256,
+    "returnedExplicitFdAttempts": 8,
+    "scandirIteratorAttempts": 0,
+    "scandirInternalFdSeparate": false,
+    "applicationWrites": 0,
+    "directChildren": 0,
+    "signalsToOtherProcesses": 0,
+    "publicStdoutMaximum": 65536,
+    "synchronousReadChecksNotPreemptiveTimeout": true,
+    "observation": {
+      "processStatusMaximum": 8,
+      "processReadObserverMaximum": 8,
+      "processReadBytes": 16384,
+      "perObserverStatusMaximum": 8,
+      "immutablePageBytes": 8192,
+      "perObserverPagesMaximum": 128,
+      "perObserverPayloadMaximum": 1048576
+    },
+    "maximumOpenedBodies": 1,
+    "bodyBytesMaximum": 6809,
+    "returnedBytesMaximum": 6810,
+    "originalBodyLimits": {
+      "maximumOpenedBodies": 2,
+      "bodyBytesEachMaximum": 1048576,
+      "returnedBytesMaximum": 2097154
+    },
+    "currentSuccessfulReadShape": {
+      "explicitFds": 7,
+      "metadataCalls": 37,
+      "bodyPreadCallsWhenNoShortRead": 2,
+      "bodyBytesReturned": 6809
+    },
+    "noBudgetIncrease": true,
+    "projection": {
+      "namespaceUTF8BytesMaximum": 256,
+      "selectedThreadsMaximum": 1,
+      "framesMaximum": 32,
+      "referencedImageLookupsMaximum": 32,
+      "eachSymbolASCIICharactersMaximum": 256,
+      "sourceShared5SecondDeadlineCheckedPerFrame": true,
+      "stdoutOriginal65536CapRetained": true
+    }
+  },
+  "projectionAdmission": {
+    "originalCorrelationPredicatesUnchanged": [
+      "crashType309",
+      "launchAndCaptureTimesTyped",
+      "metadataNameAbsentOrNode",
+      "parentIs51483",
+      "pidIs51494",
+      "procNameNode",
+      "procPathIsKnownNodePath",
+      "withinOriginalCorrelatedTimeWindow"
+    ],
+    "fullMatch": "exact fixed file whole identity AND all eight original predicates including exact known real/alias procPath",
+    "additionalSafeFieldsGate": "exact fixed file whole identity AND the same seven non-path predicates; original path predicate remains separate and is never forced true",
+    "safeFieldsWhenPathUnqualified": true,
+    "outputDistinctions": [
+      "matchesOriginalFreshChild",
+      "fixedObservedFileWholeReadBound",
+      "nonPathCorrelationSatisfied",
+      "safeCrashFieldsAdmitted",
+      "pathQualificationSatisfied",
+      "safeCrashProjectionCount"
+    ],
+    "unqualifiedPathKeepsMatchesOriginalFreshChildFalse": true,
+    "causalConclusionClaimed": false,
+    "causeClaim": false,
+    "noOriginalRuntimeProgressOrCauseOrHistoricalClosureClaim": true,
+    "requiredNonPathTypeOrValueGateFailureWithholdsSafeFields": true
+  },
+  "pathClassification": {
+    "onlyAfterAdditionalSafeFieldsGate": true,
+    "typedClass": [
+      "string",
+      "null",
+      "boolean",
+      "integer",
+      "number",
+      "array",
+      "object",
+      "other"
+    ],
+    "closedBooleans": [
+      "boundedPrintableAscii",
+      "absolute",
+      "canonicalComponents",
+      "underHomebrewPrefix",
+      "basenameIsNode",
+      "endsWithBinNode",
+      "containsLiteralAsterisk",
+      "equalsKnownReal",
+      "equalsKnownAlias"
+    ],
+    "boundedPrintableAsciiMaximum": 512,
+    "literalHypotheses": {
+      "/opt/homebrew/Cellar/node/25.9.0_1/bin/node": "known-node-real",
+      "/opt/homebrew/bin/node": "known-node-alias",
+      "/opt/homebrew/*/node": "literal-homebrew-star-node",
+      "/opt/homebrew/*/bin/node": "literal-homebrew-star-bin-node",
+      "/opt/homebrew/Cellar/node/*/bin/node": "literal-homebrew-cellar-node-star-bin-node",
+      "/opt/homebrew/Cellar/*/bin/node": "literal-homebrew-cellar-star-bin-node"
+    },
+    "noGlobExpansion": true,
+    "noRedactionMeaningInferred": true,
+    "unmatchedClass": "unrecognized",
+    "actualValueOnlyForTwoPriorKnownRealOrAliasLiterals": true,
+    "unknownProcPathIsNullNoRawNoHash": true,
+    "kernelImageOrFileContentQualified": false
+  },
+  "publicAllowlist": {
+    "identity": [
+      "Exact predetermined PID51494/parent51483/procName node and original timestamps only after exact fixed-file plus all seven original non-path gates; full correlation separately retains the path gate",
+      "procPath only exact observed real or alias path",
+      "strict timestamp text plus exact nanosecond decimal",
+      "safe regex macOS train/build; releaseType User/Beta"
+    ],
+    "exception": [
+      "fixed Mach type enumeration",
+      "fixed signal enumeration",
+      "<=4 numeric hexadecimal codes"
+    ],
+    "termination": [
+      "termination.namespace only: original value if a string encodable as <=256 UTF8 bytes with no nonprintable/control characters; empty, lowercase and whitespace are not silently suppressed. Type, character/byte length, ASCII and trim classification are published separately; no semantic/cause inference.",
+      "uint64 decimal code/flags",
+      "fixed indicator/byProc enumeration",
+      "byPid equals predetermined target/parent booleans"
+    ],
+    "fixedTextSlots": [
+      "termination.indicator",
+      "termination.reasons[]",
+      "termination.details[]",
+      "asi (string or bounded list only)",
+      "asiSignatures (string or bounded list only)",
+      "asi.dyld (string or bounded list)",
+      "asi.libsystem_c.dylib (string or bounded list)",
+      "asi.libsystem_kernel.dylib (string or bounded list)",
+      "asi.libsystem_platform.dylib (string or bounded list)",
+      "asi.libdispatch.dylib (string or bounded list)",
+      "asi.libc++abi.dylib (string or bounded list)",
+      "asi.node (string or bounded list)",
+      "asi.Node (string or bounded list)",
+      "asi.libsystem_pthread.dylib (string or bounded list)",
+      "asi.libsystem_sandbox.dylib (string or bounded list)",
+      "asi.libsystem_secinit.dylib (string or bounded list)",
+      "asi.libxpc.dylib (string or bounded list)",
+      "asiSignatures.dyld (string or bounded list)",
+      "asiSignatures.libsystem_c.dylib (string or bounded list)",
+      "asiSignatures.libsystem_kernel.dylib (string or bounded list)",
+      "asiSignatures.libsystem_platform.dylib (string or bounded list)",
+      "asiSignatures.libdispatch.dylib (string or bounded list)",
+      "asiSignatures.libc++abi.dylib (string or bounded list)",
+      "asiSignatures.node (string or bounded list)",
+      "asiSignatures.Node (string or bounded list)",
+      "asiSignatures.libsystem_pthread.dylib (string or bounded list)",
+      "asiSignatures.libsystem_sandbox.dylib (string or bounded list)",
+      "asiSignatures.libsystem_secinit.dylib (string or bounded list)",
+      "asiSignatures.libxpc.dylib (string or bounded list)"
+    ],
+    "textBudgets": {
+      "stringsMax": 32,
+      "eachUTF8BytesMax": 4096,
+      "totalUTF8BytesMax": 32768,
+      "linesMax": 64,
+      "hardFailureNoTruncation": true,
+      "cumulativeAcrossOldTerminationDyldAndNewASISlots": true,
+      "asiDyldNotDoubleCounted": true
+    },
+    "libraryMissingLinePrefixes": [
+      "Library not loaded:",
+      "Library not found:"
+    ],
+    "libraryPaths": [
+      "ASCII canonical absolute under /opt/homebrew/",
+      "ASCII canonical absolute under /System/",
+      "ASCII canonical absolute under /usr/lib/"
+    ],
+    "libraryOutput": [
+      ".dylib basename or exact same-name .framework binary",
+      "public prefix category",
+      "under fixed observed Node installation boolean",
+      "equals observed Node executable/alias boolean"
+    ],
+    "libraryMax": 8,
+    "noLibraryFullUnknownPath": true,
+    "noLibraryFileExistenceOrContentClaim": true,
+    "fixedLexicalOnly": [
+      "libraryNotLoaded",
+      "libraryNotFound",
+      "symbolNotFound",
+      "codeSignature",
+      "sandbox",
+      "operationNotPermitted",
+      "permissionDenied",
+      "abortCalled",
+      "dyld"
+    ],
+    "excluded": [
+      "raw IPS",
+      "raw or hash of unknown text",
+      "environment",
+      "arbitrary dictionary keys",
+      "incident identifiers",
+      "machine identifiers",
+      "other process PID values",
+      "raw threads or usedImages arrays",
+      "nonselected thread content",
+      "addresses/imageOffset/symbolLocation/base/size/UUID",
+      "registers/threadState/queue/id",
+      "unmapped image path/name and rejected symbol strings"
+    ],
+    "candidateMetadataBeforeShapeCheck": {
+      "source": "the same existing nofollow stat inside read_one, before unchanged leaf guards",
+      "maximum": 1,
+      "fields": [
+        "already lexically admitted basename",
+        "full9 decimal strings",
+        "closed type directory/regular/symlink/other",
+        "uid/gid/mode/nlink/size integers",
+        "modeOctal",
+        "regular/uidIs501/singleLink/noSetIdOrGroupOtherWrite/regularSingleLinkOwner/positiveSizeWithinOriginalCap booleans"
+      ],
+      "extraMetadataCalls": 0,
+      "extraBodyCalls": 0,
+      "extraFdOpens": 0,
+      "rawOrUnknownTextOrHash": false
+    },
+    "diagnosticShapes": {
+      "rows": 29,
+      "staticRootKeys": [
+        "asi",
+        "asiSignatures"
+      ],
+      "staticDictionaryKeys": [
+        "dyld",
+        "libsystem_c.dylib",
+        "libsystem_kernel.dylib",
+        "libsystem_platform.dylib",
+        "libdispatch.dylib",
+        "libc++abi.dylib",
+        "node",
+        "Node",
+        "libsystem_pthread.dylib",
+        "libsystem_sandbox.dylib",
+        "libsystem_secinit.dylib",
+        "libxpc.dylib"
+      ],
+      "noArbitraryKeyEnumeration": true,
+      "fields": [
+        "slot (one predetermined label)",
+        "present",
+        "type (closed JSON kind)",
+        "stringCount",
+        "listLength or null",
+        "nonStringListItems",
+        "supportedTextShape",
+        "rawValueOrHashExported=false"
+      ],
+      "eachListMaximum": 16,
+      "unsupportedValuesNotTraversedOrExported": true,
+      "nonStringListItemsCountedNotInterpreted": true
+    },
+    "diagnosticLexicalOnly": [
+      "abortWithPayload",
+      "abortWithReason",
+      "abortCalled",
+      "missingSymbol",
+      "missingLibrary",
+      "dynamicLoader",
+      "libraryInitialization",
+      "initializationFailure",
+      "threadCreation",
+      "pthreadDiagnostic",
+      "lockOrSemaphore",
+      "dispatchDiagnostic",
+      "recursiveOrDeadlock",
+      "resourceExhaustion",
+      "permissionOrSandbox",
+      "sandboxInitialization",
+      "jitOrExecutableMemory",
+      "forkSafety",
+      "runtimeAssertion",
+      "uncaughtException",
+      "codeSignature",
+      "architectureMismatch"
+    ],
+    "publicApiTokens": [
+      "abort_with_payload",
+      "abort_with_reason",
+      "pthread_create",
+      "pthread_mutex_init",
+      "pthread_cond_init",
+      "pthread_rwlock_init",
+      "pthread_once",
+      "pthread_jit_write_protect_np",
+      "uv_thread_create",
+      "uv__thread_create",
+      "uv_loop_init",
+      "uv_sem_init",
+      "dispatch_once",
+      "dispatch_async",
+      "dispatch_queue_create",
+      "dlopen",
+      "dlsym",
+      "sandbox_init",
+      "sandbox_init_with_parameters",
+      "sandbox_apply",
+      "sandbox_check",
+      "node::InitializeOncePerProcess",
+      "node::WorkerThreadsTaskRunner",
+      "v8::V8::Initialize",
+      "v8::base::OS::Allocate"
+    ],
+    "publicErrnoTokens": [
+      "EPERM",
+      "EACCES",
+      "EAGAIN",
+      "ENOMEM",
+      "EINVAL",
+      "ENOSYS",
+      "EDEADLK"
+    ],
+    "fixedTokenMatchesAreLexicalOnly": true,
+    "freeFormDiagnosticSentencesAllowed": false,
+    "noExtraLibraryReads": true,
+    "namespaceText": {
+      "maximumUTF8Bytes": 256,
+      "noControlOrNonprintableCodepoints": true,
+      "allowLowercaseAndSpaces": true,
+      "allowEmptyString": true,
+      "unicodeSurrogateEncodingFailureYieldsNull": true,
+      "publishOriginalNotTrimmedOrNormalized": true,
+      "output": [
+        "present",
+        "type",
+        "characterLength",
+        "utf8Bytes",
+        "asciiOnly",
+        "printableWithoutControls",
+        "trimClass",
+        "publicSyntaxQualified",
+        "knownInPreviousEnum",
+        "value",
+        "semanticMeaningClaimed=false"
+      ],
+      "onlyAfterFixedWholeAndSevenNonPathGates": true,
+      "notAFieldNameOrEnumGuess": true
+    },
+    "faultingThread": {
+      "maximumFrames": 32,
+      "selection": "Use type-int in-range crash.faultingThread as a single direct index. Inspect only that thread's fixed triggered/frames keys. Present triggered must be exactly true; absent is identified separately and the documented index supplies selection. With no faultingThread key, only a one-element threads array whose only thread has triggered=true may be selected. No search across other threads.",
+      "invalidSelection": "closed disposition plus type/count only, selectionQualified=false, no frame projection",
+      "otherThreadsVisited": 0,
+      "framesBeyond32": "Not traversed. Publish exact frameCount, remainingFramesNotTraversed, boundedFramePrefix=true, selectedThreadAllFramesVisited=false. Never call the prefix a full stack.",
+      "onlyReferencedImages": "At most one direct usedImages[imageIndex] lookup for each of the <=32 selected frames, only after type-int/in-range test; never enumerate other images or read library files.",
+      "publicImageMapping": {
+        "node": "Exactly the six literal known/public Node path forms already used by proc_path_projection, name absent or equal to basename node. No wildcard expansion and no executable identity claim.",
+        "system": "Exactly /usr/lib/system/{15 listed system basenames} or /usr/lib/{7 listed public basenames}; CoreFoundation/Foundation/Security only at the three listed standard framework layouts.",
+        "homebrew": "Canonical printable ASCII path under /opt/homebrew/Cellar|opt|lib, with basename lib(uv|node|sqlite3|icui18n|icuuc|icudata|cares|nghttp2|nghttp3|ngtcp2|crypto|ssl|z|zstd|brotlicommon|brotlidec|brotlienc|simdjson|simdutf|llhttp) plus zero-to-three 1..3 digit dot-version parts and .dylib. Public basename/category only; no full path.",
+        "imageNameCrosscheck": "If name exists it must be a string equal to the path basename; otherwise no public mapping."
+      },
+      "symbolAdmission": {
+        "requiresMappedPublicImage": true,
+        "maximumASCIICharacters": 256,
+        "noControlQuotePathOrHexAddressForms": true,
+        "c": "[A-Za-z_$][A-Za-z0-9_.$]{0,255}",
+        "cpp": "Only node/v8/uv/std/cppgc/__cxxabiv1/dyld2/3/4-or-dyld/mach_o/lsl namespace prefixes and the source's finite ASCII signature character class.",
+        "allocation": "operator new/delete, optional [], and source's finite ASCII parameter class.",
+        "publicDyldHypothesisCoverage": [
+          "ignition_halt",
+          "boot_boot",
+          "ignite",
+          "dyld4::CacheFinder"
+        ],
+        "hypothesisNotPrefilledOrProved": true,
+        "unknown": "Only type, length and boundedPrintableAscii plus null publicGrammar/publicValue; no raw/hash."
+      },
+      "coverageFlags": {
+        "otherThreadsTraversed": false,
+        "unreferencedImagesTraversed": false,
+        "addressesOrRegistersOrQueuesExported": false,
+        "rawThreadsOrUsedImagesExported": false,
+        "unknownSymbolsOrPathsOrHashesExported": false,
+        "libraryFilesRead": false,
+        "causalConclusionClaimed": false
+      },
+      "publicFieldRenamedAccurately": "Old threadsEnvironmentOrUsedImagesExported:false replaced by rawThreadsEnvironmentOrUsedImagesExported:false because a bounded public selected-thread projection is now explicitly allowed."
+    }
+  },
+  "failureSemantics": {
+    "malformedOrUnsupportedSchema": "closed failure or unqualified correlation; never guessed identity",
+    "missingOrNoMatch": "only this fixed file; no enumeration or directory coverage claim",
+    "limitsOrDrift": "hard refusal with original error, no automatic fallback/retry",
+    "unknownResourceRegistration": "pending/registrationUnknown conservatively prevents allClosed",
+    "historicalUnknownsUnchanged": true,
+    "originalAbortCauseNotAutomaticallyProved": true,
+    "newProbeCauseNotAutomaticallyProved": true,
+    "fullFileIdentityFailure": "stop before body; prior current identity preserved as typed metadata",
+    "pathMismatch": "retained unmatched; new explicitly scoped safe projection may still be admitted",
+    "unsupportedDiagnosticSlot": "publish only predetermined label, presence/type and bounded list non-string count; no traversal or interpretation of unsupported values",
+    "unrecognizedNamespace": "No closed semantic enum is required. Only non-string/unencodable/>256-byte/control-containing value is withheld while fixed shape is retained; no raw/hash of rejected value.",
+    "threadOrImageOrSymbolMismatch": "A fixed unqualified disposition/shape is returned; no alternate thread search, broader image lookup, new file read or identity/cause inference."
+  },
+  "originalMethods": {
+    "open_fd": {
+      "blob": "f37f8cad57e8b45c1a2cfb26ff0738f46697422e",
+      "bytes": 1490,
+      "sha256": "807f519034edf774a80e74b5ef7227768da027b0c8ace99cb353d1b971bc81d6"
+    },
+    "close_one": {
+      "blob": "91ea967f61a16f08cd89419cd553a77e0642c185",
+      "bytes": 458,
+      "sha256": "f900ad678de9c765cb93793009ceb98f23f4881fa671cac86040e27257a7543f"
+    },
+    "close": {
+      "blob": "c6cb1f5af500c99b8a4fee9f1c97522b5a310ef4",
+      "bytes": 139,
+      "sha256": "42057aa2bfbfe146a206cab868e7e518a93003553ab9c8e07d55432ad25b02aa"
+    }
+  },
+  "changeScope": {
+    "sourceForwardHunks": 4,
+    "sourceInverseHunks": 4,
+    "journalForwardHunks": 2,
+    "journalInverseHunks": 2,
+    "journalChangesOnly": [
+      "GF_SLOT",
+      "GF_REQUEST exact pin",
+      "observer key prefix"
+    ],
+    "patchNames": [
+      "bounded-printable-namespace-and-shape",
+      "direct-single-thread-and-public-image-symbol-projection",
+      "one-safe-gate-call-and-accurate-raw-thread-export-flag",
+      "normal-and-fallback-r5-schema"
+    ],
+    "allIOAndCorrelationAndPathClassifierAndFixedTextSlotsUnchanged": true,
+    "sourceSharedDeadlinesAndOriginalFDCustodyUnchanged": true,
+    "budgetsUnchanged": true,
+    "noPythonOrModuleExecution": true,
+    "NativeCalls": 0,
+    "oldSourceActualAndUnknownsUnchanged": true
+  },
+  "typedNativeDigest": null,
+  "typedNativeFingerprint": null,
+  "primaryReference": {
+    "url": "https://developer.apple.com/documentation/xcode/interpreting-the-json-format-of-a-crash-report",
+    "retrieved": "2026-11-06",
+    "scope": "Apple defines faultingThread as the threads-array index, triggered as the crash indicator, frame.imageIndex as the usedImages-array index, symbol as the function name, and termination.namespace as an OS termination category. These schema facts do not identify this report's unknown value or prove a cause.",
+    "notHostQualification": true
+  }
+}

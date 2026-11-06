@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+      "offset": 0,
+      "limit": 65536,
+      "expected_version": "66306:33208045:383786:1794003951048308942:1794003951048308942"
+    }
+  },
+  "idempotency_key": "heptabao-combined-5767739c-fresh-observe-r1-default-stdout-body0"
+}

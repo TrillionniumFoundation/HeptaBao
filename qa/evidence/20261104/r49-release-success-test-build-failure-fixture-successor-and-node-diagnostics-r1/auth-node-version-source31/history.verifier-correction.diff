@@ -1,0 +1,11 @@
+--- a/verifier.first.js
++++ b/verifier.js
+@@ -15,7 +15,7 @@
+  eq("source/strict-inverse",strictApplySource(s,files["source.inverse.diff"]).raw,before);
+  eq("source/six-hunks",[strictApplySource(before,files["source.forward.diff"]).hunks,strictApplySource(s,files["source.inverse.diff"]).hunks],[6,6]);
+  for(const n of ["critical","need","interrupt","remaining","sha","encoded","identity","error_projection","public_command","load_modules"])
++  eq("original-definition/"+n,def(s,n).trimEnd(),def(before,n).trimEnd());
+-  eq("original-definition/"+n,def(s,n),def(before,n));
+  const oldRequest=JSON.parse(JSON.stringify(q));delete oldRequest.stdin;delete oldRequest.idempotency_key;
+  eq("request/only-fixed-python-wrapper",oldRequest,{host:"mac",executable:"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",args:["-I","-S","-B","-"],cwd:"/Users/qianqi",timeout_seconds:60});
+  eq("request/exact-stdin",q.stdin,s);

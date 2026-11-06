@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.canonical576-body-source-verification.v1",
+  "pass": true,
+  "check_count": 31,
+  "checks": [
+    {
+      "name": "qualified_three_range_BODY_baseline",
+      "pass": true
+    },
+    {
+      "name": "actual_current_INFO_source",
+      "pass": true
+    },
+    {
+      "name": "candidate_source45b5",
+      "pass": true
+    },
+    {
+      "name": "old_BODY_diff_forward",
+      "pass": true
+    },
+    {
+      "name": "old_BODY_diff_reverse",
+      "pass": true
+    },
+    {
+      "name": "current_INFO_diff_forward",
+      "pass": true
+    },
+    {
+      "name": "current_INFO_diff_reverse",
+      "pass": true
+    },
+    {
+      "name": "5_and8_hunks",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_0",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_1",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_2",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_3",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_4",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_5",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_6",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_7",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_8",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_9",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_10",
+      "pass": true
+    },
+    {
+      "name": "unique_literal_11",
+      "pass": true
+    },
+    {
+      "name": "twelve_exact_literal_edits_only",
+      "pass": true
+    },
+    {
+      "name": "fourteen_definitions_only_two_literal_bodies",
+      "pass": true
+    },
+    {
+      "name": "exact_whole_original_INFO_native_state",
+      "pass": true
+    },
+    {
+      "name": "INFO_original_three_calls_closed",
+      "pass": true
+    },
+    {
+      "name": "actual_version_size_SHA",
+      "pass": true
+    },
+    {
+      "name": "one_exact_range_whole_request",
+      "pass": true
+    },
+    {
+      "name": "separate_whole_BODY_authority_exact_one",
+      "pass": true
+    },
+    {
+      "name": "prior_INFO_state_whole_before_attach",
+      "pass": true
+    },
+    {
+      "name": "new_archive_keys_only",
+      "pass": true
+    },
+    {
+      "name": "original_body_and_INFO_limits",
+      "pass": true
+    },
+    {
+      "name": "no_newinitialization_or_runtime",
+      "pass": true
+    }
+  ],
+  "Native_calls": 0,
+  "Python_calls": 0,
+  "journal_executed": false
+}

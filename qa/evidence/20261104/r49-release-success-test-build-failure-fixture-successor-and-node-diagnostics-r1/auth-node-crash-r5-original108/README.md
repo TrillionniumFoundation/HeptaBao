@@ -1,0 +1,9 @@
+# R5 fixed crash report original observation chain
+
+This packet preserves the unique authorized read of the already observed 6,809-byte IPS file. It contains all 17 original Native SDK returns and exact pre-dispatch request/intent/armed records, all 3 completed/inactive original observers, all 10 immutable pages, their reconstructed payloads and Native results, and the complete 19,642-byte stdout / empty stderr. The only process started was this fixed read-only projection, not Node or a business worker.
+
+The report exposes termination.namespace exactly `<0x23>` and the selected faulting thread's 11 public dyld frames, including ignition_halt, boot_boot, ignite and CacheFinder. All 7 non-path correlation predicates pass, but the exact procPath gate is still false; matchesOriginalFreshChild and cause claims remain false. No unknown path, raw IPS body/hash, other thread, environment, address or register was exported. The legacy managed/helper UNKNOWN and earlier failures remain unchanged.
+
+The parent was exit 0 / full / durable / confirmed. Seven acquired file descriptors, 37 metadata operations and 2 preads returning 6,809 bytes are closed; no scan, child, write, T5 or SDK/provider/credential action occurred. A has zero call/future and releases its observation lane.
+
+verify-original-chain.js was actually evaluated only as pure V8 over the stored public original bytes; all 522 checks passed. It does not execute the Python candidate, SDK or a product. The minimal packet's first assembly comparison incorrectly compared log_bytes.stdout/stderr objects to numbers; it failed before any archive mutation or Native call. The exact correction checks both seen and stored counts, and the original error record is included. There were no Native transport errors, retries, reconciliations or replaced pages in this run.

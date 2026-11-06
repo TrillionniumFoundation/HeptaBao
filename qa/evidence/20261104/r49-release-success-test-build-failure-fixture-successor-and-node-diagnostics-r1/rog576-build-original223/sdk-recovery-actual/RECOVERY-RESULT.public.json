@@ -1,0 +1,19 @@
+{
+  "before": {
+    "blob": "6f71ba0559184bf8f0e2e70d620ef8cd039d1e7c",
+    "bytes": 179536,
+    "sha256": "f4b55506a075d40ef0ed67fd3f03520a2c34c6f8757c2de5e3d1820914ac34a1"
+  },
+  "after": {
+    "blob": "ff24f92a8403e5364e47e614d55e04cb2d2f9365",
+    "bytes": 183689,
+    "sha256": "f7cb057193be703101ea879020e502799cbde77689ee40f35cc41da6ee304c4c"
+  },
+  "originalSDK": {
+    "blob": "b2459cf511bae4559b0941fb079048009c308d68",
+    "bytes": 978,
+    "sha256": "9403d021b20de9704d0511835b3a2253e68dedacfbf17fb996b1bec5569369ef"
+  },
+  "readyForOriginalAcceptOnly": true,
+  "NativeCalls": 0
+}

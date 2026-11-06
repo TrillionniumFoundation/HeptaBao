@@ -1,0 +1,26 @@
+{
+  "scope": "public repository retrieval only; zero Native",
+  "fixedDelegateFirstPathMiss": {
+    "url": "https://raw.githubusercontent.com/apple-oss-distributions/dyld/main/dyld/SyscallDelegate.cpp",
+    "sdk": {
+      "content": [
+        {
+          "type": "text",
+          "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}"
+        }
+      ],
+      "structuredContent": {
+        "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+        "error_code": "NOT_FOUND",
+        "error_data": {
+          "message": "Not Found",
+          "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+          "status": "404"
+        }
+      },
+      "isError": true
+    },
+    "resolvedBy": "Observed public dyld directory names locate DyldDelegates.cpp; no retry or host probe."
+  },
+  "notAHostUnknown": true
+}

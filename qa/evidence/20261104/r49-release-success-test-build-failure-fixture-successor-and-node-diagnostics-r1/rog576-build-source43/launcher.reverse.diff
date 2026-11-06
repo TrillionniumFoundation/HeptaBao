@@ -1,0 +1,108 @@
+--- a/launcher.py
++++ b/launcher.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Preserve prior evidence and admit one frozen combined source and exact 252/280 matrix."""
++"""Preserve prior evidence and admit one frozen combined source and exact 246/268 matrix."""
+ from pathlib import Path
+ import argparse
+ import fcntl
+@@ -13,11 +13,11 @@
+ 
+ BINDING_READY = True
+ assert BINDING_READY, 'formatted source and published controls need separate exact admission'
+-FINAL_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
+-FINAL_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
+-SOURCE_STAGE_ROOT = Path('/home/qian-qi/hb-5767739c-src-20261106-r1')
++FINAL_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
++FINAL_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'
++SOURCE_STAGE_ROOT = Path('/home/qian-qi/hb-02b90762-src-20261106-r1')
+ SOURCE_STAGE_SCHEMA = 'heptabao.native-jwt-independent-source-stage.v1'
+-GROUPS_SHA256 = '617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df'
++GROUPS_SHA256 = '7c0fb6c5b6819c2cab60f3044e0aec767ad8abbf22e31ff0f7fab742ea4cd786'
+ LAUNCHER_ENTERED = time.monotonic()
+ ORIGINAL_OUTER_SECONDS = 12000
+ os.umask(0o077)
+@@ -73,7 +73,7 @@
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = Path('/home/qian-qi/hb-5767739c-controls-20261106-r1')
++    ROOT = Path('/home/qian-qi/hb-02b90762-controls-20261106-r2')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'
+@@ -88,7 +88,7 @@
+     OLD_LIBTEST_SHA = '9f498c4c2c14f2198dcbe746be81be1cf0c7caabca28671bba83fb003a65b46a'
+     OLD_LIBTEST_BYTES = 188077176
+     OLD_STATUS = 'passed'
+-    TARGET = Path('/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1')
++    TARGET = Path('/home/qian-qi/hb-02b90762-controls-20261106-r2/cargo-target-r1')
+     TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'
+     CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'
+     PYTHON = '/usr/bin/python3'
+@@ -488,13 +488,13 @@
+ assert stage['source'] == str(SOURCE) and stage['root'] == str(SOURCE_STAGE_ROOT)
+ assert stage['full_worktree'] == {
+     'all_tracked_worktree_blobs_and_modes_match': True,
+-    'full_leaf_index_sha256': '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423',
+-    'index_matches_tree': True, 'tracked_bytes': 62553540, 'tracked_leaf_count': 3932}
++    'full_leaf_index_sha256': 'c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc',
++    'index_matches_tree': True, 'tracked_bytes': 62537554, 'tracked_leaf_count': 3932}
+ assert stage['within_new_stage_deadline'] and not stage['compiler_started'] and not stage['rust_tests_executed']
+ assert not stage['formatter_executed'] and not stage['historical_controls_executed']
+ runner = CONTROL / RUNNER_NAME
+ _, runner_pin = read_bound(runner, args.runner_sha256, 40000)
+-groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 35287)
++groups_raw, groups_pin = read_bound(CONTROL / 'jwt-test-groups.public.json', args.groups_sha256, 33825)
+ groups = json.loads(groups_raw)
+ assert stage['controls'][FAILED_AUTHORITY_NAME] == {'bytes': 726, 'sha256': FAILED_AUTHORITY_SHA}
+ assert stage['failed_observer_before'] == stage['failed_observer_after']
+@@ -502,7 +502,7 @@
+ PROFILE_CRATES = {'file': 'heptabao-server', 'default': 'heptabao-server',
+                   'ha-native-v6-peer-ingress': 'heptabao-ha-service'}
+ assert [(g['label'], g['libtest_profile'], len(g['tests'])) for g in groups] == [
+-    ("native-jwt-pki-file28", "file", 28), ("native-jwt-pki-default28", "default", 28),
++    ("native-jwt-pki-file22", "file", 22), ("native-jwt-pki-default22", "default", 22),
+     ("legacy-jwt-default67", "default", 67), ("native-auth-identity-default69", "default", 69),
+     ("snapshot-body10", "ha-native-v6-peer-ingress", 10), ("snapshot-peer7", "ha-native-v6-peer-ingress", 7),
+     ("snapshot-actor2", "default", 2), ("snapshot-wire4", "default", 4),
+@@ -515,10 +515,10 @@
+            and g['runtime_seconds'] == 600 and g['libtest_profile'] in PROFILE_CRATES
+            and len(g['tests']) == len(set(g['tests'])) for g in groups)
+ assert groups[0]['tests'] == groups[1]['tests']
+-assert sum(len(g['tests']) for g in groups) == 280
+-assert len({(PROFILE_CRATES[g['libtest_profile']], name) for g in groups for name in g['tests']}) == 252
+-assert sum(len(g['tests']) for g in groups[:4]) == 192
+-assert len({n for g in groups[:4] for n in g['tests']}) == 164
++assert sum(len(g['tests']) for g in groups) == 268
++assert len({(PROFILE_CRATES[g['libtest_profile']], name) for g in groups for name in g['tests']}) == 246
++assert sum(len(g['tests']) for g in groups[:4]) == 180
++assert len({n for g in groups[:4] for n in g['tests']}) == 158
+ assert sum(len(g['tests']) for g in groups[4:9]) == 27
+ assert sum(len(g['tests']) for g in groups[9:]) == 61
+ controls_raw, controls_pin = read_bound(CONTROL / 'inert-stage.result.public.json',
+@@ -605,11 +605,11 @@
+                   normal_runner_argv=argv, original_release_build_cap_seconds=1800,
+                   original_libtest_build_cap_seconds=1800 if args.host == 'mac' else 3600,
+                   each_listing_cap_seconds=30, each_runtime_group_cap_seconds=600,
+-                  unique_test_count=252, profile_instance_test_count=280,
++                  unique_test_count=246, profile_instance_test_count=268,
+                   baseline_c_unique=149, baseline_c_profile_instances=166,
+-                  selected_jwt_pki_unique=164, selected_jwt_pki_instances=192,
++                  selected_jwt_pki_unique=158, selected_jwt_pki_instances=180,
+                   snapshot_components=23, snapshot_service_regressions=4, normal61_tests=61,
+-                  new_jwt_test_names=26, new_jwt_profile_instances=52, jwt_policy_legacy_additions=4,
++                  new_jwt_test_names=20, new_jwt_profile_instances=40, jwt_policy_legacy_additions=4,
+                   new_pki_test_names=2, new_pki_profile_instances=4,
+                   existing_auth_identity_test_names=132, compile_profiles=['file', 'default', 'ha-native-v6-peer-ingress'],
+                   default_features_do_not_qualify_distributed_jwt_ha=True,
+@@ -639,7 +639,7 @@
+                       'error_type': result.get('error_type')}), flush=True)
+     raise SystemExit(1)
+ print(json.dumps({'status': 'preflight-admitted', 'source_commit': args.commit,
+-                  'source_tree': args.tree, 'unique_test_count': 252, 'profile_instance_test_count': 280,
++                  'source_tree': args.tree, 'unique_test_count': 246, 'profile_instance_test_count': 268,
+                   'fresh_target_admitted': True, 'old_target_reused': False,
+                   'historical_artifact_qualification_inherited': False,
+                   'historical_host_fences_reexecuted': False,

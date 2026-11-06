@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.root.rog576-default-libtest-stdout-whole.r1",
+  "pin": {
+    "path": "stdout.original.txt",
+    "blob": "9af7a5c589aa5c86077082afdd0145291f7515e1",
+    "bytes": 383786,
+    "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97"
+  },
+  "audit": {
+    "tree": "1a22395e25159868c70f782a09933f406f321602",
+    "files": 1,
+    "bytes": 383786,
+    "merkle": {
+      "root_sha": "1a22395e25159868c70f782a09933f406f321602",
+      "trees_verified": 1,
+      "leaf_count": 1
+    },
+    "whole": true
+  },
+  "allJSON": true,
+  "lines": 442,
+  "reasons": {
+    "compiler-artifact": 396,
+    "build-script-executed": 45,
+    "build-finished": 1
+  },
+  "buildFinished": [
+    {
+      "reason": "build-finished",
+      "success": false
+    }
+  ],
+  "compilerMessages": [],
+  "reportSHAExact": true,
+  "bindingCorrection": {
+    "firstLookup": "compileShared",
+    "actualField": "compile_shared",
+    "pureFieldLookupOnly": true,
+    "firstResultPreserved": true,
+    "noNativeCalls": 0
+  }
+}

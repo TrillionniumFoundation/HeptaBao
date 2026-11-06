@@ -1,0 +1,240 @@
+{
+  "schema": "heptabao.mac576.source-only-stage.actual-binding-plan.v1",
+  "status": "SOURCE_ONLY_BOUND_AWAIT_EXACT_GO",
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+    "leaves": 3932,
+    "tracked_bytes": 62553540,
+    "index": {
+      "blob": "4e4052b40639f1f490adf7c4f9c8a9bab1b7ac99",
+      "bytes": 453838,
+      "sha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423"
+    },
+    "expected_history": 3769,
+    "formatted": false,
+    "RustCompiled": false
+  },
+  "read_only_base": {
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-02b90762-src-20261106-r1/source",
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf",
+    "history": 3768,
+    "tracked_bytes": 62537554,
+    "index_sha256": "c6cef770842a1b0006b4c86a58e325802d00dd5779dede468262f2693c3246cc",
+    "actual_stage_report": {
+      "blob": "a148ebe5d4d729f4a1a76fd18e7a2e25b68a571d",
+      "bytes": 10558,
+      "sha256": "7d2e75f8038ba68c4ceeb5af4ec75bf8a6f528b2d394acad97ea0364b70d33e9"
+    },
+    "root_qualification": {
+      "blob": "91614d1f693343c6772302930a10b5f1c792d21e",
+      "bytes": 1353,
+      "sha256": "3e51bf9631201bcb4d67709e6ed98c2202e5d4f668126534dd3bf914362aebb4"
+    },
+    "volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "semantics": "Observed historical source base, revalidated by the unchanged in-stage freeze-before/freeze-after, local independent-clone and T5 checks. It is not an inherited build qualification or a new presence observation."
+  },
+  "source": {
+    "reviewed_template_tree": "a928d42c1558a0b48c40c10af6c76c63eae97a51",
+    "reviewed_template": {
+      "blob": "79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed",
+      "bytes": 23651,
+      "sha256": "7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"
+    },
+    "binder_original": {
+      "blob": "e353530f3a579d88554928d070790661fa720114",
+      "bytes": 6971,
+      "sha256": "bb79258cdd0357bcd56915c762eeafabb85bfca62715d8126e8d59ccb765f8a5"
+    },
+    "bound": {
+      "blob": "57f978b5e6afc37e07577e803d72803a399e6887",
+      "bytes": 23713,
+      "sha256": "a70bc4e2234b709473f3fb2ae3fb279200011e9e3bc0da194d2972a554f114df"
+    },
+    "source_diff": {
+      "blob": "35193baa26461a5ff02cba50f0f127a88dc9e97d",
+      "bytes": 730,
+      "sha256": "d869e443df7a992eb14f94dfab1dde8289de5a27942a97c2e1c77e5c9f7d10eb"
+    },
+    "difference": "Exactly the two actual bundle constants;20 previously reviewed definitions and original failure/finally text are unchanged."
+  },
+  "original_binder_source_tree": "caa857adc007a62530bcc27976f534448fed83aa",
+  "bundle": {
+    "schema": "heptabao.mac-successor576.actual-bundle-bindings.v1",
+    "ready": true,
+    "candidate": {
+      "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+      "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+      "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    },
+    "producer": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+      "report": {
+        "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+        "bytes": 29748,
+        "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+      },
+      "rootQualification": {
+        "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+        "bytes": 2941,
+        "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+      }
+    },
+    "bundle": {
+      "bytes": 5766,
+      "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
+      "full9": [
+        "66306",
+        "31358148",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "5766",
+        "1794000539740776688",
+        "1794000539740776688"
+      ],
+      "version": "66306:31358148:5766:1794000539740776688:1794000539740776688",
+      "headerSha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9"
+    },
+    "infoNative": {
+      "blob": "b40eebebed4155bff74279c2b1d06cb8e2dd181e",
+      "bytes": 472,
+      "sha256": "06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"
+    },
+    "infoOperation": "eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b",
+    "bodyOperations": [
+      "66156671a53584aade1ab361827dcd7714539359fcfc964e75af16d58fb3e4fc"
+    ],
+    "transport": {
+      "blob": "9fbaf8430240c8b767e40bd17b9b1ae932ea93e5",
+      "bytes": 869,
+      "sha256": "0f1d23c49bdf8e9254b84ab95f4bf7192c46d710bb8dc30d1392685b126f2290"
+    },
+    "transportRootQualification": {
+      "blob": "72cc86bbdbe09496c13865bb1d642d0423c873ba",
+      "bytes": 2340,
+      "sha256": "17426f94a2a78f325bd5e2e1c9340574860e99ba5b53aae2020cd55ca7e68eab"
+    },
+    "base64": {
+      "blob": "80317c9867cd6485b4a308e9d512de2d99d02c12",
+      "bytes": 7689,
+      "sha256": "bdbfecb000ed9119a5de46bd1e5ed5d986bb453a22f0fba841dc7cedb6571797"
+    }
+  },
+  "exact_request": {
+    "blob": "3b86e61a47028c1b5d8e23369ef336490dc6382b",
+    "bytes": 32676,
+    "sha256": "8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2"
+  },
+  "carrier": {
+    "blob": "f07869b53dec4249e2fd48c6e57a2e0a88badd2b",
+    "bytes": 7772,
+    "sha256": "94e495bd24e0a5ff4bdb2dcb970d10b169cb0aea6f04c3fca068e5ccf60734d8"
+  },
+  "typed": {
+    "sha256": "dae9bc16adfb96104073ba4a7571815b5aa6d153f961454d671b1e3a947b7d24",
+    "native_fingerprint": "15774345975436121616",
+    "canonical_bytes": 32573
+  },
+  "journal": {
+    "before": {
+      "blob": "0bcb0ae541da1865f788a26cdb4a884425c50cbd",
+      "bytes": 19047,
+      "sha256": "f74c58e06d949fe5e3aac9c9e7f33b3f68504ce9e6721bc59c3309c6a7c7424d"
+    },
+    "after": {
+      "blob": "9f29f42096f7d230210455cbfabfa7798a63fcd0",
+      "bytes": 19050,
+      "sha256": "c533a12a85ebc81bec9cfd1c39f5a43f7eef69f99df630f68ccbffde6048a0fc"
+    },
+    "diff": {
+      "blob": "5f96ef5e3e27e0e6db0ab29a762fefd2ea673525",
+      "bytes": 1350,
+      "sha256": "484fe1c9a3b56aae3b60457fe205f1d6a332d3508826fcc0ba14cdc9ab716484"
+    },
+    "slot": "successor576_mac_source_only_stage_gitfirst_r1",
+    "observer_key_prefix": "heptabao-5767739c-mac-source-only-a70bc4e2-",
+    "difference": "Exactly three literals:slot,whole exact request pin,original observer key prefix. No function or closed-tool policy changed."
+  },
+  "scope": {
+    "host": "mac",
+    "process_starts": 1,
+    "new_root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source",
+    "result_path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+    "stage_create_only": true,
+    "transport_on_stdin": true,
+    "source_clone_local_only": true,
+    "controls_publication": false,
+    "Cargo": false,
+    "product_processes": false,
+    "report_file_info_or_body": false
+  },
+  "budgets": {
+    "stage_seconds": 300,
+    "git_leaf_seconds": 90,
+    "clone_seconds": 180,
+    "outer_seconds": 360,
+    "complete_carrier_bytes": 262144,
+    "actual_carrier_bytes": 7772,
+    "tracked_worktree_bytes": 134217728,
+    "immutable_page_bytes": 8192,
+    "per_stream_read_bytes": 16384,
+    "observer_payload_bytes": 1048576
+  },
+  "durable_flow": [
+    "Whole exact root GO and frozen request must precede initialization of the fresh stage slot.",
+    "Externally whole request/intent/armed then a separate model boundary before the one Native START.",
+    "Save and whole archive every complete original SDK before parsing. Follow only the returned original job and original observer IDs.",
+    "Stop on UNKNOWN without replay or new key. Each original observer closes at whole payload SHA/EOF and inactive;post-finally stdout and authority jointly establish the stage terminal.",
+    "The fixed detailed stage report needs later exact INFO/BODY authorization;this SOURCE does not grant it."
+  ],
+  "actual_references": {
+    "producer_report_tree": "190455f7104859ba5df1c39180105a3e5d9b14c7",
+    "producer_root_tree": "d3c0c006a351fe117dc2731a3711fa27cbb5e374",
+    "bundle_INFO_actual26_tree": "1d737927115b7dd2469fb8f54598d58cf5f3731b",
+    "bundle_BODY_actual30_tree": "18d93805f3b61296f491a8145bfc51f4a8407bd3",
+    "bundle_transport_tree": "d8635238d1160e1145fb50ca241583c9d26bd60e",
+    "transport_root_tree": "ffd4819fce57da558cc749b5410cbfb712bcd093"
+  },
+  "next_normal": {
+    "source_tree": "66c0d39d1a8e6cdfea4af730bf053c95c70b8d4e",
+    "root_review": {
+      "blob": "d9453662d9e2e4ac556ab07ac852cee0fa4f9612",
+      "bytes": 966,
+      "sha256": "7711d49a8f9c71f3cceca822c3b7b5b30f101a87a44e06a2ffa3a772c5ba0c23"
+    },
+    "unique_tests": 89,
+    "profile_executions": 117,
+    "old_tests": 61,
+    "new_file28": 28,
+    "new_default28": 28,
+    "absolute_seconds": 8280,
+    "runner_read_cap": 49152,
+    "actual_result": null,
+    "controls_ready": false
+  },
+  "actual": {
+    "Native_calls": 0,
+    "Cargo_runs": 0,
+    "Python_runs": 0,
+    "Mac_stage_qualified": false,
+    "controls_published": false,
+    "normal_117_passed": false,
+    "full34_passed": false,
+    "LAN_passed": false,
+    "GO": null
+  },
+  "boundary_notes": [
+    "Producer stage/root qualification and original bundle transport are observed. This packet binds a proposed Mac source stage only.",
+    "The historical source-only template's normal61 interface is preserved as history;the accepted SOURCE20's89/117 plan is the current Mac normal interface.",
+    "No old4e808/02b runtime qualification or Linux execution result is inherited by Mac. Actual new Mac reports and artifact identities stay unknown until separately authorized execution.",
+    "No source/branch/ref mutation is included. Root already froze576;the sole new effect proposed here is create-only Mac source staging.",
+    "The source-only carrier remains separate from controls, and the complete encoded carrier is7772 B."
+  ]
+}

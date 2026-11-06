@@ -1,0 +1,229 @@
+{
+  "schema": "combined5767739c-independent-source-stage-source-r1",
+  "candidate": {
+    "schema": "heptabao.root.snapshot-lock-native-jwt-batch.candidate.r1",
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+    "leafCount": 3932,
+    "trackedBytes": 62553540,
+    "fullLeafIndexSha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+    "changedFiles": [
+      {
+        "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+        "before": {
+          "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+          "bytes": 19107,
+          "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+        },
+        "after": {
+          "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+          "bytes": 21936,
+          "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_auth.rs",
+        "before": {
+          "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+          "bytes": 143153,
+          "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165"
+        },
+        "after": {
+          "blob": "2b344d01edbe52e0fc4241b79461c50db2cf7fd5",
+          "bytes": 143838,
+          "sha256": "7a7b5a2aaa4bd185b4499ce31927a145a6a014a401e95031f26e7212c453a882"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+        "before": {
+          "blob": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+          "bytes": 49655,
+          "sha256": "d909c5fa2fe1044e49372b9168619feed28968d48d34fa9af111e39fc31f056a"
+        },
+        "after": {
+          "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+          "bytes": 61884,
+          "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+        "before": {
+          "blob": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+          "bytes": 20232,
+          "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f"
+        },
+        "after": {
+          "blob": "ab70d9abc8abda8d605f055ba0eaeda74d369803",
+          "bytes": 20359,
+          "sha256": "e53ba84411f23c8c822d8a4f546dbead8bc643097de419a7e70c5eac99015d58"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+        "before": {
+          "blob": "7178177f6156cce780c7044721ed53120c86a563",
+          "bytes": 19516,
+          "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73"
+        },
+        "after": {
+          "blob": "a360aa111114da8aa16827de528839ca8eb90eec",
+          "bytes": 19632,
+          "sha256": "bc7e833e0faced417249756c78e546e955271b6ed25da1d3dbfbdff2bf56ef76"
+        }
+      }
+    ],
+    "baseFullLeafIndexReproduced": true,
+    "wholeRecursiveTree": true,
+    "rootAndAllSubtreesMerkleVerified": true,
+    "baseHistoryCount": 3768,
+    "expectedHistoryCount": 3769,
+    "sourceProposals": {
+      "jwtBatchR2": "8234672429914b80e03f7c1f0c3f70cd325cd5cb",
+      "serviceLocks": "3e506b922c214561c9dd22678354b55dcff38fc1"
+    },
+    "independentReview": {
+      "productionTree": "a33e59aa868b10282b5d4e28404d80a67b1a6704",
+      "testCorrectionConfirmedByC": true
+    },
+    "testPlan": {
+      "pin": {
+        "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+        "bytes": 35287,
+        "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+      },
+      "uniqueTests": 252,
+      "instances": 280,
+      "profiles": {
+        "file": 28,
+        "default": 235,
+        "ha-native-v6-peer-ingress": 17
+      },
+      "groups": 18
+    },
+    "runtimeTestsExecuted": 0,
+    "RustCompiled": false,
+    "formatted": false,
+    "platformsQualified": [],
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  },
+  "originalStager": {
+    "blob": "36c9681e90e19521a8f09d2fbfd88896e2b6d267",
+    "bytes": 28939,
+    "sha256": "3a0aa014e5292df423d5742743ac78db9374aba51044031dce85abfa39356c6a"
+  },
+  "baseQualification": {
+    "blob": "6a64e5fec589abfeec7a05660e6edaddc780bdaf",
+    "bytes": 3658,
+    "sha256": "d722f322cd668f1c018ff0bc3ec143f2f7fb23f5119ae046a8f9e5982d58c646"
+  },
+  "freshRoot": "/home/qian-qi/hb-5767739c-src-20261106-r1",
+  "freshSource": "/home/qian-qi/hb-5767739c-src-20261106-r1/source",
+  "readOnlyCloneBase": "/home/qian-qi/hb-02b90762-src-20261106-r1/source",
+  "preserved495Source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+  "schemaUnchanged": "heptabao.native-jwt-independent-source-stage.v1",
+  "purposeUnchanged": "combined_source_for_separate_build_admission",
+  "expectedHistoryCount": 3769,
+  "expectedAncestryLinks": 17,
+  "expectedDirectCommandsOnSuccess": 68,
+  "addedDirectCommands": "one new parent query plus six fixed before/after BASE freeze metadata commands; baseline61",
+  "bundle": {
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "version": 2,
+    "prerequisites": [
+      "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    ],
+    "heads": [
+      [
+        "5767739cd25e458ac052dc8d384019bab8688ae0",
+        "HEAD"
+      ]
+    ],
+    "actualBytes": null,
+    "actualSHA256": null,
+    "actualFull9": null,
+    "bodyTransferred": false,
+    "maximumBytes": 4194304
+  },
+  "fixedReport": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/stage-result.public.json",
+  "request": {
+    "blob": "564433fa36fedb91ea45d694685cdb2c9067cc88",
+    "bytes": 112620,
+    "sha256": "1599f63a32179a77a2f8693596cc185217efeffa0a4836f5ca608be989c75c04"
+  },
+  "source": {
+    "blob": "6857eee5bc607f11417a88c1b9fece964f0261a5",
+    "bytes": 29601,
+    "sha256": "a1b67f5aeb968b173886217a26987c3ead111778158136bb036906faa488b35f"
+  },
+  "journal": {
+    "blob": "044505d0d1d6fdd977d437d4f4e829384ac3f5f7",
+    "bytes": 19047,
+    "sha256": "e1fb2de89c77a5a58807b239b26fc733b89f535d9498a8640f41a9ecbfec76a0"
+  },
+  "slot": "combined_5767739c_rog_source_gitfirst_r1",
+  "key": "heptabao-combined-5767739c-rog-source-20261106-r1-a1b67f5a",
+  "nativeBinding": {
+    "sha256": "ada1b397764974a7c473a13ec80458b71ae22aa6beacca496899a733542491bc",
+    "native_fingerprint": "12511478702917907623"
+  },
+  "budgets": {
+    "stage": 300,
+    "gitLeaf": 90,
+    "clone": 180,
+    "outer": 360,
+    "term": 5,
+    "kill": 5,
+    "stdin": 262144,
+    "bundle": 4194304,
+    "eachLeaf": 2097152,
+    "totalTracked": 134217728,
+    "processRead": 16384,
+    "immutablePage": 8192,
+    "payload": 1048576,
+    "processStarts": 1,
+    "processStatusObservers": 64,
+    "processReadObservers": 129,
+    "perObserverStatusCalls": 8,
+    "perObserverImmutablePages": 128,
+    "originalStdoutBytes": 2097152,
+    "originalStderrBytes": 2097152
+  },
+  "onlyProposedScope": "one fresh source-stage process; original job authority and full streams via unchanged generic Git-first journal",
+  "notIncluded": [
+    "report Native INFO/BODY",
+    "bundle transfer",
+    "rustfmt",
+    "Cargo/build",
+    "server/product tests",
+    "credentials",
+    "production cutover",
+    "legacy cleanup"
+  ],
+  "historicalControls": {
+    "bytes": 79951,
+    "whole": {
+      "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+      "bytes": 79951,
+      "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77"
+    },
+    "exactFourUnchanged": true,
+    "compileSyntaxOnly": true,
+    "executed": false,
+    "reported44NotCurrent252Or280": true
+  },
+  "qualification": {
+    "sourcePrepared": false,
+    "sourceFormatted": false,
+    "buildPassed": false,
+    "testPassed": false,
+    "fullReplacement": false
+  },
+  "nativeCalls": 0,
+  "slotInitialized": false
+}

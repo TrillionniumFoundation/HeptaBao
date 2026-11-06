@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.pure-source-builder-boundary.r1",
+  "stage": "R5 projection call exact-literal assembly",
+  "message": "source_anchor_count for dyldAndTerminationText call: expected indentation did not equal the original literal",
+  "effects": "Stopped before source/request/journal store or archive; no Git mutation or Native calls; original R4 unchanged.",
+  "NativeCallsAdded": 0
+}

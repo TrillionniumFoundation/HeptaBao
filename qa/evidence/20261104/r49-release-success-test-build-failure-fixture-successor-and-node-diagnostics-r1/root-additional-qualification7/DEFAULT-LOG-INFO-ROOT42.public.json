@@ -1,0 +1,115 @@
+{
+  "checks": [
+    "root_GO_exact",
+    "old56_calls_unchanged",
+    "old16_observers_unchanged",
+    "lane_closed",
+    "new_counts",
+    "call0_request_original",
+    "call0_SDK_native_original",
+    "call0_accepted_once",
+    "call0_newGO_arm",
+    "call1_request_original",
+    "call1_SDK_native_original",
+    "call1_accepted_once",
+    "call1_newGO_arm",
+    "call2_request_original",
+    "call2_SDK_native_original",
+    "call2_accepted_once",
+    "call2_newGO_arm",
+    "call3_request_original",
+    "call3_SDK_native_original",
+    "call3_accepted_once",
+    "call3_newGO_arm",
+    "call4_request_original",
+    "call4_SDK_native_original",
+    "call4_accepted_once",
+    "call4_newGO_arm",
+    "call5_request_original",
+    "call5_SDK_native_original",
+    "call5_accepted_once",
+    "call5_newGO_arm",
+    "stderr_original_unique_metadata_start",
+    "stderr_status_closed",
+    "stderr_whole_payload",
+    "stderr_original_native",
+    "stderr_metadata_pin",
+    "stderr_observer_original",
+    "stdout_original_unique_metadata_start",
+    "stdout_status_closed",
+    "stdout_whole_payload",
+    "stdout_original_native",
+    "stdout_metadata_pin",
+    "stdout_observer_original",
+    "old_UNKNOWN_retained"
+  ],
+  "count": 42,
+  "infos": [
+    {
+      "index": 0,
+      "stream": "stderr",
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stderr",
+      "size": 2146,
+      "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+      "version": "66306:33208046:2146:1794003951048308942:1794003951048308942",
+      "nativeText": {
+        "blob": "b1d3d0ec490043228da23d08724a42a59aeaccd5",
+        "bytes": 476,
+        "sha256": "89925060722b740d7f913c1283919ecff6043fc79cdef5e3331a4e0aaf81facc"
+      },
+      "originalOperation": "5869280b0bfa9fe23fd0c0d89a7aa235de0b4571d0935346a8c17de81ae94c39",
+      "full9Strings": [
+        "66306",
+        "33208046",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "2146",
+        "1794003951048308942",
+        "1794003951048308942"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "stream": "stdout",
+      "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/default-libtest-build.stdout",
+      "size": 383786,
+      "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+      "version": "66306:33208045:383786:1794003951048308942:1794003951048308942",
+      "nativeText": {
+        "blob": "ce1f88af6f5df62cb61f2fa34d02c3d54f3e9ac0",
+        "bytes": 480,
+        "sha256": "c5db1fd6976cabee105abcb667f78e0b1100f22ada8963bedcac2e9ccceb7315"
+      },
+      "originalOperation": "5fbbf4b09c6f6c642c1f07d1140ca5cfb240eb0d6a49880ad5c16fe220b21454",
+      "full9Strings": [
+        "66306",
+        "33208045",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "383786",
+        "1794003951048308942",
+        "1794003951048308942"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    }
+  ],
+  "audit": {
+    "tree": "63d99149227a85c052f26d6bd1d3cea9f452646c",
+    "files": 39,
+    "bytes": 407125,
+    "merkle": {
+      "root_sha": "63d99149227a85c052f26d6bd1d3cea9f452646c",
+      "trees_verified": 1,
+      "leaf_count": 39
+    },
+    "whole": true
+  },
+  "laneReleased": true
+}

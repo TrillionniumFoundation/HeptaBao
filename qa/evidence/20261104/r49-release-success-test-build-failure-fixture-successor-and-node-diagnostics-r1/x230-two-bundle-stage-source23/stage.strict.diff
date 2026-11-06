@@ -1,0 +1,530 @@
+--- a/stage.py
++++ b/stage.py
+@@ -1,93 +1,33 @@
+ #!/usr/bin/env python3
+-"""Receive fixed 4e808 public artifacts and one standalone full Git bundle.
++"""Stage two fixed public Git bundles in one new isolated X230 checkout.
+ 
+-No old X230 repository is used as a prerequisite. No binary, compiler, provider
+-request, acceptance suite or production service is started.
++The historical exact 4e source is a read-only local prerequisite. This source
++does not copy or execute a product binary, publish build controls or run tests.
++All candidate and transported bundle facts reside in the single BINDING block.
+ """
+ from pathlib import Path
+-import hashlib, json, os, platform, re, select, signal, stat, subprocess, sys, time
++import base64, hashlib, json, os, platform, re, select, signal, stat, subprocess, sys, time
+ 
++BINDING = json.loads("{\"schema\":\"heptabao.x230.two-incremental-bundle-source-binding.v1\",\"fresh_root\":\"/home/qian/hb-5767739c-src-20261106-r1\",\"readonly_base\":\"/home/qian/heptabao-same-root-publication-normal-20261105-r1/source\",\"base_commit\":\"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec\",\"base_tree\":\"eba5e650bd080b8ad41ea52a2bc68867f541d255\",\"base_history\":3763,\"first_prerequisite\":\"49503322c7f446e5eb41e7744f1fdbd7f1192ecc\",\"intermediate_commit\":\"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\",\"candidate\":{\"commit\":\"5767739cd25e458ac052dc8d384019bab8688ae0\",\"tree\":\"42477d622dcf96e1e2b0929fe9ecc6b7ba484740\",\"parent\":\"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\",\"leaves\":3932,\"tracked_bytes\":62553540,\"full_index_sha256\":\"20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423\",\"history\":3769},\"root_commit\":\"67d79b3b5442ed033d38929eab2010403463e56d\",\"carrier\":{\"schema\":\"heptabao.x230576.two-bundle-source-only-carrier.v1\",\"blob\":\"79d6845b1826171788333c906e77faf02ac02bb6\",\"bytes\":235828,\"sha256\":\"746de82dd389c7fe3cd1a169c5ace88737b3d94c00cf953eef4c0be9b5d7e1b0\"},\"bundles\":[{\"field\":\"canonical_02b_base64\",\"name\":\"canonical-hb-02b-from495.bundle\",\"bytes\":171016,\"sha256\":\"069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800\",\"target_mode\":256,\"prerequisite\":\"49503322c7f446e5eb41e7744f1fdbd7f1192ecc\",\"head\":\"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\",\"header\":\"# v2 git bundle\\n-49503322c7f446e5eb41e7744f1fdbd7f1192ecc test: witness authenticated native state in NoForward HA regressions\\n02b90762b3d6cc8699cc88bffb6f76cb1f07e270 HEAD\\n\\n\",\"header_sha256\":\"bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5\"},{\"field\":\"canonical_576_base64\",\"name\":\"canonical-hb-5767739c-from02b.bundle\",\"bytes\":5766,\"sha256\":\"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a\",\"target_mode\":256,\"prerequisite\":\"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\",\"head\":\"5767739cd25e458ac052dc8d384019bab8688ae0\",\"header\":\"# v2 git bundle\\n-02b90762b3d6cc8699cc88bffb6f76cb1f07e270 fix(storage,auth): integrate streaming snapshots and JWT policy schema 147\\n5767739cd25e458ac052dc8d384019bab8688ae0 HEAD\\n\\n\",\"header_sha256\":\"5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9\"}]}")
++assert isinstance(BINDING,dict), 'source binding is not frozen'
+ os.umask(0o077)
+ BASE=Path('/home/qian')
+-ROOT=BASE/'heptabao-same-root-publication-normal-20261105-r1'
++ROOT=Path(BINDING['fresh_root'])
+ CONTROL=ROOT/'control'
+ ART=ROOT/'artifacts'
+ SOURCE=ROOT/'source'
+-CANONICAL='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+-TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+-PARENT='1c66541993662f92cf717154e33717abedb2ea74'
+-ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3763
+-TRACKED_FILES=3914
+-MAX_BUNDLE=64*1024*1024
++OLD_SOURCE=Path(BINDING['readonly_base'])
++CANONICAL=BINDING['candidate']['commit']
++TREE=BINDING['candidate']['tree']
++PARENT=BINDING['candidate']['parent']
++ROOT_COMMIT=BINDING['root_commit']
++CANONICAL_COUNT=BINDING['candidate']['history']
++TRACKED_FILES=BINDING['candidate']['leaves']
++MAX_BUNDLE=262144
++MAX_CARRIER=262144
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-BINDING_READY=True
+-FILES=[
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+-    "name": "heptabao-server",
+-    "bytes": 110219600,
+-    "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+-    "source_mode": 320,
+-    "target_mode": 320,
+-    "version": "2050:7361480:110219600:1793892019496540722:1793892019496540722"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+-    "name": "native-build.public.json",
+-    "bytes": 786,
+-    "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:7361482:786:1793892021124514009:1793892021124514009"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+-    "name": "result.public.json",
+-    "bytes": 3192,
+-    "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:7361483:3192:1793892021131513894:1793892021131513894"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+-    "name": "canonical-4e808-full.bundle",
+-    "bytes": 22320862,
+-    "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:7361612:22320862:1793898902432875221:1793898902432875221"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+-    "name": "source-export.result.public.json",
+-    "bytes": 39692,
+-    "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:7361625:39692:1793898902726866721:1793898902726866721"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+-    "name": "normal61-result.public.json",
+-    "bytes": 57532,
+-    "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:7361495:57532:1793892021140513746:1793892021140513746"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+-    "name": "groups.json",
+-    "bytes": 6249,
+-    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:7361500:6249:1793892021148513615:1793892021148513615"
+-  }
+-]
++FILES=BINDING['bundles']
+ 
+ START=time.monotonic()
+ UNTIL=START+300
+@@ -96,13 +36,19 @@
+ protected=0
+ pending_signal=None
+ created_control=False
+-result={'schema':'heptabao.4e808.x230-standalone-source-receiver.v1','status':'failed',
+- 'source_commit':CANONICAL,'source_tree':TREE,'expected_full_commit_count':CANONICAL_COUNT,
+- 'expected_prerequisites':[],'network_git_protocols_enabled':False,'old_source_opened':False,
+- 'server_started':False,'compiler_started':False,'runtime_qualification':False,
+- 'product_tests_executed':0,'overall_seconds':300,'git_command_seconds':60,
+- 'clone_seconds':90,'maximum_bundle_bytes':MAX_BUNDLE,'automatic_retry':False,
+- 'production_changed':False,'partial_root_retained_on_failure':True}
++base_before=None
++base_after=None
++result={'schema':'heptabao.x230-two-bundle-source-only-stage.v1','status':'failed',
++ 'source_commit':CANONICAL,'source_tree':TREE,'source':str(SOURCE),'root':str(ROOT),
++ 'expected_full_commit_count':CANONICAL_COUNT,
++ 'expected_prerequisites':[item['prerequisite'] for item in FILES],
++ 'network_git_protocols_enabled':False,'old_source_opened':False,
++ 'server_started':False,'compiler_started':False,'controls_published':False,
++ 'runtime_qualification':False,'product_tests_executed':0,
++ 'overall_seconds':300,'git_command_seconds':60,'clone_seconds':90,
++ 'maximum_bundle_bytes':MAX_BUNDLE,'maximum_carrier_bytes':MAX_CARRIER,
++ 'automatic_retry':False,'production_changed':False,
++ 'partial_root_retained_on_failure':True,'input_descriptors':[]}
+ 
+ class Cancelled(BaseException):pass
+ 
+@@ -270,130 +216,115 @@
+     assert n==size and h.hexdigest()==expected
+     return {'bytes':n,'sha256':h.hexdigest()},b''.join(parts) if retain else None
+ 
+-def receive_files():
+-    results=[];json_bytes={}
++def read_carrier():
++    chunks=[];count=0
++    while True:
++        remaining()
++        assert select.select([0],[],[],remaining())[0]
++        try:block=os.read(0,min(65536,MAX_CARRIER+1-count))
++        except (BlockingIOError,InterruptedError):continue
++        if not block:break
++        chunks.append(block);count+=len(block)
++        assert count<=MAX_CARRIER, 'carrier exceeds original stdin ceiling'
++    raw=b''.join(chunks)
++    assert len(raw)==BINDING['carrier']['bytes'] and digest(raw)==BINDING['carrier']['sha256']
++    value=json.loads(raw)
++    assert isinstance(value,dict) and set(value)=={'schema',FILES[0]['field'],FILES[1]['field']}
++    assert value['schema']==BINDING['carrier']['schema']
++    decoded=[]
+     for item in FILES:
+-        remaining();path=ART/item['name']
+-        fd=os.open(path,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++        encoded=value[item['field']]
++        assert isinstance(encoded,str) and encoded.isascii()
++        body=base64.b64decode(encoded,validate=True)
++        assert base64.b64encode(body).decode('ascii')==encoded
++        assert len(body)==item['bytes'] and digest(body)==item['sha256']
++        bundle_header(body,item)
++        decoded.append(body)
++    remaining()
++    return raw,decoded
++
++def receive_files(decoded):
++    global protected
++    results=[]
++    assert len(decoded)==len(FILES)==2
++    for item,raw in zip(FILES,decoded,strict=True):
++        remaining();path=ART/item['name'];fd=None
++        ledger={'name':item['name'],'path':str(path),'open_attempted':False,
++                'acquired':False,'close_attempted':False,'closed':False}
++        result['input_descriptors'].append(ledger)
+         try:
+-            count=0;h=hashlib.sha256()
+-            while count<item['bytes']:
+-                assert select.select([0],[],[],remaining())[0]
+-                try:block=os.read(0,min(65536,item['bytes']-count))
+-                except (BlockingIOError,InterruptedError):continue
+-                assert block,'truncated fixed public artifact stream'
+-                count+=len(block);h.update(block);view=memoryview(block)
+-                while view:
+-                    remaining();n=os.write(fd,view);assert n>0;view=view[n:]
+-            assert count==item['bytes'] and h.hexdigest()==item['sha256']
++            protected+=1
++            try:
++                ledger['open_attempted']=True
++                fd=os.open(path,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++                ledger['acquired']=True
++            finally:protected-=1
++            if pending_signal is not None:raise Cancelled()
++            view=memoryview(raw);written=0
++            while view:
++                remaining();n=os.write(fd,view[:65536]);assert n>0
++                view=view[n:];written+=n
++            assert written==item['bytes'] and digest(raw)==item['sha256']
+             os.fchmod(fd,item['target_mode']);os.fsync(fd)
+             before=os.fstat(fd)
+             assert stat.S_ISREG(before.st_mode) and before.st_uid==UID and before.st_nlink==1
+             assert before.st_size==item['bytes'] and stat.S_IMODE(before.st_mode)==item['target_mode']
+-            same_fd,raw=read_file(fd,item['bytes'],item['sha256'],item['name'].endswith('.json'))
++            same_fd,_=read_file(fd,item['bytes'],item['sha256'])
+             assert identity(before)==identity(os.fstat(fd))==identity(path.lstat())
+-            if raw is not None:json_bytes[item['name']]=raw
+-            results.append({'name':item['name'],'path':str(path),'bytes':count,
+-                'sha256':h.hexdigest(),'mode':item['target_mode'],'create_only':True,
+-                'fsynced':True,'identity':identity(before),'same_fd_readback':same_fd})
+-        finally:os.close(fd)
+-    assert select.select([0],[],[],remaining())[0]
+-    assert os.read(0,1)==b'','unexpected fixed public artifact stream trailer'
++            results.append({'name':item['name'],'path':str(path),'bytes':written,
++                'sha256':item['sha256'],'mode':item['target_mode'],'create_only':True,
++                'fsynced':True,'identity':identity(before),'same_fd_readback':same_fd,
++                'header':bundle_header(raw,item)})
++        finally:
++            if fd is not None:
++                protected+=1
++                try:
++                    ledger['close_attempted']=True
++                    os.close(fd);ledger['closed']=True
++                finally:protected-=1
++        if pending_signal is not None:raise Cancelled()
+     assert sorted(os.listdir(ART))==sorted(x['name'] for x in FILES)
+     fsync_dir(ART);remaining()
+-    return results,json_bytes
++    return results
+ 
+ def binding_ready():
+- assert BINDING_READY is True,'actual_normal61_export_and_transport_file_bindings_unresolved'
+- assert len(FILES)==7 and len({x['name'] for x in FILES})==7
+- for item in FILES:
+-  assert type(item['bytes']) is int and item['bytes']>0
+-  assert isinstance(item['sha256'],str) and len(item['sha256'])==64
+-  assert all(c in '0123456789abcdef' for c in item['sha256'])
+-  assert isinstance(item['version'],str) and len(item['version'].split(':'))==5
+-
+-def need(value,label):
+- if not value:raise RuntimeError(label)
+-
+-def verify_normal61(raw):
+- n=json.loads(raw['normal61-result.public.json'])
+- need(n.get('schema')=='heptabao.linux-normal-same-root-publication-exact-tests.v1'
+-      and n.get('source_commit')==CANONICAL and n.get('source_tree')==TREE
+-      and n.get('controller_sha256')=='93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be'
+-      and n.get('status')=='passed' and n.get('test_count')==44
+-      and n.get('selected_test_total')==61 and n.get('normal_default_features') is True
+-      and n.get('fixture_features')==[] and n.get('original_44_status')=='passed'
+-      and n.get('original_44_and_ingress_7_status')=='passed'
+-      and n.get('original_60_status')=='passed' and n.get('original_60_test_total')==60
+-      and n.get('additional_test_counts')=={'ingress_observer':7,'cold_h2':9,'same_root_publication':1}
+-      and n.get('source_unchanged') is True and n.get('binary_unchanged') is True
+-      and n.get('release_artifacts_unchanged') is True,'exact_normal61_qualification')
+- for key,names in (
+-     ('ingress_observer_regression',["service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result","ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata","ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates","ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results","ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"]),
+-     ('cold_h2_regression',["service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity","service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results","service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file","http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context","http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work","http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result","http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture","http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context","http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"])):
+-  group=n.get(key,{})
+-  need(group.get('status')=='passed' and group.get('test_count')==len(names)
+-       and group.get('actual_test_names')==names and group.get('clamped_to_original_outer_deadline') is True,
+-       'exact_separate_normal_regression')
+- cleanup=n.get('cleanup')
+- need(isinstance(cleanup,list) and cleanup and all(
+-      row.get('exit_code')==0 and row.get('direct_child_reaped') is True
+-      and row.get('remaining')==[] and not row.get('cleanup_error_type') for row in cleanup),
+-      'normal_all_children_terminal')
+- need(n.get('groups_sha256')==digest(raw['groups.json'])=='0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1',
+-      'unchanged_original44_groups_whole_pin')
+- need(n.get('native_build_receipt_sha256')==digest(raw['native-build.public.json']),
+-      'combined_normal61_native_receipt_exact')
+- need(n.get('original_outer_seconds')==12000 and n.get('within_original_outer_before_receipt') is True
+-      and n.get('additional_group_caps_seconds')=={'ingress_observer':600,'cold_h2':600,'same_root_publication':600},
+-      'original_normal61_budgets_and_publication')
+- same=n.get('same_root_publication_regression',{})
+- need(same.get('schema')=='heptabao.normal-same-root-publication-regression.v1'
+-      and same.get('status')=='passed' and same.get('test_count')==1
+-      and same.get('actual_test_names')==['service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors']
+-      and same.get('original_44_7_9_denominators_unchanged') is True
+-      and same.get('clamped_to_original_outer_deadline') is True
+-      and same.get('new_total_group_cap_seconds')==600,
+-      'independent_same_root_publication_regression')
+- result['normal61_qualification_verified']=True
+-
+-def verify_receipts(raw):
+-    verify_normal61(raw)
+-    native=json.loads(raw['native-build.public.json'])
+-    build=json.loads(raw['result.public.json'])
+-    exported=json.loads(raw['source-export.result.public.json'])
+-    assert native['source_commit']==build['source_commit']==CANONICAL
+-    assert native['source_tree']==build['source_tree']==TREE
+-    assert native['binary_sha256']==build['artifacts']['heptabao-server']['sha256']==FILES[0]['sha256']
+-    assert build['artifacts']['heptabao-server']['bytes']==FILES[0]['bytes']
+-    assert native['provenance']['result_sha256']==FILES[2]['sha256']
+-    assert native['build_exit_code']==build['build_exit_code']==0
+-    assert native['features']==build['artifacts']['heptabao-server']['features']==['default','native-v6-ha','native-v6-storage']
+-    assert native['native_abi']==build['native_abi']=='x86_64-unknown-linux-gnu'
+-    assert native['source_freeze_verified'] and build['source_freeze_verified']
+-    assert build['normal_default_candidate'] and build['build_finished_success']
+-    assert not build['timed_out'] and not build['owned_group_survivors_after_wait']
+-    assert exported['status']=='exported' and exported['all_owned_stopped']
+-    assert exported['canonical_commit']==CANONICAL and exported['canonical_tree']==TREE
+-    assert exported['deadline_before_receipt_passed']
+-    assert exported['canonical_proof']=={
+-        'commit':CANONICAL,'tree':TREE,'parents':[PARENT],'root':ROOT_COMMIT,
+-        'commit_count':CANONICAL_COUNT,'full_fsck_passed':True}
+-    assert exported['source_before']==exported['source_after']
+-    assert exported['bundle']['bytes']==FILES[3]['bytes']
+-    assert exported['bundle']['sha256']==FILES[3]['sha256']
+-    assert exported['bundle']['header']['prerequisites']==[]
+-    assert exported['bundle']['header']['heads']==[[CANONICAL,'HEAD']]
+-    result['normal_release_provenance_verified']=True
+-    result['export_receipt_verified']=True
+-    result['raw_receipts_preserved']=True
++    assert BINDING['schema']=='heptabao.x230.two-incremental-bundle-source-binding.v1'
++    assert ROOT.parent==BASE and ROOT.name.startswith('hb-') and ROOT.name.endswith('-src-20261106-r1')
++    assert OLD_SOURCE==BASE/'heptabao-same-root-publication-normal-20261105-r1'/'source'
++    assert BINDING['base_commit']=='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++    assert BINDING['base_tree']=='eba5e650bd080b8ad41ea52a2bc68867f541d255'
++    assert BINDING['base_history']==3763
++    assert BINDING['first_prerequisite']=='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
++    assert BINDING['intermediate_commit']=='02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
++    assert len(FILES)==2 and len({x['field'] for x in FILES})==len({x['name'] for x in FILES})==2
++    assert FILES[0]['prerequisite']==BINDING['first_prerequisite']
++    assert FILES[0]['head']==FILES[1]['prerequisite']==BINDING['intermediate_commit']
++    assert FILES[1]['head']==CANONICAL
++    assert type(BINDING['carrier']['bytes']) is int and 0<BINDING['carrier']['bytes']<=MAX_CARRIER
++    assert sum(x['bytes'] for x in FILES)<=MAX_BUNDLE
++    for value in (CANONICAL,TREE,PARENT,ROOT_COMMIT):
++        assert re.fullmatch(r'[0-9a-f]{40}',value)
++    assert type(CANONICAL_COUNT) is int and CANONICAL_COUNT>BINDING['base_history']
++    assert type(TRACKED_FILES) is int and TRACKED_FILES>0
++    for item in FILES:
++        assert re.fullmatch(r'[A-Za-z0-9._-]{1,96}[.]bundle',item['name'])
++        assert type(item['bytes']) is int and 0<item['bytes']<=MAX_BUNDLE
++        assert re.fullmatch(r'[0-9a-f]{64}',item['sha256'])
++        assert re.fullmatch(r'[0-9a-f]{64}',item['header_sha256'])
++        assert item['target_mode']==0o400
+ 
+-def bundle_header(raw):
++def bundle_header(raw,item):
+     end=raw.find(b'\n\n',0,65536)
+     assert end>0 and raw[end+2:end+6]==b'PACK'
+-    assert raw[:end].split(b'\n')==[b'# v2 git bundle',(CANONICAL+' HEAD').encode('ascii')]
+-    return {'version':2,'prerequisites':[],'heads':[[CANONICAL,'HEAD']],
+-            'header_bytes':end+2,'header_sha256':digest(raw[:end+2])}
++    header=raw[:end+2]
++    assert header==item['header'].encode('ascii') and digest(header)==item['header_sha256']
++    lines=header[:-2].split(b'\n')
++    assert len(lines)==3 and lines[0]==b'# v2 git bundle'
++    prerequisite,sep,_message=lines[1][1:].partition(b' ')
++    assert lines[1].startswith(b'-') and sep and prerequisite.decode('ascii')==item['prerequisite']
++    assert lines[2]==(item['head']+' HEAD').encode('ascii')
++    return {'version':2,'prerequisites':[item['prerequisite']],'heads':[[item['head'],'HEAD']],
++            'header_bytes':len(header),'header_sha256':digest(header)}
+ 
+ def prove_canonical():
+     _,kind=git('canonical-kind',SOURCE,'cat-file','-t',CANONICAL);assert kind=='commit'
+@@ -432,7 +363,7 @@
+     for relative in ('objects/info/alternates','info/grafts','commondir','info/sparse-checkout'):
+         path=gitdir/relative
+         assert not path.exists() and not path.is_symlink()
+-    tracked_fsynced=set()
++    tracked_fsynced=set();total=0;proof=hashlib.sha256()
+     for relative,(mode,oid) in expected.items():
+         remaining();path=SOURCE/relative
+         assert path.resolve(strict=True)==path
+@@ -441,16 +372,21 @@
+             before=os.fstat(fd)
+             assert stat.S_ISREG(before.st_mode) and before.st_uid==UID and before.st_nlink==1
+             assert bool(before.st_mode&0o111)==(mode=='100755')
++            assert 0<=before.st_size<=2*1024*1024 and not before.st_mode&0o022
+             h=hashlib.sha1();h.update(('blob '+str(before.st_size)+'\0').encode('ascii'));count=0
+             while True:
+                 remaining();block=os.read(fd,65536)
+                 if not block:break
+                 count+=len(block);assert count<=before.st_size;h.update(block)
+             assert count==before.st_size and h.hexdigest()==oid
++            total+=count;assert total<=128*1024*1024
++            proof.update((relative+'\0'+mode+'\0'+oid+'\0'+str(count)+'\n').encode('utf-8'))
+             os.fsync(fd)
+             assert identity(before)==identity(os.fstat(fd))==identity(path.lstat())
+         finally:os.close(fd)
+         tracked_fsynced.add(path)
++    assert total==BINDING['candidate']['tracked_bytes']
++    assert proof.hexdigest()==BINDING['candidate']['full_index_sha256']
+     files=0;directories=0
+     def walk_error(error):
+         raise error
+@@ -473,7 +409,8 @@
+             files+=1
+         fsync_dir(directory);directories+=1
+     fsync_dir(ROOT)
+-    return {'tracked_files':len(expected),'tree_equals_index':True,'actual_git_blob_bytes_verified':True,
++    return {'tracked_files':len(expected),'tracked_bytes':total,'full_leaf_index_sha256':proof.hexdigest(),
++            'tree_equals_index':True,'actual_git_blob_bytes_verified':True,
+             'no_sparse_checkout':True,'no_symlinks_or_hardlinks':True,
+             'fsynced_files':files,'fsynced_directories':directories}
+ 
+@@ -498,37 +435,57 @@
+     controller_raw=sys.orig_argv[5].encode('utf-8')
+     assert digest(controller_raw)==sys.argv[1]
+     assert not ROOT.exists() and not ROOT.is_symlink()
++    carrier_raw,decoded=read_carrier()
++    base_before=freeze('base-before',OLD_SOURCE,BINDING['base_commit'],BINDING['base_tree'],True)
++    result['old_source_opened']=True;result['base_before']=base_before
++    _,base_count=git('base-count',OLD_SOURCE,'rev-list','--count',BINDING['base_commit'])
++    assert base_count==str(BINDING['base_history'])
++    owned('base-has-first-prerequisite',OLD_SOURCE,'merge-base','--is-ancestor',
++          BINDING['first_prerequisite'],BINDING['base_commit'])
++    result['base_first_prerequisite_verified']=True
+     remaining();ROOT.mkdir(mode=0o700)
+     CONTROL.mkdir(mode=0o700);created_control=True
+     ART.mkdir(mode=0o700);(CONTROL/'empty-hooks').mkdir(mode=0o700)
+     fsync_dir(BASE);fsync_dir(ROOT)
+-    create(CONTROL/'receiver.py',controller_raw)
++    create(CONTROL/'stage.py',controller_raw)
+     result['controller']={'bytes':len(controller_raw),'sha256':digest(controller_raw)}
+-    public(CONTROL/'intent.public.json',{**result,'files':FILES,'source':str(SOURCE),
+-        'receipt':str(ART/'transfer.result.public.json'),'binary_execution_allowed':False})
+-    file_rows,json_bytes=receive_files()
+-    result['file_results']=file_rows
+-    verify_receipts(json_bytes)
+-    bundle=ART/'canonical-4e808-full.bundle'
+-    raw,binding=stable(bundle,MAX_BUNDLE)
+-    assert binding['bytes']==FILES[3]['bytes'] and binding['sha256']==FILES[3]['sha256']
+-    result['bundle_header']=bundle_header(raw)
+-    del raw
+-    owned('standalone-clone',ROOT,'clone','--no-checkout','--no-hardlinks','--',str(bundle),str(SOURCE),limit=90)
+-    owned('bundle-verify',SOURCE,'bundle','verify',str(bundle))
+-    _,heads=git('bundle-heads',SOURCE,'bundle','list-heads',str(bundle))
+-    assert heads==CANONICAL+' HEAD'
++    result['carrier']={'bytes':len(carrier_raw),'sha256':digest(carrier_raw)}
++    public(CONTROL/'intent.public.json',{**result,'binding':BINDING,
++        'receipt':str(CONTROL/'stage-result.public.json'),'binary_execution_allowed':False})
++    for prefix,out,err,row in deferred_logs:persist_command(prefix,out,err,row)
++    deferred_logs.clear()
++    file_rows=receive_files(decoded);result['file_results']=file_rows
++    del decoded,carrier_raw
++    owned('independent-readonly-base-clone',ROOT,'clone','--no-checkout','--no-hardlinks',
++          '--',str(OLD_SOURCE),str(SOURCE),limit=90)
++    _,origin=git('new-clone-origin',SOURCE,'remote','get-url','origin')
++    assert origin==str(OLD_SOURCE)
++    owned('remove-new-local-origin',SOURCE,'remote','remove','origin')
++    for ordinal,item in enumerate(FILES):
++        remaining();bundle=ART/item['name'];raw,binding=stable(bundle,MAX_BUNDLE)
++        assert binding['bytes']==item['bytes'] and binding['sha256']==item['sha256']
++        bundle_header(raw,item);del raw
++        owned('bundle%d-verify'%ordinal,SOURCE,'bundle','verify',str(bundle))
++        _,heads=git('bundle%d-heads'%ordinal,SOURCE,'bundle','list-heads',str(bundle))
++        assert heads==item['head']+' HEAD'
++        owned('bundle%d-import'%ordinal,SOURCE,'-c','fetch.writeCommitGraph=false',
++              'fetch','--no-tags',str(bundle),'HEAD')
++        _,fetched=git('bundle%d-import-head'%ordinal,SOURCE,'rev-parse','FETCH_HEAD')
++        assert fetched==item['head']
++        assert stable(bundle,MAX_BUNDLE)[1]==binding
+     owned('canonical-checkout',SOURCE,'checkout','--detach',CANONICAL)
+-    owned('remove-local-origin',SOURCE,'remote','remove','origin')
+     result['canonical_proof']=prove_canonical()
+     result['materialized']=verify_materialized_and_fsync()
+     result['source_after']=freeze('source-after',SOURCE,CANONICAL,TREE,True)
+     recheck_artifacts(file_rows)
+-    assert stable(bundle,MAX_BUNDLE)[1]==binding
+-    assert stable(CONTROL/'receiver.py')[0]==controller_raw
++    assert stable(CONTROL/'stage.py')[0]==controller_raw
++    base_after=freeze('base-after',OLD_SOURCE,BINDING['base_commit'],BINDING['base_tree'],True)
++    result['base_after']=base_after
++    assert base_after==base_before
++    result['old_source_unchanged']=True
+     remaining()
+     result['transfer_passed']=True
+-    result['status']='complete'
++    result['status']='prepared'
+ except BaseException as error:
+     result['status']='failed';result['transfer_passed']=False
+     result['error_type']=type(error).__name__
+@@ -538,6 +495,14 @@
+     result['failure_frames']=frames
+ finally:
+     for sig in (signal.SIGTERM,signal.SIGINT,signal.SIGHUP):signal.signal(sig,signal.SIG_IGN)
++    if base_before is not None and base_after is None:
++        try:
++            base_after=freeze('base-after-failure',OLD_SOURCE,BINDING['base_commit'],BINDING['base_tree'],True)
++            result['base_after']=base_after
++            result['old_source_unchanged']=base_after==base_before
++        except BaseException as error:
++            result['old_source_unchanged']=False
++            result['base_after_error_type']=type(error).__name__
+     errors={}
+     for label,p in reversed(children):
+         try:stop_active(p)
+@@ -562,13 +527,25 @@
+         result['status']='failed';result['transfer_passed']=False
+     result['success_requires_authoritative_exit_zero']=True
+     result['success_requires_terminal_publication_within_original_deadline']=True
++    result['input_descriptors_closed']=all(not row['acquired'] or row['closed']
++                                            for row in result['input_descriptors'])
++    if not result['input_descriptors_closed'] or result.get('old_source_unchanged') is not True:
++        result['status']='failed';result['transfer_passed']=False
+     if created_control:
+         receipt=(json.dumps(result,sort_keys=True,indent=2)+'\n').encode()
+-        public_path=ART/'transfer.result.public.json'
+-        create(public_path,receipt);fsync_dir(ART);fsync_dir(ROOT)
++        assert len(receipt)<=1048576
++        public_path=CONTROL/'stage-result.public.json'
++        create(public_path,receipt);fsync_dir(CONTROL);fsync_dir(ROOT)
+         result['receipt']={'path':str(public_path),'bytes':len(receipt),'sha256':digest(receipt)}
+     result['publication_within_original_deadline']=time.monotonic()<UNTIL
+     if not result['publication_within_original_deadline']:
+         result['status']='failed';result['transfer_passed']=False
+-    sys.stderr.write(json.dumps(result,sort_keys=True)+'\n');sys.stderr.flush()
+-sys.exit(0 if result['status']=='complete' and time.monotonic()<UNTIL else 1)
++    summary={'status':result['status'],'source_commit':CANONICAL,'source_tree':TREE,
++             'all_owned_stopped':result['all_owned_stopped'],
++             'input_descriptors_closed':result['input_descriptors_closed'],
++             'old_source_unchanged':result.get('old_source_unchanged',False),
++             'compiler_started':False,'server_started':False,'controls_published':False,
++             'within_original_deadline':result['publication_within_original_deadline'],
++             'receipt':result.get('receipt')}
++    sys.stdout.write(json.dumps(summary,sort_keys=True)+'\n');sys.stdout.flush()
++sys.exit(0 if result['status']=='prepared' and time.monotonic()<UNTIL else 1)

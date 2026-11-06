@@ -1,0 +1,20 @@
+[
+  {
+    "scope": "pure checker only",
+    "message": "First checker looked for git_blob_sha/blob_sha/sha, but gitBlobMeta returns blob. All original Git SDKs retained; no repeat retrieval.",
+    "actualExample": {
+      "blob": "553b70d33e329e7c71dd957f609b672d4e3ff7a5",
+      "bytes": 6680,
+      "sha256": "feebc80e9f2e4f8cc3f9c70756ce2384aa308070b0b1e418bb7fc02d79be1ffd"
+    }
+  },
+  {
+    "phase": "pure independent review only",
+    "error": "hunk counts",
+    "cause": "Original parser trimEnd removes a final blank context line in a valid unified diff.",
+    "correction": "Require terminal LF and remove exactly that one LF; retain final context whitespace.",
+    "candidateChanged": false,
+    "rustExecuted": false,
+    "nativeCalls": 0
+  }
+]

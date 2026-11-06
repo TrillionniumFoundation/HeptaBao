@@ -1,0 +1,313 @@
+{
+  "schema": "heptabao.public-node-version-two-arm-source-checks.r1",
+  "passed": true,
+  "checkCount": 75,
+  "checks": [
+    {
+      "name": "source/pin",
+      "passed": true
+    },
+    {
+      "name": "request/pin",
+      "passed": true
+    },
+    {
+      "name": "journal/pin",
+      "passed": true
+    },
+    {
+      "name": "source/old-probe-exact",
+      "passed": true
+    },
+    {
+      "name": "source/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "source/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "source/six-hunks",
+      "passed": true
+    },
+    {
+      "name": "original-definition/critical",
+      "passed": true
+    },
+    {
+      "name": "original-definition/need",
+      "passed": true
+    },
+    {
+      "name": "original-definition/interrupt",
+      "passed": true
+    },
+    {
+      "name": "original-definition/remaining",
+      "passed": true
+    },
+    {
+      "name": "original-definition/sha",
+      "passed": true
+    },
+    {
+      "name": "original-definition/encoded",
+      "passed": true
+    },
+    {
+      "name": "original-definition/identity",
+      "passed": true
+    },
+    {
+      "name": "original-definition/error_projection",
+      "passed": true
+    },
+    {
+      "name": "original-definition/public_command",
+      "passed": true
+    },
+    {
+      "name": "original-definition/load_modules",
+      "passed": true
+    },
+    {
+      "name": "request/only-fixed-python-wrapper",
+      "passed": true
+    },
+    {
+      "name": "request/exact-stdin",
+      "passed": true
+    },
+    {
+      "name": "request/no-wrong-field",
+      "passed": true
+    },
+    {
+      "name": "request/key",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "journal/2-2-hunks",
+      "passed": true
+    },
+    {
+      "name": "journal/only-three-bindings",
+      "passed": true
+    },
+    {
+      "name": "helpers/exact-two",
+      "passed": true
+    },
+    {
+      "name": "helper/mac_owned_unreaped_r1/literal",
+      "passed": true
+    },
+    {
+      "name": "helper/mac_owned_unreaped_r1/whole",
+      "passed": true
+    },
+    {
+      "name": "helper/mac_public_node_version_commands_r1/literal",
+      "passed": true
+    },
+    {
+      "name": "helper/mac_public_node_version_commands_r1/whole",
+      "passed": true
+    },
+    {
+      "name": "helper/original-unreaped",
+      "passed": true
+    },
+    {
+      "name": "commands/original",
+      "passed": true
+    },
+    {
+      "name": "commands/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "commands/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "commands/2-2-hunks",
+      "passed": true
+    },
+    {
+      "name": "commands/all-other-bytes-original",
+      "passed": true
+    },
+    {
+      "name": "commands/argv-exact",
+      "passed": true
+    },
+    {
+      "name": "commands/restricted-versus-baseline",
+      "passed": true
+    },
+    {
+      "name": "commands/node-only-version",
+      "passed": true
+    },
+    {
+      "name": "commands/restricted-prefix",
+      "passed": true
+    },
+    {
+      "name": "commands/environment",
+      "passed": true
+    },
+    {
+      "name": "commands/environment-five-keys",
+      "passed": true
+    },
+    {
+      "name": "commands/empty-home-cwd-tmp",
+      "passed": true
+    },
+    {
+      "name": "commands/no-node-dyld-options",
+      "passed": true
+    },
+    {
+      "name": "home/exact-class",
+      "passed": true
+    },
+    {
+      "name": "home/embedded-byte-equal",
+      "passed": true
+    },
+    {
+      "name": "home/pin",
+      "passed": true
+    },
+    {
+      "name": "home/fixed-two-configurations",
+      "passed": true
+    },
+    {
+      "name": "home/preassigned-partial-init",
+      "passed": true
+    },
+    {
+      "name": "home/create-only-no-fallback",
+      "passed": true
+    },
+    {
+      "name": "home/original-first5-current-full9",
+      "passed": true
+    },
+    {
+      "name": "profile/body",
+      "passed": true
+    },
+    {
+      "name": "profile/original-actual-whole",
+      "passed": true
+    },
+    {
+      "name": "profile/literal-original-paths-preserved",
+      "passed": true
+    },
+    {
+      "name": "profile/independent-new-copy",
+      "passed": true
+    },
+    {
+      "name": "inputs/exact-original-four",
+      "passed": true
+    },
+    {
+      "name": "inputs/exact-cap-sum",
+      "passed": true
+    },
+    {
+      "name": "inputs/contract",
+      "passed": true
+    },
+    {
+      "name": "inputs/only-four-input-reduction",
+      "passed": true
+    },
+    {
+      "name": "inputs/alias-unchanged",
+      "passed": true
+    },
+    {
+      "name": "scope/two-arms-order",
+      "passed": true
+    },
+    {
+      "name": "scope/second-requires-known-closure",
+      "passed": true
+    },
+    {
+      "name": "time/same-35-45-60",
+      "passed": true
+    },
+    {
+      "name": "time/reserve-original-cleanup",
+      "passed": true
+    },
+    {
+      "name": "scope/no-t5-helper-or-libproc",
+      "passed": true
+    },
+    {
+      "name": "scope/no-launchctl-exec-or-js-argv",
+      "passed": true
+    },
+    {
+      "name": "report/unknown-text-withheld",
+      "passed": true
+    },
+    {
+      "name": "report/version-only-128",
+      "passed": true
+    },
+    {
+      "name": "scope/baseline-not-business",
+      "passed": true
+    },
+    {
+      "name": "scope/close-loop-protected",
+      "passed": true
+    },
+    {
+      "name": "linux/declaration-whole",
+      "passed": true
+    },
+    {
+      "name": "linux/current-candidate",
+      "passed": true
+    },
+    {
+      "name": "linux/phase-only",
+      "passed": true
+    },
+    {
+      "name": "linux/missing-actual-slots-stay-null",
+      "passed": true
+    },
+    {
+      "name": "linux/no-port-or-credential-action",
+      "passed": true
+    }
+  ],
+  "pythonExecuted": false,
+  "NodeExecuted": false,
+  "NativeCallsAdded": 0,
+  "sourceOnly": true,
+  "originalFailurePreserved": true,
+  "rootRuntimeGORequired": true
+}

@@ -1,0 +1,31 @@
+{
+  "tree": "15149fae616175b0cd6bc5b82f536fbc5df2dff1",
+  "entries": [
+    {
+      "path": "armed.json",
+      "blob": "5e74fbf1eb9501392f08edd33bf6d52b60120139",
+      "bytes": 925,
+      "sha256": "6f4244e29f206937bd407f79a3f75be0db7bd8f899525e6c8df48a7bf2723e85",
+      "whole": true
+    },
+    {
+      "path": "intent.json",
+      "blob": "584cf6c78541ca0bf351c9bc4dc3220d63557707",
+      "bytes": 788,
+      "sha256": "f9a465cec1b6f54b0b85c1de79f8bf632f23179be6ca59196612df10f7bebd99",
+      "whole": true
+    },
+    {
+      "path": "request.json",
+      "blob": "6fd259c8556e789f0e4b1129d45e66fcf9b09087",
+      "bytes": 83,
+      "sha256": "53ae1665d2ff8cd283ffaee2836111381953e6a2e65ca43d3946e618902debc7",
+      "whole": true
+    }
+  ],
+  "count": 3,
+  "bytes": 1796,
+  "whole": true,
+  "localDurableJournal": false,
+  "runtimeAuthorized": false
+}
