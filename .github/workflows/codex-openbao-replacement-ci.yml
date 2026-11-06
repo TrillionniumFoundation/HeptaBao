@@ -749,6 +749,11 @@ jobs:
           HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz
         run: |
           set -euo pipefail
+          qa_owner_parent="$(mktemp -d "$RUNNER_TEMP/heptabao-owned-official-270.XXXXXXXX")"
+          test -d "$qa_owner_parent" && test ! -L "$qa_owner_parent"
+          test "$(stat -c %a "$qa_owner_parent")" = 700
+          test "$(stat -c %u "$qa_owner_parent")" = "$(id -u)"
+          export HB_QA_PROCESS_WORK_ROOT="$qa_owner_parent"
           binary="$PWD/target/debug/heptabao-server"
           reports="$RUNNER_TEMP/heptabao-safe-reports/openbao270"
           mkdir -m 700 "$reports"
@@ -885,6 +890,11 @@ jobs:
           HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
         run: |
           set -euo pipefail
+          qa_owner_parent="$(mktemp -d "$RUNNER_TEMP/heptabao-owned-kv-cas.XXXXXXXX")"
+          test -d "$qa_owner_parent" && test ! -L "$qa_owner_parent"
+          test "$(stat -c %a "$qa_owner_parent")" = 700
+          test "$(stat -c %u "$qa_owner_parent")" = "$(id -u)"
+          export HB_QA_PROCESS_WORK_ROOT="$qa_owner_parent"
           reports="$RUNNER_TEMP/heptabao-kv-comparison-evidence"
           mkdir -m 700 "$reports"
           timeout 180 python qa/openbao-acceptance/kv_metadata_cas_live.py \
@@ -1065,6 +1075,11 @@ jobs:
           HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
         run: |
           set -euo pipefail
+          qa_owner_parent="$(mktemp -d "$RUNNER_TEMP/heptabao-owned-official-bounded.XXXXXXXX")"
+          test -d "$qa_owner_parent" && test ! -L "$qa_owner_parent"
+          test "$(stat -c %a "$qa_owner_parent")" = 700
+          test "$(stat -c %u "$qa_owner_parent")" = "$(id -u)"
+          export HB_QA_PROCESS_WORK_ROOT="$qa_owner_parent"
           binary="$PWD/target/debug/heptabao-server"
           # The comparison runners require a new caller-owned 0700 output parent;
           # RUNNER_TEMP itself may be searchable by other users. Keep that guard.
