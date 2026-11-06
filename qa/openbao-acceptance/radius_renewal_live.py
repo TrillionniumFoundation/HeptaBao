@@ -25,7 +25,8 @@ import time
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparison
 from online_evidence import source_identity
-from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
+from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle, crash_oracle
+from renewal_cleanup import finish_fixture
 
 RADIUS_MATERIAL = secrets.token_urlsafe(32).encode("ascii")
 USERNAME = b"alice"
@@ -535,6 +536,7 @@ def main():
               "configuration_adaptation": ADAPTATION,
               "candidate_binary_sha256": file_hash(binary), "oracle_binary_sha256": BINARY_SHA256,
               "runner_sha256": file_hash(Path(__file__)), "cargo_lock_sha256": file_hash(ROOT / "Cargo.lock"),
+              "cleanup_helper_sha256": file_hash(Path(__file__).with_name("renewal_cleanup.py")),
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
               "started_at_unix": time.time(), "cases": {}, "side_failures": {}}
@@ -571,9 +573,7 @@ def main():
                 raise ScenarioFailure("radius_renewal.candidate_restart_unseal")
 
         def restart_reference():
-            oracle["process"].kill()
-            oracle["process"].wait(timeout=5)
-            stop_oracle(oracle)
+            crash_oracle(oracle)
             restart_oracle(oracle)
 
         for side, client, responder, restart in [("candidate", candidate, candidate_udp, restart_candidate),
@@ -597,25 +597,29 @@ def main():
         result["status"] = "failed"
         result["safe_failure_code"] = "unexpected_" + type(error).__name__
     finally:
-        if instance is not None:
-            instance.stop()
-        if oracle is not None:
-            stop_oracle(oracle)
-            shutil.rmtree(oracle["root"])
-        for responder in responders:
-            responder.close()
-        shutil.rmtree(private_root)
-        result["candidate_binary_unchanged"] = file_hash(binary) == result["candidate_binary_sha256"]
-        result["source_identity"] = source_before
-        result["source_and_binary_unchanged"] = source_before == source_identity(ROOT, binary)
-        if not result["source_and_binary_unchanged"]:
-            result["status"] = "failed"
-            result["safe_failure_code"] = "source_or_binary_changed_during_execution"
-        result["finished_at_unix"] = time.time()
-        private_write(output, result)
+        def validate_final():
+            result["candidate_binary_unchanged"] = file_hash(binary) == result["candidate_binary_sha256"]
+            result["source_identity"] = source_before
+            result["source_and_binary_unchanged"] = source_before == source_identity(ROOT, binary)
+            result["cleanup_helper_unchanged"] = result["cleanup_helper_sha256"] == file_hash(
+                Path(__file__).with_name("renewal_cleanup.py"))
+            if not result["source_and_binary_unchanged"] or not result["cleanup_helper_unchanged"]:
+                result["status"] = "failed"
+                result["safe_failure_code"] = "source_or_binary_changed_during_execution"
+
+        def publish_final(value):
+            current = output.parent.stat()
+            if (current.st_dev, current.st_ino, current.st_uid, current.st_mode) != (
+                    parent.st_dev, parent.st_ino, parent.st_uid, parent.st_mode):
+                raise ValueError("report_parent_changed")
+            private_write(output, value)
+
+        finish_fixture(result, instance=instance, oracle=oracle, providers=responders,
+                       private_root=private_root, stop_oracle=stop_oracle,
+                       validate=validate_final, publish=publish_final)
     print(json.dumps({"status": result["status"], "checks_per_side": {side: len(rows) for side, rows in result["cases"].items()},
                       "side_failures": result["side_failures"], "safe_failure_code": result.get("safe_failure_code")}))
-    return 0 if result["status"] == "passed" and result["candidate_binary_unchanged"] else 1
+    return 0 if result["status"] == "passed" and result.get("candidate_binary_unchanged") is True else 1
 
 
 if __name__ == "__main__":

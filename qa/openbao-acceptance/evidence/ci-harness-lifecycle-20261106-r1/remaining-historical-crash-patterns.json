@@ -1,0 +1,163 @@
+{
+  "call_count": 14,
+  "classification": "Source-only repetition of kill/wait then graceful TERM/0; not an observed new runtime failure",
+  "file_count": 12,
+  "files": [
+    {
+      "calls": [
+        {
+          "line": 311,
+          "source_excerpt": "            target_oracle[\"process\"].kill(); target_oracle[\"process\"].wait(timeout=5)\n            stop_oracle(target_oracle); restart_oracle(target_oracle)\n        for side, client, issuer, restart in [(\"candidate\", candidate, issuers[0], restart_candidate),\n                                             (\"oracle\", reference, issuers[1], restart_reference)]:"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/oidc_renewal_live.py",
+      "sha256": "272e746b25d7ca193764bf806fb497d67700543b20ba0020caaace821b679818"
+    },
+    {
+      "calls": [
+        {
+          "line": 170,
+          "source_excerpt": "        oracle['process'].kill();oracle['process'].wait(timeout=5);stop_oracle(oracle)\n        oracle_config=Path(oracle['root'])/'server.json';cfg=json.loads(oracle_config.read_text())\n        cfg['listener'][0]['tcp']['address']=f'[::]:{port}'\n        private_write(oracle_config,cfg,replace=True);restart_oracle(oracle)"
+        },
+        {
+          "line": 176,
+          "source_excerpt": "            oracle['process'].kill();oracle['process'].wait(timeout=5);stop_oracle(oracle);restart_oracle(oracle)\n        sides=[]\n        if not args.oracle_only:\n            instance=Instance(binary,root/'candidate');provider=NativeRadius(require_ma=True);providers.append(provider)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/radius_cidrs_live.py",
+      "sha256": "b4fe3aaec8b652eb2a0cc4e58b5b1e10d8ca5c3c47a957fa1822e834de5ab221"
+    },
+    {
+      "calls": [
+        {
+          "line": 465,
+          "source_excerpt": "            oracle['process'].kill();oracle['process'].wait(timeout=5);stop_oracle(oracle);restart_oracle(oracle)\n        sides=[]\n        if not args.oracle_only:\n            instance=Instance(binary,root/'candidate');provider=NativeRadius(require_ma=True);providers.append(provider)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/radius_native_live.py",
+      "sha256": "c06265544d5670016e3ef0eed6048b916e7efaa57dfa8522f8c611ef556925d9"
+    },
+    {
+      "calls": [
+        {
+          "line": 200,
+          "source_excerpt": "                    oracle[\"process\"].kill()\n                    oracle[\"process\"].wait(timeout=5)\n                    stop_oracle(oracle)\n                    restart_oracle(oracle)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/cert_renewal_live.py",
+      "sha256": "51be6ce8bc1505f8627fef8e839b6e139dc09c24c7ee1c25b7c6fd10fc7a9146"
+    },
+    {
+      "calls": [
+        {
+          "line": 101,
+          "source_excerpt": "                    oracle['process'].kill();oracle['process'].wait(timeout=5);stop_oracle(oracle);restart_oracle(oracle)\n            rows=report['cases'][side]=[]\n            try:run_scenarios(Trace(client,rows),side,radius,directory,reviewer,ca,restart)\n            except Exception as error:report['side_failures'][side]=str(error) if isinstance(error,ScenarioFailure) else 'unexpected_'+type(error).__name__"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/provider_login_wrapping_live.py",
+      "sha256": "9b0f3dcc81e3a5baca21a836edf296b071ecd792367d865202ba521da7baa3a6"
+    },
+    {
+      "calls": [
+        {
+          "line": 249,
+          "source_excerpt": "            oracle[\"process\"].kill()\n            oracle[\"process\"].wait(timeout=5)\n            stop_oracle(oracle)\n            restart_oracle(oracle)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/jwt_renewal_live.py",
+      "sha256": "fef2da648918e9f81dc58f5f612a2a587ca721ce657e774904e839d05c7b2f3e"
+    },
+    {
+      "calls": [
+        {
+          "line": 415,
+          "source_excerpt": "            oracle[\"process\"].kill()\n            oracle[\"process\"].wait(timeout=5)\n            stop_oracle(oracle)\n            restart_oracle(oracle)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/ldap_renewal_live.py",
+      "sha256": "e5b3eb54b07a76feba86c25099ffa8f8b167a7b25d7d3b463e6c4b60ba9290bd"
+    },
+    {
+      "calls": [
+        {
+          "line": 295,
+          "source_excerpt": "                    oracle[\"process\"].kill()\n                    oracle[\"process\"].wait(timeout=5)\n                    stop_oracle(oracle)\n                    restart_oracle(oracle)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/token_child_lifetime_live.py",
+      "sha256": "ab64cb2d4194a415aa272657892b1912fcf3de2304109ae281669ba241a1521d"
+    },
+    {
+      "calls": [
+        {
+          "line": 142,
+          "source_excerpt": "                    oracle['process'].kill();oracle['process'].wait(timeout=5);stop_oracle(oracle);restart_oracle(oracle)\n            cfg=configuration(side,directory,(o/'ca.crt').read_text(),token_ttl=120);del cfg['token_policies']\n            rows=report['cases'][side]=[]\n            try:scenarios(Probe(client,directory,cfg,rows),restart)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/ldap_no_default_live.py",
+      "sha256": "9b243ad446de34c200dcfb5ec5a20123980cc1fb2a148d74e23e9824803a5c93"
+    },
+    {
+      "calls": [
+        {
+          "line": 438,
+          "source_excerpt": "            oracle[\"process\"].kill()\n            oracle[\"process\"].wait(timeout=5)\n            stop_oracle(oracle)\n            restart_oracle(oracle)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/ldap_native_live.py",
+      "sha256": "e9e5c2c1230dec068d94a18ce748cb95392abdfbd14658cf1681af6a4b449e31"
+    },
+    {
+      "calls": [
+        {
+          "line": 236,
+          "source_excerpt": "                    oracle[\"process\"].kill()\n                    oracle[\"process\"].wait(timeout=5)\n                    stop_oracle(oracle)\n                    restart_oracle(oracle)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/approle_renewal_live.py",
+      "sha256": "5026fec5152eeca825b25cceced56e9e2ac15ff68aaefb68e7dbc231bf3801a8"
+    },
+    {
+      "calls": [
+        {
+          "line": 141,
+          "source_excerpt": "        oracle['process'].kill();oracle['process'].wait(timeout=5);stop_oracle(oracle)\n        config_file=o/'server.json';settings=json.loads(config_file.read_text());settings['listener'][0]['tcp']['address']=f'[::]:{port}'\n        private_write(config_file,settings,replace=True);restart_oracle(oracle)\n        for side in (['oracle'] if args.oracle_only else ['candidate','oracle']):"
+        },
+        {
+          "line": 159,
+          "source_excerpt": "                    oracle['process'].kill();oracle['process'].wait(timeout=5);stop_oracle(oracle);restart_oracle(oracle)\n            rows=report['cases'][side]=[]\n            try:run_scenarios(Trace(client,directory,configuration(side,directory,ca),rows),restart)\n            except ScenarioFailure as error:report['side_failures'][side]=str(error)"
+        }
+      ],
+      "executed_in_this_work": false,
+      "modified": false,
+      "path": "qa/openbao-acceptance/ldap_cidrs_live.py",
+      "sha256": "f42221e54a8c20535b2e36c119d8eab7ae62144f22fea6c36ef7c3daa3cdf50a"
+    }
+  ],
+  "fixed": false,
+  "runtime_qualification": false,
+  "schema": "heptabao.remaining-historical-qa-crash-patterns.v1",
+  "source_commit": "fe10ae499ef3a7302e2480c833652bd7239910a3"
+}

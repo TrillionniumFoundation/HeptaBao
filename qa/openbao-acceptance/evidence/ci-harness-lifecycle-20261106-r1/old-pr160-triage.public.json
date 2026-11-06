@@ -1,0 +1,450 @@
+{
+  "schema": "heptabao.old-pr160-ci-terminal-readonly-triage.v1",
+  "scope": "Historical CI only; not a verdict on candidate 2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+  "run_id": 42164486987,
+  "run_url": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42164486987",
+  "original_pr": 160,
+  "head_source": "8f3dd8353aaf9642ad58f7716b0c14813d09983d",
+  "prospective_merge_source": "076f3cd1652d5a4d66b6d4b7cbc79be8153e330e",
+  "base_source": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "read_only": true,
+  "rerun_requested": false,
+  "source_modified": false,
+  "production_changed": false,
+  "jobs": [
+    {
+      "id": 127721785378,
+      "name": "OpenBao replacement / merge",
+      "status": "completed",
+      "conclusion": "failure",
+      "total_workflow_steps": 78,
+      "successful_workflow_steps": 67,
+      "not_successful_steps": [
+        {
+          "name": "Exercise real three-process HA with synthetic state",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 31
+        },
+        {
+          "name": "Exercise real encrypted-link network partitions",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 33
+        },
+        {
+          "name": "Exercise multi-epoch replay retirement, snapshot catch-up and failover",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 35
+        },
+        {
+          "name": "Exercise exact-base to candidate HA rolling upgrade",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 36
+        },
+        {
+          "name": "Exercise actual private-output client and OTP wrapping HA",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 37
+        },
+        {
+          "name": "Compare strict OpenBao 2.7.0 runtime and ACL error contracts",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 52
+        },
+        {
+          "name": "Compare live RADIUS token renewal with official OpenBao 2.6.2",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 59
+        },
+        {
+          "name": "Compare operational Agent and Proxy behavior with official OpenBao",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 60
+        },
+        {
+          "name": "Exercise online authentication and durable cross-node code consumption",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 64
+        },
+        {
+          "name": "Compare bounded OpenAPI runtime with official OpenBao",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 72
+        },
+        {
+          "name": "Exercise committed membership snapshot catch-up and real cleanup grace",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 74
+        }
+      ]
+    },
+    {
+      "id": 127721785711,
+      "name": "OpenBao replacement / head",
+      "status": "completed",
+      "conclusion": "failure",
+      "total_workflow_steps": 78,
+      "successful_workflow_steps": 67,
+      "not_successful_steps": [
+        {
+          "name": "Exercise real three-process HA with synthetic state",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 31
+        },
+        {
+          "name": "Exercise real encrypted-link network partitions",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 33
+        },
+        {
+          "name": "Exercise multi-epoch replay retirement, snapshot catch-up and failover",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 35
+        },
+        {
+          "name": "Exercise exact-base to candidate HA rolling upgrade",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 36
+        },
+        {
+          "name": "Exercise actual private-output client and OTP wrapping HA",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 37
+        },
+        {
+          "name": "Compare strict OpenBao 2.7.0 runtime and ACL error contracts",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 52
+        },
+        {
+          "name": "Compare live RADIUS token renewal with official OpenBao 2.6.2",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 59
+        },
+        {
+          "name": "Compare operational Agent and Proxy behavior with official OpenBao",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 60
+        },
+        {
+          "name": "Exercise online authentication and durable cross-node code consumption",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 64
+        },
+        {
+          "name": "Compare bounded OpenAPI runtime with official OpenBao",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 72
+        },
+        {
+          "name": "Exercise committed membership snapshot catch-up and real cleanup grace",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 74
+        }
+      ]
+    },
+    {
+      "id": 127838476465,
+      "name": "OpenBao replacement / exact-head-and-merge verdict",
+      "status": "completed",
+      "conclusion": "failure",
+      "total_workflow_steps": 3,
+      "successful_workflow_steps": 2,
+      "not_successful_steps": [
+        {
+          "name": "Reject failed cancelled or skipped qualification matrix",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        }
+      ]
+    }
+  ],
+  "workflow_step_counts_are_not_business_case_denominators": true,
+  "downloadable_workflow_artifacts": [],
+  "source_binding": "Head/merge EXPECTED_SOURCE log values and successful immutable-source gates; diagnostic source reads used exact 8f3dd835 tree.",
+  "summary": "Both head and prospective merge completed failure with the same ten failed steps and step 60 skipped. Step 28 capacity and step 29 capacity HA completed success; earlier in-progress observations no longer support a stuck/deadlocked classification.",
+  "failure_groups": [
+    {
+      "steps": [
+        31,
+        33,
+        35
+      ],
+      "classification": "confirmed_harness_exit_contract_conflict",
+      "error": "owned_standalone_shutdown_code",
+      "source": "qa/openbao-acceptance/ha_destructive.py: Node.expect_startup_rejection / Node.stop; qa/openbao-acceptance/owned_process.py: stop",
+      "observation": "All three tracebacks reach expect_startup_rejection finally self.stop. The negative startup test waits for an exact nonzero rejection, then Node.stop unconditionally requires SIGKILL exit -9.",
+      "limitation": "Actual rejected exit code and private startup diagnostic were not printed. The cleanup failure cannot qualify the interrupted downstream HA scenarios.",
+      "minimal_followup": "Retire a proved, already-exited negative-test original with its explicitly checked exit/diagnostic contract and close its log; retain -9 for intentionally killed live nodes. Do not globally accept arbitrary exits."
+    },
+    {
+      "steps": [
+        37
+      ],
+      "classification": "inherited_harness_failure_strongly_supported",
+      "error": "OwnedFailure",
+      "observation": "client_live passed 42 and agent_proxy_helper_live passed 84, then ssh_otp_ha failed after 8 observations. ssh_otp_ha inherits WrappingCluster -> Cluster.run, which includes the same startup-negative cleanup.",
+      "limitation": "No full ssh-ha JSON artifact was uploaded, so exact internal failure is inferred from inheritance and the matching early count, not a retained stack for this subprofile. idle_lifecycle_ha did not execute after set -e failure."
+    },
+    {
+      "steps": [
+        36
+      ],
+      "classification": "runtime_startup_failure_unresolved",
+      "error": "node_exited_during_startup",
+      "observation": "Rolling-upgrade base build completed. Runtime reported eight initial scenarios and then node_exited_during_startup, with exact base/candidate binary hashes in the log.",
+      "limitation": "No per-node safe startup diagnostic or complete retained artifact was available. Do not infer a specific storage, TLS, upgrade or product root cause."
+    },
+    {
+      "steps": [
+        52
+      ],
+      "classification": "three_bounded_runtime_contract_failures",
+      "observations": [
+        {
+          "profile": "transit_derived_live",
+          "result": "transport_outcome_unknown",
+          "exception_class": "http.client.RemoteDisconnected",
+          "head_pending": "derived270.upsert1.encrypt",
+          "merge_pending": "derived270.xchacha20-poly1305.convergent.hmac_verify_context.4",
+          "interpretation": "Different cut-off cases; no automatic retry or attribution to the new TLS patch."
+        },
+        {
+          "profile": "client_consistency_live",
+          "result": {
+            "candidate_ha": "missing_retry_after",
+            "proxy_ha": "future_rejected"
+          },
+          "counts": {
+            "candidate": 35,
+            "official_pebbledb": 35,
+            "official_raft": 35,
+            "candidate_ha": 5,
+            "proxy_ha": 4
+          }
+        },
+        {
+          "profile": "policy_templates_live",
+          "result": "acl_templates.injected_star_denied",
+          "expected_status_for_270": 400,
+          "cases_per_side": 74,
+          "actual_candidate_status": "not printed in summary",
+          "interpretation": "A status-contract mismatch; do not label it an authorization bypass without the missing response."
+        }
+      ]
+    },
+    {
+      "steps": [
+        59,
+        64
+      ],
+      "classification": "confirmed_harness_crash_restart_exit_contract_conflict",
+      "error": "owned_standalone_shutdown_code",
+      "source": [
+        "qa/openbao-acceptance/radius_renewal_live.py: restart_reference / finally",
+        "qa/openbao-acceptance/kubernetes_renewal_live.py: restart_reference / finally",
+        "qa/openbao-acceptance/official_openbao_launcher.py: stop_oracle"
+      ],
+      "observation": "Both restart_reference functions explicitly kill and wait the oracle (-9), then invoke stop_oracle, whose TERM shutdown contract requires exit 0. Their finally invokes stop_oracle again; the displayed failure is there, before safe report publication.",
+      "consequences": "Step59 stops at radius_renewal_live, so later native/HA RADIUS commands do not run. Step64 first kubernetes_online passed 71, then kubernetes_renewal_live failed; later LDAP/Kerberos/JWT/Cert/AppRole/OIDC/HA commands do not run.",
+      "minimal_followup": "Separate intentional crash-and-wait retirement from graceful TERM/0 shutdown, retain exact original handles and explicit code contracts; keep report/remaining fixture cleanup in protected finally paths."
+    },
+    {
+      "steps": [
+        72
+      ],
+      "classification": "bounded_openapi_runtime_contract_failure",
+      "error": "openapi_live_non_root_visibility_fails_closed",
+      "exit_code": 2,
+      "limitation": "Closed failure label only; no raw non-root response is available. This remains unqualified for old source."
+    },
+    {
+      "steps": [
+        74
+      ],
+      "classification": "binary_snapshot_sent_to_json_fixture_likely",
+      "error": "UnicodeDecodeError",
+      "completed_observations": 11,
+      "source": "qa/openbao-acceptance/raft_membership_live.py requests GET sys/storage/raft/snapshot via ha_destructive.Node.call, which always json.loads(raw). The HTTP route is treated as a download.",
+      "inference": true,
+      "limitation": "Wire headers and archive bytes were not uploaded, so the exact offending byte is unknown. Dead-server grace/cleanup was not established.",
+      "minimal_followup": "Use a bounded binary-safe snapshot download plus existing snapshot-status/durable-frontier evidence; do not decode a CLI snapshot envelope as JSON or treat parsing failure as archive corruption."
+    }
+  ],
+  "safe_public_log_summaries": {
+    "head": [
+      {
+        "decoded_log_line": 16327,
+        "timestamp": "2026-11-06T09:48:52.6681418Z",
+        "status": "failed",
+        "failure": "OwnedFailure",
+        "count": 8
+      },
+      {
+        "decoded_log_line": 17260,
+        "timestamp": "2026-11-06T09:59:19.7087957Z",
+        "status": "mismatch",
+        "failure": null,
+        "cases_per_side": 2618,
+        "side_failures": {
+          "candidate": "transport_outcome_unknown"
+        },
+        "last_completed_case": {
+          "candidate": "derived270.upsert0.derived_metadata",
+          "oracle": "derived270.weakflag9.actual_mode"
+        },
+        "transport_failures": {
+          "candidate": {
+            "fixture_phase": "scenario",
+            "phase": "open_response",
+            "exception_class": "http.client.RemoteDisconnected",
+            "pending_request_case": "derived270.upsert1.encrypt"
+          }
+        }
+      },
+      {
+        "decoded_log_line": 17268,
+        "timestamp": "2026-11-06T10:01:33.9525903Z",
+        "status": "failed",
+        "failures": {
+          "candidate_ha": "missing_retry_after",
+          "proxy_ha": "future_rejected"
+        },
+        "checks": {
+          "candidate": 35,
+          "official_pebbledb": 35,
+          "official_raft": 35,
+          "candidate_ha": 5,
+          "proxy_ha": 4
+        }
+      },
+      {
+        "decoded_log_line": 17284,
+        "timestamp": "2026-11-06T10:02:43.8975936Z",
+        "status": "mismatch",
+        "failure": null,
+        "cases_per_side": 74,
+        "side_failures": {
+          "candidate": "acl_templates.injected_star_denied"
+        },
+        "last_completed_case": {
+          "candidate": "acl_templates.injected_star_denied",
+          "oracle": "acl_templates.pre_restart_complete"
+        },
+        "transport_failures": {}
+      },
+      {
+        "decoded_log_line": 18836,
+        "timestamp": "2026-11-06T10:11:23.5223252Z",
+        "status": "failed",
+        "reason": "openapi_live_non_root_visibility_fails_closed"
+      },
+      {
+        "decoded_log_line": 18909,
+        "timestamp": "2026-11-06T10:11:48.9990752Z",
+        "status": "failed",
+        "failure": "UnicodeDecodeError",
+        "scenarios": 11
+      }
+    ],
+    "merge": [
+      {
+        "decoded_log_line": 16346,
+        "timestamp": "2026-11-06T09:55:14.1048981Z",
+        "status": "failed",
+        "failure": "OwnedFailure",
+        "count": 8
+      },
+      {
+        "decoded_log_line": 17279,
+        "timestamp": "2026-11-06T10:05:48.5915148Z",
+        "status": "mismatch",
+        "failure": null,
+        "cases_per_side": 2550,
+        "side_failures": {
+          "candidate": "transport_outcome_unknown"
+        },
+        "last_completed_case": {
+          "candidate": "derived270.xchacha20-poly1305.convergent.hmac_context_ignored.4",
+          "oracle": "derived270.weakflag9.actual_mode"
+        },
+        "transport_failures": {
+          "candidate": {
+            "fixture_phase": "scenario",
+            "phase": "open_response",
+            "exception_class": "http.client.RemoteDisconnected",
+            "pending_request_case": "derived270.xchacha20-poly1305.convergent.hmac_verify_context.4"
+          }
+        }
+      },
+      {
+        "decoded_log_line": 17287,
+        "timestamp": "2026-11-06T10:08:06.5041176Z",
+        "status": "failed",
+        "failures": {
+          "candidate_ha": "missing_retry_after",
+          "proxy_ha": "future_rejected"
+        },
+        "checks": {
+          "candidate": 35,
+          "official_pebbledb": 35,
+          "official_raft": 35,
+          "candidate_ha": 5,
+          "proxy_ha": 4
+        }
+      },
+      {
+        "decoded_log_line": 17303,
+        "timestamp": "2026-11-06T10:09:16.6885847Z",
+        "status": "mismatch",
+        "failure": null,
+        "cases_per_side": 74,
+        "side_failures": {
+          "candidate": "acl_templates.injected_star_denied"
+        },
+        "last_completed_case": {
+          "candidate": "acl_templates.injected_star_denied",
+          "oracle": "acl_templates.pre_restart_complete"
+        },
+        "transport_failures": {}
+      },
+      {
+        "decoded_log_line": 18855,
+        "timestamp": "2026-11-06T10:17:55.1679918Z",
+        "status": "failed",
+        "reason": "openapi_live_non_root_visibility_fails_closed"
+      },
+      {
+        "decoded_log_line": 18928,
+        "timestamp": "2026-11-06T10:18:20.8446550Z",
+        "status": "failed",
+        "failure": "UnicodeDecodeError",
+        "scenarios": 11
+      }
+    ]
+  },
+  "followup_order": "Keep current KV2/physical HA/AuthBus work on its exact candidate. Treat historical CI fixes as separate scoped work; never upgrade old failures to pass or count these runs as new-source tests.",
+  "independent_replacement_authority": false
+}

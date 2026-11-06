@@ -146,8 +146,47 @@ class Node:
                 raise FixtureError("non_object_response")
             return int(response.status), parsed
 
+    def download_snapshot(self, *, token: str, timeout: float = 12.0):
+        """Read this node's one bounded binary route without JSON decoding.
+
+        Content-Length and a gzip prefix are transport observations only. The caller must
+        still observe the committed snapshot and purge frontiers separately.
+        No redirect, proxy, arbitrary URL or archive extraction is admitted.
+        """
+        deadline = time.monotonic() + timeout
+        request = urllib.request.Request(
+            f"https://127.0.0.1:{self.http_port}/v1/sys/storage/raft/snapshot",
+            headers={"Accept": "application/gzip", "X-Vault-Token": token}, method="GET")
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(),
+                                             urllib.request.HTTPSHandler(context=self.context))
+        try:
+            response = opener.open(request, timeout=timeout)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            raw = response.read(32 * 1024 * 1024 + 1)
+            if len(raw) > 32 * 1024 * 1024:
+                raise FixtureError("snapshot_response_exceeds_fixture_bound")
+            if time.monotonic() >= deadline:
+                raise FixtureError("snapshot_response_original_deadline")
+            status = int(response.status)
+            if status != 200:
+                return status, {"status": status, "archive_received": False}
+            lengths = response.headers.get_all("Content-Length", [])
+            content_types = response.headers.get_all("Content-Type", [])
+            if (len(lengths) != 1 or not lengths[0].isascii() or not lengths[0].isdecimal()
+                    or int(lengths[0]) != len(raw) or not raw.startswith(b"\x1f\x8b\x08")
+                    or content_types != ["application/gzip"]
+                    or response.headers.get_all("Content-Encoding", [])
+                    or response.headers.get_all("Transfer-Encoding", [])):
+                raise FixtureError("snapshot_binary_response_contract")
+            return status, {"status": status, "archive_received": True,
+                            "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+                            "content_type": "application/gzip", "content_length_verified": True,
+                            "archive_authentication_or_restore_claim": False}
+
     def start(self, ha: bool = True, *, wait: bool = True) -> None:
-        if self.process is not None:
+        if self.process is not None or self.log is not None:
             raise FixtureError("node_already_running")
         # Created inside a fresh owner-only synthetic directory, never an existing log.
         fd = os.open(self.root / "process.log", os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
@@ -192,10 +231,14 @@ class Node:
             raise FixtureError("node_already_running")
         log_path = self.root / "process.log"
         before = log_path.stat().st_size if log_path.exists() else 0
-        self.start(wait=False)
+        waited = False
+        process = log = returncode = None
         try:
+            self.start(wait=False)
+            process, log = self.process, self.log
             try:
-                returncode = owned_process.wait(self.process, timeout=10)
+                returncode = owned_process.wait(process, timeout=10)
+                waited = True
             except subprocess.TimeoutExpired as error:
                 raise FixtureError("misbound_cluster_process_did_not_exit") from error
             if self.log is None:
@@ -207,19 +250,61 @@ class Node:
             if len(delta) > 64 * 1024 or not exact_startup_rejection(
                     returncode, delta, expected_line):
                 raise FixtureError("unexpected_startup_rejection")
+        except BaseException as error:
+            # Preserve the actual rejection/readiness error, after closing the
+            # same original. An already waited negative must not be killed or
+            # subjected to the unrelated live-node SIGKILL/-9 contract.
+            owned_process.abort(error, [lambda: self._retire_waited(process, log, returncode)
+                                        if waited else self.stop()])
+        else:
+            self._retire_waited(process, log, returncode)
+
+    def _retire_waited(self, process, log, returncode) -> None:
+        if (process is None or process is not self.process or log is not self.log
+                or type(returncode) is not int or process.returncode != returncode):
+            raise FixtureError("startup_rejection_original_wait_unconfirmed")
+        try:
+            if log is not None and not log.closed:
+                log.close()
         finally:
-            self.stop()
+            self.process = None
+            if log is None or log.closed:
+                self.log = None
 
     def stop(self) -> None:
         process, log = self.process, self.log
+        wait_confirmed = process is None
+        def stop_live_original():
+            nonlocal wait_confirmed
+            if process is None:
+                return
+            observation_error = None
+            try:
+                already_exited = process.poll() is not None
+            except BaseException as error:
+                observation_error = error
+            returncode = owned_process.stop(process, action="KILL", timeout=10)
+            wait_confirmed = type(returncode) is int and process.returncode == returncode
+            if observation_error is not None:
+                raise observation_error
+            if not wait_confirmed:
+                raise FixtureError("node_original_wait_unconfirmed")
+            if already_exited:
+                raise FixtureError("node_exited_before_intentional_stop")
+            if returncode != -9:
+                raise FixtureError("node_intentional_stop_exit_code")
         try:
             owned_process.close_all([
-                lambda: owned_process.stop(process, action="KILL", timeout=10, expected_codes=(-9,)),
+                stop_live_original,
                 lambda: log.close() if log is not None and not log.closed else None,
             ])
         finally:
-            self.process = None
-            self.log = None
+            # A failed wait must not discard the only handle that a later
+            # Cluster.close can use. No new node may replace that original.
+            if wait_confirmed:
+                self.process = None
+            if log is None or log.closed:
+                self.log = None
 
 
 class Cluster:
@@ -449,7 +534,7 @@ class Cluster:
         standby.stop()
         for index in range(8):
             self.write(leader, f"snapshot-probe-{index}", secrets.token_hex(12))
-        self.check("leader_snapshot_trigger", leader.call("GET", "sys/storage/raft/snapshot", token=self.root_token, timeout=15)[0] == 200)
+        self.check("leader_snapshot_trigger", leader.download_snapshot(token=self.root_token, timeout=15)[0] == 200)
         snapshot_value = secrets.token_hex(16)
         self.write(leader, "after-snapshot", snapshot_value)
         self.restart(standby)

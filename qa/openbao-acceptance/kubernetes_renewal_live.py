@@ -24,7 +24,8 @@ import time
 from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparison
 from online_evidence import admit_output, source_identity
-from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
+from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle, crash_oracle
+from renewal_cleanup import finish_fixture
 from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
 from remote_jwks_live import Instance, signing_key, serialization
 from jwt_login_claims_live import signed_assertion
@@ -323,6 +324,7 @@ def main():
               "oracle_binary_sha256": BINARY_SHA256, "build_source_commit": args.build_source_commit,
               "build_source_binding_basis": "caller-supplied if present; exact binary hash recorded; not inferred from active checkout or independently attested",
               "runner_sha256": file_hash(runner_path), "launcher_sha256": file_hash(launcher_path),
+              "cleanup_helper_sha256": file_hash(runner_path.with_name("renewal_cleanup.py")),
               "actual_kube_apiserver": False, "target_version": "2.6.2", "openbao271_qualification": False, "kubernetes_rbac_acceptance": False,
               "scope": "Historical 2.6.2 synthetic TLS TokenReview renewal; not a 2.7.1 gate", "cases": {}, "side_failures": {},
               "started_at_unix": time.time()}
@@ -358,9 +360,7 @@ def main():
                 raise ScenarioFailure("kubernetes_renewal.candidate_restart_unseal")
 
         def restart_reference():
-            oracle["process"].kill()
-            oracle["process"].wait(timeout=5)
-            stop_oracle(oracle)
+            crash_oracle(oracle)
             restart_oracle(oracle)
 
         for side, client, issuer, restart in [("candidate", candidate, issuers[0], restart_candidate),
@@ -381,26 +381,26 @@ def main():
     except Exception as error:
         result["status"], result["safe_failure_code"] = "failed", "unexpected_" + type(error).__name__
     finally:
-        if instance is not None:
-            instance.stop()
-        if oracle is not None:
-            stop_oracle(oracle)
-            shutil.rmtree(oracle["root"])
-        for issuer in issuers:
-            issuer.close()
-        shutil.rmtree(root)
-        after = source_identity(ROOT, binary)
-        for name in ("source_commit", "source_tree", "source_dirty", "source_content_sha256"):
-            result["harness_" + name] = before[name]
-        result["harness_source_unchanged"] = before == after
-        result["candidate_binary_unchanged"] = before["binary_sha256"] == after["binary_sha256"]
-        if (not result["candidate_binary_unchanged"] or result["runner_sha256"] != file_hash(runner_path)
-                or result["launcher_sha256"] != file_hash(launcher_path)):
-            result["status"], result["safe_failure_code"] = "failed", "binary_or_runner_changed_during_execution"
-        result["finished_at_unix"] = time.time()
-        if admit_output(output) != parent:
-            raise ValueError("report_parent_changed")
-        private_write(output, result)
+        def validate_final():
+            after = source_identity(ROOT, binary)
+            for name in ("source_commit", "source_tree", "source_dirty", "source_content_sha256"):
+                result["harness_" + name] = before[name]
+            result["harness_source_unchanged"] = before == after
+            result["candidate_binary_unchanged"] = before["binary_sha256"] == after["binary_sha256"]
+            result["cleanup_helper_unchanged"] = result["cleanup_helper_sha256"] == file_hash(
+                runner_path.with_name("renewal_cleanup.py"))
+            if (not result["candidate_binary_unchanged"] or result["runner_sha256"] != file_hash(runner_path)
+                    or result["launcher_sha256"] != file_hash(launcher_path) or not result["cleanup_helper_unchanged"]):
+                result["status"], result["safe_failure_code"] = "failed", "binary_or_runner_changed_during_execution"
+
+        def publish_final(value):
+            if admit_output(output) != parent:
+                raise ValueError("report_parent_changed")
+            private_write(output, value)
+
+        finish_fixture(result, instance=instance, oracle=oracle, providers=issuers,
+                       private_root=root, stop_oracle=stop_oracle,
+                       validate=validate_final, publish=publish_final)
     print(json.dumps({"status": result["status"], "checks_per_side": {side: len(rows) for side, rows in result["cases"].items()},
                       "side_failures": result["side_failures"], "safe_failure_code": result.get("safe_failure_code")}))
     return 0 if result["status"] == "passed" else 1
