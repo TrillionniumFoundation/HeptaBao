@@ -261,9 +261,40 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
     );
     assert_eq!(transition.source_enrollment().epoch(), 0);
     assert_eq!(transition.target_enrollment().epoch(), 1);
+    // The source finalizer commits its original RequestClock after restoring
+    // the archive and before any of these three audit-veto boundaries. The
+    // restore transition keeps A's operation; the selected head is its one
+    // observation-only successor B. Bind both actual intents instead of
+    // confusing the newest publication's operation with the restore's ID.
+    let restored = transition.intent().ok_or("actual restore commit intent")?;
+    assert_eq!(transition.operation_digest(), restored.operation_digest);
+    assert_eq!(restored.epoch, transition.target_enrollment().epoch());
+    assert_eq!(restored.prior_root_digest, transition.source_root_digest());
+    assert_eq!(restored.prior_generation, transition.source_generation());
     assert_eq!(
-        transition.operation_digest(),
-        committed.1.intent().operation_digest
+        restored.expected_previous_commit_index,
+        transition.source_publication_log_id().index
+    );
+    let terminal = committed.1.intent();
+    assert_eq!(terminal.epoch, restored.epoch);
+    assert_eq!(terminal.prior_root_digest, restored.proposed_root_digest);
+    assert_eq!(terminal.prior_generation, restored.proposed_generation);
+    assert_eq!(
+        terminal.expected_previous_commit_index,
+        transition.publication_log_id().index
+    );
+    assert_eq!(
+        terminal.proposed_generation,
+        restored
+            .proposed_generation
+            .checked_add(1)
+            .ok_or("terminal successor generation overflow")?
+    );
+    assert_ne!(terminal.operation_digest, restored.operation_digest);
+    assert!(committed.1.publication_log_id().index > transition.publication_log_id().index);
+    assert_eq!(
+        observation.installed_identity,
+        Some(StateIdentity::RecordsV6(committed.1.root_digest()))
     );
     let operation = transition.operation_digest();
     let expected_reference = format!(
