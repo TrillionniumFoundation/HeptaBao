@@ -1,0 +1,455 @@
+{
+  "attempt_count": 24,
+  "attempts": [
+    {
+      "job_id": "1a1aff07791-fc05-6ce9",
+      "number": 1,
+      "phase": "preflight",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 35,
+      "stdout_complete": true,
+      "stdout_sha256": "7d3a6f3e4f708580d6e4d102d89cc3797b3831932bc4f5cfc362dc258f0c26b2"
+    },
+    {
+      "job_id": "1a1aff10ed5-fc05-6cef",
+      "number": 2,
+      "phase": "install",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 353,
+      "stdout_complete": true,
+      "stdout_sha256": "c95f454d2ab5d39b1f742a6088e90408f3b5afd5151ec0a3ecfba7c1f927cc4b"
+    },
+    {
+      "job_id": "1a1aff1dfac-fc05-6cf6",
+      "number": 3,
+      "phase": "reverse,settings-arm,launch-provider,inspect",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3585,
+      "stdout_complete": true,
+      "stdout_sha256": "416a605f6d8ba012feba215566936fd8f6448c2bc901aedd26097ee5447a8ca4"
+    },
+    {
+      "job_id": "1a1aff2d6d9-fc05-6cfa",
+      "number": 4,
+      "phase": [
+        [
+          "tap",
+          "--selector",
+          "OPEN PROVIDER SETTINGS"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3453,
+      "stdout_complete": true,
+      "stdout_sha256": "78247b4233417c25db780362e4fec6608104943e11390e1bd0ff79825ee3f00b"
+    },
+    {
+      "job_id": "1a1aff40fbd-fc05-6d01",
+      "number": 5,
+      "phase": "ordinary_settings_package_uri",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3632,
+      "stdout_complete": true,
+      "stdout_sha256": "7bbefb54f6ac66bbc6211449a93039462b95be288f0fef593bfabb7079eb2bb7"
+    },
+    {
+      "job_id": "1a1aff5cf94-fc05-6d0b",
+      "number": 6,
+      "phase": "localized_settings_inspect",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3517,
+      "stdout_complete": true,
+      "stdout_sha256": "03cfcb7ccbda5f82fd2f66da337c7ec413855168b05544cdf92bd76b870333ea"
+    },
+    {
+      "job_id": "1a1aff8099d-fc05-6d21",
+      "number": 7,
+      "phase": "static_settings_headers",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 390,
+      "stdout_complete": true,
+      "stdout_sha256": "2ba6a1ae7de3e949dc14004b4f6c3d22e8d91e60d93b5bdd825964c15ea64cbc"
+    },
+    {
+      "job_id": "1a1aff8df31-fc05-6d2b",
+      "number": 8,
+      "phase": [
+        [
+          "tap",
+          "--selector-kind",
+          "id",
+          "--selector",
+          "com.android.settings:id/change_button"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1932,
+      "stdout_complete": true,
+      "stdout_sha256": "b910906e315cc3de8fae8c30774b35152f89d1f3d1b0ffa8112390a44fb341f5"
+    },
+    {
+      "driver_sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d",
+      "job_id": "1a1affc2f05-fc05-6d42",
+      "number": 9,
+      "phase": [
+        [
+          "settings-arm-primary-empty"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao synthetic passkeys"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1054,
+      "stdout_complete": true,
+      "stdout_sha256": "39ae62092bbe1c818fc10e0d75fdb766574a0d3388e5d336f5d25faccee15624"
+    },
+    {
+      "driver_sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d",
+      "job_id": "1a1affca8d4-fc05-6d45",
+      "number": 10,
+      "phase": [
+        [
+          "tap",
+          "--selector-kind",
+          "id",
+          "--selector",
+          "android:id/button1"
+        ],
+        [
+          "settings-selected"
+        ],
+        [
+          "launch-provider"
+        ],
+        [
+          "tap",
+          "--selector",
+          "CHOOSE ENCRYPTED VAULT FILE"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [
+        "unexpected_setting_outcome_preserved"
+      ],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 126,
+      "stdout_complete": true,
+      "stdout_sha256": "65166be136d563e42c0a4f090e0a14cd275f208d2996d0a1497e5e50f37294a1"
+    },
+    {
+      "job_id": "1a1affd6bc9-fc05-6d4c",
+      "number": 11,
+      "phase": "unexpected_settings_readonly_classification",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 905,
+      "stdout_complete": true,
+      "stdout_sha256": "da0e855865df6499793e75fda51281de8f1167a0287121d41cbed5e0d5416b3c"
+    },
+    {
+      "job_id": "1a1affe547d-fc05-6d53",
+      "number": 12,
+      "phase": "autofill_component_readonly_metadata",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 231,
+      "stdout_complete": true,
+      "stdout_sha256": "6f5b63ac0bdaeb5dc14b329c7c43895b2c337e3290273f73f8626e2a154edcf3"
+    },
+    {
+      "job_id": "1a1b00220bc-fc05-6d68",
+      "number": 13,
+      "phase": "bridge_readonly_provenance",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 1266,
+      "stderr_complete": true,
+      "stderr_sha256": "38faeefd8050054a755e16cdd302b67b4c25f0fc9b478622372ae4917dd9079b",
+      "stdout_bytes": 0,
+      "stdout_complete": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "job_id": "1a1b0035056-fc05-6d75",
+      "number": 14,
+      "phase": "bridge_readonly_provenance_regex_fixed",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1375,
+      "stdout_complete": true,
+      "stdout_sha256": "889d13ec45157e5a4e5fcfd7b0658488bf5ddd14678c9a761c1d871c0a4ab3e5"
+    },
+    {
+      "job_id": "1a1b005ec2c-fc05-6d85",
+      "number": 15,
+      "phase": "reviewed_restore_original_autofill_only",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "source_sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d",
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1168,
+      "stdout_complete": true,
+      "stdout_sha256": "33b955755bc631103f5719d4f5917a9411abaffe62665f31d787859fa7ad04b0"
+    },
+    {
+      "job_id": "1a1b00682bc-fc05-6d8a",
+      "number": 16,
+      "phase": [
+        [
+          "settings-selected"
+        ],
+        [
+          "launch-provider"
+        ],
+        [
+          "tap",
+          "--selector",
+          "CHOOSE ENCRYPTED VAULT FILE"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 4302,
+      "stdout_complete": true,
+      "stdout_sha256": "a97faa1b25e988e9364e827809eb2d96dcbecc04b9969708aefddfae4ed3b9a6"
+    },
+    {
+      "driver_sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a",
+      "job_id": "1a1b008300a-fc05-6d94",
+      "number": 17,
+      "phase": [
+        [
+          "tap",
+          "--selector-kind",
+          "description",
+          "--selector",
+          "\u663e\u793a\u6839\u76ee\u5f55"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3128,
+      "stdout_complete": true,
+      "stdout_sha256": "5319cbf58e646254b3030dfd1ef633d3e9bc51b99177795412b966c7483fd06a"
+    },
+    {
+      "job_id": "1a1b0090685-fc05-6d9b",
+      "number": 18,
+      "phase": [
+        [
+          "tap",
+          "--selector",
+          "\u4e0b\u8f7d"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-20261106-r4"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-r4-seed.hbv"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [
+        "ui_target_not_unique"
+      ],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 180,
+      "stdout_complete": true,
+      "stdout_sha256": "9bb1c9eb3753cd273612061d8dc457e0b43a621c89f658abe416837f029f5bec"
+    },
+    {
+      "job_id": "1a1b009d98d-fc05-6da0",
+      "number": 19,
+      "phase": [
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3116,
+      "stdout_complete": true,
+      "stdout_sha256": "16e30df9c939cba3e83e10bbc06eacdc62a7d753ba134fafd2e41ea4ae58f5df"
+    },
+    {
+      "job_id": "1a1b00b9c35-fc05-6db3",
+      "number": 20,
+      "phase": "owned_ciphertext_media_index",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 231,
+      "stdout_complete": true,
+      "stdout_sha256": "bb9fdd856a07c179b8a9cd1bd0137592ee7dc1414ce01e492a873862b4bdefc9"
+    },
+    {
+      "job_id": "1a1b00c0b71-fc05-6db8",
+      "number": 21,
+      "phase": [
+        [
+          "back"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-20261106-r4"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 4347,
+      "stdout_complete": true,
+      "stdout_sha256": "fa324b53f55a617ed8a7e2ee54182e06a6f4273b41f3772ed5a0f003b52a7c86"
+    },
+    {
+      "job_id": "1a1b00ce243-fc05-6dbd",
+      "number": 22,
+      "phase": [
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-r4-seed.hbv"
+        ],
+        [
+          "inspect"
+        ]
+      ],
+      "provider_observations": [
+        "unsafe_directory"
+      ],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3413,
+      "stdout_complete": true,
+      "stdout_sha256": "d462683dbc66795f0950a4615a15923faea9e0d6024e5ca567a55784e8b6075e"
+    },
+    {
+      "job_id": "1a1b00fc2c8-fc05-6dd3",
+      "number": 23,
+      "phase": "restore",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 355,
+      "stdout_complete": true,
+      "stdout_sha256": "e6801b4521090b338d77582a1bcea1a6041419486780525028bdcad371194600"
+    },
+    {
+      "job_id": "1a1b01121f5-fc05-6de0",
+      "number": 24,
+      "phase": "owned_documents_cleanup_and_final_postchecks",
+      "provider_observations": [],
+      "reported_failure_codes": [],
+      "stderr_bytes": 0,
+      "stderr_complete": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 306,
+      "stdout_complete": true,
+      "stdout_sha256": "996a71fe020048a7d153cbf815e055951c3b296575f33d730bfa6e9936782bb9"
+    }
+  ],
+  "original_private_archive_sha256": "4b2cdb26597791e9482367d4dca4415f597fad9d4022175c6860d7c7ec4b5906",
+  "qualification_is_case_ledger_not_phase_success": true,
+  "schema": 1,
+  "scope": "all_r4_phone_attempts_including_failures"
+}

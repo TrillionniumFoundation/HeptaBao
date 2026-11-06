@@ -1,0 +1,97 @@
+{
+  "attempt_indices_unique_contiguous": true,
+  "attempts_indexed": 24,
+  "device_operations": 0,
+  "explicit_attempt_script_hash_bindings_verified": [
+    {
+      "field": "driver_sha256",
+      "job_id": "1a1affc2f05-fc05-6d42",
+      "number": 9,
+      "sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d"
+    },
+    {
+      "field": "driver_sha256",
+      "job_id": "1a1affca8d4-fc05-6d45",
+      "number": 10,
+      "sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d"
+    },
+    {
+      "field": "source_sha256",
+      "job_id": "1a1b005ec2c-fc05-6d85",
+      "number": 15,
+      "sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d"
+    },
+    {
+      "field": "driver_sha256",
+      "job_id": "1a1b008300a-fc05-6d94",
+      "number": 17,
+      "sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a"
+    }
+  ],
+  "files": {
+    "passkey_live.final-r4.py": {
+      "bytes": 27781,
+      "sha256": "67d7ab8dd282cec1e7f94796352b6c40bd2f14339acd1d2866dc75c3bd0f6000"
+    },
+    "passkey_live.localized-r4.py": {
+      "bytes": 30991,
+      "sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a"
+    },
+    "passkey_live.primary-r4.py": {
+      "bytes": 30448,
+      "sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d"
+    },
+    "passkey_phone_profile.r4.py": {
+      "bytes": 6303,
+      "sha256": "6a26dbf2c4394becba2eb0c21192853afb5f176ede68f2e4dbf9d00ed9b1a7b0"
+    },
+    "passkey_restore_autofill_bridge.final-r4.py": {
+      "bytes": 7289,
+      "sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d"
+    },
+    "phone-r4-public-evidence.tar.gz": {
+      "bytes": 8131,
+      "sha256": "77dc53f7d944b94e14692817a8c974de658311d27b279325adafbd83a4d98bc5"
+    },
+    "public/attempt-index.public.json": {
+      "bytes": 14324,
+      "sha256": "96893e13b5e6c495a73eccca55af363428a7d405ad3fba7cb97589137c2d7e9d"
+    },
+    "public/autofill-bridge-provenance.public.json": {
+      "bytes": 1347,
+      "sha256": "c078a27fd760598d291e55775c4aece81cca580a43fc277edcb32bca2916b049"
+    },
+    "public/autofill-correction.result.public.json": {
+      "bytes": 1228,
+      "sha256": "4d84f24da4ac8fe8cfd17ef0addebfa4cd8e02239a318fec20ddc44d0dd19369"
+    },
+    "public/case-results.public.json": {
+      "bytes": 13740,
+      "sha256": "4c5c2d0678cbdbbfd0629e54782338c49e42726c1a19b8a63eac463889cf2b72"
+    },
+    "public/cleanup.result.public.json": {
+      "bytes": 1276,
+      "sha256": "a89c4a4c0e3e3c24d4b6bde440ddd0a5094986fa8ff1a08370d00ccca270dd3d"
+    },
+    "public/packet.manifest.public.json": {
+      "bytes": 992,
+      "sha256": "c4594a2192b8d9b9256540a42ea866856404d73de2b84ecf2973a3d952b766bd"
+    },
+    "public/profile.public.json": {
+      "bytes": 6893,
+      "sha256": "ca294b7f04877b6662afe2b05d0653651161d2b7820c0d8c3f03c5ad203524e8"
+    },
+    "transfer.manifest.public.json": {
+      "bytes": 4259,
+      "sha256": "908617d8e450222bac72e1dfee9bd48dc47d45dac10792e6ebe13464b671a8c1"
+    }
+  },
+  "inline_wrapper_original_argv_complete": false,
+  "original_archive_regular_files": 7,
+  "original_public_manifest_entries_verified": 6,
+  "original_source_files": 5,
+  "private_data_retrieved": false,
+  "qualification_result_not_upgraded": true,
+  "schema": 1,
+  "scope": "preserved_passkey_r4_failed_phone_public_packet"
+}

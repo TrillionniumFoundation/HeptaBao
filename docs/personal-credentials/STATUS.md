@@ -17,7 +17,7 @@ from implementation in progress.
 | P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The separately frozen Ed25519-only build passed **13/13 integration tests**, including all original eleven tests and real RSA/ECDSA rejection. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
 | P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. | Linux/Unix private local filesystem, trusted owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
 | P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | Target Android Autofill qualification is in progress. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
-| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. Frozen r4 host cryptography/format profile: **10/10**, including separate JVMs, latest-backup recovery, restart and stale-counter rejection. Independent RP: **68/68** per tested backend and **21/21** real loopback HTTP/restart cases. | Host and RP observations do not exercise Android CredentialManager. No completed phone create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
+| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. Frozen r4 host cryptography/format profile: **10/10**, including separate JVMs, latest-backup recovery, restart and stale-counter rejection. Independent RP: **68/68** per tested backend and **21/21** real loopback HTTP/restart cases. | The r4 phone run failed import before password entry: **one failed, one cleanup passed, sixteen blocked**, retaining all eighteen cases. No completed phone create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
 | P5: production adoption | Published `a38dab7`, `0a0bed8` and `2280c36` each passed synthetic-core CI and the workflow-trust checks for both exact head and prospective merge. A separate clean `c447536` Python preflight has no failures across 300 repository, 1510 acceptance and 183 client tests, with five explicit platform skips. Immutable evidence, an internal dependency review, runtime trust analysis and an operations/recovery procedure are available. | Full replacement qualification for `2280c36` is running and has not passed. No result is inherited across heads. Independent review, measured long-term stability, signed releases, tested upgrade/rollback and operational support are not complete. |
 
 These are separate acceptance boundaries. For example, a real local Git signing
@@ -155,6 +155,39 @@ Rust format and recovery wrapper. The ordinary app uses local Storage Access
 Framework documents for bounded encrypted import/export and fresh private
 stores for restore; these UI paths require their own phone observation.
 
+The r4 phone run subsequently selected the fixed encrypted seed through the
+ordinary SAF UI, then reported `unsafe_directory` before any password entry.
+Its eighteen-case ledger records M01 failed, M07 cleanup passed and the other
+sixteen cases blocked. No phone passkey was created and the RP recorded zero
+create/get operations. Final cleanup verified all three original settings,
+successful exact absence queries for the three owned packages, removal of the
+owned reverse mapping and removal of tracked synthetic documents/media rows.
+
+That run also exposed a missing package URI in the app's settings shortcut
+and a platform settings selection that changed the Autofill component to the
+verified system CredentialManager bridge. The original guard stopped on that
+unexpected change. A separately reviewed, exact-state correction restored the
+original Autofill value while preserving both credential fields and the
+original failed observation; final cleanup then restored the complete original
+state. No original allowlist was retroactively expanded.
+
+The observed phone error is `unsafe_directory`. The
+[AOSP Android 16 QPR2 ContextImpl source](https://android.googlesource.com/platform/frameworks/base/+/android16-qpr2-release/core/java/android/app/ContextImpl.java)
+(file blob `a1cbb22021fcf7d24b737a94534b0cb5899d026f`) suggests the platform
+`files` directory's initial 0771 mode explains the strict 0700 check,
+but the private phone directory mode was not directly measured. A new r5b
+candidate restricts normalization to the fixed Context files leaf, checks its
+type/UID/mode and stable descriptor identity, tightens it to 0700 and retains
+strict later checks. The first r5 SDK34 compile failure and the corrected r5b
+source archive remain separate originals. New builds and device observations
+must retain their own identities.
+
+The archived r4 packet contains the complete eighteen-case ledger, cleanup and
+correction receipts, a twenty-four-attempt index and five actual QA source
+files. It does not contain every original inline wrapper's complete argv.
+That provenance limit remains explicit; the source files are not presented as
+a complete reconstruction of all twenty-four invocations.
+
 The r4 host profile passed 10 top-level checks. Its two nested format/negative
 groups passed 17 and 18 checks respectively. Separate Java processes created a
 credential and produced signatures verified by the independent RP, advanced
@@ -185,7 +218,7 @@ provenance. It does not claim a password-path read in that later observation.
 | Frozen mobile artifact | SHA-256 | Current evidence boundary |
 | --- | --- | --- |
 | Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 phone profile failed after 1/12 checks. |
-| Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; CredentialManager/SAF profile pending. |
+| Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; phone import failed before any credential creation, with all eighteen cases retained. |
 
 All mobile material is synthetic. The device QA driver enters synthetic
 passwords through real EditText controls, with a temporary value in the

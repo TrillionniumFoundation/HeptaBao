@@ -34,6 +34,70 @@ EXPECTED_CASES = [
 ]
 
 
+def pending_intent_metadata(raw, identifiers):
+    """Only our package section survives; raw Intent data and global UID tails do not."""
+    if len(raw) > 1024 * 1024 or not raw.startswith("ACTIVITY MANAGER PENDING INTENTS (dumpsys activity intents)"):
+        return {"available": False, "reason": "unrecognized_format"}
+    expected_count, section = None, []
+    recognized_empty, unknown_before_section, reading_weak_refs = False, False, False
+    for line in raw.splitlines()[1:]:
+        stripped = line.strip()
+        if stripped.startswith("* "):
+            live_section = re.fullmatch(r"\* ([A-Za-z0-9_.$]+): ([0-9]+) items", stripped)
+            if live_section and live_section.group(1) != PROVIDER:
+                return {"available": False, "reason": "package_filter_not_observed"}
+            if expected_count is not None: break
+            match = re.fullmatch(r"\* " + re.escape(PROVIDER) + r": ([0-9]+) items", stripped)
+            if match:
+                expected_count = int(match.group(1))
+            elif stripped == "* WEAK REFS:":
+                recognized_empty = True; reading_weak_refs = True
+            elif re.fullmatch(r"\* UID: [0-9]+ total: [0-9]+", stripped):
+                recognized_empty = True; reading_weak_refs = False
+            else:
+                unknown_before_section = True; reading_weak_refs = False
+            continue
+        if expected_count is not None:
+            section.append(stripped)
+        elif stripped == "(nothing)":
+            recognized_empty = True
+        elif stripped and not (reading_weak_refs and re.fullmatch(r"#[0-9]+: (?:null|java\.lang\.ref\.WeakReference@[0-9a-f]+)", stripped)):
+            unknown_before_section = True
+    if unknown_before_section:
+        return {"available": False, "reason": "unrecognized_body_format"}
+    if expected_count is None:
+        return {"available": True, "own_record_count": 0, "records": []} if recognized_empty else {"available": False, "reason": "unrecognized_empty_format"}
+    if expected_count > 256:
+        return {"available": False, "reason": "own_record_limit"}
+    records = []
+    current = None
+    cancellation_reasons = {"NULL", "USER_STOPPED", "OWNER_UNINSTALLED", "OWNER_FORCE_STOPPED", "OWNER_CANCELED", "HOSTING_ACTIVITY_DESTROYED", "SUPERSEDED", "ONE_SHOT_SENT", "UNKNOWN"}
+    for line in section:
+        start = re.fullmatch(r"#[0-9]+: PendingIntentRecord\{([0-9a-f]+) " + re.escape(PROVIDER) + r" startActivity\}", line)
+        if start:
+            key = start.group(1)  # Local registry identity only; never serialized.
+            if key not in identifiers: identifiers[key] = len(identifiers) + 1
+            current = {"observation_record_id": identifiers[key], "auth_component_present": False,
+                       "one_shot": None, "mutable": None, "immutable": None,
+                       "sent": None, "cancelled": None, "cancel_reason": None}
+            records.append(current)
+        elif current is not None:
+            flags = re.fullmatch(r"uid=[0-9]+ packageName=" + re.escape(PROVIDER) + r" featureId=null type=startActivity flags=0x([0-9a-f]+)", line)
+            if flags:
+                bits = int(flags.group(1), 16)
+                current.update(one_shot=bool(bits & 0x40000000), mutable=bool(bits & 0x02000000), immutable=bool(bits & 0x04000000))
+            if line.startswith("requestIntent="):
+                current["auth_component_present"] = bool(re.search(r"\bcmp=" + re.escape(PROVIDER + "/org.heptabao.preview.AuthActivity") + r"(?:\s|\})", line))
+            state = re.fullmatch(r"sent=(true|false) canceled=(true|false)(?: cancelReason=([A-Z_]+))?", line)
+            if state:
+                current["sent"] = state.group(1) == "true"
+                current["cancelled"] = state.group(2) == "true"
+                current["cancel_reason"] = state.group(3) if state.group(3) in cancellation_reasons else None
+    if len(records) != expected_count or any(row["one_shot"] is None for row in records):
+        return {"available": False, "reason": "unrecognized_own_record_format"}
+    return {"available": True, "own_record_count": expected_count, "records": records}
+
+
 class Failed(Exception):
     pass
 
@@ -81,6 +145,12 @@ class Device:
         self.last_wait = None
         self.last_public_ui = {}
         self.expected_fixture = None
+        self.current_case = None
+        self.tap_diagnostics = []
+        self._pi_identifiers = {}
+        self._ui_parents = {}
+        self._ui_started_ns = 0
+        self._ui_finished_ns = 0
         raw = self.command([self.adb, "devices"], 15)
         devices = [row.split()[0] for row in raw.decode().splitlines()[1:] if len(row.split()) == 2 and row.split()[1] == "device"]
         if len(devices) != 1 or sha(devices[0].encode()) != DEVICE_SHA256:
@@ -158,12 +228,16 @@ class Device:
         if current is None or current[0] not in PACKAGES | {"android"}:
             raise Failed("unexpected_foreground_no_ui_read")
         # No hierarchy file is created on the device or host. Parse only in memory.
+        self._ui_started_ns = time.monotonic_ns()
         raw = self.adb_command("exec-out", "uiautomator", "dump", "--compressed", "/dev/tty", timeout=20)
         start, end = raw.find(b"<hierarchy"), raw.find(b"</hierarchy>")
         if start < 0 or end < start:
             raise Failed("ui_hierarchy_unavailable")
         try:
-            nodes = list(ET.fromstring(raw[start:end + len(b"</hierarchy>")]).iter("node"))
+            tree = ET.fromstring(raw[start:end + len(b"</hierarchy>")])
+            nodes = list(tree.iter("node"))
+            self._ui_parents = {child: parent for parent in tree.iter() for child in parent}
+            self._ui_finished_ns = time.monotonic_ns()
             allowed = {"unlock heptabao locally", "heptabao · local authorization", "locked", "locked or expired", "authorization rejected", "heptabao synthetic native login", "fill synthetic login once", "unlock failed", "request autofill", "unlock locally", "fill once", "cancel"}
             self.last_public_ui = {"foreground": current, "controls": sorted({node.get("text", "").casefold() for node in nodes if node.get("text", "").casefold() in allowed})}
             return nodes
@@ -187,6 +261,8 @@ class Device:
         raise Failed("expected_ui_missing")
 
     def tap(self, text=None, description=None):
+        diagnostic = text in {"Request Autofill", "Unlock HeptaBao locally"}
+        menu = text == "Unlock HeptaBao locally"
         node = self.wait(text, description)
         match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
         if not match or node.get("enabled") != "true":
@@ -194,7 +270,68 @@ class Device:
         left, top, right, bottom = map(int, match.groups())
         if right <= left or bottom <= top:
             raise Failed("ui_target_bounds_invalid")
-        self.shell("input", "tap", str((left + right) // 2), str((top + bottom) // 2))
+        point = [(left + right) // 2, (top + bottom) // 2]
+        event = None
+        if diagnostic:
+            event = {"selector": text, "case": self.current_case, "display": 0, "point": point,
+                     "selected_node_and_ancestors": self.node_geometry(node),
+                     "dump_duration_ms": round((self._ui_finished_ns - self._ui_started_ns) / 1e6),
+                     "sampling_is_not_case_proof": True}
+            if menu:
+                event["pending_intents_immediately_before_tap"] = self.pending_intents()
+                current = self.foreground()
+                event["foreground_before_tap"] = self.public_component(current)
+                if current != (self.expected_fixture, ACTIVITY) and not (current is not None and current[0] == "android"):
+                    self.tap_diagnostics.append(event)
+                    raise Failed("autofill_menu_context_changed")
+            self.tap_diagnostics.append(event)
+            event["dump_end_to_input_start_ms"] = round((time.monotonic_ns() - self._ui_finished_ns) / 1e6)
+            if menu and event["dump_end_to_input_start_ms"] >= 1000:
+                raise Failed("autofill_menu_sample_stale")
+        input_started = time.monotonic_ns()
+        self.shell("input", "tap", str(point[0]), str(point[1]))
+        if event is not None:
+            event["input_command_completed"] = True
+            event["input_command_ms"] = round((time.monotonic_ns() - input_started) / 1e6)
+            if menu:
+                event["pending_intents_after_tap"] = self.pending_intents()
+                event["foreground_after_tap"] = self.public_component(self.foreground())
+
+    @staticmethod
+    def public_component(component):
+        if component in {(GOOD, ACTIVITY), (DECOY, ACTIVITY), (PROVIDER, "org.heptabao.preview.MainActivity"), (PROVIDER, "org.heptabao.preview.AuthActivity")}:
+            return {"component": list(component)}
+        return {"classification": "system_window" if component and component[0] == "android" else "unavailable_or_other"}
+
+    def node_geometry(self, node):
+        out = []
+        for _ in range(8):
+            if node is None or node.tag != "node": break
+            package = node.get("package")
+            cls = node.get("class", "")
+            row = {"package": package if package in PACKAGES | {"android"} else "other_omitted",
+                   "class": cls if re.fullmatch(r"android\.(?:widget|view)\.[A-Za-z0-9_$]+", cls) else "other_omitted",
+                   "is_presentation_text_id": node.get("resource-id") == PROVIDER + ":id/presentation_text"}
+            bounds = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
+            row["bounds"] = list(map(int, bounds.groups())) if bounds else None
+            for key in ("enabled", "clickable", "focusable", "focused", "scrollable", "visible-to-user"):
+                row[key] = {"true": True, "false": False}.get(node.get(key))
+            out.append(row)
+            node = self._ui_parents.get(node)
+        return out
+
+    def pending_intents(self):
+        # Framework-side exact package filter. The parser discards all URI tokens,
+        # request extras, weak-reference entries, and the global UID-count tail.
+        started = time.monotonic_ns()
+        try:
+            raw = self.shell("dumpsys", "activity", "-a", "intents", PROVIDER, timeout=5)
+            result = pending_intent_metadata(raw, self._pi_identifiers)
+        except Failed:
+            result = {"available": False, "reason": "query_failed"}
+        result["query_duration_ms"] = round((time.monotonic_ns() - started) / 1e6)
+        result["observation_monotonic_ns"] = time.monotonic_ns()
+        return result
 
     def fixture(self, package=GOOD):
         if package not in {GOOD, DECOY}: raise Failed("fixture_out_of_scope")
@@ -407,11 +544,13 @@ def main():
     def case(name, action):
         if name not in EXPECTED_CASES or any(row["name"] == name for row in report["cases"]): raise Failed("unexpected_case_inventory")
         report["current_case"] = name
+        device.current_case = name
         print(json.dumps({"case": name, "state": "running"}), flush=True)
         started = time.monotonic(); evidence = action()
         if not isinstance(evidence, dict): raise Failed("case_evidence_missing")
         report["cases"].append({"name": name, "passed": True, "elapsed_ms": round((time.monotonic() - started) * 1000), "evidence": evidence})
         report["current_case"] = None
+        device.current_case = None
         atomic_json(args.output / "progress.json", report)
         print(json.dumps({"case": name, "passed": True}), flush=True)
     def install(variant):
@@ -581,6 +720,7 @@ def main():
         report["missing_cases"] = [name for name in EXPECTED_CASES if not any(row["name"] == name for row in report["cases"])]
         if report["missing_cases"]: failure = failure or "incomplete_case_inventory"
         report["finished_unix_ns"] = time.time_ns(); report["passed"] = failure is None
+        report["interaction_diagnostics"] = {"scope": "public_geometry_and_package_scoped_pending_intent_metadata", "causal_case_proof": False, "pending_intent_absence_does_not_distinguish_cancel_from_one_shot_send": True, "events": device.tap_diagnostics}
         report["error"] = failure; report["checks_passed"] = len(report["cases"])
         atomic_json(args.output / "report.json", report)
     print(json.dumps({"ok": report["passed"], "checks_passed": report["checks_passed"], "error": failure, "restoration": report["restoration"], "report": str(args.output / "report.json"), "report_sha256": sha((args.output / "report.json").read_bytes())}, sort_keys=True), flush=True)

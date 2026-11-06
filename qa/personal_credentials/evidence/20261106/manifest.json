@@ -88,6 +88,18 @@
       "transformation": "none; byte-identical original failed 1-of-12 device receipt"
     },
     {
+      "file": "android-c5-r6-framework-diagnostic.public.json",
+      "sha256": "8b4b3ba66d37a069475b3ed5e55f64065a5ffafc17354489261a28a831e255f4",
+      "bytes": 564,
+      "transformation": "none; byte-identical original read-only owned-process diagnostic; no proven root cause"
+    },
+    {
+      "file": "android-c5-r6-framework-diagnostic.py",
+      "sha256": "1e6d91f6242118015cd305284ac2b9b7129c2e3ac4a9667f4b575a8256ed87ca",
+      "bytes": 3937,
+      "transformation": "none; byte-identical original read-only diagnostic script"
+    },
+    {
       "file": "android-c5-r6-readonly-diagnostic.public.json",
       "sha256": "1cc9652f1593b510416868912a4ee7e2180210ef07581e4c16aa5042eb4e2715",
       "bytes": 4301,
@@ -104,6 +116,18 @@
       "sha256": "b3fba2d2e42a4c196809576a2c3c9ec6fa263305b89a81d17e4261be034d85e2",
       "bytes": 479,
       "transformation": "none; byte-identical original eight host-only driver guard tests"
+    },
+    {
+      "file": "android-qa9-before-phone-source-binding.public.json",
+      "sha256": "c785e79de3181b566e4af54ed0e8321f416f5c605d123fbeff32b817f3ac426f",
+      "bytes": 3009,
+      "transformation": "none; byte-identical original QA9 source binding before its first device run"
+    },
+    {
+      "file": "android-qa9-offline-guards.public.json",
+      "sha256": "623d218fa8f256f5f39deaf57bc2012e7a293faf96166c0b04d5130e246114bd",
+      "bytes": 5578,
+      "transformation": "none; byte-identical original 45 host-only guard observations across Android and Passkey drivers; no device qualification"
     },
     {
       "file": "broker-ed25519-build-and-tests.public.json",
@@ -454,6 +478,96 @@
       "transformation": "none; byte-identical original public host-only receipt"
     },
     {
+      "file": "passkey-r4-phone-attempt-index.public.json",
+      "sha256": "96893e13b5e6c495a73eccca55af363428a7d405ad3fba7cb97589137c2d7e9d",
+      "bytes": 14324,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-autofill-bridge-provenance.public.json",
+      "sha256": "c078a27fd760598d291e55775c4aece81cca580a43fc277edcb32bca2916b049",
+      "bytes": 1347,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-autofill-correction.result.public.json",
+      "sha256": "4d84f24da4ac8fe8cfd17ef0addebfa4cd8e02239a318fec20ddc44d0dd19369",
+      "bytes": 1228,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-case-results.public.json",
+      "sha256": "4c5c2d0678cbdbbfd0629e54782338c49e42726c1a19b8a63eac463889cf2b72",
+      "bytes": 13740,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-cleanup.result.public.json",
+      "sha256": "a89c4a4c0e3e3c24d4b6bde440ddd0a5094986fa8ff1a08370d00ccca270dd3d",
+      "bytes": 1276,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-packet-review.public.json",
+      "sha256": "45f2304868bae329422ec70cac0da15ad37aed9e9d9d7f61d8289879661fae74",
+      "bytes": 3408,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-packet.manifest.public.json",
+      "sha256": "c4594a2192b8d9b9256540a42ea866856404d73de2b84ecf2973a3d952b766bd",
+      "bytes": 992,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_live.final-r4.py",
+      "sha256": "67d7ab8dd282cec1e7f94796352b6c40bd2f14339acd1d2866dc75c3bd0f6000",
+      "bytes": 27781,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_live.localized-r4.py",
+      "sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a",
+      "bytes": 30991,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_live.primary-r4.py",
+      "sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d",
+      "bytes": 30448,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_phone_profile.r4.py",
+      "sha256": "6a26dbf2c4394becba2eb0c21192853afb5f176ede68f2e4dbf9d00ed9b1a7b0",
+      "bytes": 6303,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_restore_autofill_bridge.final-r4.py",
+      "sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d",
+      "bytes": 7289,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-phone-r4-public-evidence.tar.gz",
+      "sha256": "77dc53f7d944b94e14692817a8c974de658311d27b279325adafbd83a4d98bc5",
+      "bytes": 8131,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-profile.public.json",
+      "sha256": "ca294b7f04877b6662afe2b05d0653651161d2b7820c0d8c3f03c5ad203524e8",
+      "bytes": 6893,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-transfer.manifest.public.json",
+      "sha256": "908617d8e450222bac72e1dfee9bd48dc47d45dac10792e6ebe13464b671a8c1",
+      "bytes": 4259,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
       "file": "passkey-r4-rust-reopen-fixed-b0cc.public.json",
       "sha256": "d6dd270dbc8be85e7d96622b0c5c2c8d29c72945adcdb9b811d365e2b48bf2e7",
       "bytes": 1732,
@@ -470,6 +584,12 @@
       "sha256": "8f4aa93fb4600a722ca34798d4f8364dba81c43da71a1c7cc2d30c95e2cd4b1b",
       "bytes": 473,
       "transformation": "none; byte-identical original seed receipt; its local producer build provenance remains unestablished"
+    },
+    {
+      "file": "passkey-r5b-phone-profile.declared.json",
+      "sha256": "79632f9c91877bdcec9285fe7b893196e1029008d7185cf0a2618dc158bb1c9f",
+      "bytes": 12552,
+      "transformation": "deterministic output of frozen profile source 5e21b66be609f539ca7e6945752b66974933ac11639e7b0b9ccb6751a7ce5400; declares eighteen cases and does not prove execution"
     },
     {
       "file": "passkey-r5b-source-match.public.json",
