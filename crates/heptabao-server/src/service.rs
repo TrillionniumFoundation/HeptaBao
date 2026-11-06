@@ -1602,6 +1602,8 @@ pub struct Service {
     state_capacity: usize,
     #[cfg(test)]
     audit_capacity: u64,
+    #[cfg(all(test, feature = "native-v6-ha"))]
+    snapshot_forward_test: snapshot_transfer::forward::test_faults::State,
 }
 
 impl Service {
@@ -2069,6 +2071,8 @@ impl Service {
             state_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
             audit_capacity: MAX_AUDIT_BYTES,
+            #[cfg(all(test, feature = "native-v6-ha"))]
+            snapshot_forward_test: Default::default(),
         })
     }
 

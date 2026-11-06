@@ -222,6 +222,11 @@ impl Service {
             }
             return Err(response);
         }
+        #[cfg(test)]
+        self.fixture_snapshot_forward_fault(
+            test_faults::Point::SourceAfterFinalizer, admitted.ready.data.nonce,
+            plan.deadline, &admitted.ready.data,
+        );
         let publication: Result<(u16, Zeroizing<Vec<u8>>), Response> = (|| {
             let original = &admitted.ready.data;
             original_actor(&admitted.auth, &original.actor, admitted.clock, plan.deadline)?;

@@ -95,6 +95,11 @@ impl Service {
 }
 
 impl SnapshotForwardPlan {
+    #[cfg(test)]
+    pub(crate) fn fixture_request_context(&self) -> ([u8; 32], Instant) {
+        (self.request.nonce, self.owner.deadline)
+    }
+
     fn accept_ready(
         &self, service: &mut Service, bytes: &[u8],
     ) -> Result<OriginalCheckpoint, Response> {
@@ -359,6 +364,11 @@ impl SnapshotForwardPlan {
             // An original Auth view never becomes the newly restored Auth owner.
             sync_prefix(service, &self.owner, &original.admission.data, &data.prefix)?;
             let activation = Zeroizing::new(service.unseal_nonce.clone());
+            #[cfg(test)]
+            service.fixture_snapshot_forward_fault(
+                test_faults::Point::IngressFirstDelivery, self.request.nonce,
+                self.owner.deadline, &original.admission.data,
+            );
             self.delivery_check(service, &original, &data, &response, &activation)?;
             Ok::<_, Response>(activation)
         })();
@@ -382,6 +392,11 @@ impl SnapshotForwardPlan {
                 response: self.uncertain_completion(&data), file: None,
             };
         }
+        #[cfg(test)]
+        service.fixture_snapshot_forward_fault(
+            test_faults::Point::IngressSecondDelivery, self.request.nonce,
+            self.owner.deadline, &original.admission.data,
+        );
         if self.delivery_check(service, &original, &data, &response, &activation).is_err() {
             erase_json(&mut response.body);
             response.response_headers.clear();

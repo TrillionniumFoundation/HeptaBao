@@ -16,6 +16,9 @@ mod file;
 mod client;
 #[path = "service_snapshot_forward_source.rs"]
 mod source;
+#[cfg(test)]
+#[path = "service_snapshot_forward_test_faults.rs"]
+pub(crate) mod test_faults;
 
 pub(crate) use client::SnapshotForwardPlan;
 
