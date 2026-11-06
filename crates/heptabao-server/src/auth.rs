@@ -4550,6 +4550,30 @@ impl AuthState {
         origin_peer: Option<std::net::IpAddr>,
         cluster_id: Option<&str>,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        self.handle_with_connection_clock_and_native_jwt_lifetime_for_cluster(
+            principal, namespace, method, path, body, time, clock,
+            peer_certificates, origin_peer, cluster_id, None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn handle_with_connection_clock_and_native_jwt_lifetime_for_cluster(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+        clock: Option<RequestClock>,
+        peer_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        cluster_id: Option<&str>,
+        native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+    ) -> Result<Option<AuthResponse>, AuthError> {
+        if native_jwt_lifetime.as_deref().is_some_and(Option::is_some) {
+            return Err(err(503, "native JWT output slot is not fresh"));
+        }
         let time = self.token_api_observed_time(time);
         let clock = clock.map(|clock| self.token_api_request_clock(clock));
         let now = time.seconds();
@@ -4632,7 +4656,12 @@ impl AuthState {
                 "approle" if suffix == "role" || suffix.starts_with("role/") => {
                     self.role_route(principal, scope, method, path, body, now, cluster_id)
                 }
-                "jwt" => self.jwt_route(principal, scope, method, path, body, now),
+                "jwt" => match native_jwt_lifetime {
+                    Some(lifetime) => self.jwt_route_with_native_lifetime(
+                        principal, scope, method, path, body, now, Some(lifetime),
+                    ),
+                    None => self.jwt_route(principal, scope, method, path, body, now),
+                },
                 "cert" => self.cert_route(
                     principal,
                     scope,
@@ -6211,6 +6240,20 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        self.jwt_route_with_native_lifetime(principal, scope, method, path, body, now, None)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn jwt_route_with_native_lifetime(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        native_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+    ) -> Result<AuthResponse, AuthError> {
         let AuthScope { namespace, mount } = scope;
         if path == format!("auth/{mount}/config") {
             return self.jwt_config_route(principal, scope, method, body, now);
@@ -6240,16 +6283,18 @@ impl AuthState {
             if verification_config.audiences.is_empty() {
                 verification_config.audiences = role.bound_audiences.clone();
             }
-            let verified = verification_config
-                .verifier()?
-                .verify_native_with_user_claim(
-                    jwt,
-                    now,
-                    jwt_login::native_time_policy(&config, &role),
-                    role.bound_claims.as_ref(),
-                    role.user_claim.as_deref().unwrap_or("sub"),
-                )
-                .map_err(|_| bad("JWT signature or claims validation failed"))?;
+            let verifier = verification_config.verifier()?;
+            let time_policy = jwt_login::native_time_policy(&config, &role);
+            let user_claim = role.user_claim.as_deref().unwrap_or("sub");
+            let (verified, lifetime) = if native_lifetime.is_some() {
+                verifier.verify_native_with_user_claim_and_lifetime(
+                    jwt, now, time_policy, role.bound_claims.as_ref(), user_claim,
+                ).map(|(identity, lifetime)| (identity, Some(lifetime)))
+            } else {
+                verifier.verify_native_with_user_claim(
+                    jwt, now, time_policy, role.bound_claims.as_ref(), user_claim,
+                ).map(|identity| (identity, None))
+            }.map_err(|_| bad("JWT signature or claims validation failed"))?;
             let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
             if claimed_namespace != namespace
                 || !role.bound_groups.is_subset(&verified.groups)
@@ -6356,6 +6401,9 @@ impl AuthState {
             self.jwt_at_mut(scope)
                 .identities
                 .insert(identity_key, identity);
+            if let Some(output) = native_lifetime {
+                *output = lifetime;
+            }
             return Ok(response);
         }
         if path == format!("auth/{mount}/role") {
@@ -10163,6 +10211,12 @@ pub(crate) use native_v6_routes::NativeV6CertLifetime;
 mod native_userpass;
 #[cfg(feature = "native-v6-storage")]
 pub(crate) use native_userpass::NativeUserpassOwner;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_jwt.rs"]
+mod native_jwt;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_jwt::NativeJwtOwner;
 
 #[cfg(test)]
 #[path = "auth_lossless_json_tests.rs"]
