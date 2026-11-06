@@ -1,0 +1,540 @@
+{
+  "schema": "heptabao.r39-qualified-stages-controls-and-Mac-readonly.v1",
+  "as_of_UTC": "2026-11-06 08:53:00 UTC",
+  "previous_validation_commit": "4403b2e23ec12b611b4e374cc723546fea821fda",
+  "prefix": "qa/evidence/20261104/r39-stage-controls-and-mac-readonly-r1",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "qualified_product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "prior_real_LAN_scope": "Mac192.168.0.8/ROG.10/Pocket4.9 real-process SIGKILL, election, ReadIndex, quorum loss, durable cold restart98+12; not physical power removal; no transfer of qualification to new uncompiled source.",
+  "JWT_PKI": {
+    "source_freeze": {
+      "schema": "heptabao.root-PKI3-freeze-preflight.v1",
+      "parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+      "base_tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+      "expected_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+      "leaves": 3916,
+      "unchanged": 3913,
+      "modified": 3,
+      "index": {
+        "blob": "274ab44690eb8992c7bb7954757cb81c994b6575",
+        "bytes": 452026,
+        "sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0"
+      },
+      "tracked_bytes": 62297347,
+      "formatted_content_qualification": "804c07ab40bb0be24776fd6ec110935f1cf064fb",
+      "draft_tree": "2268a8e714bdec077116b8675773506a0ede68b2",
+      "branch": "codex/heptabao-native-jwt-pki-source-20261106",
+      "source_only": true,
+      "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+      "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+      "tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+      "branch_read_back_verified": true,
+      "commit_read_back_verified": true,
+      "tree_layers_verified": [
+        {
+          "path": "crates/heptabao-server/src/engines",
+          "sha": "73153086733f7c586a5b9db968c933cbdeafaa55",
+          "entries": 116,
+          "whole": true
+        },
+        {
+          "path": "crates/heptabao-server/src",
+          "sha": "30df5c0f2c8c0dde945bd3447a48821712324cd7",
+          "entries": 782,
+          "whole": true
+        },
+        {
+          "path": "crates/heptabao-server",
+          "sha": "1f4f1a2806d2cde84ff1522ad01c4364d5dd1439",
+          "entries": 8,
+          "whole": true
+        },
+        {
+          "path": "qa/openbao-acceptance",
+          "sha": "1844411ab50ee681a3ae4e22258e5041d7a64c71",
+          "entries": 381,
+          "whole": true
+        },
+        {
+          "path": "crates",
+          "sha": "b2c01aa42fff7f8480749fdb3b312e1d1a69371e",
+          "entries": 49,
+          "whole": true
+        },
+        {
+          "path": "qa",
+          "sha": "f5f6a877d49a3df3c1a2be612c87ac57c62139e1",
+          "entries": 2,
+          "whole": true
+        },
+        {
+          "path": "",
+          "sha": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+          "entries": 26,
+          "whole": true
+        }
+      ],
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/engines/pki.rs",
+          "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+          "bytes": 136672,
+          "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+          "blob": "23b2c1344eec6ad1cc659f665df14d6379687a49",
+          "bytes": 42909,
+          "sha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56"
+        },
+        {
+          "path": "qa/openbao-acceptance/acceptance.py",
+          "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+          "bytes": 36333,
+          "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
+        }
+      ],
+      "mutation_journals": {
+        "tree_intent": "75cb8603324f652fdc303294b8dbd84c9ead2a2e",
+        "tree_original_sdk": "d6251b2ca91f9e88f1e71f8165057b55ed1abd63",
+        "commit_intent": "4132c03349e54803c2280a943140cd4a8e77e2ef",
+        "commit_original_sdk": "27926ef6d88550d23844633b6877d24f394f28c3",
+        "branch_intent": "f1fb20c3d1522bde5902e2a53a5a2a2b8de082e7",
+        "branch_original_sdk": "d05dbdf33b69a29d744af6a6c1fecf59222bfa3e"
+      },
+      "limits": {
+        "compiled": false,
+        "product_runtime": false,
+        "http_12": false,
+        "full_replacement": false,
+        "production_cutover": false,
+        "cleanup": false
+      },
+      "tree_comparator_correction": "All seven returned hashes matched; cached entry arrays compared as exact path/mode/type/sha sets and independently Merkle-recomputed. Initial order-only comparison failure remains in commit intent. No mutation was repeated."
+    },
+    "independent_stage_root": {
+      "blob": "7cdf99e46ba40fe09ab156a09608ee131e28400d",
+      "bytes": 10731,
+      "sha256": "76746d7ea3b03821a5f4a9aea1f4b0ad07ed380b2b765337a5afd68d9443d84a"
+    },
+    "independent_stage_report": {
+      "blob": "f2c2bd29fd1209f79776ec01fb170119a2d912ef",
+      "bytes": 27931,
+      "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0"
+    },
+    "independent_stage_actual": {
+      "commands": 59,
+      "all_direct_children_closed": true,
+      "full_leaves": 3916,
+      "tracked_bytes": 62297347,
+      "original_calls": 17,
+      "original_observers": 4,
+      "original_pages": 8
+    },
+    "ready_control_source": {
+      "blob": "dcff8731146da337823480560ed55b1108b58542",
+      "bytes": 8463,
+      "sha256": "1068816f28e953217087f7969f7ab7ce8e67fd39a5dee09ddb91709302fc5162"
+    },
+    "inert_publication_root": {
+      "blob": "dfd419873cbf01d054033a6c894ec64fbedb3605",
+      "bytes": 7519,
+      "sha256": "0aef246812c716930a14769f4e58de1a5eaf17e2106eab1c0ca3fb32ad72b34f"
+    },
+    "inert_actual": {
+      "native_calls": 7,
+      "observers": 2,
+      "immutable_pages": 2,
+      "elapsed_seconds": 0.015043918,
+      "publication": "prepared",
+      "created_files": [
+        {
+          "bytes": 30397,
+          "identity": [
+            "66306",
+            "31235924",
+            "1000",
+            "1000",
+            "33152",
+            "1",
+            "30397",
+            "1793954281105928260",
+            "1793954281106897967"
+          ],
+          "mode": "0600",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py",
+          "publication": "created",
+          "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add"
+        },
+        {
+          "bytes": 38565,
+          "identity": [
+            "66306",
+            "31235925",
+            "1000",
+            "1000",
+            "33152",
+            "1",
+            "38565",
+            "1793954281107963513",
+            "1793954281108998030"
+          ],
+          "mode": "0600",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+          "publication": "created",
+          "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056"
+        },
+        {
+          "bytes": 19789,
+          "identity": [
+            "66306",
+            "31235926",
+            "1000",
+            "1000",
+            "33152",
+            "1",
+            "19789",
+            "1793954281109723489",
+            "1793954281110748800"
+          ],
+          "mode": "0600",
+          "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json",
+          "publication": "created",
+          "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+        }
+      ],
+      "stdin_bytes": 118531,
+      "stdin_sha256": "7afbd432447feee5fbee147c747baa6f084f8286aaea0b427bc19952f83cdf44",
+      "python_compile_only": true
+    },
+    "independent_controls_file_info_GO": {
+      "blob": "151ec9b645dc9480f825162627d356768c253c10",
+      "bytes": 5516,
+      "sha256": "02554b9b9581649eee2d9ed4ac7eebc71dbf172a9d89201aa20c2c19392a956e"
+    },
+    "independent_controls_file_info_root_qualified": false,
+    "independent_controls_bodies_qualified": false,
+    "Cargo_started": false,
+    "test_results_observed": 0,
+    "planned_unique_tests": 149,
+    "planned_profile_instances": 166,
+    "group_sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+    "original_release1800_compile3600_groups600_outer12000_unchanged": true,
+    "official_ACL_oracle": {
+      "source_case_count": 23,
+      "actual_executed": 0,
+      "predicted_differences": 9,
+      "not_observed": true,
+      "two_layers_require_review": "owner capture auth_native_jwt.rs and backend auth.rs",
+      "missing_role_DELETE_204_vs404_source_observation_not_added_to23": true
+    },
+    "HTTP12_executed": false
+  },
+  "snapshot": {
+    "old_CLI_failure": {
+      "job": "desktop/1a1aee01612-fc05-639b",
+      "root": "e36c81a7222c41a9ba4e327e340d2d5d2d2bfc33",
+      "report": {
+        "blob": "0b2edd60185b80817c3c7f1378b914ae914ab21e",
+        "bytes": 848065,
+        "sha256": "d5c691d23b513a2a63916792bbe21178e2b34799e6adbd20ddf88cdf6147bc48"
+      },
+      "B01": true,
+      "B02": true,
+      "B03": true,
+      "B04": false,
+      "B05": false,
+      "B05_CLI0_did_not_restore": true,
+      "second_upload_bytes_and_internal400_cause_unknown": true
+    },
+    "b694_terminal_root": {
+      "blob": "c36049a5266f8d71dadd8657609fbf81c7d1f8f9",
+      "bytes": 5637,
+      "sha256": "b441acab6dc77890504d05b60ab54bfd1a389ea58daddf1cd631f3e2eb16f718"
+    },
+    "b694_independent_info_root": {
+      "blob": "034bd53236d4e4a7de9e881cbd3e61062107a3a1",
+      "bytes": 4598,
+      "sha256": "eb8be24343c9285b1a343c30c76acd8c2354040e40c2e59730e3a1209790a30d"
+    },
+    "b694_complete_original_body_packet": "ac1290757435090eaa787a595635ff9328da2466",
+    "b694_report": {
+      "blob": "49c3cd8ce2e70d224331ac0acf4cce8be0429485",
+      "bytes": 28206,
+      "sha256": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db"
+    },
+    "b694_complete_semantic_root_qualified": false,
+    "Service_four_source_root": {
+      "blob": "0dbf6b3938e5189af890e80f65d4d1c23f086056",
+      "bytes": 17649,
+      "sha256": "da578231e7429d418012f310b5e71dd38c63197bf392b2af65456e16033335c1"
+    },
+    "Service_source_freeze": {
+      "schema": "heptabao.root-source-freeze.real-Service-snapshot-audit-four-proof.v1",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "branch": "codex/heptabao-native-snapshot-forward-r5-source-20261106",
+      "commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+      "tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+      "sole_parent": "b6949024dc5d0922ca9b27d865923d28982286c3",
+      "leaves": 3930,
+      "modified_existing": 6,
+      "new_files": 2,
+      "unchanged": 3922,
+      "deleted_files": 0,
+      "tracked_bytes": 62486000,
+      "index": {
+        "blob": "8cd39d6c4900a37bb5d64d37eb1330c54bfdba22",
+        "bytes": 453627,
+        "sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+      },
+      "source_packet": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+      "root_source_review": {
+        "blob": "0dbf6b3938e5189af890e80f65d4d1c23f086056",
+        "bytes": 17649,
+        "sha256": "da578231e7429d418012f310b5e71dd38c63197bf392b2af65456e16033335c1"
+      },
+      "union": {
+        "files": 49,
+        "unformatted_bytes": 2023746
+      },
+      "exact_new_tests": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+      ],
+      "component_tests": 23,
+      "Service_tests": 4,
+      "combined_distinct_candidate_tests": 27,
+      "product_without_test_configuration_unchanged": true,
+      "layers_verified": [
+        {
+          "path": "",
+          "sha": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+          "entries": 26
+        },
+        {
+          "path": "crates",
+          "sha": "743063431acebaa06bbd5f0f04e545daa6c27205",
+          "entries": 49
+        },
+        {
+          "path": "crates/heptabao-server",
+          "sha": "a00080e5408a8f2f525236e4aa7829d787cc8529",
+          "entries": 8
+        },
+        {
+          "path": "crates/heptabao-server/src",
+          "sha": "e854727c23dd1c5ba7367c55b4b3417be7e9231f",
+          "entries": 792
+        }
+      ],
+      "commit_readback_verified": true,
+      "branch_readback_verified": true,
+      "mutation_journals": {
+        "tree_intent": "d9c594027dac58d8c3014168ee2b101561a17df1",
+        "tree_SDK": "f3f6a3fed2bf164ea2ec9edef524d39197e2ca69",
+        "commit_intent": "4ad65d64db70debb6ce6f9a49ae1e815196028c2",
+        "commit_SDK": "e6ad0a8cd6f6cdbd9d3d6592e2e899c598713c72",
+        "branch_intent": "d0423105a7aec3080dc7e820bfa79c3109b8054a",
+        "branch_SDK": "229d2b2764673caeceec3a2201a492e4b9d5054e"
+      },
+      "formatted": false,
+      "compiled": false,
+      "tests_executed": false,
+      "PKI33b_not_included": true,
+      "C149_unique166_instances_unchanged": true,
+      "old_CLI_failure_preserved": true,
+      "full_replacement": false,
+      "production_cutover": false,
+      "legacy_cleanup": false,
+      "root_Runtime_calls": 0
+    },
+    "current_2379_stage_GO": {
+      "blob": "91619d523a338a718d551e90fc1386efe798ca27",
+      "bytes": 7658,
+      "sha256": "261f835215adb811fbcc92f0217186c0557fecce226b415a8c47099dbc9a4ec9"
+    },
+    "current_2379_original_terminal_packet": "410dfe06fb8785fbdd0722170594f3c2c43c4285",
+    "current_2379_original_job": "rog/1a1b008fa4a-fc05-6d9a",
+    "current_2379_terminal_root_qualified": false,
+    "current_2379_detailed_report_observed": false,
+    "formatter49_source_root": {
+      "blob": "ee0a83720e5101983a37eecc9898ae5a08d81592",
+      "bytes": 28499,
+      "sha256": "002b82cb1f8f9206b582e10436ad1450e462bc28e80c54a5b05abd372dce36ed"
+    },
+    "formatter49_executed": false,
+    "compiler_started": false,
+    "component_tests_planned": 23,
+    "Service_tests_planned": 4,
+    "combined_unique_tests_planned": 27,
+    "combined_tests_executed": 0,
+    "PKI33b_separate_branch_not_integrated": true,
+    "old46_formatter_never_executed": true
+  },
+  "AuthBus": {
+    "J3160_contacted": false,
+    "private_capsule_read": false,
+    "old_worker_root_or_label_mutated": false,
+    "old_EX_CONFIG78_cause_qualified": false,
+    "old_R4_root": {
+      "blob": "3b0956905839b1271f5e416bdf321b97492f3300",
+      "bytes": 9807,
+      "sha256": "0f9d53ad1bd285f156ea2eb2855897e2708a8916a286f409f95d2a46f242142f"
+    },
+    "readonly_R2_root": {
+      "blob": "e65caf0cf0e3447b50a205d1d6033796dfb75ad8",
+      "bytes": 10848,
+      "sha256": "64eda6fbc05d7cf8de5564d24661945f21e80dd08e71522806f4458b92d0c04c"
+    },
+    "readonly_R2_actual": {
+      "native_calls": 13,
+      "observers": 2,
+      "immutable_pages": 8,
+      "elapsed_seconds": 0.058716667,
+      "stage": "current_ready_pid_first",
+      "error": {
+        "code": "direct_helper_outcome_unknown",
+        "errno": null,
+        "type": "ProbeRefused"
+      },
+      "first_current_print": {
+        "bytes": 2004,
+        "state": "not running",
+        "runs": 1,
+        "pid_present": false,
+        "last_exit_code": 1,
+        "exact_registered_path_program_and_argv": true
+      },
+      "current_ready": {
+        "bytes": 640,
+        "identity": {
+          "birthSec": 1793950344,
+          "birthUsec": 737052,
+          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+          "pgid": 58228,
+          "pid": 58228,
+          "ppid": 1,
+          "uid": 501
+        },
+        "marker_present": true
+      },
+      "current_terminal": {
+        "bytes": 4816,
+        "stage": "home_admission",
+        "error": {
+          "code": "child_absolute_deadline",
+          "errno": null,
+          "type": "ProbeRefused"
+        },
+        "same_birth_admission": false,
+        "entered_T5": false,
+        "application_FD_rows": 19,
+        "all_returned_application_FDs_closed": true
+      },
+      "controller_FD_rows": 21,
+      "all_returned_controller_FDs_closed": true,
+      "helper_known_closed": 87641,
+      "helper_UNKNOWN": {
+        "pid": 87650,
+        "custody": null,
+        "cleanup_error": "owned_child_scope_mismatch",
+        "direct_child_reaped": false,
+        "streams_closed": true,
+        "signals": []
+      },
+      "managed_registration_closed": false,
+      "old_R4_rewritten": false
+    },
+    "readonly_R3_source_root": {
+      "blob": "90a8fa6f91ae1b80f8d0a22194cf516dfa232f6d",
+      "bytes": 11816,
+      "sha256": "829e9e94ba586940186a3f61c08e0eba714026cba9028fc6f87c7f107256d734"
+    },
+    "readonly_R3_exact_GO": {
+      "blob": "339fb0884b246dedf92994dcfdca7279a802790b",
+      "bytes": 13459,
+      "sha256": "aa19f9d017396b11c778381bd2a165979aa9e5cbacda9a2765ab619098d32b81"
+    },
+    "readonly_R3_actual_root_qualified": false,
+    "readonly_R3_API_scope": "At most6 new proc_pidinfo(pid,3,1) calls for2 self and4 ready-PID samples. ESRCH is only a lookup result; no automatic managed closure. Original helper internals and their ps remain unchanged.",
+    "old_R4_managed_registration_unknown": true,
+    "old_R2_helper87650_unknown": true,
+    "trusted_current_credentials_qualified": false,
+    "AppRole_TLS_KV_Policy_renew_revoke_qualified": false,
+    "production_consumers_switched": 0
+  },
+  "history_preserved": {
+    "C_original_local_page_prepare_failure_and_once_root_authorized_local_resume": true,
+    "C_body_semantic_precheck_before_separate_decoded_leaf_order_exception": true,
+    "all_final_C_root51_semantics_after_whole_original_report": true,
+    "superseded_b694_GO_source_packet_object_corrected_to_SHA_before_dispatch": true,
+    "superseded_2379_GO_one_sequence_sentence_corrected_before_initialize": true,
+    "B2379_pure_Git_helper_argument_error_and_unpublished_release_draft_correction": true,
+    "old_UNKNOWN_records_not_replayed_or_rekeyed": true,
+    "source_verifier_corrections_not_changes_to_candidate_source": true
+  },
+  "remaining_gates": [
+    "CLI standby save and restore exact cause and repair",
+    "AuthBus actual trusted owner credential chain and five current consumers",
+    "Native JWT actual compilation/test plus precise official role ACL create/update/delete semantics",
+    "Other native auth/provider routes including OIDC/Kubernetes/MFA and SDK owners",
+    "Database/RabbitMQ/Kubernetes secret external effects",
+    "ACME/EAB/externalKMS/HSM PKI and Transit integration",
+    "Rekey/root generation/rotation and runtime plugin mutation",
+    "Protected namespace/nondefault Raft administration",
+    "Two exact PKI expired/revoked status oracles",
+    "Current per-client credential read/write, restart, rollback and traffic cutover",
+    "All current backup-path migration evidence before legacy cleanup"
+  ],
+  "baseline_evidence_limits_preserved": [
+    "Mac/X230 formal34MiB31/31 is scoped to4e808 baseline; no current candidate qualification inheritance.",
+    "X23069 remains67 exact plus2 normalized PKI until actual new HTTP oracle.",
+    "RealLAN prior98+12 does not cover new snapshot forwarding, rawOpenBao archive interoperability or current production cutover.",
+    "H2 prior H01-H03 small archive/ALPN scope does not establish34MiB H2 or multi-host new CLI restore.",
+    "Native database,Kubernetes,RabbitMQ,ACME/EAB,KMS/HSM,root/rekey/plugin/namespace/admin capability gaps remain.",
+    "Current inventory and every real client restart/rollback plus every backup migration must precede old-service and asset removal."
+  ],
+  "next_work": [
+    "Finish exact independent controls metadata/bodies, bind build request and execute original149/166 matrix.",
+    "Finish2379 detailed source report, format49 exact source copies, freeze observed output and run23+4 snapshot regressions.",
+    "Complete Mac fixed ready-PID readonly observation, resolve registered scope with trustworthy current evidence, then resume AuthBus trusted credential work.",
+    "Integrate successful source branches and rerun affected Mac,X230Linux and realLAN acceptance before per-client switch.",
+    "Complete current per-client real-credential R/W,restart,rollback,backup migrations and traffic switch before deleting legacy assets."
+  ],
+  "publication": {
+    "mounted_packet_count": 52,
+    "mounted_file_count": 957,
+    "mounted_bytes": 20226417,
+    "mounts_are_new_since_R38": true,
+    "prior_evidence_via_parent_commit": true,
+    "product_source_on_validation_branch_unchanged": true,
+    "previous_paths_unchanged": true,
+    "deletions": 0
+  },
+  "root_Runtime_calls": 0,
+  "maximum_Runtime_lanes": 2,
+  "local_executor_available": false
+}

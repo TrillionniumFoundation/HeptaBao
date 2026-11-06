@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "sourceTree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "stageOriginal52": "fb5c5087ffe2c1b1fa3e62f6145af079eedb251b",
+  "stageRoot34": "0a1dba5b1f12c51489f831eebc653767e2e1e866",
+  "infoActual23": "ba5841da1f32fd1ed326766e7c699600fb52f43d",
+  "infoRoot21": "d887b5e42273dca5fdf263e20b84d0640c54c693",
+  "bodySource23": "74d43f4e1c7a142f833c8e276fb3deef574e801a",
+  "bodySourceRoot27": "cab38a2b03940ce0e05d8950cba8db2212bad525",
+  "localPreparationRefusalPacket": "9dc8226cb1e0aafb29fcf240856c98381c8f3a0f",
+  "localRecoveryRoot22": "68b6537dc3a9718b16c9e58be1dc5aa097a8faee",
+  "localRecoveryActual5": "9895cd07b152174695935306414d89f39296abaa",
+  "decodedBodyWholeBeforeFinalReview": "ef4ff0c4796ff3e9dce8bb1871446a4d8beeefdd",
+  "buildPrebound18": "58e49e63109b129fac48c7dce2bcf80a6071a150",
+  "buildPreboundRoot39": "b11b98d7e5c7c628830b47819d37ad4a34636a3d",
+  "threeBuildReadinessFlagsRemainFalse": true,
+  "CargoStarted": false
+}

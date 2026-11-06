@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.snapshot-b694-stage-report-body-source.v1",
+  "status": "SOURCE_ONLY_NOT_AUTHORIZED",
+  "scope": "stage_result_binary_read_only",
+  "source": {
+    "blob": "61b7fb890ee853563f93c1539a0cee6e6585284c",
+    "bytes": 28285,
+    "sha256": "9f02326d5674de871fc71e453fba4888c8446a75804e77341cb5c9a8cb657e15"
+  },
+  "request": {
+    "blob": "426dcd9abdb9e50e3e24bd2b91b702cbefbf7143",
+    "bytes": 445,
+    "sha256": "c7576e46df69c988342313e14a96dac1647436a8a10d5b1c91872f0860b13fec"
+  },
+  "expected_report": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "bytes": 28206,
+    "sha256": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db",
+    "version": "66306:31235919:28206:1793952723578666336:1793952723578666336",
+    "infoOperation": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "infoNative": {
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    }
+  },
+  "actual_info22": "3bc2225f92dc750bd3c2f1becff3aaa27a2541ee",
+  "info_original_native": {
+    "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+    "bytes": 495,
+    "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+  },
+  "info_closed_observer": {
+    "id": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "tool": "file_info",
+    "payload": {
+      "blob": "6eeeeb9d2e21fcb9e7dc777c115f04f091d010dd",
+      "bytes": 612,
+      "sha256": "61d22a322a7f5ef03aa91c618781ebfbfa44da429f05f395d917179e638dadc5"
+    },
+    "payloadTree": "3ae8fa963079b54ae8814db648fb67b74ae49c0a",
+    "nativeText": {
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "original_stage49": "a4f5ad504624966ab6918623d743d105cab1752d",
+  "root_stage_terminal_qualification": {
+    "blob": "c36049a5266f8d71dadd8657609fbf81c7d1f8f9",
+    "bytes": 5637,
+    "sha256": "b441acab6dc77890504d05b60ab54bfd1a389ea58daddf1cd631f3e2eb16f718"
+  },
+  "original_slot": "snapshot_b694_rog_source_gitfirst_r1",
+  "original_job": "1a1afe9f4f5-fc05-6cb6",
+  "old_algorithm_source": {
+    "blob": "6135a73fa269e17aecfec9c575e28bda46462751",
+    "bytes": 28285,
+    "sha256": "dfc4c4d96755db97999019c0457c3421106fa6788913f8e33a05ce55ba8d32f0"
+  },
+  "old_algorithm_rootGO": {
+    "blob": "04b08af80d7fa198a95762e6fdbfdd65406df266",
+    "bytes": 3338,
+    "sha256": "2c18f016b0c1c0e04787a03fe86a465456123db7acaafabba0dd4cc9a1a23ffb"
+  },
+  "old_algorithm_qualification_does_not_transfer": true,
+  "initialize": false,
+  "maximum_binary_read_starts": 1,
+  "exact_offset": 0,
+  "exact_limit": 28206,
+  "immutable_page_bytes": 8192,
+  "original_payload_bytes": 1048576,
+  "report_cap": 65536,
+  "maximum_native_call_or_future_per_lane": 1,
+  "conditional_body_GO_required": true,
+  "body_not_submitted": true,
+  "other_paths_authorized": false,
+  "info_refresh_authorized": false,
+  "formatter46_or49_authorized": false,
+  "cargo_or_product_authorized": false,
+  "prior_UNKNOWN_and_failures_unchanged": true,
+  "newNativeCalls": 0
+}

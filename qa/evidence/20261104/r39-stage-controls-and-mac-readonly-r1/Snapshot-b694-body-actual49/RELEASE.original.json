@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.snapshot-b694-stage-body-owner-release.v1",
+  "host": "rog",
+  "originalJob": "1a1afe9f4f5-fc05-6cb6",
+  "slot": "snapshot_b694_rog_source_gitfirst_r1",
+  "rootBodyGO": {
+    "blob": "830f4dada4a3dca14db6632f1594b1550dfa0897",
+    "bytes": 3425,
+    "sha256": "69a30cdee447d5477544c78649095d193dc7a0d89c264979d2fabbb5765af8b7"
+  },
+  "report": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "version": "66306:31235919:28206:1793952723578666336:1793952723578666336",
+    "body": {
+      "blob": "49c3cd8ce2e70d224331ac0acf4cce8be0429485",
+      "bytes": 28206,
+      "sha256": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db"
+    },
+    "originalOperation": "1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d",
+    "metadataOperation": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "originalPayload": {
+      "blob": "a183ec16c0974ea76096bf0abc9b73ec53ad7349",
+      "bytes": 38056,
+      "sha256": "6f7f2973e6ec7fa33125b75f3c33e946f4bd9705d418c15b53cb8372bc2bcba3"
+    },
+    "semanticQualification": false
+  },
+  "actualInfo": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "size": 28206,
+    "sha256": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db",
+    "version": "66306:31235919:28206:1793952723578666336:1793952723578666336",
+    "nativeText": {
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    },
+    "originalOperation": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "full9Strings": [
+      "66306",
+      "31235919",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28206",
+      "1793952723578666336",
+      "1793952723578666336"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "originalBodyObserver": {
+    "id": "1362eb4ecb29942fa30a86f757f59e6a430e16f72f47c342a4de45ff5544aa6d",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "a183ec16c0974ea76096bf0abc9b73ec53ad7349",
+      "bytes": 38056,
+      "sha256": "6f7f2973e6ec7fa33125b75f3c33e946f4bd9705d418c15b53cb8372bc2bcba3"
+    },
+    "payloadTree": "909d278b5dd236567d7199826cbea12681ab2438",
+    "nativeText": {
+      "blob": "077ea0b48bd96878f1106a5fa5bb22d1f1bd5c12",
+      "bytes": 37953,
+      "sha256": "691c9d30a9cd99c39ef9e5536515dea39050b49f32c8158e8729199f51e264fd"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "bodyNativeCalls": 7,
+  "bodyImmutablePages": 5,
+  "totalOriginalNativeCalls": 17,
+  "totalOriginalObservers": 4,
+  "totalOriginalPages": 8,
+  "nativeCallInFlight": false,
+  "nativeFutureActive": false,
+  "pending": null,
+  "businessProcessActive": false,
+  "laneReleased": true,
+  "semanticQualificationPending": true,
+  "bodyDecodedBeforeSemanticReview": true,
+  "formatterStarted": false,
+  "compilerStarted": false,
+  "productStarted": false,
+  "replay": false
+}

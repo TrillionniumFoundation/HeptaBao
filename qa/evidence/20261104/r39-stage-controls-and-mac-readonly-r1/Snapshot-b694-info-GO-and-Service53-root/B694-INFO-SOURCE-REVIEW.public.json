@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.root-source-review.snapshot-b694-report-info-only.v1",
+  "status": "PASS_EXACT_ONE_ORIGINAL_REPORT_INFO",
+  "checks": [
+    {
+      "name": "whole20_133042",
+      "passed": true
+    },
+    {
+      "name": "old_qualified_info_source_GO_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_stage_GO_source_and_original_release",
+      "passed": true
+    },
+    {
+      "name": "only_seven_binding_literals",
+      "passed": true
+    },
+    {
+      "name": "binding_unique_0",
+      "passed": true
+    },
+    {
+      "name": "binding_unique_1",
+      "passed": true
+    },
+    {
+      "name": "binding_unique_2",
+      "passed": true
+    },
+    {
+      "name": "binding_unique_3",
+      "passed": true
+    },
+    {
+      "name": "binding_unique_4",
+      "passed": true
+    },
+    {
+      "name": "binding_unique_5",
+      "passed": true
+    },
+    {
+      "name": "binding_unique_6",
+      "passed": true
+    },
+    {
+      "name": "entire_candidate_only_seven_literal_bindings",
+      "passed": true
+    },
+    {
+      "name": "two_hunks_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "same_six_hunks_from_actual_stage_journal",
+      "passed": true
+    },
+    {
+      "name": "one_exact_request_fixed_report_only",
+      "passed": true
+    },
+    {
+      "name": "only_original_actual_job_slot_two_observers",
+      "passed": true
+    },
+    {
+      "name": "full_terminal_original383_stream_gate",
+      "passed": true
+    },
+    {
+      "name": "original_file_and_paging_caps_unchanged",
+      "passed": true
+    },
+    {
+      "name": "attach_only_one_metadata_no_body_START",
+      "passed": true
+    },
+    {
+      "name": "source_pending_root_marker_is_historical_not_scope",
+      "passed": true
+    },
+    {
+      "name": "no_implicit_formatter_Cargo_or_successor",
+      "passed": true
+    },
+    {
+      "name": "JS_syntax_only_not_invoked",
+      "passed": true
+    }
+  ],
+  "check_count": 22,
+  "source_packet": {
+    "tree": "f13282e598f1ade7b024904c9e293c08aabe48fc",
+    "files": 20,
+    "bytes": 133042,
+    "merkle": {
+      "root_sha": "f13282e598f1ade7b024904c9e293c08aabe48fc",
+      "trees_verified": 1,
+      "leaf_count": 20
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "926ee770939a1f2b1381e092acfea0a395f3b5fd",
+    "bytes": 23894,
+    "sha256": "a886b508598ef773faa2f612f14abdaaeadfae70fd9768101952b83535bcfe5b"
+  },
+  "exact_request": {
+    "blob": "f77cd0f6a623d4d52ac1652fb1ea7fe86a8f0309",
+    "bytes": 312,
+    "sha256": "33e1fc63a321552058870f1604b9f7b47112b0d2b3a97cee478dd9fefc155326"
+  },
+  "original_slot": "snapshot_b694_rog_source_gitfirst_r1",
+  "original_job": "1a1afe9f4f5-fc05-6cb6",
+  "prerequisites": [
+    {
+      "id": "63eb11ba6363fa901c8e79ab4418ea9f6ce240e82757391fa6c83c4ed696d4b1",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "6da55f27d92467f15103a0bde8d1a0f2598ef9e8",
+        "bytes": 729,
+        "sha256": "fc714cd188b940470b1d1724232cd9339719270ce116cee5fb722e81e2b5489d"
+      }
+    },
+    {
+      "id": "502549e6c265343e2d5d8239a65515d474546b02b4dcc8cea72581b114394c1c",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "6f4568f2c416ffa937bb48325c5830d26dd93c58",
+        "bytes": 1495,
+        "sha256": "968528ca330b628475e552cbcf2f42d1170ca95bc70cb15e6f0fe9a7e4e9df0d"
+      }
+    }
+  ],
+  "actual_root_terminal_qualification": {
+    "blob": "c36049a5266f8d71dadd8657609fbf81c7d1f8f9",
+    "bytes": 5637,
+    "sha256": "b441acab6dc77890504d05b60ab54bfd1a389ea58daddf1cd631f3e2eb16f718"
+  },
+  "source_cutoff_note": "SOURCE20's null root qualification predates root35; this review binds actual root35 without modifying source20.",
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "minimum_size": 1,
+    "maximum_size": 65536,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "full_mode": 33152,
+    "sha256": null,
+    "version": null,
+    "full9": null,
+    "decimal_integer_tokens_preserved": true
+  },
+  "no_binary_body_or_process_start": true,
+  "root_Runtime_calls": 0
+}

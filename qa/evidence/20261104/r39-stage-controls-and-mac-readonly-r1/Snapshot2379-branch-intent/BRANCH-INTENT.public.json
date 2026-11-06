@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.root-source-freeze.Service-audit-test8-branch-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-native-snapshot-forward-r5-source-20261106",
+    "sha": "2379d02ba1ee3e88989815d5a978f998822bac4f"
+  },
+  "commit_exact_readback": true,
+  "tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+  "sole_parent": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "branch_absence_request": {
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-native-snapshot-forward-r5-source-20261106"
+  },
+  "original_branch404": true,
+  "branch_mutation_not_yet_called": true,
+  "replay_allowed": false,
+  "Runtime": 0
+}

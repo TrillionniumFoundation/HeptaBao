@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.root-GO-document-correction.snapshot2379.v1",
+  "reason": "The prior cloned GO retained b694/60 in one natural-language post-run sentence. All source/request/typed digest/fingerprint/roots/slot/budgets were already exact2379; agent refused before initialize,arm or Native.",
+  "superseded_GO": {
+    "blob": "85f07e0191b15d89db2563f6fbcdf92fee12a610",
+    "bytes": 7621,
+    "sha256": "4f0078fd55809dd42874611c41d9bc236327cdd82d638e23f24fb27065111a35"
+  },
+  "superseded_packet": "a2067746e081cdbf74d65f1b03d972ad0e00423e",
+  "old_GO_initialized": false,
+  "old_GO_armed": false,
+  "old_GO_Native_dispatched": false,
+  "candidate_changed": false,
+  "exact_request_changed": false,
+  "budgets_changed": false,
+  "sole_changed_field": "sequence[4]",
+  "before": "Require known exit0/full/durable/confirmed terminal,original whole streams,actual b694 source/tree/index/old fences and all actual direct-child closures within original300/360. Expected successful path has60 commands, not observed yet.",
+  "after": "Require known exit0/full/durable/confirmed terminal, original whole streams, actual2379 source/tree/index/old fences and direct-child closure within original300/360; expected successful path61 direct commands, with actual count verified from the completed original report."
+}

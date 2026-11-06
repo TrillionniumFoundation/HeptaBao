@@ -1,0 +1,33 @@
+{
+  "oldFailure": {
+    "name": "Error",
+    "message": "formatter carrier46 exact",
+    "stack": "Error: formatter carrier46 exact\n    at check (exec_main.mjs:3:94)\n    at verifySnapshotStageFormat46 (exec_main.mjs:57:2)\n    at exec_main.mjs:84:13",
+    "source": {
+      "blob": "23966583111a58c86e72d1f1608c848a195be9d6",
+      "bytes": 10685,
+      "sha256": "6c386965ed490badbd9153e7839f4089c9a58ce94527273dc8b16b7613acbcbc"
+    }
+  },
+  "changedCandidateOrVerifier": false,
+  "reason": "First invocation supplied parsed manifest object where texts.formatManifest contract requires exact request.stdin string. Replaced only this input with unchanged exact stdin after checking parsed structure equals the existing manifest object.",
+  "candidatePins": {
+    "stage": {
+      "blob": "e08a9afb9a675d04929fa1643c95ace07d6ecbe7",
+      "bytes": 28951,
+      "sha256": "5dbb0ad1f3501b825c5f8ab14ccdbb7f1e4daf33e7710729203b2675c00c2dcc"
+    },
+    "formatter": {
+      "blob": "e6283ddf256193caa2ab644ab0b0714fcac8a196",
+      "bytes": 24130,
+      "sha256": "98a7bf475b0770ac5a06f67a7f40ba4fefca6e42aea276e90e7d8c3d671b3508"
+    }
+  },
+  "verifier": {
+    "blob": "23966583111a58c86e72d1f1608c848a195be9d6",
+    "bytes": 10685,
+    "sha256": "6c386965ed490badbd9153e7839f4089c9a58ce94527273dc8b16b7613acbcbc"
+  },
+  "allPassed": true,
+  "count": 352
+}

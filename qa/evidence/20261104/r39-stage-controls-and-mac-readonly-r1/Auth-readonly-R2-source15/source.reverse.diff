@@ -1,0 +1,20 @@
+--- a/diagnostic.r2.py
++++ b/diagnostic.r1.py
+@@ -789,7 +789,7 @@
+          and actual['ppid'] != plan['controllerIdentity']['pid'],
+          'diagnostic_ready_not_original_controller')
+     result['ready'] = {'markerPresent':True,'qualified':True,'identity':actual,
++        'full9':held,'bytes':len(raw),'sha256':sha(raw),'markerFull9':marker,
+-        'full9':held,'bytes':len(raw),'markerFull9':marker,
+         'sameFixedPlanAndSource':True,'historicalReadyInodeNotPreviouslyPublished':True}
+     return actual,held
+ 
+@@ -804,7 +804,7 @@
+             code = value['error'].get('code')
+             need(code is None or code in CHILD_PUBLIC_ERROR_CODES, 'diagnostic_original_child_error_set')
+         projected = validate_child_terminal(raw,ready_identity)
++        result['terminal'].update(qualified=True,public=projected,sha256=sha(raw))
+-        result['terminal'].update(qualified=True,public=projected)
+     err,err_held = io.read(STDERR)
+     result['managedStderr'] = {'bytes':len(err),'empty':not err,'full9':err_held,
+         'rawOrUnknownHashExported':False}

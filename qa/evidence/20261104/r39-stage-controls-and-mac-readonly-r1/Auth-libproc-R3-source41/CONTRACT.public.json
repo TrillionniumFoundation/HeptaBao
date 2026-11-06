@@ -1,0 +1,453 @@
+{
+  "schema": "heptabao.public-home-t5-existing-label-readonly-libproc.source-contract.r3",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "source": {
+    "blob": "1ba4cec6b0ce49db5111b429ffe337064ce42dbb",
+    "bytes": 93249,
+    "sha256": "86512cae0db15a19e1f052b4bac786e7a612bc6dfd948f1e605f14077ca0b21e"
+  },
+  "request": {
+    "blob": "108f52fa6b6032079f805195794805b390228d97",
+    "bytes": 96033,
+    "sha256": "680aa388879b7025d06cd00625a8e83dd5fa1efb858223c4c232c319c2aa5b48"
+  },
+  "journal": {
+    "blob": "49c76552dbf87ac51033db785b1660aaaf0d1810",
+    "bytes": 19061,
+    "sha256": "0ecb12c80802de5864caab693faceed4fbbb9c3e8e072c1ceaf1b0e5070d14ba"
+  },
+  "newSlot": "owner_launchd_home_t5_existing_readonly_libproc_gitfirst_r3",
+  "slotInitialized": false,
+  "requestIdempotencyKey": "heptabao-mac-owned-home-t5-readonly-86512cae-20261106-r3",
+  "objective": "Observe only the same existing R4 label and qualified ready PID, using bounded numeric libproc samples instead of the explicit ready-PID ps child. Preserve every original unknown and all original direct-helper ownership rules.",
+  "originalR4": {
+    "job": "mac/1a1afc5dbd9-fc05-6b85",
+    "actualPacket": "3adcec2f471f87e8a5873b7c9394fb3f013502f8",
+    "stdout": {
+      "blob": "5e6a6ad62efe78bee580edd50cd7e96f36da68ca",
+      "bytes": 18131,
+      "sha256": "f3b9a879dd2c22774b471723aeb3920116e21a70891fe569344e6c51be3b6257"
+    },
+    "rootQualification": "3b0956905839b1271f5e416bdf321b97492f3300",
+    "rootArchive": "0b502c497ac9835336bcf3d4b779a77178b0b54b",
+    "scope": "QUALIFIED_ORIGINAL_FAILURE_MANAGED_SCOPE_UNKNOWN",
+    "rawPrint2276Retained": false,
+    "originalPredicateValuesRecovered": false,
+    "managedRegistrationClosed": false
+  },
+  "exactHostAndLabel": {
+    "host": "mac",
+    "label": "org.heptabao.qa.home-t5-context-20261106-r1",
+    "target": "gui/501/org.heptabao.qa.home-t5-context-20261106-r1",
+    "home": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "oldWorkerLabelTouched": false
+  },
+  "originalParser": {
+    "blob": "67eebb1703023041fe375a6313bb5f1506c5c0b5",
+    "bytes": 2030,
+    "unchanged": true,
+    "missingCodesAnalysis": "dbe0fb40b6b627a91e9edb5d8c3fcf4feaead89f",
+    "codes": [
+      "bounded_launchctl_print",
+      "exact_launchctl_target",
+      "plain_fixed_launchctl_argument",
+      "bounded_launchctl_arguments",
+      "one_launchctl_arguments_block",
+      "unique_launchctl_field",
+      "balanced_launchctl_print",
+      "one_complete_launchctl_record",
+      "complete_launchctl_arguments",
+      "typed_launchctl_integer",
+      "actual_launchctl_pid"
+    ],
+    "fixed78StillInteger78FailureValue": true,
+    "neverExitedLiteral": "(never exited)",
+    "neverExitedLiteralScope": "Only fresh equality boolean; not admitted by original parser, not claimed original value."
+  },
+  "budgets": {
+    "controllerSuccessSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "directCommandsMaximum": 4,
+    "eachPrintSeconds": 10,
+    "eachPrintPerStreamBytes": 65536,
+    "returnedDirectCommandBytesAggregate": 1048576,
+    "originalOwnerCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "applicationFdsCap": 64,
+    "maximumDeclaredApplicationFds": 21,
+    "maximumDeclaredSimultaneousApplicationFds": 15,
+    "maximumDeclaredDirectoryFds": 14,
+    "maximumDeclaredLeafFds": 7,
+    "applicationMetadataCap": 4096,
+    "applicationReadCallsCap": 256,
+    "applicationReadBytesCap": 262144,
+    "sumSuccessfulBodyMaxima": 118977,
+    "oneOverflowByteIsCountedBeforeFailure": true,
+    "applicationWriteCallsCap": 0,
+    "applicationWriteBytesCap": 0,
+    "controllerStdoutCap": 65536,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192,
+    "eachReadyPidNativeObservationSeconds": 4,
+    "nativeCallsMaximum": 6,
+    "nativeSelfCallsMaximum": 2,
+    "nativeReadyPidCallsMaximum": 4,
+    "nativeStructBytes": 136,
+    "nativeReturnedStructBytesMaximum": 816,
+    "explicitReadyPidPsChildren": 0,
+    "reachablePrintCommandsMaximum": 2
+  },
+  "byteCapBoundary": "The original file, helper stream and output caps are unchanged. Only the explicit ready-PID ps command and its output parsing are removed. The two launchctl commands still use the exact original Commands/WNOWAIT helpers, including their internal bounded ps custody projections (up to 2 MiB stdout / 65536 stderr per ps); this proposal does not claim zero ps overall. Numeric proc_pidinfo results have a separate fixed maximum of 6 calls x 136 bytes = 816 bytes. This is not a reset or enlargement of application file-read bytes. FixedIO still counts every returned overflow byte before refusal.",
+  "deadlineBoundary": "Original 45 s shared successful-result deadline, 35 s helper-admission cutoff and 60 s outer remain. Each ready-PID observation has one fixed 4 s absolute deadline clipped to the 35 s cutoff. The first observation's two self and two target calls share that same 4 s deadline; the second has only two target calls. Each call checks before and after return, and final closure/handler restoration plus post-flush exit retain the original checks. Synchronous C calls are not individually preemptible. No late result qualifies; there is no retry or sleeping.",
+  "pinnedInputs": {
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py": {
+      "identity": [
+        "16777233",
+        "592904416",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "36522",
+        "1793950344732464747",
+        "1793950344732464747"
+      ],
+      "bytes": 36522,
+      "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json": {
+      "identity": [
+        "16777233",
+        "592904417",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1108",
+        "1793950344732730209",
+        "1793950344732730209"
+      ],
+      "bytes": 1108,
+      "sha256": "da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.plist": {
+      "identity": [
+        "16777233",
+        "592904418",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1651",
+        "1793950344732934377",
+        "1793950344732934377"
+      ],
+      "bytes": 1651,
+      "sha256": "7aedefa6fdbde7a17abf5dedfef5bd85903e8bdb96257107b2f2cf738227fd9a"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "dynamicPublicLeaves": [
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/ready.complete",
+      "bodyRead": false,
+      "maximumBytes": 0,
+      "gate": "fresh regular/nlink1/uid501/mode0600 metadata; same marker before and after ready and final fences"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/ready.public.json",
+      "bodyRead": true,
+      "maximumBytes": 8192,
+      "gate": "only if ready.complete exists; exact original keys, schema/generation/plan/source/home; original process shape/kernel path and not original controller; no raw body hash exported"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.stdout.public",
+      "bodyRead": true,
+      "maximumBytes": 32768,
+      "gate": "read whole with fresh full9; no raw or raw-body hash publication; only the original complete child validator's typed projection after the old child error-code set passes"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.stderr.public",
+      "bodyRead": true,
+      "maximumBytes": 4096,
+      "gate": "only size/empty/full9; never raw or unknown text hash"
+    }
+  ],
+  "metadataBoundary": "Pinned Python/source/plan/plist require original full9 and SHA. Fresh ready/stdout/stderr are not forced to original creation-size metadata. Directory acquisition compares full9 before/open/named, then fixed object first5; the unchanged root anchor additionally requires its original full9. HOME is tied to original pinned plan.homeObject. All leaf full9 is rechecked at end. Metadata is an interval observation, not a claim of atomicity across independent records.",
+  "printProjection": {
+    "fixedNames": [
+      "path",
+      "program",
+      "pid",
+      "state",
+      "runs",
+      "last exit code",
+      "last terminating signal"
+    ],
+    "outputs": [
+      "present/count/unique",
+      "bounded decimal syntax and integer for four numeric-named fields",
+      "known state enum running/not running or null",
+      "exact expected path/program booleans",
+      "two exact last-exit literal booleans",
+      "argument block/count and nine expected-position booleans",
+      "original unchanged parser success or fixed error projection",
+      "fixed binding booleans"
+    ],
+    "doesNotPublish": [
+      "unknown field values",
+      "arbitrary keys",
+      "environment",
+      "whole print or ps text",
+      "unknown print/ps/stderr hashes"
+    ],
+    "scanCompleteScope": "Only the original bounded depth/arguments grammar, not a claim to fully interpret launchctl output."
+  },
+  "observationOrder": [
+    "same Python/source/plan/plist whole and object pins",
+    "exact first launchctl print with unchanged direct-helper custody",
+    "ready marker and ready typed public record",
+    "stdout typed terminal and stderr size/empty",
+    "if ready admitted: exact local ABI layout check, two same-process PID/PPID/PGID/UID/birth self samples, then two samples for that ready PID within the first shared 4 s window",
+    "exact second launchctl print with unchanged direct-helper custody",
+    "if ready admitted: two more samples only for that ready PID within the second 4 s window",
+    "final pinned/fresh leaf and directory fences",
+    "all original application/command close and handler restoration"
+  ],
+  "ownership": {
+    "newManagedChildStarted": false,
+    "existingManagedPidSignalled": false,
+    "existingManagedPidReaped": false,
+    "registrationMutated": false,
+    "bootstrap": false,
+    "bootout": false,
+    "onlyDirectHelpersUseOriginalWNOWAITAndCleanup": true,
+    "managedReadIsConditionalOnQualifiedPublicReady": true,
+    "reusedPidIsNotOwnedOrSignalled": true,
+    "departureObservationIsTwoDiscreteCurrentSamples": true,
+    "noContinuousAbsenceClaim": true,
+    "historicalReadonlyR2Helper87650ClosureUnknown": true,
+    "queryOrSignalOrReap87650": false,
+    "explicitReadyPidPsRemoved": true,
+    "originalCommandsInternalCustodyPsUnchanged": true,
+    "libprocEsrchNotAutomaticDeparture": true
+  },
+  "results": {
+    "parentExit0Means": "complete bounded current diagnostic and its own resource closure only",
+    "parseFailureCanBeKnownDiagnostic": true,
+    "managedRegistrationClosureClaimed": false,
+    "originalR4ManagedScopeAutomaticallyClosed": false,
+    "oldUnknownsRewritten": false,
+    "sameCurrentObservationExit0NotOriginalR4Success": true,
+    "currentNewDirectHelperClosureDoesNotClose87650": true
+  },
+  "forbidden": {
+    "t5FilesystemAccess": true,
+    "newDirectoriesOrFiles": true,
+    "admissionWriteOrRead": true,
+    "oldWorkerLabel": true,
+    "privateCapsule": true,
+    "credentials": true,
+    "SDKOrFactory": true,
+    "product": true,
+    "providerModelRefreshOrQuotaChanges": true
+  },
+  "originalComponents": {
+    "common": {
+      "blob": "16bc4fc1ea3359d6ac8c496d250b634b8a54a2e4",
+      "bytes": 15120,
+      "sha256": "b3c5663af414ab0d954eae244ef24090fe37b9e320e2003e72bbccf0c65f6039"
+    },
+    "constants": {
+      "blob": "663602cc45be9806bfc60b46e26a4d10d054f8e5",
+      "bytes": 3308,
+      "sha256": "330c327731a79eeceea0f8b572670358dc41bf43e937a445ce900da69c51862f"
+    },
+    "reader": {
+      "blob": "ec2182b5075246b30ef96c5b6472adeafb6654c8",
+      "bytes": 3302,
+      "sha256": "e37f6ed5569182cc8dd0ec42d1876d566b207ddc14ec57d0891ea31148a72e59"
+    },
+    "childValidators": {
+      "blob": "116d4a3c705b8cfed3d17527abe7bc65c22a981b",
+      "bytes": 6045,
+      "sha256": "efaa9626c6cc3a729d57b18b69e3ecf9a48d7b192b10dc7a77a79e7d5b7817cd"
+    },
+    "modules": [
+      {
+        "name": "mac_owned_unreaped_r1",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      {
+        "name": "mac_owned_commands_r1",
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      }
+    ],
+    "journalOriginal": "03e72b0bd32b4fe9219b98b0c6d4dab57182bead",
+    "journalDiffHunks": 2
+  },
+  "verificationBoundary": {
+    "pureV8SourceBindingsOnly": true,
+    "old78And73And58And36NotRerun": true,
+    "newPythonModuleOrSelectedMethodsExecuted": false,
+    "originalOptionalCompileAttemptNoUsableExecutorResultPreserved": true,
+    "noPythonPassClaim": true,
+    "noNativeRuntime": true,
+    "noNewComponentTestRun": true
+  },
+  "freshDynamicBodyHashesExported": false,
+  "revision": {
+    "before": {
+      "blob": "15002c2fb720188546a25045d7d3bb3f743fabba",
+      "bytes": 90416,
+      "sha256": "32917b77d7bcbcec3016610e17b7758f919b9dc0971c912f0ab18c170763d989"
+    },
+    "sourceDiffHunks": 6,
+    "journalDiffHunks": 2,
+    "change": "Replace only the explicit ready-PID ps+arg0 numeric sampling with a bounded arg1 numeric libproc projection, local self crosscheck and explicit conservative result fields. Original fixed-field print parser, input pins, child validators, FixedIO, Commands/WNOWAIT, filesystem scope and budgets are byte-exact.",
+    "oldReadonlyR2ActualPreserved": true,
+    "previousBodyHashRemovalPreserved": true,
+    "originalSourceR1Archive": "e11856456b51b54cd3bc564fd797ea7bc95dbea8",
+    "originalSourceR2Overlay": "0d5667845ab96120314855e08f4e9809b4a505fd"
+  },
+  "previousReadonlyR2": {
+    "source": {
+      "blob": "15002c2fb720188546a25045d7d3bb3f743fabba",
+      "bytes": 90416,
+      "sha256": "32917b77d7bcbcec3016610e17b7758f919b9dc0971c912f0ab18c170763d989"
+    },
+    "request": {
+      "blob": "2e5f413a527d0cb6de8d3403282dcd56ef197308",
+      "bytes": 93145,
+      "sha256": "edc6d1f1e68b5224b8af5c7ab53c3b73d753ca8381b6bde3947a8c859f2f18ec"
+    },
+    "journal": {
+      "blob": "89252ff15dacd03efcac832d0f24b80203274dd6",
+      "bytes": 19053,
+      "sha256": "66eaf0e3a879dc4b5eb9f3744445886b1030f55cf86d8c4623c1ebd2cccfa0a6"
+    },
+    "actualPacket": "80235457cc3c2190e76f8c809347de281023dd22",
+    "stdout": {
+      "blob": "a7a080a2776800e25c1a55fe31d2b853b3de2b48",
+      "bytes": 15809,
+      "sha256": "0efc8ad6b16f153b94e81e3731c7642124a38f6b4cf82a4d99bcdcfa28d1894e"
+    },
+    "authority": {
+      "blob": "46658c20db6acfbd69df748277528554477313a6",
+      "bytes": 730,
+      "sha256": "5a1d3a569c45968628c47bbfd3584c7ae719feb5a4bc0626fae974334c9db8ec"
+    },
+    "rootReview": {
+      "blob": "e65caf0cf0e3447b50a205d1d6033796dfb75ad8",
+      "bytes": 10848,
+      "sha256": "64eda6fbc05d7cf8de5564d24661945f21e80dd08e71522806f4458b92d0c04c"
+    },
+    "rootArchive": "882413cf7790ca98dbc71bc71c955327242e8db0",
+    "scope": "QUALIFIED_ORIGINAL_FAILURE_NEW_DIRECT_HELPER_UNKNOWN",
+    "diagnosticOutcomeUnknown": true,
+    "directHelper87650ClosureUnknown": true,
+    "queriedHelper87650": false,
+    "originalFailureRewritten": false
+  },
+  "nativeProjection": {
+    "fixedLibrary": "/usr/lib/libproc.dylib",
+    "originalProcessReaderUnchanged": true,
+    "flavor": 3,
+    "arg": 1,
+    "requestZombieLookup": true,
+    "fullSize": 136,
+    "offsets": {
+      "status": 4,
+      "pid": 12,
+      "ppid": 16,
+      "uid": 20,
+      "pgid": 100,
+      "birth_sec": 120,
+      "birth_usec": 128
+    },
+    "allowedPids": "Current diagnostic self only for the two local ABI/identity crosschecks, then only ready.identity.pid after the exact original validator and fixed-plan/source/home binding; no hardcoded foreign PID.",
+    "targetPathsOrArgsRead": false,
+    "processListOrGroupEnumeration": false,
+    "errnoCapturedImmediately": true,
+    "fullNumericTuple": "pid, ppid, pgid, uid, status, birth_sec, birth_usec; full tuple must match between each pair, only bounded classification booleans/return length and ESRCH number are public",
+    "noReturnClassification": "Only count=0 with errno=ESRCH is a typed lookup_esrch observation. Two such results publish originalBirthPresent=null and existenceOrDepartureAutomaticallyConcluded=false. No absence, exit, ownership or cleanup is automatically inferred.",
+    "otherErrors": "Short/wrong-size return, other errno, PID/birth mismatch or late return refuses the diagnostic. Exceptions during C read/validation set new observation unknown; outer closure still runs.",
+    "sampleDisagreement": "Different result kinds or different present tuples refuse a complete observation. No sampling retry.",
+    "presentClassification": "Same reported birth is same_birth_present; a different reported birth is reused_different_birth and never owned or signalled. DepartureObservedTwice is restricted to two reused_different_birth observations; ESRCH has a separate factual flag.",
+    "selfQualificationBoundary": "Exact sizeof/offsets and two same-birth basic-identity samples qualify only this proposed runtime observation if actually executed successfully. No installed-kernel whole pin, installed image hash, actual zombie-branch execution or blanket API permission is claimed.",
+    "currentStatus": "SOURCE_ONLY_NOT_EXECUTED"
+  },
+  "primarySourceReferences": [
+    {
+      "path": "bsd/kern/proc_info.c",
+      "file": "reference.apple.proc_info.c",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/kern/proc_info.c",
+      "pin": {
+        "blob": "c061a09289afe73572456395af70de2cd92b69fc",
+        "bytes": 105375,
+        "sha256": "557092f14fbad3341100f59e0391d2e812c54b79a7404c89b2af97471ad67082"
+      },
+      "originalSdkFile": "reference.apple.proc_info.c.original.sdk.json"
+    },
+    {
+      "path": "bsd/sys/proc_info.h",
+      "file": "reference.apple.proc_info.h",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/sys/proc_info.h",
+      "pin": {
+        "blob": "718a69fcf5340f547893ed8dc85908f253c1ce81",
+        "bytes": 31682,
+        "sha256": "f898ba1f6acecf128f6bb960bf07c7029fdd936620e03b6206419834cf2941fa"
+      },
+      "originalSdkFile": "reference.apple.proc_info.h.original.sdk.json"
+    },
+    {
+      "path": "libsyscall/wrappers/libproc/libproc.c",
+      "file": "reference.apple.libproc.c",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/libsyscall/wrappers/libproc/libproc.c",
+      "pin": {
+        "blob": "c3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e",
+        "bytes": 28996,
+        "sha256": "5c8a771427e04c5e1d55c4cdf5a077f3b52c5be4a091683b970084bfdda76df2"
+      },
+      "originalSdkFile": "reference.apple.libproc.c.original.sdk.json"
+    },
+    {
+      "path": "libsyscall/wrappers/libproc/libproc.h",
+      "file": "reference.apple.libproc.h",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/libsyscall/wrappers/libproc/libproc.h",
+      "pin": {
+        "blob": "602e4fe897d1fc5a7ceacc372c78f184ea242bfe",
+        "bytes": 7580,
+        "sha256": "37c7629819a18c5ef10d19a9bea00eb7e0bd31e0b127ecd2ae108c74f47c39e2"
+      },
+      "originalSdkFile": "reference.apple.libproc.h.original.sdk.json"
+    }
+  ]
+}

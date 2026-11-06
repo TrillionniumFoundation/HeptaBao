@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.snapshot-b694-stage-report-info-only-source.v1",
+  "status": "SOURCE_ONLY_NOT_AUTHORIZED",
+  "source_packet_terminal49": "a4f5ad504624966ab6918623d743d105cab1752d",
+  "terminal_release": {
+    "blob": "287769784426124ce23656baec360900729ce76b",
+    "bytes": 4100,
+    "sha256": "79e8583c1eedc369c46f505ccea94f22a82838b1a6c271c4f3dbbe4bc005287e"
+  },
+  "old_reviewed_source": {
+    "blob": "46233bcb53bb26878cdc7ba02b090ebb29f43037",
+    "bytes": 23894,
+    "sha256": "e5ca9c869f506d1d495f34709d04649fad17749c8790c13fd76b0448d4e3b3a5"
+  },
+  "old_go": {
+    "blob": "a5b7c1a5826a407bad723fb737d9e4996b150774",
+    "bytes": 3084,
+    "sha256": "5a756349b47c6b07f0c40b86b397dedf565514a022b80c21431f4d8ddaedcc83"
+  },
+  "source": {
+    "blob": "926ee770939a1f2b1381e092acfea0a395f3b5fd",
+    "bytes": 23894,
+    "sha256": "a886b508598ef773faa2f612f14abdaaeadfae70fd9768101952b83535bcfe5b"
+  },
+  "exact_request": {
+    "blob": "f77cd0f6a623d4d52ac1652fb1ea7fe86a8f0309",
+    "bytes": 312,
+    "sha256": "33e1fc63a321552058870f1604b9f7b47112b0d2b3a97cee478dd9fefc155326"
+  },
+  "original_slot": "snapshot_b694_rog_source_gitfirst_r1",
+  "original_job": "1a1afe9f4f5-fc05-6cb6",
+  "original_stage_go": {
+    "blob": "418170d7751a9ba9e54cfb768e87b3af79611af4",
+    "bytes": 7483,
+    "sha256": "8d09bf077a084b906cdda5f1d4db3b1a4bce291e5f86247ee9be802bbd6fe2c2"
+  },
+  "prerequisites": [
+    {
+      "id": "63eb11ba6363fa901c8e79ab4418ea9f6ce240e82757391fa6c83c4ed696d4b1",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "6da55f27d92467f15103a0bde8d1a0f2598ef9e8",
+        "bytes": 729,
+        "sha256": "fc714cd188b940470b1d1724232cd9339719270ce116cee5fb722e81e2b5489d"
+      }
+    },
+    {
+      "id": "502549e6c265343e2d5d8239a65515d474546b02b4dcc8cea72581b114394c1c",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "6f4568f2c416ffa937bb48325c5830d26dd93c58",
+        "bytes": 1495,
+        "sha256": "968528ca330b628475e552cbcf2f42d1170ca95bc70cb15e6f0fe9a7e4e9df0d"
+      }
+    }
+  ],
+  "root_stage_terminal_qualification": null,
+  "root_stage_terminal_qualification_note": "root independent review is pending; no authorization inferred from author checks",
+  "scope": "stage_result_file_info_only",
+  "attach_only": true,
+  "initialize": false,
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "minimum_size": 1,
+    "maximum_size": 65536,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "full_mode": 33152,
+    "sha256": null,
+    "version": null,
+    "full9": null,
+    "decimal_integer_tokens_preserved": true
+  },
+  "immutable_page_bytes": 8192,
+  "original_payload_bytes": 1048576,
+  "maximum_native_call_or_future_per_lane": 1,
+  "process_start": false,
+  "formatter": false,
+  "cargo": false,
+  "product": false,
+  "old_UNKNOWN_unchanged": true,
+  "source52_unchanged": true,
+  "future49_formatter_not_authorized": true,
+  "new_native_calls": 0
+}

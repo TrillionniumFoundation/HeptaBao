@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-b694-stage-GO-source-identifier-correction-r2",
+  "records": [
+    {
+      "name": "STAGE-GO.public.json",
+      "blob": "418170d7751a9ba9e54cfb768e87b3af79611af4",
+      "bytes": 7483,
+      "sha256": "8d09bf077a084b906cdda5f1d4db3b1a4bce291e5f86247ee9be802bbd6fe2c2"
+    },
+    {
+      "name": "CORRECTION.public.json",
+      "blob": "1f42bdf0b3be6e3a5d4ba62c53f46a05975c6374",
+      "bytes": 899,
+      "sha256": "dc38a7e5514122c37bf78ffe92565f5d7e2f914cb4194bd59e4f115373448c7a"
+    }
+  ],
+  "expected_data_tree": "74b8bc2edb870a9011145b98b6d3709284878ef9",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

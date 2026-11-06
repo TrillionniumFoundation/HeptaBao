@@ -1,0 +1,350 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-independent-stage-complete-report.v1",
+  "status": "PASS_ORIGINAL_COMPLETE_REPORT_AND_EXACT_INDEPENDENT_SOURCE_STAGE",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole61_301411",
+      "passed": true
+    },
+    {
+      "name": "exact_body_GO_and_prior_qualified_INFO",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_call_jwt-pki-33b814c7-source-result-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_armed_tree_jwt-pki-33b814c7-source-result-body0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_call_jwt-pki-33b814c7-source-result-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_armed_tree_jwt-pki-33b814c7-source-result-body0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_call_jwt-pki-33b814c7-source-result-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_armed_tree_jwt-pki-33b814c7-source-result-body0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_call_jwt-pki-33b814c7-source-result-body0-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_armed_tree_jwt-pki-33b814c7-source-result-body0-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_call_jwt-pki-33b814c7-source-result-body0-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_armed_tree_jwt-pki-33b814c7-source-result-body0-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_call_jwt-pki-33b814c7-source-result-body0-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_armed_tree_jwt-pki-33b814c7-source-result-body0-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_call_jwt-pki-33b814c7-source-result-body0-page4-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_armed_tree_jwt-pki-33b814c7-source-result-body0-page4-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_observer_2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_page_2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e_0",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_page_2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e_8192",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_page_2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e_16384",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_page_2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e_24576",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_page_2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e_32768",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_payload_2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e",
+      "passed": true
+    },
+    {
+      "name": "PKI33bBody_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_original_calls_one_BODY_five_pages",
+      "passed": true
+    },
+    {
+      "name": "one_actual_INFO_bound27931_range",
+      "passed": true
+    },
+    {
+      "name": "complete_binary_extent_and_original_SHA",
+      "passed": true
+    },
+    {
+      "name": "whole_decoded_original_report_exact",
+      "passed": true
+    },
+    {
+      "name": "body_lane_closed",
+      "passed": true
+    },
+    {
+      "name": "exact_original_refusal_recovery_GO_source_state_retained",
+      "passed": true
+    },
+    {
+      "name": "one_local_recovery_no_body_replay_or_history_erasure",
+      "passed": true
+    },
+    {
+      "name": "correct_not_previously_submitted_page1_bound",
+      "passed": true
+    },
+    {
+      "name": "ordering_exception_and_final_after_whole_check_explicit",
+      "passed": true
+    },
+    {
+      "name": "original_stage_terminal_root_already_qualified",
+      "passed": true
+    },
+    {
+      "name": "exact_stage_schema_prepared_and_identity",
+      "passed": true
+    },
+    {
+      "name": "same_exact_stager_carrier_roots",
+      "passed": true
+    },
+    {
+      "name": "all3916_source_blobs_modes_and_index",
+      "passed": true
+    },
+    {
+      "name": "independent_objects_and_exact_public_fetch",
+      "passed": true
+    },
+    {
+      "name": "all14_actual_ancestry_and_history",
+      "passed": true
+    },
+    {
+      "name": "old495_source_fence_before_after",
+      "passed": true
+    },
+    {
+      "name": "original_failed_observer_all_before_after_equal",
+      "passed": true
+    },
+    {
+      "name": "original12_failed_files_whole_pins_and_lossless_identities",
+      "passed": true
+    },
+    {
+      "name": "original_failed_authority_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_incremental_bundle_witness",
+      "passed": true
+    },
+    {
+      "name": "bundle_lossless_private_regular_identity",
+      "passed": true
+    },
+    {
+      "name": "all59_direct_children_reaped_success_and_empty_groups",
+      "passed": true
+    },
+    {
+      "name": "original_budgets_deadline_after_cleanup",
+      "passed": true
+    },
+    {
+      "name": "four_historical_controls_exact_inert",
+      "passed": true
+    },
+    {
+      "name": "historical_test_counts_are_not_execution",
+      "passed": true
+    }
+  ],
+  "check_count": 51,
+  "packet": {
+    "tree": "54e263b8fce7df97c49ebd70df288eae136b90a7",
+    "files": 61,
+    "bytes": 301411,
+    "merkle": {
+      "root_sha": "54e263b8fce7df97c49ebd70df288eae136b90a7",
+      "trees_verified": 1,
+      "leaf_count": 61
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1afcbafab-fc05-6bb0",
+  "report": {
+    "blob": "f2c2bd29fd1209f79776ec01fb170119a2d912ef",
+    "bytes": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0"
+  },
+  "actual_report_metadata": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "size": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0",
+    "version": "66306:31235720:27931:1793950741423957124:1793950741423957124",
+    "nativeText": {
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    },
+    "originalOperation": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "full9Strings": [
+      "66306",
+      "31235720",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "27931",
+      "1793950741423957124",
+      "1793950741423957124"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "original_body_observer": {
+    "id": "2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "33fcffd56e221d1b0a63709b82f2171448eb156b",
+      "bytes": 37683,
+      "sha256": "abeeb93a25b3b410096cb75c30d28d30802687e1a9a6d1d257fbb3e59ea79950"
+    },
+    "payloadTree": "9d30ada14a0af02dc2f56b99f22cf79a95c294b4",
+    "nativeText": {
+      "blob": "1ef5da64f5dfc01e112ac2393329cf7ac8300581",
+      "bytes": 37580,
+      "sha256": "dca6540431db0fadc56e1a4d9637bd656197c86c03544053245ffe6fd8b91c53"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "original_transport": {
+    "stage_calls": 7,
+    "info_calls": 3,
+    "body_calls": 7,
+    "total_calls": 17,
+    "observers": 4,
+    "pages": 8
+  },
+  "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "source_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "source_full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0",
+    "index_matches_tree": true,
+    "tracked_bytes": 62297347,
+    "tracked_leaf_count": 3916
+  },
+  "actual_commands": 59,
+  "all_direct_children_closed": true,
+  "actual_elapsed_seconds": 16.642744900949765,
+  "canonical_bundle": {
+    "bytes": 60426,
+    "header": {
+      "header_sha256": "5f296606105b9af9b43e20cc0d7ad8207c869827a26138567a77f84d337e7258",
+      "heads": [
+        [
+          "33b814c7034ec853151b1ff13e7529c83f65ea70",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31235676,
+      1000,
+      1000,
+      33152,
+      1,
+      60426,
+      {
+        "$exactInteger": "1793950740602778496"
+      },
+      {
+        "$exactInteger": "1793950740603778494"
+      }
+    ],
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/canonical-native-jwt-pki-33b814c7-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "6b25592606997af45d7c3fe251474a57ca7052a7eccd52b85ca0abb170d986e4"
+  },
+  "local_prepare_refusal_and_recovery": {
+    "original_failure": {
+      "blob": "29702a6bdaa45a33b23389cef0d89b6cce7edb8e",
+      "bytes": 246,
+      "sha256": "3cec331779379b2607b0dd64fe129cd8ad7443f2ab3e691ae43cbae0f7b8ed28"
+    },
+    "root_recovery_GO": "83822d9fc630a8f21e39bb4a66bb7b8ca3073433",
+    "body_replayed": false,
+    "history_preserved": true
+  },
+  "normalization": "CALL-INDEX omits phase; accepted here is a root label based on original SDK and closed payload evidence, not an invented original phase field.",
+  "ordering_exception_preserved": "Original SDK and complete encoded payload were external whole before parsing. A preliminary in-memory report check was made before separate decoded-body Git creation; it is not adopted as qualification. This packet whole-archives the exact decoded body; final consistency verification follows this completed boundary and root independent review remains required.",
+  "limits": [
+    "Independent source3916 and this exact33b stage only; all59 command closures observed.",
+    "Historical carrier controls were parsed/compiled only,never run. Counts44/7/9/1 are not product test results.",
+    "Actual incremental bundle was generated/validated by stager; no independent export or Mac import of its body here.",
+    "Prior formatting is independently qualified; this stage did not rerun rustfmt. No Cargo,149/166 tests,HTTP12 or production qualification follows."
+  ],
+  "source_prepared": true,
+  "compile_executed": false,
+  "product_tests_executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

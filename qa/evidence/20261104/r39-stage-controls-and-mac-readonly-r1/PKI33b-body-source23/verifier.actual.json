@@ -1,0 +1,203 @@
+{
+  "schema": "heptabao.jwt-pki-finalstage-body-source-checks.v1",
+  "pass": true,
+  "checks": 46,
+  "rows": [
+    {
+      "check": "exact_original_successful_body_source",
+      "pass": true
+    },
+    {
+      "check": "candidate_pin",
+      "pass": true
+    },
+    {
+      "check": "13_binding_entries_14_literal_occurrences",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:const GF_STAGE_BODY_REQUEST = {\"blob\":\"53891d75942",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:const GF_STAGE_BODY_EXPECTED = {\"path\":\"/home/qian",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:Only this 27581-byte range is admitted",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:jwt_e3af_rog_source_gitfirst_r1",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:c1429991e9c597d1639f02a68f791043e6c8b9e5",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:111605",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:aebf043cfcb5d60611dd67f3ed93c0caee8098091a70c8b61c",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:heptabao-native-jwt-e3afc157-rog-source-observe-r1",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:const GF_STAGE_RESULT_PATH = \"/home/qian-qi/heptab",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:{\"blob\":\"dbd4063ee0bcadab95c7649ef189e91a99c2402c\"",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:[{\"id\":\"a515896bf0bb7d3653cc9093f51818ee2c34f76bf0",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:s.job===\"1a1aed43ac9-fc05-62ec\"",
+      "pass": true
+    },
+    {
+      "check": "exact_occurrences:s.nextStdout===370",
+      "pass": true
+    },
+    {
+      "check": "all_other_source_bytes_unchanged",
+      "pass": true
+    },
+    {
+      "check": "inverse_whole_original",
+      "pass": true
+    },
+    {
+      "check": "strict_four_hunks_forward_reverse",
+      "pass": true
+    },
+    {
+      "check": "same_complete_function_order",
+      "pass": true
+    },
+    {
+      "check": "only_3_existing_binding_sections_changed",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfNeed",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfMetaEquals",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfState",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfSave",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfIntegerText",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfPrepareOne",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "check": "whole_function:gfRun",
+      "pass": true
+    },
+    {
+      "check": "metadata_source_pin",
+      "pass": true
+    },
+    {
+      "check": "original_info_closed",
+      "pass": true
+    },
+    {
+      "check": "whole_metadata_content_match",
+      "pass": true
+    },
+    {
+      "check": "private_Linux_singlelink_unchanged",
+      "pass": true
+    },
+    {
+      "check": "decimal_version_without_loss",
+      "pass": true
+    },
+    {
+      "check": "request_only_known_bindings",
+      "pass": true
+    },
+    {
+      "check": "exact_frozen_request_pin",
+      "pass": true
+    },
+    {
+      "check": "one_fixed_binary_range_no_extra_args",
+      "pass": true
+    },
+    {
+      "check": "single_chunk_and_original_caps",
+      "pass": true
+    },
+    {
+      "check": "separate_body_GO_once_no_reset",
+      "pass": true
+    },
+    {
+      "check": "actual_info_proof_not_summary_derived",
+      "pass": true
+    },
+    {
+      "check": "original_stream_complete_bound",
+      "pass": true
+    },
+    {
+      "check": "SOURCE_not_body_observation",
+      "pass": true
+    }
+  ],
+  "functionCount": 15,
+  "wholeFunctions": 12,
+  "changedSections": [
+    "gfAuthorizeStageResultInfoOnly",
+    "gfAuthorizeStageResultBodyOnly",
+    "gfValidateRequest"
+  ],
+  "strictHunks": 4,
+  "bindingEntries": 13,
+  "literalOccurrences": 14,
+  "candidateExecuted": false,
+  "NativeCalls": 0
+}

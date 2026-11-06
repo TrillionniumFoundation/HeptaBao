@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-pki33b-controls-inert-GO",
+  "records": [
+    {
+      "name": "SOURCE45.root-review.json",
+      "blob": "dcff8731146da337823480560ed55b1108b58542",
+      "bytes": 8463,
+      "sha256": "1068816f28e953217087f7969f7ab7ce8e67fd39a5dee09ddb91709302fc5162"
+    },
+    {
+      "name": "exact-INERT-GO.json",
+      "blob": "089430c36582b8d485a3264f90313a37605ac952",
+      "bytes": 7435,
+      "sha256": "71a3c79699b825151bdefab8739b294b3e08098eca88567d64fda3ba4a9376a2"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "4b0036908e97c3714383ee4a50bf644060291d14",
+      "bytes": 9112,
+      "sha256": "5b4208e75b3d46f41d9b36ce1612bc94e6e7d208ebb68d34b69f5a416cf6a4ea"
+    },
+    {
+      "name": "correct-typed-binding.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    }
+  ],
+  "expected_data_tree": "c9e50b7a70bb662e1f5590136cbdad71bd838734",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-publication-proof",
+  "records": [
+    {
+      "name": "R38-PUBLICATION-PROOF.json",
+      "blob": "9fe0308d8bfb3160a6decb88cf8876f6907c59fe",
+      "bytes": 2312,
+      "sha256": "19cf4c1864467b3534abd827fd8212a49292dc8c7a9fdbed85e838dd9150b0f5"
+    },
+    {
+      "name": "REF-READBACK.original.sdk.json",
+      "blob": "6b6896d867bb2953c945a2c44dd7b532408aa8b6",
+      "bytes": 1753,
+      "sha256": "ca4810c6dd796dd74e9f9da60e7edbe24e3ca6d402f2b404fecc1a56a3dafb91"
+    }
+  ],
+  "expected_data_tree": "927da1fcd21f1e924f0815a1658acd0df52548dc",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

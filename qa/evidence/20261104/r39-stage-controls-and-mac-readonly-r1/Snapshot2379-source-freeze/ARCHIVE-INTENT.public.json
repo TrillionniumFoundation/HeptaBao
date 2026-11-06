@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-Service-audit-test8-freeze-proof",
+  "records": [
+    {
+      "name": "SOURCE-FREEZE-PROOF.public.json",
+      "blob": "8b967cbd150207e5335bb22bdcb41887d5809f8f",
+      "bytes": 3258,
+      "sha256": "24fe6c1d76f1ac446873b430967fdf1add994a91fc3bb5e4290ffb5d51788a0a"
+    },
+    {
+      "name": "BRANCH-READBACK.original.sdk.json",
+      "blob": "faea43962ddca6d7048ec526ddc2f1842c26b5da",
+      "bytes": 2043,
+      "sha256": "df02b1fac0b6b8c8d9e1785cb3456651e2479ffdc1ec43b36cd89432652fa7d8"
+    }
+  ],
+  "expected_data_tree": "883e206728c0893e2cf442662459e2f3f77df2e8",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

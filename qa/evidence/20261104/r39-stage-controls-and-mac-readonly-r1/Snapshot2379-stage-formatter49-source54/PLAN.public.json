@@ -1,0 +1,200 @@
+{
+  "schema": "heptabao.snapshot2379-stage-format49-source-plan.v1",
+  "status": "SOURCE_ONLY_NOT_AUTHORIZED",
+  "runtimeAuthorized": false,
+  "nativeCalls": 0,
+  "sourceStageExecuted": false,
+  "formatterExecuted": false,
+  "candidate": {
+    "commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+    "soleParent": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "branch": "codex/heptabao-native-snapshot-forward-r5-source-20261106",
+    "leaves": 3930,
+    "trackedBytes": 62486000,
+    "index": {
+      "blob": "8cd39d6c4900a37bb5d64d37eb1330c54bfdba22",
+      "bytes": 453627,
+      "sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+    },
+    "historyCount": 3768,
+    "ancestryCountFrom495": 16,
+    "modifiedFromParent": 6,
+    "newFromParent": 2,
+    "deletedFromParent": 0,
+    "unchangedFromParent": 3922,
+    "rootFreeze": {
+      "blob": "8b967cbd150207e5335bb22bdcb41887d5809f8f",
+      "bytes": 3258,
+      "sha256": "24fe6c1d76f1ac446873b430967fdf1add994a91fc3bb5e4290ffb5d51788a0a"
+    }
+  },
+  "stage": {
+    "root": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1",
+    "source": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/source",
+    "control": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control",
+    "sourceCode": {
+      "blob": "7da772881143eca4dd66a3628651e480547f2263",
+      "bytes": 29045,
+      "sha256": "cb1a1c58ed7fcfeded35c9d4892518a42b2455c8779b39c5865c4b0ea0eb974d"
+    },
+    "exactRequest": {
+      "blob": "f84c09ce0410038dda0e55ce1a9b98609990780a",
+      "bytes": 112068,
+      "sha256": "6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8"
+    },
+    "typedDigest": "7a2a6824e91e032a7a73205cda8a29b46a9a03d3abd4a7eef53c2b3cd4cbf996",
+    "nativeFingerprint": "8802962929388225322",
+    "key": "heptabao-native-snapshot-forward-2379d02b-rog-source-20261106-r1-cb1a1c58",
+    "sharedSeconds": 300,
+    "GitSeconds": 90,
+    "cloneSeconds": 180,
+    "outerSeconds": 360,
+    "cleanupTermSeconds": 5,
+    "cleanupKillSeconds": 5,
+    "stdinBytes": 79951,
+    "stdinSha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "stdinCap": 262144,
+    "expectedSuccessfulPathCommands": 61,
+    "actualCommands": null,
+    "actualReport": null,
+    "actualQualification": false,
+    "prior495Source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+    "prior495Commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "priorFailureSourceAnd12FencesUnchanged": true,
+    "originalPublicGitFetchSourceUnchanged": "https://github.com/TrillionniumFoundation/HeptaBao.git",
+    "requiresNoNewBootstrap": true,
+    "original4ControlsCompileOnly": true,
+    "original4ControlsExecuted": false,
+    "bundle": {
+      "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/canonical-native-snapshot-forward-2379d02b-from495.bundle",
+      "singlePrerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "standalone": false,
+      "maxBytes": 4194304,
+      "actualSize": null,
+      "actualSha256": null,
+      "actualVersion": null,
+      "transportAuthorized": false
+    }
+  },
+  "formatter": {
+    "root": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1",
+    "readonlySource": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/source",
+    "sourceCode": {
+      "blob": "f72361046db565c98ec06be2426b651da287bd2f",
+      "bytes": 25194,
+      "sha256": "5c461ab08a55a79a7af317edb95d92716074a185e3f443b34f348b594d619e22"
+    },
+    "reviewOnlyRequest": {
+      "blob": "0fce0771c8a4e42b85abfc10ffbc14e59e588616",
+      "bytes": 34045,
+      "sha256": "72289e6809a067df0df78ae0bd96383725ccbbcaca6fb219349c9ede1d4ce70f"
+    },
+    "typedDigest": "8b4e78b9c28d7e9480bc4f3898aaec15e6fb5a08d236f687c939eb06a59da5cc",
+    "nativeFingerprint": "10038093358683750036",
+    "key": "heptabao-native-snapshot-forward-2379d02b-format-20261106-r1-5c461ab0",
+    "manifest": {
+      "blob": "d7d2f76cb6f88e13231d6f5702c62ac4e1174de2",
+      "bytes": 7155,
+      "sha256": "c16fa6ac164072a545b28917a8a010b4edc240562fd3b5ffb95d25f91efff51d"
+    },
+    "fileCount": 49,
+    "totalSourceBytes": 2023746,
+    "original46OrderPreserved": true,
+    "threeAddedBasenames": [
+      "service_native_v6_ha_pipeline_tests.rs",
+      "service_snapshot_forward_test_faults.rs",
+      "service_native_snapshot_forward_audit_tests.rs"
+    ],
+    "sharedSeconds": 50,
+    "eachChildSeconds": 10,
+    "outerSeconds": 60,
+    "stdinCap": 262144,
+    "config": {
+      "bytes": 17,
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "edition": "2024"
+    },
+    "rustfmt": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+    },
+    "sourceBeforeAfterWholeRequired": true,
+    "copyMode": 384,
+    "serviceOutputCap": 655360,
+    "otherOutputCap": 262144,
+    "stderrCap": 65536,
+    "reportCap": 131072,
+    "outputReadFileCount": 198,
+    "outputReadTotalCap": 31842643,
+    "outputReadActualVersions": null,
+    "outputReadsAuthorized": false,
+    "actualSourceStageRequiredBeforeGO": true,
+    "readOnlySourceNoRewrite": true,
+    "custody": "original direct Popen children reaped, same supervisor PGID; does not claim independently empty groups",
+    "noGitOrCargoInFormatter": true
+  },
+  "processProtocol": {
+    "stageJournal": {
+      "blob": "d2fb755149c37da99c35705136ae973c91be8cc4",
+      "bytes": 19050,
+      "sha256": "0f5efb2be268a7db06e9ca2195000b87f26809244f23c6d52fa8746734c53a69"
+    },
+    "stageSlot": "snapshot_2379_rog_source_gitfirst_r1",
+    "formatterJournal": {
+      "blob": "2e0a6321fceb53ca84f4c117d12aa84e451f30a3",
+      "bytes": 19051,
+      "sha256": "4f67f3e16ba885d69f24d9f4d202325a50e74ba05de53a71ea55d804dde6351e"
+    },
+    "formatterSlot": "snapshot_2379_rog_formatter_gitfirst_r1",
+    "slotsInitialized": false,
+    "GitFirstWholeSDKBeforeParse": true,
+    "oneProcessStartPerSeparateGO": true,
+    "immutablePages8192": true,
+    "processReadCap16384": true,
+    "originalPayloadCap1048576": true,
+    "noReplayUnknown": true,
+    "noLocalExec": true
+  },
+  "scope": {
+    "formatterUnion": "original23 + explicitForward24 + realService8: 49 unique files",
+    "testDenominators": {
+      "schema": "heptabao.snapshot-forward-distinct-test-denominators.v1",
+      "low_level_component_tests": 23,
+      "new_real_Service_tests": 4,
+      "future_total_component_and_Service_tests": 27,
+      "all_27_executed": false,
+      "new_Service_test_source_packet": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+      "exact_tests": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+      ],
+      "separate_C_branch": {
+        "unique_tests": 149,
+        "profiles": 166,
+        "not_in_this_packet": true
+      },
+      "old_CLI": {
+        "B04": "failed",
+        "B05": "failed",
+        "not_replayed": true
+      },
+      "full_replacement": false
+    },
+    "original8c95AndB694CheckoutsNotModified": true,
+    "b694DetailedReportQualificationPending": true,
+    "originalB694TerminalRoot35": {
+      "blob": "c36049a5266f8d71dadd8657609fbf81c7d1f8f9",
+      "bytes": 5637,
+      "sha256": "b441acab6dc77890504d05b60ab54bfd1a389ea58daddf1cd631f3e2eb16f718"
+    },
+    "C33bScopeUnaffected": true,
+    "formatter46NeverExecuted": true,
+    "product": false,
+    "credentials": false,
+    "fullReplacement": false
+  },
+  "futureSourceRule": "Actual formatter output, complete report and individual source whole/version evidence must be reviewed and frozen into a later commit; these unformatted sources are not compiler or runtime evidence."
+}

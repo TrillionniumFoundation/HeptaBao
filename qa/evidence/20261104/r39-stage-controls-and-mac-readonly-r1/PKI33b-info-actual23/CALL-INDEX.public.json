@@ -1,0 +1,68 @@
+[
+  {
+    "ordinal": 1,
+    "callKey": "jwt-pki-33b814c7-source-result-info0-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "538b045d46c03cd5787a4a80d41595345232ae47",
+      "bytes": 309,
+      "sha256": "ca7c34ce798a1155e6b49a989f5f792c9aaaf2a4db568f70b8ab999d48b341b2"
+    },
+    "armedTree": "2b71efa42f1901acf2b866fd1b9a25177aa497c1",
+    "SDK": {
+      "blob": "9f3a9bdfa99e1907bfea945bf62687571efd87cb",
+      "bytes": 704,
+      "sha256": "d505162e8009cb2863fba4762e7c589893d6933b329e480a04bfd397b86c43d9"
+    },
+    "SDKTree": "b99b17e587a14ffa37b85c97bc8a4763865a18df",
+    "native": {
+      "blob": "774c69ba6e19996bba92e6fe3022a1a47e371bb7",
+      "bytes": 543,
+      "sha256": "4d5bfa94385f0a28a57dfd2d076b63e9260f366ef135bcc573ea20ea325af8c7"
+    }
+  },
+  {
+    "ordinal": 2,
+    "callKey": "jwt-pki-33b814c7-source-result-info0-status0-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "1a08b3d79962dc765e65b694640f7c702e09dea6",
+      "bytes": 89,
+      "sha256": "58530e7f5da673dff3f5f09f65bce2fbcd30ee89b9f397ca842f83a3d7321e81"
+    },
+    "armedTree": "3aa364ac3a2ddd18a7d1721395affaa74e42a90e",
+    "SDK": {
+      "blob": "128e60e94d8a044c159169c7b7ce84300e8c2ac8",
+      "bytes": 975,
+      "sha256": "ff47901b39fefbae0c2523591e4e2acd301ffd1a4c5b637777f98e00ad78b155"
+    },
+    "SDKTree": "50d54787634e7e5175d0d70a8e08c35701e46770",
+    "native": {
+      "blob": "8fc5b7e82f2f8271ccb34b8dc6c359fac97b11f6",
+      "bytes": 800,
+      "sha256": "0e8f7487a17400c2bd2393adc2dfa0d770c072d315c9177effb1cda7a0d3bbfb"
+    }
+  },
+  {
+    "ordinal": 3,
+    "callKey": "jwt-pki-33b814c7-source-result-info0-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "5ba2e8910b461fe32e7bc31d4149c5a4b74aaa5b",
+      "bytes": 121,
+      "sha256": "3812af97c6a40c00236f966efa990631e65921f62a3f76ad889f5de5fcdae3a0"
+    },
+    "armedTree": "b858b810459fbf365ee0cd038e30a505814077d9",
+    "SDK": {
+      "blob": "cb32a9f5834978678670a086e96abbc49c2b4375",
+      "bytes": 1656,
+      "sha256": "43ff5aaddc0be94392d08af6e5f3bd3c0059212d776d09d9866de7e6d1d371b6"
+    },
+    "SDKTree": "08f54aae71d02e16ac0962c1854fc0a5ac1fd1bf",
+    "native": {
+      "blob": "352bee7ed2ccd3c48624b784d9a05a4f88299818",
+      "bytes": 1485,
+      "sha256": "dfccf9d90c5ed1bc3fc939d6222c1c4fafd9743bf659185928c5b1db700e93a0"
+    }
+  }
+]

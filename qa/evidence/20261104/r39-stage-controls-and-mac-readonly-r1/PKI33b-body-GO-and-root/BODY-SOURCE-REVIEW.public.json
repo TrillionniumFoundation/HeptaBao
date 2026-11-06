@@ -1,0 +1,148 @@
+{
+  "schema": "heptabao.root-source-review.PKI33b-stage-report-single-body.v1",
+  "status": "PASS_ONE_EXACT_ACTUAL_REPORT_RANGE_SOURCE",
+  "checks": [
+    {
+      "name": "whole23_119373",
+      "passed": true
+    },
+    {
+      "name": "actual_INFO_and_GO_exact",
+      "passed": true
+    },
+    {
+      "name": "original_single_range_reference_exact",
+      "passed": true
+    },
+    {
+      "name": "thirteen_bindings_fourteen_occurrences",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_0",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_1",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_2",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_3",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_4",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_5",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_6",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_7",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_8",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_9",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_10",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_11",
+      "passed": true
+    },
+    {
+      "name": "replacement_count_12",
+      "passed": true
+    },
+    {
+      "name": "whole_only_literal_binding_changes",
+      "passed": true
+    },
+    {
+      "name": "four_hunks_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "exact_source_and_request_pins",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_info_binding",
+      "passed": true
+    },
+    {
+      "name": "only_one_27931_exact_version_range",
+      "passed": true
+    },
+    {
+      "name": "same_original_slot_no_reinitialize",
+      "passed": true
+    },
+    {
+      "name": "closed_INFO_one_body_armed_and_whole_SHA_guards",
+      "passed": true
+    },
+    {
+      "name": "original_paging_and_file_chunk_caps",
+      "passed": true
+    },
+    {
+      "name": "no_body_yet_no_Cargo_or_automatic_scope",
+      "passed": true
+    },
+    {
+      "name": "syntax_only_not_invoked",
+      "passed": true
+    }
+  ],
+  "check_count": 27,
+  "source_packet": "74d43f4e1c7a142f833c8e276fb3deef574e801a",
+  "source": {
+    "blob": "068abfcedf4a9116e618389f31213b4e31185b72",
+    "bytes": 28270,
+    "sha256": "65d8ad457fa07cf9312ac03e914bf949ba1e04ef15a88d0840b34aaa6234b4f3"
+  },
+  "exact_request": {
+    "blob": "d866eaf8211ae79d4d29153a3cc47de776f51863",
+    "bytes": 442,
+    "sha256": "ae5cde505b6eadb04033a334a7d795ca94a81d7f0986e4332b477fd0f2884f0d"
+  },
+  "original_job": "1a1afcbafab-fc05-6bb0",
+  "original_slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+  "actual_info_root": {
+    "blob": "d887b5e42273dca5fdf263e20b84d0640c54c693",
+    "bytes": 4554,
+    "sha256": "999fe6b031f599431e053b2d12bb55da9e06bff4aab9d7b81970e5bc91bde196"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "bytes": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0",
+    "version": "66306:31235720:27931:1793950741423957124:1793950741423957124",
+    "infoOperation": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "infoNative": {
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    }
+  },
+  "root_Runtime_calls": 0,
+  "body_observed": false,
+  "detailed_stage_qualified": false
+}

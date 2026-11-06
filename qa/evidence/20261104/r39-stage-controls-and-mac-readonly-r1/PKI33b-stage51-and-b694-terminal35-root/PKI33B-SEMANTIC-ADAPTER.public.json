@@ -1,0 +1,42 @@
+[
+  {
+    "before": "load(\"r34_packet_Snapshot8c95-independent-stage-formatter-source44\").raw[\"stage.after.py\"]",
+    "after": "load(\"r34_packet_PKI33b-finalstage-source24\").raw[\"stager.after.py\"]"
+  },
+  {
+    "before": "tq.value.evidence_qualified&&rel.originalStageJobTerminalRootQualification===tq.blob&&rel.originalJob===\"1a1afa74868-fc05-6a7e\"",
+    "after": "tq.value.evidence_qualified&&tq.value.original_job===\"rog/\"+rel.originalJob&&rel.originalJob===\"1a1afcbafab-fc05-6bb0\""
+  },
+  {
+    "before": "heptabao.native-snapshot-forward-independent-source-stage.v1",
+    "after": "heptabao.native-jwt-independent-source-stage.v1"
+  },
+  {
+    "before": "unformatted_snapshot_forward_source_for_separate_formatter_admission",
+    "after": "formatted_jwt_pki_source_for_separate_build_admission"
+  },
+  {
+    "before": "all3928_source_blobs_modes_and_index",
+    "after": "all3916_source_blobs_modes_and_index"
+  },
+  {
+    "before": "tracked_bytes:62460068,tracked_leaf_count:3928",
+    "after": "tracked_bytes:62297347,tracked_leaf_count:3916"
+  },
+  {
+    "before": "bundle.bytes===103944",
+    "after": "bundle.bytes===60426"
+  },
+  {
+    "before": "6fcb01e845ddf4bbb7c3d1aa7ee4eaa6eb5777030853f065697c8e7ba201857b",
+    "after": "6b25592606997af45d7c3fe251474a57ca7052a7eccd52b85ca0abb170d986e4"
+  },
+  {
+    "before": "[1000,1000,33152,1,103944]",
+    "after": "[1000,1000,33152,1,60426]"
+  },
+  {
+    "before": "load(\"r34_packet_Snapshot8c95-independent-stage-formatter-source44\").raw[\"historical-carrier.unchanged.json\"]",
+    "after": "load(\"r34_packet_PKI33b-finalstage-source24\").raw[\"carrier.unchanged.public.json\"]"
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "executor": "functions.exec V8",
+  "entry": "verifyReadonlySourcePacket(files)",
+  "inputs": [
+    "CONTRACT.public.json",
+    "diagnostic.source.py",
+    "journal.forward.diff",
+    "journal.js",
+    "journal.reverse.diff",
+    "new-main.source.py",
+    "original.child-validators.py",
+    "original.child.r4.py",
+    "original.common.r4.py",
+    "original.constants.r4.py",
+    "original.journal.r4.js",
+    "original.missing-service.py",
+    "original.parent-core.r3.py",
+    "original.parse-print.py",
+    "original.r4.stdout.public.json",
+    "original.reader.py",
+    "request.exact.public.json"
+  ],
+  "requiredGlobals": [
+    "gitBlobMeta",
+    "utf8Text",
+    "unb64",
+    "strictApplySource",
+    "calls"
+  ],
+  "providers": {
+    "gitBlobMeta/utf8Text/unb64": "pure_helpers.js",
+    "strictApplySource": "source-unified-helpers.js",
+    "calls": "literal-code-extractor.js"
+  },
+  "calledOnce": true,
+  "toolCallsInsideVerifier": 0,
+  "candidateExecuted": false
+}

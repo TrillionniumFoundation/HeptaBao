@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.root-GO-undispatched-document-correction.v1",
+  "original": {
+    "blob": "e5e19733dc159889d29a65d04f1d68e76136a40b",
+    "bytes": 24461,
+    "sha256": "5a4a9a2ae8d838e53c1f015f651dc3cfc6909a683ebdc5ed5bbf4532cc003a1b"
+  },
+  "corrected": {
+    "blob": "418170d7751a9ba9e54cfb768e87b3af79611af4",
+    "bytes": 7483,
+    "sha256": "8d09bf077a084b906cdda5f1d4db3b1a4bce291e5f86247ee9be802bbd6fe2c2"
+  },
+  "field": "source_packet",
+  "before": "whole parsed52-entry tree object",
+  "after": "c2676044f1e456c0531ee8401c567fb412a932db",
+  "reason": "Reader exposes tree object and audit.tree SHA separately; identifier field requires SHA.",
+  "candidate_source_changed": false,
+  "exact_request_changed": false,
+  "old_GO_delivered_to_agent": false,
+  "old_GO_initialized": false,
+  "Native_calls": 0,
+  "original_immutable_archive": "29159abaade8dcd646672a94d452caf8963c32c5"
+}

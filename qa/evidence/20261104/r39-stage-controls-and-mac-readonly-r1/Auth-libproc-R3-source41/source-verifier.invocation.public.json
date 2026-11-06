@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.pure-source-verifier.invocation.v1",
+  "engine": "functions.exec JavaScript V8",
+  "interface": "verifyReadonlyLibprocR3(flatTexts, {pin:gitBlobMeta, apply:strictApplySource, unb64, utf8Text})",
+  "helperSources": [
+    "pure-helpers.original.js",
+    "unified-diff-helpers.original.js"
+  ],
+  "inputFiles": [
+    "CONTRACT.public.json",
+    "REVIEW.md",
+    "changed-methods.libproc.r3.py",
+    "contract.r2.before.public.json",
+    "diagnostic.libproc.r3.py",
+    "diagnostic.r2-to-r3.diff",
+    "diagnostic.r2.before.py",
+    "diagnostic.r3-to-r2.diff",
+    "exact-request.libproc.r3.public.json",
+    "exact-request.r2.before.public.json",
+    "journal.libproc.r3.js",
+    "journal.r2-to-r3.diff",
+    "journal.r2.before.js",
+    "journal.r3-to-r2.diff",
+    "original-ready-pid-method.r2.py",
+    "pure-helpers.original.js",
+    "reference.apple.libproc.c",
+    "reference.apple.libproc.c.original.sdk.json",
+    "reference.apple.libproc.c.request.public.json",
+    "reference.apple.libproc.h",
+    "reference.apple.libproc.h.original.sdk.json",
+    "reference.apple.libproc.h.request.public.json",
+    "reference.apple.proc_info.c",
+    "reference.apple.proc_info.c.original.sdk.json",
+    "reference.apple.proc_info.c.request.public.json",
+    "reference.apple.proc_info.h",
+    "reference.apple.proc_info.h.original.sdk.json",
+    "reference.apple.proc_info.h.request.public.json",
+    "reference.mac_owned_commands_r1.py",
+    "reference.mac_owned_unreaped_r1.py",
+    "reference.original-r2.authority.public.json",
+    "reference.original-r2.stdout.public.json",
+    "unified-diff-helpers.original.js"
+  ],
+  "verifier": {
+    "blob": "d0e79d374299cc94660b660b6387b153611babae",
+    "bytes": 10650,
+    "sha256": "04c5d7a8b31c2497b91225b03466e66830a880a366fbdc3dad45a1a73bef11c8"
+  },
+  "result": {
+    "blob": "d81f875bb3680026b5648892301aab90e80c7f46",
+    "bytes": 6247,
+    "sha256": "9593395af22d1124f3b043b03f72fe98a5b0e55717d857ad224255fda5484d25"
+  },
+  "executorObservation": "Script completed; 66 exact source checks returned passed=true.",
+  "candidateExecuted": false,
+  "nativeCalls": 0,
+  "pythonExecuted": false,
+  "oldComponentsRerun": false
+}

@@ -1,0 +1,144 @@
+[
+  {
+    "name": "service.rs",
+    "path": "crates/heptabao-server/src/service.rs",
+    "before": {
+      "blob": "c952232a835a4f6437e310790ba42b8509b79dcb",
+      "bytes": 519343,
+      "sha256": "c6fcb7631d424c16b5f86530570172b61f2b090d71384516d267ffaf7ee1dc89"
+    },
+    "after": {
+      "blob": "63bacb537a17cc060239a1793f8ac526e15df158",
+      "bytes": 519577,
+      "sha256": "152d79076104755a522ad972e020be3f9efad47cfc0b20692dc3190169ebf276"
+    },
+    "hunks": 2,
+    "edits": [
+      {
+        "before": "    #[cfg(test)]\n    audit_capacity: u64,\n",
+        "after": "    #[cfg(test)]\n    audit_capacity: u64,\n    #[cfg(all(test, feature = \"native-v6-ha\"))]\n    snapshot_forward_test: snapshot_transfer::forward::test_faults::State,\n"
+      },
+      {
+        "before": "            #[cfg(test)]\n            audit_capacity: MAX_AUDIT_BYTES,\n",
+        "after": "            #[cfg(test)]\n            audit_capacity: MAX_AUDIT_BYTES,\n            #[cfg(all(test, feature = \"native-v6-ha\"))]\n            snapshot_forward_test: Default::default(),\n"
+      }
+    ]
+  },
+  {
+    "name": "service_snapshot_forward.rs",
+    "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+    "before": {
+      "blob": "4edbdf52aee39919065db9dc0d8924fd346c5306",
+      "bytes": 8798,
+      "sha256": "70cfadda87cad016af530310c525c94e04b6e2e3df5353cc2762bc91d08570bd"
+    },
+    "after": {
+      "blob": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42",
+      "bytes": 8891,
+      "sha256": "6db3cd4b9c8d115779b59282aef59755556099491f517985e453c1bd5b41586b"
+    },
+    "hunks": 1,
+    "edits": [
+      {
+        "before": "#[path = \"service_snapshot_forward_source.rs\"]\nmod source;\n",
+        "after": "#[path = \"service_snapshot_forward_source.rs\"]\nmod source;\n#[cfg(test)]\n#[path = \"service_snapshot_forward_test_faults.rs\"]\npub(crate) mod test_faults;\n"
+      }
+    ]
+  },
+  {
+    "name": "service_snapshot_forward_client.rs",
+    "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+    "before": {
+      "blob": "ccefc2b6e836f407f285245fa1f595230d828ab0",
+      "bytes": 18255,
+      "sha256": "786eb9ec00fc1d8d82e78793da18c9b9b33b02609c80153b0fd960de4b75dc17"
+    },
+    "after": {
+      "blob": "694edf2abe8a8f61dc887469e2dcc963dfc58fca",
+      "bytes": 18850,
+      "sha256": "0007a55d455493318cb2e606d5a19b94438e67b2b52cc0ab98465a240f74aa6c"
+    },
+    "hunks": 3,
+    "edits": [
+      {
+        "before": "impl SnapshotForwardPlan {\n    fn accept_ready(",
+        "after": "impl SnapshotForwardPlan {\n    #[cfg(test)]\n    pub(crate) fn fixture_request_context(&self) -> ([u8; 32], Instant) {\n        (self.request.nonce, self.owner.deadline)\n    }\n\n    fn accept_ready("
+      },
+      {
+        "before": "            let activation = Zeroizing::new(service.unseal_nonce.clone());\n            self.delivery_check(service, &original, &data, &response, &activation)?;",
+        "after": "            let activation = Zeroizing::new(service.unseal_nonce.clone());\n            #[cfg(test)]\n            service.fixture_snapshot_forward_fault(\n                test_faults::Point::IngressFirstDelivery, self.request.nonce,\n                self.owner.deadline, &original.admission.data,\n            );\n            self.delivery_check(service, &original, &data, &response, &activation)?;"
+      },
+      {
+        "before": "        if self.delivery_check(service, &original, &data, &response, &activation).is_err() {\n",
+        "after": "        #[cfg(test)]\n        service.fixture_snapshot_forward_fault(\n            test_faults::Point::IngressSecondDelivery, self.request.nonce,\n            self.owner.deadline, &original.admission.data,\n        );\n        if self.delivery_check(service, &original, &data, &response, &activation).is_err() {\n"
+      }
+    ]
+  },
+  {
+    "name": "service_snapshot_forward_source.rs",
+    "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+    "before": {
+      "blob": "b4a0645164c6ba5cb0c3489e058f65c89136796b",
+      "bytes": 17315,
+      "sha256": "86b55dde688720321fce0c2fdfc59a18a6a185911d9725d6f9b4afb8e71b2062"
+    },
+    "after": {
+      "blob": "ca9962d39f90cdf6ebbc06d04a9cc6c0fa7aa0a1",
+      "bytes": 17522,
+      "sha256": "3f37df8a3ad5d4cc535127b2c286b32a2c633ec7c4295a2525367a91099ec560"
+    },
+    "hunks": 1,
+    "edits": [
+      {
+        "before": "        let publication: Result<(u16, Zeroizing<Vec<u8>>), Response> = (|| {\n",
+        "after": "        #[cfg(test)]\n        self.fixture_snapshot_forward_fault(\n            test_faults::Point::SourceAfterFinalizer, admitted.ready.data.nonce,\n            plan.deadline, &admitted.ready.data,\n        );\n        let publication: Result<(u16, Zeroizing<Vec<u8>>), Response> = (|| {\n"
+      }
+    ]
+  },
+  {
+    "name": "service_native_v6_ha_historical_restore_tests.rs",
+    "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+    "before": {
+      "blob": "1ff6e42dade56eb4431271aae5a9dee90e9cca39",
+      "bytes": 53072,
+      "sha256": "2ea71a8fc8a009f4505792dee58165ecacbfa677e7b339f0f25a43be257a26b5"
+    },
+    "after": {
+      "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+      "bytes": 53166,
+      "sha256": "ff6cc53a65ea25bcb9d4817f5875d1de950c4814b54bd7eafdff6b95ad8ed69d"
+    },
+    "hunks": 1,
+    "edits": [
+      {
+        "before": "//! Host power loss is separately measured by the physical acceptance runner.\n",
+        "after": "//! Host power loss is separately measured by the physical acceptance runner.\n#[path = \"service_native_snapshot_forward_audit_tests.rs\"]\nmod snapshot_forward_audit_tests;\n\n"
+      }
+    ]
+  },
+  {
+    "name": "service_native_v6_ha_pipeline_tests.rs",
+    "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+    "before": {
+      "blob": "aa9e00cd0f530ff27fa896160f8db1e0c5700920",
+      "bytes": 69866,
+      "sha256": "2bfa098fe3ad0a5a6bf27eaf0c92269a0766dd1e9e2917bec6df6b96f8e565eb"
+    },
+    "after": {
+      "blob": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+      "bytes": 70780,
+      "sha256": "0e204bfd4f2a2b5640e1da6611014f5a87799b099c9b2f6c861283e60c57c2ea"
+    },
+    "hunks": 2,
+    "edits": [
+      {
+        "before": "    fn start_with_configured_storage(configured_native_storage: bool) -> TestResult<Self> {\n",
+        "after": "    fn start_with_configured_storage(configured_native_storage: bool) -> TestResult<Self> {\n        Self::start_with_snapshot_routes(configured_native_storage, false)\n    }\n\n    fn start_for_snapshot_forwarding() -> TestResult<Self> {\n        Self::start_with_snapshot_routes(false, true)\n    }\n\n    fn start_with_snapshot_routes(\n        configured_native_storage: bool,\n        snapshot_api_origins: bool,\n    ) -> TestResult<Self> {\n"
+      },
+      {
+        "before": "        let configs = configurations(&files.path, &cluster_id, &pins)?;\n",
+        "after": "        let mut configs = configurations(&files.path, &cluster_id, &pins)?;\n        if snapshot_api_origins {\n            // Snapshot admission requires a configured API origin even when\n            // the request will use the authenticated binary peer route. These\n            // are the fixed real peer socket addresses; no HTTP listener or\n            // HTTP request is claimed, and a Redirect fails the new fixture.\n            for config in &mut configs {\n                for peer in config.peers.values_mut() {\n                    peer.api_address = Some(format!(\"https://{}\", peer.address));\n                }\n            }\n        }\n"
+      }
+    ]
+  }
+]

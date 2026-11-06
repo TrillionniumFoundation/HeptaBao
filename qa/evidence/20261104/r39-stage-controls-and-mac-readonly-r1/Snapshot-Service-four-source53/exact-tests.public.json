@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.snapshot-forward.real-Service-tests.v1",
+  "base": {
+    "commit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+    "rootFreeze": "98647b553634c669c84ba1dcd82058af3cf25dd3"
+  },
+  "testCount": 4,
+  "tests": [
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+  ],
+  "observedPassCount": 0,
+  "runRequested": false
+}

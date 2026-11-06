@@ -1,0 +1,11 @@
+{
+  "originalSourcePacket": "e11856456b51b54cd3bc564fd797ea7bc95dbea8",
+  "beforeSource": "467393a64a2a5e7eb92a89df0981b9849217eb87",
+  "beforeRequest": "1891e38a9ddcd970f27c6fb7d7d3ef1b1183bdc0",
+  "beforeJournal": "bdceb4d0d435fb5a71df78a6440288c62025f3c6",
+  "beforeContract": "2a2163976c2afb5664e73473adeca30b0b33f27f",
+  "r4Journal": "03e72b0bd32b4fe9219b98b0c6d4dab57182bead",
+  "original78NotRerun": true,
+  "helpersSameAsOriginalPacket": true,
+  "oldSourceNeverAuthorizedOrSubmitted": true
+}

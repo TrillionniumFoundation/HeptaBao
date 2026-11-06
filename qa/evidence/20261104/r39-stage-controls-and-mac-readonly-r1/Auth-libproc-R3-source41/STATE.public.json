@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.home-t5-existing-label-libproc-source.r3",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "source": {
+    "blob": "1ba4cec6b0ce49db5111b429ffe337064ce42dbb",
+    "bytes": 93249,
+    "sha256": "86512cae0db15a19e1f052b4bac786e7a612bc6dfd948f1e605f14077ca0b21e"
+  },
+  "request": {
+    "blob": "108f52fa6b6032079f805195794805b390228d97",
+    "bytes": 96033,
+    "sha256": "680aa388879b7025d06cd00625a8e83dd5fa1efb858223c4c232c319c2aa5b48"
+  },
+  "journal": {
+    "blob": "49c76552dbf87ac51033db785b1660aaaf0d1810",
+    "bytes": 19061,
+    "sha256": "0ecb12c80802de5864caab693faceed4fbbb9c3e8e072c1ceaf1b0e5070d14ba"
+  },
+  "newSlot": "owner_launchd_home_t5_existing_readonly_libproc_gitfirst_r3",
+  "slotInitialized": false,
+  "armed": false,
+  "submitted": false,
+  "liveRuntimeCalls": 0,
+  "activeNativeFutures": 0,
+  "verifier": {
+    "passed": true,
+    "checkCount": 66,
+    "scope": "Exact SOURCE/whole/strict-diff bindings only; no Python, candidate, SDK, Native or old component execution."
+  },
+  "originalR2Actual": "80235457cc3c2190e76f8c809347de281023dd22",
+  "originalR2RootQualification": "e65caf0cf0e3447b50a205d1d6033796dfb75ad8",
+  "historicalR4ManagedScopeUnknown": true,
+  "historicalR2Helper87650ScopeUnknown": true,
+  "noSdkOrCredentialOrT5OrBootstrapOrBootout": true
+}

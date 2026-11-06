@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-mac-existing-R4-public-readonly-r2-root-GO",
+  "records": [
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "cb6e21b4e745cb2d78d91e5f80181a9d289f8e77",
+      "bytes": 13813,
+      "sha256": "674834982a38886a8e9e4b89651bc2f4a62032d080fb58ca8c3dab39c926ce17"
+    },
+    {
+      "name": "READONLY-GO.public.json",
+      "blob": "9a9c2215377af1e00c02f57f012274a33b3c1ac8",
+      "bytes": 14051,
+      "sha256": "9f40163f7e44c8ab0f7e6ab7cfbf8c30ee1f0107b3abd464eadfbffc2c67e861"
+    },
+    {
+      "name": "ROOT-VERIFIER.source.js",
+      "blob": "a1458029e2ced3dfc8ce9858c113da3355ed5b90",
+      "bytes": 14972,
+      "sha256": "348dcb1cc4d5353a9f17a5b42393276e0cf01a403d12afa500c1eb7e1eb44bd0"
+    },
+    {
+      "name": "ROOT-VERIFIER-r1.original.js",
+      "blob": "f7c204660d9c4828c98baf340473b4c968291c33",
+      "bytes": 14860,
+      "sha256": "a04397cf39daa1c6212c0383b458b47a37746355b91c60125b53a803dbb8ae62"
+    },
+    {
+      "name": "ROOT-CHECKER-METADATA-ORDER-CORRECTION.public.json",
+      "blob": "71ab334970a0bd9f933ac1380d0d98382abcc67f",
+      "bytes": 634,
+      "sha256": "c03b9e5daf387e84a4184ade154e429c68edd32ff33f793be661ea5947b6b865"
+    }
+  ],
+  "expected_data_tree": "fd3301d6a751fca40b6e15e25e3e1b0d247ed54a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

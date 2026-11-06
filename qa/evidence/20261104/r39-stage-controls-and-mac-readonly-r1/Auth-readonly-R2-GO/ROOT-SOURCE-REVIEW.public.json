@@ -1,0 +1,461 @@
+{
+  "schema": "heptabao.root-source-review.Mac-existing-R4-label-readonly-r2.v1",
+  "status": "PASS_FOR_EXACT_CURRENT_PUBLIC_READONLY_DIAGNOSTIC",
+  "checks": [
+    {
+      "name": "whole_original33_and_final_overlay15",
+      "passed": true
+    },
+    {
+      "name": "source_request_journal_exact_pins",
+      "passed": true
+    },
+    {
+      "name": "original_actual_R4_failure_not_rewritten",
+      "passed": true
+    },
+    {
+      "name": "common_constants_child_and_journal_original_exact",
+      "passed": true
+    },
+    {
+      "name": "original_R4_contains_original.parent-core.r3.py",
+      "passed": true
+    },
+    {
+      "name": "original_R4_contains_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "original_R4_contains_original.missing-service.py",
+      "passed": true
+    },
+    {
+      "name": "original_R4_contains_original.child-validators.py",
+      "passed": true
+    },
+    {
+      "name": "reader_original_child_whole_subsection",
+      "passed": true
+    },
+    {
+      "name": "unique_output_removal_0",
+      "passed": true
+    },
+    {
+      "name": "unique_output_removal_1",
+      "passed": true
+    },
+    {
+      "name": "only_two_raw_dynamic_hash_outputs_removed",
+      "passed": true
+    },
+    {
+      "name": "source_two_hunks_strict_both_directions",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_json_assignment_INPUT_PINS",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_json_assignment_EXPECTED_ARGV",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_json_assignment_MODULES",
+      "passed": true
+    },
+    {
+      "name": "only_two_original_helper_modules",
+      "passed": true
+    },
+    {
+      "name": "original_helper_whole_mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "original_helper_whole_mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "fixed_error_type_literal_unchanged",
+      "passed": true
+    },
+    {
+      "name": "closed_finite_sorted_error_union_and_old_child_set",
+      "passed": true
+    },
+    {
+      "name": "all11_exact_original_parser_codes_public",
+      "passed": true
+    },
+    {
+      "name": "one_unchanged_component_original.constants.r4.py",
+      "passed": true
+    },
+    {
+      "name": "one_unchanged_component_original.reader.py",
+      "passed": true
+    },
+    {
+      "name": "one_unchanged_component_original.common.r4.py",
+      "passed": true
+    },
+    {
+      "name": "one_unchanged_component_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "one_unchanged_component_original.missing-service.py",
+      "passed": true
+    },
+    {
+      "name": "one_unchanged_component_original.child-validators.py",
+      "passed": true
+    },
+    {
+      "name": "one_complete_reviewed_main",
+      "passed": true
+    },
+    {
+      "name": "unique_assembly_line_PUBLIC_ERROR_TYPES",
+      "passed": true
+    },
+    {
+      "name": "unique_assembly_line_PUBLIC_ERROR_CODES",
+      "passed": true
+    },
+    {
+      "name": "unique_assembly_line_CHILD_PUBLIC_ERROR_CODES",
+      "passed": true
+    },
+    {
+      "name": "unique_assembly_line_INPUT_PINS",
+      "passed": true
+    },
+    {
+      "name": "unique_assembly_line_EXPECTED_ARGV",
+      "passed": true
+    },
+    {
+      "name": "unique_assembly_line_MODULES",
+      "passed": true
+    },
+    {
+      "name": "entire_source_covered_no_extra_executable_bytes",
+      "passed": true
+    },
+    {
+      "name": "typed_stdin_request_exact_no_environment_or_shell",
+      "passed": true
+    },
+    {
+      "name": "journal_two_hunks_from_originalR4_both_directions",
+      "passed": true
+    },
+    {
+      "name": "journal_only_slot_request_and_observer_prefix_bindings",
+      "passed": true
+    },
+    {
+      "name": "JS_journal_syntax_only_no_candidate_python_execution",
+      "passed": true
+    },
+    {
+      "name": "all_nine_original_managed_arguments",
+      "passed": true
+    },
+    {
+      "name": "same_original_created_public_pin_probe.public.py",
+      "passed": true
+    },
+    {
+      "name": "same_original_created_public_pin_plan.public.json",
+      "passed": true
+    },
+    {
+      "name": "same_original_created_public_pin_probe.plist",
+      "passed": true
+    },
+    {
+      "name": "same_original_python_full9_whole_pin",
+      "passed": true
+    },
+    {
+      "name": "exact_four_inputs_and_successful_read_max118977",
+      "passed": true
+    },
+    {
+      "name": "readonly_allowlists_set_before_any_application_IO",
+      "passed": true
+    },
+    {
+      "name": "fixed_two_prints_and_only_ready_pid_two_queries",
+      "passed": true
+    },
+    {
+      "name": "no_registration_mutation_or_managed_signals",
+      "passed": true
+    },
+    {
+      "name": "ready_exact_source_plan_home_process_schema",
+      "passed": true
+    },
+    {
+      "name": "present_pid_two_complete_same_birth_reads",
+      "passed": true
+    },
+    {
+      "name": "terminal_only_original_validated_projection",
+      "passed": true
+    },
+    {
+      "name": "raw_print_ps_stderr_not_exported_or_hashed",
+      "passed": true
+    },
+    {
+      "name": "four_fixed_commands_and_byte_bounds",
+      "passed": true
+    },
+    {
+      "name": "all_original45_35_60_budgets",
+      "passed": true
+    },
+    {
+      "name": "final_full9_fences_and_original_FD_unknown_accounting",
+      "passed": true
+    },
+    {
+      "name": "original_whole_close_loop_critical_and_once",
+      "passed": true
+    },
+    {
+      "name": "helper_attempt_ledger_and_unknown_preserved",
+      "passed": true
+    },
+    {
+      "name": "closure_handler_deadline_and_post_flush_no_late_PASS",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_success_cannot_close_old_R4",
+      "passed": true
+    },
+    {
+      "name": "R1_R2_not_initialized_no_Native_and_no_Python_PASS",
+      "passed": true
+    }
+  ],
+  "check_count": 61,
+  "source_packets": [
+    {
+      "tree": "e11856456b51b54cd3bc564fd797ea7bc95dbea8",
+      "files": 33,
+      "bytes": 569067,
+      "merkle": {
+        "root_sha": "e11856456b51b54cd3bc564fd797ea7bc95dbea8",
+        "trees_verified": 1,
+        "leaf_count": 33
+      },
+      "whole": true
+    },
+    {
+      "tree": "0d5667845ab96120314855e08f4e9809b4a505fd",
+      "files": 15,
+      "bytes": 231918,
+      "merkle": {
+        "root_sha": "0d5667845ab96120314855e08f4e9809b4a505fd",
+        "trees_verified": 1,
+        "leaf_count": 15
+      },
+      "whole": true
+    }
+  ],
+  "source": {
+    "blob": "15002c2fb720188546a25045d7d3bb3f743fabba",
+    "bytes": 90416,
+    "sha256": "32917b77d7bcbcec3016610e17b7758f919b9dc0971c912f0ab18c170763d989"
+  },
+  "exact_request": {
+    "blob": "2e5f413a527d0cb6de8d3403282dcd56ef197308",
+    "bytes": 93145,
+    "sha256": "edc6d1f1e68b5224b8af5c7ab53c3b73d753ca8381b6bde3947a8c859f2f18ec"
+  },
+  "journal": {
+    "blob": "89252ff15dacd03efcac832d0f24b80203274dd6",
+    "bytes": 19053,
+    "sha256": "66eaf0e3a879dc4b5eb9f3744445886b1030f55cf86d8c4623c1ebd2cccfa0a6"
+  },
+  "native_binding": {
+    "sha256": "0cdb320bdf730ef48e00beec02315a3037162fc0eb199495d44e9a152cbc5410",
+    "native_fingerprint": "926389174929657588",
+    "typed_stdin": true
+  },
+  "contract": {
+    "blob": "72abe8c184dea74f11d4a3ab01144b57b6bd4695",
+    "bytes": 12724,
+    "sha256": "1d3c826de875b72b9ee64d6f02bebfbd170e24e97bd5f64e1b303460a0acace0"
+  },
+  "original_R4_root_qualification": "3b0956905839b1271f5e416bdf321b97492f3300",
+  "original_components": {
+    "common": {
+      "blob": "16bc4fc1ea3359d6ac8c496d250b634b8a54a2e4",
+      "bytes": 15120,
+      "sha256": "b3c5663af414ab0d954eae244ef24090fe37b9e320e2003e72bbccf0c65f6039"
+    },
+    "constants": {
+      "blob": "663602cc45be9806bfc60b46e26a4d10d054f8e5",
+      "bytes": 3308,
+      "sha256": "330c327731a79eeceea0f8b572670358dc41bf43e937a445ce900da69c51862f"
+    },
+    "reader": {
+      "blob": "ec2182b5075246b30ef96c5b6472adeafb6654c8",
+      "bytes": 3302,
+      "sha256": "e37f6ed5569182cc8dd0ec42d1876d566b207ddc14ec57d0891ea31148a72e59"
+    },
+    "childValidators": {
+      "blob": "116d4a3c705b8cfed3d17527abe7bc65c22a981b",
+      "bytes": 6045,
+      "sha256": "efaa9626c6cc3a729d57b18b69e3ecf9a48d7b192b10dc7a77a79e7d5b7817cd"
+    },
+    "modules": [
+      {
+        "name": "mac_owned_unreaped_r1",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      {
+        "name": "mac_owned_commands_r1",
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      }
+    ],
+    "journalOriginal": "03e72b0bd32b4fe9219b98b0c6d4dab57182bead",
+    "journalDiffHunks": 2
+  },
+  "source_whole_reconstruction": true,
+  "new_main_reviewed_bytes": {
+    "blob": "5dd28dcdeb183911fea1cff3d93fb859bac0a72a",
+    "bytes": 21404,
+    "sha256": "d6359fa86d1e3d2cffa7d82cbf1978f1120ae44975e382b832246eba14a489d0"
+  },
+  "pinned_inputs": {
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py": {
+      "identity": [
+        "16777233",
+        "592904416",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "36522",
+        "1793950344732464747",
+        "1793950344732464747"
+      ],
+      "bytes": 36522,
+      "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json": {
+      "identity": [
+        "16777233",
+        "592904417",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1108",
+        "1793950344732730209",
+        "1793950344732730209"
+      ],
+      "bytes": 1108,
+      "sha256": "da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.plist": {
+      "identity": [
+        "16777233",
+        "592904418",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1651",
+        "1793950344732934377",
+        "1793950344732934377"
+      ],
+      "bytes": 1651,
+      "sha256": "7aedefa6fdbde7a17abf5dedfef5bd85903e8bdb96257107b2f2cf738227fd9a"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "readonly_scope": {
+    "host": "mac",
+    "label": "org.heptabao.qa.home-t5-context-20261106-r1",
+    "target": "gui/501/org.heptabao.qa.home-t5-context-20261106-r1",
+    "home": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "oldWorkerLabelTouched": false
+  },
+  "budgets": {
+    "controllerSuccessSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "directCommandsMaximum": 4,
+    "eachPrintSeconds": 10,
+    "eachPrintPerStreamBytes": 65536,
+    "eachReadyPidPsSeconds": 4,
+    "eachReadyPidPsPerStreamBytes": 4096,
+    "returnedDirectCommandBytesAggregate": 1048576,
+    "originalOwnerCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "applicationFdsCap": 64,
+    "maximumDeclaredApplicationFds": 21,
+    "maximumDeclaredSimultaneousApplicationFds": 15,
+    "maximumDeclaredDirectoryFds": 14,
+    "maximumDeclaredLeafFds": 7,
+    "applicationMetadataCap": 4096,
+    "applicationReadCallsCap": 256,
+    "applicationReadBytesCap": 262144,
+    "sumSuccessfulBodyMaxima": 118977,
+    "oneOverflowByteIsCountedBeforeFailure": true,
+    "applicationWriteCallsCap": 0,
+    "applicationWriteBytesCap": 0,
+    "controllerStdoutCap": 65536,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192
+  },
+  "limitations": [
+    "FixedIO increments bytes before overflow refusal and includes any returned overflow byte. Original Commands reads chunks of 65536 and then enforces each stream's bound; the per-stream parameter is not a pre-syscall exact bound. The original helper also performs its unchanged bounded custody ps projections (up to 2 MiB stdout / 65536 stderr per ps); those are not included in application-file bytes or the four returned direct-command bodies. All original cancellation, WNOWAIT, no-post-reap-signal, and cleanup deadlines stay unchanged.",
+    "One shared successful-result deadline includes application/command closures and handler restoration; a post-flush late result exits nonzero. Synchronous system calls are not individually preemptible; no late completion qualifies.",
+    "Pinned Python/source/plan/plist require original full9 and SHA. Fresh ready/stdout/stderr are not forced to original creation-size metadata. Directory acquisition compares full9 before/open/named, then fixed object first5; the unchanged root anchor additionally requires its original full9. HOME is tied to original pinned plan.homeObject. All leaf full9 is rechecked at end. Metadata is an interval observation, not a claim of atomicity across independent records.",
+    "Original parser failure is a valid diagnostic observation; no existing registration closure or historical field recovery follows.",
+    "No usable local Python compile result exists. Root source review is not a Python execution result."
+  ],
+  "new_slot": "owner_launchd_home_t5_existing_readonly_gitfirst_r2",
+  "old_R4_scope_unknown": true,
+  "Python_candidate_executed": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

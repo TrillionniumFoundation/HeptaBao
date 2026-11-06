@@ -1,0 +1,307 @@
+{
+  "schema": "heptabao.root-GO.Mac-existing-public-label-readonly-r2.v1",
+  "authorization": "GO",
+  "agent": "/root/authbus_migration",
+  "scope": "existing_public_label_readonly_diagnostic_only",
+  "purpose": "One current bounded observation of original R4-created public inputs and exact new QA label to resolve parser predicates; no registration mutation.",
+  "source_packets": [
+    "e11856456b51b54cd3bc564fd797ea7bc95dbea8",
+    "0d5667845ab96120314855e08f4e9809b4a505fd"
+  ],
+  "source": {
+    "blob": "15002c2fb720188546a25045d7d3bb3f743fabba",
+    "bytes": 90416,
+    "sha256": "32917b77d7bcbcec3016610e17b7758f919b9dc0971c912f0ab18c170763d989"
+  },
+  "exact_request": {
+    "blob": "2e5f413a527d0cb6de8d3403282dcd56ef197308",
+    "bytes": 93145,
+    "sha256": "edc6d1f1e68b5224b8af5c7ab53c3b73d753ca8381b6bde3947a8c859f2f18ec"
+  },
+  "source_review": {
+    "blob": "cb6e21b4e745cb2d78d91e5f80181a9d289f8e77",
+    "bytes": 13813,
+    "sha256": "674834982a38886a8e9e4b89651bc2f4a62032d080fb58ca8c3dab39c926ce17"
+  },
+  "source_review_checks": 61,
+  "contract": {
+    "blob": "72abe8c184dea74f11d4a3ab01144b57b6bd4695",
+    "bytes": 12724,
+    "sha256": "1d3c826de875b72b9ee64d6f02bebfbd170e24e97bd5f64e1b303460a0acace0"
+  },
+  "native_binding": {
+    "sha256": "0cdb320bdf730ef48e00beec02315a3037162fc0eb199495d44e9a152cbc5410",
+    "native_fingerprint": "926389174929657588",
+    "typed_stdin": true
+  },
+  "helpers": {
+    "native": {
+      "blob": "89252ff15dacd03efcac832d0f24b80203274dd6",
+      "bytes": 19053,
+      "sha256": "66eaf0e3a879dc4b5eb9f3744445886b1030f55cf86d8c4623c1ebd2cccfa0a6"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "do_not_use_legacy_processStartBinding": true
+  },
+  "slot": "owner_launchd_home_t5_existing_readonly_gitfirst_r2",
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "stdin_source": {
+      "blob": "15002c2fb720188546a25045d7d3bb3f743fabba",
+      "bytes": 90416,
+      "sha256": "32917b77d7bcbcec3016610e17b7758f919b9dc0971c912f0ab18c170763d989"
+    },
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-home-t5-readonly-32917b77-20261106-r2",
+    "maximum_START_count": 1
+  },
+  "fixed_scope": {
+    "host": "mac",
+    "label": "org.heptabao.qa.home-t5-context-20261106-r1",
+    "target": "gui/501/org.heptabao.qa.home-t5-context-20261106-r1",
+    "home": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1",
+    "oldWorkerLabelTouched": false
+  },
+  "pinned_inputs": {
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py": {
+      "identity": [
+        "16777233",
+        "592904416",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "36522",
+        "1793950344732464747",
+        "1793950344732464747"
+      ],
+      "bytes": 36522,
+      "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json": {
+      "identity": [
+        "16777233",
+        "592904417",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1108",
+        "1793950344732730209",
+        "1793950344732730209"
+      ],
+      "bytes": 1108,
+      "sha256": "da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.plist": {
+      "identity": [
+        "16777233",
+        "592904418",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1651",
+        "1793950344732934377",
+        "1793950344732934377"
+      ],
+      "bytes": 1651,
+      "sha256": "7aedefa6fdbde7a17abf5dedfef5bd85903e8bdb96257107b2f2cf738227fd9a"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "dynamic_public_leaves": [
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/ready.complete",
+      "bodyRead": false,
+      "maximumBytes": 0,
+      "gate": "fresh regular/nlink1/uid501/mode0600 metadata; same marker before and after ready and final fences"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/ready.public.json",
+      "bodyRead": true,
+      "maximumBytes": 8192,
+      "gate": "only if ready.complete exists; exact original keys, schema/generation/plan/source/home; original process shape/kernel path and not original controller; no raw body hash exported"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.stdout.public",
+      "bodyRead": true,
+      "maximumBytes": 32768,
+      "gate": "read whole with fresh full9; no raw or raw-body hash publication; only the original complete child validator's typed projection after the old child error-code set passes"
+    },
+    {
+      "path": "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.stderr.public",
+      "bodyRead": true,
+      "maximumBytes": 4096,
+      "gate": "only size/empty/full9; never raw or unknown text hash"
+    }
+  ],
+  "original_R4_qualification": "3b0956905839b1271f5e416bdf321b97492f3300",
+  "budgets": {
+    "controllerSuccessSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "directCommandsMaximum": 4,
+    "eachPrintSeconds": 10,
+    "eachPrintPerStreamBytes": 65536,
+    "eachReadyPidPsSeconds": 4,
+    "eachReadyPidPsPerStreamBytes": 4096,
+    "returnedDirectCommandBytesAggregate": 1048576,
+    "originalOwnerCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "applicationFdsCap": 64,
+    "maximumDeclaredApplicationFds": 21,
+    "maximumDeclaredSimultaneousApplicationFds": 15,
+    "maximumDeclaredDirectoryFds": 14,
+    "maximumDeclaredLeafFds": 7,
+    "applicationMetadataCap": 4096,
+    "applicationReadCallsCap": 256,
+    "applicationReadBytesCap": 262144,
+    "sumSuccessfulBodyMaxima": 118977,
+    "oneOverflowByteIsCountedBeforeFailure": true,
+    "applicationWriteCallsCap": 0,
+    "applicationWriteBytesCap": 0,
+    "controllerStdoutCap": 65536,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192
+  },
+  "original_helper_custody_boundary": "FixedIO increments bytes before overflow refusal and includes any returned overflow byte. Original Commands reads chunks of 65536 and then enforces each stream's bound; the per-stream parameter is not a pre-syscall exact bound. The original helper also performs its unchanged bounded custody ps projections (up to 2 MiB stdout / 65536 stderr per ps); those are not included in application-file bytes or the four returned direct-command bodies. All original cancellation, WNOWAIT, no-post-reap-signal, and cleanup deadlines stay unchanged.",
+  "shared_deadline_boundary": "One shared successful-result deadline includes application/command closures and handler restoration; a post-flush late result exits nonzero. Synchronous system calls are not individually preemptible; no late completion qualifies.",
+  "read_identity_boundary": "Pinned Python/source/plan/plist require original full9 and SHA. Fresh ready/stdout/stderr are not forced to original creation-size metadata. Directory acquisition compares full9 before/open/named, then fixed object first5; the unchanged root anchor additionally requires its original full9. HOME is tied to original pinned plan.homeObject. All leaf full9 is rechecked at end. Metadata is an interval observation, not a claim of atomicity across independent records.",
+  "print_projection": {
+    "fixedNames": [
+      "path",
+      "program",
+      "pid",
+      "state",
+      "runs",
+      "last exit code",
+      "last terminating signal"
+    ],
+    "outputs": [
+      "present/count/unique",
+      "bounded decimal syntax and integer for four numeric-named fields",
+      "known state enum running/not running or null",
+      "exact expected path/program booleans",
+      "two exact last-exit literal booleans",
+      "argument block/count and nine expected-position booleans",
+      "original unchanged parser success or fixed error projection",
+      "fixed binding booleans"
+    ],
+    "doesNotPublish": [
+      "unknown field values",
+      "arbitrary keys",
+      "environment",
+      "whole print or ps text",
+      "unknown print/ps/stderr hashes"
+    ],
+    "scanCompleteScope": "Only the original bounded depth/arguments grammar, not a claim to fully interpret launchctl output."
+  },
+  "observation_order": [
+    "same Python/source/plan/plist whole and object pins",
+    "exact first launchctl print",
+    "ready marker and ready typed public record",
+    "stdout typed terminal and stderr size/empty",
+    "if ready admitted: exact numeric PID ps and two full-size libproc birth samples",
+    "exact second launchctl print",
+    "if ready admitted: exact numeric PID ps and two full-size libproc birth samples",
+    "final pinned/fresh leaf and directory fences",
+    "all application/command close and handler restoration"
+  ],
+  "ownership": {
+    "newManagedChildStarted": false,
+    "existingManagedPidSignalled": false,
+    "existingManagedPidReaped": false,
+    "registrationMutated": false,
+    "bootstrap": false,
+    "bootout": false,
+    "onlyDirectHelpersUseOriginalWNOWAITAndCleanup": true,
+    "managedReadIsConditionalOnQualifiedPublicReady": true,
+    "reusedPidIsNotOwnedOrSignalled": true,
+    "departureObservationIsTwoDiscreteCurrentSamples": true,
+    "noContinuousAbsenceClaim": true
+  },
+  "qualified_result_scope": {
+    "parentExit0Means": "complete bounded current diagnostic and its own resource closure only",
+    "parseFailureCanBeKnownDiagnostic": true,
+    "managedRegistrationClosureClaimed": false,
+    "originalR4ManagedScopeAutomaticallyClosed": false,
+    "oldUnknownsRewritten": false
+  },
+  "excludes": {
+    "t5FilesystemAccess": true,
+    "newDirectoriesOrFiles": true,
+    "admissionWriteOrRead": true,
+    "oldWorkerLabel": true,
+    "privateCapsule": true,
+    "credentials": true,
+    "SDKOrFactory": true,
+    "product": true,
+    "providerModelRefreshOrQuotaChanges": true
+  },
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576
+  },
+  "lane_activation": "This exact action is authorized after root confirms one prior B/C lane has no pending call or active observer. Until that handoff, source/GO whole review and exact external arming only; no Native START. Root has zero Native.",
+  "sequence": [
+    "Whole this exact final R2 GO,source,request and journal; only the new R2 slot may initialize once. R1 readonly proposal and old R4 context are not revived.",
+    "Use root stdin-aware native digest/fingerprint. Whole exact request,intent and armed before an independent dispatch boundary and the one process_start,after lane handoff.",
+    "Externally preserve and whole each original SDK before parse/isError; follow only actual original mac job and original operation IDs with full contiguous8192 pages,SHA/EOF and completed inactive closure.",
+    "Require known final authority and complete original streams; parent exit0 only qualifies this current diagnostic,closure and original45-second deadline.",
+    "Preserve original R4 managed registration/process UNKNOWN. Current parser failure is evidence,not historical field recovery; no automatic bootstrap,bootout,credential or product continuation."
+  ],
+  "source_review_limitations": [
+    "FixedIO increments bytes before overflow refusal and includes any returned overflow byte. Original Commands reads chunks of 65536 and then enforces each stream's bound; the per-stream parameter is not a pre-syscall exact bound. The original helper also performs its unchanged bounded custody ps projections (up to 2 MiB stdout / 65536 stderr per ps); those are not included in application-file bytes or the four returned direct-command bodies. All original cancellation, WNOWAIT, no-post-reap-signal, and cleanup deadlines stay unchanged.",
+    "One shared successful-result deadline includes application/command closures and handler restoration; a post-flush late result exits nonzero. Synchronous system calls are not individually preemptible; no late completion qualifies.",
+    "Pinned Python/source/plan/plist require original full9 and SHA. Fresh ready/stdout/stderr are not forced to original creation-size metadata. Directory acquisition compares full9 before/open/named, then fixed object first5; the unchanged root anchor additionally requires its original full9. HOME is tied to original pinned plan.homeObject. All leaf full9 is rechecked at end. Metadata is an interval observation, not a claim of atomicity across independent records.",
+    "Original parser failure is a valid diagnostic observation; no existing registration closure or historical field recovery follows.",
+    "No usable local Python compile result exists. Root source review is not a Python execution result."
+  ],
+  "Python_compile_claimed": false,
+  "old_failure_rewritten": false,
+  "old_R4_managed_scope_automatically_closed": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

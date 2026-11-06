@@ -1,0 +1,673 @@
+{
+  "schema": "heptabao.snapshot-b694-original-report-finite-checks.v1",
+  "pass": true,
+  "count": 166,
+  "checks": [
+    {
+      "name": "7-original-body-calls",
+      "pass": true
+    },
+    {
+      "name": "one-binary-read-admission",
+      "pass": true
+    },
+    {
+      "name": "no-business-start",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:SDK-native",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-admit:original-archives-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:SDK-native",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-status:original-archives-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:SDK-native",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:original-archives-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:SDK-native",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:original-archives-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:SDK-native",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:original-archives-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:SDK-native",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:original-archives-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:SDK-native",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:original-archives-whole",
+      "pass": true
+    },
+    {
+      "name": "exact-original-admission",
+      "pass": true
+    },
+    {
+      "name": "fixed-binary-read",
+      "pass": true
+    },
+    {
+      "name": "original-operation-id",
+      "pass": true
+    },
+    {
+      "name": "completed-inactive",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:request-geometry",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page0:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:request-geometry",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page1:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:request-geometry",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page2:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:request-geometry",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page3:original-page",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:request-geometry",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-report-body-page4:original-page",
+      "pass": true
+    },
+    {
+      "name": "five-pages-whole",
+      "pass": true
+    },
+    {
+      "name": "original-payload-native",
+      "pass": true
+    },
+    {
+      "name": "single-real-body-EOF",
+      "pass": true
+    },
+    {
+      "name": "decoded-full-original",
+      "pass": true
+    },
+    {
+      "name": "whole-raw-original-pin",
+      "pass": true
+    },
+    {
+      "name": "stage-schema-status",
+      "pass": true
+    },
+    {
+      "name": "b694-canonical",
+      "pass": true
+    },
+    {
+      "name": "fixed-fresh-root",
+      "pass": true
+    },
+    {
+      "name": "actual-full-tree",
+      "pass": true
+    },
+    {
+      "name": "full_strict_fsck_passed",
+      "pass": true
+    },
+    {
+      "name": "independent_git_directory",
+      "pass": true
+    },
+    {
+      "name": "no_alternates",
+      "pass": true
+    },
+    {
+      "name": "no_shared_object_links",
+      "pass": true
+    },
+    {
+      "name": "source_clean",
+      "pass": true
+    },
+    {
+      "name": "old_source_unchanged",
+      "pass": true
+    },
+    {
+      "name": "within_new_stage_deadline",
+      "pass": true
+    },
+    {
+      "name": "actual-history-and-ancestry",
+      "pass": true
+    },
+    {
+      "name": "old495-source-unchanged",
+      "pass": true
+    },
+    {
+      "name": "failed-observer-fences-unchanged",
+      "pass": true
+    },
+    {
+      "name": "original-budgets",
+      "pass": true
+    },
+    {
+      "name": "actual-60-direct-cleanup",
+      "pass": true
+    },
+    {
+      "name": "cleanup-059-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-058-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-057-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-056-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-055-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-054-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-053-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-052-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-051-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-050-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-049-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-048-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-047-git-bundle",
+      "pass": true
+    },
+    {
+      "name": "cleanup-046-git-bundle",
+      "pass": true
+    },
+    {
+      "name": "cleanup-045-git-bundle",
+      "pass": true
+    },
+    {
+      "name": "cleanup-044-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-043-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-042-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-041-git-ls-files",
+      "pass": true
+    },
+    {
+      "name": "cleanup-040-git-ls-tree",
+      "pass": true
+    },
+    {
+      "name": "cleanup-039-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-038-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-037-git-fsck",
+      "pass": true
+    },
+    {
+      "name": "cleanup-036-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-035-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-034-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-033-git-checkout",
+      "pass": true
+    },
+    {
+      "name": "cleanup-032-git-rev-list",
+      "pass": true
+    },
+    {
+      "name": "cleanup-031-git-rev-list",
+      "pass": true
+    },
+    {
+      "name": "cleanup-030-git-rev-list",
+      "pass": true
+    },
+    {
+      "name": "cleanup-029-git-rev-list",
+      "pass": true
+    },
+    {
+      "name": "cleanup-028-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-027-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-026-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-025-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-024-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-023-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-022-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-021-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-020-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-019-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-018-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-017-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-016-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-015-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-014-git-show",
+      "pass": true
+    },
+    {
+      "name": "cleanup-013-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-012-git--c",
+      "pass": true
+    },
+    {
+      "name": "cleanup-011-git-remote",
+      "pass": true
+    },
+    {
+      "name": "cleanup-010-git-remote",
+      "pass": true
+    },
+    {
+      "name": "cleanup-009-independent-local-clone",
+      "pass": true
+    },
+    {
+      "name": "cleanup-008-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-007-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-006-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-005-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-004-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-003-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-002-git-status",
+      "pass": true
+    },
+    {
+      "name": "cleanup-001-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "cleanup-000-git-rev-parse",
+      "pass": true
+    },
+    {
+      "name": "actual-incremental-bundle-witness",
+      "pass": true
+    },
+    {
+      "name": "bundle-identity-reported",
+      "pass": true
+    },
+    {
+      "name": "bundle-header-not-standalone",
+      "pass": true
+    },
+    {
+      "name": "four-controls-inert",
+      "pass": true
+    },
+    {
+      "name": "not-qualified-actual_build_qualification",
+      "pass": true
+    },
+    {
+      "name": "not-qualified-candidate_build_qualification",
+      "pass": true
+    },
+    {
+      "name": "not-qualified-compiler_started",
+      "pass": true
+    },
+    {
+      "name": "not-qualified-server_started",
+      "pass": true
+    },
+    {
+      "name": "not-qualified-formatter_executed",
+      "pass": true
+    },
+    {
+      "name": "not-qualified-rust_tests_executed",
+      "pass": true
+    },
+    {
+      "name": "not-qualified-production_changed",
+      "pass": true
+    },
+    {
+      "name": "cumulative-slot-closure",
+      "pass": true
+    }
+  ],
+  "newNativeCalls": 0,
+  "scope": "one original version-bound report read plus its finite report assertions; no independent bundle-body or raw 60 command-file reads; no Rust qualification"
+}

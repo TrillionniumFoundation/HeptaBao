@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-Service-audit-test8-freeze-tree-intent",
+  "records": [
+    {
+      "name": "TREE-INTENT.public.json",
+      "blob": "de195fb7305d39eb7cf7a777eadb1486337f7897",
+      "bytes": 3141,
+      "sha256": "eb44b2baee2bca5923257aad63613b9c4db98a3182723d01de6d55f7cceed712"
+    },
+    {
+      "name": "REQUEST.public.json",
+      "blob": "478b756e4a178cc4e39c17563933c6183e0b407b",
+      "bytes": 1708,
+      "sha256": "e28908a90984421a246f1ecb8549b2b1319f2ccad7df1d8849cabfa6fc39f089"
+    },
+    {
+      "name": "BRANCH-ABSENCE.original.sdk.json",
+      "blob": "47cd51d22561d8222ca1cb3f9fe45fd9c8877060",
+      "bytes": 629,
+      "sha256": "929fdc37b1bd92a54d1a68b22cde5c9ceb70e2eab86f02af7b921970af5aac8b"
+    }
+  ],
+  "expected_data_tree": "ef4890ab7af23f47ef9726b333c7d7c81db7f8b8",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

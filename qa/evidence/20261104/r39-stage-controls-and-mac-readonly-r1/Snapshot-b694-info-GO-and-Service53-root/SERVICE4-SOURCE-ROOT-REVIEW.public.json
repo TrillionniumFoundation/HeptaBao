@@ -1,0 +1,484 @@
+{
+  "schema": "heptabao.root-source-review.snapshot-real-Service-audit-four-r2.v1",
+  "status": "PASS_TEST_ONLY_SOURCE_FOR_SEPARATE_FREEZE_FORMAT_AND_RUNTIME",
+  "checks": [
+    {
+      "name": "whole53_2879861_and_prior42_held",
+      "passed": true
+    },
+    {
+      "name": "exact_frozen_b694_base",
+      "passed": true
+    },
+    {
+      "name": "all3928_base_canonical_Merkle",
+      "passed": true
+    },
+    {
+      "name": "six_modified_two_new_fixed_paths",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_base_and_candidate_service.rs",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service.rs_0",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service.rs_1",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service.rs_519575",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service.rs_519464",
+      "passed": true
+    },
+    {
+      "name": "all_other_bytes_unchanged_and_strict_both_ways_service.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_base_and_candidate_service_snapshot_forward.rs",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_snapshot_forward.rs_0",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_snapshot_forward.rs_8891",
+      "passed": true
+    },
+    {
+      "name": "all_other_bytes_unchanged_and_strict_both_ways_service_snapshot_forward.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_base_and_candidate_service_snapshot_forward_client.rs",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_snapshot_forward_client.rs_0",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_snapshot_forward_client.rs_1",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_snapshot_forward_client.rs_2",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_snapshot_forward_client.rs_18850",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_snapshot_forward_client.rs_18636",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_snapshot_forward_client.rs_18403",
+      "passed": true
+    },
+    {
+      "name": "all_other_bytes_unchanged_and_strict_both_ways_service_snapshot_forward_client.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_base_and_candidate_service_snapshot_forward_source.rs",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_snapshot_forward_source.rs_0",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_snapshot_forward_source.rs_17522",
+      "passed": true
+    },
+    {
+      "name": "all_other_bytes_unchanged_and_strict_both_ways_service_snapshot_forward_source.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_base_and_candidate_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_native_v6_ha_historical_restore_tests.rs_0",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_native_v6_ha_historical_restore_tests.rs_53166",
+      "passed": true
+    },
+    {
+      "name": "all_other_bytes_unchanged_and_strict_both_ways_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_exact_base_and_candidate_service_native_v6_ha_pipeline_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_native_v6_ha_pipeline_tests.rs_0",
+      "passed": true
+    },
+    {
+      "name": "unique_declared_edit_service_native_v6_ha_pipeline_tests.rs_1",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_native_v6_ha_pipeline_tests.rs_70780",
+      "passed": true
+    },
+    {
+      "name": "unique_inverse_service_native_v6_ha_pipeline_tests.rs_70210",
+      "passed": true
+    },
+    {
+      "name": "all_other_bytes_unchanged_and_strict_both_ways_service_native_v6_ha_pipeline_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "ten_exact_modified_hunks",
+      "passed": true
+    },
+    {
+      "name": "new_file_absent_and_whole_service_snapshot_forward_test_faults.rs",
+      "passed": true
+    },
+    {
+      "name": "new_file_absent_and_whole_service_native_snapshot_forward_audit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "four_product_files_only_cfg_test_additions",
+      "passed": true
+    },
+    {
+      "name": "field_and_initialization_native_test_only",
+      "passed": true
+    },
+    {
+      "name": "new_tests_nested_in_original_real_fixture",
+      "passed": true
+    },
+    {
+      "name": "prior_test_bodies_unchanged_constructor_only_successor",
+      "passed": true
+    },
+    {
+      "name": "all_existing_pipeline_methods_tests_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_constructors_keep_false_new_only_true",
+      "passed": true
+    },
+    {
+      "name": "only_fixed_peer_origin_no_new_HTTP_transport",
+      "passed": true
+    },
+    {
+      "name": "source_fault_after_real_retained_finalizer_status_and_before_publication",
+      "passed": true
+    },
+    {
+      "name": "first_actual_delivery_gate_after_sync_activation",
+      "passed": true
+    },
+    {
+      "name": "second_actual_delivery_gate_after_real_success_audit",
+      "passed": true
+    },
+    {
+      "name": "per_Service_nonce_bound_once_fault_no_global",
+      "passed": true
+    },
+    {
+      "name": "only_actual_activation_and_audit_capacity_faults",
+      "passed": true
+    },
+    {
+      "name": "no_synthetic_completion_or_root_authority",
+      "passed": true
+    },
+    {
+      "name": "only_existing_received_actual_receipt_observation",
+      "passed": true
+    },
+    {
+      "name": "production_handlers_real_mTLS_weak_Service_owner",
+      "passed": true
+    },
+    {
+      "name": "real_archive_then_distinct_one_use_auth_before_one_execute",
+      "passed": true
+    },
+    {
+      "name": "existing_deadlines_no_restart_or_retry",
+      "passed": true
+    },
+    {
+      "name": "each_publication_denial_asserts_unknown_no_retry_exact_receipt",
+      "passed": true
+    },
+    {
+      "name": "actual_auth_owner_replaced_and_real_audit_veto_fences",
+      "passed": true
+    },
+    {
+      "name": "no_success_data_headers_or_file_after_veto",
+      "passed": true
+    },
+    {
+      "name": "one_actual_dispatch_actual_epoch_and_exact_operation",
+      "passed": true
+    },
+    {
+      "name": "actual_cold_reopen_no_restore_resubmit",
+      "passed": true
+    },
+    {
+      "name": "actual_spool_leases_reacquired_after_plan_drop",
+      "passed": true
+    },
+    {
+      "name": "negative_two_fresh_branches_before_vs_actual_attempt",
+      "passed": true
+    },
+    {
+      "name": "negative_untrusted_JSON_cannot_mint_audit_veto_authority",
+      "passed": true
+    },
+    {
+      "name": "exact_four_new_test_names_no_executed_claim",
+      "passed": true
+    },
+    {
+      "name": "union46_plus8_minus5_equals49_2023746bytes",
+      "passed": true
+    }
+  ],
+  "check_count": 66,
+  "source_packet": {
+    "tree": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+    "files": 53,
+    "bytes": 2879861,
+    "merkle": {
+      "root_sha": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+      "trees_verified": 1,
+      "leaf_count": 53
+    },
+    "whole": true
+  },
+  "prior_held_source": {
+    "tree": "0e8c558ac81c64a6bc9c230d083c121871277f33",
+    "files": 42,
+    "bytes": 2703477,
+    "merkle": {
+      "root_sha": "0e8c558ac81c64a6bc9c230d083c121871277f33",
+      "trees_verified": 1,
+      "leaf_count": 42
+    },
+    "whole": true
+  },
+  "base": {
+    "commit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+    "rootFreeze": "98647b553634c669c84ba1dcd82058af3cf25dd3"
+  },
+  "changed": [
+    {
+      "name": "service.rs",
+      "path": "crates/heptabao-server/src/service.rs",
+      "before": {
+        "blob": "c952232a835a4f6437e310790ba42b8509b79dcb",
+        "bytes": 519343,
+        "sha256": "c6fcb7631d424c16b5f86530570172b61f2b090d71384516d267ffaf7ee1dc89"
+      },
+      "after": {
+        "blob": "63bacb537a17cc060239a1793f8ac526e15df158",
+        "bytes": 519577,
+        "sha256": "152d79076104755a522ad972e020be3f9efad47cfc0b20692dc3190169ebf276"
+      },
+      "hunks": 2,
+      "insertions": 2
+    },
+    {
+      "name": "service_snapshot_forward.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "before": {
+        "blob": "4edbdf52aee39919065db9dc0d8924fd346c5306",
+        "bytes": 8798,
+        "sha256": "70cfadda87cad016af530310c525c94e04b6e2e3df5353cc2762bc91d08570bd"
+      },
+      "after": {
+        "blob": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42",
+        "bytes": 8891,
+        "sha256": "6db3cd4b9c8d115779b59282aef59755556099491f517985e453c1bd5b41586b"
+      },
+      "hunks": 1,
+      "insertions": 1
+    },
+    {
+      "name": "service_snapshot_forward_client.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "before": {
+        "blob": "ccefc2b6e836f407f285245fa1f595230d828ab0",
+        "bytes": 18255,
+        "sha256": "786eb9ec00fc1d8d82e78793da18c9b9b33b02609c80153b0fd960de4b75dc17"
+      },
+      "after": {
+        "blob": "694edf2abe8a8f61dc887469e2dcc963dfc58fca",
+        "bytes": 18850,
+        "sha256": "0007a55d455493318cb2e606d5a19b94438e67b2b52cc0ab98465a240f74aa6c"
+      },
+      "hunks": 3,
+      "insertions": 3
+    },
+    {
+      "name": "service_snapshot_forward_source.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "before": {
+        "blob": "b4a0645164c6ba5cb0c3489e058f65c89136796b",
+        "bytes": 17315,
+        "sha256": "86b55dde688720321fce0c2fdfc59a18a6a185911d9725d6f9b4afb8e71b2062"
+      },
+      "after": {
+        "blob": "ca9962d39f90cdf6ebbc06d04a9cc6c0fa7aa0a1",
+        "bytes": 17522,
+        "sha256": "3f37df8a3ad5d4cc535127b2c286b32a2c633ec7c4295a2525367a91099ec560"
+      },
+      "hunks": 1,
+      "insertions": 1
+    },
+    {
+      "name": "service_native_v6_ha_historical_restore_tests.rs",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+      "before": {
+        "blob": "1ff6e42dade56eb4431271aae5a9dee90e9cca39",
+        "bytes": 53072,
+        "sha256": "2ea71a8fc8a009f4505792dee58165ecacbfa677e7b339f0f25a43be257a26b5"
+      },
+      "after": {
+        "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+        "bytes": 53166,
+        "sha256": "ff6cc53a65ea25bcb9d4817f5875d1de950c4814b54bd7eafdff6b95ad8ed69d"
+      },
+      "hunks": 1,
+      "insertions": 1
+    },
+    {
+      "name": "service_native_v6_ha_pipeline_tests.rs",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "before": {
+        "blob": "aa9e00cd0f530ff27fa896160f8db1e0c5700920",
+        "bytes": 69866,
+        "sha256": "2bfa098fe3ad0a5a6bf27eaf0c92269a0766dd1e9e2917bec6df6b96f8e565eb"
+      },
+      "after": {
+        "blob": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+        "bytes": 70780,
+        "sha256": "0e204bfd4f2a2b5640e1da6611014f5a87799b099c9b2f6c861283e60c57c2ea"
+      },
+      "hunks": 2,
+      "insertions": 2
+    }
+  ],
+  "added": [
+    {
+      "name": "service_snapshot_forward_test_faults.rs",
+      "path": "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+      "after": {
+        "blob": "abc4dbef9044f6105c00fdc290fd053e1d2cbd26",
+        "bytes": 5345,
+        "sha256": "51cbdba0849307d58e3631994a9d2fe0ecaacda7f69617becb2b8b698e65bb29"
+      }
+    },
+    {
+      "name": "service_native_snapshot_forward_audit_tests.rs",
+      "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+      "after": {
+        "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+        "bytes": 14875,
+        "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+      }
+    }
+  ],
+  "modified_hunks": 10,
+  "product_without_test_configuration_unchanged": true,
+  "original_test_function_bodies_unchanged": true,
+  "exact_tests": [
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+  ],
+  "test_count": 4,
+  "component_source_count": 23,
+  "combined_distinct_candidate_tests": 27,
+  "union": {
+    "files": 49,
+    "unformatted_bytes": 2023746,
+    "overlap": [
+      "crates/heptabao-server/src/service.rs",
+      "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs"
+    ]
+  },
+  "semantics": [
+    {
+      "id": "service-regression-1",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+      "fault": "After actual successful retained restore finalizer and response status/quota check, before peer publication validation",
+      "actualPath": "Production snapshot listener -> source Actor admission -> real archive parse -> real quorum root/epoch restore -> finalizer/mandatory audit -> test-only activation drift and next-audit capacity exhaustion -> retained historical receipt publication-veto -> actual mTLS denial -> ingress audit",
+      "expected": "503/outcome_unknown/retry_allowed=false/root_attempted=true/exact actual operation recovery reference; source fenced, no private response file, audit append denied, real cold reopen retains restored history/one epoch",
+      "completionTrust": "Source-side original affine historical receipt; this case does not claim a successful binary CompletionWire was emitted."
+    },
+    {
+      "id": "service-regression-2",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+      "fault": "After authenticated CompletionWire and actual final catch-up, before ingress first delivery_check",
+      "actualPath": "Real successful source restore/MAC/body completion; ingress sync then actual activation mismatch; original audit_failure(data) attempts real denied audit append",
+      "expected": "Authenticated original operation/reference survives audit failure, UNKNOWN/no replay, ingress fenced, actual epoch and cold reopen independently match."
+    },
+    {
+      "id": "service-regression-3",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+      "fault": "After mandatory successful ingress response audit, before second delivery_check",
+      "actualPath": "Real authenticated completion and first delivery gate; after success audit inject activation drift and exhaust capacity; second gate veto then failed_delivery attempts real denied audit append",
+      "expected": "Same authenticated operation/reference survives secondary audit failure; no binary/publication capability, actual restored epoch/cold state persists."
+    },
+    {
+      "id": "service-regression-4",
+      "test": "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority",
+      "subcases": 2,
+      "fault": "After actual ingress admission, deny next real audit append; branch A calls real reject_before_exchange with forged JSON, branch B performs one actual enrolled mTLS exchange receiving nonce-bound forged denial without READY/CompletionMAC",
+      "expected": "Branch A no UNKNOWN/root/reference, zero peer calls. Branch B conservative UNKNOWN/no replay but no root/reference, one actual peer callback. Both actual selected root/epoch unchanged."
+    }
+  ],
+  "limits": [
+    "Source audit only. None of these four tests or the23 components has executed.",
+    "True source finalizer veto uses retained real receipt plus a nonce-bound enrolled-peer rejection; it does not claim an authenticated successful CompletionWire in that case.",
+    "Two ingress cases require actual authenticated completion before fault injection.",
+    "Cold regression drops/reopens real Service/Raft owners; it is not physical power loss or full LAN qualification.",
+    "The supplied API origin enables test admission only; no HTTP listener,redirect follow or OpenBao CLI result is claimed.",
+    "Frozen PKI33b and its149/166 build remain separate."
+  ],
+  "compile_executed": false,
+  "tests_executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

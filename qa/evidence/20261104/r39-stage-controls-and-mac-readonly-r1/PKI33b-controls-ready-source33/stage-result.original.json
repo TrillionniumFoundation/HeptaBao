@@ -1,0 +1,1015 @@
+{
+  "actual_build_qualification": false,
+  "additional_cold_h2_tests": 9,
+  "additional_existing_tests": 7,
+  "additional_same_root_publication_tests": 1,
+  "candidate_build_qualification": false,
+  "canonical_bundle": {
+    "bytes": 60426,
+    "header": {
+      "header_sha256": "5f296606105b9af9b43e20cc0d7ad8207c869827a26138567a77f84d337e7258",
+      "heads": [
+        [
+          "33b814c7034ec853151b1ff13e7529c83f65ea70",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31235676,
+      1000,
+      1000,
+      33152,
+      1,
+      60426,
+      1793950740602778496,
+      1793950740603778494
+    ],
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/canonical-native-jwt-pki-33b814c7-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "6b25592606997af45d7c3fe251474a57ca7052a7eccd52b85ca0abb170d986e4"
+  },
+  "canonical_history_count": 3766,
+  "carrier_sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "058-git-status",
+      "pid": 453260,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "057-git-rev-parse",
+      "pid": 453258,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "056-git-rev-parse",
+      "pid": 453256,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "055-git-status",
+      "pid": 453247,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "054-git-rev-parse",
+      "pid": 453245,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "053-git-rev-parse",
+      "pid": 453243,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "052-git-status",
+      "pid": 453234,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "051-git-rev-parse",
+      "pid": 453232,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "050-git-rev-parse",
+      "pid": 453230,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "049-git-status",
+      "pid": 453219,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "048-git-rev-parse",
+      "pid": 453217,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "047-git-rev-parse",
+      "pid": 453215,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "046-git-bundle",
+      "pid": 453213,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "045-git-bundle",
+      "pid": 453208,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "044-git-bundle",
+      "pid": 453201,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "043-git-status",
+      "pid": 453192,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "042-git-rev-parse",
+      "pid": 453190,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "041-git-rev-parse",
+      "pid": 453188,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "040-git-ls-files",
+      "pid": 453186,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "039-git-ls-tree",
+      "pid": 453184,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "038-git-rev-parse",
+      "pid": 453182,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "037-git-rev-parse",
+      "pid": 453180,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "036-git-fsck",
+      "pid": 453142,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "035-git-status",
+      "pid": 453133,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "034-git-rev-parse",
+      "pid": 453131,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "033-git-rev-parse",
+      "pid": 453129,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "032-git-checkout",
+      "pid": 453122,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "031-git-rev-list",
+      "pid": 453077,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "030-git-rev-list",
+      "pid": 453052,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "029-git-rev-list",
+      "pid": 453050,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "028-git-rev-list",
+      "pid": 453048,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "027-git-show",
+      "pid": 453046,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "026-git-show",
+      "pid": 453044,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "025-git-show",
+      "pid": 453042,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "024-git-show",
+      "pid": 453040,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "023-git-show",
+      "pid": 453038,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "022-git-show",
+      "pid": 453036,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "021-git-show",
+      "pid": 453033,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "020-git-show",
+      "pid": 453031,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "019-git-show",
+      "pid": 453029,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "018-git-show",
+      "pid": 453026,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "017-git-show",
+      "pid": 453024,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "016-git-show",
+      "pid": 453022,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "015-git-show",
+      "pid": 453020,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "014-git-show",
+      "pid": 453018,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "013-git-rev-parse",
+      "pid": 453016,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "012-git--c",
+      "pid": 452747,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "011-git-remote",
+      "pid": 452745,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "010-git-remote",
+      "pid": 452743,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "009-independent-local-clone",
+      "pid": 452739,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "008-git-status",
+      "pid": 452730,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "007-git-rev-parse",
+      "pid": 452728,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "006-git-rev-parse",
+      "pid": 452726,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "005-git-status",
+      "pid": 452717,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "004-git-rev-parse",
+      "pid": 452715,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "003-git-rev-parse",
+      "pid": 452713,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "002-git-status",
+      "pid": 452704,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "001-git-rev-parse",
+      "pid": 452702,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "000-git-rev-parse",
+      "pid": 452700,
+      "remaining": []
+    }
+  ],
+  "compiler_started": false,
+  "controls": {
+    "launch_normal_same_root_publication.py": {
+      "bytes": 35592,
+      "sha256": "8c0ba96f4953ba934d2dd067ef8bc7de2534f93181d99816fe38b056f564ab96"
+    },
+    "normal-test-groups.public.json": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    "normal_same_root_publication_build.py": {
+      "bytes": 35452,
+      "sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
+    },
+    "prior-observer-build-authority.public.json": {
+      "bytes": 726,
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"
+    }
+  },
+  "elapsed_seconds_after_cleanup": 16.642744900949765,
+  "exact_groups": [
+    [
+      "ssh25",
+      25
+    ],
+    [
+      "mount1",
+      1
+    ],
+    [
+      "redirect5",
+      5
+    ],
+    [
+      "actor2",
+      2
+    ],
+    [
+      "ordinary5",
+      5
+    ],
+    [
+      "no_forward6",
+      6
+    ]
+  ],
+  "exact_test_count": 44,
+  "failed_observer_after": {
+    "authority": {
+      "bytes": 726,
+      "identity": [
+        66306,
+        31235376,
+        1000,
+        1000,
+        33152,
+        1,
+        726,
+        1793950724801178218,
+        1793950724801178218
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/prior-observer-build-authority.public.json",
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+      "source": "exact cached authoritative terminal receipt"
+    },
+    "files": {
+      "build-control-r1/launch-preflight.public.json": {
+        "bytes": 12914,
+        "identity": [
+          66306,
+          33072021,
+          1000,
+          1000,
+          33152,
+          1,
+          12914,
+          1793828282418613404,
+          1793828282418613404
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/build-control-r1/launch-preflight.public.json",
+        "sha256": "91b8fe2e1d6e34d1e0b885a9bbb81c27e83e1d6f3f07cb4235cb2314b27e29d4"
+      },
+      "control/launch_normal_phaseb_observer.py": {
+        "bytes": 22961,
+        "identity": [
+          66306,
+          28228644,
+          1000,
+          1000,
+          33152,
+          1,
+          22961,
+          1793827577463293983,
+          1793827577463293983
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/launch_normal_phaseb_observer.py",
+        "sha256": "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63"
+      },
+      "control/normal-test-groups.public.json": {
+        "bytes": 6249,
+        "identity": [
+          66306,
+          28228645,
+          1000,
+          1000,
+          33152,
+          1,
+          6249,
+          1793827577464354338,
+          1793827577464354338
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/normal-test-groups.public.json",
+        "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+      },
+      "control/normal_phaseb_observer_build.py": {
+        "bytes": 20791,
+        "identity": [
+          66306,
+          28228643,
+          1000,
+          1000,
+          33152,
+          1,
+          20791,
+          1793827577462263895,
+          1793827577462263895
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/normal_phaseb_observer_build.py",
+        "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"
+      },
+      "control/stage-result.public.json": {
+        "bytes": 6838,
+        "identity": [
+          66306,
+          28228881,
+          1000,
+          1000,
+          33152,
+          1,
+          6838,
+          1793827589265840218,
+          1793827589265840218
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/stage-result.public.json",
+        "sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b"
+      },
+      "control/stage_source_phaseb_observer.py": {
+        "bytes": 18774,
+        "identity": [
+          66306,
+          28228642,
+          1000,
+          1000,
+          33152,
+          1,
+          18774,
+          1793827577461070972,
+          1793827577461070972
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/stage_source_phaseb_observer.py",
+        "sha256": "2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a"
+      },
+      "normal-release-tests-r1/intent.public.json": {
+        "bytes": 7838,
+        "identity": [
+          66306,
+          33072023,
+          1000,
+          1000,
+          33152,
+          1,
+          7838,
+          1793828282456385272,
+          1793828282456385272
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/intent.public.json",
+        "sha256": "ad7adbf410217af34555e9b9135505cb8f70309facfa748f4fb1c3f0614eedb2"
+      },
+      "normal-release-tests-r1/normal-release-build.public.json": {
+        "bytes": 710,
+        "identity": [
+          66306,
+          33072026,
+          1000,
+          1000,
+          33152,
+          1,
+          710,
+          1793828344558640174,
+          1793828344558640174
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.public.json",
+        "sha256": "654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412"
+      },
+      "normal-release-tests-r1/normal-release-build.stderr": {
+        "bytes": 27914,
+        "identity": [
+          66306,
+          33072025,
+          1000,
+          1000,
+          33152,
+          1,
+          27914,
+          1793828344504145242,
+          1793828344504145242
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stderr",
+        "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e"
+      },
+      "normal-release-tests-r1/normal-release-build.stdout": {
+        "bytes": 384196,
+        "identity": [
+          66306,
+          33072024,
+          1000,
+          1000,
+          33152,
+          1,
+          384196,
+          1793828344504145242,
+          1793828344504145242
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stdout",
+        "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92"
+      },
+      "normal-release-tests-r1/result.public.json": {
+        "bytes": 9233,
+        "identity": [
+          66306,
+          33072044,
+          1000,
+          1000,
+          33152,
+          1,
+          9233,
+          1793828344571144982,
+          1793828344571144982
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/result.public.json",
+        "sha256": "2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122"
+      },
+      "source/crates/heptabao-server/src/ha_native_v6_runtime.rs": {
+        "bytes": 61578,
+        "identity": [
+          66306,
+          30562620,
+          1000,
+          1000,
+          33152,
+          1,
+          61578,
+          1793827585518089345,
+          1793827585518089345
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d"
+      }
+    },
+    "prior_failed_build_replayed": false,
+    "source_after": {
+      "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+      "status": "",
+      "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
+    },
+    "source_before": {
+      "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+      "status": "",
+      "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
+    }
+  },
+  "failed_observer_before": {
+    "authority": {
+      "bytes": 726,
+      "identity": [
+        66306,
+        31235376,
+        1000,
+        1000,
+        33152,
+        1,
+        726,
+        1793950724801178218,
+        1793950724801178218
+      ],
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/prior-observer-build-authority.public.json",
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+      "source": "exact cached authoritative terminal receipt"
+    },
+    "files": {
+      "build-control-r1/launch-preflight.public.json": {
+        "bytes": 12914,
+        "identity": [
+          66306,
+          33072021,
+          1000,
+          1000,
+          33152,
+          1,
+          12914,
+          1793828282418613404,
+          1793828282418613404
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/build-control-r1/launch-preflight.public.json",
+        "sha256": "91b8fe2e1d6e34d1e0b885a9bbb81c27e83e1d6f3f07cb4235cb2314b27e29d4"
+      },
+      "control/launch_normal_phaseb_observer.py": {
+        "bytes": 22961,
+        "identity": [
+          66306,
+          28228644,
+          1000,
+          1000,
+          33152,
+          1,
+          22961,
+          1793827577463293983,
+          1793827577463293983
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/launch_normal_phaseb_observer.py",
+        "sha256": "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63"
+      },
+      "control/normal-test-groups.public.json": {
+        "bytes": 6249,
+        "identity": [
+          66306,
+          28228645,
+          1000,
+          1000,
+          33152,
+          1,
+          6249,
+          1793827577464354338,
+          1793827577464354338
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/normal-test-groups.public.json",
+        "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+      },
+      "control/normal_phaseb_observer_build.py": {
+        "bytes": 20791,
+        "identity": [
+          66306,
+          28228643,
+          1000,
+          1000,
+          33152,
+          1,
+          20791,
+          1793827577462263895,
+          1793827577462263895
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/normal_phaseb_observer_build.py",
+        "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"
+      },
+      "control/stage-result.public.json": {
+        "bytes": 6838,
+        "identity": [
+          66306,
+          28228881,
+          1000,
+          1000,
+          33152,
+          1,
+          6838,
+          1793827589265840218,
+          1793827589265840218
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/stage-result.public.json",
+        "sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b"
+      },
+      "control/stage_source_phaseb_observer.py": {
+        "bytes": 18774,
+        "identity": [
+          66306,
+          28228642,
+          1000,
+          1000,
+          33152,
+          1,
+          18774,
+          1793827577461070972,
+          1793827577461070972
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/stage_source_phaseb_observer.py",
+        "sha256": "2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a"
+      },
+      "normal-release-tests-r1/intent.public.json": {
+        "bytes": 7838,
+        "identity": [
+          66306,
+          33072023,
+          1000,
+          1000,
+          33152,
+          1,
+          7838,
+          1793828282456385272,
+          1793828282456385272
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/intent.public.json",
+        "sha256": "ad7adbf410217af34555e9b9135505cb8f70309facfa748f4fb1c3f0614eedb2"
+      },
+      "normal-release-tests-r1/normal-release-build.public.json": {
+        "bytes": 710,
+        "identity": [
+          66306,
+          33072026,
+          1000,
+          1000,
+          33152,
+          1,
+          710,
+          1793828344558640174,
+          1793828344558640174
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.public.json",
+        "sha256": "654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412"
+      },
+      "normal-release-tests-r1/normal-release-build.stderr": {
+        "bytes": 27914,
+        "identity": [
+          66306,
+          33072025,
+          1000,
+          1000,
+          33152,
+          1,
+          27914,
+          1793828344504145242,
+          1793828344504145242
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stderr",
+        "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e"
+      },
+      "normal-release-tests-r1/normal-release-build.stdout": {
+        "bytes": 384196,
+        "identity": [
+          66306,
+          33072024,
+          1000,
+          1000,
+          33152,
+          1,
+          384196,
+          1793828344504145242,
+          1793828344504145242
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stdout",
+        "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92"
+      },
+      "normal-release-tests-r1/result.public.json": {
+        "bytes": 9233,
+        "identity": [
+          66306,
+          33072044,
+          1000,
+          1000,
+          33152,
+          1,
+          9233,
+          1793828344571144982,
+          1793828344571144982
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/result.public.json",
+        "sha256": "2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122"
+      },
+      "source/crates/heptabao-server/src/ha_native_v6_runtime.rs": {
+        "bytes": 61578,
+        "identity": [
+          66306,
+          30562620,
+          1000,
+          1000,
+          33152,
+          1,
+          61578,
+          1793827585518089345,
+          1793827585518089345
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d"
+      }
+    },
+    "prior_failed_build_replayed": false,
+    "source_after": {
+      "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+      "status": "",
+      "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
+    },
+    "source_before": {
+      "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+      "status": "",
+      "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
+    }
+  },
+  "formatter_executed": false,
+  "full_strict_fsck_passed": true,
+  "full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0",
+    "index_matches_tree": true,
+    "tracked_bytes": 62297347,
+    "tracked_leaf_count": 3916
+  },
+  "historical_controls_executed": false,
+  "host": "rog",
+  "independent_git_directory": true,
+  "new_commits_since_actual_495": [
+    "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "808e45d690f177ecb922e13d1ed19f7877156094",
+    "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "1c66541993662f92cf717154e33717abedb2ea74",
+    "6d02ceca629163e1c07480fa1f21520434407143",
+    "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "e5de554f5dfe99f0de30012122fe3e248fb60532",
+    "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+    "6d3040a2dbd06661a67f5c62df259ff446eb8515"
+  ],
+  "new_stage_total_seconds": 300,
+  "new_supervisor_seconds": 360,
+  "no_alternates": true,
+  "no_shared_object_links": true,
+  "object_files_checked": 207,
+  "old_source_after": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "status": "",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "old_source_before": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "status": "",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "old_source_unchanged": true,
+  "original_60_test_count": 60,
+  "original_clone_cap_seconds": 180,
+  "original_git_leaf_cap_seconds": 90,
+  "production_changed": false,
+  "public_network_fetch_used": true,
+  "root": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1",
+  "rust_tests_executed": false,
+  "schema": "heptabao.native-jwt-independent-source-stage.v1",
+  "server_started": false,
+  "sole_parent": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "source": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/source",
+  "source_clean": true,
+  "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "source_fetch_argument": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "source_ref": null,
+  "source_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "stage_purpose": "formatted_jwt_pki_source_for_separate_build_admission",
+  "stager_sha256": "9e82c538579389d6bd7ebc85795d3104dc24053b7df6e014c5bfe972ab3955c4",
+  "started_ns": 1793950724796282824,
+  "status": "prepared",
+  "terminal_ns": 1793950741423612448,
+  "within_new_stage_deadline": true
+}

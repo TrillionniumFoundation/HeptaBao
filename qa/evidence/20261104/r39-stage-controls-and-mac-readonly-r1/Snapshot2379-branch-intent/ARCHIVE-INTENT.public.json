@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-Service-audit-test8-freeze-branch-intent",
+  "records": [
+    {
+      "name": "BRANCH-INTENT.public.json",
+      "blob": "5d636ff3ff693a38f468bf3f73838e3922cc767b",
+      "bytes": 744,
+      "sha256": "f833216b67b5c8e00296c550863916c081f33a918d07646e81f13b8d17ec4cfe"
+    },
+    {
+      "name": "COMMIT-READBACK.original.sdk.json",
+      "blob": "ecb7293d2fe7ffad1ba2d5ecbbe0a063710fb042",
+      "bytes": 4349,
+      "sha256": "f1b26849865c2d24050879067b33391571aa0cc10db2769f6365ae0d54451748"
+    }
+  ],
+  "expected_data_tree": "1db9b4b97b18c4cc912715e8e860912cf86414ed",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

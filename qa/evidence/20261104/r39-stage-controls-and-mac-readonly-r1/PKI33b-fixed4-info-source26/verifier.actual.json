@@ -1,0 +1,172 @@
+{
+  "schema": "heptabao.jwt-pki33b-fixed4-info-source-checks.v1",
+  "pass": true,
+  "checks": 40,
+  "rows": [
+    {
+      "name": "strict6_hunks_both_whole",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_replacement:1",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_replacement:2",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_replacement:3",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_replacement:4",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_replacement:5",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_replacement:6",
+      "pass": true
+    },
+    {
+      "name": "unique_declared_replacement:7",
+      "pass": true
+    },
+    {
+      "name": "only_declared_changes",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "unchanged_function:gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "four_fixed_requests",
+      "pass": true
+    },
+    {
+      "name": "exact_roles_and_content",
+      "pass": true
+    },
+    {
+      "name": "no_binary_branch",
+      "pass": true
+    },
+    {
+      "name": "original_8K_16K_1MiB_caps",
+      "pass": true
+    },
+    {
+      "name": "metadata_once_marker_before_native",
+      "pass": true
+    },
+    {
+      "name": "lossless_metadata_and_no_permission_widening",
+      "pass": true
+    },
+    {
+      "name": "selected_authorize_preserves_original_context",
+      "pass": true
+    },
+    {
+      "name": "selected_fixed_index:0",
+      "pass": true
+    },
+    {
+      "name": "selected_fixed_index:1",
+      "pass": true
+    },
+    {
+      "name": "selected_fixed_index:2",
+      "pass": true
+    },
+    {
+      "name": "selected_fixed_index:3",
+      "pass": true
+    },
+    {
+      "name": "reject_no_new_GO",
+      "pass": true
+    },
+    {
+      "name": "reject_repeat_index0",
+      "pass": true
+    },
+    {
+      "name": "reject_out_of_order",
+      "pass": true
+    },
+    {
+      "name": "reject_existing_future",
+      "pass": true
+    },
+    {
+      "name": "reject_pending_call",
+      "pass": true
+    },
+    {
+      "name": "reject_paused",
+      "pass": true
+    },
+    {
+      "name": "reject_unlisted_path",
+      "pass": true
+    },
+    {
+      "name": "reject_binary",
+      "pass": true
+    },
+    {
+      "name": "reject_second_process_start",
+      "pass": true
+    },
+    {
+      "name": "reject_second_attach",
+      "pass": true
+    },
+    {
+      "name": "lossless_compact_actual_stdout",
+      "pass": true
+    },
+    {
+      "name": "exact_derived_receipt1854",
+      "pass": true
+    }
+  ],
+  "selectedChecksUsedFakeStore": true,
+  "actualSlotUnchanged": true,
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "bodyAuthorized": false
+}

@@ -1,0 +1,53 @@
+{
+  "scope": "12 pure checks of already-returned original records; no product test or candidate run",
+  "checks": [
+    {
+      "name": "exact_original_job",
+      "passed": true
+    },
+    {
+      "name": "one_start_thirteen_calls",
+      "passed": true
+    },
+    {
+      "name": "all_original_call_records_accepted",
+      "passed": true
+    },
+    {
+      "name": "two_original_observers_eight_pages",
+      "passed": true
+    },
+    {
+      "name": "no_pending_native_or_observer",
+      "passed": true
+    },
+    {
+      "name": "original_terminal_failure_complete",
+      "passed": true
+    },
+    {
+      "name": "stdout_hex_text_whole",
+      "passed": true
+    },
+    {
+      "name": "stderr_hex_text_eof",
+      "passed": true
+    },
+    {
+      "name": "known_diagnostic_failure_not_success",
+      "passed": true
+    },
+    {
+      "name": "own_application_fds_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_unknown_retained",
+      "passed": true
+    },
+    {
+      "name": "original_managed_scope_not_closed",
+      "passed": true
+    }
+  ]
+}

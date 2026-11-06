@@ -1,0 +1,292 @@
+{
+  "schema": "heptabao.existing-home-t5-readonly-r2.original-observation-lane-release.v1",
+  "job": {
+    "host": "mac",
+    "id": "1a1afeed843-fc05-6cd7"
+  },
+  "scope": "ORIGINAL_DIAGNOSTIC_FAILED_DIRECT_HELPER_UNKNOWN",
+  "transport": {
+    "nativeCalls": 13,
+    "originalObservers": 2,
+    "originalImmutablePages": 8,
+    "allOriginalObserversCompletedInactive": true,
+    "currentNativeCalls": 0,
+    "currentActiveNativeFutures": 0,
+    "laneReleased": true
+  },
+  "originalAuthority": {
+    "pin": {
+      "blob": "46658c20db6acfbd69df748277528554477313a6",
+      "bytes": 730,
+      "sha256": "5a1d3a569c45968628c47bbfd3584c7ae719feb5a4bc0626fae974334c9db8ec"
+    },
+    "exitCode": 1,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "timedOut": false
+  },
+  "stdout": {
+    "blob": "a7a080a2776800e25c1a55fe31d2b853b3de2b48",
+    "bytes": 15809,
+    "sha256": "0efc8ad6b16f153b94e81e3731c7642124a38f6b4cf82a4d99bcdcfa28d1894e"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "observers": [
+    {
+      "id": "2a7a2f8ce67aa00d8774e6783e3e7622c64eab97bb8e673869eb33be27f411fb",
+      "tool": "process_status",
+      "payload": {
+        "blob": "d0ff6cd4e8941101c0ddc9bab827459dbb4626a4",
+        "bytes": 909,
+        "sha256": "b60a18326363582194a6d14c0d365c072282e8d9630900591f31711a3097e602"
+      },
+      "payloadTree": "638e46d82d8d13907e670c4516257d643bbf96bc",
+      "nativeText": {
+        "blob": "46658c20db6acfbd69df748277528554477313a6",
+        "bytes": 730,
+        "sha256": "5a1d3a569c45968628c47bbfd3584c7ae719feb5a4bc0626fae974334c9db8ec"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "218498e352a62872071a951145cae90a7a0f08d5818468419f2764ccadb9fe65",
+      "tool": "process_read",
+      "payload": {
+        "blob": "2dede84d2b6f261224da4f2ce1f8722a2a123c79",
+        "bytes": 52916,
+        "sha256": "0faba4a96de69a6b38087cfbebf64192139dcd3211a061cda1e6df761e18dc47"
+      },
+      "payloadTree": "31e750f680f7462dc478690e28124e5aaf36df10",
+      "nativeText": {
+        "blob": "de909ca5a8cce4c05a30f3cdaaec1b9ddd14c012",
+        "bytes": 49427,
+        "sha256": "a9f88d22c37755e93aeb231286c8d61a3daa8dc3983a7256b4d8eaafbabf8ea1"
+      },
+      "pages": 7,
+      "completedInactive": true
+    }
+  ],
+  "diagnostic": {
+    "stage": "current_ready_pid_first",
+    "error": {
+      "code": "direct_helper_outcome_unknown",
+      "errno": null,
+      "type": "ProbeRefused"
+    },
+    "ok": false,
+    "observationComplete": false,
+    "outcomeUnknown": true,
+    "elapsedSeconds": 0.058716667,
+    "deadlineMetAfterClosure": true,
+    "allReturnedApplicationFdsClosed": true,
+    "applicationFdRows": 21,
+    "openLedger": {
+      "attempts": 21,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 21,
+      "registrationUnknown": false
+    },
+    "counts": {
+      "metadata": 128,
+      "readBytes": 79377,
+      "readCalls": 13,
+      "writeBytes": 0,
+      "writeCalls": 0
+    },
+    "allDirectHelpersClosed": false,
+    "unknownCommandCount": 1
+  },
+  "factsReached": {
+    "firstCurrentPrint": {
+      "bytes": 2004,
+      "parsed": true,
+      "registrationPresent": true,
+      "exactBindings": {
+        "arguments": true,
+        "path": true,
+        "program": true,
+        "runsAllowed": true,
+        "stateAllowed": true
+      },
+      "fields": {
+        "last exit code": {
+          "count": 1,
+          "exactExConfig78": false,
+          "exactNeverExitedLiteral": false,
+          "knownState": null,
+          "matchesExpected": null,
+          "numericDecimalSyntax": true,
+          "present": true,
+          "typedInteger": 1,
+          "unique": true
+        },
+        "last terminating signal": {
+          "count": 0,
+          "exactExConfig78": null,
+          "exactNeverExitedLiteral": null,
+          "knownState": null,
+          "matchesExpected": null,
+          "numericDecimalSyntax": false,
+          "present": false,
+          "typedInteger": null,
+          "unique": false
+        },
+        "path": {
+          "count": 1,
+          "exactExConfig78": null,
+          "exactNeverExitedLiteral": null,
+          "knownState": null,
+          "matchesExpected": true,
+          "numericDecimalSyntax": null,
+          "present": true,
+          "typedInteger": null,
+          "unique": true
+        },
+        "pid": {
+          "count": 0,
+          "exactExConfig78": null,
+          "exactNeverExitedLiteral": null,
+          "knownState": null,
+          "matchesExpected": null,
+          "numericDecimalSyntax": false,
+          "present": false,
+          "typedInteger": null,
+          "unique": false
+        },
+        "program": {
+          "count": 1,
+          "exactExConfig78": null,
+          "exactNeverExitedLiteral": null,
+          "knownState": null,
+          "matchesExpected": true,
+          "numericDecimalSyntax": null,
+          "present": true,
+          "typedInteger": null,
+          "unique": true
+        },
+        "runs": {
+          "count": 1,
+          "exactExConfig78": null,
+          "exactNeverExitedLiteral": null,
+          "knownState": null,
+          "matchesExpected": null,
+          "numericDecimalSyntax": true,
+          "present": true,
+          "typedInteger": 1,
+          "unique": true
+        },
+        "state": {
+          "count": 1,
+          "exactExConfig78": null,
+          "exactNeverExitedLiteral": null,
+          "knownState": "not running",
+          "matchesExpected": null,
+          "numericDecimalSyntax": null,
+          "present": true,
+          "typedInteger": null,
+          "unique": true
+        }
+      }
+    },
+    "ready": {
+      "qualified": true,
+      "identity": {
+        "birthSec": 1793950344,
+        "birthUsec": 737052,
+        "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "pgid": 58228,
+        "pid": 58228,
+        "ppid": 1,
+        "uid": 501
+      },
+      "bytes": 640,
+      "full9": [
+        "16777233",
+        "592904421",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "640",
+        "1793950344882619282",
+        "1793950344882619282"
+      ],
+      "markerFull9": [
+        "16777233",
+        "592904422",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "0",
+        "1793950344883708127",
+        "1793950344883708127"
+      ]
+    },
+    "terminal": {
+      "qualified": true,
+      "bytes": 4816,
+      "full9": [
+        "16777233",
+        "592904419",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "4816",
+        "1793950369615463915",
+        "1793950369615463915"
+      ],
+      "stage": "home_admission",
+      "error": {
+        "code": "child_absolute_deadline",
+        "errno": null,
+        "type": "ProbeRefused"
+      },
+      "sameBirthAdmission": false,
+      "enteredT5": false,
+      "deadlineMetAfterClosure": false,
+      "applicationFdRows": 19,
+      "allReturnedApplicationFdsClosed": true,
+      "outcomeUnknown": false
+    }
+  },
+  "directHelperUnknown": {
+    "pid": 87650,
+    "argv": [
+      "/bin/ps",
+      "-p",
+      "58228",
+      "-o",
+      "pid=,ppid=,pgid=,uid=,stat="
+    ],
+    "custody": null,
+    "cleanupErrorCode": "owned_child_scope_mismatch",
+    "directChildReaped": false,
+    "allGroupRowsEmptyAfterReap": false,
+    "streamsClosed": true,
+    "signals": [],
+    "notAnObservationOfManagedPid58228": true
+  },
+  "notReached": [
+    "first managed PID observation completion",
+    "second current label print",
+    "second managed PID observation",
+    "final full9/directory fences"
+  ],
+  "originalR4Rewritten": false,
+  "managedRegistrationClosureClaimed": false,
+  "oldUnknownsPreserved": true,
+  "source": "15002c2fb720188546a25045d7d3bb3f743fabba",
+  "request": "2e5f413a527d0cb6de8d3403282dcd56ef197308",
+  "go": "9a9c2215377af1e00c02f57f012274a33b3c1ac8",
+  "nativeReplayOrRetry": false,
+  "bootoutOrSignalOrCredentialAction": false
+}

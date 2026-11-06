@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.after-external-whole-source-report-consistency.v1",
+  "decodedBodyExternalWholeTree": "ef4ff0c4796ff3e9dce8bb1871446a4d8beeefdd",
+  "body": {
+    "blob": "f2c2bd29fd1209f79776ec01fb170119a2d912ef",
+    "bytes": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0"
+  },
+  "verifier": {
+    "blob": "c0d01b8a7be91f7c27dbe830904eb74ddbe1521f",
+    "bytes": 5248,
+    "sha256": "2f186a882b3514e08b85116992ae0000b4ff139abcd9bc1c868b78d0eab79081"
+  },
+  "result": {
+    "blob": "ab403ae0dcf615b0df8e4b55c4597e46ce161917",
+    "bytes": 3190,
+    "sha256": "5e61a80fa36b269e163d3e8b6d9fb34d1b5324d36839b1f8634e876c03a34cbf"
+  },
+  "performedAfterCompletedDecodedWhole": true,
+  "preliminaryResultRetained": true,
+  "rootQualificationPending": true,
+  "Native": 0,
+  "Cargo": 0,
+  "productCases": 0
+}

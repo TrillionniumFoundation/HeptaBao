@@ -1,0 +1,31 @@
+{
+  "originalR4SourceTree": "690747178bd9d66eedca0e704719727bd4cd5a3a",
+  "originalR4Controller": "fb453c023c1de1299e1875078ae8720b20a441de",
+  "originalR4ParentCore": "8ee0b29ea750d1b752b8ab26e27914a377dc61dd",
+  "originalR4ActualTree": "3adcec2f471f87e8a5873b7c9394fb3f013502f8",
+  "originalR4Authority": "e550fd98a40b72b0387624a58665a7b268a1475e",
+  "originalR4Release": "42a76fe52bde656bbec881b13461307926f70d0b",
+  "originalR4RootQualification": "3b0956905839b1271f5e416bdf321b97492f3300",
+  "originalR4RootArchive": "0b502c497ac9835336bcf3d4b779a77178b0b54b",
+  "elevenCodeAnalysisTree": "dbe0fb40b6b627a91e9edb5d8c3fcf4feaead89f",
+  "elevenCodeAnalysisBlob": "1c9dc3ce169b13d7deb14f3f09a6ac4d3e59fdec",
+  "originalR3UnknownUnchanged": "03fb9f788ff6ffd5e538c5ea9c99009eb12e60cb",
+  "freshSelfRootQualification": "110d8f083a05e5cb478fdb60917d0406b54bc276",
+  "pureHelper": "b6890e8b7217c546bec073dcb04988fc37652721",
+  "onceGitArchiveHelper": "b093fdbf655511f7db94be2d95555606141bbb42",
+  "proposedRequest": {
+    "blob": "1891e38a9ddcd970f27c6fb7d7d3ef1b1183bdc0",
+    "bytes": 93179,
+    "sha256": "099ebcd583caf7d52d63c96701334734b2682e77b92647101f79a86bb2a058a9"
+  },
+  "proposedSource": {
+    "blob": "467393a64a2a5e7eb92a89df0981b9849217eb87",
+    "bytes": 90450,
+    "sha256": "e8a76931ddd9cf55ef24870e6e84e9e82c94a07a78117c28ee15fe8989ad2c63"
+  },
+  "proposedJournal": {
+    "blob": "bdceb4d0d435fb5a71df78a6440288c62025f3c6",
+    "bytes": 19053,
+    "sha256": "808c4bee577760d8cd54080baec6270939762ebf02caaa7c3429fa9119cebdbc"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-controls-inert-qualified-and-format49-source",
+  "records": [
+    {
+      "name": "INERT39.root-qualification.json",
+      "blob": "dfd419873cbf01d054033a6c894ec64fbedb3605",
+      "bytes": 7519,
+      "sha256": "0aef246812c716930a14769f4e58de1a5eaf17e2106eab1c0ca3fb32ad72b34f"
+    },
+    {
+      "name": "INERT.root-verifier.js",
+      "blob": "4dc25c85df23e4830a1ca535f0715835bd1315f8",
+      "bytes": 6829,
+      "sha256": "45cb9c5a9c305b0bbb54cafdd39421db1f6c5fd50f8eef659c2b71239f51c221"
+    },
+    {
+      "name": "FORMAT49-SOURCE99.root-review.json",
+      "blob": "ee0a83720e5101983a37eecc9898ae5a08d81592",
+      "bytes": 28499,
+      "sha256": "002b82cb1f8f9206b582e10436ad1450e462bc28e80c54a5b05abd372dce36ed"
+    },
+    {
+      "name": "FORMAT49.root-verifier.js",
+      "blob": "e726d5168a011dd651a5f1ebe009075f455dd2c5",
+      "bytes": 7758,
+      "sha256": "a1196fed1fa64d084720d99017b37666281bc42cb2121ececf25facd0a35a9a8"
+    },
+    {
+      "name": "journal-verifier.original.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "1838894ab8c9611b252c7d22eaa96198a6981b76",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

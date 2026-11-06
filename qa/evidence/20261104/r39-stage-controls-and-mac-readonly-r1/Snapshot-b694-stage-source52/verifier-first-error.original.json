@@ -1,0 +1,10 @@
+{
+  "name": "Error",
+  "message": "formatter carrier46 exact",
+  "stack": "Error: formatter carrier46 exact\n    at check (exec_main.mjs:3:94)\n    at verifySnapshotStageFormat46 (exec_main.mjs:57:2)\n    at exec_main.mjs:84:13",
+  "source": {
+    "blob": "23966583111a58c86e72d1f1608c848a195be9d6",
+    "bytes": 10685,
+    "sha256": "6c386965ed490badbd9153e7839f4089c9a58ce94527273dc8b16b7613acbcbc"
+  }
+}

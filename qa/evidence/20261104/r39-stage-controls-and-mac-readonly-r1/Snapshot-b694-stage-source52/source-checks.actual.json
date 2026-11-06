@@ -1,0 +1,1430 @@
+{
+  "schema": "heptabao.snapshot-source46-stage-format.SOURCE-checks.v1",
+  "checks": [
+    {
+      "name": "canonical b694 root/Merkle",
+      "pass": true
+    },
+    {
+      "name": "parent 8c95 root/Merkle",
+      "pass": true
+    },
+    {
+      "name": "both canonical trees3928",
+      "pass": true
+    },
+    {
+      "name": "exact24 modifications no add/delete",
+      "pass": true
+    },
+    {
+      "name": "3904 unchanged",
+      "pass": true
+    },
+    {
+      "name": "tracked bytes62463643",
+      "pass": true
+    },
+    {
+      "name": "canonical index whole",
+      "pass": true
+    },
+    {
+      "name": "b694 exact commit soleparent",
+      "pass": true
+    },
+    {
+      "name": "8c95 parent still808",
+      "pass": true
+    },
+    {
+      "name": "46 fixed union23+24-1",
+      "pass": true
+    },
+    {
+      "name": "only overlap service_snapshot_transfer",
+      "pass": true
+    },
+    {
+      "name": "46 unique basenames/two crates",
+      "pass": true
+    },
+    {
+      "name": "46 exact total1931523",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin authenticated_peer_frame.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference authenticated_peer_frame.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection authenticated_peer_frame.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin lib.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference lib.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection lib.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin native_snapshot_body.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference native_snapshot_body.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection native_snapshot_body.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin native_snapshot_body_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference native_snapshot_body_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection native_snapshot_body_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin native_snapshot_peer.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference native_snapshot_peer.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection native_snapshot_peer.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin native_snapshot_peer_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference native_snapshot_peer_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection native_snapshot_peer_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin auth_forward_actor.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference auth_forward_actor.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection auth_forward_actor.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin auth_snapshot_forward_actor_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference auth_snapshot_forward_actor_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection auth_snapshot_forward_actor_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin ha.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference ha.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection ha.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin ha_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference ha_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection ha_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin http.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference http.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection http.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin http_snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference http_snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection http_snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_forward_delivery.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_forward_delivery.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_forward_delivery.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_forward_file.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_forward_file.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_forward_file.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_forward_wire.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_forward_wire.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_forward_wire.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_forward_wire_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_forward_wire_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_forward_wire_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_v6_ha.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_v6_ha.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_v6_ha.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_v6_ha_restore.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_v6_ha_restore.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_v6_ha_restore.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_controlgroups_271_namespace_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_controlgroups_271_namespace_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_controlgroups_271_namespace_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_controlgroups_271_namespace_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_controlgroups_271_namespace_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_controlgroups_271_namespace_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_file_gc_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_file_gc_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_file_gc_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_flat_retirement_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_flat_retirement_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_flat_retirement_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_kv2_import_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_kv2_import_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_kv2_import_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_kv2_large_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_kv2_large_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_kv2_large_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_kv2_mount_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_kv2_mount_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_kv2_mount_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_kv2_storage_witness_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_kv2_storage_witness_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_kv2_storage_witness_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_namespace_tree_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_namespace_tree_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_namespace_tree_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_pki_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_pki_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_pki_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_remount_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_remount_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_remount_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_ssh_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_ssh_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_ssh_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_storage_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_storage_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_storage_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_transit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_transit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_transit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_v6_ha_cold_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_v6_ha_cold_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_v6_ha_cold_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_v6_ha_restore_borrowed_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_v6_ha_restore_borrowed_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_v6_ha_restore_borrowed_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_v6_ha_snapshot_repair_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_v6_ha_snapshot_repair_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_v6_ha_snapshot_repair_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_v6_ha_snapshot_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_v6_ha_snapshot_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_v6_ha_snapshot_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_native_v6_migration_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_native_v6_migration_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_native_v6_migration_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_rate_limit_quota_139_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_rate_limit_quota_139_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_rate_limit_quota_139_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_lossless_export_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_lossless_export_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_lossless_export_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current canonical pin service_snapshot_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "lineage and base reference service_snapshot_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "current after selection service_snapshot_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical delta is exact24",
+      "pass": true
+    },
+    {
+      "name": "stage strict forward",
+      "pass": true
+    },
+    {
+      "name": "stage strict reverse",
+      "pass": true
+    },
+    {
+      "name": "stage exact hunks",
+      "pass": true
+    },
+    {
+      "name": "stage literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 3 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 4 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 5 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 6 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 7 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 8 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 9 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 10 unique",
+      "pass": true
+    },
+    {
+      "name": "stage complete literal delta",
+      "pass": true
+    },
+    {
+      "name": "formatter strict forward",
+      "pass": true
+    },
+    {
+      "name": "formatter strict reverse",
+      "pass": true
+    },
+    {
+      "name": "formatter exact hunks",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 3 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 4 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 5 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 6 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 7 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 8 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 9 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter complete literal delta",
+      "pass": true
+    },
+    {
+      "name": "stage journal strict forward",
+      "pass": true
+    },
+    {
+      "name": "stage journal strict reverse",
+      "pass": true
+    },
+    {
+      "name": "stage journal exact hunks",
+      "pass": true
+    },
+    {
+      "name": "stage journal literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "stage journal literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "stage journal literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "stage journal complete literal delta",
+      "pass": true
+    },
+    {
+      "name": "format journal strict forward",
+      "pass": true
+    },
+    {
+      "name": "format journal strict reverse",
+      "pass": true
+    },
+    {
+      "name": "format journal exact hunks",
+      "pass": true
+    },
+    {
+      "name": "format journal literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "format journal literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "format journal literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "format journal complete literal delta",
+      "pass": true
+    },
+    {
+      "name": "stage11/format10/journals3+3",
+      "pass": true
+    },
+    {
+      "name": "20 stage definitions whole",
+      "pass": true
+    },
+    {
+      "name": "stage definition 0 on_signal",
+      "pass": true
+    },
+    {
+      "name": "stage definition 1 digest",
+      "pass": true
+    },
+    {
+      "name": "stage definition 2 blob",
+      "pass": true
+    },
+    {
+      "name": "stage definition 3 identity",
+      "pass": true
+    },
+    {
+      "name": "stage definition 4 stable_read",
+      "pass": true
+    },
+    {
+      "name": "stage definition 5 fsync_dir",
+      "pass": true
+    },
+    {
+      "name": "stage definition 6 create",
+      "pass": true
+    },
+    {
+      "name": "stage definition 7 public",
+      "pass": true
+    },
+    {
+      "name": "stage definition 8 group_members",
+      "pass": true
+    },
+    {
+      "name": "stage definition 9 stop_owned",
+      "pass": true
+    },
+    {
+      "name": "stage definition 10 owned",
+      "pass": true
+    },
+    {
+      "name": "stage definition 11 git",
+      "pass": true
+    },
+    {
+      "name": "stage definition 12 stage_remaining",
+      "pass": true
+    },
+    {
+      "name": "stage definition 13 owned",
+      "pass": true
+    },
+    {
+      "name": "stage definition 14 freeze",
+      "pass": true
+    },
+    {
+      "name": "stage definition 15 preserve_failed_observer",
+      "pass": true
+    },
+    {
+      "name": "stage definition 16 walk_error",
+      "pass": true
+    },
+    {
+      "name": "stage definition 17 independent_git",
+      "pass": true
+    },
+    {
+      "name": "stage definition 18 verify_full_worktree",
+      "pass": true
+    },
+    {
+      "name": "stage definition 19 canonical_bundle_header",
+      "pass": true
+    },
+    {
+      "name": "5 formatter definitions whole",
+      "pass": true
+    },
+    {
+      "name": "formatter definition 0 remain",
+      "pass": true
+    },
+    {
+      "name": "formatter definition 1 sha",
+      "pass": true
+    },
+    {
+      "name": "formatter definition 2 read_pin",
+      "pass": true
+    },
+    {
+      "name": "formatter definition 3 write_new",
+      "pass": true
+    },
+    {
+      "name": "formatter definition 4 sync_dir",
+      "pass": true
+    },
+    {
+      "name": "formatter original Popen/communicate/cleanup whole",
+      "pass": true
+    },
+    {
+      "name": "same historical79951 carrier",
+      "pass": true
+    },
+    {
+      "name": "stage argv exact main contract",
+      "pass": true
+    },
+    {
+      "name": "stage exact unchanged host/cwd/tool/outer360",
+      "pass": true
+    },
+    {
+      "name": "stage original guard STAGE_SECONDS = 300.0",
+      "pass": true
+    },
+    {
+      "name": "stage original guard def owned(label, argv, limit=90, cwd=None):",
+      "pass": true
+    },
+    {
+      "name": "stage original guard process.wait(timeout=5)",
+      "pass": true
+    },
+    {
+      "name": "stage original guard str(SOURCE)], 180)",
+      "pass": true
+    },
+    {
+      "name": "stage original guard sys.stdin.buffer.read(262145)",
+      "pass": true
+    },
+    {
+      "name": "stage original guard len(carrier) <= 262144",
+      "pass": true
+    },
+    {
+      "name": "stage original guard compile(raw, name, 'exec')",
+      "pass": true
+    },
+    {
+      "name": "stage original guard assert not os.path.lexists(ROOT)",
+      "pass": true
+    },
+    {
+      "name": "stage original guard canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024)",
+      "pass": true
+    },
+    {
+      "name": "stage ancestry exactly prepend one",
+      "pass": true
+    },
+    {
+      "name": "no new stage subprocess or exec",
+      "pass": true
+    },
+    {
+      "name": "formatter argv exact unchanged shape",
+      "pass": true
+    },
+    {
+      "name": "formatter host/cwd/tool/outer60",
+      "pass": true
+    },
+    {
+      "name": "formatter carrier46 exact",
+      "pass": true
+    },
+    {
+      "name": "formatter table EXPECTED",
+      "pass": true
+    },
+    {
+      "name": "formatter table SOURCE_SIZES",
+      "pass": true
+    },
+    {
+      "name": "formatter table SOURCE_RELATIVE",
+      "pass": true
+    },
+    {
+      "name": "formatter table FORMAT_OUTPUT_CAPS",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference authenticated_peer_frame.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap authenticated_peer_frame.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference lib.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap lib.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference native_snapshot_body.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap native_snapshot_body.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference native_snapshot_body_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap native_snapshot_body_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference native_snapshot_peer.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap native_snapshot_peer.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference native_snapshot_peer_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap native_snapshot_peer_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference auth_forward_actor.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap auth_forward_actor.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference auth_snapshot_forward_actor_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap auth_snapshot_forward_actor_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference ha.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap ha.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference ha_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap ha_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference http.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap http.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference http_snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap http_snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_forward_delivery.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_forward_delivery.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_forward_file.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_forward_file.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_forward_wire.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_forward_wire.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_forward_wire_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_forward_wire_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_v6_ha.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_v6_ha.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_v6_ha_restore.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_v6_ha_restore.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_controlgroups_271_namespace_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_controlgroups_271_namespace_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_controlgroups_271_namespace_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_controlgroups_271_namespace_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_file_gc_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_file_gc_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_flat_retirement_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_flat_retirement_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_kv2_import_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_kv2_import_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_kv2_large_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_kv2_large_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_kv2_mount_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_kv2_mount_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_kv2_storage_witness_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_kv2_storage_witness_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_namespace_tree_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_namespace_tree_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_pki_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_pki_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_remount_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_remount_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_ssh_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_ssh_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_storage_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_storage_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_transit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_transit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_v6_ha_cold_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_v6_ha_cold_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_v6_ha_restore_borrowed_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_v6_ha_restore_borrowed_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_v6_ha_snapshot_repair_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_v6_ha_snapshot_repair_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_v6_ha_snapshot_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_v6_ha_snapshot_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_native_v6_migration_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_native_v6_migration_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_rate_limit_quota_139_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_rate_limit_quota_139_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_lossless_export_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_lossless_export_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format46 current input and reference service_snapshot_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "format original output cap service_snapshot_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "two readonly source lookups",
+      "pass": true
+    },
+    {
+      "name": "formatter inherited guard START=time.monotonic(); LIMIT=50.0",
+      "pass": true
+    },
+    {
+      "name": "formatter inherited guard timeout=min(10.0,remain())",
+      "pass": true
+    },
+    {
+      "name": "formatter inherited guard 'newRemoteSupervisorSeconds':60",
+      "pass": true
+    },
+    {
+      "name": "formatter inherited guard FMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'",
+      "pass": true
+    },
+    {
+      "name": "formatter inherited guard FORMAT_CONFIG=b'edition = \"2024\"\\n'",
+      "pass": true
+    },
+    {
+      "name": "formatter inherited guard start_new_session=False",
+      "pass": true
+    },
+    {
+      "name": "formatter inherited guard if child['pgid']!=child['supervisorGroup']",
+      "pass": true
+    },
+    {
+      "name": "formatter no cargo/rustc execution",
+      "pass": true
+    },
+    {
+      "name": "stage journal request exact pin",
+      "pass": true
+    },
+    {
+      "name": "stage journal unchanged bounds",
+      "pass": true
+    },
+    {
+      "name": "format journal request exact pin",
+      "pass": true
+    },
+    {
+      "name": "format journal unchanged bounds",
+      "pass": true
+    },
+    {
+      "name": "binding helper actual8c95 stage positive",
+      "pass": true
+    },
+    {
+      "name": "binding helper frozen8c95 formatter positive",
+      "pass": true
+    }
+  ],
+  "checkCount": 352,
+  "allPassed": true,
+  "sourceCommit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "stagerBinding": {
+    "sha256": "e36df921ed2e993ce0db77e39a87913a65bc80bc9dcbb174067e18afb60476da",
+    "native_fingerprint": "16388028543179594044"
+  },
+  "formatterBinding": {
+    "sha256": "957567b8508b43e5319bdf58f5b2c88a8145899628007a9292e329fbc0dfb3e1",
+    "native_fingerprint": "10769628125249356773"
+  },
+  "stageActualQualified": false,
+  "formatterActualQualified": false,
+  "pythonExecuted": false,
+  "rustfmtExecuted": false,
+  "cargoExecuted": false,
+  "runtimeCalls": 0
+}

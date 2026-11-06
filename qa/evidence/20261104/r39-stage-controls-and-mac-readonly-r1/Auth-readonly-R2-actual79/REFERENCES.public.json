@@ -1,0 +1,13 @@
+{
+  "sourcePackets": [
+    "e11856456b51b54cd3bc564fd797ea7bc95dbea8",
+    "0d5667845ab96120314855e08f4e9809b4a505fd"
+  ],
+  "source": "15002c2fb720188546a25045d7d3bb3f743fabba",
+  "request": "2e5f413a527d0cb6de8d3403282dcd56ef197308",
+  "journal": "89252ff15dacd03efcac832d0f24b80203274dd6",
+  "rootGO": "9a9c2215377af1e00c02f57f012274a33b3c1ac8",
+  "releasePacket": "1092ba6ead16dc4fa2a94ec78082e62bc57642b7",
+  "originalR4Packet": "3adcec2f471f87e8a5873b7c9394fb3f013502f8",
+  "originalR4RootQualification": "3b0956905839b1271f5e416bdf321b97492f3300"
+}

@@ -1,0 +1,264 @@
+{
+  "schema": "heptabao.root-source-review.PKI33b-fixed4-controls-file-info.v1",
+  "status": "PASS_FOUR_EXACT_INDEPENDENT_METADATA_SOURCE",
+  "checks": [
+    {
+      "name": "whole26_396612_root39",
+      "passed": true
+    },
+    {
+      "name": "exact_original_stdout_and_release_and_request",
+      "passed": true
+    },
+    {
+      "name": "same_unchanged_helpers",
+      "passed": true
+    },
+    {
+      "name": "six_hunks_exact_both_directions",
+      "passed": true
+    },
+    {
+      "name": "seven_explicit_source_edits",
+      "passed": true
+    },
+    {
+      "name": "literal_once_0",
+      "passed": true
+    },
+    {
+      "name": "literal_once_1",
+      "passed": true
+    },
+    {
+      "name": "literal_once_2",
+      "passed": true
+    },
+    {
+      "name": "literal_once_3",
+      "passed": true
+    },
+    {
+      "name": "literal_once_4",
+      "passed": true
+    },
+    {
+      "name": "literal_once_5",
+      "passed": true
+    },
+    {
+      "name": "literal_once_6",
+      "passed": true
+    },
+    {
+      "name": "all_other_journal_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfState",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfAcceptArchivedSDK",
+      "passed": true
+    },
+    {
+      "name": "unchanged_gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "four_exact_expected_rows",
+      "passed": true
+    },
+    {
+      "name": "independent_lossless_compact_stdout_positive_control",
+      "passed": true
+    },
+    {
+      "name": "derived_receipt_expected_only1854_SHA",
+      "passed": true
+    },
+    {
+      "name": "exact_ordered_info_request_0",
+      "passed": true
+    },
+    {
+      "name": "exact_ordered_info_request_1",
+      "passed": true
+    },
+    {
+      "name": "exact_ordered_info_request_2",
+      "passed": true
+    },
+    {
+      "name": "exact_ordered_info_request_3",
+      "passed": true
+    },
+    {
+      "name": "original_slot_job_attached_only",
+      "passed": true
+    },
+    {
+      "name": "root_scope_exact4_no_binary",
+      "passed": true
+    },
+    {
+      "name": "original_two_closed_observers_exact",
+      "passed": true
+    },
+    {
+      "name": "one_index_and_marker_before_dispatch",
+      "passed": true
+    },
+    {
+      "name": "whole_payload_before_metadata_final_classification",
+      "passed": true
+    },
+    {
+      "name": "private_linux_metadata_and_lossless_version",
+      "passed": true
+    },
+    {
+      "name": "unobserved_actuals_stay_null_no_execution",
+      "passed": true
+    }
+  ],
+  "check_count": 35,
+  "source_packet": "84eabfeac9cf4179c18ee3387fe38cdafbda7048",
+  "source": {
+    "blob": "80e33a52cc2b2d5a4c781de1521432c0eb56d6de",
+    "bytes": 26589,
+    "sha256": "e67beeec067be48b18a473cbf38d579b2acb34305716356b4b3ccc678e3eb95f"
+  },
+  "exact_requests": [
+    {
+      "blob": "55d9c9eaa0088e989ec9f1493e4bfca35b2a1a1a",
+      "bytes": 284,
+      "sha256": "d3deedf47dd60afe119e822d3548dcd97f3fbbe61f9cca0f428d0bbac2e4eb9e"
+    },
+    {
+      "blob": "46a7b2b225b3b8460dc5f9124b2d3e97a37ba091",
+      "bytes": 291,
+      "sha256": "06ffb83fac7970aa4fd42093451c6abcfb077cc597d17eb19b2cefad2a235c9d"
+    },
+    {
+      "blob": "13f5a8c7882754691900ddb68f720e8551cc5f5f",
+      "bytes": 292,
+      "sha256": "652a352f9db5be57f4ac069b23fac29f3ba0ab3f633fed0a8b1421a653e2130c"
+    },
+    {
+      "blob": "dc830aea81d620fb0ba59d29cd562f6d90bada27",
+      "bytes": 295,
+      "sha256": "22170fdedd1b25f061dfdf8cb145c01bf0fb8f5b7c62d6d0d345787340e0a753"
+    }
+  ],
+  "expected": [
+    {
+      "index": 0,
+      "name": "native_jwt_build.py",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py",
+      "bytes": 30397,
+      "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add",
+      "publisherFull9": [
+        "66306",
+        "31235924",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30397",
+        "1793954281105928260",
+        "1793954281106897967"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "launch_native_jwt_build.py",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+      "bytes": 38565,
+      "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056",
+      "publisherFull9": [
+        "66306",
+        "31235925",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793954281107963513",
+        "1793954281108998030"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "jwt-test-groups.public.json",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "publisherFull9": [
+        "66306",
+        "31235926",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793954281109723489",
+        "1793954281110748800"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "inert-stage.result.public.json",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json",
+      "bytes": 1854,
+      "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2",
+      "publisherFull9": null
+    }
+  ],
+  "original_slot": "jwt_pki_33b814c7_build_controls_inert_gitfirst_r1",
+  "original_job": "1a1b001e788-fc05-6d66",
+  "publication_root_qualification": {
+    "blob": "dfd419873cbf01d054033a6c894ec64fbedb3605",
+    "bytes": 7519,
+    "sha256": "0aef246812c716930a14769f4e58de1a5eaf17e2106eab1c0ca3fb32ad72b34f"
+  },
+  "derived_receipt": {
+    "blob": "514dda8c5a69d4ed96123d788e4e1cf672e6a0ef",
+    "bytes": 1854,
+    "sha256": "f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2",
+    "actual_file_observed": false,
+    "full9": null,
+    "version": null
+  },
+  "limits": {
+    "immutablePageBytes": 8192,
+    "payloadBytes": 1048576,
+    "maximumOriginalFileInfoStarts": 4,
+    "oneFuture": true,
+    "newBinaryStarts": 0,
+    "newProcessStarts": 0
+  },
+  "source_only": true,
+  "root_Runtime_calls": 0
+}

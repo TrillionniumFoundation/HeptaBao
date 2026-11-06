@@ -1,0 +1,100 @@
+{
+  "modified": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "before": {
+        "blob": "c952232a835a4f6437e310790ba42b8509b79dcb",
+        "bytes": 519343,
+        "sha256": "c6fcb7631d424c16b5f86530570172b61f2b090d71384516d267ffaf7ee1dc89"
+      },
+      "after": {
+        "blob": "63bacb537a17cc060239a1793f8ac526e15df158",
+        "bytes": 519577,
+        "sha256": "152d79076104755a522ad972e020be3f9efad47cfc0b20692dc3190169ebf276"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "before": {
+        "blob": "4edbdf52aee39919065db9dc0d8924fd346c5306",
+        "bytes": 8798,
+        "sha256": "70cfadda87cad016af530310c525c94e04b6e2e3df5353cc2762bc91d08570bd"
+      },
+      "after": {
+        "blob": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42",
+        "bytes": 8891,
+        "sha256": "6db3cd4b9c8d115779b59282aef59755556099491f517985e453c1bd5b41586b"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "before": {
+        "blob": "ccefc2b6e836f407f285245fa1f595230d828ab0",
+        "bytes": 18255,
+        "sha256": "786eb9ec00fc1d8d82e78793da18c9b9b33b02609c80153b0fd960de4b75dc17"
+      },
+      "after": {
+        "blob": "694edf2abe8a8f61dc887469e2dcc963dfc58fca",
+        "bytes": 18850,
+        "sha256": "0007a55d455493318cb2e606d5a19b94438e67b2b52cc0ab98465a240f74aa6c"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "before": {
+        "blob": "b4a0645164c6ba5cb0c3489e058f65c89136796b",
+        "bytes": 17315,
+        "sha256": "86b55dde688720321fce0c2fdfc59a18a6a185911d9725d6f9b4afb8e71b2062"
+      },
+      "after": {
+        "blob": "ca9962d39f90cdf6ebbc06d04a9cc6c0fa7aa0a1",
+        "bytes": 17522,
+        "sha256": "3f37df8a3ad5d4cc535127b2c286b32a2c633ec7c4295a2525367a91099ec560"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+      "before": {
+        "blob": "1ff6e42dade56eb4431271aae5a9dee90e9cca39",
+        "bytes": 53072,
+        "sha256": "2ea71a8fc8a009f4505792dee58165ecacbfa677e7b339f0f25a43be257a26b5"
+      },
+      "after": {
+        "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+        "bytes": 53166,
+        "sha256": "ff6cc53a65ea25bcb9d4817f5875d1de950c4814b54bd7eafdff6b95ad8ed69d"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "before": {
+        "blob": "aa9e00cd0f530ff27fa896160f8db1e0c5700920",
+        "bytes": 69866,
+        "sha256": "2bfa098fe3ad0a5a6bf27eaf0c92269a0766dd1e9e2917bec6df6b96f8e565eb"
+      },
+      "after": {
+        "blob": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+        "bytes": 70780,
+        "sha256": "0e204bfd4f2a2b5640e1da6611014f5a87799b099c9b2f6c861283e60c57c2ea"
+      }
+    }
+  ],
+  "added": [
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+      "after": {
+        "blob": "abc4dbef9044f6105c00fdc290fd053e1d2cbd26",
+        "bytes": 5345,
+        "sha256": "51cbdba0849307d58e3631994a9d2fe0ecaacda7f69617becb2b8b698e65bb29"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+      "after": {
+        "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+        "bytes": 14875,
+        "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.pure-archive-release-draft-correction.v1",
+  "scope": "unpublished local derived release only",
+  "cause": "initial shallow draft copied prior b694 nested pins and partially replaced commit prefix",
+  "detectedBeforeGitPacketCreate": true,
+  "correctedFromActual2379Originals": true,
+  "originalSDKAndRequestsChanged": false,
+  "initialVerifierScopeGap": "initial92 checked actual original chain but not nine release association predicates",
+  "addedChecks": 9,
+  "finalChecks": 101,
+  "newNativeCalls": 0
+}

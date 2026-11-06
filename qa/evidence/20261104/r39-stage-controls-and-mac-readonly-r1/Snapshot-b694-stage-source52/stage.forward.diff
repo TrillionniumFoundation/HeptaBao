@@ -1,0 +1,60 @@
+--- a/stage
++++ b/stage
+@@ -19,16 +19,17 @@
+ parser.add_argument('--carrier-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'rog'
+-ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1')
++ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+ OLD_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-COMMIT = '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'
+-TREE = 'f412f1524e08a56e23374897d329bfcf6295f4fe'
+-PARENT = '808e45d690f177ecb922e13d1ed19f7877156094'
++COMMIT = 'b6949024dc5d0922ca9b27d865923d28982286c3'
++TREE = '9c800e97a2527e7f01c3a4b0be594e6762f9581e'
++PARENT = '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'
+ ANCESTRY = (
++    ('b6949024dc5d0922ca9b27d865923d28982286c3', '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'),
+     ('8c95fb0a8b2f61933a09b04986df2bafc9e7095c', '808e45d690f177ecb922e13d1ed19f7877156094'),
+     ('808e45d690f177ecb922e13d1ed19f7877156094', 'e3afc157447d35c861f275a761b29da3e42aff8e'),
+     ('e3afc157447d35c861f275a761b29da3e42aff8e', '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'),
+@@ -449,7 +450,7 @@
+           'stage_purpose': 'unformatted_snapshot_forward_source_for_separate_formatter_admission',
+           'historical_controls_executed': False, 'candidate_build_qualification': False,
+           'formatter_executed': False, 'rust_tests_executed': False,
+-          'canonical_history_count': 3766, 'actual_build_qualification': False,
++          'canonical_history_count': 3767, 'actual_build_qualification': False,
+           'controls': {}, 'started_ns': time.time_ns()}
+ before = None
+ try:
+@@ -486,21 +487,21 @@
+     for child_commit, parent_commit in ANCESTRY:
+         assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit
+     added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()
+-    assert len(added) == 14 and set(added) == {row[0] for row in ANCESTRY}
++    assert len(added) == 15 and set(added) == {row[0] for row in ANCESTRY}
+     result['new_commits_since_actual_495'] = added
+     assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3752'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3766'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3767'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62460068
+-    assert result['full_worktree']['full_leaf_index_sha256'] == '6baa9290fa3ee8f67bc22a77697d38a7ad1c4c776fc769f5f04ee645de204574'
++    assert result['full_worktree']['tracked_bytes'] == 62463643
++    assert result['full_worktree']['full_leaf_index_sha256'] == '80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+ 
+-    canonical_path = CONTROL / 'canonical-native-snapshot-forward-8c95fb0a-from495.bundle'
++    canonical_path = CONTROL / 'canonical-native-snapshot-forward-b6949024-from495.bundle'
+     assert not os.path.lexists(canonical_path)
+     git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + OLD_COMMIT)
+     canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024)

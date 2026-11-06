@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.root-r38-publication-nonforce-ref-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-validation-20261104",
+    "sha": "4403b2e23ec12b611b4e374cc723546fea821fda",
+    "expected_sha": "ce7664a4d8ff9bb688343a1e0ac906bdfc2a8d95",
+    "force": false
+  },
+  "verified_commit": "4403b2e23ec12b611b4e374cc723546fea821fda",
+  "tree": "578bb457e6d719d6503d5c3f29628d0ae0f2a3e8",
+  "commit_original_sdk": "ff2d7dbd8e9acc6ed0c91130b3f262aeadab0810",
+  "expected_prior_head_verified": true,
+  "not_yet_called": true,
+  "no_replay": true
+}

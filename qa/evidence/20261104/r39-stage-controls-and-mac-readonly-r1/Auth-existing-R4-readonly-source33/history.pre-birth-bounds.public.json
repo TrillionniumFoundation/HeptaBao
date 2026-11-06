@@ -1,0 +1,13 @@
+{
+  "source": {
+    "blob": "988a87b03b28ddee54ca8dc02b0e479ccc8321d2",
+    "bytes": 90380,
+    "sha256": "d17d99076279440b8524db83e6a1b251169edad04ac9cd4543f1be685f2053da"
+  },
+  "change": "require positive birth seconds and microseconds < 1000000 before reporting same/reused birth; no additional IO or changed original helper",
+  "finalSource": {
+    "blob": "467393a64a2a5e7eb92a89df0981b9849217eb87",
+    "bytes": 90450,
+    "sha256": "e8a76931ddd9cf55ef24870e6e84e9e82c94a07a78117c28ee15fe8989ad2c63"
+  }
+}

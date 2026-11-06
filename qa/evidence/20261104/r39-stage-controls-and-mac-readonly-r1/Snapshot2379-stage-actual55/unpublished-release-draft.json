@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.snapshot-2379-independent-stage-owner-release.v1",
+  "host": "rog",
+  "job_id": "1a1b008fa4a-fc05-6d9a",
+  "source_commit": "2379d02bdc5d0922ca9b27d865923d28982286c3",
+  "source_tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+  "root_go": {
+    "blob": "91619d523a338a718d551e90fc1386efe798ca27",
+    "bytes": 7658,
+    "sha256": "261f835215adb811fbcc92f0217186c0557fecce226b415a8c47099dbc9a4ec9"
+  },
+  "request": {
+    "blob": "cbd6774e2f40e2c4b1e0c2f29cbc7954eaff494d",
+    "bytes": 111973,
+    "sha256": "12c03db5255a6373e20773cd09e82effaab754525a6f1cc6856aff61f34f1337"
+  },
+  "unique_process_start": true,
+  "authority": {
+    "blob": "6da55f27d92467f15103a0bde8d1a0f2598ef9e8",
+    "bytes": 729,
+    "sha256": "fc714cd188b940470b1d1724232cd9339719270ce116cee5fb722e81e2b5489d"
+  },
+  "streams": {
+    "blob": "6f4568f2c416ffa937bb48325c5830d26dd93c58",
+    "bytes": 1495,
+    "sha256": "968528ca330b628475e552cbcf2f42d1170ca95bc70cb15e6f0fe9a7e4e9df0d"
+  },
+  "stdout": {
+    "blob": "35c11cc5eee150705650eeace5d592293cad4b83",
+    "bytes": 383,
+    "sha256": "9c0cb22a2ca69c4220b4b04cb95ba451e503b6832b8d70e05109a8ac0d2c7b67"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminal": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "stdout_summary": {
+    "all_owned_stopped": true,
+    "compiler_started": false,
+    "result_path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "server_started": false,
+    "source_commit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "source_tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+    "status": "prepared",
+    "within_new_stage_deadline": true
+  },
+  "original_native_calls": 7,
+  "original_observers": 2,
+  "original_pages": 2,
+  "observers": [
+    {
+      "id": "63eb11ba6363fa901c8e79ab4418ea9f6ce240e82757391fa6c83c4ed696d4b1",
+      "tool": "process_status",
+      "payload": {
+        "blob": "b3979decca3b6b6cb9f49850957fc80a2fdc93ad",
+        "bytes": 908,
+        "sha256": "91470730529fd8bbfa010b8fb6c617aab75d83bd6a43e820e4fba6af0d7da0b6"
+      },
+      "payloadTree": "e11aa38e0e5ff4287430c110b087729e094bbc65",
+      "nativeText": {
+        "blob": "6da55f27d92467f15103a0bde8d1a0f2598ef9e8",
+        "bytes": 729,
+        "sha256": "fc714cd188b940470b1d1724232cd9339719270ce116cee5fb722e81e2b5489d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "502549e6c265343e2d5d8239a65515d474546b02b4dcc8cea72581b114394c1c",
+      "tool": "process_read",
+      "payload": {
+        "blob": "c8358b6dad1688287b62df0ea4c33450a62925df",
+        "bytes": 1684,
+        "sha256": "51dab2dba1e45e822c94dbd57d5dd2250224d826393166d2e4ec9d71fd5cee9d"
+      },
+      "payloadTree": "2bd5929f3d0493a6e28ef8f7ecf3325cab787e82",
+      "nativeText": {
+        "blob": "6f4568f2c416ffa937bb48325c5830d26dd93c58",
+        "bytes": 1495,
+        "sha256": "968528ca330b628475e552cbcf2f42d1170ca95bc70cb15e6f0fe9a7e4e9df0d"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "native_call_in_flight": false,
+  "native_future_active": false,
+  "pending_call": null,
+  "paused": false,
+  "business_process_live": false,
+  "lane_released": true,
+  "detailed_report_observed": false,
+  "detailed_report_file_info_submitted": false,
+  "detailed_report_body_submitted": false,
+  "formatter_started": false,
+  "compiler_started": false,
+  "product_started": false,
+  "stage_child_closure_scope": "stdout reports all_owned_stopped; detailed 60 command records await separately authorized report read",
+  "history_unchanged": [
+    "old failure and UNKNOWN evidence",
+    "8c95 stage remains distinct",
+    "original CLI B04/B05 failure",
+    "four Service tests SOURCE-only"
+  ],
+  "local_journal_available": false,
+  "git_first_original_sdk_whole_before_parse": true
+}

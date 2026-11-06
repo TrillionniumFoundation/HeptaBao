@@ -1,0 +1,8 @@
+{
+  "error": {
+    "error": "ReferenceError: source is not defined",
+    "stack": "ReferenceError: source is not defined\n    at eval (eval at <anonymous> (exec_main.mjs:34:7), <anonymous>:118:232)\n    at eval (eval at <anonymous> (exec_main.mjs:34:7), <anonymous>:120:3)\n    at exec_main.mjs:41:131"
+  },
+  "boundary": "Argument evaluation failed before writer invocation; source/review/GO exact unchanged; no Git or Native call.",
+  "correction": "Load the stored verifier source explicitly."
+}

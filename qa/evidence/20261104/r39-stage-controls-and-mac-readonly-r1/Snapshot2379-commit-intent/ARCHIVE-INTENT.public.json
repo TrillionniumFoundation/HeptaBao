@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-Service-audit-test8-freeze-commit-intent",
+  "records": [
+    {
+      "name": "COMMIT-INTENT.public.json",
+      "blob": "2afbcc36628d9d911cffb6f1b3da8a9e93f9cb47",
+      "bytes": 1546,
+      "sha256": "b3b53f4a122c3934e4259d31166274100657857c11a053d2814bed48e2fd9786"
+    },
+    {
+      "name": "TREE-LAYER-0.original.sdk.json",
+      "blob": "95e4e6ea583c970e0262352b4effa39fe8368c64",
+      "bytes": 14145,
+      "sha256": "10cf47bfb775e74f813af11c406afd4d4dc5560da6b44a4ead6eab4f5313b47c"
+    },
+    {
+      "name": "TREE-LAYER-1.original.sdk.json",
+      "blob": "384f182b90655d5f6e813bf8d9e4fb52161fe092",
+      "bytes": 26141,
+      "sha256": "53d2382c2ec0147b8dcc0d4d53b0e02bde6e200c2a4d10fad3242b63e49afed0"
+    },
+    {
+      "name": "TREE-LAYER-2.original.sdk.json",
+      "blob": "67bc90038d5cb160135fbceb0ae12f5c827590aa",
+      "bytes": 5501,
+      "sha256": "5062ba80b6f6af2cefda336745bd2479998607f0dbf1071c974161f2699b1529"
+    },
+    {
+      "name": "TREE-LAYER-3.original.sdk.json",
+      "blob": "6889c847ed9766ab6864a32033310a933fbbfc0e",
+      "bytes": 435315,
+      "sha256": "017b2c70095d9c67a9df2ec8c54e31786cbc7b11e3c15aaabe14a03f0d7f870c"
+    }
+  ],
+  "expected_data_tree": "22afb3e9b729269b8bd7400e888da27a05f7d4a5",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

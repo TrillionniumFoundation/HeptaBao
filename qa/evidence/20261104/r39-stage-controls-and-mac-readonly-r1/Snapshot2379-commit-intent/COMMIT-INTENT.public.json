@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.root-source-freeze.Service-audit-test8-commit-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "tree_sha": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+    "message": "test(snapshot): exercise real restore audit vetoes through native peers\n\nAdd four isolated Service regressions for source publication and both ingress delivery audit vetoes, plus untrusted pre-exchange and mTLS-denial cases. Bind each one-shot test fault to the actual request nonce, retain actual restore receipts and verify cold reopen. Keep non-test product behavior and prior test bodies unchanged. Source only: formatting, compilation and execution remain pending."
+  },
+  "verified_tree_layers": [
+    {
+      "path": "",
+      "sha": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+      "entries": 26
+    },
+    {
+      "path": "crates",
+      "sha": "743063431acebaa06bbd5f0f04e545daa6c27205",
+      "entries": 49
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "a00080e5408a8f2f525236e4aa7829d787cc8529",
+      "entries": 8
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "e854727c23dd1c5ba7367c55b4b3417be7e9231f",
+      "entries": 792
+    }
+  ],
+  "tree_intent_archive": "d9c594027dac58d8c3014168ee2b101561a17df1",
+  "tree_SDK_archive": "f3f6a3fed2bf164ea2ec9edef524d39197e2ca69",
+  "tree_exact_expected": true,
+  "commit_not_yet_called": true,
+  "mutation_replay_allowed": false,
+  "Runtime": 0
+}

@@ -1,0 +1,20 @@
+--- a/source-verifier.js
++++ b/source-verifier.js
+@@ -3,7 +3,7 @@
+  const checks=[];function check(name,value){checks.push({name,pass:!!value});if(!value)throw Error(name);}
+  check("exact b694 canonical Merkle",audit(canonical).root_sha==="9c800e97a2527e7f01c3a4b0be594e6762f9581e");
+  const map=new Map(canonical.tree.filter(e=>e.type==="blob").map(e=>[e.path,e]));
+- check("5 modified2 new fixed paths",changes.length===5&&newFiles.length===2&&new Set([...changes,...newFiles].map(x=>x.path)).size===7);
++ check("6 modified2 new fixed paths",changes.length===6&&newFiles.length===2&&new Set([...changes,...newFiles].map(x=>x.path)).size===8);
+  for(const c of changes){
+   check("canonical before "+c.name,map.get(c.path)?.sha===c.before.blob&&map.get(c.path)?.size===c.before.bytes);
+   check("before/after whole "+c.name,JSON.stringify(meta(c.beforeText))===JSON.stringify(c.before)&&JSON.stringify(meta(c.afterText))===JSON.stringify(c.after));
+@@ -39,7 +39,7 @@
+  check("no manufactured completion/receipt/root",!fault.includes("CompletionWire::seal(")&&!fault.includes("NativeV6PublishedRoot")&&!fault.includes("NativeHaHistoricalReceipt")&&!fault.includes("publish_native_v6"));
+  check("observations only real fields",fault.includes("original_identity: original.original_identity")&&fault.includes("installed_identity: self.current_state_identity().ok()")&&fault.includes("audit_sequence: self.audit_sequence")&&fault.includes("injected: audit_bytes.is_some()"));
+  check("exact4 test functions",(tests.match(/#\[test\]/g)||[]).length===4);
+- check("real Pipeline and actual production listener",tests.includes("Pipeline::start()?")&&tests.includes(".register_snapshot_forward_handler(")&&tests.includes("Service::serve_native_snapshot_peer(&service, ingress, REQUEST_BUDGET)"));
++ check("real Pipeline and actual production listener",tests.includes("Pipeline::start_for_snapshot_forwarding()?")&&tests.includes(".register_snapshot_forward_handler(")&&tests.includes("Service::serve_native_snapshot_peer(&service, ingress, REQUEST_BUDGET)"));
+  check("no handler strong Service cycle",tests.includes("let weak = Arc::downgrade(service)")&&tests.includes("weak.upgrade()"));
+  check("real archive/once restore path",tests.includes("Zeroizing::new(export(pipeline, leader, pipeline.admin())?)")&&tests.includes("plan.execute(&service, &mut &archive[..]).into_parts()"));
+  check("postarchive finite final use token",tests.indexOf("let (migration_source, archive) = prepare_archive")<tests.indexOf("let token = finite_original_token")&&tests.includes('"num_uses":1')&&tests.includes('assert_eq!(response.body["auth"]["num_uses"], 1)'));

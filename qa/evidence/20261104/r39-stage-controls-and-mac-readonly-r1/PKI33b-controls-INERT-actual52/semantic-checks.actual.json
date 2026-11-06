@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.jwt-pki33b-controls-inert-semantic-checks.v1",
+  "pass": true,
+  "checks": 11,
+  "rows": [
+    {
+      "check": "terminal_original_success",
+      "pass": true
+    },
+    {
+      "check": "whole_original_streams",
+      "pass": true
+    },
+    {
+      "check": "publication_prepared",
+      "pass": true
+    },
+    {
+      "check": "payload_exact",
+      "pass": true
+    },
+    {
+      "check": "compile_only_no_execution",
+      "pass": true
+    },
+    {
+      "check": "exact_three_roles",
+      "pass": true
+    },
+    {
+      "check": "created_exact:native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "check": "created_exact:launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "check": "created_exact:jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "check": "two_observers_seven_calls",
+      "pass": true
+    },
+    {
+      "check": "current_lane_zero",
+      "pass": true
+    }
+  ],
+  "NativeNewCalls": 0
+}

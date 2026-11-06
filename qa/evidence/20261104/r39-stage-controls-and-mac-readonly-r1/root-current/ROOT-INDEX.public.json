@@ -1,0 +1,74 @@
+[
+  {
+    "key": "r39_pki33b_stage_complete_qualification",
+    "blob": "7cdf99e46ba40fe09ab156a09608ee131e28400d",
+    "bytes": 10731,
+    "sha256": "76746d7ea3b03821a5f4a9aea1f4b0ad07ed380b2b765337a5afd68d9443d84a"
+  },
+  {
+    "key": "r39_pki33b_controls_inert_actual_qualification",
+    "blob": "dfd419873cbf01d054033a6c894ec64fbedb3605",
+    "bytes": 7519,
+    "sha256": "0aef246812c716930a14769f4e58de1a5eaf17e2106eab1c0ca3fb32ad72b34f"
+  },
+  {
+    "key": "r39_controls_info26_source_review",
+    "blob": "ac644ca0b18d7bf30e6bb4ee51594dde764dd5be",
+    "bytes": 6560,
+    "sha256": "2c03ec0d40fb6fdece924742673d579519783eb87b8af057ff1d482db0bea03b"
+  },
+  {
+    "key": "r39_pki33b_controls_info_GO",
+    "blob": "151ec9b645dc9480f825162627d356768c253c10",
+    "bytes": 5516,
+    "sha256": "02554b9b9581649eee2d9ed4ac7eebc71dbf172a9d89201aa20c2c19392a956e"
+  },
+  {
+    "key": "r39_snapshot_Service53_source_review",
+    "blob": "0dbf6b3938e5189af890e80f65d4d1c23f086056",
+    "bytes": 17649,
+    "sha256": "da578231e7429d418012f310b5e71dd38c63197bf392b2af65456e16033335c1"
+  },
+  {
+    "key": "r39_snapshot_Service_freeze_proof",
+    "blob": "8b967cbd150207e5335bb22bdcb41887d5809f8f",
+    "bytes": 3258,
+    "sha256": "24fe6c1d76f1ac446873b430967fdf1add994a91fc3bb5e4290ffb5d51788a0a"
+  },
+  {
+    "key": "r39_snapshot2379_stage_source_review",
+    "blob": "455335ee6c13a28a62211d6855a19bc4bbd04c93",
+    "bytes": 7606,
+    "sha256": "2e24ed7e15e7d847556d148b285f183ef679fe5b1f7b1d594f52a6f3723a99cb"
+  },
+  {
+    "key": "r39_snapshot2379_stage_GO",
+    "blob": "91619d523a338a718d551e90fc1386efe798ca27",
+    "bytes": 7658,
+    "sha256": "261f835215adb811fbcc92f0217186c0557fecce226b415a8c47099dbc9a4ec9"
+  },
+  {
+    "key": "r39_snapshot2379_formatter49_source_review",
+    "blob": "ee0a83720e5101983a37eecc9898ae5a08d81592",
+    "bytes": 28499,
+    "sha256": "002b82cb1f8f9206b582e10436ad1450e462bc28e80c54a5b05abd372dce36ed"
+  },
+  {
+    "key": "r39_auth_readonly_r2_actual_qualification",
+    "blob": "e65caf0cf0e3447b50a205d1d6033796dfb75ad8",
+    "bytes": 10848,
+    "sha256": "64eda6fbc05d7cf8de5564d24661945f21e80dd08e71522806f4458b92d0c04c"
+  },
+  {
+    "key": "r39_auth_libproc_r3_source_review",
+    "blob": "90a8fa6f91ae1b80f8d0a22194cf516dfa232f6d",
+    "bytes": 11816,
+    "sha256": "829e9e94ba586940186a3f61c08e0eba714026cba9028fc6f87c7f107256d734"
+  },
+  {
+    "key": "r39_auth_libproc_r3_GO",
+    "blob": "339fb0884b246dedf92994dcfdca7279a802790b",
+    "bytes": 13459,
+    "sha256": "aa19f9d017396b11c778381bd2a165979aa9e5cbacda9a2765ab619098d32b81"
+  }
+]

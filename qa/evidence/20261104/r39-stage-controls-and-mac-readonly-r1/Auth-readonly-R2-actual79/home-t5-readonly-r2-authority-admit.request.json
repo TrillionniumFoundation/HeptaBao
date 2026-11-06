@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owned-home-t5-readonly-32917b77-authority-r2",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1afeed843-fc05-6cd7"
+    }
+  }
+}

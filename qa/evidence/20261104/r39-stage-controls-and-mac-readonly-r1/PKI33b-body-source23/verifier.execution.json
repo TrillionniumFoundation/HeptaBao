@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.pure-v8-execution.v1",
+  "verifier": {
+    "blob": "41a34da5e8c76fb01bc547ced738249fe4aafc50",
+    "bytes": 4882,
+    "sha256": "1d5234f280952debecd4d340875f2d7022c32d5663342dcbe3de98c0164d562d"
+  },
+  "inputs": [
+    {
+      "path": "journal.before.js",
+      "blob": "703a403a43fbd8ce8db9d0e30c21b77d13982900",
+      "bytes": 28250,
+      "sha256": "ac12e9659a0f1aeb182fd0a211a7621d8ce3f7730aa44060b27eacad1645acd3"
+    },
+    {
+      "path": "journal.after.js",
+      "blob": "068abfcedf4a9116e618389f31213b4e31185b72",
+      "bytes": 28270,
+      "sha256": "65d8ad457fa07cf9312ac03e914bf949ba1e04ef15a88d0840b34aaa6234b4f3"
+    },
+    {
+      "path": "journal.strict.diff",
+      "blob": "2f9da6a10f26305be28166beb5e7575ae003f2a6",
+      "bytes": 6442,
+      "sha256": "dcb06a994b241c38564f9d3cb9c828c4f2ca73effa85cd415f8a3e2bbb1b983e"
+    },
+    {
+      "path": "request.before.json",
+      "blob": "53891d75942f028f9511f61724474fc58d3343e6",
+      "bytes": 434,
+      "sha256": "dbe7886be6f77f2c69b0070593e56c24b26f011b3761eb6a7154038070078193"
+    },
+    {
+      "path": "request.exact.json",
+      "blob": "d866eaf8211ae79d4d29153a3cc47de776f51863",
+      "bytes": 442,
+      "sha256": "ae5cde505b6eadb04033a334a7d795ca94a81d7f0986e4332b477fd0f2884f0d"
+    },
+    {
+      "path": "BINDINGS.public.json",
+      "blob": "2edb7d59d027b06d220e09e611512cab0b8fdf92",
+      "bytes": 5453,
+      "sha256": "c32d730f5aae357cd58ff17861c316e1f40ea8269b342a0f08a04311fa6e1a0e"
+    },
+    {
+      "path": "info.native.original.json",
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    },
+    {
+      "path": "info.status.original.json",
+      "blob": "8fc5b7e82f2f8271ccb34b8dc6c359fac97b11f6",
+      "bytes": 800,
+      "sha256": "0e8f7487a17400c2bd2393adc2dfa0d770c072d315c9177effb1cda7a0d3bbfb"
+    }
+  ],
+  "result": {
+    "blob": "3969ef7e68609600bbb810832a98d131e1450ed4",
+    "bytes": 4502,
+    "sha256": "b31d81d5c10b8483af801c58770f402a94120bf45f4a27779c45f52630a115bb"
+  },
+  "candidateExecuted": false,
+  "Native": 0,
+  "processes": 0,
+  "pass": true
+}

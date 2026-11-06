@@ -1,0 +1,908 @@
+{
+  "schema": "heptabao.snapshot2379-stage-format49-source-checks.v1",
+  "pass": true,
+  "count": 224,
+  "checks": [
+    {
+      "name": "canonical root 358 Merkle",
+      "pass": true
+    },
+    {
+      "name": "parent b694 root",
+      "pass": true
+    },
+    {
+      "name": "3930 versus3928 leaves",
+      "pass": true
+    },
+    {
+      "name": "exact6modified2new no delete",
+      "pass": true
+    },
+    {
+      "name": "3922 unchanged",
+      "pass": true
+    },
+    {
+      "name": "service change service.rs",
+      "pass": true
+    },
+    {
+      "name": "service change service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "service change service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "service change service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "service change service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "service change service_native_v6_ha_pipeline_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "service new crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+      "pass": true
+    },
+    {
+      "name": "service new crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "tracked62486000",
+      "pass": true
+    },
+    {
+      "name": "index453627 exact",
+      "pass": true
+    },
+    {
+      "name": "current exact commit soleparent",
+      "pass": true
+    },
+    {
+      "name": "b694 exact parent unaffected",
+      "pass": true
+    },
+    {
+      "name": "49 union",
+      "pass": true
+    },
+    {
+      "name": "49 unique basename",
+      "pass": true
+    },
+    {
+      "name": "46 original order preserved",
+      "pass": true
+    },
+    {
+      "name": "5 intersection3 added",
+      "pass": true
+    },
+    {
+      "name": "49 exact total2023746",
+      "pass": true
+    },
+    {
+      "name": "canonical49 authenticated_peer_frame.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 lib.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 native_snapshot_body.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 native_snapshot_body_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 native_snapshot_peer.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 native_snapshot_peer_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 auth_forward_actor.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 auth_snapshot_forward_actor_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 ha.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 ha_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 http.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 http_snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_forward_delivery.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_forward_file.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_forward_wire.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_forward_wire_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_v6_ha.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_v6_ha_restore.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_controlgroups_271_namespace_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_controlgroups_271_namespace_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_file_gc_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_flat_retirement_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_kv2_import_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_kv2_large_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_kv2_mount_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_kv2_storage_witness_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_namespace_tree_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_pki_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_remount_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_ssh_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_storage_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_transit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_v6_ha_cold_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_v6_ha_restore_borrowed_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_v6_ha_snapshot_repair_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_v6_ha_snapshot_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_v6_migration_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_rate_limit_quota_139_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_lossless_export_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_v6_ha_pipeline_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_snapshot_forward_test_faults.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical49 service_native_snapshot_forward_audit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "stage literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 3 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 4 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 5 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 6 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 7 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 8 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 9 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 10 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal 11 unique",
+      "pass": true
+    },
+    {
+      "name": "stage literal whole",
+      "pass": true
+    },
+    {
+      "name": "stage exact predecessor",
+      "pass": true
+    },
+    {
+      "name": "stage strict forward",
+      "pass": true
+    },
+    {
+      "name": "stage strict reverse",
+      "pass": true
+    },
+    {
+      "name": "stage whole source pin",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 3 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 4 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 5 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 6 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 7 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 8 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal 9 unique",
+      "pass": true
+    },
+    {
+      "name": "formatter literal whole",
+      "pass": true
+    },
+    {
+      "name": "formatter exact predecessor",
+      "pass": true
+    },
+    {
+      "name": "formatter strict forward",
+      "pass": true
+    },
+    {
+      "name": "formatter strict reverse",
+      "pass": true
+    },
+    {
+      "name": "formatter whole source pin",
+      "pass": true
+    },
+    {
+      "name": "stageJournal literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "stageJournal literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "stageJournal literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "stageJournal literal whole",
+      "pass": true
+    },
+    {
+      "name": "stageJournal exact predecessor",
+      "pass": true
+    },
+    {
+      "name": "stageJournal strict forward",
+      "pass": true
+    },
+    {
+      "name": "stageJournal strict reverse",
+      "pass": true
+    },
+    {
+      "name": "stageJournal whole source pin",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal literal 0 unique",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal literal 1 unique",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal literal 2 unique",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal literal whole",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal exact predecessor",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal strict forward",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal strict reverse",
+      "pass": true
+    },
+    {
+      "name": "formatterJournal whole source pin",
+      "pass": true
+    },
+    {
+      "name": "4-3-2-2 hunks",
+      "pass": true
+    },
+    {
+      "name": "12-10-3-3 literals",
+      "pass": true
+    },
+    {
+      "name": "stage20 defs",
+      "pass": true
+    },
+    {
+      "name": "stage def 0 on_signal",
+      "pass": true
+    },
+    {
+      "name": "stage def 1 digest",
+      "pass": true
+    },
+    {
+      "name": "stage def 2 blob",
+      "pass": true
+    },
+    {
+      "name": "stage def 3 identity",
+      "pass": true
+    },
+    {
+      "name": "stage def 4 stable_read",
+      "pass": true
+    },
+    {
+      "name": "stage def 5 fsync_dir",
+      "pass": true
+    },
+    {
+      "name": "stage def 6 create",
+      "pass": true
+    },
+    {
+      "name": "stage def 7 public",
+      "pass": true
+    },
+    {
+      "name": "stage def 8 group_members",
+      "pass": true
+    },
+    {
+      "name": "stage def 9 stop_owned",
+      "pass": true
+    },
+    {
+      "name": "stage def 10 owned",
+      "pass": true
+    },
+    {
+      "name": "stage def 11 git",
+      "pass": true
+    },
+    {
+      "name": "stage def 12 stage_remaining",
+      "pass": true
+    },
+    {
+      "name": "stage def 13 owned",
+      "pass": true
+    },
+    {
+      "name": "stage def 14 freeze",
+      "pass": true
+    },
+    {
+      "name": "stage def 15 preserve_failed_observer",
+      "pass": true
+    },
+    {
+      "name": "stage def 16 walk_error",
+      "pass": true
+    },
+    {
+      "name": "stage def 17 independent_git",
+      "pass": true
+    },
+    {
+      "name": "stage def 18 verify_full_worktree",
+      "pass": true
+    },
+    {
+      "name": "stage def 19 canonical_bundle_header",
+      "pass": true
+    },
+    {
+      "name": "formatter5 defs",
+      "pass": true
+    },
+    {
+      "name": "formatter def 0",
+      "pass": true
+    },
+    {
+      "name": "formatter def 1",
+      "pass": true
+    },
+    {
+      "name": "formatter def 2",
+      "pass": true
+    },
+    {
+      "name": "formatter def 3",
+      "pass": true
+    },
+    {
+      "name": "formatter def 4",
+      "pass": true
+    },
+    {
+      "name": "stage exact request meta",
+      "pass": true
+    },
+    {
+      "name": "stage code argv",
+      "pass": true
+    },
+    {
+      "name": "stage original79951 stdin",
+      "pass": true
+    },
+    {
+      "name": "stage360 unchanged host/tool/cwd",
+      "pass": true
+    },
+    {
+      "name": "stage only binding fields",
+      "pass": true
+    },
+    {
+      "name": "stage source key",
+      "pass": true
+    },
+    {
+      "name": "stage 300/90/180 unchanged",
+      "pass": true
+    },
+    {
+      "name": "stage history3768/16",
+      "pass": true
+    },
+    {
+      "name": "16 exact ancestry",
+      "pass": true
+    },
+    {
+      "name": "new source root",
+      "pass": true
+    },
+    {
+      "name": "formatter exact request meta",
+      "pass": true
+    },
+    {
+      "name": "formatter code argv",
+      "pass": true
+    },
+    {
+      "name": "formatter original60 host/tool/cwd",
+      "pass": true
+    },
+    {
+      "name": "formatter only bindings",
+      "pass": true
+    },
+    {
+      "name": "formatter manifest7155 within262144",
+      "pass": true
+    },
+    {
+      "name": "formatter49 dictionary geometry",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin authenticated_peer_frame.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin lib.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin native_snapshot_body.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin native_snapshot_body_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin native_snapshot_peer.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin native_snapshot_peer_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin auth_forward_actor.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin auth_snapshot_forward_actor_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin ha.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin ha_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin http.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin http_snapshot.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_forward_delivery.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_forward_file.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_forward_wire.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_forward_wire_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_transfer.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_v6_ha.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_v6_ha_restore.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_controlgroups_271_namespace_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_controlgroups_271_namespace_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_file_gc_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_flat_retirement_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_kv2_import_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_kv2_large_ha_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_kv2_mount_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_kv2_storage_witness_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_namespace_tree_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_pki_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_remount_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_ssh_archive_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_storage_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_transit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_v6_ha_cold_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_v6_ha_restore_borrowed_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_v6_ha_snapshot_repair_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_v6_ha_snapshot_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_v6_migration_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_rate_limit_quota_139_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_lossless_export_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_v6_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_v6_ha_pipeline_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_snapshot_forward_test_faults.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter49 pin service_native_snapshot_forward_audit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "formatter key",
+      "pass": true
+    },
+    {
+      "name": "formatter50 shared/10 child",
+      "pass": true
+    },
+    {
+      "name": "formatter exact source metadata",
+      "pass": true
+    },
+    {
+      "name": "stage typed digest/FP",
+      "pass": true
+    },
+    {
+      "name": "formatter typed digest/FP",
+      "pass": true
+    },
+    {
+      "name": "stage journal exact request",
+      "pass": true
+    },
+    {
+      "name": "formatter journal exact request",
+      "pass": true
+    },
+    {
+      "name": "new slots independent",
+      "pass": true
+    },
+    {
+      "name": "old observer caps unchanged",
+      "pass": true
+    },
+    {
+      "name": "198 future fixed output files",
+      "pass": true
+    },
+    {
+      "name": "not runtime tested",
+      "pass": true
+    }
+  ],
+  "newNativeCalls": 0,
+  "candidateFunctionCalls": 0,
+  "RustFormatting": false,
+  "RustCompilation": false,
+  "testsExecuted": 0
+}

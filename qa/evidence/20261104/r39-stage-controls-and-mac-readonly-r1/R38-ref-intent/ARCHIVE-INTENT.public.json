@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-validation-ref-intent",
+  "records": [
+    {
+      "name": "REF-INTENT.json",
+      "blob": "868cc52642b71d23153bd6d1994246ba27f283e7",
+      "bytes": 624,
+      "sha256": "34da4286c0321fd88741bfb1cf6cb942f0d13b21697949a4a15123a4bbed4887"
+    },
+    {
+      "name": "COMMIT-READBACK.original.sdk.json",
+      "blob": "116682c508f5347f75709a394831694d376f376a",
+      "bytes": 4137,
+      "sha256": "39c6abf8e0d893a27acac30a6db5c8cca1b18211a891956660d314f7489ec6b0"
+    }
+  ],
+  "expected_data_tree": "21f5ba3b126379854e24f2190388c97b9c97e92a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

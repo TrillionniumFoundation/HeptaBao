@@ -1,0 +1,18 @@
+{
+  "ok": false,
+  "action": "prepare",
+  "failure": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "prepare",
+    "name": "Error",
+    "message": "same_closed_original_operation_next_page",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "pin": {
+    "blob": "29702a6bdaa45a33b23389cef0d89b6cce7edb8e",
+    "bytes": 246,
+    "sha256": "3cec331779379b2607b0dd64fe129cd8ad7443f2ab3e691ae43cbae0f7b8ed28"
+  }
+}

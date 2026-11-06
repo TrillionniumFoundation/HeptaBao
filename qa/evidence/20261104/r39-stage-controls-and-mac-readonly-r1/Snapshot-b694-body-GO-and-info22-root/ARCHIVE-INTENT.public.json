@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-b694-info-body-qualified-GO",
+  "records": [
+    {
+      "name": "INFO22.root-qualification.json",
+      "blob": "034bd53236d4e4a7de9e881cbd3e61062107a3a1",
+      "bytes": 4598,
+      "sha256": "eb8be24343c9285b1a343c30c76acd8c2354040e40c2e59730e3a1209790a30d"
+    },
+    {
+      "name": "BODY32.root-source-review.json",
+      "blob": "36407e60e1a44784f2efb119789c6a5563c141d0",
+      "bytes": 3939,
+      "sha256": "23aa73e2b011f36123d3ead1a565712db61234c38c4f93321c6dbe79f01aa868"
+    },
+    {
+      "name": "BODY.exact-GO.json",
+      "blob": "830f4dada4a3dca14db6632f1594b1550dfa0897",
+      "bytes": 3425,
+      "sha256": "69a30cdee447d5477544c78649095d193dc7a0d89c264979d2fabbb5765af8b7"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "d4beaca0ff2c2195dd44a6e18b6c1816e4c93db3",
+      "bytes": 9483,
+      "sha256": "6ad57e476601ec0d0c49baa2c2e4c117edca1e5111251f2f9d5d7e9bb470bbb5"
+    },
+    {
+      "name": "journal-verifier.original.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "2347c8c799d75cfc120cf1a5ed967b67f82de1ec",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

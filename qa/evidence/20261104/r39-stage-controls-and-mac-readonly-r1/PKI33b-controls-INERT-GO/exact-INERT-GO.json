@@ -1,0 +1,191 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-ready-controls-inert.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "create_only_inert_build_controls_publication",
+  "purpose": "Publish three exact current33b build controls and one public receipt under one absent QA root; compile syntax only, then collect original terminal and whole streams.",
+  "source_packet": "8fc5a3a1b0c957b163a46b2c1eb1ef29ec70f54d",
+  "source_review": {
+    "blob": "dcff8731146da337823480560ed55b1108b58542",
+    "bytes": 8463,
+    "sha256": "1068816f28e953217087f7969f7ab7ce8e67fd39a5dee09ddb91709302fc5162"
+  },
+  "source_review_checks": 45,
+  "source": {
+    "blob": "15dc11870ccac0b5baa7088611cef03e58bfe727",
+    "bytes": 5182,
+    "sha256": "8724a95bcc73e02298949ad5942f85a65c50f554ddcff4d687d209f55464c88f"
+  },
+  "components": {
+    "runner": {
+      "blob": "cf25a5f2a3f75b63374f99f7b0245ecfdf2c13e9",
+      "bytes": 30397,
+      "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add"
+    },
+    "launcher": {
+      "blob": "4c90f7e5dba00636f7e08840e892db679c7d2600",
+      "bytes": 38565,
+      "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056"
+    },
+    "publisher": {
+      "blob": "15dc11870ccac0b5baa7088611cef03e58bfe727",
+      "bytes": 5182,
+      "sha256": "8724a95bcc73e02298949ad5942f85a65c50f554ddcff4d687d209f55464c88f"
+    }
+  },
+  "groups": {
+    "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+    "bytes": 19789,
+    "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+  },
+  "exact_request": {
+    "blob": "b304be2ede7fccc0c7013e7b2974d2637a7f7667",
+    "bytes": 124154,
+    "sha256": "b3982988fe15b71e804524b13c1d5e5ac5b462930446ef492e3f65585dac9e03"
+  },
+  "stdin": {
+    "blob": "0739c58af109c08f9a379b1c2db28fa4ba60126d",
+    "bytes": 118531,
+    "sha256": "7afbd432447feee5fbee147c747baa6f084f8286aaea0b427bc19952f83cdf44"
+  },
+  "native_binding": {
+    "sha256": "a636f467fbcec296d27884e543096819ba4fdfffec8c921640c797c78b5c8814",
+    "native_fingerprint": "11977028986481853078",
+    "typed_stdin": true
+  },
+  "start": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "args_source": {
+      "blob": "15dc11870ccac0b5baa7088611cef03e58bfe727",
+      "bytes": 5182,
+      "sha256": "8724a95bcc73e02298949ad5942f85a65c50f554ddcff4d687d209f55464c88f"
+    },
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-native-jwt-pki-33b814c7-controls-inert-r1-8724a95b",
+    "maximum_START_count": 1
+  },
+  "source_stage_qualification": {
+    "blob": "7cdf99e46ba40fe09ab156a09608ee131e28400d",
+    "bytes": 10731,
+    "sha256": "76746d7ea3b03821a5f4a9aea1f4b0ad07ed380b2b765337a5afd68d9443d84a"
+  },
+  "new_create_only_root": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1",
+  "publication": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qian-qi",
+    "outerSeconds": 60,
+    "stdinCapBytes": 262144,
+    "actualPayloadBytes": 118531,
+    "root": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1",
+    "rootMustBeAbsent": true,
+    "files": [
+      "native_jwt_build.py",
+      "launch_native_jwt_build.py",
+      "jwt-test-groups.public.json",
+      "inert-stage.result.public.json"
+    ],
+    "fileMode": "0600",
+    "directoryMode": "0700",
+    "compileOnly": true,
+    "runRunner": false,
+    "runLauncher": false,
+    "subprocess": false,
+    "network": false,
+    "Cargo": false,
+    "sourceCheckoutWrite": false
+  },
+  "helpers": {
+    "native": {
+      "blob": "d61f0eb0d9773af4f7808f2a850d2ae325cea989",
+      "bytes": 19060,
+      "sha256": "c58a0dcc58e09fc3cd8161066045827b582756756bc53a45c6bbbfce0caf6916"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "correctBinding": {
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    "do_not_use_legacy_processStartBinding": true
+  },
+  "journal": {
+    "slot": "jwt_pki_33b814c7_build_controls_inert_gitfirst_r1",
+    "call_key_prefix": "jwt-pki-33b814c7-controls-",
+    "observer_key_prefix": "heptabao-native-jwt-pki-33b814c7-controls-observe-r1-",
+    "invoke_only_through": "gfRun",
+    "initialize_only_once_with_exact_whole_GO": true
+  },
+  "budgets": {
+    "outer_seconds": 60,
+    "stdin_cap_bytes": 262144,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "future_build_budgets_unchanged": {
+    "release": 1800,
+    "compileShared": 3600,
+    "compileCommands": 3,
+    "listingMax": 30,
+    "familyShared": 600,
+    "families": 4,
+    "outer": 12000,
+    "cleanupTerm": 5,
+    "cleanupKill": 5,
+    "deadlineReset": false,
+    "publisherOuter": 60,
+    "publisherStdin": 262144,
+    "publisherPayloadActual": 118531
+  },
+  "denominators": {
+    "existing_unique": 132,
+    "new_jwt_unique": 15,
+    "new_pki_unique": 2,
+    "new_unique": 17,
+    "selected_unique": 149,
+    "new_jwt_profile_instances": 30,
+    "new_pki_profile_instances": 4,
+    "profile_instances": 166
+  },
+  "lane_activation": "C may use one Native lane now alongside B original report-body observer. A and root zero Native. At most2 lanes total and one call/future per lane; no interpretation that old managed/helper UNKNOWN is closed.",
+  "sequence": [
+    "Whole this exact GO and initialize only the fresh journal slot once with root-correct typed-stdin digest and lossless fingerprint.",
+    "Whole exact request,intent,armed externally; return across an independent dispatch boundary before the one exact process_start.",
+    "Preserve original SDK externally and whole-read it before parsing or examining isError. Unknown admission retains original key and no replay.",
+    "Follow only the actual original rog job with original status/streams operation IDs and contiguous8192 pages. Require full immutable SHA/EOF and completed inactive observer closure.",
+    "Require actual terminal exit0,full,durable,confirmed, original complete streams and publication status prepared; preserve any failure without starting runner or launcher.",
+    "Close all original observers and release this lane. Separately bind actual publication receipt and independent exact files before build request; Cargo requires concrete exact build GO."
+  ],
+  "excluded": [
+    "Cargo,rustc,rustfmt,runner/launcher execution,tests,service or product",
+    "source checkout writes,credential/provider/production access,J3160,client switching,cleanup",
+    "file_info or binary_read not present in this exact journal; subsequent files require exact concrete proposals",
+    "retry,rekey,alternate root,deadline extension,UNKNOWN replacement"
+  ],
+  "inert_publication_executed": false,
+  "compiler_or_tests_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

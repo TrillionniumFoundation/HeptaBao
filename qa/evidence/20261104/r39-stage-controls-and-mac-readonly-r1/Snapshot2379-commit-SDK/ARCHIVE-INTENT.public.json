@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-Service-audit-test8-freeze-commit-SDK",
+  "records": [
+    {
+      "name": "ORIGINAL-SDK.public.json",
+      "blob": "aa8bf13a14b214664e04aa64b300e90613c4f066",
+      "bytes": 195,
+      "sha256": "2a279d1e729aba36b76dc7614558f5ba79a05725428b111c1a7251181b1a6081"
+    }
+  ],
+  "expected_data_tree": "ea48e71a940210553a4667827ffd36dcd0a9b296",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

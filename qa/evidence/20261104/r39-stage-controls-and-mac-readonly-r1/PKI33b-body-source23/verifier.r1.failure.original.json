@@ -1,0 +1,15 @@
+{
+  "name": "Error",
+  "message": "single_chunk_and_original_caps",
+  "verifierPin": {
+    "blob": "046b5b4a492e52c22987ebec3c8574a463892b0b",
+    "bytes": 4876,
+    "sha256": "007c8321c3eedc1926f2ffea307c087cc99a5e3359792a5c914cca031b92df0a"
+  },
+  "candidatePin": {
+    "blob": "068abfcedf4a9116e618389f31213b4e31185b72",
+    "bytes": 28270,
+    "sha256": "65d8ad457fa07cf9312ac03e914bf949ba1e04ef15a88d0840b34aaa6234b4f3"
+  },
+  "Runtime": 0
+}

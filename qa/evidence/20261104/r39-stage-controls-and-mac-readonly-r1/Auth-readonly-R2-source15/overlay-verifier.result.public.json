@@ -1,0 +1,94 @@
+{
+  "ok": true,
+  "checkCount": 18,
+  "checks": [
+    {
+      "name": "preserved_r1_source",
+      "passed": true
+    },
+    {
+      "name": "two_source_hunks",
+      "passed": true
+    },
+    {
+      "name": "source_forward_exact",
+      "passed": true
+    },
+    {
+      "name": "source_reverse_exact",
+      "passed": true
+    },
+    {
+      "name": "only_two_dynamic_hash_fields_removed",
+      "passed": true
+    },
+    {
+      "name": "all_nonpayload_request_fields_unchanged",
+      "passed": true
+    },
+    {
+      "name": "request_exact_new_source",
+      "passed": true
+    },
+    {
+      "name": "source_bound_fresh_key",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_exact",
+      "passed": true
+    },
+    {
+      "name": "journal_reverse_exact",
+      "passed": true
+    },
+    {
+      "name": "only_journal_identity_binding_changed",
+      "passed": true
+    },
+    {
+      "name": "same_original_budgets",
+      "passed": true
+    },
+    {
+      "name": "same_pinned_inputs",
+      "passed": true
+    },
+    {
+      "name": "same_original_parser",
+      "passed": true
+    },
+    {
+      "name": "same_no_managed_effect_scope",
+      "passed": true
+    },
+    {
+      "name": "contract_three_wholepins",
+      "passed": true
+    },
+    {
+      "name": "fresh_dynamic_hashes_explicitly_absent",
+      "passed": true
+    },
+    {
+      "name": "still_source_only",
+      "passed": true
+    }
+  ],
+  "scope": "pure source overlay; original 78 not rerun; no Python or Native",
+  "source": {
+    "blob": "15002c2fb720188546a25045d7d3bb3f743fabba",
+    "bytes": 90416,
+    "sha256": "32917b77d7bcbcec3016610e17b7758f919b9dc0971c912f0ab18c170763d989"
+  },
+  "request": {
+    "blob": "2e5f413a527d0cb6de8d3403282dcd56ef197308",
+    "bytes": 93145,
+    "sha256": "edc6d1f1e68b5224b8af5c7ab53c3b73d753ca8381b6bde3947a8c859f2f18ec"
+  },
+  "journal": {
+    "blob": "89252ff15dacd03efcac832d0f24b80203274dd6",
+    "bytes": 19053,
+    "sha256": "66eaf0e3a879dc4b5eb9f3744445886b1030f55cf86d8c4623c1ebd2cccfa0a6"
+  }
+}

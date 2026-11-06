@@ -1,0 +1,376 @@
+{
+  "schema": "heptabao.root-source-review.Mac-existing-label-readonly-libproc-R3.v1",
+  "status": "PASS_FIXED_PID_READONLY_SOURCE",
+  "checks": [
+    {
+      "name": "whole41_1160685",
+      "passed": true
+    },
+    {
+      "name": "root69_original_failure_and_previous_source",
+      "passed": true
+    },
+    {
+      "name": "whole_original_R2_observation",
+      "passed": true
+    },
+    {
+      "name": "six_source_hunks_exact_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "request_only_source_key_changed",
+      "passed": true
+    },
+    {
+      "name": "prior_actual_typed_positive_control",
+      "passed": true
+    },
+    {
+      "name": "journal_two_hunks_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "journal_all_other_algorithm_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "name": "entire_preamble_helpers_reader_FixedIO_parser_childvalidators_unchanged",
+      "passed": true
+    },
+    {
+      "name": "only_six_fixed_new_error_codes",
+      "passed": true
+    },
+    {
+      "name": "only_explicit_target_ps_method_replaced",
+      "passed": true
+    },
+    {
+      "name": "same_two_embedded_original_ownership_helpers",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_library",
+      "passed": true
+    },
+    {
+      "name": "original_signature",
+      "passed": true
+    },
+    {
+      "name": "fixed_numeric_API",
+      "passed": true
+    },
+    {
+      "name": "six_before_call",
+      "passed": true
+    },
+    {
+      "name": "call_ledger_before_entry",
+      "passed": true
+    },
+    {
+      "name": "clear_capture_errno",
+      "passed": true
+    },
+    {
+      "name": "immediate_errno",
+      "passed": true
+    },
+    {
+      "name": "complete_numeric_identity",
+      "passed": true
+    },
+    {
+      "name": "explicit_ABI136",
+      "passed": true
+    },
+    {
+      "name": "self_numeric",
+      "passed": true
+    },
+    {
+      "name": "two_self_samples",
+      "passed": true
+    },
+    {
+      "name": "exact_ready_only",
+      "passed": true
+    },
+    {
+      "name": "same_target_tuples",
+      "passed": true
+    },
+    {
+      "name": "same_4s_clipped35",
+      "passed": true
+    },
+    {
+      "name": "read_failure_unknown",
+      "passed": true
+    },
+    {
+      "name": "ESRCH_query_fact",
+      "passed": true
+    },
+    {
+      "name": "ESRCH_not_absence",
+      "passed": true
+    },
+    {
+      "name": "no_kernel_qualification",
+      "passed": true
+    },
+    {
+      "name": "no_zombie_execution_claim",
+      "passed": true
+    },
+    {
+      "name": "old_helper_UNKNOWN",
+      "passed": true
+    },
+    {
+      "name": "old_managed_UNKNOWN",
+      "passed": true
+    },
+    {
+      "name": "no_fixed_foreign_PID_read",
+      "passed": true
+    },
+    {
+      "name": "ESRCH_not_departure_or_closure",
+      "passed": true
+    },
+    {
+      "name": "all_retained_budgets_and_only_target_ps_removal",
+      "passed": true
+    },
+    {
+      "name": "all_original_full9_pins_no_new_fs_or_credential_scope",
+      "passed": true
+    },
+    {
+      "name": "official_exact_original_bsd/kern/proc_info.c",
+      "passed": true
+    },
+    {
+      "name": "official_exact_original_bsd/sys/proc_info.h",
+      "passed": true
+    },
+    {
+      "name": "official_exact_original_libsyscall/wrappers/libproc/libproc.c",
+      "passed": true
+    },
+    {
+      "name": "official_exact_original_libsyscall/wrappers/libproc/libproc.h",
+      "passed": true
+    },
+    {
+      "name": "official_wrapper_and_kernel_branch_with_policy",
+      "passed": true
+    },
+    {
+      "name": "author66_reproduced_pure_source_not_Python",
+      "passed": true
+    },
+    {
+      "name": "new_slot_uninitialized_no_product_qualification",
+      "passed": true
+    }
+  ],
+  "check_count": 44,
+  "source_packet": "f687a33d835005a58a03db8980183bb3e9f1279e",
+  "source": {
+    "blob": "1ba4cec6b0ce49db5111b429ffe337064ce42dbb",
+    "bytes": 93249,
+    "sha256": "86512cae0db15a19e1f052b4bac786e7a612bc6dfd948f1e605f14077ca0b21e"
+  },
+  "exact_request": {
+    "blob": "108f52fa6b6032079f805195794805b390228d97",
+    "bytes": 96033,
+    "sha256": "680aa388879b7025d06cd00625a8e83dd5fa1efb858223c4c232c319c2aa5b48"
+  },
+  "native_binding": {
+    "sha256": "15cdfe572fe9532280cb5782239e25cf1ce62476ea9565eace4266a693faaf28",
+    "native_fingerprint": "1571191495441601314"
+  },
+  "journal": {
+    "blob": "49c76552dbf87ac51033db785b1660aaaf0d1810",
+    "bytes": 19061,
+    "sha256": "0ecb12c80802de5864caab693faceed4fbbb9c3e8e072c1ceaf1b0e5070d14ba"
+  },
+  "slot": "owner_launchd_home_t5_existing_readonly_libproc_gitfirst_r3",
+  "request_key": "heptabao-mac-owned-home-t5-readonly-86512cae-20261106-r3",
+  "contract": {
+    "blob": "452dab6c7cb661fb7542479772f528ede73c7766",
+    "bytes": 20286,
+    "sha256": "130827679fed98be336a56cd010cba5f08d70a95bd96468084188f1e28d36f11"
+  },
+  "original_R2_root": {
+    "blob": "e65caf0cf0e3447b50a205d1d6033796dfb75ad8",
+    "bytes": 10848,
+    "sha256": "64eda6fbc05d7cf8de5564d24661945f21e80dd08e71522806f4458b92d0c04c"
+  },
+  "budgets": {
+    "controllerSuccessSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "directCommandsMaximum": 4,
+    "eachPrintSeconds": 10,
+    "eachPrintPerStreamBytes": 65536,
+    "returnedDirectCommandBytesAggregate": 1048576,
+    "originalOwnerCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "applicationFdsCap": 64,
+    "maximumDeclaredApplicationFds": 21,
+    "maximumDeclaredSimultaneousApplicationFds": 15,
+    "maximumDeclaredDirectoryFds": 14,
+    "maximumDeclaredLeafFds": 7,
+    "applicationMetadataCap": 4096,
+    "applicationReadCallsCap": 256,
+    "applicationReadBytesCap": 262144,
+    "sumSuccessfulBodyMaxima": 118977,
+    "oneOverflowByteIsCountedBeforeFailure": true,
+    "applicationWriteCallsCap": 0,
+    "applicationWriteBytesCap": 0,
+    "controllerStdoutCap": 65536,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192,
+    "eachReadyPidNativeObservationSeconds": 4,
+    "nativeCallsMaximum": 6,
+    "nativeSelfCallsMaximum": 2,
+    "nativeReadyPidCallsMaximum": 4,
+    "nativeStructBytes": 136,
+    "nativeReturnedStructBytesMaximum": 816,
+    "explicitReadyPidPsChildren": 0,
+    "reachablePrintCommandsMaximum": 2
+  },
+  "native_projection": {
+    "fixedLibrary": "/usr/lib/libproc.dylib",
+    "originalProcessReaderUnchanged": true,
+    "flavor": 3,
+    "arg": 1,
+    "requestZombieLookup": true,
+    "fullSize": 136,
+    "offsets": {
+      "status": 4,
+      "pid": 12,
+      "ppid": 16,
+      "uid": 20,
+      "pgid": 100,
+      "birth_sec": 120,
+      "birth_usec": 128
+    },
+    "allowedPids": "Current diagnostic self only for the two local ABI/identity crosschecks, then only ready.identity.pid after the exact original validator and fixed-plan/source/home binding; no hardcoded foreign PID.",
+    "targetPathsOrArgsRead": false,
+    "processListOrGroupEnumeration": false,
+    "errnoCapturedImmediately": true,
+    "fullNumericTuple": "pid, ppid, pgid, uid, status, birth_sec, birth_usec; full tuple must match between each pair, only bounded classification booleans/return length and ESRCH number are public",
+    "noReturnClassification": "Only count=0 with errno=ESRCH is a typed lookup_esrch observation. Two such results publish originalBirthPresent=null and existenceOrDepartureAutomaticallyConcluded=false. No absence, exit, ownership or cleanup is automatically inferred.",
+    "otherErrors": "Short/wrong-size return, other errno, PID/birth mismatch or late return refuses the diagnostic. Exceptions during C read/validation set new observation unknown; outer closure still runs.",
+    "sampleDisagreement": "Different result kinds or different present tuples refuse a complete observation. No sampling retry.",
+    "presentClassification": "Same reported birth is same_birth_present; a different reported birth is reused_different_birth and never owned or signalled. DepartureObservedTwice is restricted to two reused_different_birth observations; ESRCH has a separate factual flag.",
+    "selfQualificationBoundary": "Exact sizeof/offsets and two same-birth basic-identity samples qualify only this proposed runtime observation if actually executed successfully. No installed-kernel whole pin, installed image hash, actual zombie-branch execution or blanket API permission is claimed.",
+    "currentStatus": "SOURCE_ONLY_NOT_EXECUTED"
+  },
+  "ownership": {
+    "newManagedChildStarted": false,
+    "existingManagedPidSignalled": false,
+    "existingManagedPidReaped": false,
+    "registrationMutated": false,
+    "bootstrap": false,
+    "bootout": false,
+    "onlyDirectHelpersUseOriginalWNOWAITAndCleanup": true,
+    "managedReadIsConditionalOnQualifiedPublicReady": true,
+    "reusedPidIsNotOwnedOrSignalled": true,
+    "departureObservationIsTwoDiscreteCurrentSamples": true,
+    "noContinuousAbsenceClaim": true,
+    "historicalReadonlyR2Helper87650ClosureUnknown": true,
+    "queryOrSignalOrReap87650": false,
+    "explicitReadyPidPsRemoved": true,
+    "originalCommandsInternalCustodyPsUnchanged": true,
+    "libprocEsrchNotAutomaticDeparture": true
+  },
+  "pinned_inputs": {
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.public.py": {
+      "identity": [
+        "16777233",
+        "592904416",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "36522",
+        "1793950344732464747",
+        "1793950344732464747"
+      ],
+      "bytes": 36522,
+      "sha256": "b4f52562e8e861a30bfd942399ec2229cbb52ffddd06240950b99d746686cd00"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/plan.public.json": {
+      "identity": [
+        "16777233",
+        "592904417",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1108",
+        "1793950344732730209",
+        "1793950344732730209"
+      ],
+      "bytes": 1108,
+      "sha256": "da3f2a88a5fd382eeb3eb4a7291a102c8806f03f08220c363ba8bf537a1b99e8"
+    },
+    "/Users/qianqi/heptabao-launchd-home-t5-context-20261106-r1/probe.plist": {
+      "identity": [
+        "16777233",
+        "592904418",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1651",
+        "1793950344732934377",
+        "1793950344732934377"
+      ],
+      "bytes": 1651,
+      "sha256": "7aedefa6fdbde7a17abf5dedfef5bd85903e8bdb96257107b2f2cf738227fd9a"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "limitations": [
+    "Only new explicit target-PID ps helpers are removed. Original Commands/WNOWAIT/internal custody ps and their refusal behavior remain unchanged.",
+    "Only6 new arg1 numeric API calls are capped here; unchanged existing ProcessReader and helper internals are not reclassified as these6 calls.",
+    "API C calls are synchronous; original pre/post4s/35s checks and overall45/60 bounds remain. No late result qualifies.",
+    "Official exact XNU source is API/ABI reference, not installed-kernel identity. ESRCH does not prove absence, exit, or registration closure.",
+    "Both originalR4 managed registration and R2helper87650 remain UNKNOWN. No signal,bootout,registration mutation,T5,credential or product action is included."
+  ],
+  "pure_author_checks_reproduced": 66,
+  "source_only": true,
+  "Python_executed": false,
+  "AuthBus_credentials_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

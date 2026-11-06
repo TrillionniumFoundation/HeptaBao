@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-PKI33b-complete-stage-and-b694-terminal-root",
+  "records": [
+    {
+      "name": "PKI33B-COMPLETE-STAGE-QUALIFICATION.public.json",
+      "blob": "7cdf99e46ba40fe09ab156a09608ee131e28400d",
+      "bytes": 10731,
+      "sha256": "76746d7ea3b03821a5f4a9aea1f4b0ad07ed380b2b765337a5afd68d9443d84a"
+    },
+    {
+      "name": "SNAPSHOT-B694-TERMINAL-QUALIFICATION.public.json",
+      "blob": "c36049a5266f8d71dadd8657609fbf81c7d1f8f9",
+      "bytes": 5637,
+      "sha256": "b441acab6dc77890504d05b60ab54bfd1a389ea58daddf1cd631f3e2eb16f718"
+    },
+    {
+      "name": "ROOT-VERIFIERS.source.js",
+      "blob": "d9372dc77310472feea96e94c74feaf67f11855a",
+      "bytes": 17490,
+      "sha256": "11c0cd21f423b4419f56b8b322f90c3a65fda9459f4814e8df5e4880a7147220"
+    },
+    {
+      "name": "ORIGINAL-JOURNAL-VERIFIER.source.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    },
+    {
+      "name": "PKI33B-SEMANTIC-ADAPTER.public.json",
+      "blob": "66455012209b1771feab8daf10404789ac578d11",
+      "bytes": 1661,
+      "sha256": "9df3bf316e836a78a85837173fcb0a300b30fcf8e920303869c142b00cccaa93"
+    }
+  ],
+  "expected_data_tree": "b794b61076bae3b22e7cffa92b11c417370fa7c3",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

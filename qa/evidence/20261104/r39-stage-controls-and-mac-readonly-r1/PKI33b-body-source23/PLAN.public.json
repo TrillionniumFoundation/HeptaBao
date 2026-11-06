@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.jwt-pki-finalstage-single-body-source.v1",
+  "status": "SOURCE_ONLY_NO_BODY_GO",
+  "host": "rog",
+  "originalJob": "1a1afcbafab-fc05-6bb0",
+  "slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+  "attachExistingClosedSlot": true,
+  "reinitialize": false,
+  "candidate": {
+    "blob": "068abfcedf4a9116e618389f31213b4e31185b72",
+    "bytes": 28270,
+    "sha256": "65d8ad457fa07cf9312ac03e914bf949ba1e04ef15a88d0840b34aaa6234b4f3"
+  },
+  "exactRequest": {
+    "blob": "d866eaf8211ae79d4d29153a3cc47de776f51863",
+    "bytes": 442,
+    "sha256": "ae5cde505b6eadb04033a334a7d795ca94a81d7f0986e4332b477fd0f2884f0d"
+  },
+  "actualExpected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "bytes": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0",
+    "version": "66306:31235720:27931:1793950741423957124:1793950741423957124",
+    "infoOperation": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "infoNative": {
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    }
+  },
+  "originalInfoPacket": "ba5841da1f32fd1ed326766e7c699600fb52f43d",
+  "originalInfoGO": {
+    "blob": "82334cfd8b6a1fd52a8b046ba04d8ff958e9fed6",
+    "bytes": 3203,
+    "sha256": "244effb45729a4018da659cb7c7eb499c930300c1632af60bafbe2f7a2f92472"
+  },
+  "actualFull9Strings": [
+    "66306",
+    "31235720",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "27931",
+    "1793950741423957124",
+    "1793950741423957124"
+  ],
+  "range": {
+    "offset": 0,
+    "limit": 27931,
+    "expected_version": "66306:31235720:27931:1793950741423957124:1793950741423957124"
+  },
+  "limits": {
+    "reportFileBytes": 150000,
+    "binaryChunkBytes": 65536,
+    "actualBodyBytes": 27931,
+    "immutablePageBytes": 8192,
+    "payloadBytes": 1048576,
+    "oneFuturePerLane": true,
+    "maximumConcurrentRuntimeLanes": 2
+  },
+  "changeProof": {
+    "before": "703a403a43fbd8ce8db9d0e30c21b77d13982900",
+    "strictHunks": 4,
+    "bindingEntries": 13,
+    "literalOccurrences": 14,
+    "functions": 15,
+    "wholeUnchanged": 12,
+    "changedExistingBindingSections": [
+      "gfAuthorizeStageResultInfoOnly",
+      "gfAuthorizeStageResultBodyOnly",
+      "gfValidateRequest"
+    ],
+    "allOtherBytesUnchanged": true
+  },
+  "sequence": [
+    "Root whole reviews exact SOURCE and provides separate stage_result_binary_read_only GO.",
+    "authorize_stage_result_body in original existing closed slot after original metadata pinned above.",
+    "One request/intent/armed Git whole then separate model boundary and one operation_start.",
+    "Whole original SDK before isError or native parse; follow only returned original operation and contiguous 8192-byte immutable pages.",
+    "Require inactive future plus payload SHA/EOF; whole body archive/version/size/SHA before interpreting source report semantics.",
+    "Stop and preserve original errors or UNKNOWN; no automatic replay, new key, file_info refresh, source mutation or Cargo."
+  ],
+  "NativeCallsSubmitted": 0,
+  "reportBodyObserved": false,
+  "fullStageQualification": false,
+  "CargoAuthorized": false,
+  "oldBodyGOReferenceNotAuthorization": true,
+  "checkerCorrection": {
+    "failedSelector": "a.total<=1048576",
+    "actualSourceSelector": "v.total_bytes<=1048576",
+    "candidateUnchanged": true,
+    "oldCheckerAndFailurePreserved": true,
+    "NativeCalls": 0
+  }
+}

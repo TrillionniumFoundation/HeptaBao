@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.root-source-freeze.Service-audit-test8-tree-intent.v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "codex/heptabao-native-snapshot-forward-r5-source-20261106",
+  "sole_parent": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "base_tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+  "source_packet": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+  "source_review": {
+    "blob": "0dbf6b3938e5189af890e80f65d4d1c23f086056",
+    "bytes": 17649,
+    "sha256": "da578231e7429d418012f310b5e71dd38c63197bf392b2af65456e16033335c1"
+  },
+  "candidate_tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+  "leaves": 3930,
+  "modified_existing": 6,
+  "new_files": 2,
+  "unchanged": 3922,
+  "deleted_files": 0,
+  "tracked_bytes": 62486000,
+  "index": {
+    "blob": "8cd39d6c4900a37bb5d64d37eb1330c54bfdba22",
+    "bytes": 453627,
+    "sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+  },
+  "union": {
+    "files": 49,
+    "unformatted_bytes": 2023746
+  },
+  "product_without_test_configuration_unchanged": true,
+  "source_only": true,
+  "formatter_executed": false,
+  "Cargo_executed": false,
+  "test_executions": 0,
+  "branch_absence": "originalGit404",
+  "tree_request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "base_tree_sha": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+    "tree_elements": [
+      {
+        "path": "crates/heptabao-server/src/service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "63bacb537a17cc060239a1793f8ac526e15df158"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "694edf2abe8a8f61dc887469e2dcc963dfc58fca"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca9962d39f90cdf6ebbc06d04a9cc6c0fa7aa0a1"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1e9818f52ee2827166f2e9694e63513fb0e8e713"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ac8bbc490de8197097a16acc57956b2c5243fc69"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "abc4dbef9044f6105c00fdc290fd053e1d2cbd26"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "43917b4f6547f28c097086533b4fba36ebbddb9c"
+      }
+    ]
+  },
+  "tree_mutation_not_yet_called": true,
+  "unknown_no_replay": true,
+  "root_Runtime_calls": 0
+}

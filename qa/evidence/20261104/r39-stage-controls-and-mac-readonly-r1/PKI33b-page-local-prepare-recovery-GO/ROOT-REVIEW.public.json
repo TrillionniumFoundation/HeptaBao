@@ -1,0 +1,158 @@
+{
+  "schema": "heptabao.root-review.original-body-local-page-prepare-refusal.v1",
+  "status": "PASS_LOCAL_PREDISPATCH_REFUSAL_FOR_ONE_GUARDED_RESUME",
+  "checks": [
+    {
+      "name": "whole23_60860",
+      "passed": true
+    },
+    {
+      "name": "exact_original_body_GO",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_start",
+      "passed": true
+    },
+    {
+      "name": "original_armed_intent_start",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_status0",
+      "passed": true
+    },
+    {
+      "name": "original_armed_intent_status0",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_page0",
+      "passed": true
+    },
+    {
+      "name": "original_armed_intent_page0",
+      "passed": true
+    },
+    {
+      "name": "same_original_binary_start",
+      "passed": true
+    },
+    {
+      "name": "original_native_completed_stored_inactive",
+      "passed": true
+    },
+    {
+      "name": "only_actual_first_immutable8192_page",
+      "passed": true
+    },
+    {
+      "name": "original_partial_cursor_and_digest",
+      "passed": true
+    },
+    {
+      "name": "exact_local_failure_and_return",
+      "passed": true
+    },
+    {
+      "name": "original_context_only_paused_no_inflight",
+      "passed": true
+    },
+    {
+      "name": "page1_never_recorded_or_archived",
+      "passed": true
+    },
+    {
+      "name": "source_validation_precedes_record_and_arming",
+      "passed": true
+    },
+    {
+      "name": "missing_offset_refusal_matches_original_guard",
+      "passed": true
+    },
+    {
+      "name": "only_local_pause_marker_and_no_dispatch_code",
+      "passed": true
+    },
+    {
+      "name": "fresh_separate_GO_and_same_original_state_guards",
+      "passed": true
+    },
+    {
+      "name": "once_only_and_immutable_failure_history",
+      "passed": true
+    },
+    {
+      "name": "correct_next_original_page_exact",
+      "passed": true
+    },
+    {
+      "name": "recovery_JS_syntax_only_not_executed",
+      "passed": true
+    }
+  ],
+  "check_count": 22,
+  "source_packet": {
+    "tree": "9dc8226cb1e0aafb29fcf240856c98381c8f3a0f",
+    "files": 23,
+    "bytes": 60860,
+    "merkle": {
+      "root_sha": "9dc8226cb1e0aafb29fcf240856c98381c8f3a0f",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "c2d02ddb1f88850eef9d98edc0be9f0a7841995e",
+    "bytes": 2949,
+    "sha256": "d3e5e5024573585065453e352f78782ca4b381f42b1e469051677541161cd07c"
+  },
+  "original_failure": {
+    "blob": "29702a6bdaa45a33b23389cef0d89b6cce7edb8e",
+    "bytes": 246,
+    "sha256": "3cec331779379b2607b0dd64fe129cd8ad7443f2ab3e691ae43cbae0f7b8ed28"
+  },
+  "original_state": {
+    "blob": "83baa9536eaaac685576062652eba8b9e26f3587",
+    "bytes": 14222,
+    "sha256": "9d7314ff21c79ca5fbd6ef47333f249a21480b24e6f2d437cfc43313070f345b"
+  },
+  "original_body_GO": {
+    "blob": "2890d06182b076c0198807350e632f06f121e697",
+    "bytes": 3530,
+    "sha256": "c95da8a47e95eefe309104ffcdbcd734f803aaee4ee9218a67695ed228ebd8a0"
+  },
+  "original_slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+  "original_job": "1a1afcbafab-fc05-6bb0",
+  "original_operation": "2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e",
+  "closed_original_native": true,
+  "payload_complete": false,
+  "whole_payload_SHA_qualified": false,
+  "original_page0_bytes": 8192,
+  "original_payload_total": 37683,
+  "original_payload_SHA": "abeeb93a25b3b410096cb75c30d28d30802687e1a9a6d1d257fbb3e59ea79950",
+  "next_page_request": {
+    "blob": "3d00ea6fb65a0117fbf6a65c71f949995d7b8d65",
+    "bytes": 124,
+    "sha256": "b0408755aa7792b1c6a8af8cc4c67128c095daa4e739f6df20804f59c8aa6592"
+  },
+  "prior_call_derived_armed_trees": [
+    {
+      "kind": "operation_start",
+      "tree": "140c1095b4ddac9a5180e5128fdc6f9ea48bc979"
+    },
+    {
+      "kind": "operation_status",
+      "tree": "e1b27f034b9a54ef7665c9dc423bd83e6925f5cd"
+    },
+    {
+      "kind": "operation_result",
+      "tree": "e2e9c1b28f69ca371aca55c14b9cb0382cf96e4f"
+    }
+  ],
+  "local_state_absence_scope": "Original selected agent state fields plus exact unchanged validation-before-record source; root has not accessed or overwritten live agent slot.",
+  "recovery_executed": false,
+  "new_native_calls": 0,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,14 @@
+{
+  "audit": {
+    "root_sha": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+    "trees_verified": 358,
+    "leaf_count": 3928
+  },
+  "bytes": 62463643,
+  "index": {
+    "blob": "a36e8c2f97ef062ee804114efb22b4a3a9b08899",
+    "bytes": 453379,
+    "sha256": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727"
+  },
+  "maxFileBytes": 664916
+}

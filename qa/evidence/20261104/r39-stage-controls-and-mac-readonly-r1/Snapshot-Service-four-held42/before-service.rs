@@ -1,0 +1,12801 @@
+use crate::auth::Timestamp;
+use crate::request_deadline::HaLock;
+use crate::{
+    auth::{AuthState, AuthorityTime, Principal, RequestClock},
+    crypto::{self, AeadBarrier, SecretShare},
+    engines::EngineState,
+    ha::HaProcess,
+};
+use base64::{Engine as _, engine::general_purpose::STANDARD};
+#[cfg(test)]
+use heptabao_durable_service::PutRequest;
+use heptabao_durable_service::{
+    BackendBundle, BackendError, Barrier, DurableBackend, DurableService, FileBackend,
+    MutationOutcome, ReconciliationStatus, Secret, ServiceError,
+};
+use heptabao_filesystem_guard::ExclusiveDirectory;
+use ring::hmac;
+use serde::{Deserialize, Serialize};
+use serde_json::{Value, json};
+use std::{
+    collections::BTreeMap,
+    fs::{self, File, OpenOptions},
+    io::{self, Read, Write},
+    net::{SocketAddr, TcpStream},
+    path::{Path, PathBuf},
+    sync::{Arc, Mutex},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
+};
+use zeroize::{Zeroize, Zeroizing};
+
+// SourceOnly q09 test diagnostics. The non-test branch is the original result
+// expression; it grants no publication authority and never reads response data.
+macro_rules! namespace_diagnostic {
+    ($stage:literal, $result:expr) => {{
+        #[cfg(test)]
+        {
+            let result = $result;
+            crate::service::namespace_diagnostics::record($stage, &result);
+            result
+        }
+        #[cfg(not(test))]
+        {
+            $result
+        }
+    }};
+}
+
+#[cfg(test)]
+#[path = "service_namespace_diagnostics.rs"]
+mod namespace_diagnostics;
+
+use crate::postgres_durable::PostgresDurableBackend;
+use crate::postgres_storage::PgStorageConfig;
+use crate::state_record_root::RecordStateRoot;
+
+// Schema 49 introduced durable workflow state; schema 50 adds durable Kerberos auth state;
+// schema 51 adds discovery-bound OIDC UserInfo session endpoints; schema 52 adds
+// durable userpass lockout counters and windows; schema 53 adds PostgreSQL
+// static-role and manager-password rotation intents; schema 54 binds persisted
+// PostgreSQL statement templates to lease identities and provider ledgers;
+// schema 55 persists explicit PostgreSQL password-authentication selection;
+// schema 56 adds namespace-owned password policies and database generation bindings.
+// schema 57 adds PostgreSQL root-rotation statement configuration and retained intents.
+// schema 58 adds bounded ACL parameter constraints.
+// schema 59 adds bounded PKI cluster and ACME configuration state.
+// Schema 60 adds current-Identity ACL path substitutions; schema 61 adds bounded
+// ACL wrapping TTL constraints. Both have independent persisted-state fences.
+// Schema 62 adds Transit ML-DSA seed keys under the existing encrypted engine owner.
+// Schema 63 adds the namespace-scoped External Keys registry.
+// Schema 64 adds reference-only external Transit versions; no local key material.
+// Schema 65 adds EC/RSA Transit keys and public-key-only external PKI roots/CSR state.
+// Ordinary writers retain the exact schema-65 durable contract. Explicit
+// AAD-bound convergent material activates schema 66 irreversibly for this store.
+const RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 = crate::auth::rate_limit_quotas::STATE_SCHEMA;
+const EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 =
+    crate::auth::rate_limit_quotas::EXTENDED_STATE_SCHEMA;
+const SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 =
+    crate::auth::rate_limit_quotas::SCOPED_STATE_SCHEMA;
+const NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA: u32 = 140;
+const NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA: u32 = 145;
+const APPROLE_NO_DEFAULT_STATE_SCHEMA: u32 = crate::auth::approle_no_default::STATE_SCHEMA;
+const AUTH_SECURITY_CONTRACT_STATE_SCHEMA: u32 = crate::auth::security_contract::STATE_SCHEMA;
+const APPROLE_LOCAL_STATE_SCHEMA: u32 = crate::auth::approle_local::STATE_SCHEMA;
+const POLICY_EXPIRATION_STATE_SCHEMA: u32 = crate::auth::policy_expiration::STATE_SCHEMA;
+const NAMESPACE_FACTORY_STATE_SCHEMA: u32 = crate::auth::namespace_factory::STATE_SCHEMA;
+const KV_MOUNT_CONFIGURATION_STATE_SCHEMA: u32 = 146;
+#[cfg(test)]
+#[path = "service_policy_expiration_tests.rs"]
+mod policy_expiration_tests;
+#[path = "service_rate_limit_quota_catalog.rs"]
+mod rate_limit_quota_catalog;
+#[path = "service_rate_limit_quotas.rs"]
+mod rate_limit_quotas;
+const CURRENT_STATE_SCHEMA: u32 = 65;
+const AAD_BOUND_STATE_SCHEMA: u32 = 66;
+const TYPED_PKI_STATE_SCHEMA: u32 = 67;
+// Custom JWT identity claims activate an irreversible reader requirement.
+const JWT_USER_CLAIM_STATE_SCHEMA: u32 = 68;
+const JWT_PEM_KEYSET_STATE_SCHEMA: u32 = 69;
+const TRANSIT_BYOK_STATE_SCHEMA: u32 = 70;
+const PKI_ISSUER_PATH_STATE_SCHEMA: u32 = 71;
+const LOCAL_TYPED_PKI_STATE_SCHEMA: u32 = 72;
+const RECOVERY_CREDENTIAL_STATE_SCHEMA: u32 = 73;
+const INDEXED_RECOVERY_WIRE_STATE_SCHEMA: u32 = 74;
+// Local issuer/key identifiers must survive retirement and older writers.
+const LOCAL_PKI_IDENTIFIER_STATE_SCHEMA: u32 = 75;
+const LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA: u32 = 76;
+const LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA: u32 = 77;
+// Signed local CRL caches, counters and delta bases require an irreversible reader floor.
+const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
+// Pending local CSR keys and imported intermediate/public chain ownership.
+const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
+const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
+const NAMESPACE_CUSTODY_STATE_SCHEMA: u32 = 81;
+const TOKEN_API_PRECISION_STATE_SCHEMA: u32 = 82;
+const AUTH_PUBLIC_ORIGIN_STATE_SCHEMA: u32 = 86;
+const KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA: u32 =
+    crate::engines::kubernetes_artifact::STATE_SCHEMA;
+const PKI_ROLE_ANY_NAME_STATE_SCHEMA: u32 = 83;
+const PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA: u32 = 84;
+const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
+// Typed role/leaf evidence is admitted only at its explicit protected floor.
+const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
+const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
+const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
+const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
+const NAMESPACE_DELETION_STATE_SCHEMA: u32 = 106;
+const SDK_AUTH_RETIREMENT_STATE_SCHEMA: u32 = 107;
+const NAMESPACE_SDK_CLEANUP_STATE_SCHEMA: u32 = crate::auth::namespace_sdk_cleanup::STATE_SCHEMA;
+const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
+const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
+const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
+const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
+const SDK_SECRET_LEASE_STATE_SCHEMA: u32 = 96;
+const PKI_URLS_STATE_SCHEMA: u32 = 97;
+const EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA: u32 = 98;
+const PKI_ACME_ACCOUNT_STATE_SCHEMA: u32 = 99;
+#[path = "service_pki_acme.rs"]
+mod pki_acme;
+#[path = "service_pki_acme_external.rs"]
+mod pki_acme_external;
+const SDK_AUTH_STATE_SCHEMA: u32 = 100;
+const SDK_ACCEPTED_SECRET_STATE_SCHEMA: u32 = 101;
+const SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA: u32 = 102;
+// Persisted native auth mount options must survive older readers and writers.
+const AUTH_MOUNT_OPTIONS_STATE_SCHEMA: u32 = 103;
+const PKI_KEY_POLICY_STATE_SCHEMA: u32 = 104;
+const PKI_ORDINARY_REVOCATION_STATE_SCHEMA: u32 = 105;
+const PKI_RSA8192_STATE_SCHEMA: u32 = 108;
+const RAW_WRAPPED_REPLY_STATE_SCHEMA: u32 = 110;
+// Persisted anonymous mount discovery configuration survives clearing and retirement.
+const MOUNT_LISTING_VISIBILITY_STATE_SCHEMA: u32 = 111;
+const RAW_PKI_HTTP_REPLY_STATE_SCHEMA: u32 = 112;
+const GENERAL_WRAPPED_REPLY_STATE_SCHEMA: u32 = 113;
+const SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA: u32 = 114;
+const SSH_CA_STATE_SCHEMA: u32 = 115;
+// Public-only ML-DSA versions have no seed/HMAC and require an aware reader.
+const MLDSA_IMPORT_STATE_SCHEMA: u32 = 116;
+const STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA: u32 = 117;
+const CONTROL_GROUP_STATE_SCHEMA: u32 = crate::auth::control_groups::STATE_SCHEMA;
+const SYMMETRIC_BACKUP_STATE_SCHEMA: u32 = 119;
+const KV2_LOSSLESS_STATE_SCHEMA: u32 = 120;
+pub(crate) const GLOBAL_LOSSLESS_JSON_STATE_SCHEMA: u32 = 120;
+#[path = "service_kv2_import.rs"]
+mod kv2_import;
+#[cfg(test)]
+#[path = "service_kv2_import_tests.rs"]
+mod kv2_import_tests;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_kv2_import.rs"]
+mod native_kv2_import;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_kv2_large.rs"]
+mod native_kv2_large;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_kv2_storage_witness.rs"]
+mod native_kv2_storage_witness;
+const WORKFLOW_PROFILE_STATE_SCHEMA: u32 = 121;
+const WORKFLOW_DYNAMIC_STATE_SCHEMA: u32 = 123;
+const TRANSIT_ROTATION_PRECISION_STATE_SCHEMA: u32 = 124;
+const WORKFLOW_EXPRESSION_STATE_SCHEMA: u32 = 125;
+const SDK_ADVANCED_STATE_SCHEMA: u32 = 126;
+const TRANSIT_DERIVED_ED_STATE_SCHEMA: u32 = 127;
+const WORKFLOW_CREDENTIAL_STATE_SCHEMA: u32 = 128;
+const TRANSIT_CACHE_STATE_SCHEMA: u32 = 130;
+const IDENTITY_MFA_STATE_SCHEMA: u32 = crate::auth::mfa::STATE_SCHEMA;
+#[path = "service_mfa.rs"]
+mod mfa;
+#[path = "service_mfa_janitor.rs"]
+mod mfa_janitor;
+pub(crate) use mfa_janitor::start_mfa_janitor_worker;
+const WORKFLOW_INPUT_STATE_SCHEMA: u32 = 131;
+const USERPASS_ISSUANCE_STATE_SCHEMA: u32 = crate::auth::userpass_creation_ttl::STATE_SCHEMA;
+const CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA: u32 =
+    crate::auth::control_groups::FRACTIONAL_STATE_SCHEMA;
+#[path = "service_control_groups.rs"]
+mod control_groups;
+#[path = "service_pki_acme_eab.rs"]
+mod pki_acme_eab;
+#[path = "service_request_normalization.rs"]
+mod request_normalization;
+const PKI_BATCH_LEASE_STATE_SCHEMA: u32 = 136;
+const NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA: u32 = 138;
+#[cfg(any(test, feature = "native-v6-storage"))]
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = KV_MOUNT_CONFIGURATION_STATE_SCHEMA;
+
+fn supported_reader_schema(schema: u32) -> bool {
+    schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
+        || matches!(
+            schema,
+            NAMESPACE_CUSTODY_STATE_SCHEMA
+                | TOKEN_API_PRECISION_STATE_SCHEMA
+                | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+                | PKI_ROLE_ANY_NAME_STATE_SCHEMA
+                | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+                | PKI_ROLE_WILDCARD_STATE_SCHEMA
+                | KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+                | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                | PKI_ROLE_TIME_STATE_SCHEMA
+                | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+                | NAMESPACE_BATCH_STATE_SCHEMA
+                | NAMESPACE_DELETION_STATE_SCHEMA
+                | SDK_AUTH_RETIREMENT_STATE_SCHEMA
+                | NAMESPACE_SDK_CLEANUP_STATE_SCHEMA
+                | SDK_STORAGE_STATE_SCHEMA
+                | PKI_ROLE_NAMES_STATE_SCHEMA
+                | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+                | SDK_RESPONSE_HEADERS_STATE_SCHEMA
+                | SDK_SECRET_LEASE_STATE_SCHEMA
+                | PKI_URLS_STATE_SCHEMA
+                | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+                | PKI_ACME_ACCOUNT_STATE_SCHEMA
+                | SDK_AUTH_STATE_SCHEMA
+                | SDK_ACCEPTED_SECRET_STATE_SCHEMA
+                | SDK_BATCH_CREDENTIAL_SECRET_STATE_SCHEMA
+                | AUTH_MOUNT_OPTIONS_STATE_SCHEMA
+                | PKI_KEY_POLICY_STATE_SCHEMA
+                | PKI_ORDINARY_REVOCATION_STATE_SCHEMA
+                | PKI_RSA8192_STATE_SCHEMA
+                | MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
+                | RAW_WRAPPED_REPLY_STATE_SCHEMA
+                | RAW_PKI_HTTP_REPLY_STATE_SCHEMA
+                | GENERAL_WRAPPED_REPLY_STATE_SCHEMA
+                | SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA
+                | SSH_CA_STATE_SCHEMA
+                | MLDSA_IMPORT_STATE_SCHEMA
+                | STANDARD_ASYMMETRIC_IMPORT_STATE_SCHEMA
+                | CONTROL_GROUP_STATE_SCHEMA
+                | SYMMETRIC_BACKUP_STATE_SCHEMA
+                | KV2_LOSSLESS_STATE_SCHEMA
+                | WORKFLOW_PROFILE_STATE_SCHEMA
+                | WORKFLOW_DYNAMIC_STATE_SCHEMA
+                | TRANSIT_ROTATION_PRECISION_STATE_SCHEMA
+                | WORKFLOW_EXPRESSION_STATE_SCHEMA
+                | SDK_ADVANCED_STATE_SCHEMA
+                | TRANSIT_DERIVED_ED_STATE_SCHEMA
+                | WORKFLOW_CREDENTIAL_STATE_SCHEMA
+                | TRANSIT_CACHE_STATE_SCHEMA
+                | IDENTITY_MFA_STATE_SCHEMA
+                | WORKFLOW_INPUT_STATE_SCHEMA
+                | RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA
+                | NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA
+                | NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+                | APPROLE_NO_DEFAULT_STATE_SCHEMA
+                | AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+                | APPROLE_LOCAL_STATE_SCHEMA
+                | POLICY_EXPIRATION_STATE_SCHEMA
+                | NAMESPACE_FACTORY_STATE_SCHEMA
+                | KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+                | PKI_BATCH_LEASE_STATE_SCHEMA
+                | USERPASS_ISSUANCE_STATE_SCHEMA
+                | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
+        )
+}
+const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
+const MAX_OPERATIONS: usize = 32_000;
+const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
+#[path = "audit_rotation.rs"]
+mod audit_rotation;
+#[path = "service_backup_restore.rs"]
+mod backup_restore;
+#[path = "service_capabilities.rs"]
+mod capabilities;
+#[path = "service_consistency.rs"]
+mod consistency;
+#[path = "service_database.rs"]
+mod database;
+#[path = "service_epoch_activation.rs"]
+mod epoch_activation;
+#[path = "service_external_pki.rs"]
+mod external_pki;
+#[path = "service_policy_retirement.rs"]
+mod policy_retirement;
+#[path = "service_policy_startup.rs"]
+mod policy_startup;
+
+/// Read-only access to the original trusted clock scope, never an authority.
+pub(crate) fn public_origin_observation() -> Option<Duration> {
+    external_pki::public_origin_observation()
+}
+#[path = "service_approle_tidy.rs"]
+mod approle_tidy;
+#[path = "service_external_transit.rs"]
+mod external_transit;
+#[path = "service_forward_delivery.rs"]
+mod forward_delivery;
+#[path = "service_ha_activation.rs"]
+mod ha_activation;
+#[path = "service_ha_read.rs"]
+mod ha_read;
+#[path = "service_ha_received.rs"]
+mod ha_received;
+#[path = "service_ha_step_down.rs"]
+mod ha_step_down;
+#[path = "service_help_delivery.rs"]
+mod help_delivery;
+#[path = "service_identity.rs"]
+mod identity;
+#[path = "service_kubernetes_secrets.rs"]
+mod kubernetes_secret;
+#[path = "service_leader.rs"]
+mod leader;
+#[path = "service_legacy_immutable_kv.rs"]
+mod legacy_immutable_kv;
+#[path = "service_legacy_upgrade_wire.rs"]
+pub(crate) mod legacy_upgrade_wire;
+#[path = "service_lifecycle.rs"]
+mod lifecycle;
+#[path = "service_local_unseal.rs"]
+mod local_unseal;
+#[path = "service_lossless_json_state.rs"]
+mod lossless_json_state;
+#[path = "service_missing_token_lookup.rs"]
+mod missing_token_lookup;
+#[path = "service_namespace_assets.rs"]
+mod namespace_assets;
+#[path = "service_namespace_closed_auth.rs"]
+mod namespace_closed_auth;
+#[path = "service_namespace_config.rs"]
+mod namespace_config;
+#[path = "service_namespace_runtime.rs"]
+mod namespace_runtime;
+#[path = "service_namespaces.rs"]
+mod namespaces;
+pub(crate) use approle_tidy::start_worker as start_approle_tidy_worker;
+#[path = "service_native_remount.rs"]
+mod native_remount;
+#[path = "service_transit_cache_reload.rs"]
+mod transit_cache_reload;
+pub(crate) use namespace_deletion::start_worker as start_namespace_deletion_worker;
+use namespaces::deletion as namespace_deletion;
+pub(crate) use native_remount::start_worker as start_native_remount_worker;
+#[path = "service_approle_lookup.rs"]
+mod approle_lookup;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_namespace_sdk_cleanup.rs"]
+mod namespace_sdk_cleanup;
+#[path = "service_online_auth.rs"]
+mod online_auth;
+#[path = "service_openbao_wrapper.rs"]
+mod openbao_wrapper;
+#[path = "service_openldap.rs"]
+mod openldap_secret;
+#[path = "service_ordinary_kv_delivery.rs"]
+mod ordinary_kv_delivery;
+#[path = "service_plugin.rs"]
+mod plugin;
+#[path = "service_recovery_keys.rs"]
+mod recovery_keys;
+#[path = "service_token_delivery.rs"]
+mod token_delivery;
+#[path = "service_token_precision.rs"]
+mod token_precision;
+#[path = "service_wrapper_ha.rs"]
+mod wrapper_ha;
+#[cfg(target_os = "linux")]
+pub use openbao_wrapper::{
+    OpenBaoWrapperCompletion, OpenBaoWrapperOperationPlan, WrapperCleanupState, WrapperOperation,
+    WrapperReply,
+};
+pub use openbao_wrapper::{
+    OpenBaoWrapperConfig, OpenBaoWrapperLaunchPlan, OpenBaoWrapperTransport,
+};
+#[path = "service_snapshot_transfer.rs"]
+mod snapshot_transfer;
+#[path = "service_ui_mounts.rs"]
+mod ui_mounts;
+#[path = "service_workflows.rs"]
+mod workflows;
+pub use external_kms::PluginExternalKmsConfig;
+pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
+#[path = "service_external_kms.rs"]
+mod external_kms;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_sdk_backend.rs"]
+mod sdk_backend;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_sdk_wrapping.rs"]
+mod sdk_wrapping;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub use sdk_backend::SdkBackendConfig;
+pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
+#[path = "service_openapi.rs"]
+mod openapi;
+#[path = "service_owner_store.rs"]
+mod owner_store;
+pub(crate) use owner_store::OwnerPublicationBinding;
+#[cfg(test)]
+pub(crate) use owner_store::OwnerWritePlan;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_auth.rs"]
+mod native_auth;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_blob_source.rs"]
+mod native_blob_source;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_controlgroups.rs"]
+mod native_controlgroups;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_paged_dispatch.rs"]
+mod native_paged_dispatch;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_raft_observation.rs"]
+mod native_raft_observation;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_response_wrapping.rs"]
+mod native_response_wrapping;
+#[cfg(all(unix, feature = "native-v6-storage"))]
+#[path = "service_native_seed.rs"]
+pub mod native_seed;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_storage.rs"]
+mod native_storage;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_transit_lifecycle.rs"]
+mod native_transit_lifecycle;
+#[cfg(feature = "native-v6-ha")]
+#[path = "service_native_v6_ha_install.rs"]
+pub(crate) mod native_v6_ha_install;
+#[cfg(feature = "native-v6-ha")]
+#[path = "service_native_v6_ha_objects.rs"]
+pub(crate) mod native_v6_ha_objects;
+#[cfg(feature = "native-v6-ha")]
+#[path = "service_native_v6_ha_writer.rs"]
+mod native_v6_ha_writer;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_v6_reader.rs"]
+mod native_v6_reader;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_v6_writer.rs"]
+mod native_v6_writer;
+#[path = "service_raft_admin.rs"]
+mod raft_admin;
+#[path = "service_records.rs"]
+mod records;
+#[path = "service_state_store.rs"]
+mod state_store;
+#[path = "service_records_v6.rs"]
+pub(crate) mod v6_records;
+pub(crate) use ha_activation::start_ha_activation_worker_with_budget;
+pub(crate) use lifecycle::start_lifecycle_worker;
+pub(crate) use pki_acme::QueuedChallenge;
+
+#[path = "service_leases.rs"]
+mod leases;
+pub use audit_rotation::AuditConfig;
+use audit_rotation::AuditRotation;
+const MAX_SEAL_SHARES: u8 = 16;
+const SEAL_METADATA_FILE: &str = "seal.json";
+const PENDING_REKEY_FILE: &str = "seal-rekey.json";
+const SEAL_METADATA_LIMIT: u64 = 64 * 1024;
+const REKEY_METADATA_LIMIT: u64 = 96 * 1024;
+const INIT_RECOVERY_FILE: &str = "init-recovery.hbe";
+const INIT_RECOVERY_LIMIT: u64 = 16 * 1024;
+const PG_INIT_BINDING_FILE: &str = "pg-init-binding.hbe";
+const MAX_BACKUP_TRANSFER_BYTES: usize = 20 * 1024 * 1024;
+const DURABLE_PROFILE_FILE: &str = "durable-backend.json";
+const DURABLE_PROFILE_LIMIT: u64 = 16 * 1024;
+// Schema 1 markers had only a scope and are deliberately rejected: they do
+// not bind the database target, so upgrading them in place would permit a
+// restart against a different PostgreSQL database.  An operator must rerun
+// the explicit initialization/migration procedure to produce schema 2.
+const DURABLE_PROFILE_SCHEMA: u32 = 2;
+
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+struct SealMetadata {
+    schema: u32,
+    generation: u64,
+    share_format: String,
+    secret_shares: u8,
+    secret_threshold: u8,
+    wrapped_barrier_key: String,
+}
+
+/// Local, non-secret declaration of the physical durable backend.  Sealed
+/// application artifacts remain in the selected backend; this marker only
+/// prevents an initialized PostgreSQL deployment from being silently reopened
+/// against the local filesystem after a restart.
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+struct DurableProfile {
+    schema: u32,
+    backend: String,
+    scope: Option<String>,
+    binding: String,
+}
+
+impl DurableProfile {
+    fn postgresql(config: &PgStorageConfig) -> Self {
+        Self {
+            schema: DURABLE_PROFILE_SCHEMA,
+            backend: "postgresql".into(),
+            scope: Some(config.scope.clone()),
+            binding: durable_profile_binding(config),
+        }
+    }
+
+    fn validate(&self) -> Result<(), &'static str> {
+        if self.schema != DURABLE_PROFILE_SCHEMA {
+            return Err("unsupported durable backend profile schema");
+        }
+        match self.backend.as_str() {
+            "postgresql"
+                if self.scope.as_deref().is_some_and(|scope| {
+                    !scope.is_empty() && scope.len() <= 256 && !scope.chars().any(char::is_control)
+                }) && self.binding.len() == 64
+                    && self.binding.bytes().all(|byte| byte.is_ascii_hexdigit())
+                    && self.binding.bytes().all(|byte| !byte.is_ascii_uppercase()) =>
+            {
+                Ok(())
+            }
+            _ => Err("invalid durable backend profile"),
+        }
+    }
+}
+
+fn durable_profile_binding(config: &PgStorageConfig) -> String {
+    fn append_field(output: &mut Vec<u8>, value: &str) {
+        output.extend_from_slice(&(value.len() as u64).to_be_bytes());
+        output.extend_from_slice(value.as_bytes());
+    }
+    let mut input = b"heptabao.durable-profile.v2\0".to_vec();
+    append_field(&mut input, &config.endpoint.origin);
+    append_field(&mut input, &config.endpoint.address.to_string());
+    append_field(&mut input, &config.endpoint.server_name);
+    append_field(&mut input, &config.endpoint.path_prefix);
+    append_field(&mut input, &config.endpoint.ca_pem);
+    append_field(&mut input, &config.connection_url);
+    append_field(&mut input, &config.username);
+    append_field(&mut input, &config.scope);
+    hex(&crypto::digest(&input))
+}
+
+// PgStorageConfig deliberately does not derive Clone because it owns a secret
+// password and zeroizes it on drop.  Backend open/initialize needs a temporary
+// owned copy while Service keeps the enrolled configuration for the next
+// unseal; every copy has the same zeroizing Drop implementation.
+fn clone_pg_storage_config(config: &PgStorageConfig) -> PgStorageConfig {
+    PgStorageConfig {
+        endpoint: config.endpoint.clone(),
+        connection_url: config.connection_url.clone(),
+        username: config.username.clone(),
+        password: config.password.clone(),
+        scope: config.scope.clone(),
+    }
+}
+
+impl SealMetadata {
+    fn is_wrapper(&self) -> bool {
+        matches!(self.schema, 2 | 3)
+    }
+    fn validate(&self) -> Result<(), &'static str> {
+        if self.is_wrapper() {
+            if self.generation == 0 || self.share_format != "wrapper-v1" {
+                return Err("invalid Wrapper seal metadata");
+            }
+            let envelope = openbao_wrapper::barrier::Envelope::decode(&self.wrapped_barrier_key)?;
+            if envelope.generation() != self.generation {
+                return Err("Wrapper seal generation mismatch");
+            }
+            let recovery = envelope.recovery();
+            match (self.schema, recovery) {
+                (2, None) if self.secret_shares == 0 && self.secret_threshold == 0 => {}
+                (3, Some(recovery))
+                    if recovery.shares == self.secret_shares
+                        && recovery.threshold == self.secret_threshold => {}
+                _ => return Err("invalid Wrapper recovery metadata"),
+            }
+            return Ok(());
+        }
+        if self.schema != 1
+            || self.generation == 0
+            || !matches!(self.share_format.as_str(), "shamir-v1" | "raw-v1")
+            || self.secret_shares == 0
+            || self.secret_shares > MAX_SEAL_SHARES
+            || self.secret_threshold == 0
+            || self.secret_threshold > self.secret_shares
+            || self.share_format == "raw-v1"
+                && (self.secret_shares != 1 || self.secret_threshold != 1)
+        {
+            return Err("unsupported or invalid seal metadata");
+        }
+        let wrapped = STANDARD
+            .decode(&self.wrapped_barrier_key)
+            .map_err(|_| "invalid wrapped barrier key encoding")?;
+        if wrapped.len() != 64 {
+            return Err("invalid wrapped barrier key size");
+        }
+        Ok(())
+    }
+
+    fn associated_data(&self) -> Vec<u8> {
+        seal_associated_data(
+            self.schema,
+            self.generation,
+            &self.share_format,
+            self.secret_shares,
+            self.secret_threshold,
+        )
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PendingRekeyMetadata {
+    schema: u32,
+    active_generation: u64,
+    nonce: String,
+    verification_nonce: String,
+    candidate: SealMetadata,
+}
+
+impl PendingRekeyMetadata {
+    fn validate_shape(&self) -> Result<(), &'static str> {
+        if self.schema != 1
+            || !valid_nonce(&self.nonce)
+            || !valid_nonce(&self.verification_nonce)
+            || self.active_generation == 0
+            || self.candidate.generation
+                != self
+                    .active_generation
+                    .checked_add(1)
+                    .ok_or("pending rekey generation exhausted")?
+            || self.candidate.share_format != "shamir-v1"
+        {
+            return Err("unsupported or invalid pending rekey metadata");
+        }
+        self.candidate.validate()
+    }
+}
+
+struct RekeyState {
+    nonce: String,
+    new_shares: u8,
+    new_threshold: u8,
+    require_verification: bool,
+    provided: BTreeMap<u8, SecretShare>,
+    verification: Option<PendingRekeyMetadata>,
+    verification_provided: BTreeMap<u8, SecretShare>,
+}
+
+#[derive(Debug)]
+struct CowOwner<T>(Arc<T>);
+
+impl<T> Clone for CowOwner<T> {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl<T> From<T> for CowOwner<T> {
+    fn from(value: T) -> Self {
+        Self(Arc::new(value))
+    }
+}
+
+impl<T> Default for CowOwner<T>
+where
+    T: Default,
+{
+    fn default() -> Self {
+        Self::from(T::default())
+    }
+}
+
+impl<T> CowOwner<T> {
+    fn ptr_eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+impl<T> std::ops::Deref for CowOwner<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.as_ref()
+    }
+}
+
+impl<T> std::ops::DerefMut for CowOwner<T>
+where
+    T: Clone,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl<T> Serialize for CowOwner<T>
+where
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de, T> Deserialize<'de> for CowOwner<T>
+where
+    T: Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        T::deserialize(deserializer).map(Self::from)
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct State {
+    schema: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    global_lossless_json_format: Option<u32>,
+    cluster_id: String,
+    /// Cluster-visible replay generation. Epoch changes are ordinary replicated
+    /// application-state transitions; each node retires its local detailed
+    /// replay ledger before publishing state for the new epoch.
+    #[serde(default, skip_serializing_if = "replay_epoch_is_zero")]
+    replay_epoch: u64,
+    #[serde(
+        default,
+        skip_serializing_if = "namespaces::NamespaceRegistry::is_empty"
+    )]
+    namespaces: CowOwner<namespaces::NamespaceRegistry>,
+    auth: CowOwner<AuthState>,
+    engines: CowOwner<EngineState>,
+    #[serde(default, skip_serializing_if = "database::DatabaseState::is_empty")]
+    database: CowOwner<database::DatabaseState>,
+    #[serde(
+        default,
+        skip_serializing_if = "raft_admin::RaftAdminState::is_default"
+    )]
+    raft_admin: CowOwner<raft_admin::RaftAdminState>,
+    #[serde(skip)]
+    namespace_protected: Option<Arc<State>>,
+    #[serde(skip)]
+    namespace_leases: namespace_runtime::Leases,
+}
+
+#[derive(Clone, Copy, Default)]
+struct OwnerReuseHint {
+    namespaces: bool,
+    auth: bool,
+    engines: bool,
+    database: bool,
+    raft_admin: bool,
+}
+
+impl OwnerReuseHint {
+    fn between(previous: Option<&State>, next: &State) -> Self {
+        let Some(previous) = previous.and_then(|state| state.protected_state().ok()) else {
+            return Self::default();
+        };
+        let Ok(next) = next.protected_state() else {
+            return Self::default();
+        };
+        Self {
+            namespaces: next.namespaces.ptr_eq(&previous.namespaces),
+            auth: next.auth.ptr_eq(&previous.auth),
+            engines: next.engines.ptr_eq(&previous.engines)
+                || next.engines.owner_metadata_shared_with(&previous.engines),
+            database: next.database.ptr_eq(&previous.database),
+            raft_admin: next.raft_admin.ptr_eq(&previous.raft_admin),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+struct PersistOwnerStateOptions {
+    compact_before_entry: bool,
+    allow_epoch_catchup: bool,
+    reuse: OwnerReuseHint,
+}
+
+struct OwnerBatchInput {
+    options: PersistOwnerStateOptions,
+    prepared_plan: Option<owner_store::OwnerWritePlan>,
+}
+
+fn replay_epoch_is_zero(value: &u64) -> bool {
+    *value == 0
+}
+
+#[path = "service_response_headers.rs"]
+mod response_headers;
+pub(crate) use response_headers::{
+    Headers as ResponseHeaders, validate_allowlist as validate_sdk_header_allowlist,
+};
+
+pub struct Response {
+    pub(crate) unwrapped_json: Option<crate::auth::UnwrappedJson>,
+    pub status: u16,
+    pub body: Value,
+    pub(crate) response_headers: ResponseHeaders,
+    pub(crate) consistency_index: Option<crate::http::consistency::ResponseIndex>,
+}
+impl Drop for Response {
+    fn drop(&mut self) {
+        erase_json(&mut self.body);
+    }
+}
+
+impl Response {
+    fn from_engine_error(error: crate::engines::EngineError) -> Self {
+        Self::error(error.status, &error.message)
+    }
+    pub fn error(status: u16, message: &str) -> Self {
+        Self {
+            status,
+            body: json!({"errors":[message]}),
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+        }
+    }
+    fn ok(body: Value) -> Self {
+        Self {
+            status: 200,
+            body,
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub(crate) enum WireRejection {
+    RateLimited,
+    ParseRejected,
+}
+
+fn default_audit_socket_timeout_ms() -> u64 {
+    2_000
+}
+
+#[derive(Clone, Copy, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AuditSocketConfig {
+    pub address: SocketAddr,
+    #[serde(default = "default_audit_socket_timeout_ms")]
+    pub write_timeout_ms: u64,
+}
+
+impl AuditSocketConfig {
+    fn validate(self) -> Result<Self, String> {
+        if !(1..=10_000).contains(&self.write_timeout_ms) || self.address.ip().is_unspecified() {
+            return Err("invalid bounded audit socket configuration".into());
+        }
+        Ok(self)
+    }
+}
+
+fn default_audit_syslog_facility() -> String {
+    "AUTH".into()
+}
+
+fn default_audit_syslog_tag() -> String {
+    "heptabao".into()
+}
+
+fn default_audit_syslog_socket_path() -> PathBuf {
+    PathBuf::from("/dev/log")
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AuditSyslogConfig {
+    #[serde(default = "default_audit_syslog_facility")]
+    pub facility: String,
+    #[serde(default = "default_audit_syslog_tag")]
+    pub tag: String,
+    #[serde(default = "default_audit_syslog_socket_path")]
+    pub socket_path: PathBuf,
+}
+
+impl AuditSyslogConfig {
+    fn validate(mut self) -> Result<Self, String> {
+        self.facility.make_ascii_uppercase();
+        if syslog_facility_code(&self.facility).is_none()
+            || self.tag.is_empty()
+            || self.tag.len() > 64
+            || !self
+                .tag
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+            || !self.socket_path.is_absolute()
+        {
+            return Err("invalid bounded syslog audit configuration".into());
+        }
+        Ok(self)
+    }
+}
+
+fn syslog_facility_code(facility: &str) -> Option<u8> {
+    match facility {
+        "KERN" => Some(0),
+        "USER" => Some(1),
+        "MAIL" => Some(2),
+        "DAEMON" => Some(3),
+        "AUTH" => Some(4),
+        "SYSLOG" => Some(5),
+        "LPR" => Some(6),
+        "NEWS" => Some(7),
+        "UUCP" => Some(8),
+        "CRON" => Some(9),
+        "AUTHPRIV" => Some(10),
+        "FTP" => Some(11),
+        "LOCAL0" => Some(16),
+        "LOCAL1" => Some(17),
+        "LOCAL2" => Some(18),
+        "LOCAL3" => Some(19),
+        "LOCAL4" => Some(20),
+        "LOCAL5" => Some(21),
+        "LOCAL6" => Some(22),
+        "LOCAL7" => Some(23),
+        _ => None,
+    }
+}
+
+impl WireRejection {
+    fn code(self) -> &'static [u8] {
+        match self {
+            Self::RateLimited => b"rate-limited",
+            Self::ParseRejected => b"parse-rejected",
+        }
+    }
+}
+
+struct InitializationStage {
+    path: PathBuf,
+    retain_on_drop: bool,
+    existing_empty: Option<ExclusiveDirectory>,
+}
+
+impl InitializationStage {
+    fn create(final_path: &Path) -> Result<Self, io::Error> {
+        // The native file backend accepts a pre-created empty data directory.
+        // Retain its actual exclusive owner and verify its identity immediately
+        // before publication under the held parent. Unix rename atomically
+        // publishes the prepared directory and refuses a nonempty target.
+        // The parent lock serializes cooperating writers; this preflight does
+        // not provide an atomic inode comparison against an uncooperative
+        // process that can rename entries in the private parent directory.
+        let existing_empty = Self::hold_existing_empty(final_path)?;
+        let parent = final_path
+            .parent()
+            .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+        let metadata = fs::symlink_metadata(parent)?;
+        if !metadata.is_dir() || metadata.file_type().is_symlink() {
+            return Err(io::Error::other("initialization parent is unsafe"));
+        }
+        let suffix = hex(&crypto::random::<16>().map_err(io::Error::other)?);
+        let path = parent.join(format!(".heptabao-init-{suffix}"));
+        let mut builder = fs::DirBuilder::new();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        builder.create(&path)?;
+        let stage = Self {
+            path,
+            retain_on_drop: false,
+            existing_empty,
+        };
+        stage.verify_existing_target(final_path)?;
+        Ok(stage)
+    }
+
+    fn hold_existing_empty(final_path: &Path) -> Result<Option<ExclusiveDirectory>, io::Error> {
+        let existing_empty = match fs::symlink_metadata(final_path) {
+            Ok(metadata) => {
+                if !metadata.is_dir() || metadata.file_type().is_symlink() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::AlreadyExists,
+                        "initialization target is not an empty directory",
+                    ));
+                }
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::PermissionsExt;
+                    if metadata.permissions().mode() & 0o077 != 0 {
+                        return Err(io::Error::other("initialization target is not private"));
+                    }
+                }
+                let held = ExclusiveDirectory::open(final_path).map_err(io::Error::other)?;
+                if held.entries()?.next().transpose()?.is_some() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::AlreadyExists,
+                        "initialization target is not empty",
+                    ));
+                }
+                Some(held)
+            }
+            Err(error) if error.kind() == io::ErrorKind::NotFound => None,
+            Err(error) => return Err(error),
+        };
+        Ok(existing_empty)
+    }
+
+    fn verify_existing_target(&self, final_path: &Path) -> Result<(), io::Error> {
+        let Some(held) = &self.existing_empty else {
+            return Ok(());
+        };
+        held.verify().map_err(io::Error::other)?;
+        let metadata = fs::symlink_metadata(final_path)?;
+        if held.original_path() != final_path
+            || !metadata.is_dir()
+            || metadata.file_type().is_symlink()
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "initialization target changed",
+            ));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            let prepared = fs::symlink_metadata(&self.path)?;
+            if metadata.dev() != held.identity().device()
+                || metadata.ino() != held.identity().inode()
+                || metadata.uid() != prepared.uid()
+                || metadata.mode() & 0o077 != 0
+            {
+                return Err(io::Error::new(
+                    io::ErrorKind::AlreadyExists,
+                    "initialization target owner changed",
+                ));
+            }
+        }
+        if held.entries()?.next().transpose()?.is_some() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "initialization target became nonempty",
+            ));
+        }
+        Ok(())
+    }
+
+    /// Publish the complete prepared candidate before any remote operation.
+    /// Once the rename succeeds even a failed parent sync must retain it: a
+    /// restart can resync and retry this exact candidate, never mint new keys.
+    fn retain_postgres_pending(
+        &mut self,
+        final_path: &Path,
+        parent: &ExclusiveDirectory,
+    ) -> Result<(), io::Error> {
+        verify_initialization_parent(parent)?;
+        self.verify_existing_target(final_path)?;
+        let pending = postgres_pending_path(final_path)?;
+        if path_present(&pending).map_err(io::Error::other)? {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "pending initialization exists",
+            ));
+        }
+        File::open(&self.path)?.sync_all()?;
+        let source = initialization_leaf_name(parent, &self.path)?;
+        let target = initialization_leaf_name(parent, &pending)?;
+        parent.rename(source, target)?;
+        self.path = pending;
+        self.retain_on_drop = true;
+        // The next metadata stage reacquires this empty target under the same
+        // held parent; no remote phase holds a second directory writer lock.
+        self.existing_empty = None;
+        parent.sync_all().map_err(io::Error::other)
+    }
+
+    fn publish(
+        &mut self,
+        final_path: &Path,
+        parent: &ExclusiveDirectory,
+    ) -> Result<bool, io::Error> {
+        verify_initialization_parent(parent)?;
+        let source = initialization_leaf_name(parent, &self.path)?;
+        let target = initialization_leaf_name(parent, final_path)?;
+        // Inspect the held directory without following a dangling target link.
+        self.verify_existing_target(final_path)?;
+        if self.existing_empty.is_none() && parent.entry_exists(target)? {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "initialization target appeared before publication",
+            ));
+        }
+        // Use the existing exclusive parent's Unix rename operation. A /proc
+        // access path is neither required nor substituted with an ambient path.
+        parent.rename(source, target)?;
+        self.retain_on_drop = true;
+        Ok(parent.sync_all().is_ok() && verify_initialization_parent(parent).is_ok())
+    }
+}
+
+impl Drop for InitializationStage {
+    fn drop(&mut self) {
+        if !self.retain_on_drop {
+            let _ = fs::remove_dir_all(&self.path);
+        }
+    }
+}
+
+struct PendingPostgresInitialization {
+    path: PathBuf,
+    local_fence: FileBackend,
+    seal: SealMetadata,
+    profile: DurableProfile,
+    bundle: BackendBundle,
+    response: Response,
+}
+
+/// One bounded request. The token and body are secret-bearing; deliberately no
+/// Debug/Clone/Serialize implementation. HTTP and authenticated HA use this same entry.
+pub struct ServiceRequest<'a> {
+    pub method: &'a str,
+    pub path: &'a str,
+    pub namespace: &'a str,
+    pub token: &'a str,
+    pub body: Value,
+    /// None means absent; Some(0) is an explicit zero header retained for ACL
+    /// semantics. Only a positive value requests a wrapping-token envelope.
+    pub wrap_ttl_seconds: Option<u64>,
+    /// Original socket peer, attested by the listener or authenticated HA node.
+    /// Trusted Rust embedders may supply it; None never grants a CIDR-bound token.
+    pub origin_peer: Option<std::net::IpAddr>,
+    /// Peer certificate chain captured by the TLS listener. This is populated
+    /// only after rustls has completed client-chain validation; callers that do
+    /// not own a verified TLS session must leave it absent.
+    pub(crate) client_certificates: Option<Vec<Vec<u8>>>,
+}
+
+impl<'a> ServiceRequest<'a> {
+    pub fn new(
+        method: &'a str,
+        path: &'a str,
+        namespace: &'a str,
+        token: &'a str,
+        body: Value,
+    ) -> Self {
+        Self {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        }
+    }
+
+    pub fn with_origin_peer(mut self, peer: std::net::IpAddr) -> Self {
+        self.origin_peer = Some(peer);
+        self
+    }
+}
+
+struct RequestDispatch<'a> {
+    method: &'a str,
+    path: &'a str,
+    namespace: &'a str,
+    token: &'a str,
+    body: Value,
+    now: u64,
+    allow_forward: bool,
+    enforce_namespace: bool,
+    wrap_ttl_seconds: Option<u64>,
+    origin_peer: Option<std::net::IpAddr>,
+    client_certificates: Option<Vec<Vec<u8>>>,
+}
+
+struct RequestView<'a> {
+    method: &'a str,
+    path: &'a str,
+    namespace: &'a str,
+    token: &'a str,
+    body: &'a Value,
+    now: u64,
+    admission_started: std::time::Instant,
+    token_clock: Option<RequestClock>,
+    allow_forward: bool,
+    enforce_namespace: bool,
+    wrap_ttl_seconds: Option<u64>,
+    origin_peer: Option<std::net::IpAddr>,
+    client_certificates: Option<&'a [Vec<u8>]>,
+}
+
+impl RequestView<'_> {
+    fn token_time(&self) -> Result<AuthorityTime, Response> {
+        match self.token_clock {
+            Some(clock) => clock
+                .with_seconds_floor(self.now)
+                .and_then(RequestClock::observed_at)
+                .map(AuthorityTime::Precise)
+                .map_err(|_| Response::error(503, "trusted token clock is unavailable")),
+            None => Ok(AuthorityTime::Coarse(self.now)),
+        }
+    }
+}
+
+pub(crate) enum RequestExecution {
+    Complete(Response),
+    External(Box<PendingExternalRequest>),
+}
+
+impl RequestExecution {
+    // Only trusted real-clock Service entrypoints select this mode. It is not
+    // part of ServiceRequest, a client body, an HA frame, or persisted state.
+    fn with_realtime_remote_jwt(mut self) -> Self {
+        if let Self::External(pending) = &mut self
+            && let ExternalEffectPlan::OnlineAuth(plan) = &mut pending.effect
+        {
+            plan.use_realtime_remote_jwt_clock();
+        }
+        self
+    }
+}
+
+enum ExternalEffectPlan {
+    Database(Box<database::DatabaseEffectPlan>),
+    DatabaseConfig(database::DatabaseConfigPlan),
+    DatabaseRotation(database::DatabaseRotationPlan),
+    DatabaseBatch(database::DatabaseBatchEffectPlan),
+    OnlineAuth(online_auth::OnlineAuthEffectPlan),
+    PluginAuth(plugin::PluginAuthPlan),
+    PluginRead(plugin::PluginReadPlan),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkBackend(sdk_backend::Plan),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkAuth(Box<sdk_backend::auth100::Plan>),
+    PluginKms(plugin::PluginKmsPlan),
+    ExternalKey(plugin::ExternalKeyPlan),
+    ExternalTransit(external_transit::ExternalTransitPlan),
+    ExternalPki(external_pki::ExternalPkiPlan),
+    AcmeExternal(Box<pki_acme_external::Plan>),
+    KubernetesToken(Box<kubernetes_secret::KubernetesTokenEffectPlan>),
+    OpenLdap(openldap_secret::OpenLdapEffectPlan),
+    SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
+    #[cfg(feature = "native-v6-storage")]
+    NativeKv2Large(Box<native_kv2_large::TransferPlan>),
+    #[cfg(target_os = "linux")]
+    WrapperBarrierInit(Box<openbao_wrapper::barrier::InitializationPlan>),
+}
+
+pub(crate) enum ExternalEffectResult {
+    Database(Result<(), Response>),
+    DatabaseConfig(Result<(), Response>),
+    DatabaseRotation(Result<database::DatabaseRotationObservation, Response>),
+    DatabaseBatch(database::DatabaseBatchEffectResult),
+    OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
+    PluginAuth(Result<plugin::PluginAuthObservation, Response>),
+    PluginRead(Result<Value, Response>),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkBackend(Result<Option<Value>, Response>),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkAuth(Result<Option<Value>, Response>),
+    PluginKms(Result<plugin::PluginKmsObservation, Response>),
+    ExternalKey(Result<(), Response>),
+    ExternalTransit(Result<external_transit::Observation, Response>),
+    ExternalPki(Result<external_pki::Observation, Response>),
+    AcmeExternal(Result<Vec<zeroize::Zeroizing<Vec<u8>>>, Response>),
+    KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
+    OpenLdap(Result<(), Response>),
+    SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
+    #[cfg(feature = "native-v6-storage")]
+    NativeKv2Large(Result<crate::engines::kv2_native_records::NativeKv2GraphImport, Response>),
+    #[cfg(target_os = "linux")]
+    WrapperBarrierInit(
+        Result<
+            openbao_wrapper::barrier::InitializationCompletion,
+            heptabao_openbao_grpc::BridgeError,
+        >,
+    ),
+}
+
+pub(crate) struct PendingExternalRequest {
+    raw_reply_ingress: Option<crate::auth::IngressReplyContext>,
+    quota_response_headers: Option<rate_limit_quotas::AcceptedHeaders>,
+    fingerprint: String,
+    now: u64,
+    token_clock: Option<RequestClock>,
+    effect: ExternalEffectPlan,
+}
+
+impl PendingExternalRequest {
+    /// Carry the listener's original deadline into scoped auth HTTPS; the
+    /// existing finalize boundary still rejects every late external result.
+    pub(crate) fn execute_with_service_before(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        deadline: std::time::Instant,
+    ) -> ExternalEffectResult {
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if let ExternalEffectPlan::SdkAuth(plan) = &self.effect {
+            return ExternalEffectResult::SdkAuth(plan.execute(service, deadline));
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if let ExternalEffectPlan::SdkBackend(plan) = &self.effect {
+            return ExternalEffectResult::SdkBackend(plan.execute(service, deadline));
+        }
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let _ = service;
+        self.execute_before(deadline)
+    }
+
+    pub(crate) fn execute_before(&self, deadline: std::time::Instant) -> ExternalEffectResult {
+        match &self.effect {
+            #[cfg(target_os = "linux")]
+            ExternalEffectPlan::WrapperBarrierInit(plan) => {
+                ExternalEffectResult::WrapperBarrierInit(plan.execute_before(deadline))
+            }
+            ExternalEffectPlan::OnlineAuth(plan) => {
+                ExternalEffectResult::OnlineAuth(plan.execute_before(deadline))
+            }
+            _ => self.execute(),
+        }
+    }
+
+    /// Run only the bounded external side effect. The caller must not hold the
+    /// global Service writer while this method is executing.
+    pub(crate) fn execute(&self) -> ExternalEffectResult {
+        match &self.effect {
+            #[cfg(target_os = "linux")]
+            ExternalEffectPlan::WrapperBarrierInit(plan) => {
+                ExternalEffectResult::WrapperBarrierInit(plan.execute())
+            }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            ExternalEffectPlan::SdkAuth(_) => ExternalEffectResult::SdkAuth(Err(Response::error(
+                501,
+                "SDK Auth requires the Service owner dispatcher",
+            ))),
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            ExternalEffectPlan::SdkBackend(_) => ExternalEffectResult::SdkBackend(Err(
+                Response::error(501, "SDK backend requires the Service owner dispatcher"),
+            )),
+            ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
+            ExternalEffectPlan::DatabaseConfig(plan) => {
+                ExternalEffectResult::DatabaseConfig(plan.execute())
+            }
+            ExternalEffectPlan::DatabaseRotation(plan) => {
+                ExternalEffectResult::DatabaseRotation(plan.execute())
+            }
+            ExternalEffectPlan::DatabaseBatch(plan) => {
+                ExternalEffectResult::DatabaseBatch(plan.execute())
+            }
+            ExternalEffectPlan::OnlineAuth(plan) => {
+                ExternalEffectResult::OnlineAuth(plan.execute())
+            }
+            ExternalEffectPlan::PluginAuth(plan) => {
+                ExternalEffectResult::PluginAuth(plan.execute())
+            }
+            ExternalEffectPlan::PluginRead(plan) => {
+                ExternalEffectResult::PluginRead(plan.execute())
+            }
+            ExternalEffectPlan::PluginKms(plan) => ExternalEffectResult::PluginKms(plan.execute()),
+            ExternalEffectPlan::ExternalKey(plan) => {
+                ExternalEffectResult::ExternalKey(plan.execute())
+            }
+            ExternalEffectPlan::ExternalTransit(plan) => {
+                ExternalEffectResult::ExternalTransit(plan.execute())
+            }
+            ExternalEffectPlan::ExternalPki(plan) => {
+                ExternalEffectResult::ExternalPki(plan.execute())
+            }
+            ExternalEffectPlan::AcmeExternal(plan) => {
+                ExternalEffectResult::AcmeExternal(plan.execute())
+            }
+            ExternalEffectPlan::KubernetesToken(plan) => {
+                ExternalEffectResult::KubernetesToken(plan.execute())
+            }
+            ExternalEffectPlan::OpenLdap(plan) => ExternalEffectResult::OpenLdap(plan.execute()),
+            ExternalEffectPlan::SnapshotTransfer(_) => ExternalEffectResult::SnapshotTransfer(Err(
+                Response::error(501, "native snapshot requires typed HTTP transport"),
+            )),
+            #[cfg(feature = "native-v6-storage")]
+            ExternalEffectPlan::NativeKv2Large(_) => {
+                ExternalEffectResult::NativeKv2Large(Err(Response::error(
+                    501,
+                    "native-large KV2 requires admitted typed HTTP transport",
+                )))
+            }
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum RequestEffectClass {
+    PureRead,
+    DurableMutation,
+    SideEffectingRead,
+}
+
+fn kv_authorization_method<'a>(method: &'a str, body: &Value) -> &'a str {
+    crate::engines::kv_request_method(method, body)
+}
+
+fn classify_request_effect(
+    method: &str,
+    before_digest: [u8; 32],
+    after_digest: [u8; 32],
+) -> RequestEffectClass {
+    if before_digest == after_digest {
+        RequestEffectClass::PureRead
+    } else if matches!(method, "GET" | "HEAD" | "LIST" | "SCAN") {
+        RequestEffectClass::SideEffectingRead
+    } else {
+        RequestEffectClass::DurableMutation
+    }
+}
+
+#[cfg(test)]
+type NativeRecordRoleHook = Box<dyn FnOnce(&HaProcess) + Send>;
+
+// The production initialization wrapper always selects Current. The only
+// alternative exists in unit builds for explicit unpublished historical inputs.
+enum InitialAuthFactory {
+    Current,
+    #[cfg(test)]
+    Pre141Fixture,
+}
+
+pub struct Service {
+    rate_limit_quotas: rate_limit_quotas::Runtime,
+    openbao_wrapper_owner: Option<openbao_wrapper::ServiceWrapperOwner>,
+    openbao_wrapper_generation: u64,
+    outbound: crate::outbound::Outbound,
+    sanitized_configuration: Option<Value>,
+    database_cursor: Option<(String, String, String)>,
+    database_rotation_cursor: Option<(String, String, String)>,
+    database_in_flight: database::DatabaseFlights,
+    pending_database_effect: Option<database::DatabaseEffectPlan>,
+    pending_database_config_effect: Option<database::DatabaseConfigPlan>,
+    pending_database_rotation_effect: Option<database::DatabaseRotationPlan>,
+    pending_database_batch_effect: Option<database::DatabaseBatchEffectPlan>,
+    pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
+    pending_plugin_auth: Option<plugin::PluginAuthPlan>,
+    pending_plugin_read: Option<plugin::PluginReadPlan>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_request: Option<sdk_backend::Plan>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_auth_request: Option<sdk_backend::auth100::Plan>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_control_authority: Option<plugin::PluginResponseAuthority>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_credential_list: Option<sdk_backend::auth100::CredentialList>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_configuration: Option<sdk_backend::SdkBackendConfig>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_hosts: BTreeMap<String, Arc<sdk_backend::Control>>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_migrations: BTreeMap<String, sdk_backend::MigrationStatus>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_cleanup_cursor: Option<(String, String)>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    namespace_sdk_cleanup_cursor: Option<String>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_credential_cleanup_cursor: Option<String>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_credential_preferred: bool,
+    pending_plugin_kms: Option<plugin::PluginKmsPlan>,
+    pending_external_key: Option<plugin::ExternalKeyPlan>,
+    pending_external_transit: Option<external_transit::ExternalTransitPlan>,
+    pending_external_pki: Option<external_pki::ExternalPkiPlan>,
+    pending_external_pki_no_effect: Option<external_pki::NoEffectPkiPlan>,
+    pending_acme_external: Option<pki_acme_external::Plan>,
+    pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
+    pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
+    pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
+    #[cfg(feature = "native-v6-storage")]
+    pending_native_kv2_large: Option<native_kv2_large::TransferPlan>,
+    #[cfg(feature = "native-v6-storage")]
+    pending_native_kv2_witness: Option<native_kv2_storage_witness::WitnessDelivery>,
+    #[cfg(feature = "native-v6-storage")]
+    pending_native_file_gc: Option<native_storage::file_gc::GcDelivery>,
+    #[cfg(feature = "native-v6-ha")]
+    pending_native_ha_gc: Option<native_storage::ha_gc::GcDelivery>,
+    #[cfg(feature = "native-v6-storage")]
+    native_kv2_large_transport: bool,
+    #[cfg(feature = "native-v6-storage")]
+    native_kv2_large_flight: Arc<std::sync::atomic::AtomicBool>,
+    pending_workflow_external_hold: Option<Box<PendingExternalRequest>>,
+    pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
+    pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
+    #[cfg(feature = "native-v6-storage")]
+    pending_native_auth_delivery: Option<native_auth::NativeAuthDelivery>,
+    #[cfg(feature = "native-v6-storage")]
+    pending_native_cg_delivery: Option<native_controlgroups::NativeCgDelivery>,
+    pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
+    pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
+    pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
+    pending_namespace_deletion: Option<namespace_deletion::AcceptedDelete>,
+    #[cfg(test)]
+    native_record_role_hook: Option<NativeRecordRoleHook>,
+    pending_approle_tidy: Option<approle_tidy::Accepted>,
+    approle_tidy_jobs: std::collections::VecDeque<approle_tidy::Task>,
+    approle_tidy_slots: BTreeMap<(String, String), approle_tidy::Slot>,
+    approle_tidy_periodic_cursor: Option<(String, String)>,
+    pending_native_remount: Option<native_remount::AcceptedMove>,
+    pending_transit_cache_reload: Option<transit_cache_reload::AcceptedReload>,
+    native_remount_jobs: std::collections::VecDeque<native_remount::Task>,
+    native_remount_statuses: BTreeMap<String, native_remount::Status>,
+    pending_acme_authority: Option<pki_acme::Authority>,
+    acme_nonces: pki_acme::Nonces,
+    pending_local_unseal_completion: Option<local_unseal::LocalUnsealCompletion>,
+    pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
+    native_snapshot_transport: bool,
+    native_snapshot_clock: Option<(std::time::Instant, Duration)>,
+    snapshot_spool: Option<Arc<crate::snapshot_file::SnapshotSpool>>,
+    openldap_in_flight: openldap_secret::OpenLdapFlights,
+    openldap_cursor: Option<(String, String, String)>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    lifecycle_sdk_cursor: u8,
+    lifecycle_provider_cursor: bool,
+    lifecycle_acme_preferred: bool,
+    lifecycle_database_rotation_cursor: bool,
+    auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
+    database_plugins: BTreeMap<String, plugin::SharedDatabasePlugin>,
+    kms_plugins: BTreeMap<String, plugin::SharedKmsPlugin>,
+    external_kms_plugins: external_kms::Bindings,
+    kms_keys: BTreeMap<String, plugin::KmsKeyBinding>,
+    plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
+    raft_stabilization: raft_admin::Stabilization,
+    data_dir: PathBuf,
+    audit: File,
+    audit_rotation: AuditRotation,
+    audit_key: hmac::Key,
+    audit_sequence: u64,
+    audit_previous: [u8; 32],
+    audit_failed: bool,
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+    pub(crate) native_restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultGate>,
+    audit_http_url: Option<String>,
+    audit_socket: Option<AuditSocketConfig>,
+    audit_socket_failures: u64,
+    audit_syslog: Option<AuditSyslogConfig>,
+    audit_syslog_failures: u64,
+    postgres_durable: Option<PgStorageConfig>,
+    durable_profile: Option<DurableProfile>,
+    durable: Option<DurableService<AeadBarrier>>,
+    state: Option<State>,
+    namespace_runtime: namespace_runtime::Runtime,
+    state_digest: Option<[u8; 32]>,
+    record_root: Option<RecordStateRoot>,
+    #[cfg(feature = "native-v6-storage")]
+    native_root: Option<crate::state_record_root_v6::RecordStateRootV6>,
+    #[cfg(feature = "native-v6-storage")]
+    native_payload_observations: Arc<native_blob_source::PayloadObservations>,
+    #[cfg(feature = "native-v6-storage")]
+    native_candidate_profile: Option<native_v6_reader::NativeCandidateProfile>,
+    #[cfg(feature = "native-v6-storage")]
+    native_storage_profile: Option<crate::configuration::NativeStorageProfile>,
+    #[cfg(feature = "native-v6-storage")]
+    native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
+    #[cfg(feature = "native-v6-storage")]
+    native_failure_notice: Option<native_v6_writer::NativeFailureNotice>,
+    record_writes_since_gc: u64,
+    ha_read_cache: Option<ha_read::HaReadCache>,
+    ha_activation: Option<ha_activation::LeaderActivation>,
+    policy_default_activation: Option<policy_startup::Activation>,
+    kv_read_only_dispatches: u64,
+    seal: Option<SealMetadata>,
+    unseal_shares: BTreeMap<u8, SecretShare>,
+    unseal_nonce: String,
+    #[cfg(feature = "native-v6-storage")]
+    unseal_nonce_attempt: u64,
+    barrier_key: Option<Zeroizing<[u8; 32]>>,
+    disable_unauthed_rekey_endpoints: bool,
+    rekey: Option<RekeyState>,
+    recovery_required: bool,
+    private_shutdown_requested: bool,
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    opaque_owner_capacity: usize,
+    #[cfg(test)]
+    state_capacity: usize,
+    #[cfg(test)]
+    audit_capacity: u64,
+}
+
+impl Service {
+    fn opaque_owner_limit(&self) -> usize {
+        #[cfg(test)]
+        {
+            self.opaque_owner_capacity.min(self.state_capacity)
+        }
+        #[cfg(not(test))]
+        {
+            self.opaque_owner_capacity
+        }
+    }
+
+    fn validate_loaded_capacity(
+        &self,
+        state: &State,
+        root: Option<&RecordStateRoot>,
+    ) -> Result<(), Response> {
+        let bytes = match root {
+            Some(root) => root
+                .owners
+                .iter()
+                .try_fold(0_u64, |total, owner| total.checked_add(owner.total_bytes))
+                .and_then(|total| usize::try_from(total).ok())
+                .ok_or_else(|| Response::error(503, "record capacity arithmetic failed"))?,
+            None => owner_store::serialize_owner(state)
+                .map_err(state_serialization_error)?
+                .len(),
+        };
+        if bytes > self.opaque_owner_limit() {
+            return Err(Response::error(507, "opaque owner capacity exhausted"));
+        }
+        Ok(())
+    }
+
+    #[cfg(feature = "fixture-capacity-limit")]
+    pub(crate) fn install_fixture_opaque_owner_limit(
+        &mut self,
+        limit: Option<usize>,
+    ) -> Result<(), String> {
+        const MIN_FIXTURE_LIMIT: usize = 1024 * 1024;
+        let Some(limit) = limit else {
+            return Ok(());
+        };
+        if self.state.is_some() {
+            return Err("fixture capacity is immutable while unsealed".into());
+        }
+        if !(MIN_FIXTURE_LIMIT..=MAX_STATE_BYTES).contains(&limit) {
+            return Err("fixture opaque-owner limit must be 1 MiB through 16 MiB".into());
+        }
+        self.opaque_owner_capacity = limit;
+        Ok(())
+    }
+
+    // The only caller is the trusted server bootstrap. This is a projection,
+    // NOT a persisted copy of the original HCL, key files or provider secrets.
+    pub(crate) fn install_sanitized_configuration(
+        &mut self,
+        configuration: Value,
+    ) -> Result<(), String> {
+        if self.state.is_some()
+            || self.sanitized_configuration.is_some()
+            || !configuration.is_object()
+        {
+            return Err("sanitized configuration can only be installed at bootstrap".into());
+        }
+        self.sanitized_configuration = Some(configuration);
+        Ok(())
+    }
+
+    /// Install the trusted process configuration before unseal, never via HTTP.
+    pub fn install_outbound_endpoints(
+        &mut self,
+        endpoints: Vec<crate::outbound::EndpointConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("outbound policy is immutable while unsealed".into());
+        }
+        self.outbound = crate::outbound::Outbound::new(endpoints).map_err(str::to_owned)?;
+        Ok(())
+    }
+
+    pub fn install_auth_plugins(&mut self, configs: Vec<PluginAuthConfig>) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
+        self.auth_plugins = plugin::admit_auth_plugins(configs)?;
+        Ok(())
+    }
+
+    pub fn install_database_plugins(
+        &mut self,
+        configs: Vec<PluginDatabaseConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
+        self.database_plugins = plugin::admit_database_plugins(configs)?;
+        Ok(())
+    }
+
+    pub fn install_external_kms_plugins(
+        &mut self,
+        configs: Vec<PluginExternalKmsConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("genuine KMS runtime is immutable while unsealed".into());
+        }
+        self.external_kms_plugins = external_kms::admit(configs)?;
+        Ok(())
+    }
+
+    pub fn install_kms_plugins(&mut self, configs: Vec<PluginKmsConfig>) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
+        let (plugins, keys) = plugin::admit_kms_plugins(configs)?;
+        self.kms_plugins = plugins;
+        self.kms_keys = keys;
+        Ok(())
+    }
+
+    pub fn install_secret_plugins(
+        &mut self,
+        configs: Vec<PluginSecretConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
+        self.plugins = plugin::admit_secret_plugins(configs)?;
+        Ok(())
+    }
+
+    /// Install an optional mandatory HTTPS audit collector before unseal.
+    /// The URL must already be inside the deployment-owned outbound allowlist.
+    /// Runtime API input can observe this device but cannot widen or replace it.
+    pub fn install_audit_http_endpoint(&mut self, url: Option<String>) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("audit HTTP policy is immutable while unsealed".into());
+        }
+        if let Some(value) = url.as_deref() {
+            let (_, target) = self
+                .outbound
+                .endpoint(value, "https")
+                .map_err(str::to_owned)?;
+            if target.path == "/" {
+                return Err("audit HTTP endpoint requires an enrolled non-root path".into());
+            }
+        }
+        self.audit_http_url = url;
+        Ok(())
+    }
+
+    /// Install an optional deployment-owned TCP audit device before unseal.
+    /// The mandatory local file device remains authoritative, so bounded socket
+    /// delivery failure is observable but cannot erase or block the local record.
+    pub fn install_audit_socket(
+        &mut self,
+        config: Option<AuditSocketConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("audit socket policy is immutable while unsealed".into());
+        }
+        self.audit_socket = config.map(AuditSocketConfig::validate).transpose()?;
+        self.audit_socket_failures = 0;
+        Ok(())
+    }
+
+    /// Install an optional local Unix syslog audit device before unseal.
+    /// The destination defaults to the host's local /dev/log agent and is never
+    /// mutable through the HTTP API. The mandatory authenticated file sink stays
+    /// authoritative if the local syslog agent is unavailable.
+    pub fn install_audit_syslog(
+        &mut self,
+        config: Option<AuditSyslogConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("audit syslog policy is immutable while unsealed".into());
+        }
+        self.audit_syslog = config.map(AuditSyslogConfig::validate).transpose()?;
+        self.audit_syslog_failures = 0;
+        Ok(())
+    }
+
+    /// Select PostgreSQL for the encrypted durable-service artifacts.  This is
+    /// process configuration and is intentionally unavailable through the
+    /// HTTP API.  A profile already published during initialization must match
+    /// the same scope; an initialized filesystem store cannot be converted by
+    /// silently falling back to a different backend.
+    pub fn install_postgres_durable_storage(
+        &mut self,
+        config: PgStorageConfig,
+    ) -> Result<(), String> {
+        if self.state.is_some() || self.durable.is_some() {
+            return Err("durable backend configuration is immutable while unsealed".into());
+        }
+        config
+            .validate()
+            .map_err(|_| "invalid PostgreSQL durable backend configuration".to_owned())?;
+        if let Some(profile) = self.durable_profile.as_ref() {
+            if profile.backend != "postgresql"
+                || profile.scope.as_deref() != Some(config.scope.as_str())
+                || profile.binding != durable_profile_binding(&config)
+            {
+                return Err(
+                    "PostgreSQL durable backend scope does not match the initialized profile"
+                        .into(),
+                );
+            }
+        } else if self.initialized() {
+            return Err(
+                "initialized filesystem durable storage cannot be replaced in place".into(),
+            );
+        }
+        if postgres_pending_exists(&self.data_dir).map_err(str::to_owned)? {
+            let pending = postgres_pending_path(&self.data_dir)
+                .map_err(|_| "invalid PostgreSQL initialization path".to_owned())?;
+            let profile = load_durable_profile(&pending)
+                .map_err(str::to_owned)?
+                .ok_or_else(|| "pending PostgreSQL initialization profile is missing".to_owned())?;
+            if profile != DurableProfile::postgresql(&config) {
+                return Err(
+                    "PostgreSQL configuration does not match pending initialization".into(),
+                );
+            }
+        }
+        self.postgres_durable = Some(config);
+        Ok(())
+    }
+
+    /// The TLS private key and audit file belong outside the exclusively owned
+    /// data directory. The directory is never initialized implicitly on serve.
+    pub fn new(data_dir: PathBuf, audit_path: &Path) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, None, AuditConfig::default())
+    }
+
+    pub fn new_with_ha(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        ha: Arc<Mutex<HaProcess>>,
+    ) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, Some(ha), AuditConfig::default())
+    }
+
+    pub fn new_with_audit_config(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        audit_config: AuditConfig,
+    ) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, None, audit_config)
+    }
+
+    pub fn new_with_ha_audit_config(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        ha: Arc<Mutex<HaProcess>>,
+        audit_config: AuditConfig,
+    ) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, Some(ha), audit_config)
+    }
+
+    fn new_inner(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        ha: Option<Arc<Mutex<HaProcess>>>,
+        audit_config: AuditConfig,
+    ) -> Result<Self, &'static str> {
+        if !data_dir.is_absolute() || !audit_path.is_absolute() || audit_path.starts_with(&data_dir)
+        {
+            return Err("data and audit paths must be absolute and separate");
+        }
+        // Historical audit-key escrow could expose the single-key seal to an
+        // audit-directory reader. Never silently treat it as the new protocol.
+        for suffix in [".init-escrow", ".init-escrow.next"] {
+            let mut legacy = audit_path.as_os_str().to_os_string();
+            legacy.push(suffix);
+            if path_present(Path::new(&legacy))? {
+                return Err("legacy initialization escrow requires explicit offline migration");
+            }
+        }
+        if ha.is_some()
+            && (postgres_pending_exists(&data_dir)?
+                || (initialization_recovery_pending(&data_dir)?
+                    && !load_seal_metadata(&data_dir)?
+                        .as_ref()
+                        .is_some_and(SealMetadata::is_wrapper)))
+        {
+            return Err("acknowledge initialization recovery before enabling HA");
+        }
+        let (mut audit_rotation, mut audit) = AuditRotation::open(audit_path, audit_config)
+            .map_err(|_| "cannot safely open audit rotation files")?;
+        let audit_key = load_audit_key(&audit_rotation, &audit)?;
+        let (audit_sequence, audit_previous) = audit_rotation
+            .recover(&mut audit, &audit_key)
+            .map_err(|_| "audit verification or rotation recovery failed")?;
+        let seal = load_seal_metadata(&data_dir)?;
+        let durable_profile = load_durable_profile(&data_dir)?;
+        let pending_rekey = load_pending_rekey(&data_dir, seal.as_ref())?;
+        let rekey = pending_rekey.map(|pending| RekeyState {
+            nonce: pending.nonce.clone(),
+            new_shares: pending.candidate.secret_shares,
+            new_threshold: pending.candidate.secret_threshold,
+            require_verification: true,
+            provided: BTreeMap::new(),
+            verification: Some(pending),
+            verification_provided: BTreeMap::new(),
+        });
+        let unseal_nonce = hex(&crypto::random::<16>()?);
+        let recovery_required = postgres_pending_exists(&data_dir)?;
+        Ok(Self {
+            rate_limit_quotas: Default::default(),
+            openbao_wrapper_owner: None,
+            openbao_wrapper_generation: 0,
+            outbound: crate::outbound::Outbound::default(),
+            sanitized_configuration: None,
+            database_cursor: None,
+            database_rotation_cursor: None,
+            database_in_flight: database::DatabaseFlights::default(),
+            pending_database_effect: None,
+            pending_database_config_effect: None,
+            pending_database_rotation_effect: None,
+            pending_database_batch_effect: None,
+            pending_online_auth_effect: None,
+            pending_plugin_auth: None,
+            pending_plugin_read: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_request: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_auth_request: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_control_authority: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_credential_list: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_configuration: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_hosts: BTreeMap::new(),
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_migrations: BTreeMap::new(),
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_cleanup_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            namespace_sdk_cleanup_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_credential_cleanup_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_credential_preferred: false,
+            pending_plugin_kms: None,
+            pending_external_key: None,
+            pending_external_transit: None,
+            pending_external_pki: None,
+            pending_external_pki_no_effect: None,
+            pending_acme_external: None,
+            pending_kubernetes_token: None,
+            pending_openldap_effect: None,
+            pending_snapshot_transfer: None,
+            #[cfg(feature = "native-v6-storage")]
+            pending_native_kv2_large: None,
+            #[cfg(feature = "native-v6-storage")]
+            pending_native_kv2_witness: None,
+            #[cfg(feature = "native-v6-storage")]
+            pending_native_file_gc: None,
+            #[cfg(feature = "native-v6-ha")]
+            pending_native_ha_gc: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_kv2_large_transport: false,
+            #[cfg(feature = "native-v6-storage")]
+            native_kv2_large_flight: Arc::new(std::sync::atomic::AtomicBool::new(false)),
+            pending_workflow_external_hold: None,
+            pending_ordinary_kv_authority: None,
+            pending_token_api_authority: None,
+            #[cfg(feature = "native-v6-storage")]
+            pending_native_auth_delivery: None,
+            #[cfg(feature = "native-v6-storage")]
+            pending_native_cg_delivery: None,
+            pending_ha_step_down: None,
+            pending_forward_delivery: None,
+            pending_help_authority: None,
+            pending_namespace_deletion: None,
+            #[cfg(test)]
+            native_record_role_hook: None,
+            pending_approle_tidy: None,
+            approle_tidy_jobs: Default::default(),
+            approle_tidy_slots: BTreeMap::new(),
+            approle_tidy_periodic_cursor: None,
+            pending_native_remount: None,
+            pending_transit_cache_reload: None,
+            native_remount_jobs: Default::default(),
+            native_remount_statuses: BTreeMap::new(),
+            pending_acme_authority: None,
+            acme_nonces: Default::default(),
+            pending_local_unseal_completion: None,
+            pending_ordinary_kv_commit_notice: None,
+            native_snapshot_transport: false,
+            native_snapshot_clock: None,
+            snapshot_spool: None,
+            openldap_in_flight: openldap_secret::OpenLdapFlights::default(),
+            openldap_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            lifecycle_sdk_cursor: 0,
+            lifecycle_provider_cursor: false,
+            lifecycle_acme_preferred: false,
+            lifecycle_database_rotation_cursor: false,
+            auth_plugins: BTreeMap::new(),
+            database_plugins: BTreeMap::new(),
+            kms_plugins: BTreeMap::new(),
+            external_kms_plugins: BTreeMap::new(),
+            kms_keys: BTreeMap::new(),
+            plugins: BTreeMap::new(),
+            raft_stabilization: raft_admin::Stabilization::default(),
+            data_dir,
+            audit,
+            audit_rotation,
+            audit_key,
+            audit_sequence,
+            audit_previous,
+            audit_failed: false,
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            native_restore_fault: None,
+            audit_http_url: None,
+            audit_socket: None,
+            audit_socket_failures: 0,
+            audit_syslog: None,
+            audit_syslog_failures: 0,
+            postgres_durable: None,
+            durable_profile,
+            durable: None,
+            state: None,
+            namespace_runtime: namespace_runtime::Runtime::default(),
+            state_digest: None,
+            record_root: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_root: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_payload_observations: Arc::new(
+                native_blob_source::PayloadObservations::default(),
+            ),
+            #[cfg(feature = "native-v6-storage")]
+            native_candidate_profile: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_storage_profile: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_request_binding: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_failure_notice: None,
+            record_writes_since_gc: 0,
+            ha_read_cache: None,
+            ha_activation: None,
+            policy_default_activation: None,
+            kv_read_only_dispatches: 0,
+            seal,
+            unseal_shares: BTreeMap::new(),
+            unseal_nonce,
+            #[cfg(feature = "native-v6-storage")]
+            unseal_nonce_attempt: 0,
+            barrier_key: None,
+            disable_unauthed_rekey_endpoints: true,
+            rekey,
+            recovery_required,
+            private_shutdown_requested: false,
+            ha,
+            opaque_owner_capacity: MAX_STATE_BYTES,
+            #[cfg(test)]
+            state_capacity: MAX_STATE_BYTES,
+            #[cfg(test)]
+            audit_capacity: MAX_AUDIT_BYTES,
+        })
+    }
+
+    pub fn handle(
+        &mut self,
+        method: &str,
+        path: &str,
+        namespace: &str,
+        token: &str,
+        body: Value,
+    ) -> Response {
+        self.handle_request(ServiceRequest::new(method, path, namespace, token, body))
+    }
+
+    pub(crate) fn handle_wire_rejection(
+        &mut self,
+        attempt_id: &[u8; 16],
+        rejection: WireRejection,
+        status: u16,
+        message: &'static str,
+    ) -> Response {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |duration| duration.as_secs());
+        let fingerprint = self.wire_rejection_fingerprint(attempt_id, rejection, status);
+        if self
+            .audit_event("wire-rejection", &fingerprint, now, None)
+            .is_err()
+        {
+            return Response::error(503, "wire rejection audit unavailable");
+        }
+        let mut response = Response::error(status, message);
+        // Retry-After belongs to the admission decision, not to the numeric
+        // status. A quota refusal with response headers disabled, or a standby
+        // health response, must not acquire the listener's one-second hint.
+        if matches!(rejection, WireRejection::RateLimited) && status == 429 {
+            response.response_headers = ResponseHeaders::from_sdk(
+                Some(&json!({"Retry-After":["1"]})),
+                &["Retry-After".into()],
+            )
+            .unwrap_or_default();
+        }
+        if self
+            .audit_event("wire-response", &fingerprint, now, Some(status))
+            .is_err()
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(503, "wire rejection response audit unavailable");
+        }
+        response
+    }
+
+    pub fn handle_at(
+        &mut self,
+        method: &str,
+        path: &str,
+        namespace: &str,
+        token: &str,
+        body: Value,
+        now: u64,
+    ) -> Response {
+        self.handle_request_at(
+            ServiceRequest {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
+            now,
+        )
+    }
+
+    pub fn handle_request(&mut self, request: ServiceRequest<'_>) -> Response {
+        let started = std::time::Instant::now();
+        let observed = match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(observed) => observed,
+            Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+        };
+        let clock = match RequestClock::anchored(observed, started) {
+            Ok(clock) => clock,
+            Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+        };
+        let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
+        #[cfg(all(test, feature = "native-v6-storage"))]
+        {
+            let actor_lifetime_diagnostic = crate::auth::actor_lifetime_diagnostic::Scope::enter(
+                self.native_root.is_some(),
+                (request.method, request.path, request.namespace),
+                request.token,
+                self.state.as_ref().map(|state| &*state.auth),
+                clock.admitted_at(),
+            );
+            let response =
+                self.handle_request_clock(request, observed.as_secs(), true, Some(clock));
+            actor_lifetime_diagnostic.finish(response.status);
+            response
+        }
+        #[cfg(not(all(test, feature = "native-v6-storage")))]
+        {
+            self.handle_request_clock(request, observed.as_secs(), true, Some(clock))
+        }
+    }
+
+    pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
+        let _explicit_clock = external_pki::PublicationClockScope::explicit();
+        self.handle_request_clock(request, now, false, None)
+    }
+
+    fn handle_request_clock(
+        &mut self,
+        request: ServiceRequest<'_>,
+        now: u64,
+        realtime: bool,
+        token_clock: Option<RequestClock>,
+    ) -> Response {
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        } = request;
+        let dispatch = RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward: true,
+            enforce_namespace: false,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        };
+        if realtime {
+            let execution = match token_clock {
+                Some(clock) => self.begin_at_mode_precise(dispatch, clock),
+                None => self.begin_at_mode(dispatch),
+            }
+            .with_realtime_remote_jwt();
+            self.finish_synchronous_request(execution)
+        } else {
+            self.handle_at_mode(dispatch)
+        }
+    }
+
+    /// Trusted local control only. Never called by an HTTP capability.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn begin_private_shutdown(&mut self) -> Result<(), &'static str> {
+        self.private_shutdown_requested = true;
+        self.fence_openbao_wrapper();
+        self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
+        self.state = None;
+        self.ha_activation = None;
+        self.record_root = None;
+        #[cfg(feature = "native-v6-storage")]
+        {
+            self.native_root = None;
+        }
+        self.record_writes_since_gc = 0;
+        self.ha_read_cache = None;
+        self.durable = None;
+        self.barrier_key = None;
+        self.unseal_shares.clear();
+        let discard_rekey = self
+            .rekey
+            .as_ref()
+            .is_some_and(|rekey| rekey.verification.is_none());
+        if let Some(rekey) = self.rekey.as_mut() {
+            rekey.provided.clear();
+            rekey.verification_provided.clear();
+        }
+        if discard_rekey {
+            self.rekey = None;
+        }
+        self.rotate_unseal_nonce()
+    }
+
+    /// Keep the original HTTP deadline through synchronous forwarding. Restore
+    /// the prior scope before returning either a response or an external plan.
+    pub(crate) fn begin_request_before(
+        &mut self,
+        mut request: ServiceRequest<'_>,
+        deadline: std::time::Instant,
+        forwarded: bool,
+    ) -> RequestExecution {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        if self.private_shutdown_requested {
+            erase_json(&mut request.body);
+            return RequestExecution::Complete(Response::error(
+                503,
+                "service shutdown in progress",
+            ));
+        }
+        if crate::request_deadline::current()
+            .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        {
+            erase_json(&mut request.body);
+            return RequestExecution::Complete(Response::error(
+                503,
+                "service request deadline exceeded",
+            ));
+        }
+        #[cfg(feature = "native-v6-ha")]
+        let timing = self.ha.as_ref().map(|_| {
+            let request_class = if request.path == "sys/health" {
+                "health"
+            } else {
+                "ordinary"
+            };
+            crate::ha::NativeV6RequestObservation::start(
+                crate::request_deadline::current().unwrap_or(deadline),
+                request_class,
+                forwarded,
+            )
+        });
+        let execution = if forwarded {
+            self.begin_forwarded(request)
+        } else {
+            self.begin_request(request)
+        };
+        #[cfg(feature = "native-v6-ha")]
+        if let Some(timing) = timing {
+            timing.finish(match &execution {
+                RequestExecution::Complete(response) => Some(response.status),
+                RequestExecution::External(_) => None,
+            });
+        }
+        execution
+    }
+
+    /// Start a network request while holding the Service writer. A database
+    /// provider effect may be returned as an owned external plan after its
+    /// intent has been durably committed.
+    pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
+        let started = std::time::Instant::now();
+        let observed = self.native_snapshot_clock.map_or_else(
+            || {
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or(Duration::MAX)
+            },
+            |(_, observed)| observed,
+        );
+        let clock = match RequestClock::anchored(observed, started) {
+            Ok(clock) => clock,
+            Err(_) => {
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "trusted token clock is unavailable",
+                ));
+            }
+        };
+        let now = observed.as_secs();
+        let _publication_clock = external_pki::PublicationClockScope::enter(
+            clock.admitted_at().duration_since_epoch(),
+            started,
+        );
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        } = request;
+        let execution = self.begin_at_mode_precise(
+            RequestDispatch {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                now,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates,
+            },
+            clock,
+        );
+        if self.native_snapshot_clock.is_some() {
+            execution
+        } else {
+            execution.with_realtime_remote_jwt()
+        }
+    }
+
+    pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
+        let (started, observed) = self.native_snapshot_clock.unwrap_or_else(|| {
+            (
+                std::time::Instant::now(),
+                SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or(Duration::MAX),
+            )
+        });
+        let clock = match RequestClock::anchored(observed, started) {
+            Ok(clock) => clock,
+            Err(_) => {
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "trusted token clock is unavailable",
+                ));
+            }
+        };
+        let now = observed.as_secs();
+        let _publication_clock = external_pki::PublicationClockScope::enter(
+            clock.admitted_at().duration_since_epoch(),
+            started,
+        );
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        } = request;
+        let execution = self.begin_at_mode_precise(
+            RequestDispatch {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                now,
+                allow_forward: false,
+                enforce_namespace: true,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates,
+            },
+            clock,
+        );
+        if self.native_snapshot_clock.is_some() {
+            execution
+        } else {
+            execution.with_realtime_remote_jwt()
+        }
+    }
+
+    // Test HTTP ingress keeps its original fixture clock and admission flags.
+    // The production private dispatch layout and visibility stay unchanged.
+    #[cfg(test)]
+    pub(crate) fn handle_http_fixture_at(
+        &mut self,
+        request: ServiceRequest<'_>,
+        now: u64,
+    ) -> Response {
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        } = request;
+        self.handle_at_mode(RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        })
+    }
+
+    fn handle_at_mode(&mut self, request: RequestDispatch<'_>) -> Response {
+        let execution = self.begin_at_mode(request);
+        self.finish_synchronous_request(execution)
+    }
+
+    fn finish_synchronous_request(&mut self, execution: RequestExecution) -> Response {
+        match execution {
+            RequestExecution::Complete(response) => response,
+            RequestExecution::External(pending) => {
+                let provider_result = pending.execute();
+                self.finish_external_request(*pending, provider_result)
+            }
+        }
+    }
+
+    pub(crate) fn finish_external_request(
+        &mut self,
+        mut pending: PendingExternalRequest,
+        result: ExternalEffectResult,
+    ) -> Response {
+        let headers = pending.quota_response_headers.take();
+        let fingerprint = pending.fingerprint.clone();
+        let now = pending.now;
+        let response = self.finish_external_request_without_quota_headers(pending, result);
+        self.finish_rate_limit_quota_headers(headers, response, Some((&fingerprint, now)))
+    }
+
+    fn finish_external_request_without_quota_headers(
+        &mut self,
+        pending: PendingExternalRequest,
+        result: ExternalEffectResult,
+    ) -> Response {
+        let _raw_reply_ingress =
+            crate::auth::IngressReplyScope::restore(pending.raw_reply_ingress.clone());
+        // Snapshot finalization AND terminal clock/audit completion retain the
+        // originally admitted scope; a split transfer must not lose its budget.
+        let _snapshot_deadline = match &pending.effect {
+            ExternalEffectPlan::SnapshotTransfer(plan) => Some(
+                crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline()),
+            ),
+            #[cfg(feature = "native-v6-storage")]
+            ExternalEffectPlan::NativeKv2Large(plan) => Some(
+                crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline()),
+            ),
+            _ => None,
+        };
+        let response = match (pending.effect, result) {
+            #[cfg(target_os = "linux")]
+            (
+                ExternalEffectPlan::WrapperBarrierInit(plan),
+                ExternalEffectResult::WrapperBarrierInit(result),
+            ) => self.finalize_wrapper_barrier_initialization(
+                *plan,
+                result,
+                pending.now,
+                &pending.fingerprint,
+            ),
+            (ExternalEffectPlan::Database(mut plan), ExternalEffectResult::Database(result)) => {
+                let response = self.finalize_database_request(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_database_delivery(&mut plan, response, &pending.fingerprint);
+            }
+            (
+                ExternalEffectPlan::DatabaseConfig(plan),
+                ExternalEffectResult::DatabaseConfig(result),
+            ) => self.finalize_database_config(plan, result),
+            (
+                ExternalEffectPlan::DatabaseRotation(plan),
+                ExternalEffectResult::DatabaseRotation(result),
+            ) => self.finalize_database_rotation_request(plan, result),
+            (
+                ExternalEffectPlan::DatabaseBatch(plan),
+                ExternalEffectResult::DatabaseBatch(result),
+            ) => self.finalize_database_batch_effect(&plan, result),
+            (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
+                let token_expected = plan.is_provider_renewal();
+                let response = self.finalize_online_auth_effect(plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_pending_token_api_delivery(
+                    token_expected && response.status < 300,
+                    response,
+                    &pending.fingerprint,
+                );
+            }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            (ExternalEffectPlan::SdkAuth(mut plan), ExternalEffectResult::SdkAuth(result)) => {
+                let response = self.finalize_sdk_auth(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_sdk_auth_delivery(&plan, response, &pending.fingerprint);
+            }
+            (ExternalEffectPlan::PluginAuth(plan), ExternalEffectResult::PluginAuth(result)) => {
+                self.finalize_plugin_auth(plan, result)
+            }
+            (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
+                self.finalize_plugin_read(plan, result)
+            }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            (
+                ExternalEffectPlan::SdkBackend(mut plan),
+                ExternalEffectResult::SdkBackend(result),
+            ) => {
+                let response = self.finalize_sdk_request(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_sdk_delivery(&mut plan, response, &pending.fingerprint);
+            }
+            (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
+                self.finalize_plugin_kms(plan, result)
+            }
+            (
+                ExternalEffectPlan::ExternalKey(mut plan),
+                ExternalEffectResult::ExternalKey(result),
+            ) => {
+                let response = self.finalize_external_key(&mut plan, result);
+                if plan.is_genuine() {
+                    let response = self.audit_external_key_response(
+                        &mut plan,
+                        &pending.fingerprint,
+                        (pending.now, pending.token_clock),
+                        response,
+                    );
+                    return self.complete_external_key_delivery(
+                        &mut plan,
+                        response,
+                        &pending.fingerprint,
+                    );
+                }
+                response
+            }
+            (
+                ExternalEffectPlan::ExternalTransit(mut plan),
+                ExternalEffectResult::ExternalTransit(result),
+            ) => {
+                let response = self.finalize_external_transit(&mut plan, result);
+                let response = self.audit_external_transit_response(
+                    &mut plan,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
+                    response,
+                );
+                return self.complete_external_transit_delivery(
+                    &mut plan,
+                    response,
+                    &pending.fingerprint,
+                );
+            }
+            (
+                ExternalEffectPlan::AcmeExternal(mut plan),
+                ExternalEffectResult::AcmeExternal(result),
+            ) => {
+                let response = self.finalize_acme_external(&mut plan, result);
+                self.pending_acme_authority = plan.authority.take();
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_pending_acme_delivery(true, response, &pending.fingerprint);
+            }
+            (
+                ExternalEffectPlan::ExternalPki(mut plan),
+                ExternalEffectResult::ExternalPki(result),
+            ) => {
+                let response = self.finalize_external_pki(&mut plan, result);
+                let response = self.audit_external_pki_response(
+                    &mut plan,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
+                    response,
+                    || {},
+                );
+                return self.complete_external_pki_delivery(
+                    &mut plan,
+                    response,
+                    &pending.fingerprint,
+                );
+            }
+            (
+                ExternalEffectPlan::KubernetesToken(mut plan),
+                ExternalEffectResult::KubernetesToken(result),
+            ) => {
+                let response = self.finalize_kubernetes_token(&mut plan, result);
+                let response = self.audit_completed_response_with_receipt(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                    || plan.mark_response_audited(&pending.fingerprint),
+                );
+                return self.complete_kubernetes_token_delivery(
+                    &mut plan,
+                    response,
+                    &pending.fingerprint,
+                );
+            }
+            (ExternalEffectPlan::OpenLdap(mut plan), ExternalEffectResult::OpenLdap(result)) => {
+                let response = self.finalize_openldap_request(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_openldap_delivery(&mut plan, response, &pending.fingerprint);
+            }
+            (
+                ExternalEffectPlan::SnapshotTransfer(plan),
+                ExternalEffectResult::SnapshotTransfer(result),
+            ) => {
+                return self.complete_snapshot_transfer(
+                    *plan,
+                    result,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
+                );
+            }
+            #[cfg(feature = "native-v6-storage")]
+            (
+                ExternalEffectPlan::NativeKv2Large(plan),
+                ExternalEffectResult::NativeKv2Large(result),
+            ) => {
+                return self.complete_native_kv2_large(
+                    *plan,
+                    result,
+                    &pending.fingerprint,
+                    (pending.now, pending.token_clock),
+                );
+            }
+            _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                Response::error(503, "external request observation type mismatch")
+            }
+        };
+        let response = self.audit_completed_response(
+            &pending.fingerprint,
+            pending.now,
+            pending.token_clock,
+            response,
+        );
+        #[cfg(feature = "native-v6-storage")]
+        self.retire_native_external_binding(&pending.fingerprint, pending.token_clock);
+        response
+    }
+
+    fn audit_completed_response(
+        &mut self,
+        fingerprint: &str,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        response: Response,
+    ) -> Response {
+        self.audit_completed_response_with_receipt(fingerprint, now, token_clock, response, || {})
+    }
+
+    fn audit_completed_response_with_receipt(
+        &mut self,
+        fingerprint: &str,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        response: Response,
+        after_audit: impl FnOnce(),
+    ) -> Response {
+        self.audit_completed_response_with_clock_receipt(
+            fingerprint,
+            (now, token_clock),
+            response,
+            after_audit,
+            false,
+        )
+        .0
+    }
+
+    fn audit_completed_response_with_clock_receipt(
+        &mut self,
+        fingerprint: &str,
+        request_clock: (u64, Option<RequestClock>),
+        mut response: Response,
+        after_audit: impl FnOnce(),
+        retain_clock_receipt: bool,
+    ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
+        let (now, token_clock) = request_clock;
+        #[cfg(feature = "native-v6-storage")]
+        let native_auth_deadline = self.native_auth_terminal_deadline();
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_deadline = self.native_cg_terminal_deadline();
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv_output_deadline = self.native_wrapped_kv_terminal_deadline();
+        #[cfg(feature = "native-v6-storage")]
+        let _native_kv_output_deadline =
+            native_kv_output_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv_output_terminal = native_kv_output_deadline.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_kv_output_terminal = false;
+        #[cfg(feature = "native-v6-storage")]
+        let _native_cg_deadline =
+            native_cg_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_terminal = native_cg_deadline.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_cg_terminal = false;
+        #[cfg(feature = "native-v6-storage")]
+        let _native_auth_deadline =
+            native_auth_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        #[cfg(feature = "native-v6-storage")]
+        let native_auth_terminal = native_auth_deadline.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_auth_terminal = false;
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        let phase = self
+            .native_root
+            .as_ref()
+            .and_then(|_| crate::request_deadline::current())
+            .map(|until| {
+                native_v6_ha_install::NativeHaPhaseTimer::start("terminal_owner", until, 0, 0, 0)
+            });
+        #[cfg(feature = "native-v6-storage")]
+        let terminal_owner = self
+            .check_pending_native_auth_before_terminal()
+            .and_then(|()| self.check_pending_native_cg_before_terminal())
+            .and_then(|()| self.check_pending_native_wrapped_kv_before_terminal());
+        #[cfg(not(feature = "native-v6-storage"))]
+        let terminal_owner: Result<(), Response> = Ok(());
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        if let Some(phase) = phase {
+            phase.finish(terminal_owner.is_ok());
+        }
+        #[cfg(feature = "native-v6-ha")]
+        let pre_admission_refusal =
+            self.take_native_pre_admission_refusal(fingerprint, token_clock, &response);
+        #[cfg(not(feature = "native-v6-ha"))]
+        let pre_admission_refusal: Option<Response> = None;
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        let phase = self
+            .native_root
+            .as_ref()
+            .and_then(|_| crate::request_deadline::current())
+            .map(|until| {
+                native_v6_ha_install::NativeHaPhaseTimer::start(
+                    "terminal_clock_floor",
+                    until,
+                    0,
+                    0,
+                    0,
+                )
+            });
+        let terminal_floor = terminal_owner.and_then(|()| {
+            if let Some(refusal) = pre_admission_refusal {
+                return Err(refusal);
+            }
+            if response.response_headers.has_local_redirect() {
+                // The matched local hint was selected before actor admission and
+                // checked above to have no staged effect/delivery. Like native
+                // snapshot routing, it does not consume a token or observe an
+                // application result. Keep the mandatory response audit below;
+                // every ordinary or forwarded action retains its original floor.
+                if self.pending_forward_delivery.is_none()
+                    && response
+                        .response_headers
+                        .local_redirect_matches_current(response.status)
+                    && !native_auth_terminal
+                    && !native_cg_terminal
+                    && !native_kv_output_terminal
+                {
+                    Ok(None)
+                } else {
+                    Err(Response::error(
+                        503,
+                        "local redirect completion binding changed",
+                    ))
+                }
+            } else if self.pending_forward_delivery.is_some() {
+                self.check_pending_forward_delivery(&response)
+                    .map(|()| None)
+            } else {
+                self.persist_terminal_token_clock_with_receipt(
+                    token_clock,
+                    now,
+                    retain_clock_receipt
+                        || native_auth_terminal
+                        || native_cg_terminal
+                        || native_kv_output_terminal,
+                )
+            }
+        });
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        if let Some(phase) = phase {
+            phase.finish(terminal_floor.is_ok());
+        }
+        #[cfg(all(test, feature = "native-v6-storage"))]
+        self.record_pending_missing_route_stage(
+            "terminal-floor-after",
+            terminal_floor.as_ref().err().map(|error| error.status),
+        );
+        if let Err(error) = &terminal_floor {
+            crate::ha_forward_completion::diagnostic_response("terminal_floor_veto", error);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        let native_failure = self.take_native_failure_response(fingerprint, token_clock);
+        let terminal_floor_succeeded = terminal_floor.is_ok();
+        let receipt = match terminal_floor {
+            Ok(receipt) => receipt,
+            Err(cause) => {
+                erase_json(&mut response.body);
+                #[cfg(feature = "native-v6-storage")]
+                {
+                    response = native_failure.unwrap_or(cause);
+                }
+                #[cfg(not(feature = "native-v6-storage"))]
+                {
+                    response = cause;
+                }
+                None
+            }
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let (receipt, terminal_floor_succeeded) =
+            if native_auth_terminal && terminal_floor_succeeded {
+                // The original NativeAuth capsule consumes the one exact terminal
+                // self-write receipt. Only then, before the mandatory response
+                // audit below, can it bind its sole real HA read proof.
+                match self.bind_pending_native_auth_before_audit(receipt) {
+                    Ok(()) => (None, true),
+                    Err(cause) => {
+                        erase_json(&mut response.body);
+                        response.consistency_index = None;
+                        response = cause;
+                        (None, false)
+                    }
+                }
+            } else {
+                (receipt, terminal_floor_succeeded)
+            };
+        #[cfg(feature = "native-v6-storage")]
+        let (receipt, terminal_floor_succeeded) = if native_cg_terminal && terminal_floor_succeeded
+        {
+            match self.bind_pending_native_cg_before_audit(receipt) {
+                Ok(()) => (None, true),
+                Err(cause) => {
+                    erase_json(&mut response.body);
+                    response.consistency_index = None;
+                    response = cause;
+                    (None, false)
+                }
+            }
+        } else {
+            (receipt, terminal_floor_succeeded)
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let (receipt, terminal_floor_succeeded) =
+            if native_kv_output_terminal && terminal_floor_succeeded {
+                match self.bind_pending_native_wrapped_kv_before_audit(receipt) {
+                    Ok(()) => (None, true),
+                    Err(cause) => {
+                        erase_json(&mut response.body);
+                        response.consistency_index = None;
+                        response = cause;
+                        (None, false)
+                    }
+                }
+            } else {
+                (receipt, terminal_floor_succeeded)
+            };
+        if let Err(cause) = self.check_pending_approle_lookup_before_audit() {
+            erase_json(&mut response.body);
+            response = cause;
+        }
+        let response_audit_fingerprint = response
+            .unwrapped_json
+            .as_mut()
+            .map(|origin| origin.selected_response_audit_binding(&response.body))
+            .transpose()
+            .map(Option::flatten)
+            .map(|binding| {
+                if let Some(binding) = binding {
+                    let mut context = hmac::Context::with_key(&self.audit_key);
+                    context.update(b"heptabao.audit.selected-response-custody.v1");
+                    context.update(&(fingerprint.len() as u64).to_le_bytes());
+                    context.update(fingerprint.as_bytes());
+                    context.update(&(binding.len() as u64).to_le_bytes());
+                    context.update(&binding);
+                    STANDARD.encode(context.sign().as_ref())
+                } else {
+                    fingerprint.to_owned()
+                }
+            });
+        // Selection and mandatory audit are one delivery boundary. This binds
+        // private response custody to the existing chain; it does not implement
+        // OpenBao's per-field HMAC or audit-device JSON contract.
+        let response_audit = response_audit_fingerprint
+            .map_err(|_| std::io::Error::other("selected response audit projection rejected"))
+            .and_then(|bound| self.audit_event("response", &bound, now, Some(response.status)));
+        if response_audit.is_err() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            erase_json(&mut response.body);
+            #[cfg(target_os = "linux")]
+            if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
+                self.fence_wrapper_barrier_delivery();
+            }
+            return (
+                Response::error(
+                    503,
+                    "response audit failed; outcome unknown; authoritative recovery required",
+                ),
+                None,
+            );
+        }
+        crate::ha_forward_completion::audited(if terminal_floor_succeeded {
+            token_clock
+        } else {
+            None
+        });
+        self.stamp_consistency_index(&mut response);
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            authority.mark_response_audited(fingerprint);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        self.mark_native_cg_audited(fingerprint);
+        after_audit();
+        (response, receipt)
+    }
+
+    fn begin_at_mode(&mut self, request: RequestDispatch<'_>) -> RequestExecution {
+        self.begin_at_mode_started(request, std::time::Instant::now())
+    }
+
+    // The integer request clock and monotonic anchor enter together, before
+    // audit, HA catch-up or finite-use admission can block. Explicit-clock callers
+    // retain this anchor; real remote JWT requests sample wall time at completion.
+    fn begin_at_mode_precise(
+        &mut self,
+        request: RequestDispatch<'_>,
+        clock: RequestClock,
+    ) -> RequestExecution {
+        self.begin_at_mode_started_clock(request, clock.started(), Some(clock))
+    }
+
+    fn begin_at_mode_started(
+        &mut self,
+        request: RequestDispatch<'_>,
+        admission_started: std::time::Instant,
+    ) -> RequestExecution {
+        self.begin_at_mode_started_clock(request, admission_started, None)
+    }
+
+    fn begin_at_mode_started_clock(
+        &mut self,
+        request: RequestDispatch<'_>,
+        admission_started: std::time::Instant,
+        token_clock: Option<RequestClock>,
+    ) -> RequestExecution {
+        let fingerprint = self.request_fingerprint(
+            request.method,
+            request.path,
+            request.namespace,
+            request.token,
+        );
+        let now = request.now;
+        let public_probe = request.path == "sys/leader"
+            || (request.path == "sys/health" && matches!(request.method, "GET" | "HEAD"));
+        let mut quota_headers = None;
+        let execution = self.begin_at_mode_started_clock_with_quota(
+            request,
+            admission_started,
+            token_clock,
+            &mut quota_headers,
+        );
+        match execution {
+            RequestExecution::Complete(response) => {
+                RequestExecution::Complete(self.finish_rate_limit_quota_headers(
+                    quota_headers,
+                    response,
+                    (!public_probe).then_some((fingerprint.as_str(), now)),
+                ))
+            }
+            RequestExecution::External(mut pending) => {
+                // The original plan retains this same admission observation
+                // while its external work releases the Service writer lock.
+                pending.quota_response_headers = quota_headers;
+                RequestExecution::External(pending)
+            }
+        }
+    }
+
+    fn begin_at_mode_started_clock_with_quota(
+        &mut self,
+        request: RequestDispatch<'_>,
+        admission_started: std::time::Instant,
+        token_clock: Option<RequestClock>,
+        quota_headers: &mut Option<rate_limit_quotas::AcceptedHeaders>,
+    ) -> RequestExecution {
+        let RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            mut body,
+            now,
+            allow_forward,
+            enforce_namespace,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+        } = request;
+        // Dedicated public diagnostic, before audit/ACL, finite-use admission,
+        // namespace resolution, HA forwarding or synchronization. In particular,
+        // a standby must report its own observation without contacting a leader.
+        if path == "sys/leader" {
+            if let Some(response) = self.rate_limit_quota_response(
+                &RequestView {
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body: &body,
+                    now,
+                    admission_started,
+                    token_clock,
+                    allow_forward,
+                    enforce_namespace,
+                    wrap_ttl_seconds: None,
+                    origin_peer,
+                    client_certificates: client_certificates.as_deref(),
+                },
+                quota_headers,
+            ) {
+                erase_json(&mut body);
+                return RequestExecution::Complete(response);
+            }
+            erase_json(&mut body);
+            return RequestExecution::Complete(self.leader_response(method));
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_pending = self.pending_sdk_request.is_some()
+            || self.pending_sdk_auth_request.is_some()
+            || self.pending_sdk_control_authority.is_some()
+            || self.pending_sdk_credential_list.is_some();
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_pending = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_auth_pending = self.pending_native_auth_delivery.is_some()
+            || self.pending_native_cg_delivery.is_some()
+            || self.pending_native_kv2_large.is_some()
+            || self.pending_native_kv2_witness.is_some()
+            || self.pending_native_file_gc.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_auth_pending = false;
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc_pending = self.pending_native_ha_gc.is_some();
+        #[cfg(not(feature = "native-v6-ha"))]
+        let native_ha_gc_pending = false;
+        if sdk_pending
+            || self.rate_limit_quotas.has_pending_ingress()
+            || native_auth_pending
+            || native_ha_gc_pending
+            || self.pending_database_effect.is_some()
+            || self.pending_database_config_effect.is_some()
+            || self.pending_database_rotation_effect.is_some()
+            || self.pending_database_batch_effect.is_some()
+            || self.pending_online_auth_effect.is_some()
+            || self.pending_plugin_auth.is_some()
+            || self.pending_plugin_read.is_some()
+            || self.pending_plugin_kms.is_some()
+            || self.pending_external_key.is_some()
+            || self.pending_external_transit.is_some()
+            || self.pending_external_pki.is_some()
+            || self.pending_external_pki_no_effect.is_some()
+            || self.pending_acme_external.is_some()
+            || self.pending_kubernetes_token.is_some()
+            || self.pending_openldap_effect.is_some()
+            || self.pending_snapshot_transfer.is_some()
+            || self.pending_workflow_external_hold.is_some()
+            || self.pending_ordinary_kv_authority.is_some()
+            || self.pending_token_api_authority.is_some()
+            || self.pending_ha_step_down.is_some()
+            || self.pending_forward_delivery.is_some()
+            || self.pending_help_authority.is_some()
+            || self.pending_namespace_deletion.is_some()
+            || self.pending_approle_tidy.is_some()
+            || self.pending_native_remount.is_some()
+            || self.pending_transit_cache_reload.is_some()
+            || self.pending_acme_authority.is_some()
+            || self.pending_local_unseal_completion.is_some()
+            || self.pending_ordinary_kv_commit_notice.is_some()
+        {
+            erase_json(&mut body);
+            return RequestExecution::Complete(Response::error(
+                503,
+                "external request dispatch state is unavailable",
+            ));
+        }
+        // Public health probes bypass audit and bearer-use admission. Keep the
+        // existing health handler: unlike /sys/leader, readiness still requires
+        // its bounded ReadIndex and authenticated application catch-up.
+        if path == "sys/health" && matches!(method, "GET" | "HEAD") {
+            let response = if self.audit_failed {
+                // Observation does not retry a failed mandatory device or
+                // restore the read authority which that failure fenced.
+                Response::error(503, "audit unavailable before entry")
+            } else {
+                self.handle_inner_with_quota(
+                    RequestView {
+                        method,
+                        path,
+                        namespace,
+                        token,
+                        body: &body,
+                        now,
+                        admission_started,
+                        token_clock,
+                        allow_forward,
+                        enforce_namespace,
+                        // The dedicated health diagnostic ignores wrapping TTL.
+                        // It never publishes a wrapped response or bearer token.
+                        wrap_ttl_seconds: None,
+                        origin_peer,
+                        client_certificates: client_certificates.as_deref(),
+                    },
+                    quota_headers,
+                )
+            };
+            erase_json(&mut body);
+            return RequestExecution::Complete(response);
+        }
+        // Audit binds the original client path. Canonical route resolution
+        // happens only after leader synchronization; the response retains
+        // this same fingerprint even when routing adds a KV root separator.
+        let mut fingerprint = self.request_fingerprint(method, path, namespace, token);
+        if let Some(payload) = crate::http::ocsp::audit_payload(method, path, &body) {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.ocsp-request.v1");
+            context.update(fingerprint.as_bytes());
+            context.update(payload.as_bytes());
+            fingerprint = STANDARD.encode(context.sign().as_ref());
+        }
+        if let Some((wire_method, original_path, query)) =
+            crate::http::ocsp::audit_query(method, path, &body)
+        {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.read-query.v1");
+            context.update(fingerprint.as_bytes());
+            for field in [wire_method, original_path, query] {
+                context.update(&(field.len() as u64).to_le_bytes());
+                context.update(field.as_bytes());
+            }
+            fingerprint = STANDARD.encode(context.sign().as_ref());
+        }
+        if let Ok(Some(carrier)) = crate::http::token_fields::request(method, path, &body) {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.token-number-fields.v1");
+            context.update(fingerprint.as_bytes());
+            for field in [method, path] {
+                context.update(&(field.len() as u64).to_le_bytes());
+                context.update(field.as_bytes());
+            }
+            if let Ok(numbers) = serde_json::to_vec(carrier.number_fields()) {
+                context.update(&(numbers.len() as u64).to_le_bytes());
+                context.update(&numbers);
+                fingerprint = STANDARD.encode(context.sign().as_ref());
+            }
+        }
+        if let Ok(Some(carrier)) = crate::http::pki_role_fields::request(method, path, &body) {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.pki-role-number-fields.v1");
+            context.update(fingerprint.as_bytes());
+            for field in [method, path] {
+                context.update(&(field.len() as u64).to_le_bytes());
+                context.update(field.as_bytes());
+            }
+            if let Ok(binding) = serde_json::to_vec(&(carrier.original, carrier.number_fields())) {
+                let binding = Zeroizing::new(binding);
+                context.update(&(binding.len() as u64).to_le_bytes());
+                context.update(&binding);
+                fingerprint = STANDARD.encode(context.sign().as_ref());
+            }
+        }
+        if let Some(ingress) = crate::auth::current_ingress() {
+            match ingress.lexical_request_binding(method, path, &body) {
+                Ok(Some(payload)) => {
+                    let mut context = hmac::Context::with_key(&self.audit_key);
+                    context.update(b"heptabao.audit.lexical-wrapping-data.v1");
+                    context.update(fingerprint.as_bytes());
+                    context.update(&(payload.len() as u64).to_le_bytes());
+                    context.update(&payload);
+                    fingerprint = STANDARD.encode(context.sign().as_ref());
+                }
+                Ok(None) => {}
+                Err(_) => {
+                    erase_json(&mut body);
+                    return RequestExecution::Complete(Response::error(
+                        400,
+                        "private lexical request binding rejected",
+                    ));
+                }
+            }
+        }
+        if let Some(ttl) = wrap_ttl_seconds {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.wrapping-request.v1");
+            context.update(fingerprint.as_bytes());
+            context.update(&ttl.to_le_bytes());
+            fingerprint = STANDARD.encode(context.sign().as_ref());
+        }
+        if self
+            .audit_event("request", &fingerprint, now, None)
+            .is_err()
+        {
+            erase_json(&mut body);
+            return RequestExecution::Complete(Response::error(
+                503,
+                "audit unavailable before entry",
+            ));
+        }
+        // Keep Some(0) in authenticated request metadata for ACL comparison;
+        // it is not a request to publish a response-wrapping token.
+        if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0) {
+            let validation = if ttl > 32 * 24 * 3600 {
+                Some((400, "wrapping TTL is outside the bounded service profile"))
+            } else if matches!(
+                path,
+                "sys/health"
+                    | "sys/leader"
+                    | "sys/init"
+                    | "sys/unseal"
+                    | "sys/seal"
+                    | "sys/seal-status"
+                    | "sys/init/ack"
+            ) || path.starts_with("sys/rekey/")
+                || path.starts_with("sys/storage/")
+                || path.starts_with("sys/internal/recovery/")
+                || path == "sys/internal/capacity"
+                || method == "HEAD"
+            {
+                Some((
+                    501,
+                    "response wrapping is not implemented on this service boundary",
+                ))
+            } else {
+                None
+            };
+            if let Some((status, message)) = validation {
+                erase_json(&mut body);
+                let response = Response::error(status, message);
+                if self
+                    .audit_event("response", &fingerprint, now, Some(status))
+                    .is_err()
+                {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                    self.recovery_required = true;
+                    self.ha_activation = None;
+                    return RequestExecution::Complete(Response::error(
+                        503,
+                        "wrapping rejection audit unavailable",
+                    ));
+                }
+                return RequestExecution::Complete(response);
+            }
+        }
+        if path == "sys/init"
+            && let Some(response) = self.rate_limit_quota_response(
+                &RequestView {
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body: &body,
+                    now,
+                    admission_started,
+                    token_clock,
+                    allow_forward,
+                    enforce_namespace,
+                    wrap_ttl_seconds,
+                    origin_peer,
+                    client_certificates: client_certificates.as_deref(),
+                },
+                quota_headers,
+            )
+        {
+            erase_json(&mut body);
+            return RequestExecution::Complete(self.audit_completed_response(
+                &fingerprint,
+                now,
+                token_clock,
+                response,
+            ));
+        }
+        if path == "sys/init" && matches!(method, "PUT" | "POST") {
+            #[cfg(target_os = "linux")]
+            if self.wrapper_barrier_selected()
+                && !self.initialized()
+                && !postgres_pending_exists(&self.data_dir).unwrap_or(true)
+            {
+                let plan =
+                    if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
+                        Err(Response::error(
+                            400,
+                            "initialization requires the root namespace",
+                        ))
+                    } else {
+                        self.prepare_wrapper_barrier_initialization(&body)
+                    };
+                erase_json(&mut body);
+                return match plan {
+                    Ok(plan) => RequestExecution::External(Box::new(PendingExternalRequest {
+                        raw_reply_ingress: crate::auth::current_ingress(),
+                        quota_response_headers: None,
+                        fingerprint,
+                        now,
+                        token_clock,
+                        effect: ExternalEffectPlan::WrapperBarrierInit(Box::new(plan)),
+                    })),
+                    Err(response) => RequestExecution::Complete(self.audit_completed_response(
+                        &fingerprint,
+                        now,
+                        token_clock,
+                        response,
+                    )),
+                };
+            }
+            let (response, response_audited) =
+                if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
+                    (
+                        Response::error(400, "initialization requires the root namespace"),
+                        false,
+                    )
+                } else {
+                    self.initialize(&body, now, &fingerprint)
+                };
+            erase_json(&mut body);
+            if !response_audited
+                && self
+                    .audit_event("response", &fingerprint, now, Some(response.status))
+                    .is_err()
+            {
+                self.recovery_required =
+                    self.initialized() || postgres_pending_exists(&self.data_dir).unwrap_or(true);
+                self.ha_activation = None;
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "initialization response audit unavailable",
+                ));
+            }
+            return RequestExecution::Complete(response);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        {
+            if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
+                self.recovery_required = true;
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "native request failure custody was retained",
+                ));
+            }
+            self.bind_native_request_failure(&fingerprint, token_clock, admission_started, path);
+        }
+        self.stage_quota_ingress(
+            &fingerprint,
+            now,
+            admission_started,
+            token_clock,
+            allow_forward,
+        );
+        let response = self.handle_inner_with_quota(
+            RequestView {
+                method,
+                path,
+                namespace,
+                token,
+                body: &body,
+                now,
+                admission_started,
+                token_clock,
+                allow_forward,
+                enforce_namespace,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates: client_certificates.as_deref(),
+            },
+            quota_headers,
+        );
+        crate::ha_forward_completion::diagnostic_response("route_complete", &response);
+        erase_json(&mut body);
+        let standby_quota_rejection = self.rate_limit_quotas.take_standby_rejection();
+        let database = self.pending_database_effect.take();
+        let database_config = self.pending_database_config_effect.take();
+        let database_rotation = self.pending_database_rotation_effect.take();
+        let database_batch = self.pending_database_batch_effect.take();
+        let online_auth = self.pending_online_auth_effect.take();
+        let plugin_auth = self.pending_plugin_auth.take();
+        let plugin_read = self.pending_plugin_read.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_request = self.pending_sdk_request.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_auth = self.pending_sdk_auth_request.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_control = self.pending_sdk_control_authority.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_control_present = sdk_control.is_some();
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_control_present = false;
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_staged = usize::from(sdk_request.is_some()) + usize::from(sdk_auth.is_some());
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_staged = 0;
+        let plugin_kms = self.pending_plugin_kms.take();
+        let external_key = self.pending_external_key.take();
+        let external_transit = self.pending_external_transit.take();
+        let external_pki = self.pending_external_pki.take();
+        let external_pki_no_effect = self.pending_external_pki_no_effect.take();
+        let acme_external = self.pending_acme_external.take();
+        let kubernetes_token = self.pending_kubernetes_token.take();
+        let openldap = self.pending_openldap_effect.take();
+        let snapshot_transfer = self.pending_snapshot_transfer.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv2_large = self.pending_native_kv2_large.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv2_large_staged = usize::from(native_kv2_large.is_some());
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_kv2_large_staged = 0;
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv2_witness = self.pending_native_kv2_witness.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv2_witness_expected = native_kv2_witness.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_kv2_witness_expected = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_file_gc = self.pending_native_file_gc.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_file_gc_expected = native_file_gc.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_file_gc_expected = false;
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc = self.pending_native_ha_gc.take();
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc_expected = native_ha_gc.is_some();
+        #[cfg(not(feature = "native-v6-ha"))]
+        let native_ha_gc_expected = false;
+        let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
+        let token_api_authority = self.pending_token_api_authority.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_auth_delivery = self.pending_native_auth_delivery.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_auth_expected = native_auth_delivery.is_some();
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_delivery = self.pending_native_cg_delivery.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_expected = native_cg_delivery.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_cg_expected = false;
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_auth_expected = false;
+        let step_down = self.pending_ha_step_down.take();
+        let help_authority = self.pending_help_authority.take();
+        let namespace_deletion = self.pending_namespace_deletion.take();
+        let approle_tidy = self.pending_approle_tidy.take();
+        let native_remount = self.pending_native_remount.take();
+        let transit_cache_reload = self.pending_transit_cache_reload.take();
+        let acme_authority = self.pending_acme_authority.take();
+        let local_unseal_completion = self.pending_local_unseal_completion.take();
+        let staged = sdk_staged
+            + native_kv2_large_staged
+            + usize::from(database.is_some())
+            + usize::from(database_config.is_some())
+            + usize::from(database_rotation.is_some())
+            + usize::from(database_batch.is_some())
+            + usize::from(online_auth.is_some())
+            + usize::from(plugin_auth.is_some())
+            + usize::from(plugin_read.is_some())
+            + usize::from(plugin_kms.is_some())
+            + usize::from(external_key.is_some())
+            + usize::from(external_transit.is_some())
+            + usize::from(external_pki.is_some())
+            + usize::from(acme_external.is_some())
+            + usize::from(kubernetes_token.is_some())
+            + usize::from(openldap.is_some())
+            + usize::from(snapshot_transfer.is_some());
+        let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
+            + usize::from(standby_quota_rejection.is_some())
+            + usize::from(native_auth_expected)
+            + usize::from(native_cg_expected)
+            + usize::from(native_kv2_witness_expected)
+            + usize::from(native_file_gc_expected)
+            + usize::from(native_ha_gc_expected)
+            + usize::from(external_pki_no_effect.is_some())
+            + usize::from(token_api_authority.is_some())
+            + usize::from(help_authority.is_some())
+            + usize::from(namespace_deletion.is_some())
+            + usize::from(approle_tidy.is_some())
+            + usize::from(native_remount.is_some())
+            + usize::from(transit_cache_reload.is_some())
+            + usize::from(acme_authority.is_some())
+            + usize::from(local_unseal_completion.is_some())
+            + usize::from(step_down.is_some())
+            + usize::from(sdk_control_present);
+        if staged > 1
+            || delivery_capsules > 1
+            || staged != 0 && delivery_capsules != 0
+            || response.response_headers.has_local_redirect()
+                && (staged != 0
+                    || delivery_capsules != 0
+                    || self.pending_forward_delivery.is_some())
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return RequestExecution::Complete(self.audit_completed_response(
+                &fingerprint,
+                now,
+                token_clock,
+                Response::error(503, "multiple external effects staged for one request"),
+            ));
+        }
+        if let Some(rejection) = standby_quota_rejection {
+            let response = self.complete_standby_quota_rejection(
+                rejection,
+                response,
+                &fingerprint,
+                now,
+                token_clock,
+            );
+            #[cfg(feature = "native-v6-storage")]
+            {
+                self.native_request_binding = None;
+            }
+            return RequestExecution::Complete(response);
+        }
+        let effect = database
+            .map(Box::new)
+            .map(ExternalEffectPlan::Database)
+            .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
+            .or_else(|| database_rotation.map(ExternalEffectPlan::DatabaseRotation))
+            .or_else(|| database_batch.map(ExternalEffectPlan::DatabaseBatch))
+            .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
+            .or_else(|| plugin_auth.map(ExternalEffectPlan::PluginAuth))
+            .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
+            .or_else(|| plugin_kms.map(ExternalEffectPlan::PluginKms))
+            .or_else(|| external_key.map(ExternalEffectPlan::ExternalKey))
+            .or_else(|| external_transit.map(ExternalEffectPlan::ExternalTransit))
+            .or_else(|| external_pki.map(ExternalEffectPlan::ExternalPki))
+            .or_else(|| acme_external.map(|plan| ExternalEffectPlan::AcmeExternal(Box::new(plan))))
+            .or_else(|| {
+                kubernetes_token.map(|plan| ExternalEffectPlan::KubernetesToken(Box::new(plan)))
+            })
+            .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap))
+            .or_else(|| {
+                snapshot_transfer.map(|plan| ExternalEffectPlan::SnapshotTransfer(Box::new(plan)))
+            });
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let effect = effect
+            .or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend))
+            .or_else(|| sdk_auth.map(|plan| ExternalEffectPlan::SdkAuth(Box::new(plan))));
+        #[cfg(feature = "native-v6-storage")]
+        let effect = effect.or_else(|| {
+            native_kv2_large.map(|plan| ExternalEffectPlan::NativeKv2Large(Box::new(plan)))
+        });
+        if let Some(effect) = effect {
+            return RequestExecution::External(Box::new(PendingExternalRequest {
+                raw_reply_ingress: crate::auth::current_ingress(),
+                quota_response_headers: None,
+                fingerprint,
+                now,
+                token_clock,
+                effect,
+            }));
+        }
+        if let Some(completion) = local_unseal_completion {
+            return RequestExecution::Complete(self.complete_local_unseal_response(
+                completion,
+                response,
+                &fingerprint,
+                now,
+            ));
+        }
+        #[cfg(feature = "native-v6-ha")]
+        if let Some(plan) = native_ha_gc {
+            return RequestExecution::Complete(self.complete_native_ha_gc(
+                plan,
+                response,
+                &fingerprint,
+                (now, token_clock),
+            ));
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if let Some(plan) = native_file_gc {
+            return RequestExecution::Complete(self.complete_native_file_gc(
+                plan,
+                response,
+                &fingerprint,
+                (now, token_clock),
+            ));
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if let Some(plan) = native_kv2_witness {
+            return RequestExecution::Complete(self.complete_native_kv2_storage_witness(
+                plan,
+                response,
+                &fingerprint,
+                (now, token_clock),
+            ));
+        }
+        let ordinary_kv_expected = ordinary_kv_authority.is_some();
+        let external_pki_no_effect_expected = external_pki_no_effect.is_some();
+        let token_expected = token_api_authority.is_some();
+        let help_expected = help_authority.is_some();
+        let namespace_deletion_expected = namespace_deletion.is_some();
+        let approle_tidy_expected = approle_tidy.is_some();
+        let native_remount_expected = native_remount.is_some();
+        let transit_cache_reload_expected = transit_cache_reload.is_some();
+        let step_down_expected = self.expects_local_ha_step_down(path, &response);
+        // Retain the exact moved capsule through terminal-floor publication and
+        // mandatory audit. A typed unknown floor outcome attaches to this same
+        // request, rather than being reconstructed from the public response.
+        self.pending_ordinary_kv_authority = ordinary_kv_authority;
+        self.pending_external_pki_no_effect = external_pki_no_effect;
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        {
+            self.pending_sdk_control_authority = sdk_control;
+        }
+        self.pending_token_api_authority = token_api_authority;
+        #[cfg(feature = "native-v6-storage")]
+        {
+            self.pending_native_auth_delivery = native_auth_delivery;
+            self.pending_native_cg_delivery = native_cg_delivery;
+        }
+        self.pending_help_authority = help_authority;
+        self.pending_namespace_deletion = namespace_deletion;
+        self.pending_approle_tidy = approle_tidy;
+        self.pending_native_remount = native_remount;
+        self.pending_transit_cache_reload = transit_cache_reload;
+        let acme_expected = acme_authority.is_some();
+        self.pending_acme_authority = acme_authority;
+        let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let mut response =
+            self.complete_pending_sdk_control_delivery(sdk_control_present, response, &fingerprint);
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let mut response = response;
+        let response = match (
+            ordinary_kv_expected,
+            self.pending_ordinary_kv_authority.take(),
+        ) {
+            (true, Some(authority)) => {
+                self.complete_ordinary_kv_delivery(authority, response, &fingerprint)
+            }
+            (false, None) => response,
+            _ => {
+                erase_json(&mut response.body);
+                response.consistency_index = None;
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                Response::error(503, "ordinary KV delivery capsule was lost")
+            }
+        };
+        let response =
+            self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
+        #[cfg(feature = "native-v6-storage")]
+        let response =
+            self.complete_native_auth_delivery(native_auth_expected, response, &fingerprint);
+        #[cfg(feature = "native-v6-storage")]
+        let response = self.complete_native_cg_delivery(native_cg_expected, response, &fingerprint);
+        let response = self.complete_pending_external_pki_no_effect_delivery(
+            external_pki_no_effect_expected,
+            response,
+            &fingerprint,
+        );
+        let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
+        let response = self.complete_namespace_deletion_delivery(
+            namespace_deletion_expected,
+            response,
+            &fingerprint,
+        );
+        let response =
+            self.complete_native_remount_delivery(native_remount_expected, response, &fingerprint);
+        let response =
+            self.complete_approle_tidy_delivery(approle_tidy_expected, response, &fingerprint);
+        let response = self.complete_pending_acme_delivery(acme_expected, response, &fingerprint);
+        let response =
+            self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
+        let response = self.complete_forward_delivery(response, &fingerprint);
+        let response = self.complete_transit_cache_reload_delivery(
+            transit_cache_reload_expected,
+            response,
+            &fingerprint,
+        );
+        #[cfg(feature = "native-v6-storage")]
+        {
+            self.native_request_binding = None;
+        }
+        RequestExecution::Complete(response)
+    }
+
+    fn handle_inner_with_quota(
+        &mut self,
+        request: RequestView<'_>,
+        quota_headers: &mut Option<rate_limit_quotas::AcceptedHeaders>,
+    ) -> Response {
+        self.handle_inner_control_group_with_quota(request, None, quota_headers)
+    }
+
+    // Existing direct-inner tests deliberately inspect staged delivery
+    // capsules before the outer completion/audit boundary. Keep that entry
+    // point and delegate to the same route implementation; real requests use
+    // the affine metadata out-parameter through begin/finish above.
+    #[cfg(test)]
+    fn handle_inner(&mut self, request: RequestView<'_>) -> Response {
+        self.handle_inner_with_quota(request, &mut None)
+    }
+
+    fn handle_inner_control_group(
+        &mut self,
+        request: RequestView<'_>,
+        resume: Option<control_groups::ControlGroupResume>,
+    ) -> Response {
+        self.handle_inner_control_group_with_quota(request, resume, &mut None)
+    }
+
+    fn handle_inner_control_group_with_quota(
+        &mut self,
+        request: RequestView<'_>,
+        resume: Option<control_groups::ControlGroupResume>,
+        quota_headers: &mut Option<rate_limit_quotas::AcceptedHeaders>,
+    ) -> Response {
+        let quota_ingress = self.rate_limit_quotas.take_ingress_entry();
+        let logical_data = match crate::request_metadata::current(
+            request.method,
+            request.path,
+            request.namespace,
+            request.body,
+        ) {
+            Ok(data) => data,
+            Err(error) => return Response::error(400, error),
+        };
+        let resumed_control_group = resume.is_some();
+        let (resume, control_group_echo) = match resume {
+            Some(resume) => (Some(resume.actor), resume.echo),
+            None => (None, None),
+        };
+        let original_transport = control_groups::TransportRequest {
+            method: request.method,
+            path: request.path,
+            namespace: request.namespace,
+            body: request.body,
+        };
+        let RequestView {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward,
+            enforce_namespace,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+            admission_started: _,
+            token_clock,
+        } = request;
+        let opaque_ocsp_get = crate::http::ocsp::opaque_get_request(method, path, body);
+        if !valid_namespace(namespace)
+            || (!valid_path(path)
+                && !opaque_ocsp_get
+                && !crate::http::ocsp::opaque_header_request(method, path, body)
+                && !crate::http::help::opaque_request(method, path, body))
+        {
+            return Response::error(400, "invalid canonical namespace or path");
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if path == native_kv2_storage_witness::PATH && self.ha.is_some() {
+            // This read-only profile has no forwarding contract. The normal
+            // request/terminal audit chain still records this local refusal.
+            return Response::error(501, "storage witness requires single-node native custody");
+        }
+        // Early control routes resolve the namespace against admitted state.
+        // GET/HEAD health resolves it below, after authenticated HA catch-up.
+        // The root namespace remains available during initialization.
+        if enforce_namespace
+            && self.state.is_some()
+            && matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
+            && !(path == "sys/health" && matches!(method, "GET" | "HEAD"))
+            && !self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.namespace_exists(namespace))
+        {
+            return Response::error(404, "namespace not found");
+        }
+        if path == "sys/health" && matches!(method, "GET" | "HEAD") {
+            let _health_scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + crate::request_deadline::HEALTH_PROBE_BUDGET,
+            );
+            let health_codes = match HealthStatusCodes::from_body(body) {
+                Ok(codes) => codes,
+                Err(message) => return Response::error(400, message),
+            };
+            let standby_ok = match body.get("standbyok") {
+                None => false,
+                Some(Value::Bool(value)) => *value,
+                Some(_) => return Response::error(400, "standbyok must be boolean"),
+            };
+            // OpenBao 2.6.2 does not use perfstandbyok when selecting the
+            // /sys/health status.  It is accepted by the HTTP query parser
+            // for clients that send the probe flag, but must not make a
+            // normal standby report active.
+            if let Some(value) = body.get("perfstandbyok")
+                && !value.is_boolean()
+            {
+                return Response::error(400, "perfstandbyok must be boolean");
+            }
+            let mut observation = self.ha_observation();
+            let (_, _, active, application_ready, _, _) = observation;
+            // A newly elected leader can have the committed Raft envelope but
+            // an older admitted application state. Health probes must be able
+            // to complete authenticated catch-up even when idle maintenance is
+            // disabled. Never sync a sealed, fenced or non-authoritative node.
+            if self.state.is_some()
+                && !self.recovery_required
+                && !self.audit_failed
+                && !self.ha_owned_wrapper_selected()
+                && (active && !application_ready
+                    || observation.1 && self.seal.as_ref().is_some_and(SealMetadata::is_wrapper))
+            {
+                if let Err(mut error) = self.sync_from_ha_with_anchor(false) {
+                    error.status = 503;
+                    return error;
+                }
+                // Leadership/quorum can change during materialization. Only a
+                // fresh observation of both authority and digest is ready.
+                observation = self.ha_observation();
+            }
+            if self.ha_owned_wrapper_selected()
+                && self.state.is_some()
+                && !self.recovery_required
+                && !self.audit_failed
+            {
+                // ReadIndex still proves current authority within the original
+                // 1s health budget. The owned worker alone publishes catch-up.
+                if self
+                    .current_state_identity()
+                    .and_then(|identity| self.verify_ha_state_identity(identity))
+                    .is_err()
+                {
+                    return Response::error(503, "HA local state awaits owned catch-up");
+                }
+                // Identity may remain unchanged across a term/leader change.
+                // The response must use the role after that ReadIndex gate.
+                observation = self.ha_observation();
+            }
+            // The namespace catalog may have changed in the committed state;
+            // resolving it before catch-up would admit deleted namespaces or
+            // reject newly created ones using the previous leader's snapshot.
+            if enforce_namespace
+                && self.state.is_some()
+                && !self
+                    .state
+                    .as_ref()
+                    .is_some_and(|state| state.namespace_exists(namespace))
+            {
+                return Response::error(404, "namespace not found");
+            }
+            // Health is a public early route, but it is exempt only when the
+            // configured quota exemption list says so. The current HA state
+            // has already completed the ordinary readiness catch-up above.
+            if let Some(response) = self.rate_limit_quota_response(&request, quota_headers) {
+                return response;
+            }
+            let initialized = self.initialized();
+            let sealed = self.state.is_none();
+            let (ha_enabled, standby, ha_active, application_ready, _, _) = observation;
+            let default_activation_pending =
+                (!ha_enabled || ha_active) && self.default_policy_activation_pending();
+            let application_ready = application_ready && !default_activation_pending;
+            let status = health_status_with_codes(
+                HealthObservation::new(
+                    initialized,
+                    sealed,
+                    self.recovery_required,
+                    ha_enabled,
+                    standby,
+                    ha_active && application_ready,
+                ),
+                standby_ok,
+                health_codes,
+            );
+            // An elected/read-index-verified leader still awaits the closed
+            // default startup step. Keep the existing health budget and body,
+            // including for a single node between barrier and startup finish.
+            let status = if default_activation_pending {
+                503
+            } else {
+                status
+            };
+            return Response {
+                unwrapped_json: None,
+                response_headers: Default::default(),
+                consistency_index: None,
+                status,
+                // OpenBao 2.6.2 removed the legacy performance_standby and last_wal response fields.
+                // Keep this health response aligned with that release.
+                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"ha_active":ha_active,"ha_application_ready":application_ready,"recovery_required":self.recovery_required}),
+            };
+        }
+        if path == "sys/init" && method == "GET" {
+            return Response::ok(json!({"initialized":self.initialized()}));
+        }
+        if !resumed_control_group
+            && matches!(path, "sys/seal-status" | "sys/unseal")
+            && let Some(response) = self.rate_limit_quota_response(&request, quota_headers)
+        {
+            return response;
+        }
+        if path == "sys/seal-status" && method == "GET" {
+            return self.seal_status();
+        }
+        if path == "sys/unseal" && matches!(method, "PUT" | "POST") {
+            let original_deadline = crate::request_deadline::current();
+            #[cfg(feature = "native-v6-storage")]
+            let fresh_native_transition = self.state.is_none()
+                && self.native_candidate_profile.is_some()
+                && self.ha.is_none();
+            #[cfg(not(feature = "native-v6-storage"))]
+            let fresh_native_transition = false;
+            #[cfg(feature = "native-v6-storage")]
+            let mut cold_handoff = None;
+            let mut response = self.unseal_with_cold_handoff(
+                body,
+                #[cfg(feature = "native-v6-storage")]
+                Some(&mut cold_handoff),
+            );
+            #[cfg(feature = "native-v6-storage")]
+            if response.status == 200
+                && let Some(handoff) = cold_handoff.as_mut()
+                && let Err(error) = handoff.check_before_policy(self)
+            {
+                response = error;
+            }
+            if response.status == 200
+                && let Err(error) = self.complete_default_policy_activation(token_clock)
+            {
+                #[cfg(feature = "native-v6-storage")]
+                if cold_handoff.is_some() {
+                    self.fence_cold_unseal_handoff();
+                }
+                response = error;
+            }
+            // The completion is bound to the root after active initialization.
+            // An unsuccessful initialization never captures a success owner.
+            self.capture_local_unseal_completion_with_handoff(
+                &response,
+                token_clock,
+                original_deadline,
+                fresh_native_transition,
+                #[cfg(feature = "native-v6-storage")]
+                cold_handoff,
+            );
+            eprintln!(
+                "HBHA-DIAG-UNSEAL route_status={} state_loaded={} recovery_required={} barrier_loaded={} record_root={} activation={} original_deadline_present={}",
+                response.status,
+                self.state.is_some(),
+                self.recovery_required,
+                self.barrier_key.is_some(),
+                self.record_root.is_some(),
+                self.ha_activation.is_some(),
+                crate::request_deadline::current().is_some()
+            );
+            return response;
+        }
+        if self.state.is_none() {
+            return Response::error(503, "server is sealed");
+        }
+        #[cfg(feature = "native-v6-ha")]
+        if self.native_snapshot_transport && path == snapshot_transfer::NATIVE_HA_REPAIR_PATH {
+            return self.admit_native_ha_snapshot_repair(&request);
+        }
+        if let Some(ha) = self.ha.as_ref().cloned() {
+            let (leader, local) = match ha.lock_for_request() {
+                Ok(ha) => {
+                    let leader = match ha.leader() {
+                        Ok(value) => value,
+                        Err(_) => return Response::error(503, "HA leader state is unavailable"),
+                    };
+                    let local = match ha.local_id() {
+                        Ok(value) => value,
+                        Err(_) => return Response::error(503, "HA local identity is unavailable"),
+                    };
+                    (leader, local)
+                }
+                Err(_) => return Response::error(503, "HA process lock is unavailable"),
+            };
+            if leader != Some(local) {
+                let Some(_) = leader else {
+                    return Response::error(503, "HA cluster has no elected leader");
+                };
+                #[cfg(feature = "native-v6-storage")]
+                if self.native_kv2_large_transport && path == crate::engines::kv2_native_large::PATH
+                {
+                    return Response::error(
+                        503,
+                        "native-large KV2 requires the leader; standby upload forwarding is unsupported",
+                    );
+                }
+                if self.native_snapshot_transport {
+                    // Native files cannot be carried by the bounded JSON peer
+                    // frame. HTTP snapshot redirects are not implemented yet.
+                    return Response::error(
+                        503,
+                        "native snapshot requires the leader; standby streaming is unsupported",
+                    );
+                }
+                if !resumed_control_group {
+                    // A stale local rule must not keep rejecting after the
+                    // leader deletes or revises it. Catch up even when this
+                    // node's old registry has no matching quota or mount.
+                    if let Err(error) =
+                        self.sync_from_ha_before_request_admission(false, !resumed_control_group)
+                    {
+                        return error;
+                    }
+                    // OpenBao applies its node-local HTTP bucket before
+                    // forwarding, including attempts which forwarding rejects.
+                    // The receiving active node independently charges its hop.
+                    if let Some(response) = self.standby_rate_limit_quota_response(
+                        &request,
+                        if resumed_control_group {
+                            None
+                        } else {
+                            quota_ingress
+                        },
+                    ) {
+                        return response;
+                    }
+                }
+                if !allow_forward {
+                    return Response::error(503, "forwarded request reached a standby node");
+                }
+                if let Some(response) = self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
+                {
+                    return response;
+                }
+                // This preference is considered only at the actual forwarding
+                // branch, after existing local/ReadIndex reads had their chance.
+                // A routing hint performs no actor admission or finite-use write.
+                if let Some(data) = logical_data
+                    .as_ref()
+                    .filter(|data| data.no_request_forwarding())
+                {
+                    let Some(profile) = data
+                        .local_redirect
+                        .as_ref()
+                        .filter(|profile| profile.matches_current())
+                    else {
+                        return Response::error(
+                            503,
+                            "local redirect requires original HTTP ingress",
+                        );
+                    };
+                    let origin = match self.configured_standby_destination() {
+                        Ok(Some(origin)) => origin,
+                        Ok(None) => {
+                            return Response::error(503, "HA role changed before local redirect");
+                        }
+                        Err(response) => return response,
+                    };
+                    let Some(deadline) = crate::request_deadline::current()
+                        .filter(|deadline| Instant::now() < *deadline)
+                    else {
+                        return Response::error(
+                            503,
+                            "local redirect original deadline unavailable",
+                        );
+                    };
+                    let mut response =
+                        Response::error(307, "request forwarding disabled by client");
+                    response.response_headers =
+                        ResponseHeaders::local_redirect(origin, profile.clone(), deadline);
+                    return response;
+                }
+                // This choice follows the actual catch-up above, not a URL
+                // suffix or a stale standby registry. Resumed control-group
+                // work skips that catch-up and cannot select this new profile.
+                // The profile carries the original ingress only; the active
+                // node must still capture and complete its real SSH owner.
+                #[cfg(feature = "native-v6-storage")]
+                let native_original_reply_profile = if !resumed_control_group
+                    && namespace.is_empty()
+                    && self.native_root.is_some()
+                    && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                    && crate::auth::current_ingress().is_some()
+                    && self.state.as_ref().is_some_and(|state| {
+                        state
+                            .engines
+                            .is_public_ssh_key_read(namespace, method, path)
+                    }) {
+                    Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey)
+                } else {
+                    None
+                };
+                #[cfg(not(feature = "native-v6-storage"))]
+                let native_original_reply_profile = None;
+                self.pending_forward_delivery =
+                    Some(forward_delivery::PendingForwardDelivery::Rejected);
+                #[cfg(feature = "native-v6-ha")]
+                let forward_timing = crate::ha::NativeV6TimingSpan::start(
+                    "forward_delivery",
+                    "exchange_and_applied",
+                    None,
+                );
+                let forwarded = match ha.lock_for_request() {
+                    Ok(process) => {
+                        let context = crate::ha_forward::ForwardContext {
+                            method,
+                            path,
+                            namespace,
+                            token,
+                            body,
+                            wrap_ttl_seconds,
+                            origin_peer,
+                            client_certificates,
+                            caller_deadline: crate::request_deadline::current(),
+                        };
+                        if let Some(profile) = native_original_reply_profile {
+                            process.forward_request_completed_with_native_original_reply(
+                                context, profile,
+                            )
+                        } else {
+                            process.forward_request_completed(context)
+                        }
+                    }
+                    Err(_) => return Response::error(503, "HA process lock is unavailable"),
+                };
+                #[cfg(feature = "native-v6-ha")]
+                if let Some(timing) = forward_timing {
+                    timing.finish(forwarded.is_ok());
+                }
+                return match forwarded {
+                    Ok((response, receipt)) => {
+                        if path == "sys/step-down" {
+                            eprintln!(
+                                "heptabao-forward-diagnostic: phase=received_step_down original_status={} original_actor={} receipt_index={} receipt_floor={:?}",
+                                response.status,
+                                receipt.actor().is_some(),
+                                receipt.applied_index(),
+                                receipt.floor()
+                            );
+                        }
+                        match self.stage_forward_delivery(receipt, ha, namespace, token_clock, now)
+                        {
+                            Ok(authority) => {
+                                self.pending_forward_delivery =
+                                    Some(forward_delivery::PendingForwardDelivery::Completed(
+                                        Box::new(authority),
+                                    ));
+                                response
+                            }
+                            Err(error) => error,
+                        }
+                    }
+                    Err(reason) => {
+                        // Diagnostic only. Keep the original refusal and
+                        // *never* expose a received peer error body or token.
+                        let lowered = reason.to_ascii_lowercase();
+                        let category = if lowered.contains("certificate") {
+                            "certificate"
+                        } else if lowered.contains("tls") || lowered.contains("handshake") {
+                            "tls_handshake"
+                        } else if lowered.contains("deadline") || lowered.contains("timeout") {
+                            "deadline"
+                        } else if lowered.contains("direction") || lowered.contains("decode") {
+                            "peer_decode"
+                        } else if lowered.contains("proof") || lowered.contains("receipt") {
+                            "completion_proof"
+                        } else if lowered.contains("transport") || lowered.contains("connection") {
+                            "transport"
+                        } else if lowered.contains("applied") {
+                            "applied_index"
+                        } else {
+                            "other"
+                        };
+                        eprintln!(
+                            "HBHA-MIXED-FWD-R4 phase=completed_exchange_failure category={category} reason_hash={:02x?}",
+                            crypto::digest(reason.as_bytes())
+                        );
+                        Response::error(
+                            503,
+                            "HA leader forwarding completion failed; outcome may be committed",
+                        )
+                    }
+                };
+            }
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            let phase = self
+                .native_root
+                .as_ref()
+                .and_then(|_| crate::request_deadline::current())
+                .map(|until| {
+                    native_v6_ha_install::NativeHaPhaseTimer::start(
+                        "request_pre_sync",
+                        until,
+                        0,
+                        0,
+                        0,
+                    )
+                });
+            if let Err(error) =
+                self.sync_from_ha_before_request_admission(true, !resumed_control_group)
+            {
+                return error;
+            }
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            if let Some(phase) = phase {
+                phase.finish(true);
+            }
+        }
+        if let Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey) =
+            crate::ha_forward::current_native_original_reply_profile()
+        {
+            // Recheck the receiving leader's actual mount after its own HA
+            // admission. A peer's selection, or a concurrently replaced mount,
+            // cannot redirect this profile into an ordinary KV read or another
+            // backend. Refusal never downgrades or replays the request.
+            #[cfg(feature = "native-v6-storage")]
+            let actual_native_ssh = !resumed_control_group
+                && namespace.is_empty()
+                && self.native_root.is_some()
+                && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                && crate::auth::current_ingress().is_some()
+                && self.state.as_ref().is_some_and(|state| {
+                    state
+                        .engines
+                        .is_public_ssh_key_read(namespace, method, path)
+                });
+            #[cfg(not(feature = "native-v6-storage"))]
+            let actual_native_ssh = false;
+            if !actual_native_ssh {
+                return Response::error(
+                    503,
+                    "HA native SSH reply profile no longer has its root mount",
+                );
+            }
+        }
+        // HA forwards the authenticated transport body above. Interpret this
+        // carrier only at the top-level boundary; workflow step JSON has no
+        // transport provenance. ACLs below continue to see numeric Values.
+        let envelopes = match request_normalization::envelopes(method, path, body) {
+            Ok(envelopes) => envelopes,
+            Err(error) => return error,
+        };
+        let token_fields = envelopes.token_fields;
+        let pki_role_fields = envelopes.pki_role_fields;
+        let body = envelopes.body;
+        let request = RequestView { body, ..request };
+
+        // Keep this first phase before namespace/seal/recovery guards.
+        let canonical_kv_root =
+            request_normalization::kv_root(self.state.as_ref(), namespace, method, path, body);
+        let path = canonical_kv_root.as_deref().unwrap_or(path);
+        let request = RequestView { path, ..request };
+
+        // Namespace headers resolve to an existing catalog entry before any
+        // authentication or route dispatch.  Without this fence a caller
+        // could address an arbitrary well-formed namespace path and create
+        // state in an implicit owner map, even though OpenBao returns 404 for
+        // a namespace that is absent from the namespace store.  Legacy states
+        // are adopted into the explicit catalog during unseal, so this check
+        // also remains compatible with pre-catalog state.
+        if enforce_namespace
+            && !matches!(
+                path,
+                "sys/internal/capacity" | "sys/internal/storage/capacity"
+            )
+            && !self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.namespace_exists(namespace))
+        {
+            return Response::error(404, "namespace not found");
+        }
+        if self
+            .state
+            .as_ref()
+            .is_some_and(|state| state.namespace_is_tainted(namespace))
+        {
+            return Response::error(
+                if matches!(path, "sys/auth" | "sys/mounts") || path.starts_with("sys/auth/") {
+                    404
+                } else {
+                    403
+                },
+                "namespace is tainted",
+            );
+        }
+        if enforce_namespace
+            && !matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
+            && self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.namespace_is_sealed(namespace))
+        {
+            return Response::error(503, "namespace is sealed");
+        }
+        if self.recovery_required {
+            return Response::error(
+                503,
+                "authoritative recovery required; unseal with the stored key before retry",
+            );
+        }
+
+        // Interpret opaque GET text only for the synchronized namespace's
+        // longest actual PKI responder. A valid ordinary path retains its
+        // original GET/query semantics at other owners; invalid opaque text
+        // cannot enter control, auth, KV or external-effect routes.
+        let normalized = match request_normalization::operation(
+            self.state.as_ref(),
+            namespace,
+            method,
+            path,
+            original_transport.path,
+            body,
+        ) {
+            Ok(normalized) => normalized,
+            Err(error) => return error,
+        };
+        let method = normalized.method.as_str();
+        let path = normalized.path.as_str();
+        let body = &normalized.body.0;
+        let request = RequestView {
+            method,
+            path,
+            body,
+            ..request
+        };
+
+        // The listener may decode form fields for a syntactic login carrier,
+        // but only the synchronized live native AppRole mount can consume them.
+        // This runs under the ordinary Service writer, after HA forwarding and
+        // canonical namespace/path resolution, before authentication or any effect.
+        if logical_data
+            .as_ref()
+            .is_some_and(|data| data.is_approle_form())
+            && self
+                .state
+                .as_ref()
+                .is_some_and(|state| !state.auth.is_approle_login_route(namespace, method, path))
+        {
+            return Response::error(400, "AppRole form requires an actual AppRole login mount");
+        }
+
+        if !resumed_control_group
+            && !matches!(path, "sys/init" | "sys/seal-status" | "sys/unseal")
+            && let Some(response) = self.rate_limit_quota_response(&request, quota_headers)
+        {
+            return response;
+        }
+        // A newly activated leader finishes the same closed startup transition
+        // before immutable owners or admission are captured. The activation stamp
+        // prevents later ordinary reads from recreating an expired default.
+        if let Err(error) = self.complete_default_policy_activation(request.token_clock) {
+            return error;
+        }
+        if let Some(response) = self.immutable_approle_lookup_response(&request) {
+            return response;
+        }
+        if let Some(response) = self.immutable_kv_response(&request) {
+            self.kv_read_only_dispatches = self.kv_read_only_dispatches.saturating_add(1);
+            return response;
+        }
+
+        if let Some(current) = self.state.as_ref()
+            && let Err(error) = current.engines.synchronize_transit_policy_caches(
+                self.durable.as_ref().map(|durable| durable.generation()),
+                |namespace| current.namespaces.incarnation(namespace),
+            )
+        {
+            return Response::from_engine_error(error);
+        }
+        let Some(mut admitted) = self.state.clone() else {
+            return Response::error(503, "server is sealed");
+        };
+        // Legacy HA owner-manifest migration must reach its dedicated route
+        // without an unrelated lease or wrapping-clock mutation first. Those
+        // maintenance writes intentionally reject HBSR1; a root, unlimited
+        // migration request must be the only state transition in this call.
+        let owner_manifest_migration = path == "sys/storage/raft/migrate-owner-state";
+        // A trusted wall-clock observation is persisted before a wrapping
+        // token can be rejected/consumed. Observed expiry cannot be undone by
+        // a later clock rollback, process restart, or HA leader change.
+        if !owner_manifest_migration {
+            #[cfg(feature = "native-v6-storage")]
+            let native_pki_maintenance =
+                self.native_root.is_some() && admitted.engines.has_native_local_lease_owner();
+            #[cfg(not(feature = "native-v6-storage"))]
+            let native_pki_maintenance = false;
+            #[cfg(feature = "native-v6-storage")]
+            if native_pki_maintenance
+                && let Err(error) = self.reconcile_native_pki_owners(&mut admitted, &request)
+            {
+                return error;
+            }
+            if !native_pki_maintenance {
+                let time = match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                };
+                let changed = match Self::reconcile_lease_owners_observed(&mut admitted, time) {
+                    Ok(changed) => changed,
+                    Err(error) => return error,
+                };
+                if changed {
+                    admitted.schema = admitted.writer_schema();
+                    #[cfg(feature = "native-v6-storage")]
+                    let publication = if self.native_root.is_some() {
+                        let source_floor = self
+                            .state
+                            .as_ref()
+                            .map_or(0, |state| state.engines.lease_clock());
+                        let clock = match request
+                            .token_clock
+                            .and_then(|clock| clock.with_seconds_floor(now.max(source_floor)).ok())
+                        {
+                            Some(clock) => clock,
+                            None => return Response::error(503, "trusted token clock is required"),
+                        };
+                        let fixed = match time.with_seconds_floor(source_floor) {
+                            Ok(time) => time,
+                            Err(_) => {
+                                return Response::error(503, "trusted token clock is unavailable");
+                            }
+                        };
+                        // Reconciliation advances Token API/lease observations. The
+                        // native clock writer also binds the CG observation at this
+                        // same fixed time; include it in the exact private candidate.
+                        let observed = match admitted.engines.kubernetes_artifact_time(fixed) {
+                            Ok(observed) => observed,
+                            Err(error) => return Response::error(error.status, &error.message),
+                        };
+                        let observed = admitted.auth.token_api_observed_time(observed);
+                        if let Err(error) = admitted.auth.advance_control_group_observed(observed) {
+                            return Response::error(error.status, &error.message);
+                        }
+                        admitted.schema = admitted.writer_schema();
+                        // This candidate must be the exact observation-only delta.
+                        // Real lease retirement or CRL changes remain unsupported.
+                        self.commit_native_terminal_clock_floor(&mut admitted, clock, fixed)
+                    } else {
+                        self.commit_state(&mut admitted)
+                    };
+                    #[cfg(not(feature = "native-v6-storage"))]
+                    let publication = self.commit_state(&mut admitted);
+                    if let Err(error) = publication {
+                        return error;
+                    }
+                    admitted = self.install_committed_namespace_view(admitted);
+                }
+            }
+        }
+        // HeaderOperation is unsupported by this public responder. A GET to
+        // the POST-only bare path also has no request-captured suffix. Resolve
+        // this after the same namespace/HA/barrier/maintenance guards, without
+        // interpreting DER or granting access to another owner.
+        if (method == "HEAD" && admitted.engines.is_actual_pki_ocsp_path(namespace, path))
+            || (!opaque_ocsp_get
+                && matches!(method, "GET" | "LIST" | "SCAN")
+                && admitted.engines.is_actual_pki_ocsp(namespace, path))
+        {
+            return Response::error(405, "unsupported operation");
+        }
+        // Local native PKI never enters the separate ACME protocol/effect
+        // dispatcher. Its exact request owner below either executes the local
+        // domain or refuses a provider/protocol selector before any effect.
+        #[cfg(feature = "native-v6-storage")]
+        let native_pki_mounted = self.native_root.is_some()
+            && admitted.engines.native_local_pki_mounted(namespace, path);
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_pki_mounted = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_ssh_mounted = self.native_root.is_some()
+            && admitted.engines.native_local_ssh_mounted(namespace, path);
+        if !native_pki_mounted && let Some(response) = self.handle_pki_acme(&request, &mut admitted)
+        {
+            return response;
+        }
+        let help_projection = if method == "HELP" {
+            if crate::http::help::request(method, path, body).is_none() {
+                return Response::error(400, "invalid request-local help carrier");
+            }
+            match admitted.engines.help_projection(namespace, path) {
+                Ok(value) => value,
+                Err(error) => return Response::error(error.status, &error.message),
+            }
+        } else {
+            None
+        };
+        if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            #[cfg(feature = "native-v6-storage")]
+            if native_ssh_mounted {
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
+            #[cfg(feature = "native-v6-storage")]
+            if native_pki_mounted {
+                return self.dispatch_native_pki_request(
+                    admitted,
+                    None,
+                    &request,
+                    pki_role_fields.as_ref(),
+                );
+            }
+            return Response {
+                unwrapped_json: None,
+                response_headers: Default::default(),
+                consistency_index: None,
+                status: 200,
+                body: help_projection.map_or_else(|| json!({}), |help| help.body),
+            };
+        }
+        // Public projection classification is bound to the actual namespace
+        // and mount after normal HA/unseal and durable lease-owner maintenance.
+        // Monotonic expiry observations must survive rollback and restart; a
+        // public projection neither consumes a bearer nor enters remote signing.
+        // Explicit response wrapping retains the separate existing admission.
+        if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+            && admitted.engines.is_public_pki_read(namespace, method, path)
+        {
+            #[cfg(feature = "native-v6-storage")]
+            if native_pki_mounted {
+                // Original public semantics ignore a supplied bearer. No
+                // authentication or finite-use consumption occurs here.
+                return self.dispatch_native_pki_request(
+                    admitted,
+                    None,
+                    &request,
+                    pki_role_fields.as_ref(),
+                );
+            }
+            return match admitted
+                .engines
+                .handle_public_pki_read(namespace, method, path, body, now)
+            {
+                Ok(Some(mut response)) => Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: response.status,
+                    body: std::mem::take(&mut response.body),
+                },
+                Err(error) => Response::error(error.status, &error.message),
+                Ok(None) => Response::error(503, "public PKI projection changed"),
+            };
+        }
+        if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+            && admitted
+                .engines
+                .is_public_ssh_key_read(namespace, method, path)
+        {
+            #[cfg(feature = "native-v6-storage")]
+            if self.native_root.is_some() {
+                if !native_ssh_mounted {
+                    return Response::error(501, "native SSH public key requires its root owner");
+                }
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
+            return Self::native_ssh_public_response(&admitted, namespace, method, path, body)
+                .unwrap_or_else(|| Response::error(503, "SSH public key owner changed"));
+        }
+        let public_otp_verify = admitted
+            .engines
+            .is_ssh_verification(namespace, method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_ingress = self.native_root.is_some()
+            && (path.starts_with("sys/control-group/")
+                || self.native_cg_unwrap(&admitted, &request));
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_cg_ingress = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_wrapping_observation = self.native_root.is_some()
+            && !native_cg_ingress
+            && (path.starts_with("sys/wrapping/") || admitted.auth.is_wrapping_token(token));
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_wrapping_observation = false;
+        #[cfg(feature = "native-v6-storage")]
+        if !owner_manifest_migration && native_wrapping_observation {
+            let Some(clock) = request.token_clock else {
+                return Response::error(503, "trusted token clock is required");
+            };
+            if let Err(error) = self.observe_native_wrapping(clock) {
+                return error;
+            }
+            admitted = match self.state.as_ref().cloned() {
+                Some(state) => state,
+                None => return Response::error(503, "native wrapping source unavailable"),
+            };
+        }
+        // A request to CREATE a wrapper has not observed an existing wrapper's
+        // expiry. Its clock and payload are published together by wrap_response.
+        // Access to an existing wrapper still fences time before admission below.
+        if !owner_manifest_migration
+            && !native_cg_ingress
+            && !native_wrapping_observation
+            && (path.starts_with("sys/wrapping/") || admitted.auth.is_wrapping_token(token))
+            && admitted.auth.advance_wrapping_clock(now)
+        {
+            admitted.schema = admitted.writer_schema();
+            if let Err(error) = self.commit_state(&mut admitted) {
+                return error;
+            }
+            admitted = self.install_committed_namespace_view(admitted);
+        }
+        if native_cg_ingress {
+            #[cfg(feature = "native-v6-storage")]
+            {
+                let Some(clock) = request.token_clock else {
+                    return Response::error(503, "trusted token clock is required");
+                };
+                if let Err(error) = self.observe_native_cg(clock) {
+                    return error;
+                }
+                admitted = match self.state.as_ref().cloned() {
+                    Some(state) => state,
+                    None => return Response::error(503, "native CG source unavailable"),
+                };
+            }
+        } else if !owner_manifest_migration
+            && !native_wrapping_observation
+            && (path.starts_with("sys/wrapping/")
+                || path.starts_with("sys/control-group/")
+                || admitted.auth.is_control_group_token(token))
+        {
+            let observed = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
+            let advanced = match admitted.auth.advance_control_group_observed(observed) {
+                Ok(advanced) => advanced,
+                Err(error) => return Response::error(error.status, &error.message),
+            };
+            if advanced {
+                admitted.schema = admitted.writer_schema();
+                if let Err(error) = self.commit_state(&mut admitted) {
+                    return error;
+                }
+                admitted = self.install_committed_namespace_view(admitted);
+            }
+        }
+        if path == "sys/wrapping/unwrap"
+            && let Some(response) = Self::control_group_preflight(&admitted, &request)
+        {
+            return response;
+        }
+        // OpenBao reports an invalid self-unwrapping capability as a wrapping
+        // request error, not a generic login failure. Validate its type/scope
+        // without consuming it; actual admission below still consumes exactly once.
+        if path == "sys/wrapping/unwrap"
+            && body.get("token").is_none()
+            && let Err(error) = admitted.auth.lookup_wrapping_request_observed(
+                token,
+                namespace,
+                "POST",
+                &json!({}),
+                match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                },
+            )
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if recovery_keys::legacy_recovery_path(path).is_some() {
+            return self.legacy_recovery_route(admitted, method, path, namespace, body, now);
+        }
+        // Both public discovery endpoints validate a supplied bearer without
+        // spending a use. MountMetadata remains barred from data authorization.
+        let mount_metadata = path == "sys/internal/ui/mounts"
+            || path.starts_with("sys/internal/ui/mounts/")
+            || path == "sys/internal/specs/openapi";
+        let public_login =
+            admitted.auth.is_public_login(namespace, method, path) || path == "sys/mfa/validate";
+        let authenticate_bearer = !token.is_empty()
+            && path != "sys/wrapping/lookup"
+            && !public_otp_verify
+            && !public_login;
+        // The closed ordinary-token slice follows exactly the established
+        // bearer admission classification. MountMetadata retains its separate
+        // non-consuming capability and remains on its original path.
+        if authenticate_bearer
+            && !mount_metadata
+            && let Some(response) = self.closed_namespace_token_response(
+                &admitted,
+                &request,
+                help_projection.as_ref().map(|help| &help.body),
+            )
+        {
+            return response;
+        }
+        let mut principal = if let Some(actor) = resume {
+            Some(actor)
+        } else if !authenticate_bearer {
+            None
+        } else {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
+            let authenticated = if mount_metadata {
+                admitted
+                    .auth
+                    .authenticate_mount_metadata_from_observed(token, time, origin_peer)
+            } else {
+                admitted
+                    .auth
+                    .authenticate_from_observed(token, time, origin_peer)
+            };
+            #[cfg(all(test, feature = "native-v6-storage"))]
+            crate::auth::actor_lifetime_diagnostic::admission_result(
+                authenticated
+                    .as_ref()
+                    .map_or_else(|error| error.status, |_| 200),
+            );
+            match authenticated {
+                Ok(principal) => Some(principal),
+                Err(error) => return Response::error(error.status, &error.message),
+            }
+        };
+        // Only an actually mounted SDK/native public path admits an anonymous
+        // auth request. Retirement does not disclose a route before admission.
+        if path.starts_with("auth/") && !public_login && principal.is_none() {
+            return Response::error(403, "permission denied");
+        }
+        if let Some(principal) = principal.as_mut()
+            && let Err(error) = principal.bind_request_clock(request.token_clock)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if principal.as_ref().is_some_and(Principal::consumed_use)
+            && !(native_cg_ingress && path == "sys/wrapping/unwrap")
+        {
+            admitted.schema = admitted.writer_schema();
+            #[cfg(feature = "native-v6-storage")]
+            let consumption = if self.native_root.is_some() {
+                match principal.as_ref() {
+                    Some(actor) => {
+                        self.commit_native_consumed_auth_use(&mut admitted, actor, &request)
+                    }
+                    None => Err(Response::error(
+                        503,
+                        "original consumed actor is unavailable",
+                    )),
+                }
+            } else {
+                self.commit_state(&mut admitted)
+            };
+            #[cfg(not(feature = "native-v6-storage"))]
+            let consumption = self.commit_state(&mut admitted);
+            if let Err(error) = consumption {
+                return error;
+            }
+            admitted = self.install_committed_namespace_view(admitted);
+        }
+        if let Some(principal) = principal.as_mut() {
+            principal.bind_request_wrapping_ttl(wrap_ttl_seconds);
+        }
+        // The original header's namespace/barrier guards remain above. Only
+        // this authenticated request capability selects a self token's actual
+        // context; opaque transport text or a routing hint grants no authority.
+        let token_namespace = request_normalization::token_namespace(
+            path,
+            principal.as_ref().map(Principal::namespace),
+        )
+        .map(str::to_owned);
+        let changed_token_namespace = token_namespace
+            .as_deref()
+            .is_some_and(|actual| actual != namespace);
+        let namespace = token_namespace.as_deref().unwrap_or(namespace);
+        let request = RequestView {
+            namespace,
+            ..request
+        };
+        if enforce_namespace && changed_token_namespace && !admitted.namespace_exists(namespace) {
+            return Response::error(404, "namespace not found");
+        }
+        if enforce_namespace && changed_token_namespace && admitted.namespace_is_sealed(namespace) {
+            return Response::error(503, "namespace is sealed");
+        }
+        let namespace_resource_route = namespaces::owns(path)
+            || path == "sys/mounts"
+            || path.starts_with("sys/mounts/")
+            || path.starts_with("auth/")
+            || !path.starts_with("sys/");
+        let resources_unloaded = namespace_resource_route
+            && admitted.namespaces.inherited_owner(namespace).is_some()
+            && !self.namespace_runtime.is_loaded(namespace);
+        // A disabled entity still observes its policies in the ordinary
+        // CheckToken path. This terminal branch can publish only that fixed
+        // retirement and always refuses dispatch; normal Identity binding
+        // below and foreign capability subjects retain their own checks.
+        if let Some(actor) = principal.as_mut()
+            && let Some(response) =
+                self.disabled_identity_policy_response(&mut admitted, actor, &request)
+        {
+            return response;
+        }
+        if let Some(principal) = principal.as_mut()
+            && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
+        {
+            return error;
+        }
+        // GetPolicy's lazy deletion is an admission effect. Publish the exact
+        // observed batch even if the subsequent resource ACL denies access.
+        // HELP for an unloaded owner has only the terminal metadata response
+        // below, so it does not consult that owner's resource ACL. Keep bearer
+        // validity, Identity, finite-use persistence and carrier checks in
+        // their original order without adding a foreign namespace ACL check.
+        if !(method == "HELP" && resources_unloaded)
+            && let Some(actor) = principal.as_ref()
+            && let Err(error) = self.retire_actor_policies(&mut admitted, actor, &request)
+        {
+            return error;
+        }
+        let logical_input = match workflows::input::prepare(
+            &admitted,
+            principal.as_ref(),
+            &request,
+            logical_data,
+        ) {
+            Ok(prepared) => prepared,
+            Err(error) => return error,
+        };
+        let body = logical_input.body.as_ref().map_or(body, |value| &value.0);
+        let request = RequestView { body, ..request };
+        let _logical_data_scope = match crate::request_metadata::Scope::enter(
+            logical_input.frame,
+            request.method,
+            request.path,
+            request.namespace,
+            request.body,
+        ) {
+            Ok(scope) => scope,
+            Err(error) => return Response::error(400, error),
+        };
+        if method == "HELP" {
+            if principal.is_none() {
+                return Response::error(403, "missing client token");
+            }
+            if resources_unloaded {
+                return namespace_runtime::unloaded_route(path);
+            }
+            let response = help_projection.map_or_else(
+                || Response::error(404, "help route not found"),
+                |mut help| {
+                    if path == "auth/token/lookup-self"
+                        && let Some(object) = help.body.as_object_mut()
+                    {
+                        object.insert("id".into(), Value::String(token.to_owned()));
+                    }
+                    Response {
+                        unwrapped_json: None,
+                        response_headers: Default::default(),
+                        consistency_index: None,
+                        status: 200,
+                        body: help.body,
+                    }
+                },
+            );
+            if response.status < 300 {
+                let Some(actor) = principal.take() else {
+                    return Response::error(503, "HELP metadata admission unavailable");
+                };
+                self.pending_help_authority = Some(help_delivery::HelpResponseAuthority::opened(
+                    actor,
+                    &admitted,
+                    &request,
+                    &self.unseal_nonce,
+                ));
+            }
+            return response;
+        }
+        if !mount_metadata
+            && let Some(principal) = principal.as_ref()
+            && let Err(error) = admitted.auth.authorize_request_parameters_observed(
+                principal,
+                namespace,
+                kv_authorization_method(method, body),
+                path,
+                body,
+                match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                },
+            )
+        {
+            return Response::error(error.status, &error.message);
+        }
+        // Foreign inspection has its own checked subject. Its fixed policy
+        // deletion must precede capture of an immutable native source owner.
+        if let Err(error) = self.retire_capabilities_target_policies(
+            &mut admitted,
+            principal.as_ref(),
+            &request,
+            token_fields.as_ref(),
+        ) {
+            return error;
+        }
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_transit = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_transit_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_transit_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_totp = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_totp_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_totp_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_ssh = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_ssh_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_ssh_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_pki = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_pki_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_pki_registry_route(method, path, request.body)
+                || admitted.engines.native_pki_lease_route(namespace, path));
+        #[cfg(feature = "native-v6-storage")]
+        let native_metadata_read = self.native_root.is_some()
+            && (namespace.is_empty()
+                || native_auth::is_native_openapi_metadata(path)
+                || matches!(
+                    path,
+                    "sys/mounts" | "sys/mounts/" | "sys/auth" | "sys/auth/"
+                ))
+            && native_auth::is_native_metadata_read(method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_raft_observation = self.native_root.is_some()
+            && namespace.is_empty()
+            && native_raft_observation::is_read(method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv1_mount = self.native_root.is_some()
+            && admitted
+                .engines
+                .is_native_kv1_registry_route(namespace, path, request.body);
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv2_mount = self.native_root.is_some()
+            && !native_kv1_mount
+            && path.starts_with("sys/mounts/")
+            && !native_local_transit
+            && !native_local_totp
+            && !native_local_pki
+            && !native_local_ssh
+            && !native_metadata_read;
+        #[cfg(feature = "native-v6-storage")]
+        let native_capabilities = self.native_root.is_some()
+            && namespace.is_empty()
+            && native_auth::is_native_capabilities_route(path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_identity =
+            self.native_root.is_some() && native_auth::is_native_identity_route(method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_wrapping = self.native_root.is_some()
+            && namespace.is_empty()
+            && !native_cg_ingress
+            && crate::auth::NativeWrappingOwner::route(path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_missing_route = self.native_root.is_some()
+            && admitted
+                .engines
+                .native_missing_mount_read(namespace, method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_auth = self.native_root.is_some()
+            && admitted
+                .auth
+                .native_v6_local_auth_route(namespace, method, path, request.body);
+        #[cfg(feature = "native-v6-storage")]
+        let native_remount = self.native_root.is_some()
+            && self.native_remount_handles(&admitted, &request)
+            && (path == "sys/remount" || path.starts_with("sys/remount/status/"));
+        #[cfg(feature = "native-v6-storage")]
+        {
+            if matches!(
+                path,
+                native_storage::file_gc::PATH | native_storage::file_gc::RECONCILE_PATH
+            ) {
+                return self.stage_native_file_gc(admitted, principal.take(), &request);
+            }
+            #[cfg(feature = "native-v6-ha")]
+            if matches!(
+                path,
+                native_storage::ha_gc::PATH
+                    | native_storage::ha_gc::RECONCILE_PATH
+                    | native_storage::ha_gc::INTENTS_PATH
+                    | native_storage::ha_gc::INTENTS_RECONCILE_PATH
+                    | native_storage::ha_gc::LOCAL_PATH
+                    | native_storage::ha_gc::LOCAL_RECONCILE_PATH
+                    | native_storage::ha_gc::LOCAL_MARK_PATH
+                    | native_storage::ha_gc::ROOTS_ACTIVATE_PATH
+            ) {
+                return self.stage_native_ha_gc(admitted, principal.take(), &request);
+            }
+            if path == native_storage::ACTIVATE_PATH {
+                return self.activate_configured_native_v6_route(
+                    admitted,
+                    principal.take(),
+                    &request,
+                );
+            }
+            #[cfg(any(test, feature = "fixture-native-v6-service"))]
+            if path == "sys/internal/native-v6/activate" {
+                return self.activate_native_v6_route(admitted, principal.take(), &request);
+            }
+            if self.native_root.is_some() && request.token_clock.is_none() {
+                return Response::error(503, "trusted token clock is required");
+            }
+            if self.native_root.is_some() && namespaces::owns(path) {
+                return self.dispatch_native_empty_namespace_request(
+                    admitted,
+                    principal.take(),
+                    &request,
+                );
+            }
+            let native_snapshot_route = self.native_snapshot_transport
+                && (self.ha.is_none() || self.native_ha_snapshot_transport_enabled())
+                && namespace.is_empty()
+                && matches!(
+                    path,
+                    "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                );
+            if self.native_root.is_some()
+                && !namespace.is_empty()
+                && !(native_cg_ingress
+                    || native_local_auth
+                    || native_local_identity
+                    || native_kv2_mount
+                    || native_kv1_mount
+                    || native_metadata_read
+                    || native_remount
+                    || native_missing_route
+                    || admitted
+                        .engines
+                        .ordinary_kv_mount_binding(namespace, path)
+                        .is_some())
+            {
+                return Response::error(
+                    501,
+                    "native child namespace route has no closed operation owner",
+                );
+            }
+            if self.native_root.is_some()
+                && !native_cg_ingress
+                && !native_snapshot_route
+                && !native_local_auth
+                && !native_local_wrapping
+                && !native_local_identity
+                && !native_capabilities
+                && !native_missing_route
+                && !native_metadata_read
+                && !native_raft_observation
+                && !native_local_transit
+                && !native_local_totp
+                && !native_local_pki
+                && !native_local_ssh
+                && !native_kv2_mount
+                && !native_kv1_mount
+                && !native_remount
+                && path != "sys/migration/openbao/kv2"
+                && path != crate::engines::kv2_native_large::PATH
+                && path != native_kv2_storage_witness::PATH
+                && path != crate::engines::kv2_lossless_export::PATH
+                && admitted
+                    .engines
+                    .ordinary_kv_mount_binding(namespace, path)
+                    .is_none()
+                && !(matches!(method, "GET" | "HEAD")
+                    && matches!(
+                        path,
+                        "sys/mounts"
+                            | "sys/auth"
+                            | "sys/internal/storage/capacity"
+                            | "sys/internal/capacity"
+                            | "sys/seal-status"
+                            | "sys/health"
+                    ))
+                && path != "sys/seal"
+                && path != "sys/step-down"
+            {
+                return Response::error(
+                    501,
+                    "native candidate supports root ordinary KV, local Transit, local authentication and seal observations",
+                );
+            }
+            if self.native_root.is_some()
+                && let Err(error) =
+                    namespaces::native_plain::PlainNamespaceScope::capture(&admitted, namespace)
+            {
+                return error;
+            }
+            if self.native_root.is_some()
+                && (namespaces::owns(path)
+                    || (path.starts_with("sys/remount") && !native_remount)
+                    || path.starts_with("sys/restore")
+                    || path.starts_with("sys/replication")
+                    || path.starts_with("sys/raft")
+                    || (path.starts_with("sys/storage/raft")
+                        && !native_snapshot_route
+                        && !native_raft_observation)
+                    || path.starts_with("sys/rekey")
+                    || path.starts_with("sys/raw")
+                    || path.starts_with("sys/migrate"))
+            {
+                return Response::error(
+                    501,
+                    "native candidate requires an admitted namespace and storage owner",
+                );
+            }
+        }
+        // Ordinary closure removes the actual resource owners. A valid actor
+        // from another namespace still fails the existing ACL scope check
+        // above; an authorized resource request observes the unloaded router.
+        if resources_unloaded && principal.is_some() {
+            return namespace_runtime::unloaded_route(path);
+        }
+        if matches!(method, "GET" | "HEAD") && path.starts_with("sys/external-keys/configs/") {
+            let Some(actor) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            let Some(capability) = admitted
+                .engines
+                .required_capability(namespace, method, path)
+            else {
+                return Response::error(404, "external key route not found");
+            };
+            if let Err(cause) = admitted
+                .auth
+                .authorize_request(actor, namespace, path, capability, now)
+            {
+                return Response::error(cause.status, &cause.message);
+            }
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some() {
+            let controlled = match principal.as_ref() {
+                Some(actor) => match control_groups::selected_policy(
+                    &admitted,
+                    actor,
+                    &request,
+                    match request.token_time() {
+                        Ok(t) => t,
+                        Err(e) => return e,
+                    },
+                ) {
+                    Ok(policy) => policy.is_some(),
+                    Err(error) => return error,
+                },
+                None => false,
+            };
+            if native_cg_ingress || controlled {
+                return self.dispatch_native_cg(
+                    admitted,
+                    principal.take(),
+                    &request,
+                    original_transport,
+                );
+            }
+        }
+        #[cfg(feature = "native-v6-storage")]
+        let legacy_control_groups = self.native_root.is_none();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let legacy_control_groups = true;
+        if legacy_control_groups
+            && let Some(response) = self.control_group_route(
+                &mut admitted,
+                principal.as_ref(),
+                &request,
+                original_transport,
+                resumed_control_group,
+            )
+        {
+            return response;
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if path == crate::engines::kv2_lossless_export::PATH {
+            return self.stage_native_kv2_lossless_export(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if path == crate::engines::kv2_native_large::PATH {
+            return self.stage_native_kv2_large(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if path == native_kv2_storage_witness::PATH {
+            return self.stage_native_kv2_storage_witness(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some() && path == "sys/migration/openbao/kv2" {
+            return self.dispatch_native_kv2_import(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_kv1_mount {
+            return self.dispatch_native_kv1_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_kv2_mount {
+            return self.dispatch_native_kv2_mount_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_transit {
+            return self.dispatch_native_transit_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_totp {
+            return self.dispatch_native_totp_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_ssh {
+            return self.dispatch_native_ssh_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_pki {
+            return self.dispatch_native_pki_request(
+                admitted,
+                principal.take(),
+                &request,
+                pki_role_fields.as_ref(),
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_metadata_read {
+            return self.dispatch_native_metadata_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_identity {
+            return self.dispatch_native_identity_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_capabilities {
+            return self.dispatch_native_capabilities_request(
+                admitted,
+                principal.take(),
+                &request,
+                token_fields.as_ref(),
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_missing_route {
+            return self.dispatch_native_missing_route_request(
+                admitted,
+                principal.take(),
+                &request,
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_raft_observation {
+            return self.dispatch_native_raft_observation_request(
+                admitted,
+                principal.take(),
+                &request,
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_wrapping {
+            return self.dispatch_native_wrapping_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_auth {
+            return self.dispatch_native_auth_request(
+                admitted,
+                principal.take(),
+                &request,
+                token_fields.as_ref(),
+            );
+        }
+        if path == "sys/plugins/reload/backend" {
+            return self.transit_cache_reload_route(admitted, principal, &request);
+        }
+        // Dynamic metadata is an actual provider effect, selected only from operator bindings.
+        let parameter_read = match admitted
+            .engines
+            .external_parameter_read(namespace, method, path)
+        {
+            Ok(value) => value,
+            Err(cause) => return Response::error(cause.status, &cause.message),
+        };
+        if let Some(target) = parameter_read {
+            if self.external_kms_plugins.contains_key(&target.plugin_id) {
+                return self.stage_genuine_kms_metadata(&admitted, principal, &request, target);
+            }
+            if target.plugin_id != "transit" {
+                return Response::error(
+                    501,
+                    "external KMS metadata requires an admitted genuine provider",
+                );
+            }
+        }
+        // Do not inspect stored provider parameters or disclose candidate
+        // validation/existence failures until this exact route is authorized.
+        if crate::engines::external_key_verification_route(method, path) {
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            let Some(capability) = admitted
+                .engines
+                .required_capability(namespace, method, path)
+            else {
+                return Response::error(404, "external key route not found");
+            };
+            if let Err(error) = admitted
+                .auth
+                .authorize_request(principal, namespace, path, capability, now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+        }
+        let external_key_verification = match admitted
+            .engines
+            .prepare_external_key_verification(namespace, method, path, body)
+        {
+            Ok(value) => value,
+            Err(error) => return Response::error(error.status, &error.message),
+        };
+        if let Some(verification) = external_key_verification {
+            return self.stage_external_key_verification(
+                admitted,
+                principal,
+                &request,
+                verification,
+            );
+        }
+        if namespaces::owns(path) {
+            return self.namespace_route(admitted, principal, &request);
+        }
+        if Self::workflows_handles(path) {
+            return self.workflow_route(admitted, principal.as_ref(), &request);
+        }
+        if path == "sys/audit"
+            || path.starts_with("sys/audit/")
+            || path == "sys/internal/audit/file"
+        {
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            return self.audit_route(principal, namespace, method, path, body);
+        }
+        if Self::is_raft_admin_path(path) {
+            return self.raft_admin_route(admitted, principal.as_ref(), &request);
+        }
+        if self.pki_eab_handles(&admitted, &request) {
+            return self.pki_eab_route(admitted, principal, &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_credential_handles(&admitted, &request) {
+            return self.sdk_credential_route(admitted, principal, &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_auth_handles(&admitted, &request) {
+            return self.sdk_auth_route(admitted, principal, &request);
+        }
+        if self.native_remount_handles(&admitted, &request) {
+            return self.native_remount_route(admitted, principal, &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_control_handles(&admitted, &request) {
+            return self.sdk_control_route(admitted, principal, &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_lease_handles(&admitted, &request) {
+            return self.sdk_lease_route(admitted, principal, &request);
+        }
+        if Self::plugin_catalog_handles(path) {
+            return self.plugin_catalog_route(&admitted, principal.as_ref(), &request);
+        }
+        if matches!(method, "POST" | "PUT")
+            && path.starts_with("sys/mounts/")
+            && body.get("type").and_then(Value::as_str) == Some("plugin")
+        {
+            let Some(plugin_principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) =
+                admitted
+                    .auth
+                    .authorize_request(plugin_principal, namespace, path, "sudo", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            if let Err(error) =
+                admitted
+                    .auth
+                    .authorize_request(plugin_principal, namespace, path, "update", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            if let Err(error) = self.validate_plugin_mount_request(method, path, body) {
+                return error;
+            }
+        }
+        if self.database_handles(&admitted, namespace, path, body) {
+            return self.database_route(admitted, principal, &request);
+        }
+        if Self::openldap_handles(&admitted, namespace, path, body) {
+            return self.openldap_route(admitted, principal, &request);
+        }
+        if Self::kubernetes_secret_handles(&admitted, namespace, path) {
+            return self.kubernetes_secret_route(admitted, principal, &request);
+        }
+        if admitted.engines.external_transit_handles(namespace, path) {
+            return self.stage_external_transit(&admitted, principal, &request);
+        }
+        if admitted.engines.external_pki_handles(namespace, path) {
+            return self.stage_external_pki(&admitted, principal, &request);
+        }
+        if Self::plugin_kms_handles(path) {
+            return self.plugin_kms_route(&admitted, principal, &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if admitted
+            .engines
+            .sdk_mount_binding(namespace, path)
+            .is_some()
+        {
+            return self.stage_sdk_request(admitted, principal, &request);
+        }
+        if self.plugin_secret_handles(&admitted, namespace, path) {
+            return self.plugin_secret_route(admitted, principal, &request);
+        }
+        if path == "sys/step-down" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "step-down requires POST or PUT");
+            }
+            if body.as_object().is_none_or(|object| !object.is_empty()) {
+                return Response::error(400, "step-down accepts an empty JSON object");
+            }
+            let Some(principal) = principal else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) = admitted
+                .auth
+                .authorize_sudo_request(&principal, namespace, path, "update", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            let Some(process) = self.ha.as_ref() else {
+                return Response::error(400, "HA is not enabled");
+            };
+            // Keep the original affine actor while the current leader still
+            // commits the terminal clock floor and mandatory response audit.
+            self.pending_ha_step_down = Some(ha_step_down::StepDownPlan::new(
+                Arc::clone(process),
+                plugin::PluginResponseAuthority::new(
+                    principal,
+                    &admitted,
+                    &request,
+                    "update",
+                    true,
+                    &self.unseal_nonce,
+                ),
+            ));
+            return Response {
+                unwrapped_json: None,
+                response_headers: Default::default(),
+                consistency_index: None,
+                status: 204,
+                body: Value::Null,
+            };
+        }
+        if path == "sys/init/ack" {
+            if !namespace.is_empty() || !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.ack_initialization(method, body);
+        }
+        if matches!(
+            path,
+            "sys/rotate/recovery/init"
+                | "sys/rotate/recovery/update"
+                | "sys/rotate/recovery/verify"
+                | "sys/internal/recovery-key-delivery"
+        ) {
+            return self.recovery_route(
+                admitted,
+                principal.as_ref(),
+                method,
+                path,
+                namespace,
+                body,
+                now,
+            );
+        }
+        if path.starts_with("sys/rekey-recovery-key/") {
+            return Response::error(404, "unknown legacy recovery rekey path");
+        }
+        if matches!(path, "sys/rekey/init" | "sys/rekey/update") {
+            if !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.rekey_route(method, path, body);
+        }
+        if path == "sys/internal/storage/capacity" {
+            if !namespace.is_empty() || !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.capacity_route(method, body);
+        }
+        if path == "sys/internal/capacity" {
+            if !namespace.is_empty() || !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.capacity_response(method, body);
+        }
+        if path.starts_with("sys/internal/recovery/")
+            || matches!(
+                path,
+                "sys/storage/raft/compact"
+                    | "sys/storage/raft/replay-retire"
+                    | "sys/storage/raft/snapshot"
+                    | "sys/storage/raft/snapshot-force"
+            )
+        {
+            if self.native_snapshot_transport {
+                let Some(principal) = principal.take().filter(Principal::is_root) else {
+                    return Response::error(403, "permission denied");
+                };
+                return self.stage_snapshot_transfer(principal, &request);
+            }
+            let Some(principal) = principal.as_ref().filter(|actor| actor.is_root()) else {
+                return Response::error(403, "permission denied");
+            };
+            return self.maintenance_route(principal, &request);
+        }
+        if path == "sys/seal" && matches!(method, "PUT" | "POST") {
+            if !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            self.fence_openbao_wrapper();
+            self.namespace_runtime.clear();
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            self.retire_sdk_hosts();
+            self.state = None;
+            self.ha_activation = None;
+            self.record_root = None;
+            #[cfg(feature = "native-v6-storage")]
+            {
+                self.native_root = None;
+            }
+            self.record_writes_since_gc = 0;
+            self.ha_read_cache = None;
+            self.durable = None;
+            self.barrier_key = None;
+            self.unseal_shares.clear();
+            let discard_rekey = self
+                .rekey
+                .as_ref()
+                .is_some_and(|rekey| rekey.verification.is_none());
+            if let Some(rekey) = self.rekey.as_mut() {
+                rekey.provided.clear();
+                rekey.verification_provided.clear();
+            }
+            if discard_rekey {
+                self.rekey = None;
+            }
+            if self.rotate_unseal_nonce().is_err() {
+                return Response::error(503, "operating system randomness unavailable");
+            }
+            return Response {
+                unwrapped_json: None,
+                response_headers: Default::default(),
+                consistency_index: None,
+                status: 204,
+                body: Value::Null,
+            };
+        }
+        if admitted
+            .auth
+            .approle_tidy_route_mount(namespace, path)
+            .is_some()
+        {
+            return self.stage_approle_tidy(&admitted, principal.take(), &request);
+        }
+        if let Some(response) = self.plugin_auth_login(&admitted, &request) {
+            return response;
+        }
+        if let Some(response) = self.online_provider_renewal(&admitted, &mut principal, &request) {
+            return response;
+        }
+        if let Some(response) = self.online_remote_jwt_config(&admitted, &mut principal, &request) {
+            return response;
+        }
+        if let Some(response) = self.online_login(&admitted, &request) {
+            return response;
+        }
+        // An anonymous ordinary-KV rejection has no publication authority.
+        // Keep the original namespace, recovery, clock and audit guards above,
+        // but never enter the native resource publisher merely to return 403.
+        // A real bearer has already followed authentication/finite-use handling;
+        // neither this negative response nor missing credentials grant a writer.
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some()
+            && principal.is_none()
+            && admitted
+                .engines
+                .ordinary_kv_mount_binding(namespace, path)
+                .is_some()
+        {
+            return Response::error(403, "permission denied");
+        }
+        let before_digest = match self.current_state_digest() {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        // Response wrapping is the only normal dispatch path that needs an
+        // in-memory rollback snapshot after the domain handler succeeds. Avoid
+        // cloning the complete State for every ordinary request: move the
+        // admitted candidate into dispatch and retain a rollback copy only when
+        // wrapping was explicitly requested.
+        let wrapping_rollback = wrap_ttl_seconds
+            .filter(|ttl| *ttl > 0)
+            .map(|_| admitted.clone());
+        #[cfg(feature = "native-v6-storage")]
+        let mut wrapping_rollback = wrapping_rollback;
+        let mut transaction = admitted;
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv_output_wrap = self.native_root.is_some()
+            && namespace.is_empty()
+            && wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+            && transaction
+                .engines
+                .ordinary_kv_mount_binding(namespace, path)
+                .is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_kv_output_wrap = false;
+        let mut ordinary_kv_authority = if (wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+            || native_kv_output_wrap)
+            && transaction
+                .engines
+                .ordinary_kv_mount_binding(namespace, path)
+                .is_some()
+        {
+            match principal.take() {
+                Some(principal) => match ordinary_kv_delivery::OrdinaryKvAuthority::new(
+                    principal,
+                    &transaction,
+                    &request,
+                    &self.unseal_nonce,
+                ) {
+                    Ok(authority) => Some(authority),
+                    Err(error) => return error,
+                },
+                None => None,
+            }
+        } else {
+            None
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let mut native_kv_wrapping = if native_kv_output_wrap {
+            let Some(authority) = ordinary_kv_authority.as_mut() else {
+                return Response::error(403, "missing ordinary KV actor");
+            };
+            match native_response_wrapping::NativeWrappedKvDelivery::prepare(
+                self,
+                authority,
+                &transaction,
+                &request,
+            ) {
+                Ok(owner) => Some(owner),
+                Err(error) => return error,
+            }
+        } else {
+            None
+        };
+        let token_api_authority = if path.starts_with("auth/token/")
+            && !path
+                .strip_prefix("auth/token/")
+                .is_some_and(|op| op.starts_with("revoke"))
+        {
+            principal.take().map(|principal| {
+                plugin::PluginResponseAuthority::new(
+                    principal,
+                    &transaction,
+                    &request,
+                    token_delivery::capability(method, path),
+                    false,
+                    &self.unseal_nonce,
+                )
+                .with_time_floor(now)
+            })
+        } else {
+            None
+        };
+        let mut approle_secret_consumption = None;
+        let mut response = if path == "sys/wrapping/lookup" {
+            match transaction.auth.lookup_wrapping_request_observed(
+                token,
+                namespace,
+                method,
+                body,
+                match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                },
+            ) {
+                Ok(value) => Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: value.status,
+                    body: value.body,
+                },
+                Err(error) => Response::error(error.status, &error.message),
+            }
+        } else if path == "sys/wrapping/wrap" && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0) {
+            Response::error(400, "endpoint requires response wrapping to be used")
+        } else if path == "sys/config/state/sanitized" {
+            // The process-owned server configuration is never a logical KV
+            // value. Its read is still gated by the original namespace,
+            // authenticated request policy, HA admission and response audit.
+            if method != "GET" {
+                Response::error(405, "sanitized configuration supports GET only")
+            } else if let Some(actor) = principal.as_ref() {
+                match transaction
+                    .auth
+                    .authorize_request(actor, namespace, path, "read", now)
+                {
+                    Ok(()) => match self.sanitized_configuration.as_ref() {
+                        Some(safe) => Response::ok(json!({"data": safe})),
+                        None => Response::error(503, "server configuration not installed"),
+                    },
+                    Err(error) => Response::error(error.status, &error.message),
+                }
+            } else {
+                Response::error(403, "missing client token")
+            }
+        } else if let Some(authority) = ordinary_kv_authority.as_mut() {
+            #[cfg(feature = "native-v6-storage")]
+            if self.native_root.is_some()
+                && transaction
+                    .engines
+                    .has_paged_native_request(namespace, path)
+            {
+                if native_kv_wrapping.is_some() {
+                    // The wrapper receives only an actual dispatched outcome.
+                    // A rejected payload admission is not a domain operation,
+                    // independently of the HTTP error code it returned.
+                    match self.dispatch_native_paged_outcome(&mut transaction, authority, &request)
+                    {
+                        native_paged_dispatch::NativePagedOutcome::Dispatched(response) => response,
+                        native_paged_dispatch::NativePagedOutcome::AdmissionRejected(response) => {
+                            return response;
+                        }
+                    }
+                } else {
+                    self.dispatch_native_paged_request(&mut transaction, authority, &request)
+                }
+            } else {
+                Self::dispatch_authorized_subrequest(
+                    &mut transaction,
+                    Some(authority.principal()),
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    token_fields.as_ref(),
+                    pki_role_fields.as_ref(),
+                    now,
+                    request.token_clock,
+                    client_certificates,
+                    origin_peer,
+                    &mut approle_secret_consumption,
+                )
+            }
+            #[cfg(not(feature = "native-v6-storage"))]
+            Self::dispatch_authorized_subrequest(
+                &mut transaction,
+                Some(authority.principal()),
+                namespace,
+                method,
+                path,
+                body,
+                token_fields.as_ref(),
+                pki_role_fields.as_ref(),
+                now,
+                request.token_clock,
+                client_certificates,
+                origin_peer,
+                &mut approle_secret_consumption,
+            )
+        } else if let Some(authority) = token_api_authority.as_ref() {
+            Self::dispatch_authorized_subrequest(
+                &mut transaction,
+                Some(authority.principal()),
+                namespace,
+                method,
+                path,
+                body,
+                token_fields.as_ref(),
+                pki_role_fields.as_ref(),
+                now,
+                request.token_clock,
+                client_certificates,
+                origin_peer,
+                &mut approle_secret_consumption,
+            )
+        } else {
+            Self::dispatch(
+                &mut transaction,
+                principal,
+                namespace,
+                method,
+                path,
+                body,
+                token_fields.as_ref(),
+                pki_role_fields.as_ref(),
+                now,
+                request.token_clock,
+                client_certificates,
+                origin_peer,
+                &mut approle_secret_consumption,
+            )
+        };
+        self.pending_ordinary_kv_authority = ordinary_kv_authority;
+        self.pending_token_api_authority = token_api_authority;
+        if response.status < 300
+            && matches!(method, "POST" | "PUT")
+            && let Err(error) =
+                transaction
+                    .auth
+                    .check_online_enrollment(namespace, path, &self.outbound)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        // The durable AuthState stores only token digests. After successful
+        // token renewal, echo only the exact credential already supplied on
+        // this authorized request. Do this before optional response wrapping;
+        // no bearer is reconstructed from an accessor or stored in plaintext.
+        if response.status == 200 && matches!(path, "auth/token/renew-self" | "auth/token/renew") {
+            let renewed = if path == "auth/token/renew-self" {
+                Some(
+                    control_group_echo
+                        .as_ref()
+                        .map_or(token, |raw| raw.as_str()),
+                )
+            } else {
+                body.get("token").and_then(Value::as_str)
+            };
+            if let (Some(renewed), Some(auth)) = (
+                renewed,
+                response.body.get_mut("auth").and_then(Value::as_object_mut),
+            ) {
+                auth.insert("client_token".into(), json!(renewed));
+            }
+        }
+        // Lookup can echo a bearer only after the auth route has admitted that
+        // exact target. Accessor lookup never reconstructs a bearer. Keep this
+        // response-only value outside AuthState and inside optional wrapping.
+        if response.status == 200 {
+            let looked_up = match path {
+                "auth/token/lookup-self" => Some(
+                    control_group_echo
+                        .as_ref()
+                        .map_or(token, |raw| raw.as_str()),
+                ),
+                "auth/token/lookup" => Some(
+                    body.get("token")
+                        .and_then(Value::as_str)
+                        .filter(|value| !value.is_empty())
+                        .unwrap_or(token),
+                ),
+                "auth/token/lookup-accessor" => Some(""),
+                _ => None,
+            };
+            if let (Some(bearer), Some(data)) = (
+                looked_up,
+                response.body.get_mut("data").and_then(Value::as_object_mut),
+            ) {
+                data.insert("id".into(), json!(bearer));
+            }
+        }
+        let raw_pki_reply = wrap_ttl_seconds.filter(|ttl| *ttl > 0).and_then(|_| {
+            transaction.engines.wrapping_raw_pki_reply(
+                namespace,
+                method,
+                path,
+                response.status,
+                &response.body,
+            )
+        });
+        if native_kv_output_wrap {
+            #[cfg(feature = "native-v6-storage")]
+            {
+                let Some(owner) = native_kv_wrapping.take() else {
+                    return Response::error(503, "native KV output owner missing");
+                };
+                let Some(rollback) = wrapping_rollback.take() else {
+                    return Response::error(503, "native KV output rollback missing");
+                };
+                if approle_secret_consumption.is_some() {
+                    return Response::error(503, "ordinary KV cannot own an AppRole transition");
+                }
+                match self.compose_native_wrapped_kv_output(owner, transaction, rollback, response)
+                {
+                    Ok((candidate, wrapped)) => {
+                        admitted = candidate;
+                        response = wrapped;
+                    }
+                    Err(error) => return error,
+                }
+            }
+            #[cfg(not(feature = "native-v6-storage"))]
+            return Response::error(503, "native KV output composition is unavailable");
+        } else if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0)
+            && (raw_pki_reply.is_some()
+                || ((200..300).contains(&response.status)
+                    && response.status != 204
+                    && !response.body.is_null()))
+            && response.body.get("wrap_info").is_none_or(Value::is_null)
+        {
+            let wrapped = if let Some(projection) = response
+                .unwrapped_json
+                .as_ref()
+                .and_then(|origin| origin.static_kv1_lease())
+            {
+                transaction.auth.wrap_static_kv1_response(
+                    namespace,
+                    path,
+                    ttl,
+                    &response.body,
+                    now,
+                    projection,
+                )
+            } else if let Some(transport) = &raw_pki_reply {
+                transaction.auth.wrap_pki_raw_response(
+                    namespace,
+                    path,
+                    ttl,
+                    &response.body,
+                    transport,
+                    now,
+                )
+            } else if transaction
+                .engines
+                .wrapping_uses_raw_pki_transport(namespace, method, path)
+            {
+                transaction
+                    .auth
+                    .wrap_response(namespace, path, ttl, &response.body, now)
+            } else {
+                transaction
+                    .auth
+                    .wrap_logical_response(namespace, path, ttl, &response.body, now)
+            };
+            match wrapped {
+                Ok(wrapped) => {
+                    response = Response {
+                        unwrapped_json: None,
+                        response_headers: Default::default(),
+                        consistency_index: None,
+                        status: wrapped.status,
+                        body: wrapped.body,
+                    };
+                    admitted = transaction;
+                }
+                // Wrapping publication failure rolls back the domain operation;
+                // the earlier finite-use token admission deliberately stays consumed.
+                Err(error) => {
+                    response = Response::error(error.status, &error.message);
+                    let Some(rollback) = wrapping_rollback else {
+                        return Response::error(500, "wrapping rollback state is unavailable");
+                    };
+                    admitted = rollback;
+                }
+            }
+        } else {
+            admitted = transaction;
+        }
+        // The AppRole backend authenticates/consumes a finite SecretID before
+        // Core Identity and wrapping. A denied issuance retains only that
+        // checked credential delta and, for an existing disabled entity, the
+        // native AppRole alias metadata refresh performed by dispatch. The
+        // rejected token/key/wrapper candidate is never installed.
+        if response.status >= 400
+            && let Some(consumption) = approle_secret_consumption
+            && let Err(error) = consumption.apply(&mut admitted.auth)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            let checked = authority
+                .observe_candidate(&mut admitted)
+                .and_then(|()| authority.check(&admitted, &admitted.auth, &self.unseal_nonce));
+            if let Err(error) = checked {
+                erase_json(&mut response.body);
+                return error;
+            }
+        }
+        if response.status < 300
+            && let Some(authority) = self.pending_token_api_authority.as_mut()
+        {
+            let checked = authority
+                .observe_candidate_time(&mut admitted)
+                .and_then(|_| {
+                    authority.check_token_api_candidate(
+                        &admitted,
+                        &admitted.auth,
+                        &self.unseal_nonce,
+                    )
+                });
+            if let Err(error) = checked {
+                erase_json(&mut response.body);
+                return error;
+            }
+        }
+        // Safe-key and custom JWT role candidates need their reader schema
+        // before record preflight. Ordinary legacy reads retain their original
+        // schema until a proven logical mutation, as before.
+        // Lease-prefix and owner revocations can mark a signed CRL cache dirty.
+        // Rebuild under this same candidate before validation or publication;
+        // a signing failure cannot publish a successful revocation response.
+        if !owner_manifest_migration
+            && let Err(error) = admitted.engines.maintain_local_pki_crl(now)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if response.status < 300
+            && matches!(method, "POST" | "PUT")
+            && path.ends_with("config/acme")
+        {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
+            let at = match time
+                .exact()
+                .or_else(|| Timestamp::whole(time.seconds()).ok())
+            {
+                Some(at) => at,
+                None => return Response::error(503, "ACME accepted clock unavailable"),
+            };
+            if let Err(error) = admitted.engines.acme_activate_config(
+                namespace,
+                path,
+                &admitted.cluster_id,
+                admitted.namespaces.incarnation(namespace),
+                at,
+            ) {
+                return Response::from_engine_error(error);
+            }
+        }
+        if admitted.engines.has_pki_acme_state()
+            && response.status < 300
+            && matches!(method, "POST" | "PUT" | "PATCH" | "DELETE")
+        {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
+            let at = match time
+                .exact()
+                .or_else(|| Timestamp::whole(time.seconds()).ok())
+            {
+                Some(at) => at,
+                None => return Response::error(503, "ACME original publication clock unavailable"),
+            };
+            if let Err(error) = admitted.engines.acme_observe_publication(at) {
+                return Response::from_engine_error(error);
+            }
+        }
+        if admitted.auth.has_rate_limit_quota_state()
+            || admitted.auth.has_approle_no_default_policy()
+            || admitted.auth.has_security_contract_state()
+            || admitted.auth.has_policy_expiration_state()
+            || admitted.engines.has_pki_acme_state()
+            || admitted.engines.has_kubernetes_opaque_artifact_state()
+            || admitted.has_token_api_precision_state()
+            || admitted.has_namespace_batch_state()
+            || admitted.has_namespace_deletion_state()
+            || admitted.engines.has_pki_url_state()
+            || admitted.engines.has_external_pki_signer_history()
+            || admitted.engines.has_full_dn_crl_state()
+            || admitted.engines.has_pki_role_names_state()
+            || admitted.engines.has_pki_role_time_state()
+            || admitted.engines.has_pki_role_leaf_profile_state()
+            || admitted.engines.has_pki_role_wildcard_state()
+            || admitted.engines.has_pki_role_bare_domain_state()
+            || admitted.engines.has_pki_role_any_name_state()
+            || admitted.auth.has_public_origin_state()
+            || admitted.auth.has_token_api_schema80_state()
+            || admitted.engines.has_local_pki_intermediate_state()
+            || admitted.engines.has_local_pki_crl_state()
+            || admitted.engines.has_local_pki_multi_issuer_state()
+            || admitted.engines.has_local_pki_root_fields_state()
+            || admitted.engines.has_local_pki_identifier_state()
+            || admitted.engines.has_local_typed_pki_state()
+            || admitted.engines.has_aad_bound_convergent_state()
+            || admitted.engines.has_transit_byok_state()
+            || admitted.auth.has_jwt_user_claim_state()
+            || admitted.auth.has_jwt_pem_keyset_state()
+            || admitted.auth.has_auth_mount_options_state()
+            || admitted.auth.has_sdk_auth_retirement_state()
+            || admitted.engines.has_pki_key_policy_state()
+            || admitted.engines.has_ordinary_pki_revocation_state()
+            || admitted.engines.has_pki_rsa8192_state()
+            || admitted.has_mount_listing_visibility_state()
+            || admitted.auth.has_raw_wrapped_reply_state()
+            || admitted.engines.has_ssh_ca_state()
+            || admitted.auth.has_control_group_state()
+            || admitted.engines.has_symmetric_backup_state()
+            || admitted.engines.has_transit_cache_state()
+            || admitted.engines.has_transit_derived_ed_state()
+            || admitted.engines.has_kv2_lossless_state()
+            || admitted.auth.has_identity_mfa_state()
+            || admitted.auth.has_userpass_issuance_state()
+        {
+            admitted.schema = admitted.writer_schema();
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some() {
+            #[cfg(test)]
+            if self
+                .pending_ordinary_kv_authority
+                .as_ref()
+                .is_some_and(|authority| authority.native_response_wrapping.is_some())
+            {
+                self.before_response_composition_publication();
+            }
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            let phase = crate::request_deadline::current().map(|until| {
+                native_v6_ha_install::NativeHaPhaseTimer::start(
+                    "request_native_plan",
+                    until,
+                    0,
+                    0,
+                    0,
+                )
+            });
+            let plan = match self.prepare_native_live_root(&admitted) {
+                Ok(plan) => plan,
+                Err(error) => {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+            };
+            if let Some(owner) = self
+                .pending_ordinary_kv_authority
+                .as_ref()
+                .and_then(|authority| authority.native_response_wrapping.as_ref())
+                && let Err(error) = owner.admit_candidate(&plan.candidate)
+            {
+                erase_json(&mut response.body);
+                return error;
+            }
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            if let Some(phase) = phase {
+                phase.finish(true);
+            }
+            let identity = match plan.root.identity() {
+                Ok(identity) => identity,
+                Err(_) => return Response::error(503, "native candidate identity rejected"),
+            };
+            let current = match self.current_state_identity() {
+                Ok(identity) => identity,
+                Err(error) => return error,
+            };
+            if identity != current {
+                if let Err(error) = self.commit_ordinary_native_kv_plan(&mut admitted, plan) {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+                self.state = Some(admitted);
+            }
+            if let Err(error) = self.stage_pending_native_wrapped_kv() {
+                erase_json(&mut response.body);
+                return error;
+            }
+            return response;
+        }
+        if admitted.engines.record_root().is_some() {
+            let mut plan = match self.prepare_record_plan(&mut admitted) {
+                Ok(plan) => plan,
+                Err(error) => return error,
+            };
+            let current = match self.current_state_identity() {
+                Ok(identity) => identity,
+                Err(error) => return error,
+            };
+            if plan.identity != current {
+                admitted.schema = admitted.writer_schema();
+                plan = match self.prepare_record_plan(&mut admitted) {
+                    Ok(plan) => plan,
+                    Err(error) => return error,
+                };
+                if let Err(error) = self.commit_ordinary_kv_record_plan(&admitted, plan) {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+                self.state = Some(admitted);
+            }
+            return response;
+        }
+        if let Err(error) = self.prepare_namespace_publication(&mut admitted) {
+            return error;
+        }
+        let serialized_digest = match records::legacy_candidate_digest(&admitted) {
+            Ok(digest) => digest,
+            Err(error) => return error,
+        };
+        match classify_request_effect(method, before_digest, serialized_digest) {
+            RequestEffectClass::PureRead => {}
+            RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
+                match self.commit_legacy_upgrade_kv(&mut admitted, &request) {
+                    Ok(true) => {
+                        self.state = Some(admitted);
+                        return response;
+                    }
+                    Ok(false) => {}
+                    Err(error) => {
+                        erase_json(&mut response.body);
+                        return error;
+                    }
+                }
+                if admitted.schema != admitted.writer_schema() {
+                    admitted.schema = admitted.writer_schema();
+                }
+                if let Err(error) = admitted.validate_format() {
+                    return error;
+                }
+                // Only a proven logical mutation triggers the one-way V4→V5
+                // transition. The installed candidate is exactly what we commit.
+                let key = match crypto::random::<32>() {
+                    Ok(key) => key,
+                    Err(error) => return Response::error(503, error),
+                };
+                admitted.engines = match admitted
+                    .engines
+                    .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(key))
+                {
+                    Ok(engines) => engines.into(),
+                    Err(error) => return Response::error(error.status, &error.message),
+                };
+                let plan = match self.prepare_record_plan(&mut admitted) {
+                    Ok(plan) => plan,
+                    Err(error) => return error,
+                };
+                if let Err(error) = self.commit_ordinary_kv_record_plan(&admitted, plan) {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+                self.state = Some(admitted);
+            }
+        }
+        response
+    }
+
+    fn immutable_kv_response(&mut self, request: &RequestView<'_>) -> Option<Response> {
+        if self
+            .state
+            .as_ref()
+            .is_some_and(|s| s.auth.has_control_group_state())
+        {
+            return None;
+        }
+        let state = self.state.as_ref()?;
+        if request.wrap_ttl_seconds.is_some()
+            || state.has_token_api_precision_state()
+            // GetPolicy expiry may publish a lazy retirement even for a read.
+            // Continue through ordinary admission while 143 owners are present.
+            || state.auth.has_policy_expiration_state()
+            || state.engines.has_kubernetes_opaque_artifact_state()
+            || state
+                .engines
+                .ordinary_kv_mount_binding(request.namespace, request.path)
+                .is_none()
+            || state.engines.has_live_leases()
+            || state.auth.is_wrapping_token(request.token)
+            || !state
+                .engines
+                .is_immutable_kv_read(request.namespace, request.method, request.path)
+        {
+            return None;
+        }
+        if request.token.is_empty() {
+            return Some(Response::error(403, "permission denied"));
+        }
+        let time = match request.token_time() {
+            Ok(time) => time,
+            Err(error) => return Some(error),
+        };
+        let mut principal = match state.auth.authenticate_read_only_from_observed(
+            request.token,
+            time,
+            request.origin_peer,
+        ) {
+            Ok(Some(principal)) => principal,
+            Ok(None) => return None,
+            Err(error) => return Some(Response::error(error.status, &error.message)),
+        };
+        if let Err(error) = principal.bind_request_clock(request.token_clock) {
+            return Some(Response::error(error.status, &error.message));
+        }
+        if let Err(error) = Self::bind_identity_principal(state, &mut principal, request.namespace)
+        {
+            return Some(error);
+        }
+        if let Err(error) = state.auth.authorize_request_parameters_observed(
+            &principal,
+            request.namespace,
+            kv_authorization_method(request.method, request.body),
+            request.path,
+            request.body,
+            time,
+        ) {
+            return Some(Response::error(error.status, &error.message));
+        }
+        // Direct Service callers must authorize the same operation as the HTTP
+        // parser: GET+list is a LIST, never a read-only-policy enumeration bypass.
+        let method = kv_authorization_method(request.method, request.body);
+        let capability =
+            state
+                .engines
+                .required_capability(request.namespace, method, request.path)?;
+        if let Err(error) = state.auth.authorize_request_observed(
+            &principal,
+            request.namespace,
+            request.path,
+            capability,
+            time,
+        ) {
+            return Some(Response::error(error.status, &error.message));
+        }
+        let authority = match ordinary_kv_delivery::OrdinaryKvAuthority::new(
+            principal,
+            state,
+            request,
+            &self.unseal_nonce,
+        ) {
+            Ok(authority) => authority,
+            Err(error) => return Some(error),
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let mut authority = authority;
+        #[cfg(feature = "native-v6-storage")]
+        let mut native_completed_read = None;
+        #[cfg(feature = "native-v6-storage")]
+        let result = if self.native_root.is_some()
+            && state
+                .engines
+                .has_paged_native_request(request.namespace, request.path)
+        {
+            let deadline = match crate::v6_native_custody::OriginalDeadline::capture() {
+                Ok(deadline) => deadline,
+                Err(_) => {
+                    return Some(Response::error(
+                        503,
+                        "native point original deadline unavailable",
+                    ));
+                }
+            };
+            let at = match Self::kv2_request_timestamp(time) {
+                Ok(at) => at,
+                Err(error) => return Some(error),
+            };
+            let expected = match self
+                .native_root
+                .as_ref()
+                .and_then(|root| root.encode().ok())
+            {
+                Some(root) => root,
+                None => return Some(Response::error(503, "native point root unavailable")),
+            };
+            let nonce = self.unseal_nonce.clone();
+            if let Err(error) = authority.check(state, &state.auth, &nonce) {
+                return Some(error);
+            }
+            let observations = Arc::clone(&self.native_payload_observations);
+            let durable = match self.durable.as_mut() {
+                Some(durable) => durable,
+                None => return Some(Response::error(503, "native point source unavailable")),
+            };
+            if durable
+                .get("system", "state")
+                .ok()
+                .flatten()
+                .is_none_or(|root| root.expose() != expected.as_slice())
+            {
+                return Some(Response::error(503, "native point source root changed"));
+            }
+            let source =
+                match native_blob_source::NativeSource::new_checked(durable, deadline, || {
+                    authority
+                        .check(state, &state.auth, &nonce)
+                        .map_err(|_| ServiceError::BarrierFailure)
+                }) {
+                    Ok(source) => source.with_observations(observations),
+                    Err(_) => {
+                        return Some(Response::error(503, "native point source custody rejected"));
+                    }
+                };
+            let result = state.engines.read_native_paged_completion(
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                at,
+                |scope, reference| {
+                    source.read_paged_payload(
+                        &crate::state_record_root_v6::ObjectDomain::Kv2(scope.clone()),
+                        reference,
+                    )
+                },
+            );
+            drop(source);
+            if let Err(error) = authority.check(state, &state.auth, &nonce) {
+                return Some(error);
+            }
+            result.map(|(response, completed)| {
+                native_completed_read = completed;
+                response
+            })
+        } else {
+            match time.exact() {
+                Some(at) => state.engines.handle_immutable_kv_read_precise(
+                    request.namespace,
+                    request.method,
+                    request.path,
+                    request.body,
+                    at,
+                ),
+                None => state.engines.handle_immutable_kv_read(
+                    request.namespace,
+                    request.method,
+                    request.path,
+                    request.body,
+                    time.seconds(),
+                ),
+            }
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let result = match time.exact() {
+            Some(at) => state.engines.handle_immutable_kv_read_precise(
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                at,
+            ),
+            None => state.engines.handle_immutable_kv_read(
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                time.seconds(),
+            ),
+        };
+        let mut response = match result {
+            Ok(mut response) => Response {
+                unwrapped_json: None,
+                response_headers: Default::default(),
+                consistency_index: None,
+                status: response.status,
+                body: std::mem::take(&mut response.body),
+            },
+            Err(error) => Response::error(error.status, &error.message),
+        };
+        response.unwrapped_json = match Self::project_kv1_read_lease(
+            state,
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            &mut response.body,
+            response.status,
+        ) {
+            Ok(origin) => origin,
+            Err(error) => return Some(error),
+        };
+        // The immutable path has already authenticated and authorized its
+        // original Principal, read the actual payload once, and completed its
+        // existing final source/Actor check. Retain only that actual read's
+        // affine observation; this creates no new request or Actor admission.
+        #[cfg(feature = "native-v6-storage")]
+        if request.method == "GET"
+            && request.wrap_ttl_seconds.is_none()
+            && let Some(completed) = native_completed_read
+        {
+            crate::ha_forward_completion::native_data_read_completed(completed, &response);
+        }
+        self.pending_ordinary_kv_authority = Some(authority);
+        Some(response)
+    }
+
+    fn project_kv1_read_lease(
+        state: &State,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        response: &mut Value,
+        status: u16,
+    ) -> Result<Option<crate::auth::UnwrappedJson>, Response> {
+        if status == 200
+            && method == "GET"
+            && path.starts_with("sys/mounts/")
+            && path.ends_with("/tune")
+            && let Some(data) = response.get_mut("data").and_then(Value::as_object_mut)
+        {
+            let (default_ttl, max_ttl) = state
+                .auth
+                .secret_lease_defaults()
+                .map_err(|_| Response::error(503, "secret lease defaults unavailable"))?;
+            if let Some((default_ns, max_ns)) =
+                state.engines.kv_mount_tune_duration_nanos(namespace, path)
+            {
+                for (field, configured, inherited) in [
+                    ("default_lease_ttl", default_ns, default_ttl),
+                    ("max_lease_ttl", max_ns, max_ttl),
+                ] {
+                    data.insert(
+                        field.into(),
+                        if configured == 0 {
+                            json!(inherited)
+                        } else {
+                            json!(configured / 1_000_000_000)
+                        },
+                    );
+                }
+            } else {
+                for (field, inherited) in [
+                    ("default_lease_ttl", default_ttl),
+                    ("max_lease_ttl", max_ttl),
+                ] {
+                    if data.get(field).and_then(Value::as_u64) == Some(0) {
+                        data.insert(field.into(), json!(inherited));
+                    }
+                }
+            }
+            data.entry("force_no_cache").or_insert(json!(false));
+        }
+        if status == 200
+            && state
+                .engines
+                .is_kv1_value_read(namespace, method, path, body)
+        {
+            let ttl = state
+                .auth
+                .secret_default_lease_ttl()
+                .map_err(|_| Response::error(503, "secret lease defaults unavailable"))?;
+            let configured = state
+                .engines
+                .kv1_default_lease_duration_nanos(namespace, path)
+                .ok_or_else(|| Response::error(503, "KV1 lease metadata owner unavailable"))?;
+            response["lease_duration"] = if configured == 0 {
+                json!(ttl)
+            } else {
+                json!(configured / 1_000_000_000)
+            };
+            response["renewable"] = json!(false);
+            if let Some(warning) = crate::http::ocsp::kv1_read_ignored_parameter_warning(body) {
+                response["warnings"] = warning;
+            }
+        }
+        crate::auth::UnwrappedJson::from_native_kv1_read(
+            &state.engines,
+            namespace,
+            method,
+            path,
+            body,
+            response,
+            status,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch(
+        state: &mut State,
+        principal: Option<Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+    ) -> Response {
+        Self::dispatch_authorized_subrequest(
+            state,
+            principal.as_ref(),
+            namespace,
+            method,
+            path,
+            body,
+            token_fields,
+            pki_role_fields,
+            now,
+            token_clock,
+            client_certificates,
+            origin_peer,
+            approle_secret_consumption,
+        )
+    }
+
+    /// Execute one already-authenticated in-transaction subrequest.
+    ///
+    /// The top-level request boundary consumes `Principal` by value in
+    /// `dispatch`. This borrowed form exists only so a workflow can evaluate
+    /// multiple bounded local steps under that single affine capability.
+    fn native_ssh_public_response(
+        state: &State,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Option<Response> {
+        let transport = match state
+            .engines
+            .capture_public_ssh_key(namespace, method, path, body)
+        {
+            Ok(Some(transport)) => transport,
+            Ok(None) => return None,
+            Err(error) => return Some(Response::from_engine_error(error)),
+        };
+        let Some(context) = crate::auth::current_ingress() else {
+            return Some(Response::error(
+                503,
+                "SSH public key requires original ingress",
+            ));
+        };
+        let origin = match crate::auth::UnwrappedJson::from_native_ssh_public_key(
+            &transport, &context, path,
+        ) {
+            Ok(origin) => origin,
+            Err(error) => return Some(Response::error(error.status, &error.message)),
+        };
+        Some(Response {
+            unwrapped_json: Some(origin),
+            response_headers: Default::default(),
+            consistency_index: None,
+            status: 200,
+            body: transport.logical_response().clone(),
+        })
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_authorized_subrequest(
+        state: &mut State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+    ) -> Response {
+        Self::dispatch_authorized_subrequest_inner(
+            state,
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            token_fields,
+            pki_role_fields,
+            now,
+            token_clock,
+            client_certificates,
+            origin_peer,
+            approle_secret_consumption,
+            false,
+            None,
+        )
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_native_authorized_subrequest(
+        state: &mut State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+        native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+    ) -> Response {
+        Self::dispatch_authorized_subrequest_inner(
+            state,
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            token_fields,
+            pki_role_fields,
+            now,
+            token_clock,
+            client_certificates,
+            origin_peer,
+            approle_secret_consumption,
+            true,
+            native_jwt_lifetime,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_authorized_subrequest_inner(
+        state: &mut State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+        defer_mount_quota_retirement: bool,
+        native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+    ) -> Response {
+        if native_jwt_lifetime.as_deref().is_some_and(Option::is_some) {
+            return Response::error(503, "native JWT output slot is not fresh");
+        }
+        if path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/") {
+            return Self::ui_mounts_route(state, principal, namespace, method, path, now);
+        }
+        if let Some(response) =
+            Self::native_ssh_public_response(state, namespace, method, path, body)
+        {
+            return response;
+        }
+        match state
+            .engines
+            .handle_public_pki_read(namespace, method, path, body, now)
+        {
+            Ok(Some(mut response)) => {
+                return Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: response.status,
+                    body: std::mem::take(&mut response.body),
+                };
+            }
+            Err(error) => return Response::error(error.status, &error.message),
+            Ok(None) => {}
+        }
+        let token_clock = match token_clock
+            .map(|clock| clock.with_seconds_floor(now))
+            .transpose()
+        {
+            Ok(clock) => clock,
+            Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+        };
+        let time = match token_clock {
+            Some(clock) => match clock.observed_at() {
+                Ok(at) => AuthorityTime::Precise(at),
+                Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+            },
+            None => AuthorityTime::Coarse(now),
+        };
+        if let Some(principal) = principal
+            && let Err(error) = state.auth.authorize_request_parameters_observed(
+                principal,
+                namespace,
+                kv_authorization_method(method, body),
+                path,
+                body,
+                time,
+            )
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if path == "sys/migration/openbao/kv2" {
+            return Self::kv2_import_route(state, principal, namespace, method, body, time);
+        }
+        if path == "sys/internal/ui/namespaces" {
+            return Self::ui_namespaces_route(state, principal, namespace, method, body, time);
+        }
+        if path == "sys/remount" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "remount requires POST or PUT");
+            }
+            let Some(principal) = principal else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) = state
+                .auth
+                .authorize_sudo_request(principal, namespace, path, "update", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            let Some(object) = body.as_object() else {
+                return Response::error(400, "remount requires a JSON object");
+            };
+            if object
+                .keys()
+                .any(|key| !matches!(key.as_str(), "from" | "to" | "cas_revision"))
+            {
+                return Response::error(400, "unsupported remount parameter");
+            }
+            let Some(from) = object.get("from").and_then(Value::as_str) else {
+                return Response::error(400, "remount from is required");
+            };
+            let Some(to) = object.get("to").and_then(Value::as_str) else {
+                return Response::error(400, "remount to is required");
+            };
+            if from.starts_with('/') || to.starts_with('/') {
+                return Response::error(
+                    400,
+                    "remount paths must be relative to the request namespace",
+                );
+            }
+            let cas_revision = match object.get("cas_revision") {
+                Some(value) => match value.as_u64() {
+                    Some(value) => Some(value),
+                    None => {
+                        return Response::error(400, "cas_revision must be a nonnegative integer");
+                    }
+                },
+                None => None,
+            };
+            let from = from.trim_end_matches('/');
+            let to = to.trim_end_matches('/');
+            match (from.strip_prefix("auth/"), to.strip_prefix("auth/")) {
+                (Some(from), Some(to)) => {
+                    return match state.auth.remount_mount(namespace, from, to, cas_revision) {
+                        Ok(response) => Response {
+                            unwrapped_json: None,
+                            response_headers: Default::default(),
+                            consistency_index: None,
+                            status: response.status,
+                            body: response.body,
+                        },
+                        Err(error) => Response::error(error.status, &error.message),
+                    };
+                }
+                (None, None) => {
+                    if from.starts_with("sys/")
+                        || to.starts_with("sys/")
+                        || from.starts_with("identity/")
+                        || to.starts_with("identity/")
+                        || from.starts_with("cubbyhole/")
+                        || to.starts_with("cubbyhole/")
+                    {
+                        return Response::error(
+                            400,
+                            "remount cannot relocate reserved system paths",
+                        );
+                    }
+                    return match state.engines.remount(namespace, from, to, cas_revision) {
+                        Ok(mut response) => Response {
+                            unwrapped_json: None,
+                            response_headers: Default::default(),
+                            consistency_index: None,
+                            status: response.status,
+                            body: std::mem::take(&mut response.body),
+                        },
+                        Err(error) => Response::error(error.status, &error.message),
+                    };
+                }
+                _ => {
+                    return Response::error(
+                        400,
+                        "remount cannot change between auth and secret mount classes",
+                    );
+                }
+            }
+        }
+        if state.engines.is_lease_service_route(namespace, path) || path.starts_with("sys/leases/")
+        {
+            return Self::lease_route(state, principal, namespace, method, path, body, time);
+        }
+        // Restore weak string-field spelling only after the parameter ACL.
+        let token_backend_body = token_fields.map(|carrier| carrier.backend_body());
+        let auth_body = token_backend_body.as_ref().map_or(body, |body| &body.0);
+        if matches!(
+            path,
+            "sys/capabilities" | "sys/capabilities-self" | "sys/capabilities-accessor"
+        ) {
+            return Self::capabilities_route(
+                state, principal, namespace, method, path, auth_body, now,
+            );
+        }
+        let mut auth = state.auth.clone();
+        // Coarse backend grants use the same observed, durable-floor-bound
+        // second inside handle_with_connection_clock. Retain that issuance
+        // observation for Identity/batch finalization; ingress `now` may be an
+        // earlier second after the original HA proof. Completion below still
+        // checks the continuing original clock without extending the grant.
+        let auth_dispatch_seconds = auth.token_api_observed_time(time).seconds();
+        // Export this request-local witness only after real Identity finalization.
+        let mut authenticated_jwt_lifetime = None;
+        let auth_result = if path == "sys/quotas/config"
+            || path == "sys/quotas/rate-limit"
+            || path.starts_with("sys/quotas/rate-limit/")
+        {
+            let target = state.rate_limit_quota_target(namespace, auth_body);
+            auth.rate_limit_quota_catalog_route(
+                principal,
+                namespace,
+                method,
+                path,
+                auth_body,
+                auth_dispatch_seconds,
+                target,
+            )
+            .map(Some)
+        } else {
+            auth.handle_with_connection_clock_and_native_jwt_lifetime_for_cluster(
+                principal,
+                namespace,
+                method,
+                path,
+                auth_body,
+                time,
+                token_clock,
+                client_certificates,
+                origin_peer,
+                Some(&state.cluster_id),
+                native_jwt_lifetime
+                    .is_some()
+                    .then_some(&mut authenticated_jwt_lifetime),
+            )
+        };
+        match auth_result {
+            Ok(Some(mut response)) => {
+                *approle_secret_consumption = response.approle_secret_consumption.take();
+                // Native Core refreshes the existing alias before rejecting a
+                // disabled entity. The backend has already authenticated this
+                // login and passed source constraints. Apply only its trusted
+                // alias metadata to the admitted engine owner, leaving the
+                // issued auth candidate uninstalled. This also covers an
+                // unlimited SID, which has no consumption capsule.
+                if response.status == 200
+                    && let Some(login) = response.login_identity.as_ref()
+                    && auth.online_mount_enabled(namespace, &login.mount, "approle")
+                    && let Some(metadata) = login.metadata.as_ref()
+                {
+                    let result = auth
+                        .mount_accessor(namespace, &login.mount)
+                        .map_err(|error| Response::error(error.status, &error.message))
+                        .and_then(|accessor| {
+                            state
+                                .engines
+                                .refresh_disabled_approle_alias_metadata(
+                                    namespace,
+                                    &accessor,
+                                    &login.alias,
+                                    metadata,
+                                    now,
+                                )
+                                .map_err(|error| Response::error(error.status, &error.message))
+                        });
+                    match result {
+                        Ok(false) => {}
+                        Ok(true) => {
+                            erase_json(&mut response.body);
+                            return Response::error(403, "permission denied");
+                        }
+                        Err(error) => {
+                            erase_json(&mut response.body);
+                            return error;
+                        }
+                    }
+                }
+                let mut engines = state.engines.clone();
+                let mut namespaces = state.namespaces.clone();
+                if response.mutated
+                    && method == "DELETE"
+                    && let Some(mount) = path.strip_prefix("sys/auth/")
+                    && let Ok(accessor) = state
+                        .auth
+                        .mount_accessor(namespace, mount.trim_end_matches('/'))
+                    && !auth.has_mount_accessor(namespace, &accessor)
+                    && let Err(error) =
+                        engines.revoke_external_group_membership(namespace, &accessor, now)
+                {
+                    erase_json(&mut response.body);
+                    return Response::error(error.status, &error.message);
+                }
+                if !path.starts_with("sys/wrapping/")
+                    && let Err(error) = (|| {
+                        let completion = match token_clock {
+                            Some(clock) => {
+                                AuthorityTime::Precise(clock.observed_at().map_err(|_| {
+                                    Response::error(503, "trusted token clock is unavailable")
+                                })?)
+                            }
+                            None => AuthorityTime::Coarse(now),
+                        };
+                        Self::prepare_identity_batch_namespace(
+                            &mut auth,
+                            &mut namespaces,
+                            &state.cluster_id,
+                            &state.namespace_leases,
+                            &response,
+                        )?;
+                        // This is the actual successful Auth backend response,
+                        // after its route, method, ACL and target admission.
+                        if Self::finish_missing_token_lookup_identity(
+                            &auth,
+                            &engines,
+                            &mut response,
+                            namespace,
+                            method,
+                            path,
+                        )? {
+                            return Ok(());
+                        }
+                        Self::finish_identity_response_observed(
+                            &mut auth,
+                            &mut engines,
+                            &mut response,
+                            &namespaces,
+                            namespace,
+                            auth_dispatch_seconds,
+                            completion,
+                        )
+                    })()
+                {
+                    erase_json(&mut response.body);
+                    return error;
+                }
+                if response.mutated {
+                    state.auth = auth;
+                    state.engines = engines;
+                    state.namespaces = namespaces;
+                }
+                if response.status == 200
+                    && let Some(output) = native_jwt_lifetime
+                {
+                    *output = authenticated_jwt_lifetime;
+                }
+                return Response {
+                    unwrapped_json: response.unwrapped_json,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: response.status,
+                    body: response.body,
+                };
+            }
+            Err(error) => return Response::error(error.status, &error.message),
+            Ok(None) => {}
+        }
+        if path == "sys/internal/specs/openapi" {
+            let mounts = match Self::listed_mount_catalog(state, principal, namespace, now) {
+                Ok(mounts) => mounts,
+                Err(response) => return response,
+            };
+            let (auth_mounts, secret_mounts) = mounts
+                .into_iter()
+                .partition(|(path, _)| path.starts_with("auth/"));
+            let Some(principal) = principal else {
+                return openapi::handle_anonymous(method, body, &auth_mounts, &secret_mounts);
+            };
+            // A valid token discovers each mount allowed by its actual ACL or
+            // public listing configuration. This grants no backend capability.
+            return openapi::handle(
+                method,
+                body,
+                principal.is_root(),
+                &auth_mounts,
+                &secret_mounts,
+            );
+        }
+        if path == "sys/mfa/validate" {
+            return Self::mfa_validation_route(state, namespace, method, body, time, origin_peer);
+        }
+        let Some(principal) = principal else {
+            return Response::error(403, "permission denied");
+        };
+        if path == "sys/leader" && method == "GET" {
+            return Response::error(500, "leader route escaped service HA boundary");
+        }
+        if path == "sys/step-down" || path.starts_with("sys/storage/raft") {
+            return Response::error(
+                501,
+                "Raft administrative route is not implemented by this request profile",
+            );
+        }
+        let fallback = match method {
+            "GET" | "HEAD" => "read",
+            "LIST" => "list",
+            "DELETE" => "delete",
+            "PATCH" => "patch",
+            _ => "update",
+        };
+        let capability = state
+            .engines
+            .required_capability(namespace, kv_authorization_method(method, body), path)
+            .unwrap_or(fallback);
+        if path.starts_with("sys/mounts")
+            && !matches!(method, "GET" | "LIST" | "HEAD")
+            && let Err(error) = state
+                .auth
+                .authorize_request(principal, namespace, path, "sudo", now)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if let Err(error) = state
+            .auth
+            .authorize_request(principal, namespace, path, capability, now)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if let Some(response) =
+            Self::mfa_enrollment_route(state, principal, namespace, method, path, body, time)
+        {
+            return response;
+        }
+        if let Some(response) =
+            Self::mfa_identity_route(state, principal, namespace, method, path, body, time)
+        {
+            return response;
+        }
+        if matches!(method, "POST" | "PUT" | "PATCH")
+            && let Err(error) = Self::validate_identity_alias_mount(
+                &state.auth,
+                &state.engines,
+                namespace,
+                path,
+                body,
+            )
+        {
+            return error;
+        }
+        let pki_backend_body = if state.engines.is_pki_role_write(namespace, method, path) {
+            pki_role_fields.map(|carrier| carrier.backend_body())
+        } else {
+            None
+        };
+        let engine_body = pki_backend_body.as_ref().map_or(body, |carrier| &carrier.0);
+        let mut engines = state.engines.clone();
+        let identity_scope = if path == "identity" || path.starts_with("identity/") {
+            match state.namespaces.identity_namespace(namespace) {
+                Ok(scope) => scope,
+                Err(error) => return error,
+            }
+        } else {
+            crate::engines::IdentityNamespace {
+                path: namespace,
+                id: None,
+            }
+        };
+        let at = match Self::kv2_request_timestamp(time) {
+            Ok(at) => at,
+            Err(error) => return error,
+        };
+        if at.seconds() < now {
+            return Response::error(503, "KV2 accepted request clock precedes its floor");
+        }
+        // Legacy publication retires quota metadata alongside the actual
+        // successful mount removal. Native owners defer this exact removal
+        // until their real Engine candidate has been admitted; they then pair
+        // it with the affine Auth proof before publishing the same root.
+        let quota_mount_to_retire = if !defer_mount_quota_retirement && method == "DELETE" {
+            path.strip_prefix("sys/mounts/")
+                .map(|mount| format!("{}/", mount.trim_end_matches('/')))
+                .filter(|mount| {
+                    state
+                        .engines
+                        .ui_secret_mounts(namespace)
+                        .contains_key(mount)
+                })
+        } else {
+            None
+        };
+        let engine_result =
+            match engines.handle_identity_api(&identity_scope, method, path, engine_body, now) {
+                Ok(Some(response)) => Ok(Some(response)),
+                Ok(None) => engines.handle_in_identity_namespace_with_ssh_principal_precise(
+                    identity_scope,
+                    method,
+                    path,
+                    engine_body,
+                    now,
+                    principal.display_name(),
+                    Some(principal),
+                    at,
+                ),
+                Err(error) => Err(error),
+            };
+        match engine_result {
+            Ok(Some(mut response)) => {
+                Self::project_identity_alias_mounts(
+                    &state.auth,
+                    namespace,
+                    method,
+                    path,
+                    &mut response.body,
+                );
+                let static_kv1_origin = match Self::project_kv1_read_lease(
+                    state,
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    &mut response.body,
+                    response.status,
+                ) {
+                    Ok(origin) => origin,
+                    Err(error) => return error,
+                };
+                if response.mutated {
+                    if let Some(mount) = quota_mount_to_retire
+                        && !engines.ui_secret_mounts(namespace).contains_key(&mount)
+                    {
+                        state.auth.prune_rate_limit_quotas_mount(namespace, &mount);
+                    }
+                    state.engines = engines;
+                }
+                Response {
+                    unwrapped_json: static_kv1_origin,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: response.status,
+                    body: std::mem::take(&mut response.body),
+                }
+            }
+            Ok(None) => Response::error(404, "unsupported path"),
+            Err(error) => Response::from_engine_error(error),
+        }
+    }
+
+    fn load_state_from_durable(
+        durable: &DurableService<AeadBarrier>,
+    ) -> Result<(State, Zeroizing<Vec<u8>>, bool), Response> {
+        Self::load_state_from_resources(durable)
+    }
+
+    fn prepare_owner_state_plan(
+        durable: &DurableService<AeadBarrier>,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        options: PersistOwnerStateOptions,
+    ) -> Result<owner_store::OwnerWritePlan, ServiceError> {
+        let state = state
+            .protected_state()
+            .map_err(|_| ServiceError::CorruptState)?;
+        if bytes.len() > MAX_STATE_BYTES {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        let current_replay_epoch = durable.replay_epoch();
+        if target_replay_epoch < current_replay_epoch
+            || (target_replay_epoch > current_replay_epoch
+                && !options.allow_epoch_catchup
+                && current_replay_epoch.checked_add(1) != Some(target_replay_epoch))
+        {
+            return Err(ServiceError::ReplayEpochMismatch);
+        }
+
+        let current = durable.get("system", "state")?;
+        let previous_owner = current
+            .as_ref()
+            .map(|record| owner_store::decode_manifest(record.expose()))
+            .transpose()
+            .map_err(|_| ServiceError::CorruptState)?
+            .flatten();
+        let legacy_deletes = if previous_owner.is_none() {
+            current
+                .as_ref()
+                .map(|record| state_store::decode_manifest(record.expose()))
+                .transpose()
+                .map_err(|_| ServiceError::CorruptState)?
+                .flatten()
+                .map(|manifest| manifest.unique_chunk_resources())
+                .transpose()
+                .map_err(|_| ServiceError::CorruptState)?
+                .unwrap_or_default()
+                .into_iter()
+                .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
+
+        // V4 copy-on-write owners carry their authenticated descriptor/chunks
+        // forward directly when the request did not mutate them. This keeps
+        // the local plan deterministic with the state digest sent to HA.
+        let may_reuse = previous_owner.is_some();
+        // Owners contain reusable credentials and other secret state. Keep
+        // partially serialized buffers protected on every error path too.
+        fn serialize_owner(value: &impl Serialize) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
+            owner_store::serialize_owner(value).map_err(|error| match error {
+                owner_store::OwnerStoreError::StateTooLarge => {
+                    ServiceError::RequestCapacityExhausted
+                }
+                _ => ServiceError::CorruptState,
+            })
+        }
+        let owners = vec![
+            (
+                "namespaces",
+                if may_reuse && options.reuse.namespaces {
+                    None
+                } else {
+                    Some(serialize_owner(&state.namespaces)?)
+                },
+            ),
+            (
+                "auth",
+                if may_reuse && options.reuse.auth {
+                    None
+                } else {
+                    Some(serialize_owner(&state.auth)?)
+                },
+            ),
+            (
+                "engines",
+                if may_reuse && options.reuse.engines {
+                    None
+                } else {
+                    Some(serialize_owner(&state.engines)?)
+                },
+            ),
+            (
+                "database",
+                if may_reuse && options.reuse.database {
+                    None
+                } else {
+                    Some(serialize_owner(&state.database)?)
+                },
+            ),
+            (
+                "raft_admin",
+                if may_reuse && options.reuse.raft_admin {
+                    None
+                } else {
+                    Some(serialize_owner(&state.raft_admin)?)
+                },
+            ),
+        ];
+        let plan = owner_store::OwnerWritePlan::new_with_reuse(
+            bytes,
+            operation_id,
+            state_schema,
+            &state.cluster_id,
+            target_replay_epoch,
+            owners,
+            previous_owner.as_ref(),
+            legacy_deletes,
+        )
+        .and_then(|plan| plan.with_global_lossless_json_format(state.global_lossless_json_format))
+        .map_err(|error| match error {
+            owner_store::OwnerStoreError::StateTooLarge => ServiceError::RequestCapacityExhausted,
+            _ => ServiceError::CorruptState,
+        })?;
+        if plan.required_mutations() > heptabao_durable_service::MAX_ATOMIC_MUTATIONS {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        for resource in &plan.required_existing {
+            let existing = durable
+                .get("system", resource)?
+                .ok_or(ServiceError::CorruptState)?;
+            owner_store::validate_content_addressed_chunk(resource, existing.expose())
+                .map_err(|_| ServiceError::CorruptState)?;
+        }
+        Ok(plan)
+    }
+
+    fn persist_owner_state_batch(
+        durable: &mut DurableService<AeadBarrier>,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        batch: OwnerBatchInput,
+    ) -> Result<MutationOutcome, ServiceError> {
+        let OwnerBatchInput {
+            options,
+            prepared_plan,
+        } = batch;
+        if bytes.len() > MAX_STATE_BYTES {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        let current_replay_epoch = durable.replay_epoch();
+        if target_replay_epoch < current_replay_epoch {
+            return Err(ServiceError::ReplayEpochMismatch);
+        }
+        if target_replay_epoch > current_replay_epoch {
+            if !options.allow_epoch_catchup
+                && current_replay_epoch.checked_add(1) != Some(target_replay_epoch)
+            {
+                return Err(ServiceError::ReplayEpochMismatch);
+            }
+            while durable.replay_epoch() < target_replay_epoch {
+                durable.retire_replay_epoch()?;
+            }
+        }
+
+        let plan = match prepared_plan {
+            Some(plan) => {
+                plan.publication_binding(operation_id, bytes)
+                    .map_err(|_| ServiceError::CorruptState)?;
+                plan
+            }
+            None => Self::prepare_owner_state_plan(
+                durable,
+                state,
+                bytes,
+                operation_id,
+                state_schema,
+                target_replay_epoch,
+                options,
+            )?,
+        };
+        plan.validate_write_set()
+            .map_err(|_| ServiceError::CorruptState)?;
+
+        let mut mutations = Vec::with_capacity(plan.required_mutations());
+        for chunk in plan.chunks {
+            owner_store::validate_content_addressed_chunk(&chunk.resource, chunk.bytes.expose())
+                .map_err(|_| ServiceError::CorruptState)?;
+            mutations.push((chunk.resource, Some(chunk.bytes)));
+        }
+        for resource in plan.deletes {
+            mutations.push((resource, None));
+        }
+        mutations.push(("state".to_owned(), Some(Secret::new(plan.manifest_bytes)?)));
+
+        let replay_epoch = durable.replay_epoch();
+        if replay_epoch != target_replay_epoch {
+            return Err(ServiceError::ReplayEpochMismatch);
+        }
+        if options.compact_before_entry {
+            durable.apply_batch_with_compaction_in_replay_epoch(
+                replay_epoch,
+                "heptabao-server",
+                "system",
+                operation_id,
+                crypto::digest(bytes),
+                mutations,
+            )
+        } else {
+            durable.apply_batch_in_replay_epoch(
+                replay_epoch,
+                "heptabao-server",
+                "system",
+                operation_id,
+                crypto::digest(bytes),
+                mutations,
+            )
+        }
+    }
+
+    fn commit_state(&mut self, state: &mut State) -> Result<(), Response> {
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some() {
+            let plan = self.prepare_native_live_root(state)?;
+            return self.commit_ordinary_native_kv_plan(state, plan);
+        }
+
+        #[cfg(test)]
+        let _namespace_diagnostic = crate::service::namespace_diagnostics::Scope::enter();
+        namespace_diagnostic!(
+            "commit.namespace_prepare",
+            self.prepare_namespace_publication(state)
+        )?;
+        namespace_diagnostic!("commit.format", state.validate_format())?;
+        if state.engines.record_root().is_some() {
+            let plan =
+                namespace_diagnostic!("commit.record_plan", self.prepare_record_plan(state))?;
+            return namespace_diagnostic!(
+                "commit.record_publish",
+                self.commit_record_plan(state, plan)
+            );
+        }
+        if self.record_root.is_some() {
+            return Err(Response::error(
+                503,
+                "record state cannot publish a legacy candidate",
+            ));
+        }
+        let bytes = owner_store::serialize_owner(state).map_err(state_serialization_error)?;
+        let next_digest = crypto::digest(&bytes);
+        self.commit_state_bytes(state, &bytes, state.schema, state.replay_epoch, next_digest)
+    }
+
+    fn commit_state_bytes(
+        &mut self,
+        state: &mut State,
+        bytes: &[u8],
+        state_schema: u32,
+        target_replay_epoch: u64,
+        next_digest: [u8; 32],
+    ) -> Result<(), Response> {
+        self.commit_state_bytes_with_mode(
+            state,
+            bytes,
+            state_schema,
+            target_replay_epoch,
+            next_digest,
+            false,
+        )
+    }
+
+    fn commit_state_bytes_with_mode(
+        &mut self,
+        state: &mut State,
+        bytes: &[u8],
+        state_schema: u32,
+        target_replay_epoch: u64,
+        next_digest: [u8; 32],
+        allow_legacy_migration: bool,
+    ) -> Result<(), Response> {
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some() {
+            if allow_legacy_migration {
+                return Err(Response::error(
+                    503,
+                    "native candidate cannot publish legacy bytes",
+                ));
+            }
+            let plan = self.prepare_native_live_root(state)?;
+            return self.commit_ordinary_native_kv_plan(state, plan);
+        }
+        state.validate_publication_schema(self.state.as_ref())?;
+        if state.engines.record_root().is_some() {
+            let plan = self.prepare_record_plan(state)?;
+            return self.commit_record_plan(state, plan);
+        }
+        if self.record_root.is_some() {
+            return Err(Response::error(
+                503,
+                "record state cannot publish legacy bytes",
+            ));
+        }
+        if bytes.len() > self.opaque_owner_limit() {
+            return Err(Response::error(507, "state capacity exhausted"));
+        }
+        let activation = self.prepare_epoch_activation(target_replay_epoch, false)?;
+        let base_digest = self.current_state_digest()?;
+        if allow_legacy_migration {
+            self.persist_with_mode(
+                state,
+                bytes,
+                base_digest,
+                state_schema,
+                target_replay_epoch,
+                true,
+            )?;
+        } else {
+            self.persist(state, bytes, base_digest, state_schema, target_replay_epoch)?;
+        }
+        self.state_digest = Some(next_digest);
+        self.install_epoch_activation(activation);
+        Ok(())
+    }
+
+    fn current_state_digest(&self) -> Result<[u8; 32], Response> {
+        if self.state.is_none() {
+            return Err(Response::error(503, "server is sealed"));
+        }
+        self.state_digest
+            .ok_or_else(|| Response::error(503, "server state digest is unavailable"))
+    }
+
+    fn initialized(&self) -> bool {
+        self.data_dir.join("state.hbs").exists()
+            || self.data_dir.join(DURABLE_PROFILE_FILE).exists()
+    }
+
+    fn seal_status(&self) -> Response {
+        let (seal_type, shares, threshold) = self
+            .seal
+            .as_ref()
+            .map(|seal| {
+                (
+                    if seal.is_wrapper() {
+                        "openbao-wrapper"
+                    } else if seal.share_format == "raw-v1" {
+                        "shamir-legacy"
+                    } else {
+                        "shamir"
+                    },
+                    seal.secret_shares,
+                    seal.secret_threshold,
+                )
+            })
+            .unwrap_or(("shamir-legacy", 1, 1));
+        let progress = if self.state.is_some() {
+            0
+        } else {
+            u8::try_from(self.unseal_shares.len()).unwrap_or(u8::MAX)
+        };
+        let mut body = json!({
+            "type": seal_type,
+            "initialized": self.initialized(),
+            "sealed": self.state.is_none(),
+            "t": threshold,
+            "n": shares,
+            "progress": progress,
+            "nonce": if progress == 0 { "" } else { self.unseal_nonce.as_str() },
+            "version": "HeptaBao-0.2.0",
+            "migration": false,
+            "recovery_seal": self.seal.as_ref().is_some_and(SealMetadata::is_wrapper),
+            "storage_type": if self.ha.is_some() { "heptabao-raft-v1" } else { "heptabao-durable-v2" },
+            "seal_generation": self.seal.as_ref().map_or(0, |seal| seal.generation),
+        });
+        if let Some(state) = &self.state {
+            body["cluster_id"] = json!(state.cluster_id);
+            body["cluster_name"] = json!(if self.ha.is_some() {
+                "heptabao-ha"
+            } else {
+                "heptabao-single-node"
+            });
+        }
+        Response::ok(body)
+    }
+
+    fn initialize(
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
+    ) -> (Response, bool) {
+        self.initialize_with_postgres_import(
+            body,
+            now,
+            response_fingerprint,
+            Self::import_postgres_initialization,
+        )
+    }
+
+    fn import_postgres_initialization(
+        config: &PgStorageConfig,
+        bundle: &BackendBundle,
+    ) -> Result<Box<dyn DurableBackend>, BackendError> {
+        let mut backend = PostgresDurableBackend::initialize(clone_pg_storage_config(config))?;
+        backend.initialize_or_match(bundle)?;
+        Ok(Box::new(backend))
+    }
+
+    fn initialize_with_postgres_import(
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
+        import: impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
+    ) -> (Response, bool) {
+        self.initialize_with_wrapper_material(body, now, response_fingerprint, import, None)
+    }
+
+    fn initialize_with_wrapper_material(
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
+        import: impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
+        wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
+    ) -> (Response, bool) {
+        self.initialize_with_wrapper_material_and_auth_factory(
+            body,
+            now,
+            response_fingerprint,
+            import,
+            wrapper,
+            InitialAuthFactory::Current,
+        )
+    }
+
+    fn initialize_with_wrapper_material_and_auth_factory(
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
+        mut import: impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
+        wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
+        auth_factory: InitialAuthFactory,
+    ) -> (Response, bool) {
+        let wrapper_deadline = wrapper.as_ref().and_then(|material| material.deadline);
+        let wrapper_mode =
+            wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) || {
+                #[cfg(target_os = "linux")]
+                {
+                    self.wrapper_barrier_selected()
+                        && postgres_pending_exists(&self.data_dir).unwrap_or(true)
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    false
+                }
+            };
+        if self.ha.is_some() && !wrapper_mode {
+            return (
+                Response::error(
+                    409,
+                    "HA initialization requires the configured Wrapper consumer",
+                ),
+                false,
+            );
+        }
+        if self.ha.is_some() && wrapper_ha::pending_exists(&self.data_dir).unwrap_or(true) {
+            return (
+                Response::error(
+                    503,
+                    "HA initialization must resolve its retained Wrapper candidate",
+                ),
+                false,
+            );
+        }
+        if wrapper_mode {
+            if let Err(response) = openbao_wrapper::barrier::validate_initialization_options(body) {
+                return (response, false);
+            }
+        } else if body.as_object().is_none_or(|object| {
+            object.iter().any(|(key, value)| match key.as_str() {
+                "secret_shares" | "secret_threshold" | "recovery_nonce" => false,
+                // The official Go InitRequest includes these unset fields.
+                // Empty values request no PGP or recovery-key operation.
+                "pgp_keys" | "recovery_pgp_keys" => {
+                    !value.is_null() && !value.as_array().is_some_and(Vec::is_empty)
+                }
+                "root_token_pgp_key" => !value.is_null() && value.as_str() != Some(""),
+                "recovery_shares" | "recovery_threshold" => value.as_u64() != Some(0),
+                _ => true,
+            })
+        }) {
+            return (
+                Response::error(400, "unsupported initialization options"),
+                false,
+            );
+        }
+        let shares = match bounded_u8_field(body, "secret_shares", if wrapper_mode { 0 } else { 5 })
+        {
+            Ok(value) => value,
+            Err(message) => return (Response::error(400, message), false),
+        };
+        let threshold =
+            match bounded_u8_field(body, "secret_threshold", if wrapper_mode { 0 } else { 3 }) {
+                Ok(value) => value,
+                Err(message) => return (Response::error(400, message), false),
+            };
+        let invalid_shares = if wrapper_mode {
+            shares != 0 || threshold != 0
+        } else {
+            shares == 0 || shares > MAX_SEAL_SHARES || threshold == 0 || threshold > shares
+        };
+        if invalid_shares {
+            return (
+                Response::error(
+                    400,
+                    "secret shares must be 1..=16 and threshold must be within that set",
+                ),
+                false,
+            );
+        }
+        let recovery_counts = if wrapper_mode {
+            let recovery_shares = match bounded_u8_field(body, "recovery_shares", 0) {
+                Ok(value) => value,
+                Err(error) => return (Response::error(400, error), false),
+            };
+            let recovery_threshold = match bounded_u8_field(body, "recovery_threshold", 0) {
+                Ok(value) => value,
+                Err(error) => return (Response::error(400, error), false),
+            };
+            (recovery_shares, recovery_threshold)
+        } else {
+            (0, 0)
+        };
+        let response_counts = if wrapper_mode {
+            recovery_counts
+        } else {
+            (shares, threshold)
+        };
+        let recovery_secret = match body.get("recovery_nonce") {
+            None => None,
+            Some(value) => match decode_initialization_secret(value) {
+                Ok(secret) => Some(secret),
+                Err(error) => return (Response::error(400, error), false),
+            },
+        };
+        // Serialize candidate creation and final publication across processes,
+        // including a filesystem-configured process racing a PostgreSQL one.
+        let parent = match self.data_dir.parent().map(ExclusiveDirectory::open) {
+            Some(Ok(parent)) => parent,
+            _ => {
+                return (
+                    Response::error(503, "initialization parent is unsafe or busy"),
+                    false,
+                );
+            }
+        };
+        if verify_initialization_parent(&parent).is_err() {
+            return (
+                Response::error(503, "initialization parent identity changed"),
+                false,
+            );
+        }
+        let pending_exists = match postgres_pending_exists(&self.data_dir) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot inspect pending PostgreSQL initialization"),
+                    false,
+                );
+            }
+        };
+        if pending_exists {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+        }
+        if self.initialized() {
+            // Another Service may have published initialization after this
+            // sealed process was constructed. Admit its metadata under the
+            // parent lock only when this process has never admitted a seal;
+            // an already known seal must still detect on-disk replacement.
+            if self.seal.is_none() && self.durable_profile.is_none() && self.state.is_none() {
+                match (
+                    load_seal_metadata(&self.data_dir),
+                    load_durable_profile(&self.data_dir),
+                ) {
+                    (Ok(seal), Ok(profile)) => {
+                        self.seal = seal;
+                        self.durable_profile = profile;
+                    }
+                    _ => {
+                        return (
+                            Response::error(
+                                503,
+                                "published initialization metadata is unavailable",
+                            ),
+                            false,
+                        );
+                    }
+                }
+            }
+            if pending_exists {
+                return (
+                    self.recover_published_postgres_initialization(
+                        recovery_secret.as_deref(),
+                        response_counts.0,
+                        response_counts.1,
+                        &parent,
+                    ),
+                    false,
+                );
+            }
+            return (
+                match recovery_secret.as_ref() {
+                    Some(secret) => self.recover_initialization(
+                        secret,
+                        if wrapper_mode {
+                            recovery_counts.0
+                        } else {
+                            shares
+                        },
+                        if wrapper_mode {
+                            recovery_counts.1
+                        } else {
+                            threshold
+                        },
+                    ),
+                    None => Response::error(400, "already initialized"),
+                },
+                false,
+            );
+        }
+        if pending_exists {
+            let Some(secret) = recovery_secret.as_ref() else {
+                return (
+                    Response::error(
+                        400,
+                        "recovery_nonce is required for pending PostgreSQL initialization",
+                    ),
+                    false,
+                );
+            };
+            let pending = match load_postgres_pending(
+                &self.data_dir,
+                secret,
+                response_counts.0,
+                response_counts.1,
+            ) {
+                Ok(value) => value,
+                Err(error) => return (error, false),
+            };
+            return self.finish_postgres_initialization(
+                pending,
+                secret,
+                now,
+                &parent,
+                &mut import,
+                (response_fingerprint, wrapper_deadline),
+            );
+        }
+        if self.postgres_durable.is_some() && recovery_secret.is_none() {
+            return (
+                Response::error(
+                    400,
+                    "recovery_nonce is required for PostgreSQL initialization",
+                ),
+                false,
+            );
+        }
+
+        let (mut seal, generated_shares, barrier_key) = if let Some(material) = wrapper {
+            (material.seal, Vec::new(), material.key)
+        } else {
+            let seal_key = match crypto::random::<32>() {
+                Ok(value) => Zeroizing::new(value),
+                Err(error) => return (Response::error(503, error), false),
+            };
+            let barrier_key = match crypto::random::<32>() {
+                Ok(value) => Zeroizing::new(value),
+                Err(error) => return (Response::error(503, error), false),
+            };
+            let generated_shares = match crypto::split_secret(&seal_key, shares, threshold) {
+                Ok(value) => value,
+                Err(error) => return (Response::error(503, error), false),
+            };
+            let mut seal = SealMetadata {
+                schema: 1,
+                generation: 1,
+                share_format: "shamir-v1".into(),
+                secret_shares: shares,
+                secret_threshold: threshold,
+                wrapped_barrier_key: String::new(),
+            };
+            let wrapped =
+                match crypto::wrap_barrier_key(&seal_key, &seal.associated_data(), &barrier_key) {
+                    Ok(value) => Zeroizing::new(value),
+                    Err(error) => return (Response::error(503, error), false),
+                };
+            seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
+            (seal, generated_shares, barrier_key)
+        };
+        if let Err(error) = seal.validate() {
+            return (Response::error(500, error), false);
+        }
+        let barrier = match AeadBarrier::new(*barrier_key) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot construct storage provider"),
+                    false,
+                );
+            }
+        };
+        let initial_auth = match auth_factory {
+            InitialAuthFactory::Current => {
+                AuthState::bootstrap_current_root_with_default_policy(AuthorityTime::Coarse(now))
+            }
+            #[cfg(test)]
+            InitialAuthFactory::Pre141Fixture => AuthState::bootstrap(now),
+        };
+        let (mut auth, root_token) = match initial_auth {
+            Ok((auth, token)) => (auth, Zeroizing::new(token)),
+            Err(error) => return (Response::error(error.status, &error.message), false),
+        };
+        let cluster_id = if self.ha.is_some() {
+            match self.ha_initial_cluster() {
+                Ok(cluster_id) => cluster_id,
+                Err(error) => return (error, false),
+            }
+        } else {
+            match crypto::random::<16>() {
+                Ok(value) => crypto::uuid_from_bytes(&value),
+                Err(error) => return (Response::error(503, error), false),
+            }
+        };
+        let recovery_fragments = if recovery_counts.0 != 0 {
+            let fragments = match auth.initialize_recovery_credential(
+                &cluster_id,
+                recovery_counts.0,
+                recovery_counts.1,
+            ) {
+                Ok(fragments) => fragments,
+                Err(_) => {
+                    return (
+                        Response::error(503, "cannot create independent recovery credential"),
+                        false,
+                    );
+                }
+            };
+            let Some(credential) = auth.recovery_credential.as_ref() else {
+                return (Response::error(503, "recovery candidate absent"), false);
+            };
+            seal = match openbao_wrapper::barrier::seal_with_recovery(&seal, credential) {
+                Ok(seal) => seal,
+                Err(_) => {
+                    return (
+                        Response::error(503, "cannot prepare public recovery configuration"),
+                        false,
+                    );
+                }
+            };
+            fragments
+        } else {
+            Vec::new()
+        };
+        let mut state = State {
+            global_lossless_json_format: None,
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
+            schema: CURRENT_STATE_SCHEMA,
+            cluster_id,
+            replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default().into(),
+            auth: auth.into(),
+            engines: EngineState::initialized_empty().into(),
+            database: database::DatabaseState::default().into(),
+            raft_admin: raft_admin::RaftAdminState::default().into(),
+        };
+        state.schema = state.writer_schema();
+        if let Err(error) = state.validate_format() {
+            return (error, false);
+        }
+        let mut stage = match InitializationStage::create(&self.data_dir) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot create private initialization stage"),
+                    false,
+                );
+            }
+        };
+        // Always build the entire initial state locally first. PostgreSQL is
+        // untouched until the complete candidate and recovery material are
+        // published durably under a discoverable pending name.
+        let mut durable = match DurableService::create_new(&stage.path, barrier, MAX_OPERATIONS) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot prepare durable initialization state"),
+                    false,
+                );
+            }
+        };
+        let durable_profile = self
+            .postgres_durable
+            .as_ref()
+            .map(DurableProfile::postgresql);
+        let bytes = match owner_store::serialize_owner(&state) {
+            Ok(value) => value,
+            Err(error) => return (state_serialization_error(error), false),
+        };
+        if bytes.len() > MAX_STATE_BYTES {
+            return (
+                Response::error(507, "single-node state capacity exhausted"),
+                false,
+            );
+        }
+        let operation_id = match crypto::random::<16>() {
+            Ok(value) => value,
+            Err(error) => return (Response::error(503, error), false),
+        };
+        let operation_id = hex(&operation_id);
+        let initial_plan = if self.ha.is_some() {
+            match Self::prepare_initial_owner_plan(&state, &bytes, &operation_id) {
+                Ok(plan) => Some(plan),
+                Err(error) => return (error, false),
+            }
+        } else {
+            None
+        };
+        let initial_binding = match initial_plan
+            .as_ref()
+            .map(|plan| plan.publication_binding(&operation_id, &bytes))
+            .transpose()
+        {
+            Ok(binding) => binding,
+            Err(_) => {
+                return (
+                    Response::error(503, "HA initial owner binding invalid"),
+                    false,
+                );
+            }
+        };
+        if let Err(error) = Self::persist_owner_state_batch(
+            &mut durable,
+            &state,
+            &bytes,
+            &operation_id,
+            state.schema,
+            state.replay_epoch,
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: false,
+                    allow_epoch_catchup: false,
+                    reuse: OwnerReuseHint::default(),
+                },
+                prepared_plan: initial_plan,
+            },
+        ) {
+            return (
+                Response::error(
+                    if matches!(
+                        error,
+                        ServiceError::RequestCapacityExhausted
+                            | ServiceError::JournalCapacityExhausted
+                    ) {
+                        507
+                    } else {
+                        503
+                    },
+                    "staged initialization state was rejected",
+                ),
+                false,
+            );
+        }
+        if persist_seal_metadata(&stage.path, &seal).is_err() {
+            return (Response::error(503, "cannot prepare seal metadata"), false);
+        }
+        if let Some(profile) = durable_profile.as_ref()
+            && persist_durable_profile(&stage.path, profile).is_err()
+        {
+            return (
+                Response::error(503, "cannot prepare durable backend profile"),
+                false,
+            );
+        }
+        drop(durable);
+
+        let mut keys = Vec::with_capacity(generated_shares.len());
+        let mut keys_base64 = Vec::with_capacity(generated_shares.len());
+        for share in generated_shares {
+            let encoded = Zeroizing::new(share.encode());
+            keys.push(hex(&encoded));
+            keys_base64.push(STANDARD.encode(encoded.as_slice()));
+        }
+        let mut recovery_keys = Zeroizing::new(Vec::<String>::new());
+        let mut recovery_keys_base64 = Zeroizing::new(Vec::<String>::new());
+        for fragment in recovery_fragments {
+            let Some(credential) = state.auth.recovery_credential.as_ref() else {
+                return (
+                    Response::error(503, "recovery credential absent during delivery"),
+                    false,
+                );
+            };
+            let encoded = match credential.encode_share(&fragment) {
+                Ok(encoded) => Zeroizing::new(encoded),
+                Err(_) => {
+                    return (
+                        Response::error(503, "recovery share codec rejected delivery"),
+                        false,
+                    );
+                }
+            };
+            recovery_keys.push(hex(&encoded));
+            recovery_keys_base64.push(STANDARD.encode(encoded.as_slice()));
+        }
+        let mut response = Response::ok(json!({
+            "keys": keys,
+            "keys_base64": keys_base64,
+            "root_token": root_token.as_str(),
+            "recovery_keys": recovery_keys.as_slice(),
+            "recovery_keys_base64": recovery_keys_base64.as_slice(),
+        }));
+        if let Some(secret) = recovery_secret.as_ref() {
+            response.body["init_ack_required"] = json!(true);
+            if write_initialization_recovery(&stage.path, &seal, secret, &response.body).is_err() {
+                return (
+                    Response::error(503, "cannot prepare initialization recovery"),
+                    false,
+                );
+            }
+        }
+        if let Some(binding) = initial_binding {
+            if self
+                .audit_event(
+                    "initialization-response-prepared",
+                    response_fingerprint,
+                    now,
+                    Some(200),
+                )
+                .is_err()
+            {
+                self.fence_recovery_delivery();
+                return (
+                    Response::error(503, "HA initialization response audit unavailable"),
+                    true,
+                );
+            }
+            return self.publish_ha_initialization(
+                stage,
+                &state,
+                &bytes,
+                &operation_id,
+                binding,
+                seal,
+                &barrier_key,
+                response,
+                &parent,
+                wrapper_deadline,
+            );
+        }
+        if let (Some(profile), Some(secret)) = (durable_profile.as_ref(), recovery_secret.as_ref())
+        {
+            let bundle = match FileBackend::open(&stage.path).and_then(|mut backend| backend.load())
+            {
+                Ok(value) => value,
+                Err(_) => {
+                    return (
+                        Response::error(
+                            503,
+                            "cannot read prepared PostgreSQL initialization bundle",
+                        ),
+                        false,
+                    );
+                }
+            };
+            if write_postgres_pending_binding(
+                &stage.path,
+                &self.data_dir,
+                secret,
+                &seal,
+                profile,
+                &bundle,
+            )
+            .is_err()
+                || stage
+                    .retain_postgres_pending(&self.data_dir, &parent)
+                    .is_err()
+            {
+                self.recovery_required = postgres_pending_exists(&self.data_dir).unwrap_or(true);
+                self.ha_activation = None;
+                return (
+                    Response::error(
+                        503,
+                        "cannot durably prepare PostgreSQL initialization; retry with the same recovery nonce",
+                    ),
+                    false,
+                );
+            }
+            // The sealed genuine provider remains owned while this prepared
+            // candidate is imported. Any failure is fenced by its finalizer;
+            // successful publication is admitted only before the same deadline.
+            self.recovery_required = true;
+            self.ha_activation = None;
+            let pending = match load_postgres_pending(
+                &self.data_dir,
+                secret,
+                response_counts.0,
+                response_counts.1,
+            ) {
+                Ok(value) => value,
+                Err(error) => return (error, false),
+            };
+            return self.finish_postgres_initialization(
+                pending,
+                secret,
+                now,
+                &parent,
+                &mut import,
+                (response_fingerprint, wrapper_deadline),
+            );
+        }
+        if self
+            .audit_event(
+                "initialization-response-prepared",
+                response_fingerprint,
+                now,
+                Some(200),
+            )
+            .is_err()
+        {
+            return (
+                Response::error(
+                    503,
+                    "initialization response audit unavailable; no active state published",
+                ),
+                true,
+            );
+        }
+        if wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            self.fence_openbao_wrapper();
+            return (
+                Response::error(
+                    503,
+                    "Wrapper initialization deadline expired before publication",
+                ),
+                true,
+            );
+        }
+        let parent_synced = match stage.publish(&self.data_dir, &parent) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "initialization publication failed before activation"),
+                    false,
+                );
+            }
+        };
+        self.seal = Some(seal);
+        self.durable_profile = durable_profile;
+        self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
+        self.state = None;
+        self.ha_activation = None;
+        self.record_root = None;
+        #[cfg(feature = "native-v6-storage")]
+        {
+            self.native_root = None;
+        }
+        self.record_writes_since_gc = 0;
+        self.ha_read_cache = None;
+        self.durable = None;
+        self.barrier_key = None;
+        self.unseal_shares.clear();
+        self.rekey = None;
+        if !parent_synced
+            || wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            if recovery_secret.is_some() {
+                return (
+                    Response::error(
+                        503,
+                        "initialization publication outcome unknown; retry with the same recovery nonce",
+                    ),
+                    true,
+                );
+            }
+            if let Some(object) = response.body.as_object_mut() {
+                object.insert(
+                    "warnings".into(),
+                    json!(["initialization published but parent directory sync requires recovery review"]),
+                );
+            }
+        }
+        (response, true)
+    }
+
+    fn finish_postgres_initialization(
+        &mut self,
+        pending: PendingPostgresInitialization,
+        secret: &[u8; 32],
+        now: u64,
+        parent: &ExclusiveDirectory,
+        import: &mut impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
+        publication: (&str, Option<std::time::Instant>),
+    ) -> (Response, bool) {
+        let (response_fingerprint, wrapper_deadline) = publication;
+        let Some(config) = self.postgres_durable.as_ref() else {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL durable backend configuration is required for initialization recovery",
+                ),
+                false,
+            );
+        };
+        if pending.profile != DurableProfile::postgresql(config) {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL initialization target does not match the prepared profile",
+                ),
+                false,
+            );
+        }
+        if verify_initialization_parent(parent).is_err() || pending.local_fence.verify().is_err() {
+            return (
+                Response::error(503, "PostgreSQL initialization ownership changed"),
+                false,
+            );
+        }
+        // Prepare all fallible local metadata work before the remote commit.
+        // This second stage intentionally contains no snapshot/ledger/journal.
+        let mut metadata = match InitializationStage::create(&self.data_dir) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot prepare PostgreSQL initialization metadata"),
+                    false,
+                );
+            }
+        };
+        if persist_seal_metadata(&metadata.path, &pending.seal).is_err()
+            || persist_durable_profile(&metadata.path, &pending.profile).is_err()
+            || write_initialization_recovery(
+                &metadata.path,
+                &pending.seal,
+                secret,
+                &pending.response.body,
+            )
+            .is_err()
+        {
+            return (
+                Response::error(
+                    503,
+                    "cannot durably prepare PostgreSQL initialization metadata",
+                ),
+                false,
+            );
+        }
+        if self
+            .audit_event(
+                "initialization-response-prepared",
+                response_fingerprint,
+                now,
+                Some(200),
+            )
+            .is_err()
+        {
+            return (
+                Response::error(
+                    503,
+                    "initialization response audit unavailable; PostgreSQL initialization remains pending",
+                ),
+                true,
+            );
+        }
+        let Some(config) = self.postgres_durable.as_ref() else {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL durable backend configuration is unavailable",
+                ),
+                false,
+            );
+        };
+        // The returned backend owns the remote writer fence. Keep it alive
+        // until local publication and pending cleanup have completed.
+        if wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            self.fence_openbao_wrapper();
+            return (
+                Response::error(503, "Wrapper PostgreSQL initialization deadline expired"),
+                false,
+            );
+        }
+        let mut remote_fence = match import(config, &pending.bundle) {
+            Ok(value) => value,
+            Err(BackendError::RootNotEmpty) => {
+                return (
+                    Response::error(
+                        409,
+                        "PostgreSQL initialization conflicts with existing durable state",
+                    ),
+                    false,
+                );
+            }
+            Err(_) => {
+                return (
+                    Response::error(
+                        503,
+                        "PostgreSQL initialization outcome is unconfirmed; retry with the same recovery nonce",
+                    ),
+                    false,
+                );
+            }
+        };
+        if wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline)
+            || remote_fence.verify_live_ownership().is_err()
+            || verify_initialization_parent(parent).is_err()
+            || pending.local_fence.verify().is_err()
+        {
+            self.fence_openbao_wrapper();
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL initialization ownership changed; retry with the same recovery nonce",
+                ),
+                false,
+            );
+        }
+        let parent_synced = match metadata.publish(&self.data_dir, parent) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(
+                        503,
+                        "PostgreSQL initialization metadata publication failed; retry with the same recovery nonce",
+                    ),
+                    false,
+                );
+            }
+        };
+        self.seal = Some(pending.seal);
+        self.durable_profile = Some(pending.profile);
+        self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
+        self.state = None;
+        self.ha_activation = None;
+        self.record_root = None;
+        #[cfg(feature = "native-v6-storage")]
+        {
+            self.native_root = None;
+        }
+        self.record_writes_since_gc = 0;
+        self.ha_read_cache = None;
+        self.durable = None;
+        self.barrier_key = None;
+        self.unseal_shares.clear();
+        self.rekey = None;
+        if !parent_synced
+            || wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline)
+            || remote_fence.verify_live_ownership().is_err()
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return (
+                Response::error(
+                    503,
+                    "initialization publication outcome unknown; retry with the same recovery nonce",
+                ),
+                true,
+            );
+        }
+        drop(pending.local_fence);
+        let cleaned = cleanup_postgres_pending(&pending.path, parent);
+        drop(remote_fence);
+        if cleaned.is_err() {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL initialization cleanup requires recovery; retry with the same recovery nonce",
+                ),
+                true,
+            );
+        }
+        self.recovery_required = false;
+        (pending.response, true)
+    }
+
+    fn recover_published_postgres_initialization(
+        &mut self,
+        secret: Option<&[u8; 32]>,
+        shares: u8,
+        threshold: u8,
+        parent: &ExclusiveDirectory,
+    ) -> Response {
+        let Some(secret) = secret else {
+            return Response::error(
+                400,
+                "recovery_nonce is required for pending PostgreSQL initialization",
+            );
+        };
+        let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        if self.seal.as_ref() != Some(&pending.seal)
+            || self.durable_profile.as_ref() != Some(&pending.profile)
+            || load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(&pending.seal)
+            || load_durable_profile(&self.data_dir).ok().flatten().as_ref()
+                != Some(&pending.profile)
+        {
+            return Response::error(
+                503,
+                "published initialization does not match the pending candidate",
+            );
+        }
+        let response = self.recover_initialization(secret, shares, threshold);
+        if response.status != 200 {
+            return response;
+        }
+        if response.body != pending.response.body {
+            return Response::error(
+                503,
+                "published initialization response does not match the pending candidate",
+            );
+        }
+        drop(pending.local_fence);
+        if cleanup_postgres_pending(&pending.path, parent).is_err() {
+            return Response::error(503, "PostgreSQL initialization cleanup requires recovery");
+        }
+        self.recovery_required = false;
+        response
+    }
+
+    fn recover_initialization(&self, secret: &[u8; 32], shares: u8, threshold: u8) -> Response {
+        let ha_identity = if self.ha.is_some() {
+            if self.recovery_required || self.state.is_none() {
+                return Response::error(
+                    503,
+                    "HA initialization response requires admitted current authority",
+                );
+            }
+            match self
+                .current_state_identity()
+                .and_then(|identity| self.verify_ha_state_identity(identity).map(|()| identity))
+            {
+                Ok(identity) => Some(identity),
+                Err(error) => return error,
+            }
+        } else {
+            None
+        };
+        let seal = match self.seal.as_ref() {
+            Some(seal) if seal.secret_shares == shares && seal.secret_threshold == threshold => {
+                seal
+            }
+            _ => return Response::error(400, "initialization recovery parameters do not match"),
+        };
+        if load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(seal) {
+            return Response::error(503, "initialization recovery seal binding changed");
+        }
+        let protected = match read_initialization_recovery(&self.data_dir) {
+            Ok(Some(value)) => value,
+            Ok(None) => return Response::error(409, "initialization recovery is not pending"),
+            Err(_) => return Response::error(503, "initialization recovery file is unavailable"),
+        };
+        let (barrier, context) = match initialization_recovery_barrier(secret, seal) {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "initialization recovery provider unavailable"),
+        };
+        let plaintext = match barrier.open(&context, &protected) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => return Response::error(403, "initialization recovery authentication failed"),
+        };
+        let Some(parent) = self.data_dir.parent() else {
+            return Response::error(503, "initialization recovery parent is unavailable");
+        };
+        if File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .is_err()
+        {
+            return Response::error(503, "initialization publication durability is unknown");
+        }
+        if ha_identity.is_some_and(|identity| {
+            self.current_state_identity().ok() != Some(identity)
+                || self.verify_ha_state_identity(identity).is_err()
+                || crate::request_deadline::current()
+                    .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        }) {
+            return Response::error(
+                503,
+                "HA initialization response authority changed or deadline expired",
+            );
+        }
+        match serde_json::from_slice::<Value>(&plaintext) {
+            Ok(body) => Response::ok(body),
+            Err(_) => Response::error(503, "initialization recovery response is corrupt"),
+        }
+    }
+
+    fn ack_initialization(&mut self, method: &str, body: &Value) -> Response {
+        self.ack_initialization_with_sync(method, body, |path| File::open(path)?.sync_all())
+    }
+
+    fn ack_initialization_with_sync(
+        &mut self,
+        method: &str,
+        body: &Value,
+        sync: impl FnOnce(&Path) -> io::Result<()>,
+    ) -> Response {
+        if !matches!(method, "POST" | "PUT") {
+            return Response::error(405, "initialization acknowledgement requires POST or PUT");
+        }
+        if body.as_object().is_none_or(|fields| !fields.is_empty()) {
+            return Response::error(
+                400,
+                "initialization acknowledgement accepts an empty object",
+            );
+        }
+        let removed = fs::remove_file(self.data_dir.join(INIT_RECOVERY_FILE));
+        if let Err(error) = removed
+            && error.kind() != io::ErrorKind::NotFound
+        {
+            return Response::error(503, "cannot remove initialization recovery file");
+        }
+        // Also sync an already absent file: a previous delete may have succeeded
+        // while its directory sync failed, so absence alone is not an acknowledgement.
+        if sync(&self.data_dir).is_err() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(
+                503,
+                "initialization acknowledgement outcome unknown; directory sync failed",
+            );
+        }
+        Response {
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+            status: 204,
+            body: Value::Null,
+        }
+    }
+
+    #[cfg(test)]
+    fn unseal(&mut self, body: &Value) -> Response {
+        self.unseal_with_cold_handoff(
+            body,
+            #[cfg(feature = "native-v6-storage")]
+            None,
+        )
+    }
+
+    fn unseal_with_cold_handoff(
+        &mut self,
+        body: &Value,
+        #[cfg(feature = "native-v6-storage")] mut cold_handoff: Option<
+            &mut Option<native_v6_reader::ColdUnsealHandoff>,
+        >,
+    ) -> Response {
+        if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
+            return Response::error(
+                501,
+                "Wrapper seal uses trusted startup; manual unseal and migration are unavailable",
+            );
+        }
+        if self.state.is_some() && !self.recovery_required {
+            return self.seal_status();
+        }
+        match postgres_pending_exists(&self.data_dir) {
+            Ok(false) => {}
+            Ok(true) => {
+                return Response::error(
+                    503,
+                    "complete PostgreSQL initialization recovery before unseal",
+                );
+            }
+            Err(_) => {
+                return Response::error(503, "cannot inspect PostgreSQL initialization recovery");
+            }
+        }
+        if !self.initialized() {
+            return Response::error(400, "not initialized");
+        }
+        let Some(object) = body.as_object() else {
+            return Response::error(400, "invalid unseal request");
+        };
+        if object
+            .keys()
+            .any(|key| !matches!(key.as_str(), "key" | "reset" | "migrate"))
+        {
+            return Response::error(400, "unsupported unseal options");
+        }
+        match body.get("migrate") {
+            None | Some(Value::Bool(false)) => {}
+            Some(Value::Bool(true)) => {
+                return Response::error(501, "seal migration is not implemented by this endpoint");
+            }
+            Some(_) => return Response::error(400, "migrate must be a boolean"),
+        }
+        let reset = match body.get("reset") {
+            None => false,
+            Some(Value::Bool(value)) => *value,
+            Some(_) => return Response::error(400, "reset must be a boolean"),
+        };
+        if reset {
+            if body.get("key").is_some() {
+                return Response::error(400, "reset and key cannot be supplied together");
+            }
+            self.unseal_shares.clear();
+            if self.rotate_unseal_nonce().is_err() {
+                return Response::error(503, "operating system randomness unavailable");
+            }
+            return self.seal_status();
+        }
+        if private_directory(&self.data_dir).is_err() {
+            return Response::error(400, "unsafe data directory");
+        }
+        let Some(encoded) = body.get("key").and_then(Value::as_str) else {
+            return Response::error(400, "key is required");
+        };
+
+        if self.seal.is_none() {
+            let decoded = match decode_key_material(encoded) {
+                Ok(value) => Zeroizing::new(value),
+                Err(error) => return Response::error(400, error),
+            };
+            let key: Zeroizing<[u8; 32]> = match decoded.as_slice().try_into() {
+                Ok(value) => Zeroizing::new(value),
+                Err(_) => return Response::error(400, "invalid legacy unseal key length"),
+            };
+            if let Err(error) = self.activate_barrier(&key) {
+                return error;
+            }
+            let mut seal = SealMetadata {
+                schema: 1,
+                generation: 1,
+                share_format: "raw-v1".into(),
+                secret_shares: 1,
+                secret_threshold: 1,
+                wrapped_barrier_key: String::new(),
+            };
+            let wrapped = match crypto::wrap_barrier_key(&key, &seal.associated_data(), &key) {
+                Ok(value) => Zeroizing::new(value),
+                Err(_) => {
+                    self.namespace_runtime.clear();
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    self.retire_sdk_hosts();
+                    self.state = None;
+                    self.ha_activation = None;
+                    self.record_root = None;
+                    #[cfg(feature = "native-v6-storage")]
+                    {
+                        self.native_root = None;
+                    }
+                    self.record_writes_since_gc = 0;
+                    self.ha_read_cache = None;
+                    self.durable = None;
+                    self.barrier_key = None;
+                    return Response::error(503, "legacy seal metadata migration failed");
+                }
+            };
+            seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
+            if persist_seal_metadata(&self.data_dir, &seal).is_err() {
+                self.namespace_runtime.clear();
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                self.retire_sdk_hosts();
+                self.state = None;
+                self.ha_activation = None;
+                self.record_root = None;
+                #[cfg(feature = "native-v6-storage")]
+                {
+                    self.native_root = None;
+                }
+                self.record_writes_since_gc = 0;
+                self.ha_read_cache = None;
+                self.durable = None;
+                self.barrier_key = None;
+                return Response::error(503, "legacy seal metadata migration failed");
+            }
+            self.seal = Some(seal);
+            return self.seal_status();
+        }
+
+        let seal = match self.seal.clone() {
+            Some(value) => value,
+            None => return Response::error(503, "seal metadata unavailable"),
+        };
+        let seal_key = match collect_seal_key(&seal, encoded, &mut self.unseal_shares) {
+            Ok(Some(value)) => Zeroizing::new(value),
+            Ok(None) => return self.seal_status(),
+            Err(error) => return Response::error(400, error),
+        };
+        let wrapped = match STANDARD.decode(&seal.wrapped_barrier_key) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => {
+                self.unseal_shares.clear();
+                return Response::error(503, "seal metadata is corrupt");
+            }
+        };
+        let barrier_key =
+            match crypto::unwrap_barrier_key(&seal_key, &seal.associated_data(), &wrapped) {
+                Ok(value) => Zeroizing::new(value),
+                Err(_) => {
+                    self.unseal_shares.clear();
+                    let _ = self.rotate_unseal_nonce();
+                    return Response::error(400, "unseal failed");
+                }
+            };
+        if let Err(error) = self.activate_barrier_with_cold_handoff(
+            &barrier_key,
+            crate::request_deadline::current(),
+            #[cfg(feature = "native-v6-storage")]
+            cold_handoff.as_deref_mut(),
+        ) {
+            self.unseal_shares.clear();
+            let _ = self.rotate_unseal_nonce();
+            return error;
+        }
+        self.unseal_shares.clear();
+        #[cfg(feature = "native-v6-storage")]
+        let rotation = match cold_handoff.and_then(Option::as_mut) {
+            Some(handoff) => handoff.rotate_once(self),
+            None => self
+                .rotate_unseal_nonce()
+                .map_err(|_| Response::error(503, "operating system randomness unavailable")),
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let rotation = self
+            .rotate_unseal_nonce()
+            .map_err(|_| Response::error(503, "operating system randomness unavailable"));
+        if let Err(error) = rotation {
+            self.namespace_runtime.clear();
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            self.retire_sdk_hosts();
+            self.state = None;
+            self.ha_activation = None;
+            self.record_root = None;
+            #[cfg(feature = "native-v6-storage")]
+            {
+                self.native_root = None;
+            }
+            self.record_writes_since_gc = 0;
+            self.ha_read_cache = None;
+            self.durable = None;
+            self.barrier_key = None;
+            return error;
+        }
+        self.seal_status()
+    }
+
+    fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
+        self.activate_barrier_with_deadline(key, crate::request_deadline::current())
+            .map(|_| ())
+    }
+
+    fn activate_barrier_with_deadline(
+        &mut self,
+        key: &[u8; 32],
+        deadline: Option<std::time::Instant>,
+    ) -> Result<recovery_keys::AdmittedRecoverySeal, Response> {
+        self.activate_barrier_with_cold_handoff(
+            key,
+            deadline,
+            #[cfg(feature = "native-v6-storage")]
+            None,
+        )
+    }
+
+    fn activate_barrier_with_cold_handoff(
+        &mut self,
+        key: &[u8; 32],
+        deadline: Option<std::time::Instant>,
+        #[cfg(feature = "native-v6-storage")] cold_handoff: Option<
+            &mut Option<native_v6_reader::ColdUnsealHandoff>,
+        >,
+    ) -> Result<recovery_keys::AdmittedRecoverySeal, Response> {
+        #[cfg(feature = "native-v6-storage")]
+        let mut cold_proof = None;
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            return Err(Response::error(503, "barrier admission deadline expired"));
+        }
+        let wrapper_activation = self.begin_openbao_wrapper_activation();
+        self.policy_default_activation = None;
+        self.rate_limit_quotas.begin_barrier_activation();
+        self.durable = None;
+        self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
+        self.state = None;
+        self.ha_activation = None;
+        self.record_root = None;
+        #[cfg(feature = "native-v6-storage")]
+        {
+            self.native_root = None;
+        }
+        self.record_writes_since_gc = 0;
+        self.ha_read_cache = None;
+        let barrier =
+            AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
+        let mut durable = match self.durable_profile.as_ref() {
+            Some(profile) if profile.backend == "postgresql" => {
+                let Some(config) = self.postgres_durable.as_ref() else {
+                    return Err(Response::error(
+                        503,
+                        "PostgreSQL durable backend configuration is required before unseal",
+                    ));
+                };
+                if profile.scope.as_deref() != Some(config.scope.as_str()) {
+                    return Err(Response::error(
+                        503,
+                        "PostgreSQL durable backend scope does not match the initialized profile",
+                    ));
+                }
+                if profile.binding != durable_profile_binding(config) {
+                    return Err(Response::error(
+                        503,
+                        "PostgreSQL durable backend target does not match the initialized profile",
+                    ));
+                }
+                let backend = PostgresDurableBackend::open(clone_pg_storage_config(config))
+                    .map_err(|_| Response::error(503, "PostgreSQL durable backend unavailable"))?;
+                DurableService::reopen_with_backend(
+                    Box::new(backend) as Box<dyn DurableBackend>,
+                    barrier,
+                    MAX_OPERATIONS,
+                )
+                .map_err(|_| Response::error(400, "unseal or recovery failed"))?
+            }
+            Some(_) => {
+                return Err(Response::error(503, "unsupported durable backend profile"));
+            }
+            None => DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
+                .map_err(|_| Response::error(400, "unseal or recovery failed"))?,
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let cold_native = if let Some(profile) = self.native_candidate_profile.as_ref() {
+            let original = crate::v6_native_custody::OriginalDeadline::capture()
+                .map_err(|_| Response::error(503, "native unseal requires original deadline"))?;
+            native_v6_reader::load_cold_root(self, profile, &mut durable, key, original)?.map(
+                |cold| {
+                    if cold_handoff.is_some() {
+                        cold_proof = Some(cold.proof);
+                    }
+                    (cold.metadata, cold.native, cold.root)
+                },
+            )
+        } else {
+            None
+        };
+        #[cfg(feature = "native-v6-ha")]
+        let cold_native = if self.ha.as_ref().is_some_and(|ha| {
+            ha.lock_for_request()
+                .is_ok_and(|process| process.native_v6_enabled())
+        }) {
+            let original = crate::v6_native_custody::OriginalDeadline::capture()
+                .map_err(|_| Response::error(503, "native HA unseal requires original deadline"))?;
+            native_v6_ha_install::load_cold_native_ha(self, &mut durable, key, original)?
+                .map(|cold| (cold.metadata, cold.native, cold.root))
+        } else {
+            cold_native
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let (state, bytes, state_rewrite_required, record_root, native_root) =
+            if let Some((mut metadata, native, root)) = cold_native {
+                metadata
+                    .engines
+                    .install_native_views(native)
+                    .map_err(Response::from_engine_error)?;
+                self.require_native_root_candidate(&metadata)?;
+                metadata.validate_format()?;
+                let owner_bytes = root
+                    .owners
+                    .iter()
+                    .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+                    .ok_or_else(|| {
+                        Response::error(507, "native opaque owner capacity exhausted")
+                    })?;
+                if owner_bytes > self.opaque_owner_limit() as u64 {
+                    return Err(Response::error(
+                        507,
+                        "native opaque owner capacity exhausted",
+                    ));
+                }
+                let bytes = root
+                    .encode()
+                    .map_err(|_| Response::error(503, "native cold identity rejected"))?;
+                (metadata, bytes, false, None, Some(root))
+            } else {
+                native_storage::reject_unconfigured_native_root(&durable)?;
+                let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
+                let root = records::decode_root(&bytes)?;
+                self.validate_loaded_capacity(&state, root.as_ref())?;
+                (state, bytes, rewrite, root, None)
+            };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let (state, bytes, state_rewrite_required, record_root) = {
+            let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
+            let root = records::decode_root(&bytes)?;
+            self.validate_loaded_capacity(&state, root.as_ref())?;
+            (state, bytes, rewrite, root)
+        };
+        // Bind durable identity before any local state is admitted into an HA epoch.
+
+        // A PostgreSQL owner must still hold the same server-side session
+        // fence before and after repairing its authenticated local public index.
+        durable.verify_live_ownership().map_err(|_| {
+            Response::error(
+                503,
+                "durable recovery owner unavailable before public-index repair",
+            )
+        })?;
+        let admitted_seal = if self.ha.is_some() {
+            // Local protected state may lag Raft. Repair only after the exact
+            // committed HA authority has been installed below.
+            recovery_keys::AdmittedRecoverySeal(self.seal.clone())
+        } else {
+            self.reconcile_recovery_seal(&state, deadline)?
+        };
+        durable.verify_live_ownership().map_err(|_| {
+            Response::error(
+                503,
+                "durable recovery owner unavailable after public-index repair",
+            )
+        })?;
+        // Bind durable identity before any local state is admitted into an HA epoch.
+        if let Some(ha) = self.ha.as_ref() {
+            let ha = ha
+                .lock_for_request()
+                .map_err(|_| Response::error(503, "HA identity is unavailable during unseal"))?;
+            if state.cluster_id != ha.cluster_id() {
+                return Err(Response::error(
+                    503,
+                    "HA configuration belongs to a different cluster",
+                ));
+            }
+        }
+        if state_rewrite_required {
+            let operation_id = format!(
+                "state-format-{}",
+                hex(&crypto::random::<16>().map_err(|error| Response::error(503, error))?)
+            );
+            let rewrite_result = if let Some(root) = record_root.clone() {
+                let plan = records::existing_plan(root)?;
+                Self::persist_record_batch(&mut durable, &plan, &operation_id)
+            } else {
+                Self::persist_owner_state_batch(
+                    &mut durable,
+                    &state,
+                    &bytes,
+                    &operation_id,
+                    state.schema,
+                    state.replay_epoch,
+                    OwnerBatchInput {
+                        options: PersistOwnerStateOptions {
+                            compact_before_entry: true,
+                            allow_epoch_catchup: false,
+                            reuse: OwnerReuseHint::default(),
+                        },
+                        prepared_plan: None,
+                    },
+                )
+                .map(|_| ())
+            };
+            match rewrite_result {
+                Ok(_) => {}
+                Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+                    return Err(Response {
+                        unwrapped_json: None,
+                        response_headers: Default::default(),
+                        consistency_index: None,
+                        status: 503,
+                        body: json!({
+                            "errors":["state-format metadata migration outcome unknown; retry unseal after durable reconciliation"],
+                            "recovery_reference": recovery_reference,
+                        }),
+                    });
+                }
+                Err(
+                    ServiceError::RequestCapacityExhausted | ServiceError::JournalCapacityExhausted,
+                ) => {
+                    return Err(Response::error(
+                        507,
+                        "state-format metadata migration capacity exhausted",
+                    ));
+                }
+                Err(_) => {
+                    return Err(Response::error(
+                        503,
+                        "state-format metadata migration failed closed",
+                    ));
+                }
+            }
+        }
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            return Err(Response::error(
+                503,
+                "barrier deadline expired before publication",
+            ));
+        }
+        self.seal = admitted_seal.0.clone();
+        self.durable = Some(durable);
+        self.state = Some(state);
+        self.record_root = record_root;
+        #[cfg(feature = "native-v6-storage")]
+        {
+            self.native_root = native_root;
+        }
+        self.state_digest = Some(
+            #[cfg(feature = "native-v6-storage")]
+            if let Some(root) = &self.native_root {
+                root.identity()
+                    .map_err(|_| Response::error(503, "native identity rejected"))?
+                    .digest()
+            } else {
+                match &self.record_root {
+                    Some(root) => root
+                        .identity()
+                        .map_err(|_| Response::error(503, "record identity failed"))?
+                        .digest(),
+                    None => crypto::digest(&bytes),
+                }
+            },
+            #[cfg(not(feature = "native-v6-storage"))]
+            match &self.record_root {
+                Some(root) => root
+                    .identity()
+                    .map_err(|_| Response::error(503, "record identity failed"))?
+                    .digest(),
+                None => crypto::digest(&bytes),
+            },
+        );
+        self.record_writes_since_gc = 64;
+        self.barrier_key = Some(Zeroizing::new(*key));
+        self.recovery_required = false;
+        let synchronize =
+            if self.ha.is_some() && self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
+                self.synchronize_ha_after_unseal_with(
+                    |_| Ok(true),
+                    |service| service.sync_from_ha(),
+                    || std::thread::sleep(std::time::Duration::from_millis(50)),
+                )
+                .and_then(|()| self.reconcile_ha_recovery_index(deadline))
+            } else {
+                self.synchronize_ha_after_unseal()
+            };
+        if let Err(error) = synchronize {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(error);
+        }
+        if let Err(error) = self.activate_inherited_namespaces(key, deadline) {
+            self.fence_recovery_delivery();
+            return Err(error);
+        }
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            self.fence_recovery_delivery();
+            return Err(Response::error(
+                503,
+                "barrier deadline expired before lifecycle publication",
+            ));
+        }
+        if wrapper_activation.publish_unsealed().is_err() {
+            self.fence_openbao_wrapper();
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "Wrapper lifecycle publication unavailable",
+            ));
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if let (Some(output), Some(proof)) = (cold_handoff, cold_proof) {
+            // Fixed eligibility precedes policy startup. HA, historical absence,
+            // any time-dependent default and every admitted seal repair use the
+            // unchanged full capture route. A selected authority failure is Err.
+            if self.ha.is_none()
+                && self.state.as_ref().is_some_and(|state| {
+                    state.auth.cold_unseal_has_stable_default()
+                        && !state.auth.default_policy_activation_needs_clock()
+                })
+                && admitted_seal.0.as_ref()
+                    == Some(native_v6_reader::ColdUnsealHandoff::original_seal(&proof))
+            {
+                *output = Some(native_v6_reader::ColdUnsealHandoff::prepare(
+                    self, key, proof,
+                )?);
+            }
+        }
+        Ok(admitted_seal)
+    }
+
+    fn transient_ha_unseal_error(response: &Response) -> bool {
+        response.status == 503
+            && response.body["errors"].as_array().is_some_and(|errors| {
+                errors.len() == 1
+                    && errors[0].as_str().is_some_and(|message| {
+                        matches!(
+                            message,
+                            "HA linearizable state is unavailable"
+                                | "HA control state is unavailable"
+                                | "HA role is unavailable"
+                                | "HA role is unavailable during unseal"
+                        )
+                    })
+            })
+    }
+
+    fn ha_leader_during_unseal(&self) -> Result<bool, Response> {
+        let Some(ha) = self.ha.as_ref() else {
+            return Ok(false);
+        };
+        ha.lock_for_request()
+            .map_err(|_| Response::error(503, "HA role is unavailable during unseal"))?
+            .is_leader()
+            .map_err(|_| Response::error(503, "HA role is unavailable during unseal"))
+    }
+
+    fn synchronize_ha_after_unseal(&mut self) -> Result<(), Response> {
+        self.synchronize_ha_after_unseal_with(
+            |service| service.ha_leader_during_unseal(),
+            |service| service.sync_from_ha(),
+            || std::thread::sleep(std::time::Duration::from_millis(50)),
+        )
+    }
+
+    fn synchronize_ha_after_unseal_with(
+        &mut self,
+        mut is_leader: impl FnMut(&Self) -> Result<bool, Response>,
+        mut synchronize: impl FnMut(&mut Self) -> Result<(), Response>,
+        mut pause: impl FnMut(),
+    ) -> Result<(), Response> {
+        const ATTEMPTS: usize = 20;
+        for attempt in 0..ATTEMPTS {
+            match is_leader(self) {
+                Ok(false) => return Ok(()),
+                Ok(true) => {}
+                Err(error) if attempt + 1 < ATTEMPTS && Self::transient_ha_unseal_error(&error) => {
+                    pause();
+                    continue;
+                }
+                Err(error) => return Err(error),
+            }
+            match synchronize(self) {
+                Ok(()) => return Ok(()),
+                Err(error) if attempt + 1 < ATTEMPTS && Self::transient_ha_unseal_error(&error) => {
+                    pause();
+                }
+                Err(error) => return Err(error),
+            }
+        }
+        Err(Response::error(503, "HA linearizable state is unavailable"))
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    fn advance_unseal_nonce_attempt(attempt: &mut u64) {
+        // Infallible even on a post-commit install. MAX poisons every capsule;
+        // it never wraps into an earlier accepted lifecycle observation.
+        *attempt = attempt.saturating_add(1);
+    }
+
+    fn rotate_unseal_nonce(&mut self) -> Result<(), &'static str> {
+        self.rotate_unseal_nonce_with(crypto::random::<16>)
+    }
+
+    fn rotate_unseal_nonce_with(
+        &mut self,
+        random: impl FnOnce() -> Result<[u8; 16], &'static str>,
+    ) -> Result<(), &'static str> {
+        #[cfg(feature = "native-v6-storage")]
+        {
+            Self::advance_unseal_nonce_attempt(&mut self.unseal_nonce_attempt);
+        }
+        self.ha_read_cache = None;
+        self.unseal_nonce = hex(&random()?);
+        Ok(())
+    }
+
+    fn rekey_status(&self) -> Response {
+        if let Some(rekey) = &self.rekey {
+            let (
+                progress,
+                required,
+                verification_required,
+                verification_nonce,
+                verification_progress,
+            ) = if let Some(pending) = &rekey.verification {
+                (
+                    0,
+                    0,
+                    true,
+                    pending.verification_nonce.as_str(),
+                    rekey.verification_provided.len(),
+                )
+            } else {
+                (
+                    rekey.provided.len(),
+                    usize::from(self.seal.as_ref().map_or(1, |seal| seal.secret_threshold)),
+                    false,
+                    "",
+                    0,
+                )
+            };
+            Response::ok(json!({
+                "started": rekey.verification.is_none(),
+                "nonce": rekey.nonce,
+                "t": rekey.new_threshold,
+                "n": rekey.new_shares,
+                "progress": progress,
+                "required": required,
+                "verification_required": verification_required,
+                "verification_nonce": verification_nonce,
+                "verification_progress": verification_progress,
+                "verification_required_shares": if verification_required { rekey.new_threshold } else { 0 },
+            }))
+        } else {
+            Response::ok(json!({
+                "started": false,
+                "nonce": "",
+                "t": 0,
+                "n": 0,
+                "progress": 0,
+                "required": self.seal.as_ref().map_or(1, |seal| seal.secret_threshold),
+                "verification_required": false,
+                "verification_nonce": "",
+                "verification_progress": 0,
+                "verification_required_shares": 0,
+            }))
+        }
+    }
+
+    fn rekey_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
+        if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
+            return Response::error(
+                501,
+                "Wrapper recovery-key rekey requires a separate supported consumer",
+            );
+        }
+        match initialization_recovery_pending(&self.data_dir) {
+            Ok(false) => {}
+            Ok(true) => {
+                return Response::error(409, "acknowledge initialization recovery before rekey");
+            }
+            Err(_) => return Response::error(503, "initialization recovery state is unavailable"),
+        }
+        if path == "sys/rekey/init" {
+            if method == "GET" {
+                return self.rekey_status();
+            }
+            if method == "DELETE" {
+                if self
+                    .rekey
+                    .as_ref()
+                    .is_some_and(|rekey| rekey.verification.is_some())
+                    && delete_pending_rekey(&self.data_dir).is_err()
+                {
+                    return Response::error(503, "cannot durably cancel pending rekey");
+                }
+                self.rekey = None;
+                return Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: 204,
+                    body: Value::Null,
+                };
+            }
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "method not allowed");
+            }
+            if self.rekey.is_some() {
+                return Response::error(400, "rekey is already in progress");
+            }
+            let Some(object) = body.as_object() else {
+                return Response::error(400, "invalid rekey request");
+            };
+            if object.keys().any(|key| {
+                !matches!(
+                    key.as_str(),
+                    "secret_shares" | "secret_threshold" | "backup" | "require_verification"
+                )
+            }) {
+                return Response::error(400, "unsupported rekey options");
+            }
+            match body.get("backup") {
+                None | Some(Value::Bool(false)) => {}
+                Some(Value::Bool(true)) => {
+                    return Response::error(501, "PGP-encrypted rekey backup is not implemented");
+                }
+                Some(_) => return Response::error(400, "backup must be a boolean"),
+            }
+            let require_verification = match body.get("require_verification") {
+                None => true,
+                Some(Value::Bool(value)) => *value,
+                Some(_) => return Response::error(400, "require_verification must be a boolean"),
+            };
+            let shares = match bounded_u8_field(body, "secret_shares", 5) {
+                Ok(value) => value,
+                Err(error) => return Response::error(400, error),
+            };
+            let threshold = match bounded_u8_field(body, "secret_threshold", 3) {
+                Ok(value) => value,
+                Err(error) => return Response::error(400, error),
+            };
+            if shares == 0 || shares > MAX_SEAL_SHARES || threshold == 0 || threshold > shares {
+                return Response::error(400, "invalid rekey share configuration");
+            }
+            let nonce = match crypto::random::<16>() {
+                Ok(value) => hex(&value),
+                Err(error) => return Response::error(503, error),
+            };
+            self.rekey = Some(RekeyState {
+                nonce,
+                new_shares: shares,
+                new_threshold: threshold,
+                require_verification,
+                provided: BTreeMap::new(),
+                verification: None,
+                verification_provided: BTreeMap::new(),
+            });
+            return self.rekey_status();
+        }
+
+        if path != "sys/rekey/update" {
+            return Response::error(404, "unsupported rekey path");
+        }
+        if !matches!(method, "POST" | "PUT") {
+            return Response::error(405, "method not allowed");
+        }
+        let Some(object) = body.as_object() else {
+            return Response::error(400, "invalid rekey request");
+        };
+        if object
+            .keys()
+            .any(|key| !matches!(key.as_str(), "key" | "nonce"))
+        {
+            return Response::error(400, "unsupported rekey update fields");
+        }
+        let supplied_nonce = match body.get("nonce").and_then(Value::as_str) {
+            Some(value) => value,
+            None => return Response::error(400, "rekey nonce is required"),
+        };
+        let supplied_key = match body.get("key").and_then(Value::as_str) {
+            Some(value) => value,
+            None => return Response::error(400, "unseal share is required"),
+        };
+        let mut rekey = match self.rekey.take() {
+            Some(value) => value,
+            None => return Response::error(400, "rekey is not in progress"),
+        };
+        if rekey.verification.is_some() {
+            return self.verify_rekey_share(rekey, supplied_nonce, supplied_key);
+        }
+        if supplied_nonce != rekey.nonce {
+            self.rekey = Some(rekey);
+            return Response::error(400, "rekey nonce mismatch");
+        }
+        let seal = match self.seal.clone() {
+            Some(value) => value,
+            None => {
+                self.rekey = Some(rekey);
+                return Response::error(503, "seal metadata unavailable");
+            }
+        };
+        let seal_key = match collect_seal_key(&seal, supplied_key, &mut rekey.provided) {
+            Ok(Some(value)) => Zeroizing::new(value),
+            Ok(None) => {
+                let progress = rekey.provided.len();
+                let response = Response::ok(json!({
+                    "started": true,
+                    "nonce": rekey.nonce,
+                    "t": rekey.new_threshold,
+                    "n": rekey.new_shares,
+                    "progress": progress,
+                    "required": seal.secret_threshold,
+                    "complete": false,
+                    "verification_required": false,
+                }));
+                self.rekey = Some(rekey);
+                return response;
+            }
+            Err(error) => {
+                self.rekey = Some(rekey);
+                return Response::error(400, error);
+            }
+        };
+        let wrapped = match STANDARD.decode(&seal.wrapped_barrier_key) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => {
+                self.rekey = Some(rekey);
+                return Response::error(503, "seal metadata is corrupt");
+            }
+        };
+        let current_barrier_key =
+            match crypto::unwrap_barrier_key(&seal_key, &seal.associated_data(), &wrapped) {
+                Ok(value) => Zeroizing::new(value),
+                Err(_) => {
+                    self.rekey = Some(rekey);
+                    return Response::error(400, "unseal shares do not authorize rekey");
+                }
+            };
+        if let Err(error) = self.verify_active_barrier(&current_barrier_key) {
+            self.rekey = Some(rekey);
+            return error;
+        }
+
+        let next_seal_key = match crypto::random::<32>() {
+            Ok(value) => Zeroizing::new(value),
+            Err(error) => {
+                self.rekey = Some(rekey);
+                return Response::error(503, error);
+            }
+        };
+        let next_shares =
+            match crypto::split_secret(&next_seal_key, rekey.new_shares, rekey.new_threshold) {
+                Ok(value) => value,
+                Err(error) => {
+                    self.rekey = Some(rekey);
+                    return Response::error(503, error);
+                }
+            };
+        let generation = match seal.generation.checked_add(1) {
+            Some(value) => value,
+            None => {
+                self.rekey = Some(rekey);
+                return Response::error(507, "seal generation exhausted");
+            }
+        };
+        let mut next = SealMetadata {
+            schema: 1,
+            generation,
+            share_format: "shamir-v1".into(),
+            secret_shares: rekey.new_shares,
+            secret_threshold: rekey.new_threshold,
+            wrapped_barrier_key: String::new(),
+        };
+        let next_wrapped = match crypto::wrap_barrier_key(
+            &next_seal_key,
+            &next.associated_data(),
+            &current_barrier_key,
+        ) {
+            Ok(value) => Zeroizing::new(value),
+            Err(error) => {
+                self.rekey = Some(rekey);
+                return Response::error(503, error);
+            }
+        };
+        next.wrapped_barrier_key = STANDARD.encode(next_wrapped.as_slice());
+
+        let mut keys = Vec::with_capacity(next_shares.len());
+        let mut keys_base64 = Vec::with_capacity(next_shares.len());
+        for share in next_shares {
+            let encoded = Zeroizing::new(share.encode());
+            keys.push(hex(&encoded));
+            keys_base64.push(STANDARD.encode(encoded.as_slice()));
+        }
+
+        if rekey.require_verification {
+            let verification_nonce = match crypto::random::<16>() {
+                Ok(value) => hex(&value),
+                Err(error) => {
+                    self.rekey = Some(rekey);
+                    return Response::error(503, error);
+                }
+            };
+            let pending = PendingRekeyMetadata {
+                schema: 1,
+                active_generation: seal.generation,
+                nonce: rekey.nonce.clone(),
+                verification_nonce,
+                candidate: next,
+            };
+            if persist_pending_rekey(&self.data_dir, &pending).is_err() {
+                self.rekey = Some(rekey);
+                return Response::error(503, "cannot durably stage rekey verification");
+            }
+            let response = Response::ok(json!({
+                "started": false,
+                "complete": true,
+                "nonce": rekey.nonce,
+                "keys": keys,
+                "keys_base64": keys_base64,
+                "verification_required": true,
+                "verification_nonce": pending.verification_nonce,
+            }));
+            rekey.provided.clear();
+            rekey.verification = Some(pending);
+            rekey.verification_provided.clear();
+            self.rekey = Some(rekey);
+            return response;
+        }
+
+        if persist_seal_metadata(&self.data_dir, &next).is_err() {
+            self.rekey = Some(rekey);
+            return Response::error(503, "cannot durably publish new seal generation");
+        }
+        self.seal = Some(next);
+        self.rekey = None;
+        self.unseal_shares.clear();
+        Response::ok(json!({
+            "started": false,
+            "complete": true,
+            "nonce": rekey.nonce,
+            "keys": keys,
+            "keys_base64": keys_base64,
+            "verification_required": false,
+            "verification_nonce": "",
+        }))
+    }
+
+    fn verify_rekey_share(
+        &mut self,
+        mut rekey: RekeyState,
+        supplied_nonce: &str,
+        supplied_key: &str,
+    ) -> Response {
+        let pending = match rekey.verification.clone() {
+            Some(value) => value,
+            None => {
+                self.rekey = Some(rekey);
+                return Response::error(500, "missing pending rekey metadata");
+            }
+        };
+        if supplied_nonce != pending.verification_nonce {
+            self.rekey = Some(rekey);
+            return Response::error(400, "rekey verification nonce mismatch");
+        }
+        let next_seal_key = match collect_seal_key(
+            &pending.candidate,
+            supplied_key,
+            &mut rekey.verification_provided,
+        ) {
+            Ok(Some(value)) => Zeroizing::new(value),
+            Ok(None) => {
+                let progress = rekey.verification_provided.len();
+                let response = Response::ok(json!({
+                    "started": false,
+                    "complete": false,
+                    "verification_required": true,
+                    "verification_nonce": pending.verification_nonce,
+                    "verification_progress": progress,
+                    "verification_required_shares": pending.candidate.secret_threshold,
+                }));
+                self.rekey = Some(rekey);
+                return response;
+            }
+            Err(error) => {
+                self.rekey = Some(rekey);
+                return Response::error(400, error);
+            }
+        };
+        let wrapped = match STANDARD.decode(&pending.candidate.wrapped_barrier_key) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => {
+                self.rekey = Some(rekey);
+                return Response::error(503, "pending rekey metadata is corrupt");
+            }
+        };
+        let candidate_barrier = match crypto::unwrap_barrier_key(
+            &next_seal_key,
+            &pending.candidate.associated_data(),
+            &wrapped,
+        ) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => {
+                rekey.verification_provided.clear();
+                self.rekey = Some(rekey);
+                return Response::error(400, "rekey verification failed");
+            }
+        };
+        if let Err(error) = self.verify_active_barrier(&candidate_barrier) {
+            rekey.verification_provided.clear();
+            self.rekey = Some(rekey);
+            return error;
+        }
+        if persist_seal_metadata(&self.data_dir, &pending.candidate).is_err() {
+            self.rekey = Some(rekey);
+            return Response::error(503, "cannot durably promote verified seal generation");
+        }
+        self.seal = Some(pending.candidate.clone());
+        self.unseal_shares.clear();
+        self.rekey = None;
+        if delete_pending_rekey(&self.data_dir).is_err() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(
+                503,
+                "verified seal promoted but pending marker cleanup failed; restart required",
+            );
+        }
+        Response::ok(json!({
+            "started": false,
+            "complete": true,
+            "verification_required": false,
+            "verification_nonce": pending.verification_nonce,
+        }))
+    }
+
+    fn capacity_route(&self, method: &str, body: &Value) -> Response {
+        if method != "GET" {
+            return Response::error(405, "capacity observation requires GET");
+        }
+        if !body.is_null() && body.as_object().is_none_or(|v| !v.is_empty()) {
+            return Response::error(400, "capacity observation accepts no fields");
+        }
+        let Some(durable) = self.durable.as_ref() else {
+            return Response::error(503, "server is sealed");
+        };
+        let capacity = match durable.capacity() {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "durable capacity unavailable"),
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let native = self.native_root.as_ref();
+        #[cfg(feature = "native-v6-storage")]
+        let storage_format = if native.is_some() {
+            crate::state_record_root_v6::STORAGE_FORMAT
+        } else if self.record_root.is_some() {
+            crate::state_record_root::STORAGE_FORMAT
+        } else {
+            owner_store::STATE_STORAGE_FORMAT
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let storage_format = if self.record_root.is_some() {
+            crate::state_record_root::STORAGE_FORMAT
+        } else {
+            owner_store::STATE_STORAGE_FORMAT
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let state_limit = if native.is_some() {
+            MAX_STATE_BYTES
+                + 2 * crate::state_records::MAX_GRAPH_BYTES
+                + native
+                    .filter(|root| root.reader_floor.native_kv2_format == 2)
+                    .map_or(0, |_| {
+                        crate::engines::kv2_native_records::MAX_PAGED_LOGICAL_BYTES as usize
+                    })
+        } else if self.record_root.is_some() {
+            MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
+        } else {
+            MAX_STATE_BYTES
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let state_limit = if self.record_root.is_some() {
+            MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
+        } else {
+            MAX_STATE_BYTES
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let logical_payload_bytes = if let Some(root) = native {
+            let owner = root
+                .owners
+                .iter()
+                .try_fold(0_u64, |n, role| n.checked_add(role.owner.total_bytes));
+            let metadata = root.kv2.iter().try_fold(
+                root.kv1.reference.as_ref().map_or(0, |r| r.payload_bytes),
+                |n, graph| {
+                    n.checked_add(graph.root.reference.as_ref().map_or(0, |r| r.payload_bytes))
+                },
+            );
+            let payload = root
+                .kv2
+                .iter()
+                .try_fold(0_u64, |n, graph| n.checked_add(graph.logical_payload_bytes));
+            match owner
+                .zip(metadata)
+                .zip(payload)
+                .and_then(|((owner, metadata), payload)| {
+                    owner.checked_add(metadata)?.checked_add(payload)
+                }) {
+                Some(bytes) => bytes,
+                None => return Response::error(503, "native typed logical capacity overflow"),
+            }
+        } else {
+            capacity.logical_payload_bytes as u64
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let logical_payload_bytes = capacity.logical_payload_bytes as u64;
+        let response = Response::ok(json!({"data": {
+            "scope": "local_node_bounded_runtime",
+            "state_storage_format": storage_format,
+            "state_limit_bytes": state_limit,
+            "state_limit_is_admission_budget": false,
+            "durable_artifact_limit_bytes": capacity.max_file_bytes,
+            "stored_value_bytes": logical_payload_bytes,
+            "durable_stored_record_bytes": capacity.logical_payload_bytes,
+            "generation": capacity.generation,
+            "journal_bytes": capacity.journal_bytes,
+            "journal_limit_bytes": capacity.journal_limit_bytes,
+            "retained_requests": capacity.retained_requests,
+            "retained_request_limit": capacity.max_retained_requests,
+            "remaining_request_slots": capacity.max_retained_requests.saturating_sub(capacity.retained_requests),
+            "recovery_required": false,
+            "automatic_journal_checkpoint": true,
+            "replay_id_eviction": false,
+            "replay_epoch": durable.replay_epoch(),
+            "retired_through_generation": durable.retired_through_generation(),
+            "replay_retirement": if self.ha.is_some() { "raft-coordinated" } else { "local-epoch" }
+        }}));
+        #[cfg(feature = "native-v6-storage")]
+        let response = if let Some(root) = native {
+            // All components belong to this exact local root/generation.
+            // Audited HTTP requests can advance the private Auth clock between
+            // two observations; cross-generation aggregate equality is invalid.
+            let owner_bytes = root
+                .owners
+                .iter()
+                .try_fold(0_u64, |n, role| n.checked_add(role.owner.total_bytes));
+            let kv1_bytes = root.kv1.reference.as_ref().map_or(0, |r| r.payload_bytes);
+            let metadata_bytes = root.kv2.iter().try_fold(0_u64, |n, graph| {
+                n.checked_add(graph.root.reference.as_ref().map_or(0, |r| r.payload_bytes))
+            });
+            let logical_bytes = root
+                .kv2
+                .iter()
+                .try_fold(0_u64, |n, graph| n.checked_add(graph.logical_payload_bytes));
+            let (Some(owner_bytes), Some(metadata_bytes), Some(logical_bytes)) =
+                (owner_bytes, metadata_bytes, logical_bytes)
+            else {
+                return Response::error(503, "native capacity component overflow");
+            };
+            if owner_bytes
+                .checked_add(kv1_bytes)
+                .and_then(|n| n.checked_add(metadata_bytes))
+                .and_then(|n| n.checked_add(logical_bytes))
+                != Some(logical_payload_bytes)
+            {
+                return Response::error(503, "native capacity component identity mismatch");
+            }
+            let mut response = response;
+            let Some(data) = response.body.get_mut("data").and_then(Value::as_object_mut) else {
+                return Response::error(503, "native capacity component shape rejected");
+            };
+            for (name, value) in [
+                ("opaque_owner_aggregate_bytes", owner_bytes),
+                ("native_kv1_metadata_bytes", kv1_bytes),
+                ("native_kv2_metadata_bytes", metadata_bytes),
+                ("native_kv2_logical_payload_bytes", logical_bytes),
+            ] {
+                data.insert(name.to_owned(), json!(value));
+            }
+            data.insert(
+                "native_capacity_component_scope".to_owned(),
+                json!("same-local-root-generation"),
+            );
+            response
+        } else {
+            response
+        };
+        response
+    }
+
+    fn maintenance_route(&mut self, principal: &Principal, request: &RequestView<'_>) -> Response {
+        let (method, path, body) = (request.method, request.path, request.body);
+        if let Some(reference) = path.strip_prefix("sys/internal/recovery/") {
+            if method != "GET" {
+                return Response::error(405, "recovery lookup requires GET");
+            }
+            if !valid_recovery_reference(reference) {
+                return Response::error(400, "invalid recovery reference");
+            }
+            let Some(durable) = self.durable.as_ref() else {
+                return Response::error(503, "server is sealed");
+            };
+            return match durable.reconcile(reference) {
+                ReconciliationStatus::Committed { generation } => Response::ok(json!({
+                    "data": {
+                        "recovery_reference": reference,
+                        "status": "committed",
+                        "generation": generation,
+                    }
+                })),
+                ReconciliationStatus::Aborted => Response::ok(json!({
+                    "data": {
+                        "recovery_reference": reference,
+                        "status": "aborted",
+                    }
+                })),
+                ReconciliationStatus::Unknown => Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: 404,
+                    body: json!({"errors":["recovery reference is unknown"]}),
+                },
+            };
+        }
+
+        if path == "sys/storage/raft/replay-retire" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "replay retirement requires POST or PUT");
+            }
+            if body.as_object().is_none_or(|object| !object.is_empty()) {
+                return Response::error(400, "replay retirement accepts an empty JSON object");
+            }
+            let Some(mut next_state) = self.state.clone() else {
+                return Response::error(503, "server is sealed");
+            };
+            let Some(durable) = self.durable.as_ref() else {
+                return Response::error(503, "server is sealed");
+            };
+            let previous_epoch = durable.replay_epoch();
+            if next_state.replay_epoch != previous_epoch {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                return Response::error(503, "replay epoch metadata requires recovery");
+            }
+            let Some(current_epoch) = previous_epoch.checked_add(1) else {
+                return Response::error(507, "replay epoch exhausted");
+            };
+            let retired_requests = durable.retained_request_count();
+            let retired_through_generation = durable.generation();
+            next_state.schema = next_state.writer_schema();
+            next_state.replay_epoch = current_epoch;
+
+            // The epoch marker is part of the authoritative application state.
+            // In HA mode it is committed by Raft before any node discards its
+            // detailed replay ledger. Each node then retires locally immediately
+            // before publishing the state batch under the new epoch.
+            if let Err(error) = self.commit_state(&mut next_state) {
+                return error;
+            }
+            self.state = Some(next_state);
+            let Some(durable) = self.durable.as_ref() else {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                return Response::error(503, "replay retirement lost durable owner");
+            };
+            if durable.replay_epoch() != current_epoch
+                || durable.retired_through_generation() != retired_through_generation
+            {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                return Response::error(503, "replay retirement did not converge locally");
+            }
+            return Response::ok(json!({
+                "data": {
+                    "previous_epoch": previous_epoch,
+                    "replay_epoch": current_epoch,
+                    "retired_through_generation": retired_through_generation,
+                    "retired_requests": retired_requests,
+                    "cluster_coordinated": self.ha.is_some(),
+                }
+            }));
+        }
+
+        if path == "sys/storage/raft/compact" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "storage compaction requires POST or PUT");
+            }
+            if body.as_object().is_none_or(|object| !object.is_empty()) {
+                return Response::error(400, "storage compaction accepts an empty JSON object");
+            }
+            if let Some(ha) = self.ha.as_ref() {
+                let result = ha
+                    .lock_for_request()
+                    .map_err(|_| ())
+                    .and_then(|ha| ha.trigger_snapshot().map_err(|_| ()));
+                if result.is_err() {
+                    return Response::error(503, "HA snapshot trigger failed");
+                }
+            }
+            let (result, fenced) = {
+                let Some(durable) = self.durable.as_mut() else {
+                    return Response::error(503, "server is sealed");
+                };
+                let result = durable.compact();
+                (result, durable.recovery_required())
+            };
+            if fenced {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+            }
+            return match result {
+                Ok(outcome) => Response::ok(json!({
+                    "data": {
+                        "generation": outcome.generation,
+                        "retained_requests": outcome.retained_requests,
+                        "journal_bytes_before": outcome.journal_bytes_before,
+                        "journal_bytes_after": outcome.journal_bytes_after,
+                    }
+                })),
+                Err(_) => Response::error(503, "storage compaction failed; inspect durable state"),
+            };
+        }
+
+        if path == "sys/storage/raft/snapshot" && method == "GET" {
+            if let Some(ha) = self.ha.as_ref() {
+                let result = ha
+                    .lock_for_request()
+                    .map_err(|_| ())
+                    .and_then(|ha| ha.trigger_snapshot().map_err(|_| ()));
+                if result.is_err() {
+                    return Response::error(503, "HA snapshot trigger failed");
+                }
+            }
+            let Some(durable) = self.durable.as_ref() else {
+                return Response::error(503, "server is sealed");
+            };
+            let backup = match durable.export_backup() {
+                Ok(value) => Zeroizing::new(value),
+                Err(_) => return Response::error(503, "cannot export durable snapshot"),
+            };
+            if backup.len() > MAX_BACKUP_TRANSFER_BYTES {
+                return Response::error(507, "durable snapshot exceeds transfer limit");
+            }
+            let digest = hex(&crypto::digest(&backup));
+            return Response::ok(json!({
+                "data": {
+                    "snapshot": STANDARD.encode(backup.as_slice()),
+                    "sha256": digest,
+                    "generation": durable.generation(),
+                    "retained_requests": durable.retained_request_count(),
+                    "format": "heptabao-encrypted-backup-v1",
+                }
+            }));
+        }
+
+        if matches!(
+            path,
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        ) {
+            if self.ha.is_some() {
+                return Response::error(
+                    409,
+                    "direct local snapshot restore is forbidden while HA is enabled",
+                );
+            }
+            if self
+                .state
+                .as_ref()
+                .is_some_and(|state| !state.database.is_empty())
+            {
+                return Response::error(
+                    409,
+                    "database provider epochs cannot be rolled back with a local snapshot",
+                );
+            }
+            if self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.engines.has_openldap_mount())
+            {
+                return Response::error(
+                    409,
+                    "OpenLDAP provider intents cannot be rolled back with a local snapshot",
+                );
+            }
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "snapshot restore requires POST or PUT");
+            }
+            let Some(object) = body.as_object() else {
+                return Response::error(400, "snapshot restore requires a JSON object");
+            };
+            if object.keys().any(|key| key != "snapshot") {
+                return Response::error(400, "unsupported snapshot restore field");
+            }
+            let Some(encoded) = object.get("snapshot").and_then(Value::as_str) else {
+                return Response::error(400, "snapshot is required");
+            };
+            if encoded.len() > MAX_BACKUP_TRANSFER_BYTES * 2 {
+                return Response::error(413, "encoded snapshot exceeds transfer limit");
+            }
+            let backup = match STANDARD.decode(encoded) {
+                Ok(value) if value.len() <= MAX_BACKUP_TRANSFER_BYTES => Zeroizing::new(value),
+                Ok(_) => return Response::error(413, "snapshot exceeds transfer limit"),
+                Err(_) => return Response::error(400, "invalid snapshot encoding"),
+            };
+            let prepared = match self.prepare_snapshot_restore(&backup) {
+                Ok(value) => value,
+                Err(response) => return response,
+            };
+            return self.commit_snapshot_restore(prepared, principal, request);
+        }
+
+        Response::error(404, "unsupported maintenance path")
+    }
+
+    fn verify_active_barrier(&self, candidate: &[u8; 32]) -> Result<(), Response> {
+        let Some(active_key) = self.barrier_key.as_ref() else {
+            return Err(Response::error(503, "server must be unsealed for rekey"));
+        };
+        let candidate_key = hmac::Key::new(hmac::HMAC_SHA256, candidate);
+        let candidate_tag = hmac::sign(&candidate_key, b"heptabao.barrier-key-proof.v1");
+        let active_key = hmac::Key::new(hmac::HMAC_SHA256, active_key.as_ref());
+        hmac::verify(
+            &active_key,
+            b"heptabao.barrier-key-proof.v1",
+            candidate_tag.as_ref(),
+        )
+        .map_err(|_| Response::error(400, "seal shares do not match the active barrier"))
+    }
+
+    fn persist(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        base_digest: [u8; 32],
+        state_schema: u32,
+        target_replay_epoch: u64,
+    ) -> Result<(), Response> {
+        self.persist_with_mode(
+            state,
+            bytes,
+            base_digest,
+            state_schema,
+            target_replay_epoch,
+            false,
+        )
+    }
+
+    fn persist_with_mode(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        base_digest: [u8; 32],
+        state_schema: u32,
+        target_replay_epoch: u64,
+        allow_legacy_migration: bool,
+    ) -> Result<(), Response> {
+        state.validate_publication_schema(self.state.as_ref())?;
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let current_epoch = durable.replay_epoch();
+        let next_epoch = current_epoch.checked_add(1);
+        let epoch_transition = next_epoch == Some(target_replay_epoch);
+        if target_replay_epoch < current_epoch
+            || (target_replay_epoch != current_epoch && !epoch_transition)
+        {
+            return Err(Response::error(503, "invalid replay epoch transition"));
+        }
+        // Ordinary requests allocate a new local replay identity and must prove
+        // capacity before a Raft effect. An epoch transition is itself the
+        // authenticated escape from a full detailed ledger, so it is allowed to
+        // replicate before local retirement and then publishes under the new epoch.
+        if !epoch_transition {
+            durable
+                .preflight_new_identity()
+                .map_err(|error| match error {
+                    ServiceError::RequestCapacityExhausted => {
+                        Response::error(507, "retained operation capacity exhausted")
+                    }
+                    _ => Response::error(503, "durable capacity preflight unavailable"),
+                })?;
+        }
+        let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
+        let operation_id = hex(&id);
+        let owner_plan = if self.ha.is_some() {
+            let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
+            let durable = self
+                .durable
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "server is sealed"))?;
+            let plan = Self::prepare_owner_state_plan(
+                durable,
+                state,
+                bytes,
+                &operation_id,
+                state_schema,
+                target_replay_epoch,
+                PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: false,
+                    reuse,
+                },
+            )
+            .map_err(|error| match error {
+                ServiceError::RequestCapacityExhausted | ServiceError::JournalCapacityExhausted => {
+                    Response::error(507, "durable capacity exhausted; no response released")
+                }
+                ServiceError::ReplayEpochMismatch => {
+                    Response::error(503, "invalid replay epoch transition")
+                }
+                _ => Response::error(503, "durable owner publication preflight failed"),
+            })?;
+            Some(plan)
+        } else {
+            None
+        };
+        let owner_binding = owner_plan
+            .as_ref()
+            .map(|plan| plan.publication_binding(&operation_id, bytes))
+            .transpose()
+            .map_err(|_| Response::error(503, "owner and HA state publication digests diverge"))?;
+        if let Some(ha) = self.ha.as_ref() {
+            let owner_binding = owner_binding
+                .ok_or_else(|| Response::error(503, "owner publication binding is unavailable"))?;
+            let ha = ha
+                .lock_for_request()
+                .map_err(|_| Response::error(503, "HA control state is unavailable"))?;
+            let commit = if allow_legacy_migration {
+                ha.commit_legacy_owner_migration_with_binding(
+                    &operation_id,
+                    base_digest,
+                    bytes,
+                    owner_binding,
+                )
+            } else {
+                ha.commit_state_with_owner_binding(&operation_id, base_digest, bytes, owner_binding)
+            };
+            if let Err(error) = commit {
+                // An error after proposal may hide a committed epoch change.
+                // Never continue admitting observations from the old epoch.
+                if epoch_transition {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                    self.recovery_required = true;
+                    self.ha_activation = None;
+                }
+                return Err(Response::error(503, &error));
+            }
+        }
+        match self.persist_local_with_prepared_plan(
+            state,
+            bytes,
+            &operation_id,
+            state_schema,
+            target_replay_epoch,
+            owner_plan,
+        ) {
+            Ok(()) => Ok(()),
+            Err(error) => {
+                if self.ha.is_some() {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                    self.recovery_required = true;
+                    self.ha_activation = None;
+                    return Err(Self::ha_committed_local_failure(error));
+                }
+                Err(error)
+            }
+        }
+    }
+
+    #[cfg(test)]
+    fn persist_local(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+    ) -> Result<(), Response> {
+        self.persist_local_with_epoch_policy(
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            false,
+        )
+    }
+
+    fn persist_local_with_prepared_plan(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        prepared_plan: Option<owner_store::OwnerWritePlan>,
+    ) -> Result<(), Response> {
+        let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
+        self.persist_local_with_epoch_policy_and_plan(
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: false,
+                    reuse,
+                },
+                prepared_plan,
+            },
+        )
+    }
+
+    #[cfg(test)]
+    fn persist_local_with_epoch_policy(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        allow_epoch_catchup: bool,
+    ) -> Result<(), Response> {
+        let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
+        self.persist_local_with_epoch_policy_and_plan(
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup,
+                    reuse,
+                },
+                prepared_plan: None,
+            },
+        )
+    }
+
+    fn persist_local_with_epoch_policy_and_plan(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        batch: OwnerBatchInput,
+    ) -> Result<(), Response> {
+        state.validate_publication_schema(self.state.as_ref())?;
+        self.persist_admitted_owner_state_batch(
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            batch,
+        )
+    }
+
+    fn persist_admitted_owner_state_batch(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        batch: OwnerBatchInput,
+    ) -> Result<(), Response> {
+        let durable = self
+            .durable
+            .as_mut()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let prior_replay_epoch = durable.replay_epoch();
+        let result = Self::persist_owner_state_batch(
+            durable,
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            batch,
+        );
+        // If retirement itself published but the following state batch failed,
+        // application state and replay authority no longer have the same epoch.
+        // Fence the process even when the durable primitive is otherwise healthy;
+        // restart normalization or HA catch-up is then the only admissible path.
+        let epoch_advanced_without_state = result.is_err()
+            && target_replay_epoch > prior_replay_epoch
+            && durable.replay_epoch() == target_replay_epoch;
+        if durable.recovery_required() || epoch_advanced_without_state {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+        }
+        match result {
+            Ok(_) => Ok(()),
+            Err(
+                ref error @ ServiceError::OutcomeUnknown {
+                    ref recovery_reference,
+                },
+            ) => {
+                self.capture_ordinary_kv_outcome_unknown(error, false);
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                Err(Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: 503,
+                    body: json!({"errors":["durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
+                })
+            }
+            Err(
+                ServiceError::RequestCapacityExhausted | ServiceError::JournalCapacityExhausted,
+            ) => Err(Response::error(
+                507,
+                "durable capacity exhausted; no response released",
+            )),
+            Err(_) => {
+                self.recovery_required |= durable.recovery_required();
+                if self.recovery_required {
+                    self.ha_activation = None;
+                }
+                Err(Response::error(
+                    503,
+                    "durable state rejected; no response released",
+                ))
+            }
+        }
+    }
+
+    // Only the two ordinary ingress synchronization sites use this boundary.
+    // Health, resume, publication, final proof and terminal-clock sync keep the
+    // original path and cannot mint a pre-admission refusal.
+    fn sync_from_ha_before_request_admission(
+        &mut self,
+        allow_initial_anchor: bool,
+        fresh_request: bool,
+    ) -> Result<(), Response> {
+        #[cfg(feature = "native-v6-ha")]
+        self.arm_native_pre_admission_read(fresh_request);
+        #[cfg(not(feature = "native-v6-ha"))]
+        let _ = fresh_request;
+        let result = (|| {
+            #[cfg(feature = "native-v6-ha")]
+            let ingress = if fresh_request {
+                match self.take_native_fresh_ingress_binding() {
+                    Some(binding) => {
+                        let ha = self.ha.as_ref().cloned().ok_or_else(|| {
+                            Response::error(503, "fresh native ingress HA owner absent")
+                        })?;
+                        Some(native_v6_ha_install::NativeIngressSelectionPermit::capture(
+                            self, binding, &ha,
+                        )?)
+                    }
+                    None => None,
+                }
+            } else {
+                None
+            };
+            self.sync_from_ha_with_anchor_progress_in_ingress(
+                allow_initial_anchor,
+                #[cfg(feature = "native-v6-ha")]
+                ingress,
+            )?
+            .into_result()
+        })();
+        #[cfg(feature = "native-v6-ha")]
+        self.disarm_native_pre_admission_read();
+        result
+    }
+
+    fn sync_from_ha(&mut self) -> Result<(), Response> {
+        self.sync_from_ha_with_anchor(true)
+    }
+
+    fn sync_from_ha_with_anchor(&mut self, allow_initial_anchor: bool) -> Result<(), Response> {
+        self.sync_from_ha_with_anchor_progress(allow_initial_anchor)?
+            .into_result()
+    }
+
+    fn sync_from_ha_with_anchor_progress(
+        &mut self,
+        allow_initial_anchor: bool,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
+        self.sync_from_ha_with_anchor_progress_in_ingress(
+            allow_initial_anchor,
+            #[cfg(feature = "native-v6-ha")]
+            None,
+        )
+    }
+
+    fn sync_from_ha_with_anchor_progress_in_ingress(
+        &mut self,
+        allow_initial_anchor: bool,
+        #[cfg(feature = "native-v6-ha")] ingress: Option<
+            native_v6_ha_install::NativeIngressSelectionPermit,
+        >,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
+        let before = self.local_activation_key();
+        let result = self.sync_from_ha_with_anchor_inner(
+            allow_initial_anchor,
+            #[cfg(feature = "native-v6-ha")]
+            ingress,
+        );
+        if let Err(error) = &result {
+            eprintln!(
+                "heptabao-r72-sync: stage=sync_inner_error status={} loaded={} recovery={} record_root={}",
+                error.status,
+                self.state.is_some(),
+                self.recovery_required,
+                self.record_root.is_some()
+            );
+        }
+        if matches!(&result, Ok(ha_received::HaSyncProgress::Current)) {
+            // This is the serialized application activation publication point,
+            // after ReadIndex, authenticated materialization and local admission.
+            self.publish_ha_activation_after_sync(before);
+        } else {
+            self.ha_activation = None;
+        }
+        result
+    }
+
+    fn sync_from_ha_with_anchor_inner(
+        &mut self,
+        allow_initial_anchor: bool,
+        #[cfg(feature = "native-v6-ha")] mut ingress: Option<
+            native_v6_ha_install::NativeIngressSelectionPermit,
+        >,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
+        let Some(ha) = self.ha.as_ref().cloned() else {
+            return Ok(ha_received::HaSyncProgress::Current);
+        };
+        #[cfg(feature = "native-v6-ha")]
+        {
+            let selected = {
+                let process = ha
+                    .lock_for_request()
+                    .map_err(|_| Response::error(503, "HA control state is unavailable"))?;
+                if process.native_v6_enabled() {
+                    let deadline =
+                        crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| {
+                            Response::error(503, "native HA read requires original deadline")
+                        })?;
+                    let observed = if let Some(permission) = ingress.as_ref() {
+                        process.native_v6_committed_fresh_ingress_read(
+                            deadline,
+                            self.current_state_identity()?.digest(),
+                            permission,
+                        )
+                    } else if self.native_root.is_some() {
+                        process
+                            .native_v6_committed_read_for_local_root(
+                                deadline,
+                                self.current_state_identity()?.digest(),
+                            )
+                            .map(|value| value.map(crate::ha::NativeV6IngressRead::Ready))
+                    } else {
+                        process
+                            .native_v6_committed_read(deadline)
+                            .map(|value| value.map(crate::ha::NativeV6IngressRead::Ready))
+                    };
+                    observed.map_err(|_| {
+                        self.record_native_pre_admission_read_refusal();
+                        Response::error(503, "native HA committed root is unavailable")
+                    })?
+                } else {
+                    None
+                }
+            };
+            if let Some(selected) = selected {
+                let selected = match selected {
+                    crate::ha::NativeV6IngressRead::Ready(read) => {
+                        if let Some(permission) = ingress.as_ref() {
+                            permission.check(self)?;
+                        }
+                        read
+                    }
+                    crate::ha::NativeV6IngressRead::Superseded(source) => ingress
+                        .take()
+                        .ok_or_else(|| {
+                            Response::error(503, "fresh native ingress permission absent")
+                        })?
+                        .finish(self, &ha, source)?,
+                };
+                // No ingress permission survives into installation, Actor
+                // admission, a writer, audit, terminal delivery or migration.
+                drop(ingress);
+                return self.sync_native_v6_from_ha(&ha, selected);
+            }
+            if self.native_root.is_some() {
+                return Err(Response::error(
+                    503,
+                    "native HA root has no current quorum selection",
+                ));
+            }
+            // A concurrent native activation cannot make the old read safe:
+            // ProcessRaftNode fences V5 and legacy under the same applied lock.
+        }
+        let known = self.reusable_ha_cursor().cloned();
+        let previous_cache = self.ha_read_cache.take();
+        let observation_started = std::time::Instant::now();
+        let observed = ha
+            .lock_for_request()
+            .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+            .latest_committed_state_if_changed(known.as_ref())
+            .inspect_err(|error| {
+                crate::ha_observation::report(
+                    crate::ha_observation::Stage::StateRead,
+                    error,
+                    observation_started.elapsed(),
+                )
+            })
+            .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?;
+        let committed = match observed {
+            crate::ha::CommittedStateRead::Unchanged => {
+                self.ha_read_cache = previous_cache;
+                return Ok(ha_received::HaSyncProgress::Current);
+            }
+            crate::ha::CommittedStateRead::Records(committed) => {
+                return self.sync_record_state_from_ha(&ha, *committed);
+            }
+            crate::ha::CommittedStateRead::Materialized(state) => Some(state),
+            crate::ha::CommittedStateRead::Absent => None,
+        };
+        let Some(committed) = committed else {
+            // Anonymous readiness may materialize an authenticated commit, but
+            // must never create the cluster's first application publication.
+            if !allow_initial_anchor {
+                return Err(Response::error(
+                    503,
+                    "HA committed application state is absent",
+                ));
+            }
+            // A cluster enabled after single-node initialization has a valid
+            // local state but no application envelope yet.  The elected
+            // leader must anchor that exact state before it can advertise an
+            // application-ready authority; followers remain standby until
+            // this bootstrap publication is committed.
+            let is_leader = ha
+                .lock_for_request()
+                .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+                .is_leader()
+                .map_err(|_| Response::error(503, "HA role is unavailable"))?;
+            if is_leader {
+                let mut state = self
+                    .state
+                    .clone()
+                    .ok_or_else(|| Response::error(503, "server is sealed"))?;
+                if state.engines.record_root().is_some() {
+                    let plan = self.full_existing_record_plan(&state)?;
+                    self.commit_record_plan(&state, plan)?;
+                } else {
+                    self.commit_state(&mut state)?;
+                }
+            }
+            return Ok(ha_received::HaSyncProgress::Current);
+        };
+        if self.record_root.is_some() {
+            return Err(Response::error(
+                503,
+                "HA record authority cannot fall back to legacy state",
+            ));
+        }
+        if self.current_state_digest()? == committed.digest {
+            if self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
+                // Read local B before the independent fresh HA receipt. A
+                // pre-index authority failure may leave that complete owner
+                // available for a later pass, but local integrity failures fence.
+                let local = self.capture_existing_ha_publication()?;
+                let received = self.receive_materialized_ha_state(&committed)?;
+                if self.reconcile_existing_ha_publication_progress(&local, &received)?
+                    == ha_received::HaLocalPublicationProgress::Superseded
+                {
+                    return Ok(ha_received::HaSyncProgress::Superseded(Response::error(
+                        503,
+                        "HA existing publication is catching up to a newer committed target",
+                    )));
+                }
+            } else {
+                self.reconcile_unchanged_ha_recovery_index(crate::request_deadline::current())?;
+            }
+            self.cache_verified_ha_state(&committed)?;
+            return Ok(ha_received::HaSyncProgress::Current);
+        }
+        let received = self.receive_materialized_ha_state(&committed)?;
+        let state = received.state();
+        if let Err(error) = self.validate_loaded_capacity(state, None) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            self.ha_read_cache = None;
+            return Err(Self::ha_committed_local_failure(error));
+        }
+        // This epoch is already authoritative in Raft. RNG failure must fence
+        // this node before any local publication or old observation release.
+        let activation = self.prepare_epoch_activation(state.replay_epoch, true)?;
+        let operation_id = received.operation_id()?;
+        // Older HA envelopes bind their exact logical wire bytes, not this
+        // binary's State serializer. Materialized owners are written with the
+        // current serializer, so local V4 integrity must bind those bytes.
+        // Keep committed.digest as the HA/CAS identity below: a local format
+        // projection must never relabel the authoritative remote publication.
+        let local_bytes =
+            owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
+        // HBSM4 carries the canonical owner-plan identity from the leader.
+        // Rebuild the follower's local plan before publication and compare the
+        // canonical manifest identity.  The changed-owner mask is a delta from
+        // the leader's immediately preceding manifest; a follower may be
+        // several committed states behind, so its local delta can legitimately
+        // be wider.  HBSM4 currently does not carry that predecessor identity;
+        // comparing masks here would reject valid catch-up rather than prevent
+        // divergence.  The canonical target manifest remains the fail-closed
+        // binding, and the mask is still range-validated on decode.
+        let prepared_plan = match (
+            committed.owner_manifest_digest,
+            committed.changed_owner_mask,
+        ) {
+            (Some(expected_digest), Some(expected_mask)) => {
+                // An owner-bound publication already declares its canonical
+                // representation. Unlike legacy unbound envelopes it cannot
+                // be normalized into another identity by a receiving node.
+                if local_bytes.as_slice() != committed.bytes.as_slice() {
+                    return Err(Response::error(
+                        503,
+                        "HA owner-bound logical state is not canonical",
+                    ));
+                }
+                if expected_mask & !0x1f != 0 {
+                    return Err(Response::error(
+                        503,
+                        "HA owner publication changed-owner mask is invalid",
+                    ));
+                }
+                let durable = self
+                    .durable
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "server is sealed"))?;
+                let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
+                let plan = Self::prepare_owner_state_plan(
+                    durable,
+                    state,
+                    &committed.bytes,
+                    &operation_id,
+                    state.schema,
+                    state.replay_epoch,
+                    PersistOwnerStateOptions {
+                        compact_before_entry: true,
+                        allow_epoch_catchup: true,
+                        reuse,
+                    },
+                )
+                .map_err(|_| Response::error(503, "HA owner publication preflight failed"))?;
+                let binding = plan
+                    .publication_binding(&operation_id, &committed.bytes)
+                    .map_err(|_| Response::error(503, "HA owner binding is invalid"))?;
+                if binding.owner_manifest_digest() != expected_digest {
+                    return Err(Response::error(
+                        503,
+                        "HA owner publication identity diverges from committed manifest",
+                    ));
+                }
+                Some(plan)
+            }
+            (None, None) => None,
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "HA owner publication metadata is incomplete",
+                ));
+            }
+        };
+        received.before_publication(self)?;
+        let result = self.persist_admitted_owner_state_batch(
+            state,
+            &local_bytes,
+            &operation_id,
+            state.schema,
+            state.replay_epoch,
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: true,
+                    reuse: OwnerReuseHint::between(self.state.as_ref(), state),
+                },
+                prepared_plan,
+            },
+        );
+        if let Err(error) = result {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Self::ha_committed_local_failure(error));
+        }
+        let publication: Result<ha_received::HaLocalPublicationProgress, Response> = (|| {
+            let completed = received.after_publication(self)?;
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            let sdk_invalidations = self.reserve_committed_sdk_invalidations(
+                received.state(),
+                completed.previous_identity(),
+                completed.identity(),
+                completed.deadline(),
+            )?;
+            self.state = Some(received.state().clone());
+            self.state_digest = Some(committed.digest);
+            let progress = completed.publication_progress(self)?;
+            if progress == ha_received::HaLocalPublicationProgress::Superseded {
+                return Ok(progress);
+            }
+            let progress = self.reconcile_completed_ha_recovery_index(&completed)?;
+            if progress == ha_received::HaLocalPublicationProgress::Current {
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                self.finish_committed_sdk_invalidations(sdk_invalidations)?;
+            }
+            Ok(progress)
+        })();
+        match publication {
+            Ok(ha_received::HaLocalPublicationProgress::Current) => {}
+            Ok(ha_received::HaLocalPublicationProgress::Superseded) => {
+                return Ok(ha_received::HaSyncProgress::Superseded(Response::error(
+                    503,
+                    "HA local publication is catching up to a newer committed target",
+                )));
+            }
+            Err(error) => {
+                eprintln!(
+                    "heptabao-r72-sync: stage=materialized_completed_error status={}",
+                    error.status
+                );
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.ha_read_cache = None;
+                return Err(Self::ha_committed_local_failure(error));
+            }
+        }
+        self.install_epoch_activation(activation);
+        self.recovery_required = false;
+        if let Err(error) = self.cache_verified_ha_state(&committed) {
+            eprintln!("heptabao-ha-completed: stage=after_index_materialized_cache");
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(error);
+        }
+        Ok(ha_received::HaSyncProgress::Current)
+    }
+
+    fn ha_observation(&mut self) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {
+        self.ha_observation_with(|_| {})
+    }
+
+    fn ha_observation_with(
+        &mut self,
+        after_role: impl FnOnce(&crate::ha::HaProcess),
+    ) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {
+        let Some(ha) = self.ha.as_ref().cloned() else {
+            self.ha_activation = None;
+            return (false, false, true, true, None, None);
+        };
+        let Ok(ha) = ha.lock_for_request() else {
+            self.ha_activation = None;
+            return (true, false, false, false, None, None);
+        };
+        let local = match ha.local_id() {
+            Ok(local) => Some(local),
+            Err(_) => {
+                self.ha_activation = None;
+                return (true, false, false, false, None, None);
+            }
+        };
+        let leader = match ha.leader() {
+            Ok(leader) => leader,
+            Err(_) => {
+                self.ha_activation = None;
+                return (true, false, false, false, None, local);
+            }
+        };
+        let before_observation = ha.leader_status().ok();
+        let before = before_observation.and_then(ha_activation::ActivationKey::from_observation);
+        after_role(&ha);
+        let sampled_active = ha.bootstrap_ready()
+            && leader.is_some()
+            && leader == local
+            && ha.ensure_linearizable().is_ok();
+        // A failed authority probe cannot be repaired by a second identity
+        // probe. Do not spend another ReadIndex budget after quorum is absent.
+        let sampled_application_ready = sampled_active
+            && self
+                .current_state_identity()
+                .ok()
+                .is_some_and(|identity| ha.ensure_application_identity(identity).is_ok());
+        let after_observation = ha.leader_status().ok();
+        let after = after_observation.and_then(ha_activation::ActivationKey::from_observation);
+        // A follower can complete ReadIndex through the current leader. Neither
+        // that success nor an unchanged application digest carries the earlier
+        // local role across a transfer or a new election term.
+        let same_leader_role = before.is_some() && before == after;
+        let active = sampled_active && same_leader_role;
+        let application_ready = sampled_application_ready && same_leader_role;
+        let leader = after_observation.and_then(|observation| observation.leader);
+        let standby = leader.is_some() && leader != local;
+        drop(ha);
+        self.record_ha_activation(before, after, application_ready);
+        (true, standby, active, application_ready, leader, local)
+    }
+
+    /// Inspect deployment-owned audit devices. The standard file-device route
+    /// follows the pinned OpenBao declarative-device profile: list the device,
+    /// reject duplicate enable and disable, and refuse a per-device GET. The
+    /// explicit internal file route retains HeptaBao's read/idempotent binding
+    /// extension without claiming that extension is an upstream endpoint.
+    fn audit_route(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Response {
+        if !namespace.is_empty() || !principal.is_root() {
+            return Response::error(403, "1 error occurred:\n\t* permission denied\n\n");
+        }
+        let config = self.audit_rotation.config();
+        let file_path = self.audit_rotation.active_path();
+        let file_path = file_path.to_string_lossy().into_owned();
+        let device = || {
+            json!({
+                "type": "file",
+                "accessor": "audit_file",
+                "revision": 1,
+                "description": "HeptaBao mandatory authenticated file audit device",
+                "options": {
+                    "file_path": file_path.as_str(),
+                    "segment_bytes": config.segment_bytes,
+                    "retained_segments": config.retained_segments,
+                },
+                "local": true,
+                "log_raw": false,
+                "seal_wrap": false,
+            })
+        };
+        let http_device = || {
+            self.audit_http_url.as_ref().map(|url| {
+                json!({
+                    "type": "http",
+                    "accessor": "audit_http",
+                    "revision": 1,
+                    "description": "HeptaBao mandatory host-enrolled HTTPS audit collector",
+                    "options": {
+                        "address": url,
+                    },
+                    "local": true,
+                    "log_raw": false,
+                    "seal_wrap": false,
+                })
+            })
+        };
+        let socket_device = || {
+            self.audit_socket.map(|config| {
+                json!({
+                    "type": "socket",
+                    "accessor": "audit_socket",
+                    "revision": 1,
+                    "description": "HeptaBao deployment-owned bounded TCP audit collector",
+                    "options": {
+                        "address": config.address.to_string(),
+                        "socket_type": "tcp",
+                        "write_timeout_ms": config.write_timeout_ms,
+                    },
+                    "local": true,
+                    "log_raw": false,
+                    "seal_wrap": false,
+                    "failed_writes": self.audit_socket_failures,
+                })
+            })
+        };
+        let syslog_device = || {
+            self.audit_syslog.as_ref().map(|config| {
+                json!({
+                    "type": "syslog",
+                    "accessor": "audit_syslog",
+                    "revision": 1,
+                    "description": "HeptaBao deployment-owned local Unix syslog audit device",
+                    "options": {
+                        "facility": config.facility.as_str(),
+                        "tag": config.tag.as_str(),
+                    },
+                    "local": true,
+                    "log_raw": false,
+                    "seal_wrap": false,
+                    "failed_writes": self.audit_syslog_failures,
+                })
+            })
+        };
+        let path = path.trim_end_matches('/');
+        match (path, method) {
+            ("sys/audit", "GET" | "LIST") => {
+                let mut devices = serde_json::Map::new();
+                devices.insert("file/".into(), device());
+                if let Some(http) = http_device() {
+                    devices.insert("http/".into(), http);
+                }
+                if let Some(socket) = socket_device() {
+                    devices.insert("socket/".into(), socket);
+                }
+                if let Some(syslog) = syslog_device() {
+                    devices.insert("syslog/".into(), syslog);
+                }
+                Response::ok(json!({"data":devices}))
+            }
+            ("sys/internal/audit/file", "GET") => Response::ok(json!({"data":device()})),
+            ("sys/audit/file", "POST" | "PUT") => {
+                Response::error(400, "audit device is already configured by the deployment")
+            }
+            ("sys/audit/http", "GET") => match http_device() {
+                Some(http) => Response::ok(json!({"data":http})),
+                None => Response::error(404, "audit device not found"),
+            },
+            ("sys/audit/socket", "GET") => match socket_device() {
+                Some(socket) => Response::ok(json!({"data":socket})),
+                None => Response::error(404, "audit device not found"),
+            },
+            ("sys/audit/syslog", "GET") => match syslog_device() {
+                Some(syslog) => Response::ok(json!({"data":syslog})),
+                None => Response::error(404, "audit device not found"),
+            },
+            ("sys/internal/audit/file", "POST" | "PUT") => {
+                let Some(object) = body.as_object() else {
+                    return Response::error(400, "audit enable requires a JSON object");
+                };
+                if object.keys().any(|key| {
+                    !matches!(
+                        key.as_str(),
+                        "type" | "description" | "options" | "local" | "cas_revision"
+                    )
+                }) {
+                    return Response::error(400, "unsupported file audit parameter");
+                }
+                if let Some(revision) = object.get("cas_revision") {
+                    let Some(revision) = revision.as_u64() else {
+                        return Response::error(400, "cas_revision must be a nonnegative integer");
+                    };
+                    if revision != 1 {
+                        return Response::error(409, "stale audit mount revision");
+                    }
+                }
+                if object
+                    .get("type")
+                    .and_then(Value::as_str)
+                    .is_none_or(|kind| kind != "file")
+                {
+                    return Response::error(
+                        501,
+                        "only the mandatory file audit device is supported",
+                    );
+                }
+                if let Some(options) = object.get("options") {
+                    let Some(options) = options.as_object() else {
+                        return Response::error(400, "audit options must be a JSON object");
+                    };
+                    if let Some(requested) = options.get("file_path") {
+                        let Some(requested) = requested.as_str() else {
+                            return Response::error(400, "audit file_path must be a string");
+                        };
+                        if requested != file_path.as_str() {
+                            return Response::error(
+                                409,
+                                "the mandatory audit file path is fixed at process startup",
+                            );
+                        }
+                    }
+                    if let Some(requested) = options.get("segment_bytes")
+                        && requested.as_u64() != Some(config.segment_bytes)
+                    {
+                        return Response::error(
+                            409,
+                            "the audit segment bound is fixed at process startup",
+                        );
+                    }
+                    if let Some(requested) = options.get("retained_segments")
+                        && requested.as_u64() != Some(config.retained_segments as u64)
+                    {
+                        return Response::error(
+                            409,
+                            "the audit retention bound is fixed at process startup",
+                        );
+                    }
+                    for key in options.keys() {
+                        if !matches!(
+                            key.as_str(),
+                            "file_path" | "segment_bytes" | "retained_segments"
+                        ) {
+                            return Response::error(400, "unsupported file audit option");
+                        }
+                    }
+                }
+                Response {
+                    unwrapped_json: None,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    status: 204,
+                    body: Value::Null,
+                }
+            }
+            ("sys/audit/file" | "sys/internal/audit/file", "DELETE") => Response::error(
+                400,
+                "the mandatory file audit device cannot be disabled while the service is running",
+            ),
+            ("sys/audit/http", "POST" | "PUT" | "DELETE") => Response::error(
+                409,
+                "HTTP audit collector is fixed by trusted process configuration",
+            ),
+            ("sys/audit/socket", "POST" | "PUT" | "DELETE") => Response::error(
+                409,
+                "socket audit collector is fixed by trusted process configuration",
+            ),
+            ("sys/audit/syslog", "POST" | "PUT" | "DELETE") => Response::error(
+                409,
+                "syslog audit device is fixed by trusted process configuration",
+            ),
+            ("sys/audit", _)
+            | ("sys/audit/file", _)
+            | ("sys/internal/audit/file", _)
+            | ("sys/audit/http", _)
+            | ("sys/audit/socket", _)
+            | ("sys/audit/syslog", _) => Response::error(405, "unsupported sys/audit method"),
+            _ => Response::error(404, "audit device not found"),
+        }
+    }
+
+    fn wire_rejection_fingerprint(
+        &self,
+        attempt_id: &[u8; 16],
+        rejection: WireRejection,
+        status: u16,
+    ) -> String {
+        let mut context = hmac::Context::with_key(&self.audit_key);
+        context.update(b"heptabao.audit.wire-rejection.v1");
+        context.update(&(rejection.code().len() as u64).to_le_bytes());
+        context.update(rejection.code());
+        context.update(&status.to_le_bytes());
+        context.update(attempt_id);
+        STANDARD.encode(context.sign().as_ref())
+    }
+
+    fn request_fingerprint(
+        &self,
+        method: &str,
+        path: &str,
+        namespace: &str,
+        token: &str,
+    ) -> String {
+        let mut context = hmac::Context::with_key(&self.audit_key);
+        context.update(b"heptabao.audit.request-fingerprint.v2");
+        for field in [method, namespace, path, token] {
+            context.update(&(field.len() as u64).to_le_bytes());
+            context.update(field.as_bytes());
+        }
+        STANDARD.encode(context.sign().as_ref())
+    }
+
+    fn audit_event(
+        &mut self,
+        kind: &str,
+        fingerprint: &str,
+        now: u64,
+        status: Option<u16>,
+    ) -> Result<(), std::io::Error> {
+        if self.audit_failed {
+            return Err(std::io::Error::other("audit requires offline recovery"));
+        }
+        let sequence = self
+            .audit_sequence
+            .checked_add(1)
+            .ok_or_else(|| std::io::Error::other("audit sequence exhausted"))?;
+        let unsigned = AuditUnsigned {
+            schema: 2,
+            sequence,
+            previous: STANDARD.encode(self.audit_previous),
+            time: now,
+            kind: kind.to_owned(),
+            path_digest: fingerprint.to_owned(),
+            status,
+        };
+        let payload = serde_json::to_vec(&unsigned)?;
+        let tag = hmac::sign(&self.audit_key, &payload);
+        let record = AuditRecord {
+            event: unsigned,
+            mac: STANDARD.encode(tag.as_ref()),
+        };
+        let mut bytes = serde_json::to_vec(&record)?;
+        bytes.push(b'\n');
+        // Preserve the existing test-only I/O budget injection. Production
+        // capacity is per segment and rotates without skipping either audit event.
+        #[cfg(test)]
+        if self
+            .audit
+            .metadata()?
+            .len()
+            .checked_add(bytes.len() as u64)
+            .is_none_or(|n| n > self.audit_capacity)
+        {
+            return Err(std::io::Error::other("injected audit capacity exhausted"));
+        }
+        if let Err(error) = self.audit_rotation.before_append(
+            &mut self.audit,
+            &self.audit_key,
+            bytes.len(),
+            self.audit_sequence,
+            self.audit_previous,
+        ) {
+            self.audit_failed = true;
+            self.ha_activation = None;
+            return Err(error);
+        }
+        if let Err(error) = self
+            .audit
+            .write_all(&bytes)
+            .and_then(|()| self.audit.sync_all())
+        {
+            self.audit_failed = true;
+            self.ha_activation = None;
+            return Err(error);
+        }
+        if let Some(url) = self.audit_http_url.as_deref() {
+            let value = serde_json::to_value(&record)?;
+            if self.outbound.post_audit_json(url, &value).is_err() {
+                self.audit_failed = true;
+                self.ha_activation = None;
+                return Err(std::io::Error::other(
+                    "mandatory HTTP audit collector unavailable",
+                ));
+            }
+        }
+        if let Some(config) = self.audit_socket
+            && write_audit_socket(config, &bytes).is_err()
+        {
+            self.audit_socket_failures = self.audit_socket_failures.saturating_add(1);
+        }
+        if let Some(config) = self.audit_syslog.as_ref()
+            && write_audit_syslog(config, &bytes).is_err()
+        {
+            self.audit_syslog_failures = self.audit_syslog_failures.saturating_add(1);
+        }
+        self.audit_sequence = sequence;
+        self.audit_previous.copy_from_slice(tag.as_ref());
+        Ok(())
+    }
+}
+fn write_audit_socket(config: AuditSocketConfig, bytes: &[u8]) -> io::Result<()> {
+    let timeout = Duration::from_millis(config.write_timeout_ms);
+    let mut stream = TcpStream::connect_timeout(&config.address, timeout)?;
+    stream.set_write_timeout(Some(timeout))?;
+    stream.write_all(bytes)?;
+    stream.flush()
+}
+
+#[cfg(unix)]
+fn write_audit_syslog(config: &AuditSyslogConfig, bytes: &[u8]) -> io::Result<()> {
+    use std::os::unix::net::UnixDatagram;
+
+    let facility = syslog_facility_code(&config.facility)
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid syslog facility"))?;
+    let priority = facility
+        .checked_mul(8)
+        .and_then(|value| value.checked_add(6))
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid syslog priority"))?;
+    let mut frame = Vec::with_capacity(bytes.len().saturating_add(config.tag.len() + 16));
+    write!(&mut frame, "<{priority}>{}: ", config.tag)?;
+    frame.extend_from_slice(bytes);
+    if frame.len() > 64 * 1024 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "bounded syslog datagram exceeds 64 KiB",
+        ));
+    }
+    let socket = UnixDatagram::unbound()?;
+    socket.connect(&config.socket_path)?;
+    if socket.send(&frame)? != frame.len() {
+        return Err(io::Error::new(
+            io::ErrorKind::WriteZero,
+            "short syslog datagram write",
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn write_audit_syslog(_config: &AuditSyslogConfig, _bytes: &[u8]) -> io::Result<()> {
+    Err(io::Error::new(
+        io::ErrorKind::Unsupported,
+        "syslog audit is supported only on Unix",
+    ))
+}
+
+#[cfg(test)]
+fn health_status(
+    initialized: bool,
+    sealed: bool,
+    recovery_required: bool,
+    ha_enabled: bool,
+    standby: bool,
+    ha_active: bool,
+) -> u16 {
+    health_status_with_codes(
+        HealthObservation::new(
+            initialized,
+            sealed,
+            recovery_required,
+            ha_enabled,
+            standby,
+            ha_active,
+        ),
+        false,
+        HealthStatusCodes {
+            uninit: 501,
+            sealed: 503,
+            standby: 429,
+            active: 200,
+        },
+    )
+}
+
+#[derive(Clone, Copy)]
+struct HealthObservation {
+    initialized: bool,
+    sealed: bool,
+    recovery_required: bool,
+    ha_enabled: bool,
+    standby: bool,
+    ha_active: bool,
+}
+
+impl HealthObservation {
+    fn new(
+        initialized: bool,
+        sealed: bool,
+        recovery_required: bool,
+        ha_enabled: bool,
+        standby: bool,
+        ha_active: bool,
+    ) -> Self {
+        Self {
+            initialized,
+            sealed,
+            recovery_required,
+            ha_enabled,
+            standby,
+            ha_active,
+        }
+    }
+}
+
+fn health_status_with_codes(
+    observation: HealthObservation,
+    standby_ok: bool,
+    codes: HealthStatusCodes,
+) -> u16 {
+    if !observation.initialized {
+        codes.uninit
+    } else if observation.sealed || observation.recovery_required {
+        codes.sealed
+    } else if observation.ha_enabled && observation.standby {
+        if standby_ok {
+            codes.active
+        } else {
+            codes.standby
+        }
+    } else if observation.ha_enabled && !observation.ha_active {
+        503
+    } else {
+        codes.active
+    }
+}
+
+#[derive(Clone, Copy)]
+struct HealthStatusCodes {
+    uninit: u16,
+    sealed: u16,
+    standby: u16,
+    active: u16,
+}
+
+impl HealthStatusCodes {
+    fn from_body(body: &Value) -> Result<Self, &'static str> {
+        fn code(body: &Value, key: &str, default: u16) -> Result<u16, &'static str> {
+            let Some(value) = body.get(key) else {
+                return Ok(default);
+            };
+            let Some(value) = value.as_u64() else {
+                return Err("health status code must be an integer");
+            };
+            if !(100..=999).contains(&value) {
+                return Err("health status code must be between 100 and 999");
+            }
+            u16::try_from(value).map_err(|_| "health status code is too large")
+        }
+
+        Ok(Self {
+            uninit: code(body, "uninitcode", 501)?,
+            sealed: code(body, "sealedcode", 503)?,
+            standby: code(body, "standbycode", 429)?,
+            active: code(body, "activecode", 200)?,
+        })
+    }
+}
+
+fn path_present(path: &Path) -> Result<bool, &'static str> {
+    match fs::symlink_metadata(path) {
+        Ok(_) => Ok(true),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(false),
+        Err(_) => Err("cannot inspect initialization recovery path"),
+    }
+}
+
+fn initialization_recovery_pending(data_dir: &Path) -> Result<bool, &'static str> {
+    path_present(&data_dir.join(INIT_RECOVERY_FILE))
+}
+
+fn postgres_pending_path(data_dir: &Path) -> io::Result<PathBuf> {
+    let parent = data_dir
+        .parent()
+        .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+    let mut identity = b"heptabao.postgresql-pending-path.v1\0".to_vec();
+    identity.extend_from_slice(data_dir.as_os_str().as_encoded_bytes());
+    Ok(parent.join(format!(
+        ".heptabao-pg-init-{}",
+        hex(&crypto::digest(&identity))
+    )))
+}
+
+fn sync_initialization_parent(data_dir: &Path) -> io::Result<()> {
+    let parent = data_dir
+        .parent()
+        .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+    let metadata = fs::symlink_metadata(parent)?;
+    if !metadata.is_dir() || metadata.file_type().is_symlink() {
+        return Err(io::Error::other("initialization parent is unsafe"));
+    }
+    File::open(parent)?.sync_all()
+}
+
+fn initialization_leaf_name<'a>(
+    parent: &ExclusiveDirectory,
+    path: &'a Path,
+) -> io::Result<&'a str> {
+    if path.parent() != Some(parent.original_path()) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "initialization leaf is outside the held parent",
+        ));
+    }
+    path.file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid initialization leaf"))
+}
+
+fn verify_initialization_parent(parent: &ExclusiveDirectory) -> io::Result<()> {
+    parent.verify().map_err(io::Error::other)?;
+    let metadata = fs::symlink_metadata(parent.original_path())?;
+    if !metadata.is_dir() || metadata.file_type().is_symlink() {
+        return Err(io::Error::other("initialization parent changed"));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if metadata.dev() != parent.identity().device()
+            || metadata.ino() != parent.identity().inode()
+        {
+            return Err(io::Error::other("initialization parent identity changed"));
+        }
+    }
+    Ok(())
+}
+
+fn postgres_pending_exists(data_dir: &Path) -> Result<bool, &'static str> {
+    let pending =
+        postgres_pending_path(data_dir).map_err(|_| "invalid PostgreSQL initialization path")?;
+    path_present(&pending)
+}
+
+fn cleanup_postgres_pending(path: &Path, parent: &ExclusiveDirectory) -> io::Result<()> {
+    retire_postgres_pending(path, parent, |parent, retired| {
+        parent.remove_directory_all(retired)
+    })
+}
+
+fn retire_postgres_pending(
+    path: &Path,
+    parent: &ExclusiveDirectory,
+    cleanup: impl FnOnce(&ExclusiveDirectory, &str) -> io::Result<()>,
+) -> io::Result<()> {
+    verify_initialization_parent(parent)?;
+    let name = initialization_leaf_name(parent, path)?;
+    let suffix = hex(&crypto::random::<8>().map_err(io::Error::other)?);
+    let retired = format!("{name}.retired-{suffix}");
+    parent.rename(name, &retired)?;
+    // Do not touch any retired artifact before the removal from the active
+    // pending namespace is durable. A crash may then retain encrypted debris,
+    // but can never make recovery require a half-deleted active candidate.
+    parent.sync_all().map_err(io::Error::other)?;
+    let _ = cleanup(parent, &retired);
+    Ok(())
+}
+
+fn postgres_pending_context(
+    data_dir: &Path,
+    seal: &SealMetadata,
+    profile: &DurableProfile,
+    bundle: &BackendBundle,
+    recovery: &[u8],
+) -> io::Result<Vec<u8>> {
+    let mut context = b"heptabao.postgresql-initialization.v1\0".to_vec();
+    for bytes in [
+        data_dir.as_os_str().as_encoded_bytes(),
+        &serde_json::to_vec(seal).map_err(io::Error::other)?,
+        &serde_json::to_vec(profile).map_err(io::Error::other)?,
+        &bundle.snapshot,
+        &bundle.ledger,
+        &bundle.journal,
+        recovery,
+    ] {
+        context.extend_from_slice(&crypto::digest(bytes));
+    }
+    Ok(context)
+}
+
+fn write_postgres_pending_binding(
+    stage: &Path,
+    data_dir: &Path,
+    secret: &[u8; 32],
+    seal: &SealMetadata,
+    profile: &DurableProfile,
+    bundle: &BackendBundle,
+) -> io::Result<()> {
+    let recovery = read_initialization_recovery(stage)?
+        .ok_or_else(|| io::Error::other("initialization recovery is missing"))?;
+    let context = postgres_pending_context(data_dir, seal, profile, bundle, &recovery)?;
+    let (barrier, _) = initialization_recovery_barrier(secret, seal)?;
+    let protected = barrier
+        .seal(&context, b"prepared")
+        .map_err(|_| io::Error::other("cannot authenticate pending initialization"))?;
+    write_private_initialization_file(stage, PG_INIT_BINDING_FILE, &protected)
+}
+
+fn load_postgres_pending(
+    data_dir: &Path,
+    secret: &[u8; 32],
+    shares: u8,
+    threshold: u8,
+) -> Result<PendingPostgresInitialization, Response> {
+    let path = postgres_pending_path(data_dir)
+        .map_err(|_| Response::error(503, "invalid PostgreSQL initialization path"))?;
+    if !path_present(&path)
+        .map_err(|_| Response::error(503, "cannot inspect PostgreSQL initialization"))?
+    {
+        return Err(Response::error(
+            409,
+            "PostgreSQL initialization is not pending",
+        ));
+    }
+    private_directory(&path)
+        .map_err(|_| Response::error(503, "unsafe PostgreSQL initialization directory"))?;
+    let mut local_fence = FileBackend::open(&path)
+        .map_err(|_| Response::error(503, "PostgreSQL initialization is unavailable or busy"))?;
+    let bundle = local_fence
+        .load()
+        .map_err(|_| Response::error(503, "PostgreSQL initialization bundle is incomplete"))?;
+    let seal = load_seal_metadata(&path)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization seal is unavailable"))?;
+    if seal.secret_shares != shares || seal.secret_threshold != threshold {
+        return Err(Response::error(
+            400,
+            "initialization recovery parameters do not match",
+        ));
+    }
+    let profile = load_durable_profile(&path)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization profile is unavailable"))?;
+    let recovery = read_initialization_recovery(&path)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization response is unavailable"))?;
+    let protected = read_private_initialization_file(&path, PG_INIT_BINDING_FILE)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization binding is unavailable"))?;
+    let context = postgres_pending_context(data_dir, &seal, &profile, &bundle, &recovery)
+        .map_err(|_| Response::error(503, "PostgreSQL initialization binding is invalid"))?;
+    let (barrier, recovery_context) = initialization_recovery_barrier(secret, &seal)
+        .map_err(|_| Response::error(503, "initialization recovery provider unavailable"))?;
+    let proof = barrier
+        .open(&context, &protected)
+        .map_err(|_| Response::error(403, "PostgreSQL initialization authentication failed"))?;
+    if proof != b"prepared" {
+        return Err(Response::error(
+            403,
+            "PostgreSQL initialization authentication failed",
+        ));
+    }
+    let plaintext = Zeroizing::new(
+        barrier
+            .open(&recovery_context, &recovery)
+            .map_err(|_| Response::error(403, "initialization recovery authentication failed"))?,
+    );
+    let body = serde_json::from_slice(&plaintext)
+        .map_err(|_| Response::error(503, "initialization recovery response is corrupt"))?;
+    local_fence
+        .verify()
+        .map_err(|_| Response::error(503, "PostgreSQL initialization ownership changed"))?;
+    sync_initialization_parent(data_dir)
+        .map_err(|_| Response::error(503, "PostgreSQL initialization durability is unknown"))?;
+    Ok(PendingPostgresInitialization {
+        path,
+        local_fence,
+        seal,
+        profile,
+        bundle,
+        response: Response::ok(body),
+    })
+}
+
+fn decode_initialization_secret(value: &Value) -> Result<Zeroizing<[u8; 32]>, &'static str> {
+    let encoded = value.as_str().ok_or("recovery_nonce must be a string")?;
+    if encoded.len() != 44 && encoded.len() != 64 {
+        return Err("recovery_nonce must contain 32 random bytes");
+    }
+    let decoded = if encoded.len() == 64
+        && encoded
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        Zeroizing::new(decode_hex(encoded).ok_or("invalid recovery_nonce encoding")?)
+    } else {
+        let decoded = Zeroizing::new(
+            STANDARD
+                .decode(encoded)
+                .map_err(|_| "invalid recovery_nonce encoding")?,
+        );
+        let canonical = Zeroizing::new(STANDARD.encode(decoded.as_slice()));
+        if canonical.as_str() != encoded {
+            return Err("recovery_nonce must use canonical base64 or lowercase hex");
+        }
+        decoded
+    };
+    let secret = Zeroizing::new(
+        decoded
+            .as_slice()
+            .try_into()
+            .map_err(|_| "recovery_nonce must contain 32 random bytes")?,
+    );
+    if *secret == [0; 32] {
+        return Err("recovery_nonce must be generated with cryptographic randomness");
+    }
+    Ok(secret)
+}
+
+fn initialization_recovery_barrier(
+    secret: &[u8; 32],
+    seal: &SealMetadata,
+) -> Result<(AeadBarrier, Vec<u8>), io::Error> {
+    let encoded = serde_json::to_vec(seal).map_err(io::Error::other)?;
+    let mut context = b"heptabao.initialization-recovery.v2\0".to_vec();
+    context.extend_from_slice(&crypto::digest(&encoded));
+    let key = hmac::Key::new(hmac::HMAC_SHA256, secret);
+    let tag = hmac::sign(&key, &context);
+    let mut derived = Zeroizing::new([0_u8; 32]);
+    derived.copy_from_slice(tag.as_ref());
+    let barrier = AeadBarrier::new(*derived)
+        .map_err(|_| io::Error::other("cannot derive initialization recovery key"))?;
+    Ok((barrier, context))
+}
+
+fn write_initialization_recovery(
+    stage: &Path,
+    seal: &SealMetadata,
+    secret: &[u8; 32],
+    response: &Value,
+) -> Result<(), io::Error> {
+    let plaintext = owner_store::serialize_owner(response).map_err(io::Error::other)?;
+    let (barrier, context) = initialization_recovery_barrier(secret, seal)?;
+    let protected = Zeroizing::new(
+        barrier
+            .seal(&context, &plaintext)
+            .map_err(|_| io::Error::other("cannot encrypt initialization recovery"))?,
+    );
+    if protected.len() as u64 > INIT_RECOVERY_LIMIT {
+        return Err(io::Error::other("initialization recovery exceeds bound"));
+    }
+    write_private_initialization_file(stage, INIT_RECOVERY_FILE, &protected)
+}
+
+fn write_private_initialization_file(stage: &Path, name: &str, protected: &[u8]) -> io::Result<()> {
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+    }
+    let mut file = options.open(stage.join(name))?;
+    check_private_file(&file)?;
+    file.write_all(protected)?;
+    file.sync_all()?;
+    File::open(stage)?.sync_all()
+}
+
+fn read_initialization_recovery(data_dir: &Path) -> Result<Option<Zeroizing<Vec<u8>>>, io::Error> {
+    read_private_initialization_file(data_dir, INIT_RECOVERY_FILE)
+}
+
+fn read_private_initialization_file(
+    data_dir: &Path,
+    name: &str,
+) -> Result<Option<Zeroizing<Vec<u8>>>, io::Error> {
+    let path = data_dir.join(name);
+    match fs::symlink_metadata(&path) {
+        Ok(metadata) if metadata.file_type().is_symlink() => {
+            return Err(io::Error::other(
+                "initialization recovery symlink is forbidden",
+            ));
+        }
+        Ok(_) => {}
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    }
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+    }
+    let file = options.open(path)?;
+    check_private_file(&file)?;
+    if file.metadata()?.len() > INIT_RECOVERY_LIMIT {
+        return Err(io::Error::other("initialization recovery exceeds bound"));
+    }
+    let mut protected = Zeroizing::new(Vec::new());
+    file.take(INIT_RECOVERY_LIMIT + 1)
+        .read_to_end(&mut protected)?;
+    if protected.len() as u64 > INIT_RECOVERY_LIMIT {
+        return Err(io::Error::other("initialization recovery exceeds bound"));
+    }
+    Ok(Some(protected))
+}
+
+fn seal_associated_data(
+    schema: u32,
+    generation: u64,
+    share_format: &str,
+    shares: u8,
+    threshold: u8,
+) -> Vec<u8> {
+    let mut output = Vec::with_capacity(64 + share_format.len());
+    output.extend_from_slice(b"heptabao.seal-metadata.v1\0");
+    output.extend_from_slice(&schema.to_le_bytes());
+    output.extend_from_slice(&generation.to_le_bytes());
+    output.extend_from_slice(&(share_format.len() as u64).to_le_bytes());
+    output.extend_from_slice(share_format.as_bytes());
+    output.extend_from_slice(&[shares, threshold]);
+    output
+}
+
+fn bounded_u8_field(body: &Value, field: &str, default: u8) -> Result<u8, &'static str> {
+    let Some(value) = body.get(field) else {
+        return Ok(default);
+    };
+    let Some(value) = value.as_u64() else {
+        return Err("share configuration fields must be unsigned integers");
+    };
+    u8::try_from(value).map_err(|_| "share configuration field exceeds supported range")
+}
+
+fn decode_key_material(encoded: &str) -> Result<Vec<u8>, &'static str> {
+    if encoded.is_empty() || encoded.len() > 1024 {
+        return Err("invalid bounded key encoding");
+    }
+    if encoded.len().is_multiple_of(2) && encoded.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return decode_hex(encoded).ok_or("invalid hexadecimal key encoding");
+    }
+    STANDARD
+        .decode(encoded)
+        .map_err(|_| "key must be hexadecimal or standard base64")
+}
+
+fn collect_seal_key(
+    seal: &SealMetadata,
+    encoded: &str,
+    provided: &mut BTreeMap<u8, SecretShare>,
+) -> Result<Option<[u8; 32]>, &'static str> {
+    let decoded = Zeroizing::new(decode_key_material(encoded)?);
+    if seal.share_format == "raw-v1" {
+        let key: [u8; 32] = decoded
+            .as_slice()
+            .try_into()
+            .map_err(|_| "invalid legacy unseal key length")?;
+        return Ok(Some(key));
+    }
+    let share = SecretShare::decode(decoded.as_slice())?;
+    if share.total() != seal.secret_shares || share.threshold() != seal.secret_threshold {
+        return Err("Shamir share does not match this seal generation");
+    }
+    if let Some(existing) = provided.get(&share.index()) {
+        if existing != &share {
+            return Err("conflicting Shamir share index");
+        }
+    } else {
+        provided.insert(share.index(), share);
+    }
+    if provided.len() < usize::from(seal.secret_threshold) {
+        return Ok(None);
+    }
+    let selected = provided
+        .values()
+        .take(usize::from(seal.secret_threshold))
+        .cloned()
+        .collect::<Vec<_>>();
+    crypto::combine_shares(&selected).map(Some)
+}
+
+fn decode_seal_metadata(encoded: &[u8]) -> Result<SealMetadata, &'static str> {
+    let metadata: SealMetadata =
+        serde_json::from_slice(encoded).map_err(|_| "invalid seal metadata")?;
+    metadata.validate()?;
+    Ok(metadata)
+}
+
+fn load_seal_metadata(data_dir: &Path) -> Result<Option<SealMetadata>, &'static str> {
+    read_seal_metadata_bytes(data_dir)?
+        .map(|encoded| decode_seal_metadata(&encoded))
+        .transpose()
+}
+
+fn read_seal_metadata_bytes(data_dir: &Path) -> Result<Option<Zeroizing<Vec<u8>>>, &'static str> {
+    let path = data_dir.join(SEAL_METADATA_FILE);
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+    }
+    let file = match options.open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err("cannot safely open seal metadata"),
+    };
+    check_private_file(&file).map_err(|_| "seal metadata must be a private regular file")?;
+    if file
+        .metadata()
+        .map_err(|_| "cannot inspect seal metadata")?
+        .len()
+        > SEAL_METADATA_LIMIT
+    {
+        return Err("seal metadata exceeds the supported bound");
+    }
+    let mut encoded = Zeroizing::new(Vec::new());
+    file.take(SEAL_METADATA_LIMIT + 1)
+        .read_to_end(&mut encoded)
+        .map_err(|_| "cannot read seal metadata")?;
+    if encoded.len() as u64 > SEAL_METADATA_LIMIT {
+        return Err("seal metadata exceeds the supported bound");
+    }
+    Ok(Some(encoded))
+}
+
+fn load_durable_profile(data_dir: &Path) -> Result<Option<DurableProfile>, &'static str> {
+    let path = data_dir.join(DURABLE_PROFILE_FILE);
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+    }
+    let file = match options.open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err("cannot safely open durable backend profile"),
+    };
+    check_private_file(&file)
+        .map_err(|_| "durable backend profile must be a private regular file")?;
+    if file
+        .metadata()
+        .map_err(|_| "cannot inspect durable backend profile")?
+        .len()
+        > DURABLE_PROFILE_LIMIT
+    {
+        return Err("durable backend profile exceeds the supported bound");
+    }
+    let mut encoded = Vec::new();
+    file.take(DURABLE_PROFILE_LIMIT + 1)
+        .read_to_end(&mut encoded)
+        .map_err(|_| "cannot read durable backend profile")?;
+    if encoded.len() as u64 > DURABLE_PROFILE_LIMIT {
+        return Err("durable backend profile exceeds the supported bound");
+    }
+    let profile: DurableProfile =
+        serde_json::from_slice(&encoded).map_err(|_| "invalid durable backend profile")?;
+    profile.validate()?;
+    Ok(Some(profile))
+}
+
+fn persist_durable_profile(
+    data_dir: &Path,
+    profile: &DurableProfile,
+) -> Result<(), std::io::Error> {
+    profile.validate().map_err(std::io::Error::other)?;
+    private_directory(data_dir)?;
+    let encoded = serde_json::to_vec(profile)
+        .map_err(|_| std::io::Error::other("cannot encode durable backend profile"))?;
+    if encoded.len() as u64 > DURABLE_PROFILE_LIMIT {
+        return Err(std::io::Error::other(
+            "durable backend profile exceeds supported bound",
+        ));
+    }
+    let suffix = hex(&crypto::random::<8>().map_err(std::io::Error::other)?);
+    let temporary = data_dir.join(format!(".{DURABLE_PROFILE_FILE}.{suffix}.next"));
+    let final_path = data_dir.join(DURABLE_PROFILE_FILE);
+    let result = (|| {
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+        }
+        let mut file = options.open(&temporary)?;
+        check_private_file(&file)?;
+        file.write_all(&encoded)?;
+        file.sync_all()?;
+        fs::rename(&temporary, &final_path)?;
+        File::open(data_dir)?.sync_all()
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
+fn load_pending_rekey(
+    data_dir: &Path,
+    active: Option<&SealMetadata>,
+) -> Result<Option<PendingRekeyMetadata>, &'static str> {
+    let path = data_dir.join(PENDING_REKEY_FILE);
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+    }
+    let file = match options.open(&path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err("cannot safely open pending rekey metadata"),
+    };
+    check_private_file(&file)
+        .map_err(|_| "pending rekey metadata must be a private regular file")?;
+    if file
+        .metadata()
+        .map_err(|_| "cannot inspect pending rekey metadata")?
+        .len()
+        > REKEY_METADATA_LIMIT
+    {
+        return Err("pending rekey metadata exceeds the supported bound");
+    }
+    let mut encoded = Zeroizing::new(Vec::new());
+    file.take(REKEY_METADATA_LIMIT + 1)
+        .read_to_end(&mut encoded)
+        .map_err(|_| "cannot read pending rekey metadata")?;
+    if encoded.len() as u64 > REKEY_METADATA_LIMIT {
+        return Err("pending rekey metadata exceeds the supported bound");
+    }
+    let pending: PendingRekeyMetadata =
+        serde_json::from_slice(&encoded).map_err(|_| "invalid pending rekey metadata")?;
+    pending.validate_shape()?;
+    let active = active.ok_or("pending rekey exists without active seal metadata")?;
+    if &pending.candidate == active {
+        delete_pending_rekey(data_dir)
+            .map_err(|_| "cannot reconcile completed pending rekey marker")?;
+        return Ok(None);
+    }
+    if pending.active_generation != active.generation {
+        return Err("pending rekey does not match the active seal generation");
+    }
+    Ok(Some(pending))
+}
+
+fn persist_pending_rekey(
+    data_dir: &Path,
+    pending: &PendingRekeyMetadata,
+) -> Result<(), std::io::Error> {
+    pending.validate_shape().map_err(std::io::Error::other)?;
+    private_directory(data_dir)?;
+    let encoded = owner_store::serialize_owner(pending)
+        .map_err(|_| std::io::Error::other("cannot encode pending rekey metadata"))?;
+    if encoded.len() as u64 > REKEY_METADATA_LIMIT {
+        return Err(std::io::Error::other(
+            "pending rekey metadata exceeds supported bound",
+        ));
+    }
+    let suffix = hex(&crypto::random::<8>().map_err(std::io::Error::other)?);
+    let temporary = data_dir.join(format!(".seal-rekey.{suffix}.next"));
+    let final_path = data_dir.join(PENDING_REKEY_FILE);
+    let result = (|| {
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+        }
+        let mut file = options.open(&temporary)?;
+        check_private_file(&file)?;
+        file.write_all(encoded.as_slice())?;
+        file.sync_all()?;
+        fs::rename(&temporary, &final_path)?;
+        File::open(data_dir)?.sync_all()
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
+fn delete_pending_rekey(data_dir: &Path) -> Result<(), std::io::Error> {
+    match fs::remove_file(data_dir.join(PENDING_REKEY_FILE)) {
+        Ok(()) => File::open(data_dir)?.sync_all(),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error),
+    }
+}
+
+fn valid_nonce(value: &str) -> bool {
+    value.len() == 32 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+}
+
+fn valid_recovery_reference(value: &str) -> bool {
+    value.len() == 32 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+}
+
+fn persist_seal_metadata(data_dir: &Path, seal: &SealMetadata) -> Result<(), std::io::Error> {
+    seal.validate().map_err(std::io::Error::other)?;
+    private_directory(data_dir)?;
+    let encoded = owner_store::serialize_owner(seal)
+        .map_err(|_| std::io::Error::other("cannot encode seal metadata"))?;
+    if encoded.len() as u64 > SEAL_METADATA_LIMIT {
+        return Err(std::io::Error::other(
+            "seal metadata exceeds supported bound",
+        ));
+    }
+    let suffix = hex(&crypto::random::<8>().map_err(std::io::Error::other)?);
+    let temporary = data_dir.join(format!(".seal.{}.{}.next", seal.generation, suffix));
+    let final_path = data_dir.join(SEAL_METADATA_FILE);
+    let result = (|| {
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+        }
+        let mut file = options.open(&temporary)?;
+        check_private_file(&file)?;
+        file.write_all(encoded.as_slice())?;
+        file.sync_all()?;
+        fs::rename(&temporary, &final_path)?;
+        File::open(data_dir)?.sync_all()
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
+fn private_directory(path: &Path) -> Result<(), std::io::Error> {
+    if path.exists() {
+        let meta = fs::symlink_metadata(path)?;
+        if !meta.is_dir() || meta.file_type().is_symlink() {
+            return Err(std::io::Error::other("unsafe directory"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if meta.permissions().mode() & 0o077 != 0 {
+                return Err(std::io::Error::other("directory is not private"));
+            }
+        }
+    } else {
+        let mut builder = fs::DirBuilder::new();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        builder.create(path)?;
+    }
+    Ok(())
+}
+fn valid_namespace(value: &str) -> bool {
+    value.is_empty()
+        || (value.len() <= 1024
+            && value.split('/').all(|s| {
+                !s.is_empty()
+                    && !matches!(s, "." | "..")
+                    && s.bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.'))
+            }))
+}
+fn valid_path(value: &str) -> bool {
+    value.len() <= 4096
+        && !value.contains("//")
+        && !value.starts_with('/')
+        && value.trim_end_matches('/').split('/').all(|s| {
+            !s.is_empty()
+                && !matches!(s, "." | "..")
+                && s.chars()
+                    .all(|c| c.is_alphanumeric() || matches!(c, '-' | '_' | '.' | ':' | '+' | '*'))
+        })
+}
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+fn decode_hex(value: &str) -> Option<Vec<u8>> {
+    if !value.len().is_multiple_of(2) {
+        return None;
+    }
+    value
+        .as_bytes()
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .map(|p| {
+            std::str::from_utf8(p)
+                .ok()
+                .and_then(|s| u8::from_str_radix(s, 16).ok())
+        })
+        .collect()
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AuditUnsigned {
+    schema: u32,
+    sequence: u64,
+    previous: String,
+    time: u64,
+    kind: String,
+    path_digest: String,
+    status: Option<u16>,
+}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AuditRecord {
+    event: AuditUnsigned,
+    mac: String,
+}
+
+fn check_private_file(file: &File) -> Result<(), std::io::Error> {
+    let metadata = file.metadata()?;
+    if !metadata.is_file() {
+        return Err(std::io::Error::other("not a regular file"));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::{MetadataExt, PermissionsExt};
+        if metadata.permissions().mode() & 0o077 != 0 || metadata.nlink() != 1 {
+            return Err(std::io::Error::other("file is not private"));
+        }
+    }
+    Ok(())
+}
+
+fn load_audit_key(rotation: &AuditRotation, audit: &File) -> Result<hmac::Key, &'static str> {
+    use std::io::Read;
+    let material = match rotation.open_key(false) {
+        Ok(mut file) => {
+            check_private_file(&file).map_err(|_| "audit key must be a private regular file")?;
+            if file
+                .metadata()
+                .map_err(|_| "cannot inspect audit key")?
+                .len()
+                != 32
+            {
+                return Err("invalid audit key size");
+            }
+            let mut material = Zeroizing::new([0_u8; 32]);
+            file.read_exact(material.as_mut())
+                .map_err(|_| "cannot read audit key")?;
+            rotation
+                .verify_key_identity(&file)
+                .map_err(|_| "audit key identity changed")?;
+            material
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            if audit.metadata().map_err(|_| "cannot inspect audit")?.len() != 0 {
+                return Err(
+                    "existing audit has no authentication key; explicit migration required",
+                );
+            }
+            let material = Zeroizing::new(crypto::random::<32>()?);
+            let mut file = rotation
+                .open_key(true)
+                .map_err(|_| "cannot exclusively create audit key")?;
+            file.write_all(material.as_ref())
+                .and_then(|()| file.sync_all())
+                .map_err(|_| "cannot persist audit key")?;
+            rotation
+                .verify_key_identity(&file)
+                .map_err(|_| "audit key identity changed")?;
+            rotation
+                .sync_directory()
+                .map_err(|_| "cannot sync audit directory")?;
+            material
+        }
+        Err(_) => return Err("cannot safely open audit key"),
+    };
+    Ok(hmac::Key::new(hmac::HMAC_SHA256, material.as_ref()))
+}
+
+fn verify_audit_from(
+    audit: &mut File,
+    key: &hmac::Key,
+    mut sequence: u64,
+    mut previous: [u8; 32],
+) -> Result<(u64, [u8; 32]), &'static str> {
+    use std::io::{Read, Seek, SeekFrom};
+    if audit.metadata().map_err(|_| "cannot inspect audit")?.len() > MAX_AUDIT_BYTES {
+        return Err("audit capacity exceeded");
+    }
+    audit
+        .seek(SeekFrom::Start(0))
+        .map_err(|_| "cannot seek audit")?;
+    let mut bytes = Vec::new();
+    audit
+        .take(MAX_AUDIT_BYTES + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|_| "cannot read audit")?;
+    if bytes.len() as u64 > MAX_AUDIT_BYTES || !bytes.is_empty() && !bytes.ends_with(b"\n") {
+        return Err("audit is truncated or oversized; preserve evidence for recovery");
+    }
+    if bytes.windows(2).any(|pair| pair == b"\n\n") || bytes.starts_with(b"\n") {
+        return Err("audit contains empty records");
+    }
+    for line in bytes
+        .split(|b| *b == b'\n')
+        .take_while(|line| !line.is_empty())
+    {
+        let record: AuditRecord = serde_json::from_slice(line)
+            .map_err(|_| "unsupported or corrupt authenticated audit format")?;
+        if record.event.schema != 2
+            || Some(record.event.sequence) != sequence.checked_add(1)
+            || record.event.previous != STANDARD.encode(previous)
+        {
+            return Err("audit chain is inconsistent");
+        }
+        let tag = STANDARD
+            .decode(&record.mac)
+            .map_err(|_| "invalid audit authenticator")?;
+        if tag.len() != 32 {
+            return Err("invalid audit authenticator length");
+        }
+        let payload = serde_json::to_vec(&record.event).map_err(|_| "invalid audit payload")?;
+        hmac::verify(key, &payload, &tag).map_err(|_| "audit authentication failed")?;
+        previous.copy_from_slice(&tag);
+        sequence = record.event.sequence;
+    }
+    Ok((sequence, previous))
+}
+
+fn state_serialization_error(error: owner_store::OwnerStoreError) -> Response {
+    match error {
+        owner_store::OwnerStoreError::StateTooLarge => {
+            Response::error(507, "server state exceeds configured capacity")
+        }
+        _ => Response::error(500, "state serialization failed"),
+    }
+}
+
+pub(crate) fn erase_json(value: &mut Value) {
+    match value {
+        Value::String(value) => value.zeroize(),
+        Value::Array(values) => {
+            for value in values {
+                erase_json(value);
+            }
+        }
+        Value::Object(values) => {
+            for (mut key, mut value) in std::mem::take(values) {
+                key.zeroize();
+                erase_json(&mut value);
+            }
+        }
+        _ => {}
+    }
+    *value = Value::Null;
+}
+
+#[cfg(test)]
+mod cow_owner_tests {
+    use super::CowOwner;
+    use std::collections::BTreeMap;
+
+    #[test]
+    fn serialization_is_transparent_and_mutation_detaches() -> Result<(), Box<dyn std::error::Error>>
+    {
+        let plain = BTreeMap::from([("alpha".to_owned(), "one".to_owned())]);
+        let owner = CowOwner::from(plain.clone());
+        let encoded_owner = serde_json::to_vec(&owner)?;
+        let encoded_plain = serde_json::to_vec(&plain)?;
+        assert_eq!(encoded_owner, encoded_plain);
+
+        let mut fork = owner.clone();
+        fork.insert("beta".to_owned(), "two".to_owned());
+        assert_eq!(owner.len(), 1);
+        assert_eq!(fork.len(), 2);
+
+        let decoded: CowOwner<BTreeMap<String, String>> = serde_json::from_slice(&encoded_owner)?;
+        assert_eq!(&*decoded, &plain);
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod ha_health_status_tests {
+    use super::{HealthObservation, HealthStatusCodes, health_status, health_status_with_codes};
+
+    #[test]
+    fn health_never_reports_active_without_current_linearizable_authority() {
+        assert_eq!(health_status(true, false, false, false, false, true), 200);
+        assert_eq!(health_status(true, false, false, true, false, true), 200);
+        assert_eq!(health_status(true, false, false, true, true, false), 429);
+        assert_eq!(health_status(true, false, false, true, false, false), 503);
+        assert_eq!(health_status(true, true, false, true, false, true), 503);
+        assert_eq!(health_status(true, false, true, true, false, true), 503);
+        assert_eq!(health_status(false, false, false, true, false, false), 501);
+    }
+
+    #[test]
+    fn standby_probe_uses_standbyok_only_and_honors_custom_codes() {
+        let codes = HealthStatusCodes {
+            uninit: 204,
+            sealed: 499,
+            standby: 430,
+            active: 201,
+        };
+        // perfstandbyok is intentionally absent from this decision: OpenBao
+        // 2.6.2 does not treat it as permission to call an ordinary standby
+        // active. The HTTP parser may accept the flag for client tolerance,
+        // but only standbyok changes this result.
+        assert_eq!(
+            health_status_with_codes(
+                HealthObservation::new(true, false, false, true, true, false),
+                false,
+                codes,
+            ),
+            430
+        );
+        assert_eq!(
+            health_status_with_codes(
+                HealthObservation::new(true, false, false, true, true, false),
+                true,
+                codes,
+            ),
+            201
+        );
+        assert_eq!(
+            health_status_with_codes(
+                HealthObservation::new(false, false, false, true, false, false),
+                false,
+                codes,
+            ),
+            204
+        );
+        assert_eq!(
+            health_status_with_codes(
+                HealthObservation::new(true, true, false, true, false, true),
+                true,
+                codes,
+            ),
+            499
+        );
+    }
+
+    #[test]
+    fn health_status_code_body_values_are_validated() {
+        let valid = serde_json::json!({
+            "uninitcode": 204,
+            "sealedcode": 499,
+            "standbycode": 430,
+            "activecode": 201,
+        });
+        assert!(HealthStatusCodes::from_body(&valid).is_ok());
+        for invalid in [
+            serde_json::json!({"activecode": 99}),
+            serde_json::json!({"activecode": 1000}),
+            serde_json::json!({"activecode": "201"}),
+        ] {
+            assert!(HealthStatusCodes::from_body(&invalid).is_err());
+        }
+    }
+}
+
+#[cfg(test)]
+#[path = "service_tests.rs"]
+mod tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "wrapping_service_tests.rs"]
+mod wrapping_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "capabilities_service_tests.rs"]
+mod capabilities_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "ssh_service_tests.rs"]
+mod ssh_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "pki_service_tests.rs"]
+mod pki_service_tests;
+
+#[cfg(test)]
+#[path = "service_mount_listing_visibility_tests.rs"]
+mod mount_listing_visibility_tests;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "openapi_service_tests.rs"]
+mod openapi_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "auth_mount_ttl_tests.rs"]
+mod auth_mount_ttl_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_approle_defaults_tests.rs"]
+mod approle_defaults_tests;
+#[cfg(test)]
+#[path = "service_approle_no_default_tests.rs"]
+mod approle_no_default_tests;
+
+#[cfg(test)]
+#[path = "service_approle_form_tests.rs"]
+mod approle_form_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_native_tests.rs"]
+mod userpass_native_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_radius_renewal_tests.rs"]
+mod radius_renewal_tests;
+
+#[cfg(test)]
+#[path = "service_radius_native_tests.rs"]
+mod radius_native_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_ldap_renewal_tests.rs"]
+mod ldap_renewal_tests;
+
+#[cfg(test)]
+#[path = "service_ldap_native_tests.rs"]
+mod ldap_native_tests;
+
+#[cfg(test)]
+#[path = "service_jwt_pem_tests.rs"]
+mod jwt_pem_tests;
+#[cfg(test)]
+#[path = "service_jwt_user_claim_tests.rs"]
+mod jwt_user_claim_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_jwt_renewal_tests.rs"]
+mod jwt_renewal_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_kubernetes_renewal_tests.rs"]
+mod kubernetes_renewal_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_oidc_renewal_tests.rs"]
+mod oidc_renewal_tests;
+
+#[cfg(test)]
+#[path = "service_state_store_integration_tests.rs"]
+mod state_store_integration_tests;
+
+#[path = "service_capacity.rs"]
+mod capacity;
+#[cfg(test)]
+#[path = "service_capacity_tests.rs"]
+mod capacity_tests;
+
+#[cfg(test)]
+#[path = "service_immutable_read_tests.rs"]
+mod immutable_read_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_compare_tests.rs"]
+mod userpass_compare_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_bcrypt_tests.rs"]
+mod userpass_bcrypt_tests;
+
+#[cfg(test)]
+#[path = "service_token_lookup_tests.rs"]
+mod token_lookup_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_cidrs_tests.rs"]
+mod userpass_cidrs_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_no_default_tests.rs"]
+mod userpass_no_default_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_names_tests.rs"]
+mod userpass_names_tests;
+
+#[cfg(test)]
+#[path = "service_batch_schema_tests.rs"]
+mod batch_schema_tests;
+
+#[cfg(test)]
+#[path = "service_approle_batch_tests.rs"]
+mod approle_batch_tests;
+
+#[cfg(test)]
+#[path = "service_approle_cidrs_tests.rs"]
+mod approle_cidrs_tests;
+
+#[cfg(test)]
+#[path = "service_approle_local_tests.rs"]
+mod approle_local_tests;
+
+#[cfg(test)]
+#[path = "service_cert_batch_tests.rs"]
+mod cert_batch_tests;
+
+#[cfg(test)]
+#[path = "service_kerberos_schema_tests.rs"]
+mod kerberos_schema_tests;
+
+#[cfg(test)]
+#[path = "service_secret_delivery_tests.rs"]
+mod secret_delivery_tests;
+
+#[cfg(test)]
+#[path = "service_sanitized_config_tests.rs"]
+mod sanitized_config_tests;
+
+#[cfg(test)]
+#[path = "service_token_number_tests.rs"]
+mod token_number_tests;
+
+#[cfg(test)]
+#[path = "service_acl_parameter_tests.rs"]
+mod acl_parameter_tests;
+
+#[cfg(test)]
+#[path = "ha_initial_anchor_tests.rs"]
+mod ha_initial_anchor_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_transit_mldsa_tests.rs"]
+mod transit_mldsa_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_external_keys_tests.rs"]
+mod external_keys_tests;
+
+#[cfg(test)]
+#[path = "service_external_transit_tests.rs"]
+mod external_transit_tests;
+
+#[cfg(test)]
+#[path = "service_kv_versioning_tests.rs"]
+mod kv_versioning_tests;
+
+#[cfg(test)]
+#[path = "service_ui_bootstrap_tests.rs"]
+mod ui_bootstrap_tests;
+#[cfg(test)]
+#[path = "service_ui_mounts_tests.rs"]
+mod ui_mounts_tests;
+
+#[cfg(test)]
+#[path = "service_transit_byok_tests.rs"]
+mod transit_byok_tests;
+
+#[cfg(test)]
+#[path = "service_symmetric_backup_tests.rs"]
+mod symmetric_backup_tests;
+#[cfg(test)]
+#[path = "service_transit_rotation_precision_tests.rs"]
+mod transit_rotation_precision_tests;
+
+#[cfg(test)]
+#[path = "service_default_mount_tests.rs"]
+mod default_mount_tests;
+
+#[cfg(test)]
+#[path = "pki_ocsp_service_tests.rs"]
+mod pki_ocsp_service_tests;
+
+#[cfg(test)]
+#[path = "service_token_roles_tests.rs"]
+mod token_roles_tests;
+
+#[cfg(test)]
+#[path = "service_public_origin_tests.rs"]
+mod public_origin_tests;
+
+#[cfg(test)]
+#[path = "service_sdk_storage_tests.rs"]
+mod sdk_storage_tests;
+
+#[cfg(all(test, unix))]
+#[path = "service_initialization_existing_tests.rs"]
+mod initialization_existing_tests;
+
+#[cfg(test)]
+#[path = "service_auth_mount_options_tests.rs"]
+mod auth_mount_options_tests;
+
+#[cfg(test)]
+#[path = "service_raw_wrapped_reply110_tests.rs"]
+mod raw_wrapped_reply110_tests;
+
+#[cfg(test)]
+#[path = "service_ssh_ca115_tests.rs"]
+mod ssh_ca115_tests;
+#[cfg(test)]
+#[path = "service_ssh_template115_tests.rs"]
+mod ssh_template115_tests;
+
+#[cfg(test)]
+#[path = "service_transit_cache_tests.rs"]
+mod transit_cache_tests;
+#[cfg(test)]
+#[path = "service_transit_derivation_tests.rs"]
+mod transit_derivation_tests;
+
+#[cfg(all(test, feature = "native-v6-ha"))]
+#[path = "service_native_v6_ha_pipeline_tests.rs"]
+mod native_v6_ha_pipeline_tests;
+
+#[cfg(test)]
+#[path = "service_request_redirect_tests.rs"]
+mod request_redirect_tests;

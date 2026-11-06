@@ -1,0 +1,5 @@
+{
+  "reason": "Checker searched a keyword clone argument and remaining() spelling; exact unchanged baseline uses positional180 and remain(). Source candidates and all inputs remain unchanged.",
+  "candidateChanged": false,
+  "newNativeCalls": 0
+}

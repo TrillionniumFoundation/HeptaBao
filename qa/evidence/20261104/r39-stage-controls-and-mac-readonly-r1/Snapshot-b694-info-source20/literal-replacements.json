@@ -1,0 +1,30 @@
+[
+  {
+    "before": "const GF_SLOT = \"snapshot_8c95_rog_source_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"snapshot_b694_rog_source_gitfirst_r1\";"
+  },
+  {
+    "before": "const GF_REQUEST = {blob:\"5f908e91a5cd38e8e3cfab448ec38d45e97b6310\",\n bytes:111878,sha256:\"b3a2bb5d470ba645b275d289aabb188d9b6c542fd2a48ee3df5881f192a686bf\"};",
+    "after": "const GF_REQUEST = {blob:\"cbd6774e2f40e2c4b1e0c2f29cbc7954eaff494d\",\n bytes:111973,sha256:\"12c03db5255a6373e20773cd09e82effaab754525a6f1cc6856aff61f34f1337\"};"
+  },
+  {
+    "before": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/stage-result.public.json\";",
+    "after": "const GF_STAGE_RESULT_PATH = \"/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json\";"
+  },
+  {
+    "before": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"e17cbc53589698ea5071ea83e0269d8fe73ebb2f\",\"bytes\":312,\"sha256\":\"5b59a60e8942e3ed5bb93dcbb04b238d07ad0395ba23daa7625dd03c0da1792a\"};",
+    "after": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"f77cd0f6a623d4d52ac1652fb1ea7fe86a8f0309\",\"bytes\":312,\"sha256\":\"33e1fc63a321552058870f1604b9f7b47112b0d2b3a97cee478dd9fefc155326\"};"
+  },
+  {
+    "before": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"f7460c09894a68fe7622de01561bbd14f4c5a65b7cb24789538a4dd0a3f2e845\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"26f56d9f051d7658a68712f734800f6db024ac6c\",\"bytes\":729,\"sha256\":\"957abc11f02c98c3f5d1507147a72632f3f373fd95615ce5093a1c58c8b488be\"}},{\"id\":\"1e40beb579745ca0e6774933faadb7ad74ea296cf7422bd5a40270bfb60a50f4\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"5f506f5fe8e4644053b2c3a9447680f0d44b23d0\",\"bytes\":1495,\"sha256\":\"3f0576dd0dc86405c15856fa3abc967cac6956ec807b89658824157f9d62ca88\"}}];",
+    "after": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"63eb11ba6363fa901c8e79ab4418ea9f6ce240e82757391fa6c83c4ed696d4b1\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"6da55f27d92467f15103a0bde8d1a0f2598ef9e8\",\"bytes\":729,\"sha256\":\"fc714cd188b940470b1d1724232cd9339719270ce116cee5fb722e81e2b5489d\"}},{\"id\":\"502549e6c265343e2d5d8239a65515d474546b02b4dcc8cea72581b114394c1c\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"6f4568f2c416ffa937bb48325c5830d26dd93c58\",\"bytes\":1495,\"sha256\":\"968528ca330b628475e552cbcf2f42d1170ca95bc70cb15e6f0fe9a7e4e9df0d\"}}];"
+  },
+  {
+    "before": "s.job===\"1a1afa74868-fc05-6a7e\"",
+    "after": "s.job===\"1a1afe9f4f5-fc05-6cb6\""
+  },
+  {
+    "before": "/^heptabao-native-snapshot-8c95fb0a-rog-source-observe-r1-/",
+    "after": "/^heptabao-native-snapshot-b6949024-rog-source-observe-r1-/"
+  }
+]

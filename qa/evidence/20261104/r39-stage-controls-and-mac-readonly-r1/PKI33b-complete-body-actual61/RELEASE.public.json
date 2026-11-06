@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.jwt-pki-finalstage-body-release.v1",
+  "originalJob": "1a1afcbafab-fc05-6bb0",
+  "slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+  "host": "rog",
+  "body": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "version": "66306:31235720:27931:1793950741423957124:1793950741423957124",
+    "body": {
+      "blob": "f2c2bd29fd1209f79776ec01fb170119a2d912ef",
+      "bytes": 27931,
+      "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0"
+    },
+    "originalOperation": "2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e",
+    "metadataOperation": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "originalPayload": {
+      "blob": "33fcffd56e221d1b0a63709b82f2171448eb156b",
+      "bytes": 37683,
+      "sha256": "abeeb93a25b3b410096cb75c30d28d30802687e1a9a6d1d257fbb3e59ea79950"
+    },
+    "semanticQualification": false
+  },
+  "observer": {
+    "id": "2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "33fcffd56e221d1b0a63709b82f2171448eb156b",
+      "bytes": 37683,
+      "sha256": "abeeb93a25b3b410096cb75c30d28d30802687e1a9a6d1d257fbb3e59ea79950"
+    },
+    "payloadTree": "9d30ada14a0af02dc2f56b99f22cf79a95c294b4",
+    "nativeText": {
+      "blob": "1ef5da64f5dfc01e112ac2393329cf7ac8300581",
+      "bytes": 37580,
+      "sha256": "dca6540431db0fadc56e1a4d9637bd656197c86c03544053245ffe6fd8b91c53"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "status": {
+    "blob": "9c3ef7c5a921debcc041609658c094a5f537b602",
+    "bytes": 802,
+    "sha256": "be111d10074e4c6bc2c89cd5df1d4620ba1a1d5deb4a7fdd4abbc896f4117e78"
+  },
+  "closure": {
+    "NativeCalls": 7,
+    "returnedObservers": 1,
+    "immutablePages": 5,
+    "pending": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "ownedFutureActive": false,
+    "C_laneReleased": true
+  },
+  "history": {
+    "localPrepareRefusal": "29702a6bdaa45a33b23389cef0d89b6cce7edb8e",
+    "failurePacket": "9dc8226cb1e0aafb29fcf240856c98381c8f3a0f",
+    "rootRecoveryGO": "83822d9fc630a8f21e39bb4a66bb7b8ca3073433",
+    "localRecovery": "f32eb6ac49e99fc9d0f1f1c1a3e8a9b3271751d9",
+    "recoveryPacket": "9895cd07b152174695935306414d89f39296abaa",
+    "originalBinaryReadReplayed": false,
+    "oldErrorPreserved": true
+  },
+  "stageSemanticQualification": false,
+  "compileStarted": false,
+  "productCases": 0,
+  "interpretationOrderNote": "Original SDK and complete encoded payload were external whole before parsing. A preliminary in-memory report check was made before separate decoded-body Git creation; it is not adopted as qualification. This packet whole-archives the exact decoded body; final consistency verification follows this completed boundary and root independent review remains required."
+}

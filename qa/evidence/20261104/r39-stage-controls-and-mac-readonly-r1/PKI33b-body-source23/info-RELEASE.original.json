@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.jwt-pki-finalstage-info-release.v1",
+  "host": "rog",
+  "originalJob": "1a1afcbafab-fc05-6bb0",
+  "scope": "fixed_stage_result_metadata_only",
+  "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+  "sourceCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "sourceTree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "observer": {
+    "id": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "tool": "file_info",
+    "payload": {
+      "blob": "48a119738de68d86ff0301058e6ffb5f69a08fd6",
+      "bytes": 603,
+      "sha256": "f81ed8823ce514db94ef5e291903d30efc9cf723fd4de4dab6d9ae300196110e"
+    },
+    "payloadTree": "b8372befd07fb3edd13a273c13fc84f6fa22a1f9",
+    "nativeText": {
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "statusOriginal": {
+    "blob": "8fc5b7e82f2f8271ccb34b8dc6c359fac97b11f6",
+    "bytes": 800,
+    "sha256": "0e8f7487a17400c2bd2393adc2dfa0d770c072d315c9177effb1cda7a0d3bbfb"
+  },
+  "actual": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "size": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0",
+    "version": "66306:31235720:27931:1793950741423957124:1793950741423957124",
+    "nativeText": {
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    },
+    "originalOperation": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "full9Strings": [
+      "66306",
+      "31235720",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "27931",
+      "1793950741423957124",
+      "1793950741423957124"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "closure": {
+    "calls": 3,
+    "originalObservers": 1,
+    "immutablePages": 1,
+    "pending": null,
+    "activeObserver": null,
+    "activeNativeFuture": false,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "C_laneReleased": true
+  },
+  "remaining": {
+    "bodyObserved": false,
+    "fullStageQualified": false,
+    "CargoStarted": false,
+    "buildQualified": false
+  },
+  "errors": []
+}

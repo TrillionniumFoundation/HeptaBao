@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-b694-info-GO-and-Service4-source-review",
+  "records": [
+    {
+      "name": "B694-INFO-SOURCE-REVIEW.public.json",
+      "blob": "933c5cbcd1120f784ee296135b5a35ec5024e913",
+      "bytes": 4239,
+      "sha256": "dca98fb968597b9de838c24e23d5f067cdd7075d850097cdead14819c0b24061"
+    },
+    {
+      "name": "B694-INFO-GO.public.json",
+      "blob": "0c67972ccc415f79b2223ceb65dbbf9c20ca4806",
+      "bytes": 3167,
+      "sha256": "cdaa7362d87a2a5c208536347c2081c25e825fdb29f76b03f43ff566f20993a9"
+    },
+    {
+      "name": "B694-INFO-ROOT-VERIFIER.source.js",
+      "blob": "128dea838ae3a643e3cfd5530d61b597c401d51a",
+      "bytes": 5525,
+      "sha256": "ef2ce634b3cf024153ae1eb1d4d41e6e8877a62cadd102e39129e286ebe4d3b1"
+    },
+    {
+      "name": "SERVICE4-SOURCE-ROOT-REVIEW.public.json",
+      "blob": "0dbf6b3938e5189af890e80f65d4d1c23f086056",
+      "bytes": 17649,
+      "sha256": "da578231e7429d418012f310b5e71dd38c63197bf392b2af65456e16033335c1"
+    },
+    {
+      "name": "SERVICE4-ROOT-VERIFIER.source.js",
+      "blob": "cacc4576d90dbb9c642f0f82b7b0549fd9b2b0ae",
+      "bytes": 15342,
+      "sha256": "e9fa6d78da10084081f859f2975cbaaa02ce5142d8c1925d6407aebaace62717"
+    },
+    {
+      "name": "SERVICE4-ROOT-VERIFIER-r1.original.js",
+      "blob": "ae6ebf834edc4e66891aa1c03a31e723ec4ac4a0",
+      "bytes": 15433,
+      "sha256": "235615d4c745464cd108419d4258fe1a8806bdb0fc6661662590ad962356c187"
+    },
+    {
+      "name": "SERVICE4-ROOT-CHECKER-CORRECTION.public.json",
+      "blob": "74e8e96a3d093e37aeb0b66a9b958dcbf524b6bf",
+      "bytes": 746,
+      "sha256": "b7ddedf1b48664df90c8c5eb926326d08a2e91a7f0fb46630fc37342205cb780"
+    },
+    {
+      "name": "SERVICE53-READONLY-SAME-BLOB-RECOVERY.public.json",
+      "blob": "c4149dba78dc78ccc1cc6b9f7b01d1211c9804fa",
+      "bytes": 294,
+      "sha256": "e7d240395e9ac48fb7318f659f8ad2368f366c185f9fc2fbea7869b9a55b7ac3"
+    }
+  ],
+  "expected_data_tree": "a3fbda3abe5723a6fa2350cc57149431a026072b",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-root-current",
+  "records": [
+    {
+      "name": "README.md",
+      "blob": "3dc1b8f13c7d865037967085aeeef27c838e77f7",
+      "bytes": 5860,
+      "sha256": "08451615622b95a108a5c24b7803f00bc6db135a63c9757b7f7ab0395be5fc9b"
+    },
+    {
+      "name": "STATE.public.json",
+      "blob": "cd230dd7558f1b13f1815685a200fc667019968a",
+      "bytes": 21988,
+      "sha256": "1c1ab4c77cc9a07a719432d0f0dce29b16db0554f405c1d332b8db69f200f72b"
+    },
+    {
+      "name": "MOUNTS.public.json",
+      "blob": "442988fb7f6adc013c3a4df18c23a78821353551",
+      "bytes": 240075,
+      "sha256": "2d969235e257dc13e4163098334662f370acffde1da2f9dfaaa6d0d1e170b5dd"
+    },
+    {
+      "name": "ROOT-INDEX.public.json",
+      "blob": "f619e4870fb022df511ec224aca7c174b9e7ebde",
+      "bytes": 2582,
+      "sha256": "af968b6fa14ccd0325b06dd28fef1596e262891f9a4f2e19b8b7f5adcfb670ed"
+    }
+  ],
+  "expected_data_tree": "76a6e0fd2b2c6d5a082fb03371dc681f5e4c42ce",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

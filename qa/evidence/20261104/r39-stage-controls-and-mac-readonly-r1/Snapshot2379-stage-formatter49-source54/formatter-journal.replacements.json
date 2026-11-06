@@ -1,0 +1,14 @@
+[
+  {
+    "before": "const GF_SLOT = \"snapshot_b694_rog_formatter_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"snapshot_2379_rog_formatter_gitfirst_r1\";"
+  },
+  {
+    "before": "const GF_REQUEST = {blob:\"46cde2a119a96c95ce11c882297208fecf57f2ec\",\n bytes:32443,sha256:\"1d174d0b29606c358a79df4bb0fc367eaf30e44b6cf22b2aa56a968aacfb43b4\"};",
+    "after": "const GF_REQUEST = {blob:\"0fce0771c8a4e42b85abfc10ffbc14e59e588616\",\n bytes:34045,sha256:\"72289e6809a067df0df78ae0bd96383725ccbbcaca6fb219349c9ede1d4ce70f\"};"
+  },
+  {
+    "before": "heptabao-native-snapshot-b6949024-formatter-observe-r1-",
+    "after": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-"
+  }
+]

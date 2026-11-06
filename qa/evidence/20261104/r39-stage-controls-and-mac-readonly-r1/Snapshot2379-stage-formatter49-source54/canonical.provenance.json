@@ -1,0 +1,29 @@
+{
+  "audit": {
+    "root_sha": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+    "trees_verified": 358,
+    "leaf_count": 3930
+  },
+  "trackedBytes": 62486000,
+  "index": {
+    "blob": "8cd39d6c4900a37bb5d64d37eb1330c54bfdba22",
+    "bytes": 453627,
+    "sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+  },
+  "changed": [
+    "crates/heptabao-server/src/service.rs",
+    "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+    "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+    "crates/heptabao-server/src/service_snapshot_forward.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_source.rs"
+  ],
+  "added": [
+    "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs"
+  ],
+  "unchanged": 3922,
+  "formatterFiles": 49,
+  "formatterSourceBytes": 2023746,
+  "fullCanonicalBlobsNotRefetched": true
+}

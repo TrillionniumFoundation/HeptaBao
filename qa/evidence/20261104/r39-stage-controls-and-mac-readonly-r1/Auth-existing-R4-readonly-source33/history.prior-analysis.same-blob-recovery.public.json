@@ -1,0 +1,36 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "ok": true,
+      "row": {
+        "path": "pure-reader-first-error.public.json",
+        "blob": "021eb534d05f79344f7eec53914b59b5a9ff5a85",
+        "bytes": 537,
+        "sha256": "5a9ff4ac934803f775702338477a4d91eed3652bc2f68fa0c67de87401d2b1e8"
+      },
+      "pin": {
+        "blob": "021eb534d05f79344f7eec53914b59b5a9ff5a85",
+        "bytes": 537,
+        "sha256": "5a9ff4ac934803f775702338477a4d91eed3652bc2f68fa0c67de87401d2b1e8"
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "ok": true,
+      "row": {
+        "path": "references.public.json",
+        "blob": "de5f1727361224783b33e0f53e2ce1e7c295b457",
+        "bytes": 631,
+        "sha256": "dcaa952e3f401bf6c32026073180c73123ad5c63bfc4609fb7aea769330157d4"
+      },
+      "pin": {
+        "blob": "de5f1727361224783b33e0f53e2ce1e7c295b457",
+        "bytes": 631,
+        "sha256": "dcaa952e3f401bf6c32026073180c73123ad5c63bfc4609fb7aea769330157d4"
+      }
+    }
+  }
+]

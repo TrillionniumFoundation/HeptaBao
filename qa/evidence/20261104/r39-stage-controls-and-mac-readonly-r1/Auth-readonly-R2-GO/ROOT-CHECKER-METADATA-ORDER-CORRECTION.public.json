@@ -1,0 +1,9 @@
+{
+  "issue": "Same complete helper row fields and body but JSON metadata key insertion order differs; compare key sets and exact field values.",
+  "originalFailure": {
+    "error": "Error: original_helper_whole_mac_owned_unreaped_r1",
+    "stack": "Error: original_helper_whole_mac_owned_unreaped_r1\n    at ck (eval at <anonymous> (exec_main.mjs:63:1), <anonymous>:57:76)\n    at reviewMacExistingReadonlyR2 (eval at <anonymous> (exec_main.mjs:63:1), <anonymous>:72:69)\n    at eval (eval at <anonymous> (exec_main.mjs:63:1), <anonymous>:114:17)\n    at exec_main.mjs:65:131"
+  },
+  "candidate_changed": false,
+  "native_calls": 0
+}

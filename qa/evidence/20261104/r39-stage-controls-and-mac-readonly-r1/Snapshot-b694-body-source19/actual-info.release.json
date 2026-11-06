@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.snapshot-b694-stage-info-owner-release.v1",
+  "host": "rog",
+  "original_job": "1a1afe9f4f5-fc05-6cb6",
+  "slot": "snapshot_b694_rog_source_gitfirst_r1",
+  "root_GO": {
+    "blob": "0c67972ccc415f79b2223ceb65dbbf9c20ca4806",
+    "bytes": 3167,
+    "sha256": "cdaa7362d87a2a5c208536347c2081c25e825fdb29f76b03f43ff566f20993a9"
+  },
+  "original_observer": {
+    "id": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "tool": "file_info",
+    "payload": {
+      "blob": "6eeeeb9d2e21fcb9e7dc777c115f04f091d010dd",
+      "bytes": 612,
+      "sha256": "61d22a322a7f5ef03aa91c618781ebfbfa44da429f05f395d917179e638dadc5"
+    },
+    "payloadTree": "3ae8fa963079b54ae8814db648fb67b74ae49c0a",
+    "nativeText": {
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual_info": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "size": 28206,
+    "sha256": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db",
+    "version": "66306:31235919:28206:1793952723578666336:1793952723578666336",
+    "nativeText": {
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    },
+    "originalOperation": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "full9Strings": [
+      "66306",
+      "31235919",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28206",
+      "1793952723578666336",
+      "1793952723578666336"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "calls": 3,
+  "pages": 1,
+  "pending_call": null,
+  "native_call_in_flight": false,
+  "native_future_active": false,
+  "paused": false,
+  "business_process_live": false,
+  "lane_released": true,
+  "body_submitted": false,
+  "formatter_started": false,
+  "new_process_start": false,
+  "exact_info_started_once": true
+}

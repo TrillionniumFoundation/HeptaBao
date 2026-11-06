@@ -1,0 +1,14 @@
+{
+  "scope": "Local pure V8 verifier evaluation",
+  "observations": [
+    "SyntaxError: Unexpected token ')' at exec_main.mjs:164:27",
+    "SyntaxError: Unexpected token ')'",
+    "SyntaxError: Unexpected token ')' at exec_main.mjs:6:31"
+  ],
+  "codeStoredBeforeEvaluation": true,
+  "candidateChanged": false,
+  "nativeCalls": 0,
+  "anyCandidateExecuted": false,
+  "archiveAttempted": false,
+  "statement": "Source text and verifier text construction completed; evaluating the pure verifier failed syntax. No candidate or Native execution."
+}

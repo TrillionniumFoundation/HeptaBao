@@ -1,0 +1,20 @@
+--- a/service_native_snapshot_forward_audit_tests.rs
++++ b/service_native_snapshot_forward_audit_tests.rs
+@@ -100,7 +100,7 @@
+ }
+ 
+ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
+-    let mut pipeline = Pipeline::start()?;
++    let mut pipeline = Pipeline::start_for_snapshot_forwarding()?;
+     let leader = pipeline.ready_leader()?;
+     let (migration_source, archive) = prepare_archive(&pipeline, leader)?;
+     let token = finite_original_token(&pipeline, leader)?;
+@@ -239,7 +239,7 @@
+ }
+ 
+ fn run_unverified_attempt(attempt: bool) -> TestResult {
+-    let pipeline = Pipeline::start()?;
++    let pipeline = Pipeline::start_for_snapshot_forwarding()?;
+     let leader = pipeline.ready_leader()?;
+     let (migration_source, archive) = prepare_archive(&pipeline, leader)?;
+     let ingress = (leader + 1) % 3;

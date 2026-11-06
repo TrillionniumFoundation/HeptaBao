@@ -1,0 +1,174 @@
+{
+  "schema": "heptabao.root-GO.snapshot2379-independent-stage.v1",
+  "authorization": "GO",
+  "agent": "/root/compatibility_audit",
+  "purpose": "One independent exact2379 source checkout and canonical incremental bundle including four real Service snapshot audit regressions; historical controls remain inert.",
+  "scope": "independent_source_stage_only",
+  "source_packet": "21ec39d8574bd1711577a598fe54c92ad4f3b11f",
+  "source_review": {
+    "blob": "455335ee6c13a28a62211d6855a19bc4bbd04c93",
+    "bytes": 7606,
+    "sha256": "2e24ed7e15e7d847556d148b285f183ef679fe5b1f7b1d594f52a6f3723a99cb"
+  },
+  "source": {
+    "blob": "7da772881143eca4dd66a3628651e480547f2263",
+    "bytes": 29045,
+    "sha256": "cb1a1c58ed7fcfeded35c9d4892518a42b2455c8779b39c5865c4b0ea0eb974d"
+  },
+  "exact_request": {
+    "blob": "f84c09ce0410038dda0e55ce1a9b98609990780a",
+    "bytes": 112068,
+    "sha256": "6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8"
+  },
+  "stdin": {
+    "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+    "bytes": 79951,
+    "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "historical_controls_executed": false
+  },
+  "native_binding": {
+    "sha256": "7a2a6824e91e032a7a73205cda8a29b46a9a03d3abd4a7eef53c2b3cd4cbf996",
+    "native_fingerprint": "8802962929388225322",
+    "typed_stdin": true
+  },
+  "start": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "args_source": {
+      "blob": "7da772881143eca4dd66a3628651e480547f2263",
+      "bytes": 29045,
+      "sha256": "cb1a1c58ed7fcfeded35c9d4892518a42b2455c8779b39c5865c4b0ea0eb974d"
+    },
+    "self_sha256": "cb1a1c58ed7fcfeded35c9d4892518a42b2455c8779b39c5865c4b0ea0eb974d",
+    "carrier_sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-native-snapshot-forward-2379d02b-rog-source-20261106-r1-cb1a1c58",
+    "maximum_START_count": 1
+  },
+  "canonical": {
+    "commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+    "sole_parent": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "merkle": {
+      "root_sha": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+      "trees_verified": 358,
+      "leaf_count": 3930
+    },
+    "leaves": 3930,
+    "tracked_bytes": 62486000,
+    "index": {
+      "blob": "8cd39d6c4900a37bb5d64d37eb1330c54bfdba22",
+      "bytes": 453627,
+      "sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+    },
+    "modified": 6,
+    "new_files": 2,
+    "unchanged": 3922,
+    "source_changed_files": 8
+  },
+  "root_source_freeze": {
+    "blob": "8b967cbd150207e5335bb22bdcb41887d5809f8f",
+    "bytes": 3258,
+    "sha256": "24fe6c1d76f1ac446873b430967fdf1add994a91fc3bb5e4290ffb5d51788a0a"
+  },
+  "new_create_only_root": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1",
+  "source_checkout": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/source",
+  "new_control_directory": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control",
+  "old_readonly_source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+  "old_source_and_failed_observer_fences_required": true,
+  "public_fetch": {
+    "origin": "https://github.com/TrillionniumFoundation/HeptaBao.git",
+    "exact_commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "recursive_submodules": false,
+    "implicit_bootstrap": false
+  },
+  "bundle": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/canonical-native-snapshot-forward-2379d02b-from495.bundle",
+    "standalone": false,
+    "onlyPrerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "actualBytes": null,
+    "actualSha256": null,
+    "actualVersion": null
+  },
+  "helpers": {
+    "native": {
+      "blob": "d2fb755149c37da99c35705136ae973c91be8cc4",
+      "bytes": 19050,
+      "sha256": "0f5efb2be268a7db06e9ca2195000b87f26809244f23c6d52fa8746734c53a69"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "do_not_use_legacy_processStartBinding": true
+  },
+  "budgets": {
+    "internalSeconds": 300,
+    "gitSeconds": 90,
+    "cloneSeconds": 180,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "carrierBytes": 262144,
+    "bundleBytes": 4194304,
+    "process_read_bytes": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "journal": {
+    "slot": "snapshot_2379_rog_source_gitfirst_r1",
+    "call_key_prefix": "snapshot-2379-rog-source-",
+    "observer_key_prefix": "heptabao-native-snapshot-2379d02b-rog-source-observe-r1-",
+    "invoke_only_through": "gfRun",
+    "initialize_only_once_with_exact_whole_GO": true
+  },
+  "lane_activation": "B original b694 BODY observer and all original process observers are closed and released. B may use one empty lane now alongside C original INERT process observers. A/root zero Native; global at most2 lanes and one native call/future per lane.",
+  "sequence": [
+    "Whole exact GO then initialize only the fresh stage slot with root-correct typed-stdin digest/fingerprint.",
+    "Whole exact request,intent,armed externally; cross an independent dispatch boundary and submit the one exact process_start.",
+    "Preserve and externally whole original SDK before parse/isError. UNKNOWN retains original admission,never replays or re-keys.",
+    "Observe only actual original rog job status/streams with original operation IDs,next8192 pages,full immutable SHA/EOF and completed inactive closure.",
+    "Require known exit0/full/durable/confirmed terminal,original whole streams,actual b694 source/tree/index/old fences and all actual direct-child closures within original300/360. Expected successful path has60 commands, not observed yet.",
+    "Close original terminal/streams observers and release lane; exact detailed report observation and union49 formatting have separate concrete scopes. This GO starts no formatter or Cargo."
+  ],
+  "excluded": [
+    "rustfmt,Cargo,rustc,tests,product or historical control execution",
+    "implicit dependency/tool install or alternate root/source/commit",
+    "production services,credentials,providers,J3160,client switching or deletion",
+    "new report file_info/binary_read or automatic bundle transport/import",
+    "retry,rekey,deadline extension or inference that UNKNOWN is closed"
+  ],
+  "qualification": {
+    "historical_controls_executed": false,
+    "candidate_build_qualification": false,
+    "formatter_executed": false,
+    "rust_tests_executed": false,
+    "planned_snapshot_components23_plus_Service4_not_executed": true,
+    "PKI33b_separate_149_166_unaffected": true
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0,
+  "old_stage_root_qualification": {
+    "blob": "eca4bfe44f58cc4cc9d7d337ff0bdac4190bdcc6",
+    "bytes": 8628,
+    "sha256": "13c2a4bbe6af285447fe5c429dfde6e6fa83fdf65191995cf40c4c6971ad194c"
+  },
+  "source_review_checks": 41
+}

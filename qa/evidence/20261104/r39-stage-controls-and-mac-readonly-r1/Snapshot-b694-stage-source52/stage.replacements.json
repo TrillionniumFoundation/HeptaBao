@@ -1,0 +1,46 @@
+[
+  {
+    "before": "ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1')",
+    "after": "ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1')"
+  },
+  {
+    "before": "COMMIT = '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'",
+    "after": "COMMIT = 'b6949024dc5d0922ca9b27d865923d28982286c3'"
+  },
+  {
+    "before": "TREE = 'f412f1524e08a56e23374897d329bfcf6295f4fe'",
+    "after": "TREE = '9c800e97a2527e7f01c3a4b0be594e6762f9581e'"
+  },
+  {
+    "before": "PARENT = '808e45d690f177ecb922e13d1ed19f7877156094'",
+    "after": "PARENT = '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'"
+  },
+  {
+    "before": "ANCESTRY = (\n",
+    "after": "ANCESTRY = (\n    ('b6949024dc5d0922ca9b27d865923d28982286c3', '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'),\n"
+  },
+  {
+    "before": "'canonical_history_count': 3766",
+    "after": "'canonical_history_count': 3767"
+  },
+  {
+    "before": "assert len(added) == 14",
+    "after": "assert len(added) == 15"
+  },
+  {
+    "before": "'rev-list', '--count', COMMIT).decode().strip() == '3766'",
+    "after": "'rev-list', '--count', COMMIT).decode().strip() == '3767'"
+  },
+  {
+    "before": "['tracked_bytes'] == 62460068",
+    "after": "['tracked_bytes'] == 62463643"
+  },
+  {
+    "before": "6baa9290fa3ee8f67bc22a77697d38a7ad1c4c776fc769f5f04ee645de204574",
+    "after": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727"
+  },
+  {
+    "before": "canonical-native-snapshot-forward-8c95fb0a-from495.bundle",
+    "after": "canonical-native-snapshot-forward-b6949024-from495.bundle"
+  }
+]

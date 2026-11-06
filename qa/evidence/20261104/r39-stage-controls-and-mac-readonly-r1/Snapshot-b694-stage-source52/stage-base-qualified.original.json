@@ -1,0 +1,301 @@
+{
+  "schema": "heptabao.root-qualification.snapshot8c95-independent-stage-complete-report.v1",
+  "status": "PASS_ORIGINAL_REPORT_AND_INDEPENDENT_SOURCE_STAGE",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole49_293243",
+      "passed": true
+    },
+    {
+      "name": "exact_body_GO_and_executed_source",
+      "passed": true
+    },
+    {
+      "name": "prior_independent_info_exact_and_root_qualified",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_call_snapshot-8c95-rog-source-report-body-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_armed_tree_snapshot-8c95-rog-source-report-body-admit",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_call_snapshot-8c95-rog-source-report-body-status0",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_armed_tree_snapshot-8c95-rog-source-report-body-status0",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_call_snapshot-8c95-rog-source-report-body-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_armed_tree_snapshot-8c95-rog-source-report-body-page0",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_call_snapshot-8c95-rog-source-report-body-page1",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_armed_tree_snapshot-8c95-rog-source-report-body-page1",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_call_snapshot-8c95-rog-source-report-body-page2",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_armed_tree_snapshot-8c95-rog-source-report-body-page2",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_call_snapshot-8c95-rog-source-report-body-page3",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_armed_tree_snapshot-8c95-rog-source-report-body-page3",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_call_snapshot-8c95-rog-source-report-body-page4",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_armed_tree_snapshot-8c95-rog-source-report-body-page4",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_observer_e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_page_e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719_0",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_page_e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719_8192",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_page_e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719_16384",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_page_e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719_24576",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_page_e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719_32768",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_payload_e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+      "passed": true
+    },
+    {
+      "name": "snapshotBody_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_original_calls_five_pages",
+      "passed": true
+    },
+    {
+      "name": "one_exact_metadata_bound_range",
+      "passed": true
+    },
+    {
+      "name": "whole_original_binary_body_extent",
+      "passed": true
+    },
+    {
+      "name": "whole_report_exact_public_bytes",
+      "passed": true
+    },
+    {
+      "name": "body_lane_and_all_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "original_stage_terminal_root_already_qualified",
+      "passed": true
+    },
+    {
+      "name": "exact_stage_schema_prepared_and_identity",
+      "passed": true
+    },
+    {
+      "name": "same_exact_stager_carrier_roots",
+      "passed": true
+    },
+    {
+      "name": "all3928_source_blobs_modes_and_index",
+      "passed": true
+    },
+    {
+      "name": "independent_objects_and_exact_public_fetch",
+      "passed": true
+    },
+    {
+      "name": "all14_actual_ancestry_and_history",
+      "passed": true
+    },
+    {
+      "name": "old495_source_fence_before_after",
+      "passed": true
+    },
+    {
+      "name": "original_failed_observer_all_before_after_equal",
+      "passed": true
+    },
+    {
+      "name": "original12_failed_files_whole_pins_and_lossless_identities",
+      "passed": true
+    },
+    {
+      "name": "original_failed_authority_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_incremental_bundle_witness",
+      "passed": true
+    },
+    {
+      "name": "bundle_lossless_private_regular_identity",
+      "passed": true
+    },
+    {
+      "name": "all59_direct_children_reaped_success_and_empty_groups",
+      "passed": true
+    },
+    {
+      "name": "original_budgets_deadline_after_cleanup",
+      "passed": true
+    },
+    {
+      "name": "four_historical_controls_exact_inert",
+      "passed": true
+    },
+    {
+      "name": "historical_test_counts_are_not_execution",
+      "passed": true
+    }
+  ],
+  "check_count": 48,
+  "packet": {
+    "tree": "0d2cd087c8723d44e97740289a6f449fcac98653",
+    "files": 49,
+    "bytes": 293243,
+    "merkle": {
+      "root_sha": "0d2cd087c8723d44e97740289a6f449fcac98653",
+      "trees_verified": 1,
+      "leaf_count": 49
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1afa74868-fc05-6a7e",
+  "report": {
+    "blob": "6b514b3472e9aafb920c77f99198ccda10a9d25c",
+    "bytes": 28015,
+    "sha256": "750f5cb413cf08f1a7ba9b126320e4bbd1a9682e308b9076d2f13e54e98157c6"
+  },
+  "original_body_observer": {
+    "id": "e997ee50bcd916ec47d15426485e5d53c66b8b7d8e0c759dd3b316fa95dac719",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "a95fc75963c87c9a47f652b06393df6cc96c56f7",
+      "bytes": 37804,
+      "sha256": "a67345a693b4ad5056e78afa3c3012e27ff7251480303eeb2d9f04e27c0ab0d7"
+    },
+    "payloadTree": "7148c45c7c46d57ee661a08d8ed6837330a8c78b",
+    "nativeText": {
+      "blob": "9b7ddfb72af77d9a5bb5f2267874124387fcc6f4",
+      "bytes": 37701,
+      "sha256": "2cc3156ca0e6ab7b0c0b1c59d13f2c61902da7520ad4d51d1efd55d2ed7249ef"
+    },
+    "pages": 5,
+    "completedInactive": true
+  },
+  "original_transport": {
+    "stage_calls": 7,
+    "info_calls": 3,
+    "body_calls": 7,
+    "total_calls": 17,
+    "observers": 4,
+    "pages": 8
+  },
+  "source_commit": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+  "source_tree": "f412f1524e08a56e23374897d329bfcf6295f4fe",
+  "source_full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "6baa9290fa3ee8f67bc22a77697d38a7ad1c4c776fc769f5f04ee645de204574",
+    "index_matches_tree": true,
+    "tracked_bytes": 62460068,
+    "tracked_leaf_count": 3928
+  },
+  "actual_commands": 59,
+  "all_direct_children_closed": true,
+  "actual_elapsed_seconds": 15.112258359964471,
+  "canonical_bundle": {
+    "bytes": 103944,
+    "header": {
+      "header_sha256": "c5d6594583fd285416be513135613592da7cbfc25a7edf85d2680f2ee417b021",
+      "heads": [
+        [
+          "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31235317,
+      1000,
+      1000,
+      33152,
+      1,
+      103944,
+      {
+        "$exactInteger": "1793948356238125749"
+      },
+      {
+        "$exactInteger": "1793948356238125749"
+      }
+    ],
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-8c95fb0a-20261106-r1/control/canonical-native-snapshot-forward-8c95fb0a-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "6fcb01e845ddf4bbb7c3d1aa7ee4eaa6eb5777030853f065697c8e7ba201857b"
+  },
+  "limits": [
+    "This stage qualifies the unformatted8c95 checkout only; later b69424-arm and PKI33b source successors have separate gates.",
+    "Historical controls were parsed/compiled as Python source only, never executed. Counts44/7/9/1 are not new test results.",
+    "Bundle generation and validation were observed within the bound stager; its body was not independently exported or imported on Mac here.",
+    "No compiler, formatter, product, CLI repair, production or full replacement qualification follows."
+  ],
+  "formatted": false,
+  "compiled": false,
+  "product_tests_executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

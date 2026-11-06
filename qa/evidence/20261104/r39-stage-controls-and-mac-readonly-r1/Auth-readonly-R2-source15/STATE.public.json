@@ -1,0 +1,10 @@
+{
+  "scope": "source-only",
+  "slot": "owner_launchd_home_t5_existing_readonly_gitfirst_r2",
+  "initialized": false,
+  "nativeCalls": 0,
+  "activeFutures": 0,
+  "originalR1ProposalPreserved": true,
+  "originalR4ManagedScope": "UNKNOWN",
+  "readyForRootExactSourceReview": true
+}

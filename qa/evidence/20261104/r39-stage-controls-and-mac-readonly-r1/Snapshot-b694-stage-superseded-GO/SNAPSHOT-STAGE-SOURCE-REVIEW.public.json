@@ -1,0 +1,276 @@
+{
+  "schema": "heptabao.root-source-review.snapshot-b694-independent-stage-only.v1",
+  "status": "PASS_FOR_SEPARATE_STAGE_ONLY_GO",
+  "checks": [
+    {
+      "name": "whole52_3885073",
+      "passed": true
+    },
+    {
+      "name": "root_source_freeze_and_old_actual_exact",
+      "passed": true
+    },
+    {
+      "name": "old_stage_request_and_helpers_exact",
+      "passed": true
+    },
+    {
+      "name": "both_full_canonical_trees",
+      "passed": true
+    },
+    {
+      "name": "all3928_frozen_leaves_exact",
+      "passed": true
+    },
+    {
+      "name": "sole_parent_commit_chain",
+      "passed": true
+    },
+    {
+      "name": "canonical_complete453379_index_62463643bytes",
+      "passed": true
+    },
+    {
+      "name": "only24_modified3904_unchanged_no_add_delete",
+      "passed": true
+    },
+    {
+      "name": "all24_root_reviewed_pins",
+      "passed": true
+    },
+    {
+      "name": "original23_root_reviewed_pins",
+      "passed": true
+    },
+    {
+      "name": "exact23plus24_union46_one_overlap",
+      "passed": true
+    },
+    {
+      "name": "union_all_exact_frozen_content_pins",
+      "passed": true
+    },
+    {
+      "name": "eleven_binding_literals",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_0",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_1",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_2",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_3",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_4",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_5",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_6",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_7",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_8",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_9",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_unique_10",
+      "passed": true
+    },
+    {
+      "name": "whole_stage_literal_only",
+      "passed": true
+    },
+    {
+      "name": "three_hunks_both_exact_directions",
+      "passed": true
+    },
+    {
+      "name": "all20_function_definitions_whole_unchanged",
+      "passed": true
+    },
+    {
+      "name": "journal_three_bindings",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_unique_0",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_unique_1",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_unique_2",
+      "passed": true
+    },
+    {
+      "name": "journal_all_other_guards_unchanged",
+      "passed": true
+    },
+    {
+      "name": "journal_syntax_only_not_invoked",
+      "passed": true
+    },
+    {
+      "name": "exact_source_request_pins",
+      "passed": true
+    },
+    {
+      "name": "request_other_fields_unchanged",
+      "passed": true
+    },
+    {
+      "name": "correct_typed_stdin_native_binding",
+      "passed": true
+    },
+    {
+      "name": "historical_carrier79951_four_inert_controls",
+      "passed": true
+    },
+    {
+      "name": "frozen_commit_tree_parent_freshroot",
+      "passed": true
+    },
+    {
+      "name": "one_added_ancestry_and_history3767",
+      "passed": true
+    },
+    {
+      "name": "old_readonly_source_failed_scope_and_bundle_prereq",
+      "passed": true
+    },
+    {
+      "name": "full_worktree_new_expected_bytes_index",
+      "passed": true
+    },
+    {
+      "name": "old_exact_fetch_isolated_git_and_no_bootstrap",
+      "passed": true
+    },
+    {
+      "name": "all_original_stage_budgets",
+      "passed": true
+    },
+    {
+      "name": "new_count60_is_expectation_only",
+      "passed": true
+    },
+    {
+      "name": "all_new_runtime_and_future_scopes_still_false",
+      "passed": true
+    }
+  ],
+  "check_count": 45,
+  "source_packet": {
+    "tree": "c2676044f1e456c0531ee8401c567fb412a932db",
+    "files": 52,
+    "bytes": 3885073,
+    "merkle": {
+      "root_sha": "c2676044f1e456c0531ee8401c567fb412a932db",
+      "trees_verified": 1,
+      "leaf_count": 52
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "e08a9afb9a675d04929fa1643c95ace07d6ecbe7",
+    "bytes": 28951,
+    "sha256": "5dbb0ad1f3501b825c5f8ab14ccdbb7f1e4daf33e7710729203b2675c00c2dcc"
+  },
+  "exact_request": {
+    "blob": "cbd6774e2f40e2c4b1e0c2f29cbc7954eaff494d",
+    "bytes": 111973,
+    "sha256": "12c03db5255a6373e20773cd09e82effaab754525a6f1cc6856aff61f34f1337"
+  },
+  "native_binding": {
+    "sha256": "e36df921ed2e993ce0db77e39a87913a65bc80bc9dcbb174067e18afb60476da",
+    "native_fingerprint": "16388028543179594044"
+  },
+  "journal": {
+    "blob": "3a87cb79df3e6bd5d34d64f3904d28fe3537f11b",
+    "bytes": 19050,
+    "sha256": "bcde7b1177d30057a52d20a247f3a4dcd2b6bdee2a702d80b99e9cb7d90bc0e2"
+  },
+  "base_source": {
+    "blob": "75593a6bf87243491247aecf007b1f029d33d59b",
+    "bytes": 28857,
+    "sha256": "6d38079e9d0e41fd1a705647786bdbc5cde8a374d0477482fe3a355e10f668d9"
+  },
+  "root_source_freeze": {
+    "blob": "98647b553634c669c84ba1dcd82058af3cf25dd3",
+    "bytes": 2121,
+    "sha256": "262b2d19958f94c134a963d9a3bfcd9e53f134a95f719863fec4716527756968"
+  },
+  "old_stage_root_qualification": {
+    "blob": "eca4bfe44f58cc4cc9d7d337ff0bdac4190bdcc6",
+    "bytes": 8628,
+    "sha256": "13c2a4bbe6af285447fe5c429dfde6e6fa83fdf65191995cf40c4c6971ad194c"
+  },
+  "canonical": {
+    "commit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+    "sole_parent": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "merkle": {
+      "root_sha": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+      "trees_verified": 358,
+      "leaf_count": 3928
+    },
+    "leaves": 3928,
+    "tracked_bytes": 62463643,
+    "index": {
+      "blob": "a36e8c2f97ef062ee804114efb22b4a3a9b08899",
+      "bytes": 453379,
+      "sha256": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727"
+    },
+    "modified_existing_files": 24,
+    "unchanged_leaves": 3904
+  },
+  "union": {
+    "source_files": 46,
+    "source_bytes": 1931523,
+    "original": 23,
+    "fixture_matches": 24,
+    "overlap": 1
+  },
+  "limits": {
+    "internalSeconds": 300,
+    "gitSeconds": 90,
+    "cloneSeconds": 180,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "carrierBytes": 262144,
+    "bundleBytes": 4194304
+  },
+  "expected_successful_path_commands": 60,
+  "formatter_reviewed_for_execution": false,
+  "formatter_executed": false,
+  "compiler_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

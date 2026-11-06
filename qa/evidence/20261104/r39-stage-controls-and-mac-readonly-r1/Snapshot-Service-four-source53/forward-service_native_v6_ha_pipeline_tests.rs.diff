@@ -1,0 +1,40 @@
+--- a/service_native_v6_ha_pipeline_tests.rs
++++ b/service_native_v6_ha_pipeline_tests.rs
+@@ -303,6 +303,17 @@
+     }
+ 
+     fn start_with_configured_storage(configured_native_storage: bool) -> TestResult<Self> {
++        Self::start_with_snapshot_routes(configured_native_storage, false)
++    }
++
++    fn start_for_snapshot_forwarding() -> TestResult<Self> {
++        Self::start_with_snapshot_routes(false, true)
++    }
++
++    fn start_with_snapshot_routes(
++        configured_native_storage: bool,
++        snapshot_api_origins: bool,
++    ) -> TestResult<Self> {
+         let mut files = Root::new();
+         private_directory(&files.path)?;
+         files.path = fs::canonicalize(&files.path)?;
+@@ -345,7 +356,18 @@
+             copy_cold_directory(&seed.join("data"), &directory.join("data"))?;
+         }
+         let pins = certificates(&files.path)?;
+-        let configs = configurations(&files.path, &cluster_id, &pins)?;
++        let mut configs = configurations(&files.path, &cluster_id, &pins)?;
++        if snapshot_api_origins {
++            // Snapshot admission requires a configured API origin even when
++            // the request will use the authenticated binary peer route. These
++            // are the fixed real peer socket addresses; no HTTP listener or
++            // HTTP request is claimed, and a Redirect fails the new fixture.
++            for config in &mut configs {
++                for peer in config.peers.values_mut() {
++                    peer.api_address = Some(format!("https://{}", peer.address));
++                }
++            }
++        }
+         let mut pipeline = Self {
+             files,
+             configs,

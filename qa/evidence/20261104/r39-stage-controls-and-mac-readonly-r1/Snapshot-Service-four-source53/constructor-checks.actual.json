@@ -1,0 +1,42 @@
+[
+  {
+    "name": "old constructor wrapper explicit original false",
+    "pass": true
+  },
+  {
+    "name": "new constructor only enables origins",
+    "pass": true
+  },
+  {
+    "name": "old start unchanged calls configured false",
+    "pass": true
+  },
+  {
+    "name": "only fixed original peer socket origin",
+    "pass": true
+  },
+  {
+    "name": "all postconstructor methods/tests whole",
+    "pass": true
+  },
+  {
+    "name": "all preconstructor source whole",
+    "pass": true
+  },
+  {
+    "name": "only2 constructor calls in new tests",
+    "pass": true
+  },
+  {
+    "name": "new tests explicitly reject legacy redirect",
+    "pass": true
+  },
+  {
+    "name": "same real mTLS/limits/ownership old constructor body",
+    "pass": true
+  },
+  {
+    "name": "no new HTTP client or listener",
+    "pass": true
+  }
+]

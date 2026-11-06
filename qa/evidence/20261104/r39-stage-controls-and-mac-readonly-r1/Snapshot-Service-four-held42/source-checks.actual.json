@@ -1,0 +1,340 @@
+{
+  "schema": "heptabao.snapshot-forward.Service-audit-regression.SOURCE-checks.v1",
+  "baseCommit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "checks": [
+    {
+      "name": "exact b694 canonical Merkle",
+      "pass": true
+    },
+    {
+      "name": "5 modified2 new fixed paths",
+      "pass": true
+    },
+    {
+      "name": "canonical before service.rs",
+      "pass": true
+    },
+    {
+      "name": "before/after whole service.rs",
+      "pass": true
+    },
+    {
+      "name": "strict forward service.rs",
+      "pass": true
+    },
+    {
+      "name": "strict reverse service.rs",
+      "pass": true
+    },
+    {
+      "name": "unique insert service.rs     #[cfg(test)]\n    audit_capacity: u64,\n",
+      "pass": true
+    },
+    {
+      "name": "unique insert service.rs             #[cfg(test)]\n            audit_capacit",
+      "pass": true
+    },
+    {
+      "name": "unique removal service.rs             #[cfg(test)]\n            audit_capacit",
+      "pass": true
+    },
+    {
+      "name": "unique removal service.rs     #[cfg(test)]\n    audit_capacity: u64,\n    #[cf",
+      "pass": true
+    },
+    {
+      "name": "only declared additions service.rs",
+      "pass": true
+    },
+    {
+      "name": "cfg(test) injection service.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical before service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "before/after whole service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "strict forward service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "strict reverse service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "unique insert service_snapshot_forward.rs #[path = \"service_snapshot_forward_source.rs\"]\nmod",
+      "pass": true
+    },
+    {
+      "name": "unique removal service_snapshot_forward.rs #[path = \"service_snapshot_forward_source.rs\"]\nmod",
+      "pass": true
+    },
+    {
+      "name": "only declared additions service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "cfg(test) injection service_snapshot_forward.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical before service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "before/after whole service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "strict forward service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "strict reverse service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "unique insert service_snapshot_forward_client.rs impl SnapshotForwardPlan {\n    fn accept_ready(",
+      "pass": true
+    },
+    {
+      "name": "unique insert service_snapshot_forward_client.rs             let activation = Zeroizing::new(servic",
+      "pass": true
+    },
+    {
+      "name": "unique insert service_snapshot_forward_client.rs         if self.delivery_check(service, &original,",
+      "pass": true
+    },
+    {
+      "name": "unique removal service_snapshot_forward_client.rs         #[cfg(test)]\n        service.fixture_snaps",
+      "pass": true
+    },
+    {
+      "name": "unique removal service_snapshot_forward_client.rs             let activation = Zeroizing::new(servic",
+      "pass": true
+    },
+    {
+      "name": "unique removal service_snapshot_forward_client.rs impl SnapshotForwardPlan {\n    #[cfg(test)]\n    pu",
+      "pass": true
+    },
+    {
+      "name": "only declared additions service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "cfg(test) injection service_snapshot_forward_client.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical before service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "before/after whole service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "strict forward service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "strict reverse service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "unique insert service_snapshot_forward_source.rs         let publication: Result<(u16, Zeroizing<Ve",
+      "pass": true
+    },
+    {
+      "name": "unique removal service_snapshot_forward_source.rs         #[cfg(test)]\n        self.fixture_snapshot",
+      "pass": true
+    },
+    {
+      "name": "only declared additions service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "cfg(test) injection service_snapshot_forward_source.rs",
+      "pass": true
+    },
+    {
+      "name": "canonical before service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "before/after whole service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "strict forward service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "strict reverse service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "unique insert service_native_v6_ha_historical_restore_tests.rs //! Host power loss is separately measured by the ",
+      "pass": true
+    },
+    {
+      "name": "unique removal service_native_v6_ha_historical_restore_tests.rs //! Host power loss is separately measured by the ",
+      "pass": true
+    },
+    {
+      "name": "only declared additions service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "cfg(test) injection service_native_v6_ha_historical_restore_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "new canonical absence service_snapshot_forward_test_faults.rs",
+      "pass": true
+    },
+    {
+      "name": "new whole service_snapshot_forward_test_faults.rs",
+      "pass": true
+    },
+    {
+      "name": "new canonical absence service_native_snapshot_forward_audit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "new whole service_native_snapshot_forward_audit_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "test-only perService state/default",
+      "pass": true
+    },
+    {
+      "name": "test-only fault module",
+      "pass": true
+    },
+    {
+      "name": "child of existing real historical fixture",
+      "pass": true
+    },
+    {
+      "name": "source hook after real retained finalizer and status refusal",
+      "pass": true
+    },
+    {
+      "name": "first gate hook after original sync/activation before real check",
+      "pass": true
+    },
+    {
+      "name": "second hook after mandatory success audit before real second check",
+      "pass": true
+    },
+    {
+      "name": "actual nonce binding",
+      "pass": true
+    },
+    {
+      "name": "registration one shot and no reset",
+      "pass": true
+    },
+    {
+      "name": "only injected state mutation nonce/audit cap",
+      "pass": true
+    },
+    {
+      "name": "no manufactured completion/receipt/root",
+      "pass": true
+    },
+    {
+      "name": "observations only real fields",
+      "pass": true
+    },
+    {
+      "name": "exact4 test functions",
+      "pass": true
+    },
+    {
+      "name": "real Pipeline and actual production listener",
+      "pass": true
+    },
+    {
+      "name": "no handler strong Service cycle",
+      "pass": true
+    },
+    {
+      "name": "real archive/once restore path",
+      "pass": true
+    },
+    {
+      "name": "postarchive finite final use token",
+      "pass": true
+    },
+    {
+      "name": "no second business admission",
+      "pass": true
+    },
+    {
+      "name": "original deadline scope and exact ingress peer deadline",
+      "pass": true
+    },
+    {
+      "name": "unknown and original authority asserted",
+      "pass": true
+    },
+    {
+      "name": "no data/file/headers/index at failed delivery",
+      "pass": true
+    },
+    {
+      "name": "real originalAuth separated from installed",
+      "pass": true
+    },
+    {
+      "name": "actual audit append veto and fence",
+      "pass": true
+    },
+    {
+      "name": "actual one epoch and exact operation/ref",
+      "pass": true
+    },
+    {
+      "name": "cold actual owner replacement",
+      "pass": true
+    },
+    {
+      "name": "real private lease availability",
+      "pass": true
+    },
+    {
+      "name": "one actual dispatch measured",
+      "pass": true
+    },
+    {
+      "name": "negative has both no-exchange and real mTLS denial",
+      "pass": true
+    },
+    {
+      "name": "negative no forged root/ref after failed audit",
+      "pass": true
+    },
+    {
+      "name": "negative no root mutation and no new epoch",
+      "pass": true
+    },
+    {
+      "name": "only denied wire has forged reference",
+      "pass": true
+    }
+  ],
+  "checkCount": 82,
+  "allPassed": true,
+  "scope": "Pure byte/projection/order/fixture source checks only; not Rust parsing, compiling or executed Service behavior",
+  "rustExecuted": false,
+  "runtimeCalls": 0,
+  "testsExecuted": 0
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.finalstage.body-page-local-prepare-recovery.v1",
+  "rootGO": {
+    "blob": "83822d9fc630a8f21e39bb4a66bb7b8ca3073433",
+    "bytes": 2495,
+    "sha256": "7cfb879551650819d2b0ee64106eb20166e7479e3aa92e4a5c4c336e1501c8b2"
+  },
+  "originalFailure": "29702a6bdaa45a33b23389cef0d89b6cce7edb8e",
+  "originalOperation": "2a6b394a4c3e5df4436b6fd4627d8fe6065390668129f0d71755efd15a9a4a5e",
+  "nextOffset": 8192,
+  "limit": 8192,
+  "noNativeCalled": true,
+  "noGitMutation": true,
+  "noContextInitialization": true,
+  "oldFailurePreserved": true
+}

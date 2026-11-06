@@ -1,0 +1,27 @@
+--- a/source-verifier.invalid.js
++++ b/source-verifier.js
+@@ -56,18 +56,18 @@
+     const body=after.slice(after.indexOf(start));
+     function block(s,needle,next){const a=s.indexOf(needle);if(a<0)throw Error("missing-block:"+needle);const b=s.indexOf(next,a+needle.length);if(b<0)throw Error("missing-next:"+next);return s.slice(a,b);}
+     for(const [a,z,name] of [
++      ["    def call(","    def query(","direct-call"],
++      ["    def query(","    def pid_observation(","old-query"]
+-      ["    def call(","    def query(","direct-call"),
+-      ["    def query(","    def pid_observation(","old-query")
+     ]){
+       const oldBlock=block(before,a,z);
+       const newBlock=block(after,a,name==="old-query"?"    def native_pid_once(":z);
+       need(oldBlock===newBlock,"unchanged-"+name);
+     }
+     for(const [a,z,name] of [
++      ["def check_leaf_metadata(","def read_pinned(","leaf-final-fence"],
++      ["def observe_ready(","def observe_terminal(","ready-validator"],
++      ["def observe_terminal(","def safe_commands_public(","terminal-validator"],
++      ["def safe_commands_public(","def main(","helper-public-projection"]
+-      ["def check_leaf_metadata(","def read_pinned(","leaf-final-fence"),
+-      ["def observe_ready(","def observe_terminal(","ready-validator"),
+-      ["def observe_terminal(","def safe_commands_public(","terminal-validator"),
+-      ["def safe_commands_public(","def main(","helper-public-projection")
+     ])need(block(before,a,z)===block(after,a,z),"unchanged-"+name);
+     need(before.includes(t["original-ready-pid-method.r2.py"])&&!after.includes(t["original-ready-pid-method.r2.py"])
+       &&after.includes(t["changed-methods.libproc.r3.py"]),"only-explicit-ready-pid-method-replaced");

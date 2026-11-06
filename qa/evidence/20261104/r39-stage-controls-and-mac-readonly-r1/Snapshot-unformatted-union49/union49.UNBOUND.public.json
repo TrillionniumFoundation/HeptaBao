@@ -1,0 +1,593 @@
+{
+  "schema": "heptabao.snapshot-forward-service-regression-union49.unbound-source.v1",
+  "base_commit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "base_tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+  "base_source52": "c2676044f1e456c0531ee8401c567fb412a932db",
+  "service_regression_source53": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+  "future_commit": null,
+  "future_tree": null,
+  "future_stage_root": null,
+  "binding_ready": false,
+  "formatter_request": null,
+  "original46": 46,
+  "regression_existing6_new2": 8,
+  "intersection5": [
+    "crates/heptabao-server/src/service.rs",
+    "crates/heptabao-server/src/service_snapshot_forward.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+    "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs"
+  ],
+  "added3": [
+    "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+    "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+    "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs"
+  ],
+  "union_count": 49,
+  "source_bytes": 2023746,
+  "rows": [
+    {
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+      "name": "authenticated_peer_frame.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "8edc95536e36540a0cf160cb904e4844a80f98fc",
+        "bytes": 6204,
+        "sha256": "cd3c37ffaaaada293f3ab31727cfcd99206f551d9851fbfc6ab5ef06ccb4fac4"
+      }
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "name": "lib.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "504b1b18757bdd4bf013e7ee27029c0cc9044d37",
+        "bytes": 85408,
+        "sha256": "9719e910990ebabe8d4d84e940ec942d1a92f13cec6f1a776934ae66f0d61521"
+      }
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+      "name": "native_snapshot_body_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "fbaa67b64fd10377039096f04072868efdf88542",
+        "bytes": 7450,
+        "sha256": "c656de0f4ef9b627210e46323f2436adc4b3392d8097cfddcfdc29f2661054dc"
+      }
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_body.rs",
+      "name": "native_snapshot_body.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "bbf14e2500ffbfe36a0ef24ca0e19240e88d319e",
+        "bytes": 15545,
+        "sha256": "c5371d4d81da56be70655bd618d7fbe321ca52df531cd30f33b92dd014a903a5"
+      }
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+      "name": "native_snapshot_peer_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "e4d16a8baabe02fa172232792850f291c5cdd1d5",
+        "bytes": 24050,
+        "sha256": "aad72978eebeb7183c422cce15786049e860141a3526320b34f1f5f2d8fc7674"
+      }
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+      "name": "native_snapshot_peer.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "2aae6e8a7f5bc459e19240fec8c622bdf115b8e2",
+        "bytes": 23126,
+        "sha256": "0981114047274df0e10fb986e8db70abd04a1f3a3efa2e3fb0ab2020005a1d14"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_forward_actor.rs",
+      "name": "auth_forward_actor.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "84d925badf31803b76d0f008bb7605d2c5c15d88",
+        "bytes": 5048,
+        "sha256": "c14d38acecd53ecd6583556bcf5d0caf1e799a1a85c59bb77ef5ed09c88048c6"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs",
+      "name": "auth_snapshot_forward_actor_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "468a6808a7b910fe5c3489f9afeaa21fa8354d13",
+        "bytes": 2135,
+        "sha256": "8bdf60ffd25054dc02c87e017c79801599ed7f37b8ce437455305e5a6bc5ff61"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_forward.rs",
+      "name": "ha_snapshot_forward.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "fdc4ddc517cb7919375e05ae18ba7ae87267c8f0",
+        "bytes": 6330,
+        "sha256": "d82de887f32993f0db1c0269bd44579f09673c431d4421a5b88c97fe5b432c0f"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "name": "ha.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "19a28bccef243c221a89841209245527252a9b21",
+        "bytes": 171691,
+        "sha256": "b3cd73a6b008189838d131626fec259e498c865e8965d8cb4eede9d702b8f99d"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "name": "http_snapshot.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "c3740f0a2e55281b72a05f1b6c8e527618f3d65a",
+        "bytes": 38272,
+        "sha256": "c97b724772726f15464abb39539136e3630afa9ffd7aba1e0210396aaee09bc1"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "name": "http.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "2f3843615e5432b311eeb438c238d9222434310d",
+        "bytes": 232657,
+        "sha256": "47911a458e22757f47349ef1ca85124ea005d6de30055d456483772f2b577eb2"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_forward_delivery.rs",
+      "name": "service_forward_delivery.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "e5e2b67dc88ed2a67ee266a1bbdd8b777c42f36c",
+        "bytes": 29010,
+        "sha256": "097371c6ec8a41d95b727fb41be00524dac6a39bdd41f991cbab51b7055d438a"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_ha_tests.rs",
+      "name": "service_native_controlgroups_271_namespace_ha_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "d3b1e12fcbbfdeba55ffa344dec0a1fa476b7992",
+        "bytes": 16080,
+        "sha256": "02cc09feba880d80bfc9372b0f86260518e260d52bbc3fa7c7e5fe17b80967a2"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_tests.rs",
+      "name": "service_native_controlgroups_271_namespace_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "758fc2a19179bf0359f790a2b85ab0bb90e78e35",
+        "bytes": 16003,
+        "sha256": "3a9581e97497703fd5f8ace778b53ccf91fe2e0da1a93c9a31bf8fbb2bf73ce6"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_file_gc_tests.rs",
+      "name": "service_native_file_gc_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "063676cb26c9023e5d27dbffefba694a94422295",
+        "bytes": 13274,
+        "sha256": "018091c1d8da3ef996825cadba3508c46a843628e52d2f32e29517fe22b0631c"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_flat_retirement_tests.rs",
+      "name": "service_native_flat_retirement_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "fff1bd6ba6d249299774ce508d2511e51bd42cde",
+        "bytes": 40451,
+        "sha256": "d27e317371371497ca30b31c176a08cf30a05163e07658149d5361cf61943d56"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_import_tests.rs",
+      "name": "service_native_kv2_import_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "23038ffffacd18037700b0b9b1f4ed2d38c769f1",
+        "bytes": 34188,
+        "sha256": "9f8842428f00eba24477bc163259ca0a48df3e676b07676eed31310284f10bcb"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_large_ha_tests.rs",
+      "name": "service_native_kv2_large_ha_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "558d460b067c61d231f56c48320d4de54fa52edd",
+        "bytes": 41292,
+        "sha256": "8c15a718354afb9e180024fa90dd219cdba9d4369d72746364cd039d9f5e4097"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "name": "service_native_kv2_mount_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "0d55e13c52aa785eccb3f9893aada54f5fb626d4",
+        "bytes": 26981,
+        "sha256": "9980cd10348eee2c4bf894e090f2f41383bbe0d1de13578b5e83f1497ab07472"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs",
+      "name": "service_native_kv2_storage_witness_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "4bfdfdbf943010b434134bb1cfcaaacee86f3fff",
+        "bytes": 23721,
+        "sha256": "3d39c810a3c0655f6aadc8ab620f71c88b9f325d4e78c2fdd6a1b562634406f0"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_namespace_tree_tests.rs",
+      "name": "service_native_namespace_tree_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "dced505c3ce880f7cee05cec747d4400aac59d50",
+        "bytes": 32704,
+        "sha256": "6117d5e314f10ce1df0b10c84159222cb37b3a90edef9fa7580d1b01ccbf81c7"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_archive_tests.rs",
+      "name": "service_native_pki_archive_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "0256a72add9fca16d4ec8bbee3c5b4243ff7f1e2",
+        "bytes": 13352,
+        "sha256": "e5666d96cc2bf4e32b13821cb2786da5f2f192b8fe418c945cdb1ba2ab613231"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_remount_v6_tests.rs",
+      "name": "service_native_remount_v6_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "245516dd1985d1a64fdd0532cbbbc2a209618dd0",
+        "bytes": 25915,
+        "sha256": "96aef7794bcdfba3ab6cc544c608ffd26b48ffafed0fcba6563943c310a9f74a"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+      "name": "service_native_snapshot_forward_audit_tests.rs",
+      "original46": false,
+      "serviceRegression": true,
+      "source": {
+        "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+        "bytes": 14875,
+        "sha256": "83b76edc5b8cc05de7ea748766c045d8dc67d487f82ed43d0fc614878f747c4e"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh_archive_tests.rs",
+      "name": "service_native_ssh_archive_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "748af393ffbe89e8697ba15fe1f78b5170e418ec",
+        "bytes": 8280,
+        "sha256": "5d70e8c205b6ac5dd8f59d36e8a11d27d5483ce68a9a2240b1bfbd67b1c9dbc8"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "name": "service_native_storage_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "101bac012507c04ee3a1c2b6dc15273e18cd9d61",
+        "bytes": 25215,
+        "sha256": "9e27624cbcc31c32a739b708e134ec8022ced307d681051e26854eb167730d7e"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+      "name": "service_native_transit_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "9f94153e8309317194ec66cf5cdb51a16507e4af",
+        "bytes": 27508,
+        "sha256": "cd6cfe5785f95cb8f2cd50f156f3c790fcdb9c4787a1acd5bee9a22100d2b4ed"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "name": "service_native_v6_ha_cold_restore_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "d6359eeb2d31bfc07636bbc2c2809688ebfc3467",
+        "bytes": 33328,
+        "sha256": "bbbd43e5fd049b193da9fc092bc6feec314263f62dc7859b35e2b018afbbeff4"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+      "name": "service_native_v6_ha_historical_restore_tests.rs",
+      "original46": true,
+      "serviceRegression": true,
+      "source": {
+        "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+        "bytes": 53166,
+        "sha256": "ff6cc53a65ea25bcb9d4817f5875d1de950c4814b54bd7eafdff6b95ad8ed69d"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "name": "service_native_v6_ha_pipeline_tests.rs",
+      "original46": false,
+      "serviceRegression": true,
+      "source": {
+        "blob": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+        "bytes": 70780,
+        "sha256": "0e204bfd4f2a2b5640e1da6611014f5a87799b099c9b2f6c861283e60c57c2ea"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_restore_borrowed_tests.rs",
+      "name": "service_native_v6_ha_restore_borrowed_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "74669ad0f4e3fd26f34d10b53ed29a06ae8a2032",
+        "bytes": 21227,
+        "sha256": "39d87fbdaa26716890b2bb9c4d12577224400bdd1c9611a073c616fd78847e97"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+      "name": "service_native_v6_ha_snapshot_repair_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "d4b85c648162480a0ebd1900624a33d063c11eb7",
+        "bytes": 23538,
+        "sha256": "0cbc4d8e5855cd6726d6673b860ae514c9042f3788f8016e0fcb9403c0445814"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs",
+      "name": "service_native_v6_ha_snapshot_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "001413918726abb14faa742f291dde633ddbd036",
+        "bytes": 12836,
+        "sha256": "a7999ef4dc72fbc3b776ad9e86d6fd19ccabfba7cdfc839b6d91dab4a988e404"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_migration_tests.rs",
+      "name": "service_native_v6_migration_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "d755f8800bd1d93c8c2b1b7e113c09f2489e4f0b",
+        "bytes": 19758,
+        "sha256": "291c2e023eb4213f15cc7214ae5ca988db6af63744cc8bc06c0e51bfba276b32"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_rate_limit_quota_139_tests.rs",
+      "name": "service_rate_limit_quota_139_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "60925759e86f1bfad3a9d75ff0d53885da8b9626",
+        "bytes": 40558,
+        "sha256": "b80ea54e67134fdcba6b329e4d8f283c40461256d6e9657f61178f93479fd685"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+      "name": "service_snapshot_forward_client.rs",
+      "original46": true,
+      "serviceRegression": true,
+      "source": {
+        "blob": "694edf2abe8a8f61dc887469e2dcc963dfc58fca",
+        "bytes": 18850,
+        "sha256": "0007a55d455493318cb2e606d5a19b94438e67b2b52cc0ab98465a240f74aa6c"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_file.rs",
+      "name": "service_snapshot_forward_file.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "cc96349fe49fa0ffa067971f2cbda21839804410",
+        "bytes": 1811,
+        "sha256": "36256ca40029f4bdd57d961f4c75d020fa089aa59ebc624d8271d28ff6b8c14e"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+      "name": "service_snapshot_forward_source.rs",
+      "original46": true,
+      "serviceRegression": true,
+      "source": {
+        "blob": "ca9962d39f90cdf6ebbc06d04a9cc6c0fa7aa0a1",
+        "bytes": 17522,
+        "sha256": "3f37df8a3ad5d4cc535127b2c286b32a2c633ec7c4295a2525367a91099ec560"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+      "name": "service_snapshot_forward_test_faults.rs",
+      "original46": false,
+      "serviceRegression": true,
+      "source": {
+        "blob": "abc4dbef9044f6105c00fdc290fd053e1d2cbd26",
+        "bytes": 5345,
+        "sha256": "51cbdba0849307d58e3631994a9d2fe0ecaacda7f69617becb2b8b698e65bb29"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+      "name": "service_snapshot_forward_wire_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+        "bytes": 9844,
+        "sha256": "c189b6999fef57fe2a5c6fc221c49647323c609f31f6d65a2eda6bcb682668cb"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward_wire.rs",
+      "name": "service_snapshot_forward_wire.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "e7d14fb4237c4e2638068c91f7cb421fdc3e9f85",
+        "bytes": 15616,
+        "sha256": "458dc1a5c54dd9ee128030012c48e6a800b5e886233392894e485fdfc42fade7"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+      "name": "service_snapshot_forward.rs",
+      "original46": true,
+      "serviceRegression": true,
+      "source": {
+        "blob": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42",
+        "bytes": 8891,
+        "sha256": "6db3cd4b9c8d115779b59282aef59755556099491f517985e453c1bd5b41586b"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+      "name": "service_snapshot_lossless_export_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "dfe6f5e80709418b69bb1b33fee48dadb9ed6aa1",
+        "bytes": 13457,
+        "sha256": "9f222edca204bd1b325d1d520ee927338d587d14f5df95fd085017f9943d5072"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "name": "service_snapshot_transfer.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "9dcea728cd9afd0ba9f78a65537e7cac6ccadf55",
+        "bytes": 52444,
+        "sha256": "fb6440b75feddef609a5ddf54de163f3ec4ad5ddb9d607c19586cfb000a0d223"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "name": "service_snapshot_v6_ha_restore.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "100938ae027cc78c3037187b074856b473f9b174",
+        "bytes": 46836,
+        "sha256": "f0849c391e82b82a195779db8519245b7f27446680458b58b39ba9d034d2876c"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "name": "service_snapshot_v6_ha.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "4c111e446031fda7ac88f673298ddfa6322ecc83",
+        "bytes": 13609,
+        "sha256": "43dcba00a64eb1602aa84c7c753199db6a4f748a90426f46a6aa9ea44f29d855"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_tests.rs",
+      "name": "service_snapshot_v6_tests.rs",
+      "original46": true,
+      "serviceRegression": false,
+      "source": {
+        "blob": "2f6c5383d4303a60d15801bd348f3f337fbe144b",
+        "bytes": 17988,
+        "sha256": "293a7c730a279633b32054bde007be59275370a8c2b6d56f0e5d07ba4b07d769"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "name": "service.rs",
+      "original46": true,
+      "serviceRegression": true,
+      "source": {
+        "blob": "63bacb537a17cc060239a1793f8ac526e15df158",
+        "bytes": 519577,
+        "sha256": "152d79076104755a522ad972e020be3f9efad47cfc0b20692dc3190169ebf276"
+      }
+    }
+  ],
+  "budgets_unmodified": {
+    "formatter_shared_seconds": 50,
+    "formatter_each_seconds": 10,
+    "formatter_outer_seconds": 60
+  },
+  "qualification": {
+    "rustfmt": false,
+    "rust_compile": false,
+    "tests_run": false
+  },
+  "test_denominators": {
+    "existing_low_level_components": 23,
+    "new_real_service_regressions": 4,
+    "combined_future_components": 27,
+    "c_pki_jwt_unique": 149,
+    "c_pki_jwt_profiles": 166,
+    "c_scope_independent": true
+  },
+  "historical_failures_preserved": [
+    "CLI B04/B05",
+    "Service regression R1 missing fixture api origins",
+    "8c95 exhaustive Forward source gaps"
+  ],
+  "new_native_calls": 0
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.root-source-freeze.real-Service-snapshot-audit-four-proof.v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "codex/heptabao-native-snapshot-forward-r5-source-20261106",
+  "commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+  "tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+  "sole_parent": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "leaves": 3930,
+  "modified_existing": 6,
+  "new_files": 2,
+  "unchanged": 3922,
+  "deleted_files": 0,
+  "tracked_bytes": 62486000,
+  "index": {
+    "blob": "8cd39d6c4900a37bb5d64d37eb1330c54bfdba22",
+    "bytes": 453627,
+    "sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+  },
+  "source_packet": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+  "root_source_review": {
+    "blob": "0dbf6b3938e5189af890e80f65d4d1c23f086056",
+    "bytes": 17649,
+    "sha256": "da578231e7429d418012f310b5e71dd38c63197bf392b2af65456e16033335c1"
+  },
+  "union": {
+    "files": 49,
+    "unformatted_bytes": 2023746
+  },
+  "exact_new_tests": [
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority"
+  ],
+  "component_tests": 23,
+  "Service_tests": 4,
+  "combined_distinct_candidate_tests": 27,
+  "product_without_test_configuration_unchanged": true,
+  "layers_verified": [
+    {
+      "path": "",
+      "sha": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+      "entries": 26
+    },
+    {
+      "path": "crates",
+      "sha": "743063431acebaa06bbd5f0f04e545daa6c27205",
+      "entries": 49
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "a00080e5408a8f2f525236e4aa7829d787cc8529",
+      "entries": 8
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "e854727c23dd1c5ba7367c55b4b3417be7e9231f",
+      "entries": 792
+    }
+  ],
+  "commit_readback_verified": true,
+  "branch_readback_verified": true,
+  "mutation_journals": {
+    "tree_intent": "d9c594027dac58d8c3014168ee2b101561a17df1",
+    "tree_SDK": "f3f6a3fed2bf164ea2ec9edef524d39197e2ca69",
+    "commit_intent": "4ad65d64db70debb6ce6f9a49ae1e815196028c2",
+    "commit_SDK": "e6ad0a8cd6f6cdbd9d3d6592e2e899c598713c72",
+    "branch_intent": "d0423105a7aec3080dc7e820bfa79c3109b8054a",
+    "branch_SDK": "229d2b2764673caeceec3a2201a492e4b9d5054e"
+  },
+  "formatted": false,
+  "compiled": false,
+  "tests_executed": false,
+  "PKI33b_not_included": true,
+  "C149_unique166_instances_unchanged": true,
+  "old_CLI_failure_preserved": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

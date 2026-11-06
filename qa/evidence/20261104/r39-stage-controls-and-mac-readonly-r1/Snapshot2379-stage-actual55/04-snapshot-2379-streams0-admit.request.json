@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-native-snapshot-2379d02b-rog-source-observe-r1-streams0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1b008fa4a-fc05-6d9a",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

@@ -1,0 +1,170 @@
+[
+  {
+    "ordinal": 1,
+    "callKey": "jwt-pki-33b814c7-controls-inert-start-r1",
+    "kind": "process_start",
+    "request": {
+      "blob": "b304be2ede7fccc0c7013e7b2974d2637a7f7667",
+      "bytes": 124154,
+      "sha256": "b3982988fe15b71e804524b13c1d5e5ac5b462930446ef492e3f65585dac9e03"
+    },
+    "externalArmedTree": "7de43641c48a551295ea8e994766a999a10f0c56",
+    "originalSDK": {
+      "blob": "28a72f35b93b66b059b082641f9e1ab74851577a",
+      "bytes": 6761,
+      "sha256": "1c31d647f1a708813026303d2c5c9ef0c86afdcd55f3d45db9e897ea27fe0ebc"
+    },
+    "SDKWholeTree": "2598745f945f21a9160e46bdab5ff50e751f9a4c",
+    "nativeText": {
+      "blob": "cba07496402247a3a762786eb0cd599116b7cd61",
+      "bytes": 6351,
+      "sha256": "cfc79acc313b1646970080e03d56bb85ed116a49a6eaeab41d62c64eb9328e09"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "ordinal": 2,
+    "callKey": "jwt-pki-33b814c7-controls-authority0-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "de63afbb9000124fd73e645f88a264101c56dbe3",
+      "bytes": 229,
+      "sha256": "7f7832dd8ca458d350d53e3e5bf575d45795407fdc9281291f1c769e841bd02b"
+    },
+    "externalArmedTree": "036f867b1fa84b32aeadddebddf008247b6e0b85",
+    "originalSDK": {
+      "blob": "7749059df05aad68de956ccb29ed26f812e5d5ab",
+      "bytes": 709,
+      "sha256": "6064d3f37c6ae5b7d34c7446aee83fcb86607ccba3504d4d06575b947f9787fe"
+    },
+    "SDKWholeTree": "f715dc493734d64df163bc991664a401f93afb4a",
+    "nativeText": {
+      "blob": "451a54c79093ca7ddcb7137c2c0692ad7c53ecd2",
+      "bytes": 548,
+      "sha256": "89c341e0f07fbc807e41504c2bcb50d92a1bd761ad29339716d1e793e95730cf"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "ordinal": 3,
+    "callKey": "jwt-pki-33b814c7-controls-authority0-status0-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "d4ed162d5bc6860c95223cdbdfc53164d763a145",
+      "bytes": 89,
+      "sha256": "c87f2e1e9af60209a3648be847f0e61a8ef3ac68180380a70daa3f1130fc484f"
+    },
+    "externalArmedTree": "ed26c2d6b0df9fad863c226c5b7f7770cb007b02",
+    "originalSDK": {
+      "blob": "5c79dfa4d8fc18882550ab04f19848d84e75acf9",
+      "bytes": 980,
+      "sha256": "1fbd6b29e7d0b25110426a2cba44a2eb16ede6f79b2da4191559ea301e12d976"
+    },
+    "SDKWholeTree": "7a027cd5cf1acc731b8892fff39262ba765ebd8b",
+    "nativeText": {
+      "blob": "c8f3884e1848437b8e07a1ce3e29b72352fd1cd4",
+      "bytes": 805,
+      "sha256": "34f4c46e3a571ef6a8c982594ce943276c2e02be10dcd9c70f3e06d63eb2b949"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "ordinal": 4,
+    "callKey": "jwt-pki-33b814c7-controls-authority0-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "71357bfe905fb29c8b012b3fd00041a6856e4613",
+      "bytes": 121,
+      "sha256": "32746ec1c7ea39a05d8965c52c31c604d2b397ae6bb799959f76fc5802d18c96"
+    },
+    "externalArmedTree": "6651addca92615d6c7b23880f5311ae33c68b135",
+    "originalSDK": {
+      "blob": "fe7ed5a6b15647f0f30e86b2372bb7930ce287ae",
+      "bytes": 2068,
+      "sha256": "f8526dbebcc3d16546a65f9c3c8ebe54d05b7538b7afa0202cd5f95efb03b2c7"
+    },
+    "SDKWholeTree": "0735187a7fd9ab1f4b02ae98d96f8a37284a8890",
+    "nativeText": {
+      "blob": "af98d5be28eb7fc1dda083049038a8f5becbb4a9",
+      "bytes": 1897,
+      "sha256": "97b06cd23f3c20813d6442cf18f10a675f556f48248d1500d58c9a016811d889"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "ordinal": 5,
+    "callKey": "jwt-pki-33b814c7-controls-streams0-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "757abee8f52986a2e8e4716cf5dcdbaf7d07d957",
+      "bytes": 299,
+      "sha256": "3a25486475b75ab0c48a5a2ebd01005e8547c42bd95dd2c2ff80c33836941111"
+    },
+    "externalArmedTree": "c97aa1cde9b95699eb5056169d6d157d3aaecfb8",
+    "originalSDK": {
+      "blob": "d06f5b3cd90537bbaf8f7956b42f90e2584754e2",
+      "bytes": 707,
+      "sha256": "87fa0e721d1106546be54430e435d4b35f252fd9b25d27799fbf6abe27b03ad1"
+    },
+    "SDKWholeTree": "fecbb3e61557e2576e715cc1928e06f2b40918e2",
+    "nativeText": {
+      "blob": "acbe011e3b5dd3b95a8ed7d94d9571af7714a3fb",
+      "bytes": 546,
+      "sha256": "3788569e3892041159a1fb20ee3b75e81f89a04968577a5b0cf5fa4d9fe1f640"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "ordinal": 6,
+    "callKey": "jwt-pki-33b814c7-controls-streams0-status0-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "b40d5f0ea7587c1c7a224d5e2910c639df32dabc",
+      "bytes": 89,
+      "sha256": "4c7862f93a9131d3a06f807fe9929eb3907638aa93df811a1e3ed88db619fadb"
+    },
+    "externalArmedTree": "6f6074b67c15be7b7bdb8bd675edb45f6a070de0",
+    "originalSDK": {
+      "blob": "84d9950e050d417d807c56c91944bf8a77c0569f",
+      "bytes": 978,
+      "sha256": "0703a8ee9a7cd01f8a14ffb20b935ccf13052c975938d429f920c0721fbe739d"
+    },
+    "SDKWholeTree": "f360bd0051ce56fa2a5a229bc3134c6000a15721",
+    "nativeText": {
+      "blob": "84578975a77cd874021829024375f0281e9c6ab1",
+      "bytes": 803,
+      "sha256": "fc54c2e86a6abf8eb83a953b345b084ea0b8a9f90c7911f8eb3a6cba93cbbd85"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "ordinal": 7,
+    "callKey": "jwt-pki-33b814c7-controls-streams0-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "c0ecedaf813208d5e8035bf072f5c4d022b42b73",
+      "bytes": 121,
+      "sha256": "cd8bcff701c4f255574b2008ad0b59a62f08deaeece42bfd7e1bc0774d1910d3"
+    },
+    "externalArmedTree": "c30cac96a2ab507dc500b7cc08cf1eecbdb8a282",
+    "originalSDK": {
+      "blob": "3bf5b2eb3dd93b8470b4a900be5820f4c0709adf",
+      "bytes": 7618,
+      "sha256": "8c15a8317e01858a8a5c0a3bf68c8c24f8cc7bce6aa99f0e4cc2a6483d92e6be"
+    },
+    "SDKWholeTree": "949ad97a9be8cdba2a537167c8978bba5c4b3fcd",
+    "nativeText": {
+      "blob": "15ee5a1811985a257b9328ccc880aa09e402f626",
+      "bytes": 7447,
+      "sha256": "0488d558fca32116396178ad0dc7203fcf08d550e3e7855234209dfa159e3ee8"
+    },
+    "phase": "accepted",
+    "called": true
+  }
+]

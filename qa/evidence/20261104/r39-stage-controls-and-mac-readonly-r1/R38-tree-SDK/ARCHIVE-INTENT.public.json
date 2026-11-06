@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-validation-tree-original-SDK",
+  "records": [
+    {
+      "name": "TREE.original.sdk.json",
+      "blob": "51a2857ac92f45cb1d4f828afbe15bcdf625c684",
+      "bytes": 195,
+      "sha256": "869ca68dbf9a3041a1e758635e06982d6c44f1812c3b41ef5ab4fc66871bac0e"
+    }
+  ],
+  "expected_data_tree": "1b9dcafa2bdf2f084814a0c3619856fdd8d26046",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

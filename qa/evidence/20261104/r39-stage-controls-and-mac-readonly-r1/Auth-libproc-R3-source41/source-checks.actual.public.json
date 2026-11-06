@@ -1,0 +1,272 @@
+{
+  "schema": "heptabao.readonly-libproc-r3.pure-source-checks.v1",
+  "passed": true,
+  "checkCount": 66,
+  "checks": [
+    {
+      "name": "whole:diagnostic.libproc.r3.py",
+      "passed": true
+    },
+    {
+      "name": "whole:diagnostic.r2.before.py",
+      "passed": true
+    },
+    {
+      "name": "whole:exact-request.libproc.r3.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole:exact-request.r2.before.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole:journal.libproc.r3.js",
+      "passed": true
+    },
+    {
+      "name": "whole:journal.r2.before.js",
+      "passed": true
+    },
+    {
+      "name": "strict-source-six-hunks-both-directions",
+      "passed": true
+    },
+    {
+      "name": "strict-journal-two-hunks-both-directions",
+      "passed": true
+    },
+    {
+      "name": "typed-stdin-whole-source",
+      "passed": true
+    },
+    {
+      "name": "fresh-observer-key",
+      "passed": true
+    },
+    {
+      "name": "all-other-start-fields-exact",
+      "passed": true
+    },
+    {
+      "name": "journal-all-functions-unchanged-besides-three-bindings",
+      "passed": true
+    },
+    {
+      "name": "fresh-slot-source-only",
+      "passed": true
+    },
+    {
+      "name": "journal-exact-request-pin",
+      "passed": true
+    },
+    {
+      "name": "entire-embedded-preamble-unchanged-except-parent-error-allowlist",
+      "passed": true
+    },
+    {
+      "name": "only-six-fixed-parent-error-codes-added",
+      "passed": true
+    },
+    {
+      "name": "child-error-code-set-byte-exact",
+      "passed": true
+    },
+    {
+      "name": "embedded-module-list-literal",
+      "passed": true
+    },
+    {
+      "name": "unchanged-helper:mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "unchanged-helper:mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "unchanged-direct-call",
+      "passed": true
+    },
+    {
+      "name": "unchanged-old-query",
+      "passed": true
+    },
+    {
+      "name": "unchanged-leaf-final-fence",
+      "passed": true
+    },
+    {
+      "name": "unchanged-ready-validator",
+      "passed": true
+    },
+    {
+      "name": "unchanged-terminal-validator",
+      "passed": true
+    },
+    {
+      "name": "unchanged-helper-public-projection",
+      "passed": true
+    },
+    {
+      "name": "only-explicit-ready-pid-method-replaced",
+      "passed": true
+    },
+    {
+      "name": "no-explicit-ready-pid-child",
+      "passed": true
+    },
+    {
+      "name": "fixed-flavor-and-zombie-request",
+      "passed": true
+    },
+    {
+      "name": "six-call-cap-before-call",
+      "passed": true
+    },
+    {
+      "name": "clear-and-immediate-errno-capture",
+      "passed": true
+    },
+    {
+      "name": "esrch-is-api-observation-only",
+      "passed": true
+    },
+    {
+      "name": "complete-present-numeric-shape",
+      "passed": true
+    },
+    {
+      "name": "native-read-exception-retains-unknown",
+      "passed": true
+    },
+    {
+      "name": "exact-ABI-layout-guard",
+      "passed": true
+    },
+    {
+      "name": "two-self-identity-crosschecks",
+      "passed": true
+    },
+    {
+      "name": "only-qualified-ready-pid-no-guessed-or-unknown-helper-query",
+      "passed": true
+    },
+    {
+      "name": "fixed-four-second-deadline-pre-post",
+      "passed": true
+    },
+    {
+      "name": "reference-not-installed-kernel-or-zombie-qualification",
+      "passed": true
+    },
+    {
+      "name": "esrch-not-automatic-departure",
+      "passed": true
+    },
+    {
+      "name": "both-historical-unknowns-explicitly-preserved",
+      "passed": true
+    },
+    {
+      "name": "unchanged-bound:PARENT_UNTIL_NS = PARENT_START_NS + 45000000000",
+      "passed": true
+    },
+    {
+      "name": "unchanged-bound:HELPER_ADMISSION_END_NS = PARENT_START_NS + 35000000000",
+      "passed": true
+    },
+    {
+      "name": "unchanged-bound:self.calls < 4 and self.command_bytes < 1048576",
+      "passed": true
+    },
+    {
+      "name": "unchanged-bound:read_cap=262144,write_cap=0",
+      "passed": true
+    },
+    {
+      "name": "unchanged-bound:io.max_writes = 0",
+      "passed": true
+    },
+    {
+      "name": "unchanged-bound:if len(final_raw) > 65536:",
+      "passed": true
+    },
+    {
+      "name": "unchanged-bound:raise SystemExit(0 if result['ok'] and time.monotonic_ns() < PARENT_UNTIL_NS else 1)",
+      "passed": true
+    },
+    {
+      "name": "outer60-and-finite-numeric-return-domain",
+      "passed": true
+    },
+    {
+      "name": "whole:reference.apple.proc_info.c",
+      "passed": true
+    },
+    {
+      "name": "official-original-SDK-whole:bsd/kern/proc_info.c",
+      "passed": true
+    },
+    {
+      "name": "official-fixed-commit:bsd/kern/proc_info.c",
+      "passed": true
+    },
+    {
+      "name": "whole:reference.apple.proc_info.h",
+      "passed": true
+    },
+    {
+      "name": "official-original-SDK-whole:bsd/sys/proc_info.h",
+      "passed": true
+    },
+    {
+      "name": "official-fixed-commit:bsd/sys/proc_info.h",
+      "passed": true
+    },
+    {
+      "name": "whole:reference.apple.libproc.c",
+      "passed": true
+    },
+    {
+      "name": "official-original-SDK-whole:libsyscall/wrappers/libproc/libproc.c",
+      "passed": true
+    },
+    {
+      "name": "official-fixed-commit:libsyscall/wrappers/libproc/libproc.c",
+      "passed": true
+    },
+    {
+      "name": "whole:reference.apple.libproc.h",
+      "passed": true
+    },
+    {
+      "name": "official-original-SDK-whole:libsyscall/wrappers/libproc/libproc.h",
+      "passed": true
+    },
+    {
+      "name": "official-fixed-commit:libsyscall/wrappers/libproc/libproc.h",
+      "passed": true
+    },
+    {
+      "name": "wrapper-failure-to-zero-reference",
+      "passed": true
+    },
+    {
+      "name": "arg1-and-policy-reference-boundary",
+      "passed": true
+    },
+    {
+      "name": "whole:reference.original-r2.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole:reference.original-r2.authority.public.json",
+      "passed": true
+    },
+    {
+      "name": "original-helper-unknown-not-backfilled",
+      "passed": true
+    }
+  ],
+  "scope": "Exact SOURCE/whole/strict-diff bindings only; no Python, candidate, SDK, Native or old component execution."
+}

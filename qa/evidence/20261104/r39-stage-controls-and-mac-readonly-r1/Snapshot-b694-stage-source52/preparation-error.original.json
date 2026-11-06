@@ -1,0 +1,8 @@
+{
+  "name": "ReferenceError",
+  "message": "b64 is not defined",
+  "phase": "unused helper export initialization before candidate construction",
+  "runtimeCalls": 0,
+  "externalWrites": 0,
+  "correction": "Remove unused b64 property from helper export; no candidate or request bytes existed yet."
+}

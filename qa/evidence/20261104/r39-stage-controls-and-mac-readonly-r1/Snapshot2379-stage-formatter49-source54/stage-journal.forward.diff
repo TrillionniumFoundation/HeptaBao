@@ -1,0 +1,24 @@
+--- a/stageJournal.js
++++ b/stageJournal.js
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "snapshot_b694_rog_source_gitfirst_r1";
+-const GF_REQUEST = {blob:"cbd6774e2f40e2c4b1e0c2f29cbc7954eaff494d",
+- bytes:111973,sha256:"12c03db5255a6373e20773cd09e82effaab754525a6f1cc6856aff61f34f1337"};
++const GF_SLOT = "snapshot_2379_rog_source_gitfirst_r1";
++const GF_REQUEST = {blob:"f84c09ce0410038dda0e55ce1a9b98609990780a",
++ bytes:112068,sha256:"6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,7 +46,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-native-snapshot-b6949024-rog-source-observe-r1-/.test(q.idempotency_key),
++    && /^heptabao-native-snapshot-2379d02b-rog-source-observe-r1-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

@@ -1,0 +1,8 @@
+{
+  "packet": "b2d0ed3d7fce6c169d0a026b6fe72fae33efe329",
+  "blob": "c2fa526a5342211f3703c10833ab085ab8f7a144",
+  "path": "source-verifier.js",
+  "error": "read-only Git blob failed c2fa526a5342211f3703c10833ab085ab8f7a144",
+  "mutation": false,
+  "recovery": "same immutable blob read only"
+}

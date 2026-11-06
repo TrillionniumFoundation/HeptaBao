@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-snapshot2379-stage-only-GO",
+  "records": [
+    {
+      "name": "SOURCE41.root-review.json",
+      "blob": "455335ee6c13a28a62211d6855a19bc4bbd04c93",
+      "bytes": 7606,
+      "sha256": "2e24ed7e15e7d847556d148b285f183ef679fe5b1f7b1d594f52a6f3723a99cb"
+    },
+    {
+      "name": "exact-STAGE-GO.json",
+      "blob": "85f07e0191b15d89db2563f6fbcdf92fee12a610",
+      "bytes": 7621,
+      "sha256": "4f0078fd55809dd42874611c41d9bc236327cdd82d638e23f24fb27065111a35"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "1625b2fcd147243032f8dca8692436f54aa2b795",
+      "bytes": 10761,
+      "sha256": "77801c299c7e292e115c95827959db652aa0188fe3e72cdd06382375b8f809df"
+    }
+  ],
+  "expected_data_tree": "cc7b8af417fcd053f7f0dfcec7cd7f7c4e99e6eb",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,22 @@
+{
+  "sourcePacket": "8fc5a3a1b0c957b163a46b2c1eb1ef29ec70f54d",
+  "sourceReview": "dcff8731146da337823480560ed55b1108b58542",
+  "rootGo": {
+    "blob": "089430c36582b8d485a3264f90313a37605ac952",
+    "bytes": 7435,
+    "sha256": "71a3c79699b825151bdefab8739b294b3e08098eca88567d64fda3ba4a9376a2"
+  },
+  "journal": {
+    "blob": "d61f0eb0d9773af4f7808f2a850d2ae325cea989",
+    "bytes": 19060,
+    "sha256": "c58a0dcc58e09fc3cd8161066045827b582756756bc53a45c6bbbfce0caf6916"
+  },
+  "correctTypedBinding": {
+    "sha256": "a636f467fbcec296d27884e543096819ba4fdfffec8c921640c797c78b5c8814",
+    "native_fingerprint": "11977028986481853078",
+    "canonicalBytes": 124086
+  },
+  "rootQualifiedSource": "7cdf99e46ba40fe09ab156a09608ee131e28400d",
+  "pendingFixedTemplatesPacket": "58f0eb5bc2c56e3e240a5fbc82e06df4c1d92835",
+  "Native0Now": true
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.root-r38-publication-commit-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "ce7664a4d8ff9bb688343a1e0ac906bdfc2a8d95",
+    "tree_sha": "578bb457e6d719d6503d5c3f29628d0ae0f2a3e8",
+    "message": "evidence: publish R38 frozen source, original staging and Mac probe failure\n\nMount 74 whole evidence packets with 1,244 files. Preserve failed CLI restore and Mac R4 managed-registration UNKNOWN. Freeze uncompiled PKI and snapshot successors, original report qualifications and pending149/166 build plan. Full replacement, cutover and legacy cleanup remain false."
+  },
+  "tree_intent": "6115108fe883a99a67ef98534fbd5fb2e0fc770c",
+  "tree_SDK": "f7c283330256ea1dcece81662dd2f2b11db91182",
+  "verified_layers": [
+    {
+      "name": "prefix",
+      "sha": "23d46af8b8874b7f2f216fb0dfd09dced2341646",
+      "entries": 75,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "day",
+      "sha": "42f8fe4322c8203a8f1ea2664f3a34719cb63e1b",
+      "entries": 115,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "evidence",
+      "sha": "2fd9c52bf5603f36db5a4efe7bebed2a649e5f44",
+      "entries": 1,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "qa",
+      "sha": "dcbf60b06e8d2642f0e447ce973a86e634656219",
+      "entries": 3,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    },
+    {
+      "name": "root",
+      "sha": "578bb457e6d719d6503d5c3f29628d0ae0f2a3e8",
+      "entries": 26,
+      "whole_immediate_merkle": true,
+      "entries_exact": true
+    }
+  ],
+  "not_yet_called": true,
+  "no_replay": true
+}

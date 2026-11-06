@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.snapshot-b694-stage-info-original-index.v1",
+  "calls": [
+    {
+      "key": "snapshot-b694-report-info-admit",
+      "kind": "operation_start",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "f77cd0f6a623d4d52ac1652fb1ea7fe86a8f0309",
+        "bytes": 312,
+        "sha256": "33e1fc63a321552058870f1604b9f7b47112b0d2b3a97cee478dd9fefc155326"
+      },
+      "sdk": {
+        "blob": "ffe290addd47639f8723da0437d944d15c63d96a",
+        "bytes": 704,
+        "sha256": "f72fc42944de363fed75a47db59962e7acb4921e6e803bf25e0ca6677cf5476b"
+      },
+      "native": {
+        "blob": "65656eab659ee3062d958891d6d5f605215aaf52",
+        "bytes": 543,
+        "sha256": "88022348a67de298c9f4587dfe504586b24ae3ef5bc269812d15e9ae31e24b5b"
+      },
+      "armedTree": "e749a3eb86b056053eb4b9611b44cd56dbd1ca85",
+      "sdkTree": "5e0f0a31d5b78bd10c3824fe4bcd848778c3abb3"
+    },
+    {
+      "key": "snapshot-b694-report-info-status",
+      "kind": "operation_status",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "071f70245b6e29dc1d355afeee417aaa139ed8bf",
+        "bytes": 89,
+        "sha256": "10e0d30d80c1464cd8675a0714a0e6f951f23950aba39c8da32145afce4fd356"
+      },
+      "sdk": {
+        "blob": "f3cc971230ce10e73ec7bce88ca0c23301a22418",
+        "bytes": 975,
+        "sha256": "484aad9c5f0b715dc592b4c563fd6bfab00f0c86e3d2b84047943726dcc93294"
+      },
+      "native": {
+        "blob": "147a4d6a77df166352c8f89552598389bf2a9ca2",
+        "bytes": 800,
+        "sha256": "fa0e8fd2d70515a4369619884145864ef46410d4a9e4e499cc253035b529e7e2"
+      },
+      "armedTree": "bcb58efaa9aeffe9bb514e153aaf80f0b540561e",
+      "sdkTree": "2506e8348711adddbf0bedd3f525cd72f1e80446"
+    },
+    {
+      "key": "snapshot-b694-report-info-page0",
+      "kind": "operation_result",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "584ff2763007f06b160f098fc865af0bec9a5898",
+        "bytes": 121,
+        "sha256": "9353561c9fb275505de7741710ccd9abfb41ce94fb121a8b6ba9688c995348d1"
+      },
+      "sdk": {
+        "blob": "6bb71dbd0b0fbf7cb16f2472c04af7802c4e82e0",
+        "bytes": 1668,
+        "sha256": "e248414ac685d6c43864d10409a8060155309e6c2cb325c9e65c77f960096ad4"
+      },
+      "native": {
+        "blob": "050db877bc37c0c9435700f4f6fa0c1279cfa404",
+        "bytes": 1497,
+        "sha256": "5aff55cac580e05bfbbdc6f9f72d0c61cd3a049caf9ad451beca08879409545a"
+      },
+      "armedTree": "eefe277b9bf88d984afef2c925ff56f8ae812c55",
+      "sdkTree": "ca049bd64d3fe8dc4dc428136b2fe0110543a97d"
+    }
+  ],
+  "observer": {
+    "id": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "tool": "file_info",
+    "payload": {
+      "blob": "6eeeeb9d2e21fcb9e7dc777c115f04f091d010dd",
+      "bytes": 612,
+      "sha256": "61d22a322a7f5ef03aa91c618781ebfbfa44da429f05f395d917179e638dadc5"
+    },
+    "payloadTree": "3ae8fa963079b54ae8814db648fb67b74ae49c0a",
+    "nativeText": {
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual_info": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1/control/stage-result.public.json",
+    "size": 28206,
+    "sha256": "5709177a98a8f9b305b4e26da5f3a310a7b96d8f3086224429a9dfb56f53d5db",
+    "version": "66306:31235919:28206:1793952723578666336:1793952723578666336",
+    "nativeText": {
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    },
+    "originalOperation": "353762d80b5cec5728d101a73623b74ffe60fd1333f03c5982fb73325450a336",
+    "full9Strings": [
+      "66306",
+      "31235919",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "28206",
+      "1793952723578666336",
+      "1793952723578666336"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "original_stage49": "a4f5ad504624966ab6918623d743d105cab1752d"
+}

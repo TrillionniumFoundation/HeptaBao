@@ -1,0 +1,11 @@
+# Fixed four published-controls INFO-only successor
+
+This narrow journal attaches the original closed publisher context for rog/1a1b001e788-fc05-6d66. It preserves the original GO/job/START/call/observer history and admits four exact file_info requests in fixed order, once each, only after a separately whole root INFO-only GO. Each returned original operation must be completed/inactive and its complete immutable payload externally whole before another metadata admission. This source does not initialize or restart the publisher and does not admit binary_read.
+
+Three content size/SHA values are frozen source pins. Their full9 values come from the actual publisher stdout and must match every independently observed field, using decimal strings for ns/dev/ino. The fourth role is the one public receipt: its expected 1854-byte content/SHA is derived from the exact original1444-byte stdout using the same publisher JSON format. The lossless compact inverse equals the actual stdout. This is clearly a content expectation, not a file observation; receipt full9/version remain unobserved until the original independent INFO closes. All roles require Linux0600/full33152, uid/gid1000, nlink1, exact path/size/SHA/version shape.
+
+Six strict hunks modify five existing functions and add one scoped authorization function; eight existing functions stay whole-byte identical, including original SDK accept and Git recovery. The existing SDK-before-parse, payload-before-success,8KiB pages,1MiB original payload and no-replay rules remain. Four per-index started flags are set before each sole Native entry. No path scan, alternate root or fallback exists.
+
+The40 recorded pure checks include strict source reconstruction and selected authorization/validation cases using a private fake store and empty tools object. They do not invoke any Native function, Python candidate or real journal action. No real authorization attachment or new Native admission was performed. The source-only reproduction recipe is not an original executor transcript.
+
+Binary bodies and the149/166 build require their separate exact root GO after actual metadata. All original build deadlines and product sources remain unchanged.

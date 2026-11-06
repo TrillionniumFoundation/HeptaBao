@@ -1,0 +1,351 @@
+{
+  "ok": true,
+  "scope": "pure V8 source/literal/pin/reconstruction checks only",
+  "checkCount": 78,
+  "checks": [
+    {
+      "name": "input_diagnostic.source.py",
+      "passed": true
+    },
+    {
+      "name": "input_new-main.source.py",
+      "passed": true
+    },
+    {
+      "name": "input_request.exact.public.json",
+      "passed": true
+    },
+    {
+      "name": "input_journal.js",
+      "passed": true
+    },
+    {
+      "name": "input_original.journal.r4.js",
+      "passed": true
+    },
+    {
+      "name": "input_CONTRACT.public.json",
+      "passed": true
+    },
+    {
+      "name": "input_original.common.r4.py",
+      "passed": true
+    },
+    {
+      "name": "whole_original.common.r4.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.constants.r4.py",
+      "passed": true
+    },
+    {
+      "name": "whole_original.constants.r4.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.reader.py",
+      "passed": true
+    },
+    {
+      "name": "whole_original.reader.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "whole_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.child.r4.py",
+      "passed": true
+    },
+    {
+      "name": "whole_original.child.r4.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.parent-core.r3.py",
+      "passed": true
+    },
+    {
+      "name": "whole_original.parent-core.r3.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.journal.r4.js",
+      "passed": true
+    },
+    {
+      "name": "whole_original.journal.r4.js",
+      "passed": true
+    },
+    {
+      "name": "input_original.r4.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_original.r4.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "input_original.common.r4.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_embedded_original.common.r4.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.constants.r4.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_embedded_original.constants.r4.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.reader.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_embedded_original.reader.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_embedded_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.missing-service.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_embedded_original.missing-service.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.child-validators.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_embedded_original.child-validators.py",
+      "passed": true
+    },
+    {
+      "name": "exact_new_main_suffix",
+      "passed": true
+    },
+    {
+      "name": "input_original.parent-core.r3.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.child-validators.py",
+      "passed": true
+    },
+    {
+      "name": "original_child_validators_source",
+      "passed": true
+    },
+    {
+      "name": "input_original.child.r4.py",
+      "passed": true
+    },
+    {
+      "name": "unchanged_child_closed_error_set",
+      "passed": true
+    },
+    {
+      "name": "input_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "eleven_parser_codes",
+      "passed": true
+    },
+    {
+      "name": "exact_error_union",
+      "passed": true
+    },
+    {
+      "name": "input_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "input_original.parse-print.py",
+      "passed": true
+    },
+    {
+      "name": "no_parser_sentinel_admission",
+      "passed": true
+    },
+    {
+      "name": "only_original_two_modules",
+      "passed": true
+    },
+    {
+      "name": "module_whole_mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "module_whole_mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "source_request_stdin",
+      "passed": true
+    },
+    {
+      "name": "exact_request_fields",
+      "passed": true
+    },
+    {
+      "name": "fixed_host_argv",
+      "passed": true
+    },
+    {
+      "name": "regular_python_path",
+      "passed": true
+    },
+    {
+      "name": "request_identity_from_source",
+      "passed": true
+    },
+    {
+      "name": "exact_journal_request_binding",
+      "passed": true
+    },
+    {
+      "name": "input_journal.forward.diff",
+      "passed": true
+    },
+    {
+      "name": "input_journal.reverse.diff",
+      "passed": true
+    },
+    {
+      "name": "journal_strict_two_way",
+      "passed": true
+    },
+    {
+      "name": "only_journal_bindings_changed",
+      "passed": true
+    },
+    {
+      "name": "input_original.r4.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "original_exact_managed_argv",
+      "passed": true
+    },
+    {
+      "name": "actual_created_leaf_probe.public.py",
+      "passed": true
+    },
+    {
+      "name": "actual_created_leaf_plan.public.json",
+      "passed": true
+    },
+    {
+      "name": "actual_created_leaf_probe.plist",
+      "passed": true
+    },
+    {
+      "name": "python_original_pin",
+      "passed": true
+    },
+    {
+      "name": "four_pinned_inputs",
+      "passed": true
+    },
+    {
+      "name": "body_caps_arithmetic",
+      "passed": true
+    },
+    {
+      "name": "contract_all_three_source_pins",
+      "passed": true
+    },
+    {
+      "name": "shared_deadlines",
+      "passed": true
+    },
+    {
+      "name": "bounded_four_commands",
+      "passed": true
+    },
+    {
+      "name": "read_only_scope",
+      "passed": true
+    },
+    {
+      "name": "fixed_two_query_sites",
+      "passed": true
+    },
+    {
+      "name": "no_unknown_command_hashes",
+      "passed": true
+    },
+    {
+      "name": "unchanged_original_child_error_predicate_plus_extra_bound",
+      "passed": true
+    },
+    {
+      "name": "actual_birth_shape_and_two_samples",
+      "passed": true
+    },
+    {
+      "name": "no_success_claim_for_registration",
+      "passed": true
+    },
+    {
+      "name": "fresh_no_native_go",
+      "passed": true
+    },
+    {
+      "name": "no_managed_signals_reap_or_bootout",
+      "passed": true
+    }
+  ],
+  "source": {
+    "blob": "467393a64a2a5e7eb92a89df0981b9849217eb87",
+    "bytes": 90450,
+    "sha256": "e8a76931ddd9cf55ef24870e6e84e9e82c94a07a78117c28ee15fe8989ad2c63"
+  },
+  "request": {
+    "blob": "1891e38a9ddcd970f27c6fb7d7d3ef1b1183bdc0",
+    "bytes": 93179,
+    "sha256": "099ebcd583caf7d52d63c96701334734b2682e77b92647101f79a86bb2a058a9"
+  },
+  "journal": {
+    "blob": "bdceb4d0d435fb5a71df78a6440288c62025f3c6",
+    "bytes": 19053,
+    "sha256": "808c4bee577760d8cd54080baec6270939762ebf02caaa7c3429fa9119cebdbc"
+  },
+  "parserCodes": [
+    "bounded_launchctl_print",
+    "exact_launchctl_target",
+    "plain_fixed_launchctl_argument",
+    "bounded_launchctl_arguments",
+    "one_launchctl_arguments_block",
+    "unique_launchctl_field",
+    "balanced_launchctl_print",
+    "one_complete_launchctl_record",
+    "complete_launchctl_arguments",
+    "typed_launchctl_integer",
+    "actual_launchctl_pid"
+  ],
+  "pinnedBodyMaximum": 118977,
+  "pythonModuleExecuted": false,
+  "nativeCalls": 0,
+  "oldR4FailureUnchanged": true
+}

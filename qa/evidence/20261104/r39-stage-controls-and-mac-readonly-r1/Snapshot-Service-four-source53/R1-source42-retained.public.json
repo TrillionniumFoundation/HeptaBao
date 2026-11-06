@@ -1,0 +1,8 @@
+{
+  "tree": "0e8c558ac81c64a6bc9c230d083c121871277f33",
+  "fullWhole": true,
+  "knownSourceOnlyFixtureGap": "Pipeline original peer.api_address=None would cause production configured_standby_destination to reject before Forward; the original42 packet is preserved.",
+  "originalProductSourceUnchanged": true,
+  "runtime": 0,
+  "mutationOrUnknownRetries": 0
+}

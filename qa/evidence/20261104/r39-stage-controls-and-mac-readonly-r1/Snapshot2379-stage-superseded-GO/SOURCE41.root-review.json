@@ -1,0 +1,275 @@
+{
+  "schema": "heptabao.root-source-review.snapshot2379-independent-stage.v1",
+  "status": "PASS_EXACT_SOURCE_STAGE_ONLY",
+  "checks": [
+    {
+      "name": "whole54_3933896",
+      "passed": true
+    },
+    {
+      "name": "exact_root_freeze_and_b694_terminal",
+      "passed": true
+    },
+    {
+      "name": "original_stage_request_and_helpers",
+      "passed": true
+    },
+    {
+      "name": "canonical3930_parent3928_full_Merkle",
+      "passed": true
+    },
+    {
+      "name": "all_root_frozen_leaves_exact",
+      "passed": true
+    },
+    {
+      "name": "sole_parent_chain2379_b694_8c95",
+      "passed": true
+    },
+    {
+      "name": "complete453627_index62486000tracked",
+      "passed": true
+    },
+    {
+      "name": "six_modified_two_new3922same_no_delete",
+      "passed": true
+    },
+    {
+      "name": "eight_exact_root_reviewed_candidates",
+      "passed": true
+    },
+    {
+      "name": "union49_root_pins_and_total2023746",
+      "passed": true
+    },
+    {
+      "name": "original46order_three_additional_files",
+      "passed": true
+    },
+    {
+      "name": "12_stage_literals",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_0",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_1",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_2",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_3",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_4",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_5",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_6",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_7",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_8",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_9",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_10",
+      "passed": true
+    },
+    {
+      "name": "stage_literal_once_11",
+      "passed": true
+    },
+    {
+      "name": "only_binding_literals_four_hunks_reverse",
+      "passed": true
+    },
+    {
+      "name": "20defs19unchanged_one_cardinality_only",
+      "passed": true
+    },
+    {
+      "name": "three_journal_literals",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_once_0",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_once_1",
+      "passed": true
+    },
+    {
+      "name": "journal_literal_once_2",
+      "passed": true
+    },
+    {
+      "name": "journal_two_hunks_guards_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_stage_request_source_arguments",
+      "passed": true
+    },
+    {
+      "name": "request_remaining_fields_unchanged",
+      "passed": true
+    },
+    {
+      "name": "correct_typed_stdin_digest_FP",
+      "passed": true
+    },
+    {
+      "name": "original79951_four_inert_controls",
+      "passed": true
+    },
+    {
+      "name": "create_only2379_identity_and16_3768history",
+      "passed": true
+    },
+    {
+      "name": "exact_index_bytes_bundle_single495_prerequisite",
+      "passed": true
+    },
+    {
+      "name": "old_source_12failed_fences_public_fetch_independentGit_unchanged",
+      "passed": true
+    },
+    {
+      "name": "stage300_git90_clone180_outer360_cleanup5plus5_unchanged",
+      "passed": true
+    },
+    {
+      "name": "expected61_only_not_actual",
+      "passed": true
+    },
+    {
+      "name": "no_format_compile_or_scope_claim",
+      "passed": true
+    }
+  ],
+  "check_count": 41,
+  "source_packet": "21ec39d8574bd1711577a598fe54c92ad4f3b11f",
+  "source": {
+    "blob": "7da772881143eca4dd66a3628651e480547f2263",
+    "bytes": 29045,
+    "sha256": "cb1a1c58ed7fcfeded35c9d4892518a42b2455c8779b39c5865c4b0ea0eb974d"
+  },
+  "exact_request": {
+    "blob": "f84c09ce0410038dda0e55ce1a9b98609990780a",
+    "bytes": 112068,
+    "sha256": "6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8"
+  },
+  "native_binding": {
+    "sha256": "7a2a6824e91e032a7a73205cda8a29b46a9a03d3abd4a7eef53c2b3cd4cbf996",
+    "native_fingerprint": "8802962929388225322"
+  },
+  "journal": {
+    "blob": "d2fb755149c37da99c35705136ae973c91be8cc4",
+    "bytes": 19050,
+    "sha256": "0f5efb2be268a7db06e9ca2195000b87f26809244f23c6d52fa8746734c53a69"
+  },
+  "slot": "snapshot_2379_rog_source_gitfirst_r1",
+  "root_source_freeze": {
+    "blob": "8b967cbd150207e5335bb22bdcb41887d5809f8f",
+    "bytes": 3258,
+    "sha256": "24fe6c1d76f1ac446873b430967fdf1add994a91fc3bb5e4290ffb5d51788a0a"
+  },
+  "canonical": {
+    "commit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "tree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+    "sole_parent": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "merkle": {
+      "root_sha": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+      "trees_verified": 358,
+      "leaf_count": 3930
+    },
+    "leaves": 3930,
+    "tracked_bytes": 62486000,
+    "index": {
+      "blob": "8cd39d6c4900a37bb5d64d37eb1330c54bfdba22",
+      "bytes": 453627,
+      "sha256": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+    },
+    "modified": 6,
+    "new_files": 2,
+    "unchanged": 3922
+  },
+  "union": {
+    "files": 49,
+    "bytes": 2023746
+  },
+  "stage": {
+    "root": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1",
+    "source": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/source",
+    "control": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control",
+    "sourceCode": {
+      "blob": "7da772881143eca4dd66a3628651e480547f2263",
+      "bytes": 29045,
+      "sha256": "cb1a1c58ed7fcfeded35c9d4892518a42b2455c8779b39c5865c4b0ea0eb974d"
+    },
+    "exactRequest": {
+      "blob": "f84c09ce0410038dda0e55ce1a9b98609990780a",
+      "bytes": 112068,
+      "sha256": "6f8ed22378a218d9128d019607472452b247a8f441b2234f52038945540ca5d8"
+    },
+    "typedDigest": "7a2a6824e91e032a7a73205cda8a29b46a9a03d3abd4a7eef53c2b3cd4cbf996",
+    "nativeFingerprint": "8802962929388225322",
+    "key": "heptabao-native-snapshot-forward-2379d02b-rog-source-20261106-r1-cb1a1c58",
+    "sharedSeconds": 300,
+    "GitSeconds": 90,
+    "cloneSeconds": 180,
+    "outerSeconds": 360,
+    "cleanupTermSeconds": 5,
+    "cleanupKillSeconds": 5,
+    "stdinBytes": 79951,
+    "stdinSha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77",
+    "stdinCap": 262144,
+    "expectedSuccessfulPathCommands": 61,
+    "actualCommands": null,
+    "actualReport": null,
+    "actualQualification": false,
+    "prior495Source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+    "prior495Commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "priorFailureSourceAnd12FencesUnchanged": true,
+    "originalPublicGitFetchSourceUnchanged": "https://github.com/TrillionniumFoundation/HeptaBao.git",
+    "requiresNoNewBootstrap": true,
+    "original4ControlsCompileOnly": true,
+    "original4ControlsExecuted": false,
+    "bundle": {
+      "path": "/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1/control/canonical-native-snapshot-forward-2379d02b-from495.bundle",
+      "singlePrerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "standalone": false,
+      "maxBytes": 4194304,
+      "actualSize": null,
+      "actualSha256": null,
+      "actualVersion": null,
+      "transportAuthorized": false
+    }
+  },
+  "formatter_execution_reviewed": false,
+  "compiler_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

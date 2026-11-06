@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-Service-audit-test8-freeze-tree-SDK",
+  "records": [
+    {
+      "name": "ORIGINAL-SDK.public.json",
+      "blob": "3785ad93b393c17da9be0e7f18b28df50fad5f89",
+      "bytes": 195,
+      "sha256": "dcb21d7b9661de2d9cf82d41dd6e7290c379bbe7a007dcde40c95b7ed4911d9b"
+    }
+  ],
+  "expected_data_tree": "379454dfa13dde1ba2b8f1fded3e51810cc198cf",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

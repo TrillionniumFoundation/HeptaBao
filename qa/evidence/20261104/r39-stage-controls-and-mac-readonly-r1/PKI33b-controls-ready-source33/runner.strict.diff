@@ -1,0 +1,11 @@
+--- a/runner.before.py
++++ b/runner.after.py
+@@ -11,7 +11,7 @@
+ import subprocess
+ import time
+ 
++BINDING_READY = True
+-BINDING_READY = False
+ assert BINDING_READY, 'formatter, final source and control publication require separate admission'
+ os.umask(0o077)
+ parser = argparse.ArgumentParser()

@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.existing-label-readonly-r2.actual-state.r1",
+  "slot": "owner_launchd_home_t5_existing_readonly_gitfirst_r2",
+  "job": "1a1afeed843-fc05-6cd7",
+  "nativeBinding": {
+    "digest": "0cdb320bdf730ef48e00beec02315a3037162fc0eb199495d44e9a152cbc5410",
+    "fingerprint": "926389174929657588"
+  },
+  "startCalled": true,
+  "nativeCallInFlight": false,
+  "activeObserver": null,
+  "pending": null,
+  "paused": false,
+  "nextStdout": 15809,
+  "nextStderr": 0,
+  "calledRecords": 13,
+  "originalObservers": 2,
+  "immutablePages": 8,
+  "transportErrorOrRetry": false,
+  "laneReleased": true,
+  "diagnosticOutcomeUnknown": true,
+  "unknownDirectHelperPid": 87650,
+  "managedRegistrationClosed": false,
+  "oldR4Rewritten": false,
+  "sourceExecutedOnce": true,
+  "cleanupOrProductContinuation": false
+}

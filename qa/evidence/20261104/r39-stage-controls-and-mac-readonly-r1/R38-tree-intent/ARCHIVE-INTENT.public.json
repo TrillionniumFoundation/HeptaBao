@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-validation-tree-intent",
+  "records": [
+    {
+      "name": "TREE-INTENT.json",
+      "blob": "df2516ab7fbed5df1ab6a4cfa3d5a00fb7a91e14",
+      "bytes": 18627,
+      "sha256": "d79971af6f3b31dde69fb2f79104d82fe21e13d8650d3a7965cb79f4a76a2971"
+    },
+    {
+      "name": "PREVIOUS-REF.original.sdk.json",
+      "blob": "da3a58738e71bb2fa31b640ebc756100560d0e7c",
+      "bytes": 1753,
+      "sha256": "408ee5b06477dd5a5f075038a1cfe4ae41b3950e6366707834b5870e371e2df7"
+    },
+    {
+      "name": "PREVIOUS-root.original.sdk.json",
+      "blob": "0b7043ff648b0d804a9ce4dc596a7fb673697f3b",
+      "bytes": 13939,
+      "sha256": "052fe06957313d0a21d63b227fad9d0d9c1e61def90f8d83ab60cc529cda6568"
+    },
+    {
+      "name": "PREVIOUS-qa.original.sdk.json",
+      "blob": "73b190d23ec417aa2976ddd30280905238aa4623",
+      "bytes": 2695,
+      "sha256": "12d196ef1e2646c2c4efd554ce240c2a260d563e8ee2ba2cae0dfd1a9656b0e6"
+    },
+    {
+      "name": "PREVIOUS-evidence.original.sdk.json",
+      "blob": "f977efbfc91684065ea4788a1c5665c019ea4b37",
+      "bytes": 1713,
+      "sha256": "c77b0285e5ba35aad2930f5e68afdd2bcde720beff8ccf195576e93ff1159245"
+    },
+    {
+      "name": "PREVIOUS-day.original.sdk.json",
+      "blob": "79d5dabca948cbf8051134778de757e63458b0e2",
+      "bytes": 62141,
+      "sha256": "cd0a03c00a49d351770a8373fbddb6ca509383b20babad008189387db38a6c44"
+    }
+  ],
+  "expected_data_tree": "c44a65f82648302340d48084d8c782788bffad3c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

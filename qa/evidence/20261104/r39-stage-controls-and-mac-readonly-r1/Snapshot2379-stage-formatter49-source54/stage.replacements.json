@@ -1,0 +1,50 @@
+[
+  {
+    "before": "ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-b6949024-20261106-r1')",
+    "after": "ROOT = Path('/home/qian-qi/heptabao-native-snapshot-forward-source-2379d02b-20261106-r1')"
+  },
+  {
+    "before": "COMMIT = 'b6949024dc5d0922ca9b27d865923d28982286c3'",
+    "after": "COMMIT = '2379d02ba1ee3e88989815d5a978f998822bac4f'"
+  },
+  {
+    "before": "TREE = '9c800e97a2527e7f01c3a4b0be594e6762f9581e'",
+    "after": "TREE = 'fc933c18a0415730e3658c17ff021db9b2df2caa'"
+  },
+  {
+    "before": "PARENT = '8c95fb0a8b2f61933a09b04986df2bafc9e7095c'",
+    "after": "PARENT = 'b6949024dc5d0922ca9b27d865923d28982286c3'"
+  },
+  {
+    "before": "ANCESTRY = (\n",
+    "after": "ANCESTRY = (\n    ('2379d02ba1ee3e88989815d5a978f998822bac4f', 'b6949024dc5d0922ca9b27d865923d28982286c3'),\n"
+  },
+  {
+    "before": "assert len(entries) == 3928 and len({x[0] for x in entries}) == 3928",
+    "after": "assert len(entries) == 3930 and len({x[0] for x in entries}) == 3930"
+  },
+  {
+    "before": "'canonical_history_count': 3767",
+    "after": "'canonical_history_count': 3768"
+  },
+  {
+    "before": "assert len(added) == 15",
+    "after": "assert len(added) == 16"
+  },
+  {
+    "before": "'rev-list', '--count', COMMIT).decode().strip() == '3767'",
+    "after": "'rev-list', '--count', COMMIT).decode().strip() == '3768'"
+  },
+  {
+    "before": "['tracked_bytes'] == 62463643",
+    "after": "['tracked_bytes'] == 62486000"
+  },
+  {
+    "before": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727",
+    "after": "0e35cb5c3192efd2b9ddecfdbbe78581dd65c8ceb1aee8577709f7d7f504b811"
+  },
+  {
+    "before": "canonical-native-snapshot-forward-b6949024-from495.bundle",
+    "after": "canonical-native-snapshot-forward-2379d02b-from495.bundle"
+  }
+]

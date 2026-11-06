@@ -1,0 +1,7 @@
+{
+  "scope": "pureGit",
+  "nativeCalls": 0,
+  "message": "Unable to store \"snapshot2379-go-read:pending_sdk\". Only plain serializable objects can be stored.",
+  "cause": "recordGitSDKImmutable invoked with wrong local helper argument shape; original read result not persisted before local exception",
+  "repeatScope": "same exact Git blob read only if required; no Native replay"
+}

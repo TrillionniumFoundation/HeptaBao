@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.jwt-pki33b-controls-typed-binding.v1",
+  "request": {
+    "blob": "b304be2ede7fccc0c7013e7b2974d2637a7f7667",
+    "bytes": 124154,
+    "sha256": "b3982988fe15b71e804524b13c1d5e5ac5b462930446ef492e3f65585dac9e03"
+  },
+  "binding": {
+    "sha256": "a636f467fbcec296d27884e543096819ba4fdfffec8c921640c797c78b5c8814",
+    "native_fingerprint": "11977028986481853078",
+    "canonicalBytes": 124086
+  },
+  "correctHelper": {
+    "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+    "bytes": 659,
+    "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+  },
+  "positiveControl": {
+    "request": {
+      "blob": "1b3da82ecf429adc5d816a2ff2cb78810059ac90",
+      "bytes": 111811,
+      "sha256": "576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4"
+    },
+    "sha256": "043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732",
+    "native_fingerprint": "305633534227472263"
+  },
+  "stdinComplete": true,
+  "oldPureStdinTextHelperNotUsed": true,
+  "Native": 0
+}

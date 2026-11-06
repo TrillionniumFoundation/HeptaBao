@@ -1,0 +1,15 @@
+{
+  "scope": "pure local compile/five-memory-projection attempt",
+  "executorReturned": false,
+  "observableError": {
+    "message": "undefined",
+    "scope": "local parser invocation unavailable or failed; not Native",
+    "candidateModuleNotExecuted": true
+  },
+  "assertedCheckSuccess": false,
+  "fullCandidateModuleNeverInvokedByHarness": true,
+  "noNativeCall": true,
+  "noAutomaticRetry": true,
+  "sourceRevision": "pre_birth_shape",
+  "notAppliedToFinalSource": true
+}

@@ -1,0 +1,141 @@
+{
+  "schema": "heptabao.jwt-pki33b-source-stage-report-content-review.v1",
+  "pass": true,
+  "checks": 22,
+  "rows": [
+    {
+      "check": "whole_exact_report",
+      "pass": true
+    },
+    {
+      "check": "current_source_schema_status",
+      "pass": true
+    },
+    {
+      "check": "exact_commit_tree_parent",
+      "pass": true
+    },
+    {
+      "check": "exact_owned_source_paths",
+      "pass": true
+    },
+    {
+      "check": "exact_stager_carrier",
+      "pass": true
+    },
+    {
+      "check": "exact_commit_fetch_no_branch_guess",
+      "pass": true
+    },
+    {
+      "check": "original_stage_caps",
+      "pass": true
+    },
+    {
+      "check": "no_product_or_formatter_or_compiler",
+      "pass": true
+    },
+    {
+      "check": "source_clean_independent_checked",
+      "pass": true
+    },
+    {
+      "check": "full_canonical_inventory",
+      "pass": true
+    },
+    {
+      "check": "old495_before_after",
+      "pass": true
+    },
+    {
+      "check": "failed_fixture_before_after_exact",
+      "pass": true
+    },
+    {
+      "check": "all12_failed_files_same_content",
+      "pass": true
+    },
+    {
+      "check": "failed_authority_exact_at_new_control",
+      "pass": true
+    },
+    {
+      "check": "four_historical_controls_compile_only",
+      "pass": true
+    },
+    {
+      "check": "ancestry_history3766",
+      "pass": true
+    },
+    {
+      "check": "current_bundle_shape_identity",
+      "pass": true
+    },
+    {
+      "check": "bundle_current_HEAD_and495_prerequisite",
+      "pass": true
+    },
+    {
+      "check": "all59_owned_direct_children_closed",
+      "pass": true
+    },
+    {
+      "check": "original_cleanup_deadline",
+      "pass": true
+    },
+    {
+      "check": "original_epoch_order_lossless",
+      "pass": true
+    },
+    {
+      "check": "legacy_counters_not_new_tests",
+      "pass": true
+    }
+  ],
+  "report": {
+    "blob": "f2c2bd29fd1209f79776ec01fb170119a2d912ef",
+    "bytes": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0"
+  },
+  "cleanupCount": 59,
+  "canonicalLeafCount": 3916,
+  "trackedBytes": 62297347,
+  "elapsed": 16.642744900949765,
+  "Cargo": 0,
+  "productTests": 0,
+  "qualificationScope": "actual source report consistency; no build or runtime regression qualification",
+  "canonicalBundle": {
+    "bytes": 60426,
+    "header": {
+      "header_sha256": "5f296606105b9af9b43e20cc0d7ad8207c869827a26138567a77f84d337e7258",
+      "heads": [
+        [
+          "33b814c7034ec853151b1ff13e7529c83f65ea70",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31235676,
+      1000,
+      1000,
+      33152,
+      1,
+      60426,
+      {
+        "$exactInteger": "1793950740602778496"
+      },
+      {
+        "$exactInteger": "1793950740603778494"
+      }
+    ],
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/canonical-native-jwt-pki-33b814c7-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "6b25592606997af45d7c3fe251474a57ca7052a7eccd52b85ca0abb170d986e4"
+  }
+}

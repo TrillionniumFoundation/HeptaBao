@@ -1,0 +1,9 @@
+{
+  "original_failure": {
+    "error": "Error: four_product_files_only_cfg_test_additions",
+    "stack": "Error: four_product_files_only_cfg_test_additions\n    at ck (eval at <anonymous> (exec_main.mjs:60:1), <anonymous>:56:76)\n    at reviewSnapshotService53 (eval at <anonymous> (exec_main.mjs:60:1), <anonymous>:75:2)\n    at eval (eval at <anonymous> (exec_main.mjs:60:1), <anonymous>:110:17)\n    at exec_main.mjs:62:133"
+  },
+  "correction": "Old anchor can straddle a purely inserted cfg(test) block; prove longest common prefix/suffix exhaust all old bytes, then inspect only inserted block. Remove an unrelated chained comparison of historical test file with production reference.",
+  "source_candidate_changed": false,
+  "Native": 0
+}

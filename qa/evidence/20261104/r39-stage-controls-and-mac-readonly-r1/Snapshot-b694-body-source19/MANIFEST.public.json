@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.snapshot-b694-stage-body-source.v1",
+  "entries": [
+    {
+      "path": "actual-info-journal.js",
+      "blob": "926ee770939a1f2b1381e092acfea0a395f3b5fd",
+      "bytes": 23894,
+      "sha256": "a886b508598ef773faa2f612f14abdaaeadfae70fd9768101952b83535bcfe5b"
+    },
+    {
+      "path": "actual-info.native.json",
+      "blob": "3673f93e85ef4977b30870c853a95b0e607ea1d1",
+      "bytes": 495,
+      "sha256": "c6ea7fd93ab7c72e01154ed5ff569dd31949cdde84f583f6d0b10be1ef41c21f"
+    },
+    {
+      "path": "actual-info.payload.json",
+      "blob": "6eeeeb9d2e21fcb9e7dc777c115f04f091d010dd",
+      "bytes": 612,
+      "sha256": "61d22a322a7f5ef03aa91c618781ebfbfa44da429f05f395d917179e638dadc5"
+    },
+    {
+      "path": "actual-info.release.json",
+      "blob": "6371ff783dc52f62d79a039fe6624b808b618592",
+      "bytes": 2170,
+      "sha256": "e850b8f0def6e48b6b8dbaa6a2f980bf033dc0ff8b836e57f2be3b8f8ffff6a9"
+    },
+    {
+      "path": "candidate-body-journal.js",
+      "blob": "61b7fb890ee853563f93c1539a0cee6e6585284c",
+      "bytes": 28285,
+      "sha256": "9f02326d5674de871fc71e453fba4888c8446a75804e77341cb5c9a8cb657e15"
+    },
+    {
+      "path": "exact-binary-read-request.json",
+      "blob": "426dcd9abdb9e50e3e24bd2b91b702cbefbf7143",
+      "bytes": 445,
+      "sha256": "c7576e46df69c988342313e14a96dac1647436a8a10d5b1c91872f0860b13fec"
+    },
+    {
+      "path": "info-to-body-forward.diff",
+      "blob": "80d2b1137f4a17f7db71a3665e2bf715b1510a9e",
+      "bytes": 7085,
+      "sha256": "a64a33e4c23384a190ee7a17f6acf82ba1fd6072e6843debcec1d95074392477"
+    },
+    {
+      "path": "info-to-body-reverse.diff",
+      "blob": "34508911712bca81bb1d5d9a5de2e9dfbd2a3bc3",
+      "bytes": 7085,
+      "sha256": "eeaf8e94f6bf56b884769dc09df284a7a6d726ceb729caa6b60702d9fcc4af7a"
+    },
+    {
+      "path": "literal-replacements.json",
+      "blob": "f33c5aac07eadbeb1289881174436fe17bcf1548",
+      "bytes": 4611,
+      "sha256": "f8644e6d11423a987f2cd15d92c69b9a02680b431b45a91e76b873c9aa31ae9e"
+    },
+    {
+      "path": "old-approved-body-journal.js",
+      "blob": "6135a73fa269e17aecfec9c575e28bda46462751",
+      "bytes": 28285,
+      "sha256": "dfc4c4d96755db97999019c0457c3421106fa6788913f8e33a05ce55ba8d32f0"
+    },
+    {
+      "path": "old-body-forward.diff",
+      "blob": "1f791213b4c1dcd9be5ea13baa5aff39847d2825",
+      "bytes": 6008,
+      "sha256": "2d69eb7b56a532ee292bf0024a7878a493948203e7d203a3999bed53f4676253"
+    },
+    {
+      "path": "old-body-reverse.diff",
+      "blob": "d35d11767995270829e3ba5915f587542b6c1817",
+      "bytes": 6008,
+      "sha256": "316ac51ff6ada0fa462d65993d157a91242f38c136bcccbafd9458b229a76027"
+    },
+    {
+      "path": "old-body-root-go.json",
+      "blob": "04b08af80d7fa198a95762e6fdbfdd65406df266",
+      "bytes": 3338,
+      "sha256": "2c18f016b0c1c0e04787a03fe86a465456123db7acaafabba0dd4cc9a1a23ffb"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "74950c547d18cb3377207fa0986eac75b9df2e9b",
+      "bytes": 3323,
+      "sha256": "e9fbd7486a05c5ed0470d62a8d7d16a84f5c4829ada72d7a8e4844d2d238f538"
+    },
+    {
+      "path": "pure-helper.reference.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "source-checks.actual.json",
+      "blob": "cf403d87311dcb60ec969e5a10c44742a9badd94",
+      "bytes": 2517,
+      "sha256": "9996a23da898e2c74cec06e763ce06482ea8aa15a412f5b75282186c2e53d31c"
+    },
+    {
+      "path": "source-verifier.js",
+      "blob": "cb48538d6f390565c8b544f6d52d0f013031171d",
+      "bytes": 3528,
+      "sha256": "40ef7e2a3413a0af896c8b30f49354ea6b646b3721195b8e07dcae688d860fdb"
+    },
+    {
+      "path": "strict-diff-helper.reference.js",
+      "blob": "f595a6490497f54ea2b533fcbb98cdb306583286",
+      "bytes": 3497,
+      "sha256": "c872292668150c3b22396b4d23f315a709ef5b35eb9a286ded9cf7bbe7fd51f5"
+    }
+  ],
+  "newNativeCalls": 0
+}

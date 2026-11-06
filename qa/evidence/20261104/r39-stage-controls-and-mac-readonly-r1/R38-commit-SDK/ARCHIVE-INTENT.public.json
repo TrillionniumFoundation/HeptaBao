@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r38-validation-commit-original-SDK",
+  "records": [
+    {
+      "name": "COMMIT.original.sdk.json",
+      "blob": "84ff07e547bf2cd52c929fd32a4c6af2ea87b152",
+      "bytes": 195,
+      "sha256": "7d896855180dc51be532533e6ef7cb7f82238b1d75155b439e324052f3076a49"
+    }
+  ],
+  "expected_data_tree": "8fc42b8dc43c84d4425466a2658eb63ed0ee30d4",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-stage-report-independent-info.v1",
+  "status": "PASS_ORIGINAL_INDEPENDENT_FILE_METADATA",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole23_27754",
+      "passed": true
+    },
+    {
+      "name": "exact_INFO_GO",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_call_jwt-pki-33b814c7-source-result-info0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_armed_tree_jwt-pki-33b814c7-source-result-info0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_call_jwt-pki-33b814c7-source-result-info0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_armed_tree_jwt-pki-33b814c7-source-result-info0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_call_jwt-pki-33b814c7-source-result-info0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_armed_tree_jwt-pki-33b814c7-source-result-info0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_observer_5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_page_5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463_0",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_payload_5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+      "passed": true
+    },
+    {
+      "name": "pki33bInfo_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "three_calls_one_INFO_one_page",
+      "passed": true
+    },
+    {
+      "name": "exact_one_metadata_request",
+      "passed": true
+    },
+    {
+      "name": "native_payload_and_actual_pins",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_path_size_hash_version",
+      "passed": true
+    },
+    {
+      "name": "private_linux_singlelink_lossless_identity",
+      "passed": true
+    },
+    {
+      "name": "same_original_job_closed_lane",
+      "passed": true
+    },
+    {
+      "name": "no_body_or_Cargo",
+      "passed": true
+    }
+  ],
+  "check_count": 21,
+  "packet": {
+    "tree": "ba5841da1f32fd1ed326766e7c699600fb52f43d",
+    "files": 23,
+    "bytes": 27754,
+    "merkle": {
+      "root_sha": "ba5841da1f32fd1ed326766e7c699600fb52f43d",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1afcbafab-fc05-6bb0",
+  "original_operation": {
+    "id": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "tool": "file_info",
+    "payload": {
+      "blob": "48a119738de68d86ff0301058e6ffb5f69a08fd6",
+      "bytes": 603,
+      "sha256": "f81ed8823ce514db94ef5e291903d30efc9cf723fd4de4dab6d9ae300196110e"
+    },
+    "payloadTree": "b8372befd07fb3edd13a273c13fc84f6fa22a1f9",
+    "nativeText": {
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual_file_info": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "size": 27931,
+    "sha256": "2137f9962784c451d11a2aaae0741189fec8ab511c0b3e6b226031f908331da0",
+    "version": "66306:31235720:27931:1793950741423957124:1793950741423957124",
+    "nativeText": {
+      "blob": "fb286cf97c84dbe06652e7f8f4955fc075918303",
+      "bytes": 486,
+      "sha256": "b5b9645947ce33389cadff175f76d54bd43d192c21a7b74d56c5d387289b76a5"
+    },
+    "originalOperation": "5567960600b712069d446ab140b3664ac711277ef624ecbda472c61f2142c463",
+    "full9Strings": [
+      "66306",
+      "31235720",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "27931",
+      "1793950741423957124",
+      "1793950741423957124"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "actual": {
+    "native_calls": 3,
+    "observers": 1,
+    "immutable_pages": 1,
+    "whole_payload_bytes": 603
+  },
+  "normalization": "CALL-INDEX omits phase; common-verifier accepted is a root semantic label supported by original successful SDK and closed observer, not an original recorded field.",
+  "report_body_observed": false,
+  "detailed_stage_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

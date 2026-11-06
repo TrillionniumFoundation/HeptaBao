@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-pki33b-original-body-local-page-recovery-GO-r1",
+  "records": [
+    {
+      "name": "ROOT-REVIEW.public.json",
+      "blob": "68b6537dc3a9718b16c9e58be1dc5aa097a8faee",
+      "bytes": 4296,
+      "sha256": "a22ee2a617ebb19497082119f7a385a5b9f0b2b7c45c6c7c08232d8487d3231d"
+    },
+    {
+      "name": "RECOVERY-GO.public.json",
+      "blob": "83822d9fc630a8f21e39bb4a66bb7b8ca3073433",
+      "bytes": 2495,
+      "sha256": "7cfb879551650819d2b0ee64106eb20166e7479e3aa92e4a5c4c336e1501c8b2"
+    },
+    {
+      "name": "ROOT-VERIFIER.source.js",
+      "blob": "79e9aff73af4d99390c78d3e1556ef17aef0d105",
+      "bytes": 7300,
+      "sha256": "7b1ac2b234ca30f5aa92ff07f1dcf5a5aa5a12b7d94d94d9ccbe3e64cf3626e0"
+    },
+    {
+      "name": "ROOT-ARCHIVE-CALL-LOCAL-ERROR.public.json",
+      "blob": "192acb9e63984771105ac70faca1eee698b46afa",
+      "bytes": 499,
+      "sha256": "5a60b6720f106d18e2619b000ddf150d129a931e92b64499c4fca6e2860d251a"
+    }
+  ],
+  "expected_data_tree": "7a3e0b9fa5c5a271ca1680385f350ab01b53a6c4",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

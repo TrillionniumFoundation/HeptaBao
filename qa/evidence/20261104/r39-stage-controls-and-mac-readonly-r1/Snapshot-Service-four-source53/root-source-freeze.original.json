@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.root-snapshot24-source-freeze-proof.v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "codex/heptabao-native-snapshot-forward-r4-source-20261106",
+  "commit": "b6949024dc5d0922ca9b27d865923d28982286c3",
+  "tree": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+  "sole_parent": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+  "leaves": 3928,
+  "modified_existing": 24,
+  "unchanged": 3904,
+  "new_files": 0,
+  "deleted_files": 0,
+  "added_lines": 65,
+  "added_bytes": 3575,
+  "tracked_bytes": 62463643,
+  "index": {
+    "blob": "a36e8c2f97ef062ee804114efb22b4a3a9b08899",
+    "bytes": 453379,
+    "sha256": "80a220f0a5d03d5b9cbe5cdb6a69b2e1c29d794f0abe367a98b5be096996e727"
+  },
+  "source_packet": "c453529c0b43e6f7478e4d2a4899383d2d097dcd",
+  "root_source_review": "bd007cb047410776261834ac6c355469537d4334",
+  "layers_verified": [
+    {
+      "path": "",
+      "sha": "9c800e97a2527e7f01c3a4b0be594e6762f9581e",
+      "entries": 26
+    },
+    {
+      "path": "crates",
+      "sha": "78c6712bcb5fd13519c250f71b24410e41b0c56e",
+      "entries": 49
+    },
+    {
+      "path": "crates/heptabao-server",
+      "sha": "4162114750c08242a9187321844a91bef445083f",
+      "entries": 8
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "sha": "697aa422bae90a60cfd17c4531ca78cb9bb35307",
+      "entries": 790
+    }
+  ],
+  "commit_readback_verified": true,
+  "branch_readback_verified": true,
+  "mutation_journals": {
+    "tree_intent": "dc53d52ab7a1bcbfc621536c8e9a84d1427fee23",
+    "tree_SDK": "be04320fa059865da322e2fadaf87d65779a7bc6",
+    "commit_intent": "528acf667c164e7817c020b027d75d6cee764fe8",
+    "commit_SDK": "aeb45dd53d1fd5c4f6140c381e47d2f020bebf53",
+    "branch_intent": "8aec6891010401f9ab0843ffe51ba4c344d92811",
+    "branch_SDK": "51e4e7fcc5428ebf8ed27e28b6ba92fa99c936c3"
+  },
+  "formatted": false,
+  "compiled": false,
+  "tests_executed": false,
+  "prior23_component_tests_unchanged": true,
+  "new_test_count": 0,
+  "PKI33b_not_included": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r39-auth-readonly-r2-failure-qualified",
+  "records": [
+    {
+      "name": "ROOT69.original-failure-qualification.json",
+      "blob": "e65caf0cf0e3447b50a205d1d6033796dfb75ad8",
+      "bytes": 10848,
+      "sha256": "64eda6fbc05d7cf8de5564d24661945f21e80dd08e71522806f4458b92d0c04c"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "ec2d4d8592ef472f5ebbd463db33845fb87edc17",
+      "bytes": 12097,
+      "sha256": "6ebea8b863339a461e42eb6d0ff83ee1aa44b347b9c96fb83ca98be80f9c078f"
+    },
+    {
+      "name": "original-journal-verifier.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "b9a8b2dddce31b0123d2d6f8260d2a08d48c81fb",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

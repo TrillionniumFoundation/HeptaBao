@@ -1,0 +1,377 @@
+{
+  "schema": "heptabao.snapshot-b694-stage-original-chain-pure-checks.v1",
+  "pass": true,
+  "count": 92,
+  "checks": [
+    {
+      "name": "7-original-native-calls",
+      "pass": true
+    },
+    {
+      "name": "one-business-start",
+      "pass": true
+    },
+    {
+      "name": "2-original-observers",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:sdk-nonerror",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:sdk-native-lossless",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:exact-intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-rog-source-start:exact-armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:sdk-nonerror",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:sdk-native-lossless",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:exact-intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-admit:exact-armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:sdk-nonerror",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:sdk-native-lossless",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:exact-intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-status:exact-armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:sdk-nonerror",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:sdk-native-lossless",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:exact-intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0-page0:exact-armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:sdk-nonerror",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:sdk-native-lossless",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:exact-intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-admit:exact-armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:sdk-nonerror",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:sdk-native-lossless",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:exact-intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-status:exact-armed",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:accepted-once",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:request-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:sdk-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:native-whole",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:sdk-nonerror",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:sdk-native-lossless",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:exact-intent",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0-page0:exact-armed",
+      "pass": true
+    },
+    {
+      "name": "request-exact",
+      "pass": true
+    },
+    {
+      "name": "request-source-full",
+      "pass": true
+    },
+    {
+      "name": "request-original-budget",
+      "pass": true
+    },
+    {
+      "name": "ack-job-exact",
+      "pass": true
+    },
+    {
+      "name": "ack-native-digest",
+      "pass": true
+    },
+    {
+      "name": "ack-lossless-fingerprint",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0:same-job",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0:same-operation",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0:completed-inactive",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0:original-page-geometry",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0:payload-full",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0:original-envelope",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-authority0:native-full",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0:same-job",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0:same-operation",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0:completed-inactive",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0:original-page-geometry",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0:payload-full",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0:original-envelope",
+      "pass": true
+    },
+    {
+      "name": "snapshot-b694-streams0:native-full",
+      "pass": true
+    },
+    {
+      "name": "terminal-success",
+      "pass": true
+    },
+    {
+      "name": "terminal-full-durable",
+      "pass": true
+    },
+    {
+      "name": "stdout:full-stream",
+      "pass": true
+    },
+    {
+      "name": "stdout:authority-sized",
+      "pass": true
+    },
+    {
+      "name": "stderr:full-stream",
+      "pass": true
+    },
+    {
+      "name": "stderr:authority-sized",
+      "pass": true
+    },
+    {
+      "name": "383-stdout-0-stderr",
+      "pass": true
+    },
+    {
+      "name": "summary-exact-source",
+      "pass": true
+    },
+    {
+      "name": "summary-prepared",
+      "pass": true
+    },
+    {
+      "name": "summary-no-compiler-product",
+      "pass": true
+    },
+    {
+      "name": "fixed-report-pointer",
+      "pass": true
+    },
+    {
+      "name": "owner-release",
+      "pass": true
+    },
+    {
+      "name": "scope-not-upgraded",
+      "pass": true
+    }
+  ],
+  "scope": "7 original native calls / 2 closed observers / 2 original pages; terminal and summary only, detailed report unobserved",
+  "newNativeCalls": 0
+}

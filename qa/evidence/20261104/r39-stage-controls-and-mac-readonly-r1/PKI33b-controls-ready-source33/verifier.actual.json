@@ -1,0 +1,211 @@
+{
+  "schema": "heptabao.jwt-pki33b-build-controls-ready-source-checks.v1",
+  "pass": true,
+  "checks": 49,
+  "rows": [
+    {
+      "check": "actual_root_source_stage_qualified",
+      "pass": true
+    },
+    {
+      "check": "current33b_source_and_report",
+      "pass": true
+    },
+    {
+      "check": "before_pin:runner",
+      "pass": true
+    },
+    {
+      "check": "single_explicit_literal:runner:BINDING_READY = False",
+      "pass": true
+    },
+    {
+      "check": "all_other_bytes_same:runner",
+      "pass": true
+    },
+    {
+      "check": "inverse_whole:runner",
+      "pass": true
+    },
+    {
+      "check": "strict_both_directions:runner",
+      "pass": true
+    },
+    {
+      "check": "exactly_ready_flag:runner",
+      "pass": true
+    },
+    {
+      "check": "all_functions_whole:runner",
+      "pass": true
+    },
+    {
+      "check": "before_pin:launcher",
+      "pass": true
+    },
+    {
+      "check": "single_explicit_literal:launcher:BINDING_READY = False",
+      "pass": true
+    },
+    {
+      "check": "all_other_bytes_same:launcher",
+      "pass": true
+    },
+    {
+      "check": "inverse_whole:launcher",
+      "pass": true
+    },
+    {
+      "check": "strict_both_directions:launcher",
+      "pass": true
+    },
+    {
+      "check": "exactly_ready_flag:launcher",
+      "pass": true
+    },
+    {
+      "check": "all_functions_whole:launcher",
+      "pass": true
+    },
+    {
+      "check": "before_pin:publisher",
+      "pass": true
+    },
+    {
+      "check": "single_explicit_literal:publisher:BINDING_READY = False",
+      "pass": true
+    },
+    {
+      "check": "single_explicit_literal:publisher:        30398,\n        \"9",
+      "pass": true
+    },
+    {
+      "check": "single_explicit_literal:publisher:        38566,\n        \"7",
+      "pass": true
+    },
+    {
+      "check": "all_other_bytes_same:publisher",
+      "pass": true
+    },
+    {
+      "check": "inverse_whole:publisher",
+      "pass": true
+    },
+    {
+      "check": "strict_both_directions:publisher",
+      "pass": true
+    },
+    {
+      "check": "exactly_ready_flag:publisher",
+      "pass": true
+    },
+    {
+      "check": "all_functions_whole:publisher",
+      "pass": true
+    },
+    {
+      "check": "25_original_functions_4_hunks",
+      "pass": true
+    },
+    {
+      "check": "unchanged_groups35153",
+      "pass": true
+    },
+    {
+      "check": "actual149_unique166_profiles",
+      "pass": true
+    },
+    {
+      "check": "four_original_budgets_and_shape",
+      "pass": true
+    },
+    {
+      "check": "runner_launcher_same_groups",
+      "pass": true
+    },
+    {
+      "check": "carrier_schema_exact_3_files",
+      "pass": true
+    },
+    {
+      "check": "publisher_pin_and_whole_payload:native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "check": "publisher_pin_and_whole_payload:launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "check": "publisher_pin_and_whole_payload:jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "check": "one_unchanged_publisher_interface",
+      "pass": true
+    },
+    {
+      "check": "original_stdin_cap_actual",
+      "pass": true
+    },
+    {
+      "check": "bounded_new_inert_key",
+      "pass": true
+    },
+    {
+      "check": "actual_typed_digest_positive_control",
+      "pass": true
+    },
+    {
+      "check": "exact_proposed_typed_digest",
+      "pass": true
+    },
+    {
+      "check": "single_journal_binding:jwt_pki_33b814c7_rog_source_gi",
+      "pass": true
+    },
+    {
+      "check": "single_journal_binding:1b3da82ecf429adc5d816a2ff2cb78",
+      "pass": true
+    },
+    {
+      "check": "single_journal_binding:111811",
+      "pass": true
+    },
+    {
+      "check": "single_journal_binding:576e7eb3f5f6a20d49e7fdae8939f0",
+      "pass": true
+    },
+    {
+      "check": "single_journal_binding:heptabao-native-jwt-pki-33b814",
+      "pass": true
+    },
+    {
+      "check": "journal_only5_bindings",
+      "pass": true
+    },
+    {
+      "check": "journal2_hunks_strict_whole",
+      "pass": true
+    },
+    {
+      "check": "exact_request_and_fresh_slot_bound",
+      "pass": true
+    },
+    {
+      "check": "original_journal_caps_and_success_boundary",
+      "pass": true
+    },
+    {
+      "check": "no_new_runtime_or_Cargo_claim",
+      "pass": true
+    }
+  ],
+  "unchangedPythonFunctions": 25,
+  "sourceHunks": 4,
+  "journalHunks": 2,
+  "uniqueTests": 149,
+  "profileInstances": 166,
+  "Native": 0,
+  "Cargo": 0,
+  "candidateExecuted": false
+}

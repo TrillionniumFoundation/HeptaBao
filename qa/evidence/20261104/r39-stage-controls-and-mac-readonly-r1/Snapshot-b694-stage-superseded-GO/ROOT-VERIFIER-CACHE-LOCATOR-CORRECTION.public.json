@@ -1,0 +1,11 @@
+{
+  "kind": "root cache locator only",
+  "incorrect": "r38_snapshot24_freeze_expected_leaves",
+  "correct": "r38_snapshot24_expected_leaves",
+  "candidateChanged": false,
+  "nativeCalls": 0,
+  "originalFailure": {
+    "error": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "stack": "TypeError: Cannot read properties of undefined (reading 'map')\n    at reviewB694Stage52 (eval at <anonymous> (exec_main.mjs:77:7), <anonymous>:64:28)\n    at eval (eval at <anonymous> (exec_main.mjs:77:7), <anonymous>:130:19)\n    at eval (eval at <anonymous> (exec_main.mjs:77:7), <anonymous>:133:3)\n    at exec_main.mjs:83:8"
+  }
+}

@@ -1,0 +1,265 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-INERT-controls-original.v1",
+  "status": "PASS_CREATE_ONLY_CONTROL_PUBLICATION",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole52_227614",
+      "passed": true
+    },
+    {
+      "name": "exact_original_GO",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_call_jwt-pki-33b814c7-controls-inert-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_armed_tree_jwt-pki-33b814c7-controls-inert-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_call_jwt-pki-33b814c7-controls-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_armed_tree_jwt-pki-33b814c7-controls-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_call_jwt-pki-33b814c7-controls-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_armed_tree_jwt-pki-33b814c7-controls-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_call_jwt-pki-33b814c7-controls-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_armed_tree_jwt-pki-33b814c7-controls-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_call_jwt-pki-33b814c7-controls-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_armed_tree_jwt-pki-33b814c7-controls-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_call_jwt-pki-33b814c7-controls-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_armed_tree_jwt-pki-33b814c7-controls-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_call_jwt-pki-33b814c7-controls-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_armed_tree_jwt-pki-33b814c7-controls-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_observer_3e2c145fb3866ba0828fa38d07632e63795b01a1abcff64ebd38e3ffaa8f18be",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_page_3e2c145fb3866ba0828fa38d07632e63795b01a1abcff64ebd38e3ffaa8f18be_0",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_payload_3e2c145fb3866ba0828fa38d07632e63795b01a1abcff64ebd38e3ffaa8f18be",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_observer_cfb862c2bb678ca32654d72f13d2777cac430b9f1d4409a88478a2b9e803a067",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_page_cfb862c2bb678ca32654d72f13d2777cac430b9f1d4409a88478a2b9e803a067_0",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_payload_cfb862c2bb678ca32654d72f13d2777cac430b9f1d4409a88478a2b9e803a067",
+      "passed": true
+    },
+    {
+      "name": "PkiControlsInert_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_calls_one_START_two_observers_two_pages",
+      "passed": true
+    },
+    {
+      "name": "exact_typed_one_START",
+      "passed": true
+    },
+    {
+      "name": "original_rog_job_and_scope",
+      "passed": true
+    },
+    {
+      "name": "original_authority_stream_alias_pins",
+      "passed": true
+    },
+    {
+      "name": "exit0_full_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "1444stdout_zero_stderr_no_log_errors",
+      "passed": true
+    },
+    {
+      "name": "whole_stdout_original_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "whole_stderr_original_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "prepared_exact_payload_compile_only",
+      "passed": true
+    },
+    {
+      "name": "three_created_exact_control_pins",
+      "passed": true
+    },
+    {
+      "name": "three_safe_lossless_private_full9_identities",
+      "passed": true
+    },
+    {
+      "name": "bounded_positive_publisher_elapsed",
+      "passed": true
+    },
+    {
+      "name": "all_original_observation_lanes_closed",
+      "passed": true
+    },
+    {
+      "name": "no_independent_files_or_Cargo_claim",
+      "passed": true
+    }
+  ],
+  "check_count": 39,
+  "packet": {
+    "tree": "ab605d5e65f3be9766dad58674c55a3ba5ac636b",
+    "files": 52,
+    "bytes": 227614,
+    "merkle": {
+      "root_sha": "ab605d5e65f3be9766dad58674c55a3ba5ac636b",
+      "trees_verified": 1,
+      "leaf_count": 52
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b001e788-fc05-6d66",
+  "authority": {
+    "blob": "b71ae954e7acc32d8f0c05e2f8b69c1883ec06bf",
+    "bytes": 731,
+    "sha256": "f423c12f146b81a7ddfb5b99bf8ba0052fa03163a5bdbc3d1bb49ff0090dfe5c"
+  },
+  "stdout": {
+    "blob": "46e216e8b2120303dbc4f1a1e08aeccc41a29ef3",
+    "bytes": 1444,
+    "sha256": "a7cd7fa6220225c3b47fc543a4db218bfc06d27c8660765ebfb6c6c129a2fac0"
+  },
+  "actual": {
+    "native_calls": 7,
+    "observers": 2,
+    "immutable_pages": 2,
+    "elapsed_seconds": 0.015043918,
+    "publication": "prepared",
+    "created_files": [
+      {
+        "bytes": 30397,
+        "identity": [
+          "66306",
+          "31235924",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "30397",
+          "1793954281105928260",
+          "1793954281106897967"
+        ],
+        "mode": "0600",
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py",
+        "publication": "created",
+        "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add"
+      },
+      {
+        "bytes": 38565,
+        "identity": [
+          "66306",
+          "31235925",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "38565",
+          "1793954281107963513",
+          "1793954281108998030"
+        ],
+        "mode": "0600",
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py",
+        "publication": "created",
+        "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056"
+      },
+      {
+        "bytes": 19789,
+        "identity": [
+          "66306",
+          "31235926",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "19789",
+          "1793954281109723489",
+          "1793954281110748800"
+        ],
+        "mode": "0600",
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json",
+        "publication": "created",
+        "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+      }
+    ],
+    "stdin_bytes": 118531,
+    "stdin_sha256": "7afbd432447feee5fbee147c747baa6f084f8286aaea0b427bc19952f83cdf44",
+    "python_compile_only": true
+  },
+  "limits": [
+    "The original publisher's self-checked creation and metadata are qualified; independent exact file_info and whole bodies for all3 controls plus receipt remain pending.",
+    "The new Python sources were syntax-compiled only. Runner, launcher, Cargo, libtests, service and product were not executed.",
+    "149 unique /166 instances remain planned, not test results."
+  ],
+  "independent_controls_qualified": false,
+  "build_request_bound": false,
+  "compile_executed": false,
+  "tests_executed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}
