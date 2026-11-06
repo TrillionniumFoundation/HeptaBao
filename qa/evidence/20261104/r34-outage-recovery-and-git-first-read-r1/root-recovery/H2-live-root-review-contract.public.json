@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.root-H2-live-review-contract.v1",
+  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "prepare_result": {
+    "blob": "fd687152d3c89bf4ef8284748ef23082e494f45e",
+    "bytes": 52937,
+    "sha256": "bb5bdec75ad7081910b4ccb39492964e42a0a144f57f3d3ef1a97b0df05613d4"
+  },
+  "binding_sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+  "case_requirements": {
+    "H01": [
+      "actual complete HTTP 200",
+      "native archive valid",
+      "body at most 8388608",
+      "one actual request/response audit pair",
+      "known same target leader"
+    ],
+    "H02": [
+      "exact operation1, request single connection/single send",
+      "actual chain+hostname verification and negotiated ALPN h2",
+      "actual version2 KV2 marker equals all-node baseline",
+      "complete exact Content-Length/body SHA",
+      "DATA end plus completed empty trailers and EOS",
+      "original 15 second deadline",
+      "joined owned connection and direct child reaped",
+      "one actual audit pair"
+    ],
+    "H03": [
+      "exact operation2 with same TLS/EOS/deadline/ownership conditions",
+      "actual native archive valid and <=8388608",
+      "one actual audit pair"
+    ]
+  },
+  "final_requirements": [
+    "original full durable terminal authority and complete exact stdout/stderr",
+    "actual fixed file metadata/version and lossless full body SHA",
+    "three cases all individually qualified with no original intent gaps",
+    "all_node_state_unchanged and actual per-node state/audit witnesses",
+    "all before/after pinned inputs exact",
+    "no final errors or unknown authority",
+    "all original PIDs/start identities matched to stopped/reaped cleanup",
+    "final observations within the original 300 second deadline",
+    "all original observer pages/EOF/closure"
+  ],
+  "not_claimed": [
+    "OpenBao raw state archive format portability",
+    "34MiB HTTP2 transfer",
+    "real multi-host topology in this H2 scope",
+    "official CLI compatibility from this scope",
+    "production cutover",
+    "whole replacement"
+  ]
+}

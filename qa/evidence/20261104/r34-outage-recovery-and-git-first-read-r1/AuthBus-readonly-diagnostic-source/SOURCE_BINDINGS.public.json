@@ -1,0 +1,205 @@
+{
+  "schema": "heptabao.mac-owned-launchd-readonly-diagnostic-source-binding.r1",
+  "source": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "request": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"
+  },
+  "originalSourceTree": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+  "manager": {
+    "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+    "bytes": 35736,
+    "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+  },
+  "wrapper": {
+    "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+    "bytes": 13394,
+    "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+  },
+  "embeddedHelpers": [
+    {
+      "name": "mac_owned_unreaped_r1",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "name": "mac_owned_commands_r1",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "name": "mac_t5_volume_guard_r1",
+      "blob": "5a0177bed2e224de3ec14f68174ec9b6e0ea2525",
+      "bytes": 13391,
+      "sha256": "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+    }
+  ],
+  "anchor": {
+    "blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43",
+    "bytes": 967,
+    "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+    "source": "original full worker public anchor",
+    "raw": "{\n  \"schema\": \"heptabao.mac-current-t5-public-anchor.r1\",\n  \"source_inventory_sha256\": \"001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902\",\n  \"volumeUUID\": \"FB804D1B-24CB-4D6E-AEA7-A9E180807758\",\n  \"expectedVolumeDevice\": \"16777244\",\n  \"anchors\": [\n    {\n      \"path\": \"/\",\n      \"identity\": [\n        \"16777233\",\n        \"2\",\n        \"0\",\n        \"0\",\n        \"16877\",\n        \"22\",\n        \"704\",\n        \"1786589515000000000\",\n        \"1786589515000000000\"\n      ]\n    },\n    {\n      \"path\": \"/Volumes\",\n      \"identity\": [\n        \"16777233\",\n        \"18336\",\n        \"0\",\n        \"0\",\n        \"16877\",\n        \"5\",\n        \"160\",\n        \"1793100597756515591\",\n        \"1793100597756515591\"\n      ]\n    },\n    {\n      \"path\": \"/Volumes/T5\",\n      \"identity\": [\n        \"16777244\",\n        \"2\",\n        \"0\",\n        \"0\",\n        \"16893\",\n        \"12\",\n        \"384\",\n        \"1793152973144260495\",\n        \"1793152973144260495\"\n      ]\n    }\n  ]\n}\n"
+  },
+  "expectedOriginalArguments": [
+    "/opt/homebrew/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py",
+    "--plan",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.private.json",
+    "--plan-sha256",
+    "5b94c4b970dec5e3550b66b22700b9fff507f08062fc2a860c0399ed38802aab",
+    "--public-volume-anchor-base64",
+    "ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",
+    "--public-volume-anchor-sha256",
+    "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+    "--public-source-pins-base64",
+    "eyJtYWNfbmF0aXZlX3Byb2Nlc3Nfb2JzZXJ2ZXJfcjEucHkiOiJjYzBmYTk5MTdkMDVjNmRjMmMyOTU1OTRmOTgwYzFmNzdkMDg5YzExOTZlNjI3OWExNGYyZmRhZjJkNzdhZTliIiwibWFjX293bmVkX2NvbW1hbmRzX3IxLnB5IjoiZWI2NzZlNmRlZGI2ZDU5NGQ5NDRlOTIxNzM4Y2Y5YjM4NGYyYTk4YTM3ZWUyYmQxZmE1NDMzYjg0OGEzNjg2NyIsIm1hY19vd25lZF91bnJlYXBlZF9yMS5weSI6ImExNDNiYTMzNDE1OTkzMWQ1MzBiNDlhNTVjMjQ0NzFmNTZmYTFiNjJmMWUxMDEyZTEyYzc1ZTIxZjNjMjJiMWQiLCJtYWNfdDVfdm9sdW1lX2d1YXJkX3IxLnB5IjoiNTVhMDA3YWU5MjVjNmNhYjZlZTIyOGVjNTE1NGNmZjc5YmFhNmMyYmMzOGZiNjU4NjhmZDE5MmRmYzI5ZDI4OCJ9Cg==",
+    "--public-source-pins-sha256",
+    "4835222c55cd4375040665e9157d123a5431648dcce3d3761c834a23be8581f5"
+  ],
+  "originalActual": {
+    "job": "mac/1a1ae51309d-fc05-5ef8",
+    "request": {
+      "blob": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+      "bytes": 5329,
+      "sha256": "cbb0404036ccaf6c0e03c806de8a569eb4e6143985652428a8f5b6efe1ea6c95",
+      "text": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py\",\n    \"--candidate\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json\",\n    \"--candidate-sha256\",\n    \"1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932\",\n    \"--public-source-pins-base64\",\n    \"ewogICJtYWNfYXV0aF9yb3dzX2Nhc19yMS5tanMiOiAiZGQzZDAyNjc1MjEyZjZlNTEzYTRmOTM1NzM1NjY2NDZjNTVhMWQyN2NiMjFhYzdiYmI1MjgwNThhOTZkYjhiNyIsCiAgIm1hY19hdXRoYnVzX2NhY2hlX2Nhc19yMS5tanMiOiAiOTE2NDRiOTdhZTdkZWI0ZWRlNDY4ODMyZDNmOTE2NDZiYjAwY2Q5MTkxNDlhNTEwYmZmZmUzOGQyMzU0NGFmOCIsCiAgIm1hY19jYXB0dXJlX3NxbGl0ZV9zeW50aGV0aWNfcjEucHkiOiAiMTA4Zjk1NmViMzc3OWZjZTMxZTAxZDYzMDU0NzM0NGUyMjM2MjgzOTA0MWFmZWNiMzgyMWJmODA1M2ZmMzkyYyIsCiAgIm1hY19jYXB0dXJlX3NxbGl0ZV9zeW50aGV0aWNfcjIucHkiOiAiZjNjNmJiMzM2ODE0NDExYWE0YTI0NDkwZjA5MDRjZGJkMGZhYzJiYjg5ZGJjYzM2ZDYxNTFhZGExM2E1MWJhMiIsCiAgIm1hY19jdXJyZW50X2NhcHR1cmVfZW50cnlfd2FsX3IxLnB5IjogImYwNjAwZTBiOGZlMWYwMWEzZDY4NTU5ZTcyNGUxOWQwZjc2MjcyYzJmZWJkNGQzNjJiOTAxMmQ4NGIxMTc3ZTIiLAogICJtYWNfY3VycmVudF9jeWNsZV9yMi5tanMiOiAiZDhjZTA3NmI3NTc5NGIyY2E0OTVlZjM3YzMxMGQ5OTk1ZjA5MmMwNTYzZWFlMjYyZmNhYWIxNTgyYzU0Mzg3OCIsCiAgIm1hY19jdXJyZW50X2ZpeHR1cmVfbWF0ZXJpYWxpemVyX3IxLnB5IjogImNmMGI3OGVkNTQ2NDg1MjViODczZDkxNDczZDYwM2YxMTVlODQwMTNjMzhiYTRhYmFhNDI3NzFkZmE1ZDFjY2YiLAogICJtYWNfY3VycmVudF9vdXRlcl9pbnB1dHNfcjIucHkiOiAiOTdkYjk1M2U3MzI0ZTMxYTliYjE2MmQxZWU1MDhlZDVmMmUyYTU4Yzk4YTE4MTEzMTk4OGU5ZGQzYzNjZmRjZSIsCiAgIm1hY19jdXJyZW50X291dGVyX3dhbF9yMS5weSI6ICI2YWQxYjgwYWMwNmM5MDc1OWMyYWM1ZmQwMWRmOWM3NTBiMDc3ZmZhNDMyNTM0ODZjMDc2NThiNmUxZGRkNGQ1IiwKICAibWFjX2N1cnJlbnRfcGhhc2Vfb3duZXJfcjIucHkiOiAiYmI2NzRlZDFhNjBiMjA0MjA3YWYyZGJhYjRkN2IwNmE3NmU0N2ZkZWJiMTk5OTFlMmYyYzNkZGE3YmVhYzRhNSIsCiAgIm1hY19jdXJyZW50X3NlcnZlcl9vd25lcl9yMS5weSI6ICJmYjM4YmQ3Y2UzMGU5YTBiNjI1MzlkNDU5OTM5YjJlYzIwZDk2Zjg0ZmQwOGQ1NzE5OWFhMDk1ZmQzZmM1ZWY2IiwKICAibWFjX2Rhcndpbl9vd25lZF9wcm9qZWN0aW9uX3IxLnB5IjogIjc3YjYzMjg2ZDc5ODI3NjcxMDA5ZDU2ZDIzODQ5NGM0NzJmMzdlMzY3NGJmOTAzYWIyZGEwOTJiNDI3MzM3NDAiLAogICJtYWNfZ3VhcmRlZF9jdXJyZW50X2NhcHR1cmVfcjMucHkiOiAiNjA2YjVkZjU4OTA5ZWJlZGMwMzVlYmJmZjZhNGFhNWU3NTRkMTljNmE3ZTBmNWU0ZTg4YzlkZGZjNTdjMjY5MyIsCiAgIm1hY19uYXRpdmVfb3duZWRfY29tbWFuZHNfcjEucHkiOiAiNzE3ZmVmZjBhODcxOWE2YzIwOGIxNGFhMTU5OGNlZmQ1OTg4MWZmZmEwOWQxOWM3ODFhODk2ODliMDI1YjljZCIsCiAgIm1hY19uYXRpdmVfb3duZWRfdW5yZWFwZWRfcjEucHkiOiAiODgwNzk0ZDVlMGYwMWY0NWU5YzU1OTY4OGIyZWJkMzNjMmM5NjM5OTEyNGVhM2VjYjllNTg3MjBhMjQyNGQwYyIsCiAgIm1hY19uYXRpdmVfcHJvY2Vzc19vYnNlcnZlcl9yMS5weSI6ICJjYzBmYTk5MTdkMDVjNmRjMmMyOTU1OTRmOTgwYzFmNzdkMDg5YzExOTZlNjI3OWExNGYyZmRhZjJkNzdhZTliIiwKICAibWFjX293bmVkX2NvbW1hbmRzX3IxLnB5IjogImViNjc2ZTZkZWRiNmQ1OTRkOTQ0ZTkyMTczOGNmOWIzODRmMmE5OGEzN2VlMmJkMWZhNTQzM2I4NDhhMzY4NjciLAogICJtYWNfb3duZWRfbGF1bmNoZF9yMy5weSI6ICI0OTg5YjU4MjQ4Zjc5NTFmODI1YzAyMTQwMmJlZjYxMTcwOGI4NjEzMjkxZDMyODI3NjFjOGM5N2QwYjRhZGY2IiwKICAibWFjX293bmVkX3VucmVhcGVkX3IxLnB5IjogImExNDNiYTMzNDE1OTkzMWQ1MzBiNDlhNTVjMjQ0NzFmNTZmYTFiNjJmMWUxMDEyZTEyYzc1ZTIxZjNjMjJiMWQiLAogICJtYWNfcmVnaXN0cnlfcmVhZG9ubHlfd2FsX3IxLnB5IjogIjYwZDVlNTg3NGMyODFhZjJlMTlmZWU1NWJjNGIyMjQyNjI3ZjY5YjUwMGYxYWYxZDZiNWIyMmUxNjEyMGJmZWQiLAogICJtYWNfc2luZ2xlX25hdGl2ZV9yMi5tanMiOiAiYzJjZjBlYWEwYzJiNGI5MjViY2EwMmU4MjA1OTE1MmNmZTQyODg3ODZlMTVjNzFkNDlmYzA5ZmM1NDQ5NGM0YiIsCiAgIm1hY190NV92b2x1bWVfZ3VhcmRfcjEucHkiOiAiNTVhMDA3YWU5MjVjNmNhYjZlZTIyOGVjNTE1NGNmZjc5YmFhNmMyYmMzOGZiNjU4NjhmZDE5MmRmYzI5ZDI4OCIKfQo=\",\n    \"--public-source-pins-sha256\",\n    \"324c0b19ad8bf92c99536dd32a8a1b3994f398f34b74d39f056e14bc626b83b3\",\n    \"--public-volume-anchor-base64\",\n    \"ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==\",\n    \"--public-volume-anchor-sha256\",\n    \"dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8\"\n  ],\n  \"cwd\": \"/Users/qianqi\",\n  \"timeout_seconds\": 1080,\n  \"idempotency_key\": \"heptabao-mac-current-five-agent-owner-renew-6ad1b80a-20261105-r1\"\n}\n"
+    },
+    "stdout": {
+      "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+      "bytes": 132132,
+      "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+    },
+    "authority": {
+      "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+      "bytes": 732,
+      "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+    },
+    "release": {
+      "tree": "abfb64b76b7c933351972aba214e2f3eac42987e",
+      "blob": "d8150a0340521c6e4a5b421b1a367dd319ef22a5",
+      "bytes": 23408,
+      "sha256": "556a5441f70acb97cf9f9ab20ec05cea33d4ffb6a0d2959e14cade0b0c2d7425"
+    },
+    "registration": {
+      "attempts": {
+        "bootstrap": {
+          "attempted": true,
+          "command": {
+            "argv": [
+              "/bin/launchctl",
+              "bootstrap",
+              "gui/501",
+              "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist"
+            ],
+            "cleanup": {
+              "allGroupRowsEmptyAfterReap": true,
+              "cleanupCaps": {
+                "group": 3,
+                "psMax": 4,
+                "term": 1,
+                "wait": 5
+              },
+              "custody": {
+                "captured_exit": null,
+                "ps": {
+                  "pgid": 82492,
+                  "pid": 82492,
+                  "ppid": 82408,
+                  "start": "Fri Nov  6 08:45:20 2026    ",
+                  "uid": 501
+                },
+                "sid_observed_while_live": 82492
+              },
+              "directChildReaped": true,
+              "elapsedSeconds": 0.04465391719713807,
+              "exitCode": 0,
+              "initialLiveGroup": [],
+              "ok": true,
+              "outcomeUnknown": false,
+              "ownedLiveGroupEmptyBeforeReap": true,
+              "pgid": 82492,
+              "pid": 82492,
+              "postReapSignalSent": false,
+              "remainingGroupRows": [],
+              "retainedExit": {
+                "code": 1,
+                "pid": 82492,
+                "signo": 20,
+                "status": 0
+              },
+              "signals": [],
+              "stopAttempted": true
+            },
+            "commandDeadlineMonotonic": 2811777.446800166,
+            "completeBeforeDeadline": true,
+            "elapsedSeconds": 0.04866733402013779,
+            "errorCode": null,
+            "errorType": null,
+            "exitCode": 0,
+            "label": "launchd-bootstrap",
+            "outcomeUnknown": false,
+            "pid": 82492,
+            "stderrBytes": 0,
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdoutBytes": 0,
+            "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "streamsClosed": true
+          },
+          "complete": true,
+          "exitCode": 0,
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "cleanupErrorCode": "typed_launchctl_integer",
+      "cleanupErrorType": "ManagerRefused",
+      "completeKnownSuccess": false,
+      "execIdentity": null,
+      "generation": "server-initial",
+      "kind": "server",
+      "knownOwnedGroups": [],
+      "label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+      "lineagesClosed": false,
+      "planSha256": "5b94c4b970dec5e3550b66b22700b9fff507f08062fc2a860c0399ed38802aab",
+      "plistSha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+      "registrationClosed": false,
+      "remainingGroupRows": null,
+      "resultSha256": null,
+      "terminalSha256": null,
+      "wrapperIdentity": null
+    },
+    "runtimePython": {
+      "bytes": 34640,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "priorPrints": [
+      {
+        "pid": 82502,
+        "exitCode": 0,
+        "stdoutBytes": 4198,
+        "stdoutSha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5"
+      },
+      {
+        "pid": 82511,
+        "exitCode": 0,
+        "stdoutBytes": 4198,
+        "stdoutSha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5"
+      }
+    ],
+    "diagnosis": "typed_launchctl_integer; original precise field/value unobserved",
+    "originalOutcomeUnknown": true,
+    "oldRegisteredServiceClosureQualified": false
+  }
+}

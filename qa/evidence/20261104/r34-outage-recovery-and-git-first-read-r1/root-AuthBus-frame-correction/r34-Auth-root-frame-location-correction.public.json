@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.root-auth-launchd-frame-location-correction.v1",
+  "error": "The root initially assigned frame line 76 to the complete_launchctl_arguments guard after reading an unnumbered source excerpt. This was a root reading error, not an original report discrepancy.",
+  "source": {
+    "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+    "bytes": 35736,
+    "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+  },
+  "actual_numbered_source": {
+    "line73": "complete_launchctl_arguments",
+    "line76": "typed_launchctl_integer",
+    "integer_fields": [
+      "pid",
+      "runs",
+      "last exit code"
+    ]
+  },
+  "actual_report_evidence": {
+    "original_stdout_outer_incomplete_at_review": true,
+    "complete_manager_field_available_in_first_114688_bytes": true,
+    "manager_cleanup_error_code": "typed_launchctl_integer",
+    "original_prints": [
+      {
+        "pid": 82502,
+        "exit_code": 0,
+        "stdout_bytes": 4198,
+        "stdout_sha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5"
+      },
+      {
+        "pid": 82511,
+        "exit_code": 0,
+        "stdout_bytes": 4198,
+        "stdout_sha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5"
+      }
+    ],
+    "print_stdout_raw_bytes_not_preserved_in_public_command_rows": true
+  },
+  "qualified_conclusion": "The same complete launchctl print output was rejected by the integer-field guard. Which of pid/runs/last exit code and the actual offending literal are not yet observed.",
+  "unproved_hypothesis": "A never-exited last-exit-code sentinel is a hypothesis only and must not be presented as the original output.",
+  "effects": {
+    "new_Runtime_calls": 0,
+    "new_diagnostic_calls": 0,
+    "cleanup_dispatched": 0,
+    "source_patched": 0,
+    "business_replayed": 0,
+    "qualified_test_results_changed": 0
+  },
+  "supersedes": [
+    "Root preliminary messages assigning line76 to complete_launchctl_arguments",
+    "A source_trace.exact_frame_predicate in working-state59ce97442f204e48eb71e66093c2650a303dfca2"
+  ],
+  "user_and_A_informed": true,
+  "original_wrong_working_state_retained": true
+}

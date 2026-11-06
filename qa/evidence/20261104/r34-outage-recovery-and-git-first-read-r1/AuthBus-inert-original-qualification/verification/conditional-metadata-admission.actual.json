@@ -1,0 +1,637 @@
+{
+  "schema": "heptabao.owner-renew-inert.conditional-metadata-admission.r1",
+  "pass": true,
+  "rootGo": {
+    "blob": "964c58fa1ae491cad2f815362a2381686e64837a",
+    "bytes": 12272,
+    "sha256": "a6cd32eb138e7a0d78cb61faf81ca2b3f26db77e221f570bbf9e749b35a977e6"
+  },
+  "originalJob": "1a1ae1968c5-fc05-5d62",
+  "stdout": {
+    "blob": "e3fcc5f3d4c1d1da041251dac33e83074356cd43",
+    "bytes": 15393,
+    "sha256": "812b40198f13ec5ae9400beab043b9e16ea2d6a725a94fd164e7d1cda2c36bb8"
+  },
+  "authority": {
+    "blob": "dfb6ec250e1edd584007d6c8a66cc89ad8d493ff",
+    "bytes": 733,
+    "sha256": "67e923f418e80a7c7e9c55e4bd1ea196bc3d01ba8d78d1a8fe47b776eade8d9c"
+  },
+  "checks": [
+    {
+      "name": "exact_corrected_request",
+      "pass": true
+    },
+    {
+      "name": "exact_stdin",
+      "pass": true
+    },
+    {
+      "name": "original_job_exit0",
+      "pass": true
+    },
+    {
+      "name": "authority_output_complete",
+      "pass": true
+    },
+    {
+      "name": "authority_output_durable",
+      "pass": true
+    },
+    {
+      "name": "authority_terminal_publication_confirmed",
+      "pass": true
+    },
+    {
+      "name": "authority_audit_recorded",
+      "pass": true
+    },
+    {
+      "name": "authority_timed_out",
+      "pass": true
+    },
+    {
+      "name": "authority_cancelled",
+      "pass": true
+    },
+    {
+      "name": "authority_automatic_retry",
+      "pass": true
+    },
+    {
+      "name": "stdout_hex_text_whole_eof",
+      "pass": true
+    },
+    {
+      "name": "stdout_authority_matches",
+      "pass": true
+    },
+    {
+      "name": "stderr_hex_text_whole_eof",
+      "pass": true
+    },
+    {
+      "name": "stderr_authority_matches",
+      "pass": true
+    },
+    {
+      "name": "stdout_bound",
+      "pass": true
+    },
+    {
+      "name": "empty_stderr",
+      "pass": true
+    },
+    {
+      "name": "both_original_observers_closed",
+      "pass": true
+    },
+    {
+      "name": "no_pending_native_error_or_call",
+      "pass": true
+    },
+    {
+      "name": "publisher_schema",
+      "pass": true
+    },
+    {
+      "name": "publisher_ok",
+      "pass": true
+    },
+    {
+      "name": "publisher_originalDeadlineMetAfterClosure",
+      "pass": true
+    },
+    {
+      "name": "publisher_allOwnedCommandsStopped",
+      "pass": true
+    },
+    {
+      "name": "publisher_allOwnedDescriptorsClosed",
+      "pass": true
+    },
+    {
+      "name": "publisher_preparedCandidate",
+      "pass": true
+    },
+    {
+      "name": "publisher_fixedLibraryDefinitionsLoadedOnly",
+      "pass": true
+    },
+    {
+      "name": "publisher_authoritativeExitZeroRequired",
+      "pass": true
+    },
+    {
+      "name": "publisher_candidateFileAloneIsNotQualification",
+      "pass": true
+    },
+    {
+      "name": "publisher_outcomeUnknown",
+      "pass": true
+    },
+    {
+      "name": "publisher_currentPrivateInputsOpened",
+      "pass": true
+    },
+    {
+      "name": "publisher_productionSqliteOpened",
+      "pass": true
+    },
+    {
+      "name": "publisher_sqliteExecuted",
+      "pass": true
+    },
+    {
+      "name": "publisher_inputEntrypointsExecuted",
+      "pass": true
+    },
+    {
+      "name": "publisher_consumerExecuted",
+      "pass": true
+    },
+    {
+      "name": "publisher_serviceStarted",
+      "pass": true
+    },
+    {
+      "name": "publisher_cargoStarted",
+      "pass": true
+    },
+    {
+      "name": "publisher_gitStarted",
+      "pass": true
+    },
+    {
+      "name": "original_shared45_closed_deadline",
+      "pass": true
+    },
+    {
+      "name": "fresh_fixed_root",
+      "pass": true
+    },
+    {
+      "name": "fresh_root_two_absence",
+      "pass": true
+    },
+    {
+      "name": "fresh_parent_full9_lossless",
+      "pass": true
+    },
+    {
+      "name": "publisher_input_binding",
+      "pass": true
+    },
+    {
+      "name": "input_22_sources_8_documents",
+      "pass": true
+    },
+    {
+      "name": "actual_exact30_unique",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_current_fixture_materializer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_current_fixture_materializer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_current_fixture_materializer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_current_capture_entry_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_current_capture_entry_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_current_capture_entry_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_owned_launchd_r3.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_owned_launchd_r3.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_owned_launchd_r3.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_current_server_owner_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_current_server_owner_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_current_server_owner_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_current_phase_owner_r2.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_current_phase_owner_r2.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_current_phase_owner_r2.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_native_process_observer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_native_process_observer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_native_process_observer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_guarded_current_capture_r3.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_guarded_current_capture_r3.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_guarded_current_capture_r3.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_t5_volume_guard_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_t5_volume_guard_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_t5_volume_guard_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_capture_sqlite_synthetic_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_capture_sqlite_synthetic_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_capture_sqlite_synthetic_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_capture_sqlite_synthetic_r2.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_capture_sqlite_synthetic_r2.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_capture_sqlite_synthetic_r2.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_current_cycle_r2.mjs",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_current_cycle_r2.mjs",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_current_cycle_r2.mjs",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_single_native_r2.mjs",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_single_native_r2.mjs",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_single_native_r2.mjs",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_auth_rows_cas_r1.mjs",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_auth_rows_cas_r1.mjs",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_auth_rows_cas_r1.mjs",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_authbus_cache_cas_r1.mjs",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_authbus_cache_cas_r1.mjs",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_authbus_cache_cas_r1.mjs",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_current_outer_inputs_r2.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_current_outer_inputs_r2.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_current_outer_inputs_r2.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_current_outer_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_current_outer_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_current_outer_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_darwin_owned_projection_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_darwin_owned_projection_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_darwin_owned_projection_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_native_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_native_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_native_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_native_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_native_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_native_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:qa/mac_registry_readonly_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:qa/mac_registry_readonly_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:qa/mac_registry_readonly_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:proofs/synthetic-r2.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:proofs/synthetic-r2.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:proofs/synthetic-r2.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:proofs/synthetic-r2.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:proofs/synthetic-r2.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:proofs/synthetic-r2.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:proofs/native-proc-r2.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:proofs/native-proc-r2.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:proofs/native-proc-r2.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:proofs/native-proc-r2.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:proofs/native-proc-r2.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:proofs/native-proc-r2.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:proofs/native-proc-r2.child-stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:proofs/native-proc-r2.child-stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:proofs/native-proc-r2.child-stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:proofs/registry-wal-r1.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:proofs/registry-wal-r1.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:proofs/registry-wal-r1.stdout.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:proofs/registry-wal-r1.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:proofs/registry-wal-r1.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:proofs/registry-wal-r1.authority.public.json",
+      "pass": true
+    },
+    {
+      "name": "exact_pin:candidate-current-manager-wal-r1.public.json",
+      "pass": true
+    },
+    {
+      "name": "full9_regular_singlelink:candidate-current-manager-wal-r1.public.json",
+      "pass": true
+    },
+    {
+      "name": "independent_held_whole:candidate-current-manager-wal-r1.public.json",
+      "pass": true
+    },
+    {
+      "name": "18_compile_4_byte_only",
+      "pass": true
+    },
+    {
+      "name": "only3_definition_libraries",
+      "pass": true
+    },
+    {
+      "name": "T5_closed_known",
+      "pass": true
+    },
+    {
+      "name": "T5_all27_exact",
+      "pass": true
+    },
+    {
+      "name": "fixed_volume_UUID_input",
+      "pass": true
+    },
+    {
+      "name": "one_owned_command_closed",
+      "pass": true
+    },
+    {
+      "name": "original_diskutil_only",
+      "pass": true
+    },
+    {
+      "name": "diskutil_known_exit_and_streams",
+      "pass": true
+    },
+    {
+      "name": "diskutil_owned_cleanup",
+      "pass": true
+    },
+    {
+      "name": "cleanup_original_caps",
+      "pass": true
+    },
+    {
+      "name": "diskutil_retained_custody",
+      "pass": true
+    },
+    {
+      "name": "diskutil_natural_WNOWAIT_exit",
+      "pass": true
+    },
+    {
+      "name": "receipt_final_pin",
+      "pass": true
+    },
+    {
+      "name": "receipt_held_whole_full9",
+      "pass": true
+    }
+  ],
+  "checkCount": 147,
+  "actualSources": 22,
+  "actualDocuments": 8,
+  "actualReceipt": {
+    "bytes": 12994,
+    "identity": [
+      "16777244",
+      "72671152",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "12994",
+      "1793922263708983153",
+      "1793922263708991695"
+    ],
+    "kind": "inert_candidate_receipt",
+    "name": "inert-registry-wal-4e808-result.public.json",
+    "readbackUsesSeparateHeldFd": true,
+    "sha256": "bf03a4e84c7297b0121c1750997fafe4ca8ea4efe656b9353248dc24b101a1d1",
+    "wholeReadbackVerified": true
+  },
+  "elapsedSeconds": 0.26003133319318295,
+  "metadataNowPermitted": 3,
+  "bodyStillConditionalOnAll3Info": true,
+  "fullWorkerAuthorized": false,
+  "sequentialObservationNotAtomicExecCustody": true
+}

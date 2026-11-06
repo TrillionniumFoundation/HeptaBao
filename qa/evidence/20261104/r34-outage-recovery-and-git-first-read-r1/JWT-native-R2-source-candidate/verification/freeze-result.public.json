@@ -1,0 +1,731 @@
+{
+  "status": "PASS_PURE_V8_SOURCE_FREEZE_ONLY",
+  "checks": [
+    {
+      "name": "nine-files",
+      "passed": true
+    },
+    {
+      "name": "seven-modified-two-new",
+      "passed": true
+    },
+    {
+      "name": "current-whole:auth.rs",
+      "passed": true
+    },
+    {
+      "name": "original-whole:auth.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "original-whole:auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "original-whole:federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "original-whole:federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:service.rs",
+      "passed": true
+    },
+    {
+      "name": "original-whole:service.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "original-whole:service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "current-whole:service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "original-whole:service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-r1/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-r1/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-r1/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-r1/auth_native_jwt.rs:316",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-r1/auth_native_jwt.rs:192",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-r1/auth_native_jwt.rs:186",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-r1/auth_native_jwt.rs:166",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-r1/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-r1/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-r1/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-r1/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-r1/service_native_auth.rs:1741",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-r1/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-r1/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-r1/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-r1/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-r1/service_native_jwt_tests.rs:438",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-r1/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/auth.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth.rs:10166",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth.rs:6358",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth.rs:6242",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth.rs:6213",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth.rs:4634",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth.rs:4552",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth_native_jwt.rs:0",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth_native_v6_routes.rs:385",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth_native_v6_routes.rs:194",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth_native_v6_routes.rs:187",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth_native_v6_routes.rs:152",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/auth_native_v6_routes.rs:137",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/federated_auth.rs:40",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/federated_native_jwt.rs:167",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/federated_native_jwt.rs:160",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/federated_native_jwt.rs:144",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/federated_native_jwt.rs:137",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/federated_native_jwt.rs:82",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/federated_native_jwt.rs:25",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/service.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/service.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/service.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:7113",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:7008",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:6997",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:6981",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:6813",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:6812",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:6793",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:6777",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service.rs:6758",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/service.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:3443",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:3220",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:3177",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2967",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2711",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2691",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2481",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2365",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2229",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2188",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:2082",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1941",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1932",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1916",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1902",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1884",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1872",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1852",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1842",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1819",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1812",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1787",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1782",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1755",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1752",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1737",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1734",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1718",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1307",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1157",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1098",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:1072",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:805",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:382",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:346",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:326",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:141",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_auth.rs:111",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_jwt_tests.rs:0",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-before-pin:from-4e808/service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-after-pin:from-4e808/service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "delta-archived-exact:from-4e808/service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "splice-exact-range:from-4e808/service_native_userpass_tests.rs:728",
+      "passed": true
+    },
+    {
+      "name": "splice-whole-reconstruction:from-4e808/service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "R1-whole23058-identical-prefix",
+      "passed": true
+    },
+    {
+      "name": "ten-original-fifteen-total",
+      "passed": true
+    },
+    {
+      "name": "old-test-names-order",
+      "passed": true
+    },
+    {
+      "name": "all-fifteen-mapped",
+      "passed": true
+    },
+    {
+      "name": "all-test-execution-unobserved",
+      "passed": true
+    },
+    {
+      "name": "only-native-service-selector-replacement",
+      "passed": true
+    },
+    {
+      "name": "canonical-tree-merkle:root",
+      "passed": true
+    },
+    {
+      "name": "canonical-tree-merkle:crates",
+      "passed": true
+    },
+    {
+      "name": "canonical-tree-merkle:heptabao-server",
+      "passed": true
+    },
+    {
+      "name": "canonical-tree-merkle:src",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:auth.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:auth_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:auth_native_v6_routes.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:federated_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:federated_native_jwt.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:service.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:service_native_auth.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:service_native_jwt_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-leaf-membership:service_native_userpass_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "canonical-tree-link:heptabao-server",
+      "passed": true
+    },
+    {
+      "name": "canonical-tree-link:crates",
+      "passed": true
+    },
+    {
+      "name": "canonical-tree-link:root",
+      "passed": true
+    },
+    {
+      "name": "actual-source-tree-merkle:root",
+      "passed": true
+    },
+    {
+      "name": "independent-vs-actual-tree:root",
+      "passed": true
+    },
+    {
+      "name": "actual-source-tree-merkle:crates",
+      "passed": true
+    },
+    {
+      "name": "independent-vs-actual-tree:crates",
+      "passed": true
+    },
+    {
+      "name": "actual-source-tree-merkle:heptabao-server",
+      "passed": true
+    },
+    {
+      "name": "independent-vs-actual-tree:heptabao-server",
+      "passed": true
+    },
+    {
+      "name": "actual-source-tree-merkle:src",
+      "passed": true
+    },
+    {
+      "name": "independent-vs-actual-tree:src",
+      "passed": true
+    },
+    {
+      "name": "expected-root-tree",
+      "passed": true
+    },
+    {
+      "name": "commit-identity",
+      "passed": true
+    },
+    {
+      "name": "commit-one-parent",
+      "passed": true
+    },
+    {
+      "name": "commit-tree",
+      "passed": true
+    },
+    {
+      "name": "commit-message-exact",
+      "passed": true
+    },
+    {
+      "name": "original-local-237-actual-exit0",
+      "passed": true
+    },
+    {
+      "name": "original-zero-Rust-and-Runtime",
+      "passed": true
+    },
+    {
+      "name": "no-ref-or-Runtime",
+      "passed": true
+    },
+    {
+      "name": "one-commit-submission",
+      "passed": true
+    }
+  ],
+  "check_count": 179,
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "sole_parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "R1_tests_unchanged": 10,
+  "new_test_source_count": 15,
+  "compile": false,
+  "formatter": false,
+  "Runtime_calls": 0,
+  "product_test_executions": 0
+}

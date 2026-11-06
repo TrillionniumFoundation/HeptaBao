@@ -1,0 +1,81 @@
+{
+  "file": {
+    "blob": "c8db0cef315605b9b220bef8a7993fc84dffa321",
+    "bytes": 23058,
+    "sha256": "4db9027a12d50068b1f6e9e7e86af6810d375749336a231a8212ed1bd5c5b581"
+  },
+  "count": 10,
+  "executed": 0,
+  "compile": false,
+  "tests": [
+    {
+      "name": "native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+      "required_observation": "real local service login, same assertion twice, one entity, cold value, expired-assertion renewal after key rotation, revoke/unmount",
+      "limit": "Missing Token API child/batch/mixed-origin cases are separately flagged.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+      "required_observation": "remote JWT/batch JWT/bad signature fail closed; complete relevant Auth/Identity projection unchanged",
+      "limit": "Does not test Token API batch issuance by a JWT actor.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+      "required_observation": "current legacy role collection GET/list and named DELETE/update+sudo; no-sudo denial",
+      "limit": "Not an OpenBao ACL oracle result.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+      "required_observation": "disabled actual Identity after verification; no returned witness/token; later fresh success",
+      "limit": "No synthetic Identity grant/witness.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+      "required_observation": "original assertion expires after real authentication before plan; logical root unchanged and cold check",
+      "limit": "No claim that every lower-level unknown I/O writes zero bytes.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+      "required_observation": "real owner-capacity gate 507 after authentication; root fits but candidate does not",
+      "limit": "Known prepublication capacity veto, not unknown I/O injection.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+      "required_observation": "real committed root; assertion expiry during actual audit vetoes delivery",
+      "limit": "Committed root remains, no rollback.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+      "required_observation": "actual mandatory audit capacity failure; complete root retained/recovery required",
+      "limit": "No automatic retry or token reissue.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+      "required_observation": "audited status tamper plus original deadline expiry",
+      "limit": "No replacement deadline/proof.",
+      "execution": "NOT_RUN"
+    },
+    {
+      "name": "native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+      "required_observation": "actual owner/proof held across separately authorized real revoke; stale delivery rejected",
+      "limit": "Actual original proof reused only for rejection; cold revoked token denied.",
+      "execution": "NOT_RUN"
+    }
+  ],
+  "existing_userpass_test_update": "Only unsupported-provider example jwt -> oidc; all original assertions/test name preserved.",
+  "existing_qualified_denominators_changed": false,
+  "uncovered_r1": [
+    "JWT-origin Token API service child",
+    "JWT-origin Token API batch grant",
+    "mixed Userpass/JWT targets",
+    "official OpenBao 2.7.1 role ACL oracle",
+    "durable/HA UNKNOWN fault harness"
+  ]
+}

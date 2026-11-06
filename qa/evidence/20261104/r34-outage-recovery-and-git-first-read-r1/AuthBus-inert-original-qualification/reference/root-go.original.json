@@ -1,0 +1,255 @@
+{
+  "schema": "heptabao.AuthBus.owner-renew.corrected-inert-and-three-read.GO.r33.v1",
+  "decision": "GO_CORRECTED_INERT_ONCE_THEN_CONDITIONAL_THREE_FIXED_READ_TARGETS",
+  "as_of_utc": "2026-11-05T23:40:37Z",
+  "lane": "A",
+  "owner": "/root/authbus_migration",
+  "handoffRoot": {
+    "blob": "c2545057a868ae12869df0dc8e904398118a5ab8",
+    "bytes": 3203,
+    "sha256": "d53aeba884654133127632231125e5a0f51bf82a51c8513d142dc4aabaa1f3ec"
+  },
+  "handoffFrom": "/root/ha_validation",
+  "otherLane": "B /root/compatibility_audit holds only approved CLI fixed target reads",
+  "rootRuntimeCalls": 0,
+  "sourceQualification": {
+    "blob": "fb57872b59c10fe82ca348986cd4ddf5ac8bfc58",
+    "bytes": 3157,
+    "sha256": "0d06f9ff3ac20585f60e46b7eceb594747d95004aaf4d6bfb4cb50558c707b5c"
+  },
+  "exactProcessStart": {
+    "blob": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+    "bytes": 818377,
+    "sha256": "6ffc5db0c3d9cf79f00d9484b1d54162b75b7e975e594a1d5ca5d8566d3b9cf4"
+  },
+  "nativeBinding": {
+    "canonicalBytes": 818309,
+    "sha256": "e267418ec6d90ed3d5f9ae3fb2f3fb6cc2346e69e6b70be905777edefa05e38a",
+    "native_fingerprint": "16314080256650186451"
+  },
+  "idempotency_key": "heptabao-mac-current-owner-renew-inert-d89e5169-20261105-r1",
+  "host": "mac",
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "maximumBusinessStarts": 1,
+  "budgets": {
+    "publisherSharedSeconds": 45,
+    "diskutilSecondsClampedToSharedDeadline": 30,
+    "supervisorSeconds": 60
+  },
+  "publicationScope": {
+    "sources": 22,
+    "publicDocuments": 8,
+    "receipt": 1,
+    "maximumWrites": 31,
+    "createOnly": true,
+    "publisher": {
+      "blob": "f7a4a54c204fa2cc01590fb29f1317cc1a2ba531",
+      "bytes": 15541,
+      "sha256": "d89e5169c68a1867738824d87549e6f26635e2c55f31bdbf7d58375f8a5b3fc4"
+    },
+    "stdin": {
+      "blob": "b4caba908690e8b774aa8ee913247d2f9b7cf25d",
+      "bytes": 801859,
+      "sha256": "c84a7e6ba807f90c98f5a8a9e375aff86b9a287281d8e2d001e8566315a3b7d9"
+    },
+    "ownedSubprocess": "Exactly the original bounded /usr/sbin/diskutil info -plist /Volumes/T5 probe under the existing owned command/T5 guard.",
+    "definitionOnlyLibraries": [
+      "mac_owned_unreaped_r1.py",
+      "mac_owned_commands_r1.py",
+      "mac_t5_volume_guard_r1.py"
+    ],
+    "privateCredentialOrSQLiteRead": false,
+    "servicesOrConsumers": false,
+    "providerCalls": false,
+    "GitOrCargoOnMac": false
+  },
+  "startBoundary": "Persist this GO, the exact corrected 521c request bytes, and a separate external intent before the single native process_start. Save the complete original SDK before parsing. Never submit the preserved 850f stdin_text proposal.",
+  "observers": {
+    "allowed": "Only read-only observations of the original returned Mac job, with complete original native payload pages. Original process_start ACK/digest/fingerprint must match this exact request. No new business key or root.",
+    "oneCallAndOneNativeFuturePerLane": true,
+    "processReadPerStreamBytes": 16384,
+    "immutablePageBytes": 8192,
+    "stdoutMaximumBytes": 65536,
+    "stderr": "Complete original bytes; any nonempty stderr requires root review and stops conditional target admissions."
+  },
+  "conditionalReadPrerequisites": {
+    "authoritative": "Original job succeeded, exit0, not timed out/cancelled/automatically retried; output complete/durable/terminal-publication-confirmed; all original observer futures closed.",
+    "stdout": "Whole original final stdout JSON, ok=true, outcomeUnknown=false, originalDeadlineMetAfterClosure=true, elapsedSeconds<45, allOwnedCommandsStopped=true, allOwnedDescriptorsClosed=true, heldT5Final.lastAnchorCheckPassed=true.",
+    "sourceAndDocumentRecords": "Exactly 30 unique files: 22 source and 8 public_document entries with exact names, sizes and SHA256 from SOURCE88/801859-byte stdin. Every entry wholeReadbackVerified/readbackUsesSeparateHeldFd true and full9 retained losslessly. Candidate receipt fields must be present and independently bound from this final stdout.",
+    "T5AndChild": "Actual fixed anchor and volume guard checks pass; original owned diskutil argv, exit, stream, reaping and all final custody conditions remain as in the unchanged publisher. Do not infer successful closure from the pre-finally receipt.",
+    "noUnknown": "No missing ACK, partial streams, native error, conflicting identity, or unresolved read result permits the next stage."
+  },
+  "fixedReadProposal": {
+    "tree": "c780abd37895a5cab64775bf3166c67da0f1faf6",
+    "proposal": {
+      "blob": "ff3046f3cd50a7ca97f9244f72a8e605274f03a4",
+      "bytes": 6885,
+      "sha256": "64b668759ae9776b79de81b0576f660809146cde39686a51535c073534af6a7b"
+    },
+    "rootVerifiedFixedPaths": true
+  },
+  "metadataRequests": [
+    {
+      "pin": {
+        "blob": "56c177329ca38cbcdf84ab992e27c5283d843552",
+        "bytes": 313,
+        "sha256": "9c866d9897e81b01b259bade8ca4850b9d77ebdddb21502206a6052d12aa53df"
+      },
+      "exact": {
+        "idempotency_key": "heptabao-mac-owner-renew-inert-bootstrap-outer-info-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py"
+          }
+        }
+      }
+    },
+    {
+      "pin": {
+        "blob": "2263db35a8e968afb6344b539edf630cb4fef109",
+        "bytes": 329,
+        "sha256": "734cec4b2f5534b999ff30d97262fb72bd4427ce62e6afa191b759302fa71052"
+      },
+      "exact": {
+        "idempotency_key": "heptabao-mac-owner-renew-inert-runtime-candidate-info-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json"
+          }
+        }
+      }
+    },
+    {
+      "pin": {
+        "blob": "27f448937660c77a2b8a578e2024d2d56db9f31f",
+        "bytes": 324,
+        "sha256": "59be3479f40bd0a7d950932480f4863bf780236aa2ed1d9a28753e42a7e5baa7"
+      },
+      "exact": {
+        "idempotency_key": "heptabao-mac-owner-renew-inert-inert-receipt-info-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json"
+          }
+        }
+      }
+    }
+  ],
+  "metadataAdmissions": 3,
+  "metadataAcceptance": "All three original file_info operations must close with complete whole payloads before any body operation. Native no-symlink regular-single-link contract, uid501, permissions0600 and all nine identity components equal each actual final publication record. Preserve version and ns integers exactly; derive file-type mode using S_IFREG | permissions, not by adding permissions twice. Do not invent gid, inode or timestamps. Outer71506 and candidate7211 must equal fixed SHA; receipt1..65536 must equal final candidateReceipt.bytes/sha256 and candidateReceiptSha256.",
+  "conditionalBodies": {
+    "fixedOrder": [
+      "bootstrap_outer@0",
+      "bootstrap_outer@65536",
+      "runtime_candidate@0",
+      "inert_receipt@0"
+    ],
+    "keyTemplates": [
+      "heptabao-mac-owner-renew-inert-outer-body-000000-20261105-r1",
+      "heptabao-mac-owner-renew-inert-outer-body-065536-20261105-r1",
+      "heptabao-mac-owner-renew-inert-candidate-body-20261105-r1",
+      "heptabao-mac-owner-renew-inert-receipt-body-20261105-r1"
+    ],
+    "targets": [
+      {
+        "ordinal": 1,
+        "role": "bootstrap_outer",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+        "bytes": 71506,
+        "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5",
+        "expectedPublicationRecord": {
+          "array": "files",
+          "name": "qa/mac_current_outer_wal_r1.py",
+          "kind": "source"
+        },
+        "bodyOffsets": [
+          0,
+          65536
+        ],
+        "bodyLimits": [
+          65536,
+          5970
+        ],
+        "bodyEof": [
+          false,
+          true
+        ]
+      },
+      {
+        "ordinal": 2,
+        "role": "runtime_candidate",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+        "bytes": 7211,
+        "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932",
+        "expectedPublicationRecord": {
+          "array": "files",
+          "name": "candidate-current-manager-wal-r1.public.json",
+          "kind": "public_document"
+        },
+        "bodyOffsets": [
+          0
+        ],
+        "bodyLimits": [
+          7211
+        ],
+        "bodyEof": [
+          true
+        ]
+      },
+      {
+        "ordinal": 3,
+        "role": "inert_receipt",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+        "bytes": null,
+        "sha256": null,
+        "maxBytes": 65536,
+        "expectedPublicationRecord": {
+          "field": "candidateReceipt",
+          "name": "inert-registry-wal-4e808-result.public.json",
+          "kind": "inert_candidate_receipt"
+        },
+        "bodyOffsets": [
+          0
+        ],
+        "bodyLimits": [
+          "actual metadata size, equal to candidateReceipt.bytes and <=65536"
+        ],
+        "bodyEof": [
+          true
+        ]
+      }
+    ],
+    "maximumNativeBodyOperations": 4,
+    "maximumChunkBytes": 65536,
+    "maximumReturnedBodyBytes": 144253,
+    "knownReturnedBodyBytesExcludingReceipt": 78717,
+    "transformation": "Bind only actual accepted immutable versions to each frozen target; outer ranges0/65536,65536/5970; candidate0/7211; receipt0/exact observed size. Persist each whole exact request and separate external intent before its unique operation_start. No version refresh or path fallback.",
+    "acceptance": "Original pages whole and native chunk SHA, offsets, size, version, EOF all exact. Reassemble complete outer/candidate/receipt bytes and compare whole SHA and size to fixed or actual-final-receipt pins. Every original read closes before the next."
+  },
+  "newAcceptanceRationale": {
+    "old31ApiGoReused": false,
+    "oldGoScope": "952f0725 applied to the older registry-WAL root. It does not authorize this new root.",
+    "actualHeldReadCoverage": "The unchanged publisher writes and separately held-FD reads all 30 sources/documents plus the receipt, checking byte equality and full9 before release.",
+    "useTimeGuards": "The unchanged original runtime verifies all 22 public source pins and the seven evidence documents before opening current private inputs; the outer bootstrap itself is independently sampled here.",
+    "externalTargets": "Three explicit fixed targets: actual outer entrypoint, runtime candidate and inert receipt. This is the complete new external-read scope.",
+    "limitation": "These sequential observations do not prove atomic custody between external sampling and Python exec. The existing runtime/T5 guards and original failure handling remain unchanged."
+  },
+  "errorRule": "Any native error/refusal, missing ACK, UNKNOWN or content/version/identity mismatch stops new native admissions. Preserve original records and reconcile only already returned original read IDs; do not replay the inert start or any read to repair Git. Immutable identical public-byte archival may recover via create_tree content after preserving the original Git error; resume only once the original read payload is whole and archived.",
+  "futureRuntime": {
+    "request": {
+      "blob": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+      "bytes": 5329,
+      "sha256": "cbb0404036ccaf6c0e03c806de8a569eb4e6143985652428a8f5b6efe1ea6c95"
+    },
+    "authorized": false,
+    "requires": "Root actual inert/read qualification and a separate exact original worker admission."
+  },
+  "productionCutoverAuthorized": false,
+  "oldServiceOrBinaryDeletionAuthorized": false
+}

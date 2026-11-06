@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.local-inspection-error.v1",
+  "scope": "pure local eval before any Runtime or file inspection",
+  "error": "ReferenceError: gitUtf8 is not defined",
+  "correction": "Remove unused gitUtf8 binding; original runtime result and source unchanged.",
+  "runtimeCalls": 0
+}

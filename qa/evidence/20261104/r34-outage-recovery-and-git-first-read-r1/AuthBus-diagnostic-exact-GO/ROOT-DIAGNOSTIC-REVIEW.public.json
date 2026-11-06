@@ -1,0 +1,133 @@
+{
+  "schema": "heptabao.root-Mac-original-label-readonly-diagnostic-source-review.v1",
+  "source_packet": {
+    "tree": "b5e18906ed27f2738dda403ce16eb8a3f53fb848",
+    "files": 15,
+    "bytes": 276479,
+    "merkle": {
+      "root_sha": "b5e18906ed27f2738dda403ce16eb8a3f53fb848",
+      "trees_verified": 1,
+      "leaf_count": 15
+    },
+    "all_whole_readback": true
+  },
+  "source": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "request": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"
+  },
+  "contract": {
+    "blob": "f4c49c78ad0ba4487136a61de169e6fd300dcb68",
+    "bytes": 8960,
+    "sha256": "27a627ff6ae3654e2487baefeff9c826552a80c4673fb1abb574f295f5cd1881"
+  },
+  "native_binding": {
+    "sha256": "27412a077919b5f988477d9a0fcd4bdd7e5d049f21d2c1367ff35bd56f0d67ec",
+    "native_fingerprint": "2828588252550247929",
+    "canonical_stdin_field": "stdin"
+  },
+  "checks": [
+    {
+      "name": "whole_15_file_packet",
+      "passed": true
+    },
+    {
+      "name": "source_in_exact_stdin",
+      "passed": true
+    },
+    {
+      "name": "host_and_python",
+      "passed": true
+    },
+    {
+      "name": "args_no_import_site_bytecode",
+      "passed": true
+    },
+    {
+      "name": "cwd_timeout_key",
+      "passed": true
+    },
+    {
+      "name": "embedded_original_mac_owned_unreaped_r1",
+      "passed": true
+    },
+    {
+      "name": "embedded_original_mac_owned_commands_r1",
+      "passed": true
+    },
+    {
+      "name": "embedded_original_mac_t5_volume_guard_r1",
+      "passed": true
+    },
+    {
+      "name": "original_manager_parser_whole_present",
+      "passed": true
+    },
+    {
+      "name": "separate_structural_projection_whole_present",
+      "passed": true
+    },
+    {
+      "name": "original_manager_source_pinned",
+      "passed": true
+    },
+    {
+      "name": "wrapper_emit_extract_from_exact_source",
+      "passed": true
+    },
+    {
+      "name": "first_LF_terminates_prefix",
+      "passed": true
+    },
+    {
+      "name": "stdout_real_newline_literal",
+      "passed": true
+    },
+    {
+      "name": "budget_arithmetic",
+      "passed": true
+    },
+    {
+      "name": "exact_four_fixed_read_paths",
+      "passed": true
+    },
+    {
+      "name": "no_new_business_runtime_call",
+      "passed": true
+    }
+  ],
+  "all_static_checks_passed": true,
+  "manual_review": {
+    "all_new_control_source_read": true,
+    "four_fixed_paths_whole_metadata_and_bounded_reads_reviewed": true,
+    "private_log_only_first_LF_prefix_plus_exact_prefix_verification": true,
+    "no_private_plan_config_capsule_or_later_log_body": true,
+    "public_projection_strict_types_fixed_values_or_hashes": true,
+    "original_parse_print_unmodified": true,
+    "original_pending_literal_not_fabricated_as_observed": true,
+    "held_T5_UUID_anchor_custody_and_new_helper_closure_retained": true,
+    "only_new_helpers_signaled_never_old_service": true,
+    "success_requires_original_authority_complete_stdout_deadline_and_actual_closure": true,
+    "diagnostic_does_not_grant_old_registration_closure": true
+  },
+  "scope": {
+    "new_diagnostic_seconds": 45,
+    "outer_seconds": 60,
+    "diskutil_seconds": 30,
+    "launchctl_print_seconds": 10,
+    "body_returned_budget": 270340,
+    "read_syscall_cap": 65560,
+    "max_registered_T5_descriptors": 19,
+    "peak_T5_descriptors": 7,
+    "output_cap": 131072
+  },
+  "Python_compile_runs": 0,
+  "Runtime_calls": 0,
+  "GO": false,
+  "next_required": "Review minimal Git-first Native journaling successor, then exact diagnostic GO. No cleanup or worker rerun."
+}

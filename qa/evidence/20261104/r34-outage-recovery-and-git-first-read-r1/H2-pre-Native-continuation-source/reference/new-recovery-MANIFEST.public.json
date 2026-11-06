@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.h2-live.new-recovery-packet-manifest.v1",
+  "entries": [
+    {
+      "path": "original/armed-checkpoint.public.json",
+      "blob": "d59acffc65587115620facf74cac6ff355da271c",
+      "bytes": 108137,
+      "sha256": "678a63894f84ac58a3b7b914461ce6b62a74c8c73b0e5d982954edd743e57829"
+    },
+    {
+      "path": "original/checkpoint-create.original.SDK.json",
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    },
+    {
+      "path": "original/exact-tree-read-422.original.SDK.json",
+      "blob": "738250ce2f4ed06b398bcc6884a32c31e5c7b288",
+      "bytes": 786,
+      "sha256": "38e2155511441400086c4eeea86ff4ba61623c5050c5b38231936dfeefa047ea"
+    },
+    {
+      "path": "root/exact-checkpoint-blob-404.original.SDK.json",
+      "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+      "bytes": 617,
+      "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+    },
+    {
+      "path": "root/new-recovery-disposition.public.json",
+      "blob": "336479c6cb0d12add1f62910000044e291596373",
+      "bytes": 1575,
+      "sha256": "ae1416ed08ec5fc80646bcbc98113e3256e21f3f29811d41c76c5c852875f976"
+    },
+    {
+      "path": "CALL-BOUNDARY.public.json",
+      "blob": "f4fd29b578194de9c2b13828953637c93e0d6a73",
+      "bytes": 4197,
+      "sha256": "467ec8fc60e138fbdca8323693eddc96d28f633ffc38efeb4be565f36c34840c"
+    },
+    {
+      "path": "RECOVERY-PLAN.public.json",
+      "blob": "bada76ee670350508b19008d02b12d85ab1e5d1e",
+      "bytes": 2302,
+      "sha256": "5a7b58351cc24bcf18e9a48ef676378b26e488fca81a74f6d373bbd5133500ad"
+    }
+  ]
+}

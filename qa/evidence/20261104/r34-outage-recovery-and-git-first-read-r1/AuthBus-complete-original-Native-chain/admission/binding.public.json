@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.owner-renew.worker-ACK-binding.r1",
+  "rootGo": "fe53245e77d33c5bea2cff96def394ffaaf3f31e",
+  "request": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+  "intent": "ca0a1e2b19d294f1e01f619cdcfaad8ea7f041c5",
+  "SDK": {
+    "blob": "ac69e3dfe1ce47d2db9f28ced3739ecf7f9b9114",
+    "bytes": 6484,
+    "sha256": "99976c7e32159c06f97c5ed51307e82a7387299c7147e3a8efe9bae9400e94e0"
+  },
+  "native": {
+    "blob": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+    "bytes": 6200,
+    "sha256": "eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86"
+  },
+  "host": "mac",
+  "job_id": "1a1ae51309d-fc05-5ef8",
+  "key": "heptabao-mac-current-five-agent-owner-renew-6ad1b80a-20261105-r1",
+  "native_digest": "22cfe25e558dd973d40265b4dc397426b0613d55f56f8821f9b4a79ffc51f7a4",
+  "native_fingerprint": "2508472412258818419",
+  "exactArgsExecutableCwd": true,
+  "launch_state": "launched",
+  "reused": false,
+  "launch_ok": true,
+  "audit_recorded": true,
+  "local_record_pending": false,
+  "supervisorSeconds": 1080,
+  "maximumBusinessStarts": 1
+}

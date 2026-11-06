@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.h2-live.Git-first.source-only-checks.v1",
+  "strict_diffs": [
+    {
+      "label": "durability",
+      "hunks": 1,
+      "before": {
+        "blob": "e2cea974645461961d3481e4ae3f0a3bf4e90a12",
+        "bytes": 3999,
+        "sha256": "38ebefd65c9a0aa912ce31f191dd52c98aac6434096e707b227176995db86fef"
+      },
+      "after": {
+        "blob": "d504200624456ac43e1970afbdf5e43b259dc7f9",
+        "bytes": 9024,
+        "sha256": "247833482f2a00d6a5c9a2b46afe0333d9038a3e5575d09dcd9932f12694bd44"
+      },
+      "diff": {
+        "blob": "616c2f703dfba8a3c76f4692a4f48ece14d92c29",
+        "bytes": 13008,
+        "sha256": "16c84d9d4cda0f4017a9fbc79023ce6e2f3d9eb2e8eb4bdcc1e6554e90929231"
+      },
+      "forward_whole": true,
+      "reverse_whole": true
+    },
+    {
+      "label": "observer",
+      "hunks": 2,
+      "before": {
+        "blob": "d6599ea27660673b71260d59d56cd0e14d9c2d32",
+        "bytes": 11352,
+        "sha256": "edcbda7d6f74cf1b294656e95480e80afec8bd80400dc067e5e4d04a6bbc6b3a"
+      },
+      "after": {
+        "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+        "bytes": 16074,
+        "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+      },
+      "diff": {
+        "blob": "311297557cb99bdf826e436ab409f2d9bd44215d",
+        "bytes": 17737,
+        "sha256": "2d17fad4c0ec73551e36ae00d379cde4ad783944ce6ce5e0cd25cfb98295d438"
+      },
+      "forward_whole": true,
+      "reverse_whole": true
+    }
+  ],
+  "status_function_whole_unchanged": true,
+  "page_function_whole_unchanged": true,
+  "syntax_compile_only": true,
+  "actual_known_tree_geometries": [
+    {
+      "root": "88e46a69416f448d034b007370e343c04d4a7081",
+      "trees": 3
+    },
+    {
+      "root": "78fe39b0035c3a38c4762e0efc4d6a8384d5661d",
+      "trees": 11
+    }
+  ],
+  "forbidden_calls_absent": [
+    "tools.exec_command",
+    "tools.apply_patch",
+    "tools.write_stdin",
+    "persistRecoveryText",
+    "hlSync(",
+    "mcp__codex_apps__heptaruntime_mac_controller_process_start"
+  ],
+  "Native_calls": 0,
+  "Git_calls_in_this_check": 0,
+  "local_calls": 0,
+  "observer": {
+    "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+    "bytes": 16074,
+    "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+  },
+  "durability": {
+    "blob": "d504200624456ac43e1970afbdf5e43b259dc7f9",
+    "bytes": 9024,
+    "sha256": "247833482f2a00d6a5c9a2b46afe0333d9038a3e5575d09dcd9932f12694bd44"
+  },
+  "all_seven_range_bytes": 400034,
+  "future_requests_submitted": 0,
+  "candidate_functions_not_run_except_pure_tree_geometry": true,
+  "all_non_Git_protocol_errors_halt_new_Native": true
+}

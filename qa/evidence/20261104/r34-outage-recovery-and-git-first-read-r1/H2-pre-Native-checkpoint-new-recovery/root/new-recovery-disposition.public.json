@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root-H2-pre-Native-archive-unknown-disposition.v1",
+  "original_checkpoint_tree": "57bf417be264a07210b8d3a601c7d84354cbf801",
+  "original_checkpoint_blob": "d59acffc65587115620facf74cac6ff355da271c",
+  "original_create_SDK": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+  "original_tree_read_SDK": "738250ce2f4ed06b398bcc6884a32c31e5c7b288",
+  "root_exact_blob_read_SDK": {
+    "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+    "bytes": 617,
+    "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+  },
+  "read_result": "404 Not Found for exact expected blob",
+  "original_create_outcome_remains": "UNKNOWN",
+  "original_Native_page": {
+    "operation_id": "578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273",
+    "offset": 16384,
+    "limit": 16384,
+    "actual_tool_statement_not_reached_as_owner_reports": true,
+    "root_source_order_verified": true
+  },
+  "owner_call_boundary_proof": "f4fd29b578194de9c2b13828953637c93e0d6a73",
+  "pure_Git_archival_authorized": "One new explicitly identified recovery packet containing original armed checkpoint, all original create/read errors and exact call-boundary proof; new expected tree once with whole readback",
+  "old_tree_create_not_repeated": true,
+  "old_UNKNOWN_not_erased": true,
+  "Native_continuation_GO": false,
+  "next_required": "Whole recovery packet plus minimal source continuation at the sole not-yet-reached original Native statement; separate exact root review before invocation",
+  "root_Runtime_calls": 0,
+  "product_calls_repeated": 0
+}

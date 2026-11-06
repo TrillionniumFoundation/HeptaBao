@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.root-GO.H2-explicit-original-page-pre-Native-recovery.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 02:43:02 UTC",
+  "agent": "/root/compatibility_audit",
+  "original_read_scope_GO": "778d79c6702a0aa7933aaec598e548349eb31a73",
+  "original_live_job": "desktop/1a1ae76aacd-fc05-5fb4",
+  "source_packet": "3eca64daf35cc22562a23bcf26cb094ffeacb536",
+  "durability": {
+    "blob": "3a0b21c59640688ce94137715626f4805150f06a",
+    "bytes": 11084,
+    "sha256": "211ce0ec2870916af0cc86e407397b089b5806bd541d5f52ffb9b12eeeaefa47"
+  },
+  "observer": {
+    "blob": "2170e7202e21ca7d6cb6a4c17f70ac37fea19271",
+    "bytes": 19817,
+    "sha256": "2ba32cb0d4d9684ee3b66c95197eea4584561e0c6146e225377066673d31c22c"
+  },
+  "pure": {
+    "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+    "bytes": 6684,
+    "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+  },
+  "root_review": {
+    "blob": "bb5f68a834d9fc63712a1a9dc4f2afc482581496",
+    "bytes": 2242,
+    "sha256": "f036b35edcdf20b92d155b1c88761d1f36b72baa3da5462c82d35d7ca284b97e"
+  },
+  "independent_review": {
+    "blob": "a150fb908aad894892339a3a720755b4f906026c",
+    "bytes": 2743,
+    "sha256": "a0b5d6f7af9fdeed73dbaa13c17b750236f87425b19a0385153c562da4c5d127"
+  },
+  "new_recovery_packet": {
+    "tree": "811692431bf219ea0a217a95c43eaab871e75562",
+    "files": 8,
+    "bytes": 119620,
+    "whole_readback": true
+  },
+  "old_create": {
+    "expected_tree": "57bf417be264a07210b8d3a601c7d84354cbf801",
+    "checkpoint_blob": "d59acffc65587115620facf74cac6ff355da271c",
+    "checkpoint_bytes": 108137,
+    "checkpoint_sha256": "678a63894f84ac58a3b7b914461ce6b62a74c8c73b0e5d982954edd743e57829",
+    "block_blob": "e7060aa3c9017bd9fad44558b71a43c42e9dcf7e",
+    "block_sha256": "7505abc72cc2f10c45b0846d95547fd874471e0884b392d489adc06a3aef1db3",
+    "outcome": "UNKNOWN",
+    "original_tree_create_repeated": false,
+    "unknown_not_cleared_or_reclassified": true
+  },
+  "exact_unreached_statement": {
+    "tool": "operation_result",
+    "request": {
+      "operation_id": "578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273",
+      "offset": 16384,
+      "limit": 16384
+    },
+    "request_blob": "31b413cc3cf3c6878ecb9f0891fa162e3e37f3f6",
+    "intent_blob": "448a82490b0b370b9d845cc7e8b17f3e7728ad99",
+    "label": "result-body-065536-page-016384",
+    "last_actual_Native_label": "result-body-065536-page-000000",
+    "last_actual_Native_SDK": "55da5401ec82be4515111e69fbd6aaeaa23e9c7a",
+    "Native_invocations_before_this_continuation": 0,
+    "maximum_new_Native_invocations": 1
+  },
+  "allowed": "Use reviewed hgRun('continue-armed-page', this exact whole GO pin), preserving original pending flags and the old block. Publish new continuation intent whole, then execute only the original not-yet-reached Native page statement once. After its full SDK is external whole and parsed by unchanged lc, continue the remaining fixed read scope under 778d79 with reviewed R3 helpers.",
+  "required_boundaries": {
+    "new_recovery_packet_whole_and_exact_old_block": true,
+    "same_original_job_operation_pending_request_and_prior_page": true,
+    "returned_SDK_slot_null_before_first_call": true,
+    "no_ls_lp_reentry": true,
+    "no_submitted_reset": true,
+    "no_old_Git_create_repeat": true,
+    "historical_block_restored_after_known_new_archive_success": true,
+    "any_different_new_Git_UNKNOWN_blocks": true,
+    "full_original_SDK_immutable_store_and_external_whole_before_parse": true,
+    "all_actions_through_catching_hgRun": true,
+    "no_automatic_repeat_after_any_failure": true
+  },
+  "caps_unchanged": {
+    "binary_read": 65536,
+    "operation_result": 16384,
+    "payload": 1048576,
+    "whole_file_bytes": 465570,
+    "whole_file_sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e",
+    "per_lane_calls": 1,
+    "per_lane_native_futures": 1,
+    "max_global_lanes": 2
+  },
+  "excluded": [
+    "business process_start",
+    "old file offset0 reread",
+    "new source/path/version/budget",
+    "CLI live",
+    "build or service changes",
+    "private credentials",
+    "reclassifying old UNKNOWN as success"
+  ],
+  "root_Runtime_calls": 0,
+  "H2_whole_body_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "cleanup": false
+}

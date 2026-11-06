@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"e755a251a203f9e1f418f063dc0772410b448645\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/e755a251a203f9e1f418f063dc0772410b448645\",\"tree\":[{\"path\":\"ARCHIVE-INTENT.public.json\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"90e4e2fec1ce270b0f3a60494e75db4b851e1ea0\",\"size\":1194,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/90e4e2fec1ce270b0f3a60494e75db4b851e1ea0\"},{\"path\":\"GO.public.json\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"778d79c6702a0aa7933aaec598e548349eb31a73\",\"size\":6592,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/778d79c6702a0aa7933aaec598e548349eb31a73\"},{\"path\":\"root-outage-public-blob-reader-r2.js\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"8991fe89b5f89de2f2408cc36492880097107313\",\"size\":840,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/8991fe89b5f89de2f2408cc36492880097107313\"},{\"path\":\"root-read-only-orchestration-syntax-correction.txt\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"834a723a75fbce97ce1b462cd0c1e1971fa96611\",\"size\":188,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/834a723a75fbce97ce1b462cd0c1e1971fa96611\"},{\"path\":\"root-source-review.public.json\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"c5d24b106cef77b81c9e95dcda45768b91ca9abd\",\"size\":4051,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/c5d24b106cef77b81c9e95dcda45768b91ca9abd\"}],\"truncated\":false}",
+    "title": "e755a251a203f9e1f418f063dc0772410b448645",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/e755a251a203f9e1f418f063dc0772410b448645",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/e755a251a203f9e1f418f063dc0772410b448645",
+    "display_title": "e755a251a203f9e1f418f063dc0772410b448645",
+    "structuredContent": {
+      "title": "e755a251a203f9e1f418f063dc0772410b448645",
+      "content": "{\"sha\":\"e755a251a203f9e1f418f063dc0772410b448645\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/e755a251a203f9e1f418f063dc0772410b448645\",\"tree\":[{\"path\":\"ARCHIVE-INTENT.public.json\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"90e4e2fec1ce270b0f3a60494e75db4b851e1ea0\",\"size\":1194,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/90e4e2fec1ce270b0f3a60494e75db4b851e1ea0\"},{\"path\":\"GO.public.json\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"778d79c6702a0aa7933aaec598e548349eb31a73\",\"size\":6592,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/778d79c6702a0aa7933aaec598e548349eb31a73\"},{\"path\":\"root-outage-public-blob-reader-r2.js\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"8991fe89b5f89de2f2408cc36492880097107313\",\"size\":840,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/8991fe89b5f89de2f2408cc36492880097107313\"},{\"path\":\"root-read-only-orchestration-syntax-correction.txt\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"834a723a75fbce97ce1b462cd0c1e1971fa96611\",\"size\":188,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/834a723a75fbce97ce1b462cd0c1e1971fa96611\"},{\"path\":\"root-source-review.public.json\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"c5d24b106cef77b81c9e95dcda45768b91ca9abd\",\"size\":4051,\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/c5d24b106cef77b81c9e95dcda45768b91ca9abd\"}],\"truncated\":false}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/e755a251a203f9e1f418f063dc0772410b448645"
+    }
+  },
+  "isError": false
+}

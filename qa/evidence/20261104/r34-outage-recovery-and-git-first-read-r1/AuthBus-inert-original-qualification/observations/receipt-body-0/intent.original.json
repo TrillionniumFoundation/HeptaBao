@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.owner-renew-inert.original-observer-intent.r1",
+  "root_go": "964c58fa1ae491cad2f815362a2381686e64837a",
+  "request": {
+    "blob": "bf36a27519bb8db1421ed3b3935a9267836b221a",
+    "bytes": 454,
+    "sha256": "9d10d04cf1662d9810499e3bb392dc4408204d2ed75681a07ff473b71ead2cc5"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-owner-renew-inert-receipt-body-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+        "expected_version": "16777244:72671152:12994:1793922263708983153:1793922263708991695",
+        "offset": 0,
+        "limit": 12994
+      }
+    }
+  },
+  "original_job": "1a1ae1968c5-fc05-5d62",
+  "lane": "A",
+  "maximumNativeAdmissions": 1,
+  "startNotYetCalled": true,
+  "immutablePageLimit": 8192
+}

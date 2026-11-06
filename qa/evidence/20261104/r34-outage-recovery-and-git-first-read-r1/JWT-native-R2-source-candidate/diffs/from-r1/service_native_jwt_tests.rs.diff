@@ -1,0 +1,212 @@
+--- a/crates/heptabao-server/src/service_native_jwt_tests.rs
++++ b/crates/heptabao-server/src/service_native_jwt_tests.rs
+@@ -436,3 +436,209 @@
+     status(&f.actor(&issued, "GET", "auth/token/lookup-self", json!({}))?, 403);
+     Ok(())
+ }
++
++// R2 additions below. The ten R1 regressions and all their assertions remain
++// byte-identical; these are independent Token API composition regressions.
++const DELEGATION_POLICY: &str = r#"
++path "jwt-kv/data/value" { capabilities = ["read"] }
++path "auth/token/lookup-self" { capabilities = ["read"] }
++path "auth/token/lookup" { capabilities = ["read"] }
++path "auth/token/create" { capabilities = ["update"] }
++path "auth/token/renew-self" { capabilities = ["update"] }
++path "auth/token/renew" { capabilities = ["update"] }
++path "auth/token/revoke-self" { capabilities = ["update"] }
++path "auth/token/revoke" { capabilities = ["update"] }
++"#;
++
++fn allow_delegation(f: &mut Fixture) -> TestResult {
++    status(&f.admin("PUT", "sys/policies/acl/native-jwt",
++        json!({"policy":DELEGATION_POLICY}))?, 204);
++    Ok(())
++}
++
++fn create_service_child(f: &mut Fixture, parent: &str, ttl: u64) -> TestResult<Zeroizing<String>> {
++    let mut response = f.actor(parent, "POST", "auth/token/create", json!({
++        "policies":["native-jwt"],"no_default_policy":true,"ttl":ttl
++    }))?;
++    status(&response, 200);
++    assert_eq!(response.body["auth"]["token_type"], "service");
++    assert_eq!(response.body["auth"]["orphan"], false);
++    secret(&mut response, "/auth/client_token")
++}
++
++#[test]
++fn native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation() -> TestResult {
++    let mut f = Fixture::new()?;
++    allow_delegation(&mut f)?;
++    let assertion_expires = f.now + 60;
++    let assertion = f.assertion(assertion_expires);
++    let (parent, entity) = f.login(&assertion)?;
++    let child = create_service_child(&mut f, &parent, 80)?;
++    // A descendant is still a Token API issuer, not a direct JWT login.
++    let grandchild = create_service_child(&mut f, &child, 70)?;
++    let mut f = f.restart()?;
++    let lookup = f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?;
++    status(&lookup, 200);
++    assert_eq!(lookup.body["data"]["entity_id"], entity);
++    assert_eq!(lookup.body["data"]["path"], "auth/token/create");
++    assert_eq!(lookup.body["data"]["orphan"], false);
++    status(&f.admin("DELETE", ROLE, json!({}))?, 204);
++    f.now = assertion_expires + 1;
++    // The old assertion and issuing JWT role are no longer usable. The real
++    // child's renewal must use Token API provenance, not its inherited mount.
++    let mut renewed = f.actor(&child, "POST", "auth/token/renew-self",
++        json!({"increment":120}))?;
++    status(&renewed, 200);
++    let echo = secret(&mut renewed, "/auth/client_token")?;
++    assert!(echo.as_str() == child.as_str());
++    let parent_renew = f.actor(&parent, "POST", "auth/token/renew-self", json!({}))?;
++    status(&parent_renew, 500);no_credential(&parent_renew);
++    let mut f = f.restart()?;
++    status(&f.actor(&child, "GET", "jwt-kv/data/value", json!({}))?, 200);
++    status(&f.actor(&grandchild, "GET", "auth/token/lookup-self", json!({}))?, 200);
++    status(&f.actor(&parent, "POST", "auth/token/revoke-self", json!({}))?, 204);
++    let mut f = f.restart()?;
++    for token in [&parent, &child, &grandchild] {
++        status(&f.actor(token, "GET", "auth/token/lookup-self", json!({}))?, 403);
++    }
++    Ok(())
++}
++
++#[test]
++fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen() -> TestResult {
++    let mut f = Fixture::new()?;
++    allow_delegation(&mut f)?;
++    let assertion = f.assertion(f.now + 60);
++    let (parent, _) = f.login(&assertion)?;
++    let child = create_service_child(&mut f, &parent, 250)?;
++    let mut batches = Vec::new();
++    for issuer in [&parent, &child] {
++        let mut response = f.actor(issuer, "POST", "auth/token/create", json!({
++            "type":"batch","policies":["native-jwt"],"no_default_policy":true,"ttl":150
++        }))?;
++        status(&response, 200);
++        assert_eq!(response.body["auth"]["token_type"], "batch");
++        assert_eq!(response.body["auth"]["renewable"], false);
++        assert_eq!(response.body["auth"]["orphan"], false);
++        let batch = secret(&mut response, "/auth/client_token")?;
++        assert!(batch.starts_with("hvb."));
++        batches.push(batch);
++    }
++    let mut f = f.restart()?;
++    for batch in &batches {
++        status(&f.actor(batch, "GET", "jwt-kv/data/value", json!({}))?, 200);
++        let renewal = f.actor(batch, "POST", "auth/token/renew-self", json!({}))?;
++        status(&renewal, 400);no_credential(&renewal);
++    }
++    status(&f.actor(&parent, "POST", "auth/token/revoke-self", json!({}))?, 204);
++    let mut f = f.restart()?;
++    for batch in &batches {
++        status(&f.actor(batch, "GET", "jwt-kv/data/value", json!({}))?, 403);
++    }
++    status(&f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?, 403);
++    Ok(())
++}
++
++#[test]
++fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes() -> TestResult {
++    let mut f = Fixture::new()?;
++    allow_delegation(&mut f)?;
++    let assertion = f.assertion(f.now + 60);
++    let (parent, _) = f.login(&assertion)?;
++    let child = create_service_child(&mut f, &parent, 250)?;
++    status(&f.admin("POST", "auth/token/revoke-orphan", json!({"token":parent.as_str()}))?, 204);
++    status(&f.admin("DELETE", ROLE, json!({}))?, 204);
++    let mut f = f.restart()?;
++    status(&f.actor(&parent, "GET", "auth/token/lookup-self", json!({}))?, 403);
++    let lookup = f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?;
++    status(&lookup, 200);
++    assert_eq!(lookup.body["data"]["orphan"], true);
++    let mut renewed = f.actor(&child, "POST", "auth/token/renew-self", json!({"increment":120}))?;
++    status(&renewed, 200);
++    let echo = secret(&mut renewed, "/auth/client_token")?;
++    assert!(echo.as_str() == child.as_str());
++    status(&f.admin("DELETE", "sys/auth/native-jwt", json!({}))?, 204);
++    let mut f = f.restart()?;
++    status(&f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?, 403);
++    Ok(())
++}
++
++#[test]
++fn native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions() -> TestResult {
++    let mut f = Fixture::new()?;
++    allow_delegation(&mut f)?;
++    status(&f.admin("POST", "sys/auth/native-up", json!({"type":"userpass"}))?, 204);
++    status(&f.admin("POST", "auth/native-up/users/bob", json!({
++        "password":"native-jwt-cross-owner-synthetic","token_policies":["native-jwt"],
++        "token_ttl":300,"token_max_ttl":600
++    }))?, 204);
++    let mut response = f.actor("", "POST", "auth/native-up/login/bob",
++        json!({"password":"native-jwt-cross-owner-synthetic"}))?;
++    status(&response, 200);
++    let userpass = secret(&mut response, "/auth/client_token")?;
++    let assertion = f.assertion(f.now + 60);
++    let (jwt, _) = f.login(&assertion)?;
++    let (other_jwt, _) = f.login(&assertion)?;
++    let mut first = f.actor(&jwt, "POST", "auth/token/renew",
++        json!({"token":userpass.as_str(),"increment":120}))?;
++    status(&first, 200);
++    let echo = secret(&mut first, "/auth/client_token")?;
++    assert!(echo.as_str() == userpass.as_str());
++    let mut second = f.actor(&userpass, "POST", "auth/token/renew",
++        json!({"token":jwt.as_str(),"increment":120}))?;
++    status(&second, 200);
++    let echo = secret(&mut second, "/auth/client_token")?;
++    assert!(echo.as_str() == jwt.as_str());
++    let mut f = f.restart()?;
++    status(&f.actor(&userpass, "POST", "auth/token/revoke", json!({"token":jwt.as_str()}))?, 204);
++    status(&f.actor(&jwt, "GET", "auth/token/lookup-self", json!({}))?, 403);
++    status(&f.actor(&other_jwt, "POST", "auth/token/revoke",
++        json!({"token":userpass.as_str()}))?, 204);
++    let mut f = f.restart()?;
++    status(&f.actor(&userpass, "GET", "auth/token/lookup-self", json!({}))?, 403);
++    status(&f.actor(&jwt, "GET", "auth/token/lookup-self", json!({}))?, 403);
++    status(&f.actor(&other_jwt, "GET", "auth/token/lookup-self", json!({}))?, 200);
++    Ok(())
++}
++
++#[test]
++fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph() -> TestResult {
++    let mut f = Fixture::new()?;
++    allow_delegation(&mut f)?;
++    let assertion = f.assertion(f.now + 60);
++    let (parent, _) = f.login(&assertion)?;
++    let child = create_service_child(&mut f, &parent, 250)?;
++    let original = f.snapshot()?;
++    let auth = &f.service.state.as_ref().ok_or("actual native state")?.auth;
++    assert!(auth.native_v6_jwt_state_supported());
++    let bytes = owner_store::serialize_owner(auth).map_err(|_| "actual Auth bytes")?;
++    let mut value: Value = serde_json::from_slice(&bytes)?;
++    let child_id = value["tokens"].as_object().ok_or("actual token map")?.iter()
++        .find(|(_, token)| token["auth_mount"] == "native-jwt"
++            && token["auth_provenance"]["kind"] == "token_api")
++        .map(|(id, _)| id.clone()).ok_or("actual Token API child")?;
++    // Negative format/profile probes operate on detached values only. They
++    // never install a forged token, mutate the fixture or grant a Principal.
++    for mutation in 0..7 {
++        let mut changed = value.clone();
++        let token = &mut changed["tokens"][&child_id];
++        match mutation {
++            0 => token["auth_provenance"] = Value::Null,
++            1 => token["auth_origin_known"] = json!(false),
++            2 => token["public_origin"] = Value::Null,
++            3 => token["auth_provenance"]["issued_creation_ttl"] = Value::Null,
++            4 => token["parent"] = json!(&child_id),
++            5 => token["parent"] = json!("0".repeat(64)),
++            _ => token["public_origin"]["creation_path"] = json!(LOGIN),
++        }
++        let changed_bytes = Zeroizing::new(serde_json::to_vec(&changed)?);
++        erase_json(&mut changed);
++        if let Ok(detached) = serde_json::from_slice::<crate::auth::AuthState>(&changed_bytes) {
++            assert!(!detached.native_v6_jwt_state_supported());
++        }
++    }
++    erase_json(&mut value);
++    assert!(original.as_slice() == f.snapshot()?.as_slice());
++    status(&f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?, 200);
++    Ok(())
++}

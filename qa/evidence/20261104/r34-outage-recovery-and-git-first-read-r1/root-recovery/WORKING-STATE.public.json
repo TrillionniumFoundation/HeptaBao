@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.root-executor-outage-recovery-state.v1",
+  "as_of_UTC": "2026-11-06 02:11:04 UTC",
+  "previous_state": {
+    "blob": "cf21acb122647cf38aaf57118a5fadc052685a33",
+    "bytes": 6648,
+    "sha256": "c84762822b825c0d1e3e4bc35c4775a8e6db66576f1bc69f8b0a3c7ddc1d6263"
+  },
+  "published_branch": "codex/heptabao-validation-20261104",
+  "published_head": "b2a93ed797229674346c77f28d7a828fa1f96dfc",
+  "executor": {
+    "available": false,
+    "last_health_check": "exec-server rejected pwd before process creation: No such file or directory",
+    "repeated_probe_allowed": false,
+    "Git_available": true
+  },
+  "native": {
+    "root_Runtime_calls": 0,
+    "max_lanes": 2,
+    "active_calls": 0,
+    "active_futures": 0,
+    "new_admissions_frozen_pending_exact_Git_first_review": true
+  },
+  "AuthBus": {
+    "original_job": "mac/1a1ae51309d-fc05-5ef8",
+    "terminal": "failed exit 1; complete durable original stdout",
+    "stdout_bytes": 132132,
+    "stdout_sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748",
+    "release_tree": "abfb64b76b7c933351972aba214e2f3eac42987e",
+    "root_qualification": "b0e399383e1ea4285711acd902bb6f61202a7658",
+    "root_checks": 65,
+    "business_operations_completed": 0,
+    "failed_frame": "mac_owned_launchd_r3.py:76 typed_launchctl_integer",
+    "rejected_field_literal_observed": false,
+    "registration_closed": false,
+    "wrapper_exec_identity_observed": false,
+    "helpers_and_descriptors_closed": true,
+    "original_observers": 10,
+    "original_pages": 55,
+    "next": "Source review of one exact original-label read-only diagnostic; no cleanup or worker rerun GO"
+  },
+  "H2": {
+    "original_job": "desktop/1a1ae76aacd-fc05-5fb4",
+    "terminal": "succeeded exit 0; complete durable 396-byte stdout",
+    "stdout_claims": {
+      "H01": true,
+      "H02": true,
+      "H03": true,
+      "all_owned_stopped": true,
+      "outcome_unknown": false
+    },
+    "actual_result_bytes": 465570,
+    "actual_result_sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e",
+    "first_range_qualified": true,
+    "original_first_range_bytes": 65536,
+    "remaining_bytes": 400034,
+    "remaining_ranges": 7,
+    "next_offset": 65536,
+    "offset_zero_replay_forbidden": true,
+    "full_body_qualified": false,
+    "recovery_tree": "88e46a69416f448d034b007370e343c04d4a7081",
+    "next": "Review Git-first observer successor plus seven frozen binary_read requests before exact continuation GO"
+  },
+  "CLI": {
+    "prepare_qualified": true,
+    "live_GO": false,
+    "source_only_exact_request": "2c0692832bfe24fe8b728589900896ae64152852"
+  },
+  "JWT_R2": {
+    "owner_reported_source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "owner_reported_source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "sole_parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "changed_leaves": 9,
+    "new_tests_source": 15,
+    "refs_modified": 0,
+    "formatter_runs": 0,
+    "compile_runs": 0,
+    "test_runs": 0,
+    "root_commit_readback_pending": true
+  },
+  "official_JWT_ACL": {
+    "exact_tag_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "source_packet_tree": "bbebf79f4e89b5c40621316bb8965a96785435a5",
+    "source_report": "295980f0394775b8dcccdfd90ce0d389ee369f62",
+    "runtime_oracle_cases": 0,
+    "known_source_mismatch": "JWT role DELETE capability and collection bare GET method; follow-up differential oracle required"
+  },
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "continue_work": true
+}

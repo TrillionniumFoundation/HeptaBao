@@ -1,0 +1,1 @@
+{"all_owned_stopped": true, "result": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1/result.public.json", "result_sha256": "bb5bdec75ad7081910b4ccb39492964e42a0a144f57f3d3ef1a97b0df05613d4", "runtime_started": false, "status": "passed"}

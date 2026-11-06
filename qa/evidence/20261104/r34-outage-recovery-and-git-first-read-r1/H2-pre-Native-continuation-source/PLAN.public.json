@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.h2-live.one-armed-page-explicit-recovery-SOURCE.v1",
+  "status": "SOURCE_ONLY_NEW_ROOT_GO_REQUIRED",
+  "basis": {
+    "R1": "fa0a826b3eccdc862073753c8d8d557ab85cfa5a",
+    "R2": "a6f766eeeda2c660fba08d9668f826c7000b3b1f",
+    "read_scope_GO": "778d79c6702a0aa7933aaec598e548349eb31a73"
+  },
+  "new_whole_recovery_packet": "811692431bf219ea0a217a95c43eaab871e75562",
+  "exact_call_boundary_proof": "f4fd29b578194de9c2b13828953637c93e0d6a73",
+  "new_entry": "hgRun('continue-armed-page', exact_new_root_GO_pin)",
+  "exact_original_request": {
+    "operation_id": "578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273",
+    "offset": 16384,
+    "limit": 16384
+  },
+  "original_request_blob": "31b413cc3cf3c6878ecb9f0891fa162e3e37f3f6",
+  "original_intent_blob": "448a82490b0b370b9d845cc7e8b17f3e7728ad99",
+  "preconditions": [
+    "New recovery packet has eight exact whole records and root independently accepts it.",
+    "A new root GO distinct from original live/continuation GOs is fetched whole.",
+    "The old unresolved block still has exact SHA7505abc7; old unknown plan and original errors remain.",
+    "The exact armed pending request remains submitted=true, no returned SDK or call record exists for it, and the original operation is completed/inactive with one page at next offset16384."
+  ],
+  "explicit_historical_block_semantics": "The old block object and old plan.phase=unconfirmed are preserved. A separate root-authorized recovery context makes only that exact historical block nonblocking for the existing finite read scope. Any different new block remains blocking. Successful new Git archives restore the historical object; they do not mark the old create successful or reconstruct old tree57bf.",
+  "before_Native": "After storing the explicit recovery context, archive one new continuation intent whole. Do not call ls/lp or the failed hlState again, and do not set submitted=false. Set a once-only continuation-attempt marker immediately before the one original Native statement.",
+  "after_Native": "Store original full SDK raw text and hash before reuse of unchanged lc. lc still externalizes original SDK and whole-readbacks before isError/content/JSON parse. Original page and payload checks are byte-identical.",
+  "subsequent_scope": "Following successful original callback, retain its exact original label and page offset and the new recovery provenance. Any subsequent actions remain the seven fixed-range scope of778d, using reviewed hgRun; no new business or path.",
+  "failure_rule": "A new Git uncertainty or Native error stops new actions. There is no repeated create, repeated ls/lp, repeated continuation entry, automatic retry, or resetting submitted flags. A context exists before the once call, so reentry is conservatively rejected even if a later preliminary archive fails.",
+  "sources": {
+    "durability": {
+      "blob": "3a0b21c59640688ce94137715626f4805150f06a",
+      "bytes": 11084,
+      "sha256": "211ce0ec2870916af0cc86e407397b089b5806bd541d5f52ffb9b12eeeaefa47"
+    },
+    "observer": {
+      "blob": "2170e7202e21ca7d6cb6a4c17f70ac37fea19271",
+      "bytes": 19817,
+      "sha256": "2ba32cb0d4d9684ee3b66c95197eea4584561e0c6146e225377066673d31c22c"
+    }
+  },
+  "old_block": {
+    "blob": "e7060aa3c9017bd9fad44558b71a43c42e9dcf7e",
+    "bytes": 373,
+    "sha256": "7505abc72cc2f10c45b0846d95547fd874471e0884b392d489adc06a3aef1db3"
+  },
+  "no_product_change": true,
+  "no_budget_change": true,
+  "no_offset0_replay": true,
+  "CLI_live_authorized": false,
+  "Native_calls": 0,
+  "executor_calls": 0
+}

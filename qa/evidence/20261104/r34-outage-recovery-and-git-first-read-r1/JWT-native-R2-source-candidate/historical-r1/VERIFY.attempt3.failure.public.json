@@ -1,0 +1,3480 @@
+{
+  "status": "FAIL_SOURCE_CHECKS",
+  "error": "ValueError('substring not found')",
+  "check_count": 690,
+  "checks": [
+    {
+      "name": "canonical-merkle:heptabao-server",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical-merkle:crates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical-merkle:root",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical-merkle:src",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical-root",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical-link:crates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical-link:heptabao-server",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical-link:src",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:auth.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:auth_jwt_login.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:auth_jwt_renewal.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:auth_native_userpass.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:auth_native_v6_routes.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:federated_auth.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:federated_native_jwt.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:service.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:service_native_auth.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:service_native_auth_login_tests.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:service_native_auth_tests.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned-before:service_native_userpass_tests.rs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exact-modified-seven",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exact-new-two",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:native_time_policy",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:seconds_from_float",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:signed_duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:role_leeway",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:valid_user_claim_name",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:user_claim_update",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:has_jwt_user_claim_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:validate_jwt_user_claim_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:has_native_jwt_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:validate_native_jwt_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:retire_jwt_login_replay",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:bound_claims_update",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_login.rs:has_jwt_bound_claims_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:auth_jwt_login.rs",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "existing-function-present:auth.rs:ssh_identity_template_duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:framework_signed_integer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:transit_rotation_duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:kv_mount_configuration_duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:framework_duration_seconds",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:default_bind_secret_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:default_userpass_lockout_threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:default_userpass_lockout_duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:default_userpass_lockout_counter_reset",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:default_userpass_lockout_disable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_default_userpass_lockout_threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_default_userpass_lockout_duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_default_userpass_lockout_counter_reset",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_certificate_constraints",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:certificate_sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:normalized_certificate_sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_presented_certificate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_certificate_attributes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:der_extension_value",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:wildcard_match",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:matches_any",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:matches_cert_role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:certificate_metadata",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:certificate_identity_alias",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:group_attr",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:group_name_attr",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:same_binding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:namespace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:mount",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:plugin_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:now",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:with_admission_started",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:valid_ldap_attribute_name",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:native",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:set_started_for_test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:observed_now",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:execute",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:valid_jwt_kid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:insert_jwt_key",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_legacy_jwt_keys",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_jwks",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:verifier",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:drop",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:eq",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:auth_mount_revision_one",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:new",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:descriptor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:legacy_auth_mounts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:bind_request_clock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:original_request_clock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:request_authority_time",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_root",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:policies",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:consumed_use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:lossless_parameter_map",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:fmt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:err",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:bad",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:acl_denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:lookup_accessor_target_error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:empty",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:random_bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:random_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:checked_expiry",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_zero",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_zero_u32",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_false",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_true",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:unlimited_zero",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_namespace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:valid_name",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_path",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:string_field",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:number",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:boolean",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:optional_u64",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:optional_auth_revision",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:require_auth_revision",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:require_absent_auth_revision",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:next_auth_revision",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:reject_unknown",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:claim_values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:bounded_string_list",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:valid_oid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:certificate_extension_requirements",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:certificate_metadata_extensions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:erased_wrapper_fixture_token_present",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:erased_wrapper_fixture_runtime",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_recovery_credential",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_indexed_recovery_wire",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_recovery_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_recovery_credential",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:same_recovery_control",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_recovery_publication",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:initialize_recovery_credential",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_acl_parameter_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_acl_parameter_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_approle_token_provenance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:known_namespaces",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:namespace_is_empty",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:bootstrap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_help_actor_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_token_api_delivery_target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:principal_token_api_time",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:active_token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:active_token_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authenticate_read_only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authenticate_read_only_from",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:legacy_immutable_token_is_non_consuming",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authenticate_read_only_from_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:request_principal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:request_principal_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authenticate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authenticate_from",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authenticate_from_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:check_principal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:check_principal_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_request_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_request_observation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_sudo_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_sudo_request_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_request_parameters",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_request_parameters_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:policy_allows",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:policy_allows_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:authorize_for_unit_test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:permission",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:permission_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_issue",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_issue_captured",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_issue_with_stamp",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:issue",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:revoke",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:revoke_orphan",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:effective_auth_mounts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:users_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:users_at_mut",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:roles_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:roles_at_mut",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:ldap_groups_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:ldap_groups_at_mut",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:disable_auth_mount",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:jwt_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:jwt_at_mut",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:auth_mount_enabled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_approle_login_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:native_remount_owner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:native_remount_destination",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:advance_native_remount_epochs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:remount_source_absent",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:remount_native_accepted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:remount_mount",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:auth_mount_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:remove_auth_mount_current",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_public_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:is_native_workflow_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:handle",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:handle_with_client_certificates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:handle_with_connection",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:handle_with_connection_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:handle_with_connection_clock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:handle_with_connection_clock_for_cluster",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_plugin_auth_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_userpass_lockout_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_userpass_lockout_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_radius_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_plugin_auth_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_plugin_auth_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_plugin_auth_login_binding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:finish_plugin_auth_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:plugin_auth_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:ldap_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:ldap_group_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_ldap_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_ldap_login_from",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:finish_ldap_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:radius_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_radius_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_radius_login_with_path",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:prepare_radius_login_from",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:finish_radius_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:login_ldap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:cert_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:jwt_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:jwt_config_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_jwt_config",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:jwt_role_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:tidy_secret_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:token_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:token_route_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:token_route_with_clock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:target_token_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:cert_renewal_limits",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:create_token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:create_token_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:policy_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:user_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:auth_mount_token_limits",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_assignment",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:userpass_login_failure",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:login_userpass",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:role_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:login_approle",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:base32_no_padding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:verify_totp",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:route_capability",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:reject_alias_pair",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:normalize_ttl",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:login_token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:token_info_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:token_info",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:default_policy_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:path_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_strict_json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:finite_numbers",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:erase_parsed_json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:deserialize",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_policy",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_policy_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_json_policy",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_hcl_policy",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_capability_array",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_parameter_map",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_required_parameters",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_hcl_capabilities",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_hcl_parameter_map",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_hcl_required_parameters",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_hcl_value",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:parse_hcl_value_at_depth",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:take_hcl_key",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:take_word",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:normalize_parameter_name",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_parameter_values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_parameter_map",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:rule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:take",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:take_string",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:lex_hcl",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:lease_issuer_by_digest",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:lease_issuer_by_digest_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:sdk_auth100_literal_request_star_never_becomes_an_acl_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:has_lossless_json_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth.rs:validate_native_consumed_auth_candidate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:auth.rs",
+      "passed": true,
+      "detail": [
+        "handle_with_connection_clock_for_cluster",
+        "jwt_route"
+      ]
+    },
+    {
+      "name": "existing-function-present:federated_native_jwt.rs:missing_claim_leeway",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_native_jwt.rs:numeric_date",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_native_jwt.rs:verify_native",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_native_jwt.rs:verify_native_with_user_claim",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:federated_native_jwt.rs",
+      "passed": true,
+      "detail": [
+        "verify_native_with_user_claim"
+      ]
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:is_native_capabilities_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:is_native_identity_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:is_native_openapi_metadata",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:is_native_metadata_read",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:write",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:flush",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:drop",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:token_create_diagnostic_selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:record_token_create_failure",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:record_missing_route_stage",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:metadata_read",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:immutable_local_read",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:authorization_method",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:requires_local_proof",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:tracks_terminal_checkpoint",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:time",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_metadata_acl",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_mount_acl",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_kv1_acl",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_transit_acl",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_totp_acl",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_environment",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_owner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:current_checkpoint",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:stage_publication",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_checkpoint",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:bind_after_terminal_observation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:bind_publication",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_current_identity_actor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_reply_auth",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:auth_only_root_change",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_raft_observation_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_auth_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_metadata_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_kv2_mount_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_kv1_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_transit_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_totp_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_empty_namespace_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_owner_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:dispatch_native_owner_request_with_pki",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:native_auth_terminal_deadline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:before_response_composition_publication",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:record_pending_missing_route_stage",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:check_pending_native_auth_before_terminal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:bind_pending_native_auth_before_audit",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth.rs:complete_native_auth_delivery",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:service_native_auth.rs",
+      "passed": true,
+      "detail": [
+        "requires_local_proof",
+        "tracks_terminal_checkpoint",
+        "check_source",
+        "check_owner",
+        "check_reply_auth",
+        "dispatch_native_auth_request",
+        "dispatch_native_owner_request_with_pki",
+        "complete_native_auth_delivery"
+      ]
+    },
+    {
+      "name": "existing-function-present:service.rs:supported_reader_schema",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:public_origin_observation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:postgresql",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:validate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:durable_profile_binding",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:append_field",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:clone_pg_storage_config",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:is_wrapper",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:associated_data",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:validate_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:clone",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:from",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:default",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:ptr_eq",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:deref",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:deref_mut",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:serialize",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:deserialize",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:between",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:replay_epoch_is_zero",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:drop",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:from_engine_error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:ok",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:default_audit_socket_timeout_ms",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:default_audit_syslog_facility",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:default_audit_syslog_tag",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:default_audit_syslog_socket_path",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:syslog_facility_code",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:code",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:create",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:hold_existing_empty",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:verify_existing_target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:retain_postgres_pending",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:publish",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:new",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:with_origin_peer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:token_time",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:with_realtime_remote_jwt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:execute_with_service_before",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:execute_before",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:execute",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:kv_authorization_method",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:opaque_owner_limit",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:validate_loaded_capacity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_fixture_opaque_owner_limit",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_sanitized_configuration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_outbound_endpoints",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_auth_plugins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_database_plugins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_external_kms_plugins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_kms_plugins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_secret_plugins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_audit_http_endpoint",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_audit_socket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_audit_syslog",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:install_postgres_durable_storage",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:new_with_ha",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:new_with_audit_config",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:new_with_ha_audit_config",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:new_inner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_request_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_request_clock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_private_shutdown",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_request_before",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_forwarded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_http_fixture_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_at_mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:finish_synchronous_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:finish_external_request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:finish_external_request_without_quota_headers",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:audit_completed_response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:audit_completed_response_with_receipt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:audit_completed_response_with_clock_receipt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_at_mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_at_mode_precise",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_at_mode_started",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_at_mode_started_clock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:begin_at_mode_started_clock_with_quota",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_inner_with_quota",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_inner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_inner_control_group",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:handle_inner_control_group_with_quota",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:immutable_kv_response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:project_kv1_read_lease",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:dispatch",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:native_ssh_public_response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:dispatch_authorized_subrequest",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:dispatch_native_authorized_subrequest",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:dispatch_authorized_subrequest_inner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:load_state_from_durable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:prepare_owner_state_plan",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:serialize_owner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_owner_state_batch",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:commit_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:initialized",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:seal_status",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:initialize",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:import_postgres_initialization",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:initialize_with_postgres_import",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:initialize_with_wrapper_material",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:initialize_with_wrapper_material_and_auth_factory",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:ack_initialization",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:ack_initialization_with_sync",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:unseal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:unseal_with_cold_handoff",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:transient_ha_unseal_error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:ha_leader_during_unseal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:synchronize_ha_after_unseal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:synchronize_ha_after_unseal_with",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:advance_unseal_nonce_attempt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:rotate_unseal_nonce",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:rekey_status",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:rekey_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:verify_rekey_share",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:capacity_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:maintenance_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_local",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_local_with_prepared_plan",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_local_with_epoch_policy",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_local_with_epoch_policy_and_plan",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_admitted_owner_state_batch",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:sync_from_ha_before_request_admission",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:sync_from_ha",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:sync_from_ha_with_anchor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:sync_from_ha_with_anchor_progress",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:sync_from_ha_with_anchor_progress_in_ingress",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:sync_from_ha_with_anchor_inner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:ha_observation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:ha_observation_with",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:audit_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:request_fingerprint",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:audit_event",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:write_audit_socket",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:write_audit_syslog",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:health_status",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:health_status_with_codes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:from_body",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:path_present",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:initialization_recovery_pending",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:postgres_pending_path",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:sync_initialization_parent",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:initialization_leaf_name",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:verify_initialization_parent",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:postgres_pending_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:cleanup_postgres_pending",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:retire_postgres_pending",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:postgres_pending_context",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:write_private_initialization_file",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:read_initialization_recovery",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:read_private_initialization_file",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:seal_associated_data",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:bounded_u8_field",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:decode_key_material",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:decode_seal_metadata",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:load_seal_metadata",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:read_seal_metadata_bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:load_durable_profile",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_durable_profile",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:load_pending_rekey",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_pending_rekey",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:delete_pending_rekey",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:valid_nonce",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:valid_recovery_reference",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:persist_seal_metadata",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:private_directory",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:valid_namespace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:valid_path",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:hex",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:decode_hex",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:check_private_file",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:load_audit_key",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:state_serialization_error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:erase_json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:serialization_is_transparent_and_mutation_detaches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:health_never_reports_active_without_current_linearizable_authority",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:standby_probe_uses_standbyok_only_and_honors_custom_codes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service.rs:health_status_code_body_values_are_validated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:service.rs",
+      "passed": true,
+      "detail": [
+        "dispatch_authorized_subrequest",
+        "dispatch_native_authorized_subrequest",
+        "dispatch_authorized_subrequest_inner"
+      ]
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:header_name",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:new",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:key_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:fmt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:new_pem_keyset",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:verify",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:verify_oidc",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:verified_claims",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:verify_internal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:verify_and_record",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:drop",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:root",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:ledger_path",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:deserialize",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:expecting",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:visit_map",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:parse_unique_object",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:decode_segment",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:rsa_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:verify_signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:take_string",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:take_optional_string",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:take_u64",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:take_optional_u64",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:take_audiences",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:take_string_set",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:checked_string",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:validate_root",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:create_private_root",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:create_lock",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:open_ledger",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:verifier",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:signed_token_is_recorded_before_release_and_replay_survives_restart",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:duplicate_claim_and_wrong_namespace_fail_closed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:unknown_jose_headers_and_trailing_json_are_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:mfa_is_channel_bound_and_persistently_single_use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:tampered_replay_ledger_is_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:oidc_id_token_binds_nonce_authorized_party_and_token_hashes_without_relaxing_jwt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:jwt_signed_numeric_dates_keep_objects_and_reject_private_transport_magic",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:federated_auth.rs:jwt_unique_claim_boundary_preserves_outer_duplicates_and_nested_lastwins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:federated_auth.rs",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:check_at",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:presented_leaf_lifetime",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:supports_native_v6_root_storage",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:native_plain_namespace_auth_profile",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:native_v6_storage_profile",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:native_v6_control_groups_supported",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:native_v6_control_group_scoped_policy_paths",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:validate_native_v6_approle_login_lifetime_observed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:capture_native_v6_cert_login_lifetime",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:capture_native_v6_cert_renewal_lifetime",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:native_v6_local_auth_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_v6_routes.rs:native_v6_plain_auth_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:auth_native_v6_routes.rs",
+      "passed": true,
+      "detail": [
+        "native_v6_storage_profile",
+        "native_v6_local_auth_route"
+      ]
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:call",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:secret_field",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:activated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:reopened",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:issue_secret_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:assert_consumed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:assert_partition",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:native_approle142_local_policy_kv_cas_renew_revoke_and_cold_reopen",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:approle_policy_kv_cas_renew_revoke_and_cold_reopen",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:native_token_target_expired_after_real_audit_withholds_lookup_and_accessor_reply",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:native_token_lookup_keeps_real_control_group_admission_before_dispatch",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:private_key",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:certificates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:leaf",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:pump",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:connected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:call_tls",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_tests.rs:native_cert_auth_uses_verified_tls_peer_and_survives_cold_reopen",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:service_native_auth_tests.rs",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:is_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:validate_batch_reply",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:permits_empty_actor_retirement",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:check_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:admit_candidate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:bind_response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:authorize_reply",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:native_v6_userpass_state_supported",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:selected_native_userpass_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:native_v6_userpass_route",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:userpass_token_origin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_native_userpass.rs:capture_native_v6_userpass_owner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:auth_native_userpass.rs",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "existing-function-present:auth_jwt_renewal.rs:role_duration",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_renewal.rs:has_jwt_native_ttl_defaults",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_renewal.rs:has_jwt_renewal_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_renewal.rs:validate_jwt_renewal_state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_renewal.rs:renew_jwt_token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:auth_jwt_renewal.rs:jwt_token_expiry",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:auth_jwt_renewal.rs",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:drop",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:before_native_login_publication",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:prepare_login_role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:token_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:secret_lookup",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:assert_no_credentials",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:assert_live_token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:native_approle_original_secret_expiry_before_publication_keeps_source_unconsumed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:native_approle142_local_secret_expiry_before_publication_keeps_source_unconsumed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:original_secret_expiry_before_publication_keeps_source_unconsumed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:native_approle_original_secret_expiry_after_audit_withholds_committed_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:native_approle142_local_secret_expiry_after_audit_withholds_committed_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:original_secret_expiry_after_audit_withholds_committed_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:native_approle_one_time_secret_is_checked_without_consuming_again",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:native_approle142_local_one_time_secret_is_checked_without_consuming_again",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_auth_login_tests.rs:one_time_secret_is_checked_without_consuming_again",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:service_native_auth_login_tests.rs",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:status",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:text",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:secret",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:call",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:initialized",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:new",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:assert_native",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:admin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:actor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:user",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:restart",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:root",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:assert_business_unchanged",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:assert_value",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:audited_login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_formal_source_promotion_keeps_real_preexisting_credentials",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_formal_file_login_renew_cold_provenance_and_revoke",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_formal_mount_retirement_revokes_parent_child_and_keeps_floor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_formal_failed_login_lockout_is_durable_across_cold_open",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_formal_acl_retains_admin_sudo_and_account_scope",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_formal_finite_token_delivery_does_not_consume_an_extra_use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_actual_audit_response_status_and_error_tampering_are_vetoed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_actual_audit_cannot_refresh_the_original_request_deadline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_actual_post_audit_revocation_vetoes_the_original_credential_reply",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "existing-function-present:service_native_userpass_tests.rs:native_userpass_selector_keeps_other_providers_and_wrapped_login_closed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "function-change-scope:service_native_userpass_tests.rs",
+      "passed": true,
+      "detail": [
+        "native_userpass_selector_keeps_other_providers_and_wrapped_login_closed"
+      ]
+    },
+    {
+      "name": "unchanged-auth-declaration:AuthState",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unchanged-auth-declaration:AuthResponse",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unchanged-auth-declaration:Token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unchanged-login-identity-module",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unchanged-service-declaration:State",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unchanged-service-declaration:Response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unchanged-service-declaration:Service",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "userpass-only-provider-literal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "one-actual-verifier-in-new-body",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "numericdate-parser-unchanged",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lifetime-not-serialized",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ordinary-verifier-wrapper-one",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exclusive-verifier-branches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lifetime-export-last-auth-success",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ordinary-auth-wrapper-none",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ordinary-jwt-wrapper-none",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "service-fresh-slot-guard",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "service-local-slot-none",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "export-after-identity-and-state-install",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "only-successful-slot-export",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ordinary-service-wrapper-none",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "native-local-slot-none",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "slot-consumed-once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unexpected-slot-fails",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}

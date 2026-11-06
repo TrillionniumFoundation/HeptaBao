@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.native-jwt.r2.local-read-rejection.v1",
+  "source": "actual functions.exec error shown in conversation; not a fabricated exec SDK",
+  "error": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server rejected request (-32603): No such file or directory (os error 2)\\\")\" }",
+  "fixed_scope": "nine named existing ha_native_jwt_source_r2 source metadata files",
+  "process_created": false,
+  "repeated": false,
+  "Runtime_calls": 0
+}

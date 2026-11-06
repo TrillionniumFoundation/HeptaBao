@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.root-GO.H2-original-public-result-Git-first-continuation.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 02:18:26 UTC",
+  "agent": "/root/compatibility_audit",
+  "scope": "Seven remaining fixed read-only public result ranges from the already completed original H2 job; original service execution is not repeated",
+  "original_job": {
+    "host": "desktop",
+    "job_id": "1a1ae76aacd-fc05-5fb4",
+    "original_START_count": 1,
+    "terminal_exit_code": 0,
+    "authority": "ba0805c8ed309dcf70dc73c630a2091372bab9e7"
+  },
+  "original_GO": "39616822031623661e3db7d5153f9dcb19525842",
+  "original_immutable_page_width_amendment": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+  "root_source_review": {
+    "blob": "c5d24b106cef77b81c9e95dcda45768b91ca9abd",
+    "bytes": 4051,
+    "sha256": "5f7170e072d30dc4123c14caab5731a4629e95aad40af7e6a5bbe360b88a593a"
+  },
+  "source_composition": {
+    "R1_tree": "fa0a826b3eccdc862073753c8d8d557ab85cfa5a",
+    "R2_delta_tree": "a6f766eeeda2c660fba08d9668f826c7000b3b1f",
+    "durability": {
+      "blob": "678828a8679e0f0571a842a850c3111421adc1ae",
+      "bytes": 10192,
+      "sha256": "d542f55c62f10d13c10a8b5dcd1b0b30aa684352ebc029e783c4d14bf63aebe5"
+    },
+    "observer": {
+      "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+      "bytes": 16074,
+      "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+    },
+    "pure": {
+      "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+      "bytes": 6684,
+      "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+    },
+    "only_R2_durability_replaces_R1": true
+  },
+  "fixed_file": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2/result.public.json",
+    "size": 465570,
+    "version": "2050:7876768:465570:1793928419424368582:1793928419424368582",
+    "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e"
+  },
+  "closed_boundary": {
+    "original_observers": 4,
+    "active_Runtime_calls": 0,
+    "active_native_futures": 0,
+    "pending_request": null,
+    "original_body0_native": "402c5c221b7d26afbf95c08656c0a86362e3ffee",
+    "root_body0_review": "fbfad06b11bf1ed16551f6a8d7f190ad46924dc9",
+    "next_offset": 65536,
+    "remaining_bytes": 400034,
+    "stale_offset_zero_must_not_replay": true
+  },
+  "allowed_admissions": [
+    {
+      "offset": 65536,
+      "limit": 65536,
+      "blob": "97fa10f7aa705b265fe0bfa6b1f5a01b7d30c3b4",
+      "bytes": 438,
+      "sha256": "08e2c3baa4e3bae7a65a6e1a2acf83f785764b4084b631fa7eb43d62228737c5"
+    },
+    {
+      "offset": 131072,
+      "limit": 65536,
+      "blob": "e45ec9bc5421e6c6ef1a91e5bba2cf5d8ac22a0f",
+      "bytes": 440,
+      "sha256": "86f2111c36f8d38f9d81817787b3c61bfafe36b19b7ff103506547cf4a9dccdc"
+    },
+    {
+      "offset": 196608,
+      "limit": 65536,
+      "blob": "3dbb58645a1ccf4bc4573373b0aa9e170ab39c4f",
+      "bytes": 440,
+      "sha256": "b09def7abee32c9a014bd25f74b90747aa4d493e7ea883d9ac9d6001ac4c6b41"
+    },
+    {
+      "offset": 262144,
+      "limit": 65536,
+      "blob": "2780c676c0d0fbb9ec30dfe1d8ebff149a09c763",
+      "bytes": 440,
+      "sha256": "08a5c6fe858ec479bd379330507c20d2ce714bed1122c5b82cfaeb42ad89f6b1"
+    },
+    {
+      "offset": 327680,
+      "limit": 65536,
+      "blob": "e7bc24ca34853e1b47ca7cdc035a64a64f3bcdbf",
+      "bytes": 440,
+      "sha256": "7811cb921a12e67f10d2bc28aaca6018abc8b2dd7c21754e720ef62eb6d60bca"
+    },
+    {
+      "offset": 393216,
+      "limit": 65536,
+      "blob": "32e1d307aee89492fe94faf73eb410d10b446a54",
+      "bytes": 440,
+      "sha256": "4a185faba57b528d343fc29471640b53467a3311c7961ef39c696dad940de802"
+    },
+    {
+      "offset": 458752,
+      "limit": 6818,
+      "blob": "b20329116b397801a1834f2348d582fc92d15a93",
+      "bytes": 439,
+      "sha256": "574ba5639b6055626148fd39b88a76c0f8928ff1bd16bb41780f415b6dea57f8"
+    }
+  ],
+  "allowed_observation_tools": [
+    "operation_start of the exact seven binary_read requests",
+    "operation_status of each same original admitted operation_id",
+    "operation_result of each same original admitted operation_id at its exact next offset, limit16384"
+  ],
+  "limits": {
+    "binary_read_max": 65536,
+    "new_observer_immutable_page_bytes": 16384,
+    "per_lane_Runtime_calls": 1,
+    "per_lane_native_futures": 1,
+    "global_Runtime_lanes": 2,
+    "root_Runtime_calls": 0,
+    "whole_original_payload_cap": 1048576,
+    "whole_report_existing_cap": 4194304
+  },
+  "storage_protocol": {
+    "before_Native": "Exact request, intent, and submitted/armed checkpoint must be external Git content trees with whole readback",
+    "after_Native": "Retain the full original SDK raw JSON and hash in V8, then publish exact bytes in precomputed Git tree and whole-readback before isError/content/JSON interpretation",
+    "each_observer": "All original request/intent/SDK/native/pages/payload and manifest archived whole with complete Merkle verification before next file range",
+    "Git_read_SDKs": "Original byte-hash immutable copies plus per-object history; never alias-only",
+    "Git_uncertainty": "Freeze all actions except exact expected tree/blob read-only reconciliation; never repeat create, never repeat Native, never continue automatically",
+    "Native_uncertainty": "Preserve original returned SDK or actual transport exception; halt, retain binding, no replay",
+    "failed_checkpoint": "After exact Git reconciliation inspect the retained shadow; do not reapply status/page/range handlers blindly",
+    "local_executor_dependency": false,
+    "invocation": "Every action through reviewed hgRun; bootstrap receives this exact GO pin"
+  },
+  "final_contract": {
+    "contiguous_ranges_including_original_body0": 8,
+    "bytes": 465570,
+    "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e",
+    "whole_original_report_saved_before_semantic_review": true,
+    "root_H2_contract": "9350d75ab1a47c4a56efcc3840249f6f27c94fc0",
+    "stdout_flags_alone_not_case_qualification": true
+  },
+  "excluded": [
+    "process_start",
+    "process_status admission",
+    "process_read admission",
+    "file_info admission",
+    "another path/version/offset",
+    "offset0 reread",
+    "CLI live",
+    "new build or business/service change",
+    "deadline changes",
+    "retry or replay",
+    "private credential files",
+    "J3160"
+  ],
+  "original_product_source_and_assertions_unchanged": true,
+  "business_deadline2400_not_reset_or_extended": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "cleanup": false
+}

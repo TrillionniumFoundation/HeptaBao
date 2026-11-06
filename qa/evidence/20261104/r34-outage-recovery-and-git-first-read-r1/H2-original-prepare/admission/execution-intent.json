@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.h2-current-prepare.execution-intent.v1",
+  "GO": {
+    "blob": "8271430c9b433fb88968935d388b2b4b4bd7ce37",
+    "bytes": 6727,
+    "sha256": "828cfecd6f9c94b2970ae2a2ddaefb748148bf44ecef5661f216f53e705665ff"
+  },
+  "conditional_CLI_release": {
+    "name": "cli-prepare-actual-B-owner-release",
+    "blob": "aadd8b222cec4a0b44a33638b919fb55b8837b45",
+    "bytes": 18991,
+    "sha256": "2b8bdabc9d9c266817388e800dafbadc449b9aec4c4fd8c81ca5268d81b59842"
+  },
+  "conditional_entry_proven": true,
+  "request": {
+    "blob": "2059cf884472ae55dc799be4b781f9fe96efd10e",
+    "bytes": 619,
+    "sha256": "c5ef6c140c8687b102c532eaab4bfb5537f01e55d2ed4faa6c050dd2b07c55ef"
+  },
+  "exact_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_h2_gate_r1.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+      "--binding-sha256",
+      "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "idempotency_key": "heptabao-native-h2-gate-prepare-4e808-20261105-r2",
+    "timeout_seconds": 330
+  },
+  "expected_native_binding": {
+    "sha256": "29f0f3655298f7addf0140adc251101b3b29f4c8a77a562c3366c18c3a503408",
+    "native_fingerprint": "3022182966468605869"
+  },
+  "maximum_starts": 1,
+  "external_before_submit": true,
+  "process_start_submitted": false,
+  "lane": "B",
+  "host": "desktop",
+  "live_authorized": false
+}

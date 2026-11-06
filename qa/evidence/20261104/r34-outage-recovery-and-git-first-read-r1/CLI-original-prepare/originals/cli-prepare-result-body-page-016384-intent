@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.cli-prepare.exact-read-intent.v1",
+  "GO": {
+    "blob": "dcafbfe0fd0aac7a330109fb8b53e9df533177fa",
+    "bytes": 6591,
+    "sha256": "19c8dd1d0f2482dfec3f94f8e52213946799729723775a8f08a44826654a5b1d"
+  },
+  "original_prepare_job": "1a1ae34b455-fc05-5e28",
+  "tool": "operation_result",
+  "request": {
+    "name": "cli-prepare-result-body-page-016384-request",
+    "blob": "1257e2c20b05547e8a072bbb25b2db7baa315dec",
+    "bytes": 125,
+    "sha256": "23dcd4cc12881d9d54fe529b3e5c3d9f8a3417878cb4a6b82d49cd64b3ca36b3"
+  },
+  "original_operation_id": "f1c7acb10bc21a7eb4da50c1f6c96d7b44d4def46c98e7d9447cffd863c21e8c",
+  "business_replay": false,
+  "external_before_call": true
+}

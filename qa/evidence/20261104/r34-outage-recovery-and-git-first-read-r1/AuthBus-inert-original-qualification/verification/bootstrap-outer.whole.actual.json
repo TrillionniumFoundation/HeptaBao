@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.owner-renew-inert.external-whole.r1",
+  "role": "bootstrap_outer",
+  "pass": true,
+  "whole": {
+    "blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+    "bytes": 71506,
+    "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+  },
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+  "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+  "full9": [
+    "16777244",
+    "72671139",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "71506",
+    "1793922263700923595",
+    "1793922263700929887"
+  ],
+  "rangeStart": 0,
+  "rangeEnd": 71506,
+  "parts": [
+    {
+      "schema": "heptabao.owner-renew-inert.body-chunk.actual.r1",
+      "pass": true,
+      "name": "outer-body-0",
+      "operation_id": "4246638cb66bf68174d3266aaf46ddfc49e0e7b79d3bb7bfc1e10565fcccec41",
+      "nativePin": {
+        "blob": "2a7f19fe91bdf46076513dc31345e9fc91b132aa",
+        "bytes": 87738,
+        "sha256": "8342306dce96f0d76dbefc185a97918767faa2682073040620ceb725fb2d1025"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+      "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+      "size": 71506,
+      "offset": 0,
+      "next_offset": 65536,
+      "bytes": 65536,
+      "eof": false,
+      "chunk_sha256": "f1e9f1e53f4e3f7fdb48eef72655f82b1ac1b570d0bfea918b95193f79237ea3",
+      "equalsFrozenBytes": true,
+      "originalObserverClosed": true,
+      "proof": {
+        "blob": "079f1da18d8f27f0a7036d805e9ec098ccb4c876",
+        "bytes": 818,
+        "sha256": "69b1dbdea538975bee491e6ecf8049a43c14c9ea22f1eb0344cde4005e0baa8e"
+      }
+    },
+    {
+      "schema": "heptabao.owner-renew-inert.body-chunk.actual.r1",
+      "pass": true,
+      "name": "outer-body-65536",
+      "operation_id": "855b6489b764b9c922cd634d38d60fbfb30cb7ebe5f7afd34842055984730aeb",
+      "nativePin": {
+        "blob": "db30160887463419e70ff1f053e2ad000e9430ef",
+        "bytes": 8317,
+        "sha256": "1b1dc1c7595af963f0ffb1b30bb0f4c5af0d9633d25791bad65418daf016b120"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+      "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+      "size": 71506,
+      "offset": 65536,
+      "next_offset": 71506,
+      "bytes": 5970,
+      "eof": true,
+      "chunk_sha256": "82dde7e5e5e733ae3b75a429c3daeb30ec5a8ed0dfa9e1dcaf3b0cc64859b2af",
+      "equalsFrozenBytes": true,
+      "originalObserverClosed": true,
+      "proof": {
+        "blob": "fcce0b89056771a3af3eb0c0ece3c5b98d303264",
+        "bytes": 823,
+        "sha256": "95ec407f94ba6c9d990c5d3369a205c7af376a89f82570e186d10f2222821743"
+      }
+    }
+  ],
+  "sameVersion": true,
+  "utf8ByteExact": true,
+  "rootGo": "964c58fa1ae491cad2f815362a2381686e64837a"
+}

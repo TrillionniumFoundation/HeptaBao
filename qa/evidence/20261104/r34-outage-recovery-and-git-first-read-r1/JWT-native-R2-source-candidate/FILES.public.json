@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.native-jwt.r2.files.v1",
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "sole_parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "before": {
+        "bytes": 395371,
+        "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601",
+        "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2"
+      },
+      "after": {
+        "bytes": 397709,
+        "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97",
+        "blob": "19646b7848e5588d72f5514400d607696549611d"
+      },
+      "before_packet_path": "historical-r1/before/auth.rs",
+      "after_packet_path": "candidate/auth.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "before": null,
+      "after": {
+        "bytes": 17391,
+        "sha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042",
+        "blob": "2e76f906edefb92406328459fd6c5711dfa7ad2b"
+      },
+      "before_packet_path": null,
+      "after_packet_path": "candidate/auth_native_jwt.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "before": {
+        "bytes": 21719,
+        "sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01",
+        "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b"
+      },
+      "after": {
+        "bytes": 21959,
+        "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+        "blob": "6bb16ad15f43d0ca908438b4fb26d44d625f476b"
+      },
+      "before_packet_path": "historical-r1/before/auth_native_v6_routes.rs",
+      "after_packet_path": "candidate/auth_native_v6_routes.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/federated_auth.rs",
+      "before": {
+        "bytes": 56656,
+        "sha256": "177477696829aee63cf7d8fa68ebcc6f1c556f90814d877cec70a17a6981b097",
+        "blob": "77c1580c74a3f2ebf8b5feb6e08d33167fad00b1"
+      },
+      "after": {
+        "bytes": 56677,
+        "sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+        "blob": "21c48f7d50d30076d1aae82d51ce2b782a9739dc"
+      },
+      "before_packet_path": "historical-r1/before/federated_auth.rs",
+      "after_packet_path": "candidate/federated_auth.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/federated_native_jwt.rs",
+      "before": {
+        "bytes": 6603,
+        "sha256": "d0c673be357721547d5eb1db95fbac48104e30a22420b4b1efb0635fefcaa6fa",
+        "blob": "a7e846d4293015ee606c402115594bda01e18e1e"
+      },
+      "after": {
+        "bytes": 7709,
+        "sha256": "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e",
+        "blob": "0b4f4b18be19951e6744e1202f2fb1561351add2"
+      },
+      "before_packet_path": "historical-r1/before/federated_native_jwt.rs",
+      "after_packet_path": "candidate/federated_native_jwt.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "before": {
+        "bytes": 518245,
+        "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+      },
+      "after": {
+        "bytes": 519054,
+        "sha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a",
+        "blob": "c75adfe47637c5b2b559e515a754521e93238445"
+      },
+      "before_packet_path": "historical-r1/before/service.rs",
+      "after_packet_path": "candidate/service.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "before": {
+        "bytes": 137388,
+        "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+        "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738"
+      },
+      "after": {
+        "bytes": 142316,
+        "sha256": "877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2",
+        "blob": "c4b356de7c082b396e7e26024f567fb5337a55bb"
+      },
+      "before_packet_path": "historical-r1/before/service_native_auth.rs",
+      "after_packet_path": "candidate/service_native_auth.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "before": null,
+      "after": {
+        "bytes": 33059,
+        "sha256": "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b",
+        "blob": "89f3ce081c94e08446a15b11fdc76a1d724ab09e"
+      },
+      "before_packet_path": null,
+      "after_packet_path": "candidate/service_native_jwt_tests.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+      "before": {
+        "bytes": 25591,
+        "sha256": "a8eaf62664654721252a4df34400d5ecffdf836b9e23b280b38a270776e9e995",
+        "blob": "b4c37255bdc7d6391e71430cddb3a8431b53cb36"
+      },
+      "after": {
+        "bytes": 25592,
+        "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+        "blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558"
+      },
+      "before_packet_path": "historical-r1/before/service_native_userpass_tests.rs",
+      "after_packet_path": "candidate/service_native_userpass_tests.rs"
+    }
+  ],
+  "r1_packet": "d2edfb6d20788d43c26fee5929120fea6fcfd7ca",
+  "r1_changed_files": [
+    "auth_native_jwt.rs",
+    "service_native_auth.rs",
+    "service_native_jwt_tests.rs"
+  ],
+  "source_only": true,
+  "Runtime_calls": 0,
+  "formatter": false,
+  "compile": false,
+  "tests_executed": 0,
+  "ref_updated": false
+}

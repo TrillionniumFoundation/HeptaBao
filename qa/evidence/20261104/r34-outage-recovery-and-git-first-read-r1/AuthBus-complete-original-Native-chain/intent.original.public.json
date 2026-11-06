@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.owner-renew.full-worker.external-start-intent.r1",
+  "status": "PREPARED_NOT_SUBMITTED",
+  "rootGo": {
+    "blob": "fe53245e77d33c5bea2cff96def394ffaaf3f31e",
+    "bytes": 5726,
+    "sha256": "ece3d40ef86811b91078d5d8dfbb367ce7337d3075685df4f838ff06d91c8685"
+  },
+  "request": {
+    "blob": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+    "bytes": 5329,
+    "sha256": "cbb0404036ccaf6c0e03c806de8a569eb4e6143985652428a8f5b6efe1ea6c95"
+  },
+  "nativeBinding": {
+    "sha256": "22cfe25e558dd973d40265b4dc397426b0613d55f56f8821f9b4a79ffc51f7a4",
+    "native_fingerprint": "2508472412258818419"
+  },
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-current-five-agent-owner-renew-6ad1b80a-20261105-r1",
+  "maximumBusinessStarts": 1,
+  "supervisorSeconds": 1080,
+  "originalBudgets": {
+    "outer": 900,
+    "manager": 600,
+    "managerFailureCleanup": 60,
+    "phase": 120,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "http": 10,
+    "capture": 45,
+    "listenerReady": 30,
+    "tlsCommand": 30,
+    "supervisor": 1080,
+    "publicReportBytes": 2097152
+  },
+  "predecessorRelease": {
+    "blob": "85c59867536d180c7cbc7a1f45fc10c4b0c9aaf3",
+    "bytes": 18900,
+    "sha256": "ca289f5023377e4fd0becc599f2704f01fffad85b6d926695425798c71679a4a"
+  },
+  "predecessorQualification": {
+    "blob": "d1b480f14a62252473b547e0a85a5452895091a7",
+    "bytes": 5251,
+    "sha256": "65fd1e2e130c1e086349ce368b180be7133f59847693672e5f06d89edd28dce6"
+  },
+  "lane": "A",
+  "fullOriginalFiveAgentWorker": true,
+  "allSourceInputsAndModelUnchanged": true,
+  "productionCutover": false,
+  "noOriginalOrReplacementReplay": true,
+  "originalSDKLocalFsyncBeforeParse": true,
+  "ACKGitBeforeObservers": true,
+  "subsequentObserversBatchArchiveBeforeNext": true
+}

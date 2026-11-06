@@ -1,0 +1,82 @@
+{
+  "base_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "base_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "canonical_src_tree": "de426e481e192ca774a4c9fef252d8c1d4b71b92",
+  "local_isolation_only": true,
+  "Runtime_calls": 0,
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+      "bytes": 395371,
+      "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_jwt_login.rs",
+      "blob": "906232fdae08ea3246585152c263e572dfc7fc94",
+      "bytes": 8632,
+      "sha256": "3ef4e39330d1c09e8002d62454877107efda6f902ba2e62a8a77b59e313628e7"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_jwt_renewal.rs",
+      "blob": "8730956cc5a33a9401c71f4bcac98af8ee1b9e07",
+      "bytes": 6444,
+      "sha256": "6efa2614ce670ff9373190860c991a2a7a3f55d598bbf54289a4fa8b1eb262d6"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_userpass.rs",
+      "blob": "ca5422d79a4e45e3e0a57eecc5655fe9ee139a5b",
+      "bytes": 14054,
+      "sha256": "5fcf24744f831c6980b03a509a5521575a7cddf2aadf9a46c640351905dcbf8a"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+      "bytes": 21719,
+      "sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01"
+    },
+    {
+      "path": "crates/heptabao-server/src/federated_auth.rs",
+      "blob": "77c1580c74a3f2ebf8b5feb6e08d33167fad00b1",
+      "bytes": 56656,
+      "sha256": "177477696829aee63cf7d8fa68ebcc6f1c556f90814d877cec70a17a6981b097"
+    },
+    {
+      "path": "crates/heptabao-server/src/federated_native_jwt.rs",
+      "blob": "a7e846d4293015ee606c402115594bda01e18e1e",
+      "bytes": 6603,
+      "sha256": "d0c673be357721547d5eb1db95fbac48104e30a22420b4b1efb0635fefcaa6fa"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth_login_tests.rs",
+      "blob": "362c1809bd5d97408c5250f37984f5ce2e9066d4",
+      "bytes": 11610,
+      "sha256": "0e56acdc9063ea63ed8b0a76006262db8d9cb5abd829848e9d945d10ad19cc45"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth_tests.rs",
+      "blob": "c28391e43c4d81d9219655216b0f3a378ca24dc5",
+      "bytes": 34677,
+      "sha256": "53b66da1b73e30667c43405769ff6c77430bb441aa7f2ae528980c9ff57aafce"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+      "blob": "b4c37255bdc7d6391e71430cddb3a8431b53cb36",
+      "bytes": 25591,
+      "sha256": "a8eaf62664654721252a4df34400d5ecffdf836b9e23b280b38a270776e9e995"
+    }
+  ],
+  "claim": "Isolated SOURCE proposal; no formatter, Rust compile, test or Runtime qualification."
+}

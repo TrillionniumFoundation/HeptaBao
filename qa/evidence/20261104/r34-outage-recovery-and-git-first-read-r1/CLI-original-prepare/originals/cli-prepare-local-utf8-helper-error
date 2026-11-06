@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.local-evidence-processing-error.v1",
+  "scope": "Original prepare stdout local byte verification",
+  "error": "ReferenceError: TextEncoder is not defined",
+  "cause": "Code-mode V8 does not expose TextEncoder; the already verified root utf8Bytes helper is available.",
+  "failed_before_any_new_Runtime_call": true,
+  "failed_before_any_stdout_or_gate_mutation": true,
+  "original_SDK_unchanged": true,
+  "correction": "Use root utf8Bytes for exact UTF-8 hex and byte-length comparison; no Runtime replay."
+}

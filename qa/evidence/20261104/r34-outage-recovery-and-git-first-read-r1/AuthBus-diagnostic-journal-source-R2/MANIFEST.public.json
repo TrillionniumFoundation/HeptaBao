@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.public-source-packet-manifest.r1",
+  "entries": [
+    {
+      "path": "git_archive_once.js",
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    {
+      "path": "native_gitfirst.js",
+      "blob": "c61872aff6529e34ca89121d5c09702f8d56792c",
+      "bytes": 19027,
+      "sha256": "1aa2e506fd68673b182339194f47b091ec4c2c6b810498d69e2e0dec0970503c"
+    },
+    {
+      "path": "git_archive_once.before.js",
+      "blob": "1de1f00498f2457336f1f324a507ea1c2ac86fe1",
+      "bytes": 4189,
+      "sha256": "7eb14e27df6b8fe1bdb7cd4ae82394f7d5851fa70fd5686c562f85fc97035f28"
+    },
+    {
+      "path": "native_gitfirst.before.js",
+      "blob": "78253bc918be09af6c0bbb40da979ed392102986",
+      "bytes": 16934,
+      "sha256": "bed2f0586fb1a11412605afe863172f7250893ecc2d3ecfb54179af73060131d"
+    },
+    {
+      "path": "git_archive_once.review.diff",
+      "blob": "7268e87382e0c309c8b3a891bc156ad4516dbf9c",
+      "bytes": 3155,
+      "sha256": "aa1344358c94f5719ae94c18c1d1d30c8729b1350245c25b646fde65ce9d34db"
+    },
+    {
+      "path": "native_gitfirst.review.diff",
+      "blob": "3ea6c9f8e1f5c69b0084b1e91a2a694f03e0aadf",
+      "bytes": 3317,
+      "sha256": "8a298ff04f0c5409eb4ea847ea5849b1fce0965d01f3d708719a8eb20d7334cc"
+    },
+    {
+      "path": "steps.source.js",
+      "blob": "0a9de9aeef35470ff28150949c8a5e341b7688cb",
+      "bytes": 1815,
+      "sha256": "f865f3154992ae1f29cc1a0b77d4970238f7f9e55faf6d0ca237f6822d5c2799"
+    },
+    {
+      "path": "REVIEW.public.json",
+      "blob": "0c34b8537a122fa2e4429c0f3dea7a7f311f61f2",
+      "bytes": 3415,
+      "sha256": "390033d35efd22c7db4a3b73a41e604dfa90b5cb639f208bc4aebb895bc2be28"
+    },
+    {
+      "path": "pure-checks.public.json",
+      "blob": "fa755cc76ddc86386d348eb9f2adfdaf497109dd",
+      "bytes": 544,
+      "sha256": "580b8dbd52f800054452a8b33cb38feaed4f9fe75ff5a910ab31247c8474be22"
+    },
+    {
+      "path": "pure_helpers.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  ],
+  "RuntimeCalls": 0
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "recorded_local_completion_observation_not_original_SDK",
+  "command": "python3 ha_native_jwt_source_r1/verify_source.py",
+  "local_session_id": 12095,
+  "observed_exit_code": 0,
+  "result": {
+    "blob": "8b7ab9adec7cbf8b1d8015e50e9366c7d2b7ca04",
+    "bytes": 107997,
+    "sha256": "96870cfcd3e98a0d3cf6c180b4f89206fb094140fb17cfcb64fdb2ef1089cb62"
+  },
+  "source_only_checks": 799,
+  "unchanged_existing_functions": 641,
+  "Rust_compiled": false,
+  "Rust_tests_run": 0,
+  "rustfmt_run": false,
+  "Runtime_calls": 0,
+  "old_local_session_73135_terminal_sdk_unobserved": true
+}

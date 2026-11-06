@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owner-renew-inert-authority-01-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1ae1968c5-fc05-5d62"
+    }
+  }
+}

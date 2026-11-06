@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-h2-gate-prepare-authority0-4e808-20261105-r2",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ae4ad33e-fc05-5ebf"
+    }
+  }
+}

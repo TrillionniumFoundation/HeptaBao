@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-owner-renew-worker-authority-01-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1ae51309d-fc05-5ef8"
+    }
+  }
+}

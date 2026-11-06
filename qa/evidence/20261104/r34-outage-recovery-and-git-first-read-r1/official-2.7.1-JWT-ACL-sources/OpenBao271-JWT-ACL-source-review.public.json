@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.root-OpenBao271-JWT-ACL-source-review.v1",
+  "scope": "Pinned source comparison and runtime-oracle requirements; zero product execution",
+  "official": {
+    "tag": "v2.7.1",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "sources": [
+      {
+        "path": "internal/builtin/credential/jwt/path_role.go",
+        "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+        "bytes": 25759,
+        "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d",
+        "source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/path_role.go"
+      },
+      {
+        "path": "internal/builtin/credential/jwt/backend.go",
+        "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+        "bytes": 4189,
+        "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a",
+        "source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/backend.go"
+      },
+      {
+        "path": "internal/http/logical.go",
+        "blob": "7c091863ff2496db948ad945060d320d66b4bb7f",
+        "bytes": 15421,
+        "sha256": "5d474557d9dd8a28f0dfa3a83eb3c8e2fac502fae8b3404a3df1cc81c438f451",
+        "source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/logical.go"
+      },
+      {
+        "path": "internal/vault/policy/acl.go",
+        "blob": "2251475f3161a7eca462c0098b0ef6f8c970a553",
+        "bytes": 27409,
+        "sha256": "6e75975d1f7ad3dd52eea2e9a87febcd3c4d7ea0c15965c20bf8b7ed6ecc3a17",
+        "source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/policy/acl.go"
+      },
+      {
+        "path": "internal/vault/request_handling.go",
+        "blob": "c31daccabf24d0ec6064012d995fb0e3d5b759f9",
+        "bytes": 101673,
+        "sha256": "f539e14e846b22649eb0af207e71171919c3d0cd99a4e81a109b7446f7e8511e",
+        "source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/request_handling.go"
+      }
+    ]
+  },
+  "candidate": {
+    "qualified_base_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "R1_patch": "568fa321e4b6fd6bb540403df9f91d5ee7894ee8",
+    "R2_diff": "2b5785a57458d1d1396af6ed7b0daf859cc621ea",
+    "source_only": true,
+    "Rust_compiled": false,
+    "Rust_tests_run": 0
+  },
+  "findings": [
+    {
+      "operation": "DELETE auth/<jwt mount>/role/<name>",
+      "official_source": "HTTP selects DeleteOperation; JWT path registers DeleteOperation; ACL checks DeleteCapabilityInt. JWT backend PathsSpecial does not list root-protected paths.",
+      "candidate_source": "The legacy role handler and R2 native owner require update plus sudo.",
+      "conclusion": "Source-level capability mismatch. A successful delete-only policy and update+sudo-only rejection are expected on the official fixture; actual status/body observations remain due."
+    },
+    {
+      "operation": "Bare GET auth/<jwt mount>/role",
+      "official_source": "Bare GET selects ReadOperation. Role collection registers ListOperation, while LIST and GET?list=true select ListOperation.",
+      "candidate_source": "The legacy collection handler and R2 owner treat bare GET as list.",
+      "conclusion": "Source-level HTTP operation mismatch. Observe both read-only and list-only policies, bare GET, LIST and GET?list=true; do not normalize 403/405/200 outcomes."
+    },
+    {
+      "operation": "POST/PUT JWT named role and config",
+      "official_source": "The role path registers UpdateOperation; the backend does not mark JWT paths root-protected.",
+      "candidate_source": "The legacy named-role handler requires update plus sudo; R2 retains this. Config parse and native owner also need explicit same-route review.",
+      "conclusion": "Additional sudo semantics require actual same-valid-payload, non-root-policy oracle observations. This finding does not authorize removing arbitrary root checks."
+    }
+  ],
+  "runtime_oracle_gate": {
+    "status": "not_executed",
+    "new_isolated_TLS_fixtures_only": true,
+    "exact_official_2_7_1_binary_required": true,
+    "actual_policy_issued_non_root_tokens": true,
+    "preserve_raw_HTTP_status_and_body": true,
+    "independent_cases_counted_separately_from_comparison69": true,
+    "no_expected_status_normalization": true,
+    "no_source_or_assertion_change_under_this_report": true
+  },
+  "limitations": [
+    "Source review is not runtime parity.",
+    "No root/live endpoint was queried.",
+    "The old archived openbao-plugin-auth-jwt repository was not used as the 2.7.1 oracle.",
+    "The existing 10 R1 and 5 R2 regression sources are not compilation or execution results.",
+    "Exact public web pages were unavailable to the search opener; official GitHub API source bytes were retrieved and pinned instead."
+  ],
+  "Runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "cleanup_authorized": false
+}

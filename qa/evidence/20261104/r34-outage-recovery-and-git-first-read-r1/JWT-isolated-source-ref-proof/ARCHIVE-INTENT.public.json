@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r34-JWT-isolated-source-branch-proof-r1",
+  "records": [
+    {
+      "name": "PROOF.public.json",
+      "blob": "6e84036efb64b93d00296309f490a6aad122f31a",
+      "bytes": 881,
+      "sha256": "e55ac4823ea4d13670fcdd15c650ede6fdbd6858876aebd26a45edaabaac5e95"
+    },
+    {
+      "name": "original-create.sdk.json",
+      "blob": "01e61263633bb0f0dbb07f63246c6be23e4ae705",
+      "bytes": 202,
+      "sha256": "3c3169595614c49029c993e49319a389657a7ef78c0878acb441ae848511b6bc"
+    },
+    {
+      "name": "original-ref-read.sdk.json",
+      "blob": "594c965a5129293d4080f8dfda17ea2e4daab06d",
+      "bytes": 1879,
+      "sha256": "f9de44356d95863953ef223d4722b1a3afc7c727ef4a1c12e9c76db407c51aae"
+    }
+  ],
+  "expected_data_tree": "1d583945f33eadbb4c9f02b8af499d90e0d39a5a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

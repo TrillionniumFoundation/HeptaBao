@@ -1,0 +1,163 @@
+{
+  "schema": "heptabao.R34.working-recovery-state.v2",
+  "as_of_UTC": "2026-11-06 01:45:36 UTC",
+  "prior_working_state": {
+    "blob": "59ce97442f204e48eb71e66093c2650a303dfca2",
+    "bytes": 5666,
+    "sha256": "1ad2800ecec9ad3ac190f0c383130e6f688e180104fab84ffc31480220ea7d34"
+  },
+  "published_checkpoint": {
+    "commit": "b2a93ed797229674346c77f28d7a828fa1f96dfc",
+    "tree": "c05c16d4b7e188159a99b9f9c83b0fa028b2f3f3",
+    "branch": "codex/heptabao-validation-20261104",
+    "draft_PR": 159,
+    "merged": false
+  },
+  "runtime_lanes": {
+    "maximum": 2,
+    "root": 0,
+    "A": {
+      "owner": "/root/authbus_migration",
+      "job": "mac/1a1ae51309d-fc05-5ef8",
+      "process_authority": "failed_exit1_full_durable_terminal_confirmed",
+      "authority": {
+        "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+        "bytes": 732,
+        "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+      },
+      "complete_stdout_expected_bytes": 132132,
+      "last_owner_whole_bytes": 114688,
+      "last_report": "stream08 original immutable pages closing; stream09 tail remains",
+      "source_trace": {
+        "outer_blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+        "launchd_blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+        "error_type": "ManagerRefused",
+        "exact_frame_predicate": "typed_launchctl_integer",
+        "actual_raw_launchctl_output_not_yet_located": true,
+        "offending_field_and_literal": "not yet observed"
+      },
+      "closure_qualification": false,
+      "partial_all_owned_registrations_lineages_helpers_closed": false,
+      "production_cutover": false
+    },
+    "B": {
+      "owner": "/root/compatibility_audit",
+      "H2_prepare": {
+        "blob": "5aebec1a485dc62d5b0251c4c9e2f6e3963a58f0",
+        "bytes": 10151,
+        "sha256": "08591684a14287d6b6904680ba09418a348bb1f4387c57bf3619ab485429b1d0"
+      },
+      "H2_prepare_packet": "d3eaa7be5a25c0f4c1d504116705b4a059aae35b",
+      "H2_live_GO": {
+        "blob": "39616822031623661e3db7d5153f9dcb19525842",
+        "bytes": 10177,
+        "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+      },
+      "H2_live_exact": {
+        "blob": "32fc562b787488e539df6e57301ec9a7f6a53005",
+        "bytes": 711,
+        "sha256": "05220ced4192d3d2ee10208a86eb902b8d9e55f768acb17066c10e2e6eee94c4"
+      },
+      "job": "desktop/1a1ae76aacd-fc05-5fb4",
+      "start_count": 1,
+      "ACK_SDK": "7387f5a46e230ecd60252b0a8818213fd8ea37c1",
+      "ACK_native": "82b5159b7256c39462c5b8acb9834f971d16734b",
+      "binding_proof": "ee5cb9390778a8791950476842f5bb129e559873",
+      "actual_H2_result_pending": true,
+      "CLI_prepare_qualification": {
+        "blob": "f40fb6a88aff1d91ff59f9bca6495ae4b7d4e045",
+        "bytes": 4115,
+        "sha256": "f6a6d1e38f18c2c51b753c557e737ab4ff367b43ed240d9433a1efa9fadebdec"
+      },
+      "CLI_prepare_packet": "8ae5958ff87929da33235fc2f9ed5790265a4871",
+      "CLI_live_authorized": false,
+      "authority": {
+        "blob": "ba0805c8ed309dcf70dc73c630a2091372bab9e7",
+        "bytes": 729,
+        "sha256": "0431c9388e7e917e29c9c5187fc6371bc72c891ce8617197d14126052ef4b4de"
+      },
+      "stdout_reported_cases_passed": [
+        "H01",
+        "H02",
+        "H03"
+      ],
+      "actual_public_result": {
+        "bytes": 465570,
+        "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e",
+        "version": "2050:7876768:465570:1793928419424368582:1793928419424368582",
+        "body_not_yet_whole": true
+      }
+    },
+    "C": {
+      "owner": "/root/ha_validation",
+      "Runtime_calls": 0,
+      "task": "JWT native root local-key/service-token owner source implementation R2",
+      "R1_patch": {
+        "blob": "568fa321e4b6fd6bb540403df9f91d5ee7894ee8",
+        "bytes": 67574,
+        "sha256": "b662c3e40a2a80a799166ffff3f1bdbe8aaf4e77b49c27697e2c4cb2a8e17ec9"
+      },
+      "R1_manifest": {
+        "blob": "906b747c8ed22a6e947f20a979a0f6baa6230400",
+        "bytes": 4277,
+        "sha256": "4ce5eeb75264379dc9d4882991f107d097ac0036e82ecacea560fb72a8eccb2a"
+      },
+      "Rust_compile_runs": 0,
+      "Rust_test_runs": 0,
+      "first_10_tests_source_only": true,
+      "concrete_R1_gaps": [
+        "JWT actor normal service child TokenApi provenance rejected by new metadata predicate",
+        "Jwt non-login owner not wired to existing BatchIssuerOwner"
+      ],
+      "next": "Freeze R1 and review; repair exact TokenApi lineage and original BatchIssuerOwner integration, add genuine child/batch renewal/revoke/cold tests."
+    }
+  },
+  "root_new_immutable_packets": {
+    "H2_live_GO_and_prepare_qualification": "ebac33b9ac45afaf6b896079c6ac0902e2920d27",
+    "Auth_inert_qualified_201": "ead18951b17648cbc6278e4e1e62be9af692a9b6",
+    "CLI_prepare_90": "8ae5958ff87929da33235fc2f9ed5790265a4871",
+    "H2_prepare_113": "d3eaa7be5a25c0f4c1d504116705b4a059aae35b",
+    "HA_coverage_review_16": "75336e0f7d1a27c723e2c636dd46761f94280ed8"
+  },
+  "recovery_helpers": {
+    "pure": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+    "git_current": "c8da5d5db882c2e0a8d6165d21e9e0ae886e7e47",
+    "git_original": "85878559fd5af179c2d0f7aac8657145513ed204",
+    "tree": "6c5bd52313333acd4abd635085c4019af4462b78",
+    "process_binding": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+    "batch": "19f7da615ee1dfbb5a22fb91aad1132d8aaace30"
+  },
+  "corrections": {
+    "Git_failure_SDK_retention": {
+      "blob": "acb4448d4e152aca4c43fa78577a7b4152289c25",
+      "bytes": 1742,
+      "sha256": "1c801b6b2257469c54d7657965226e8ba55d1c02199c619ceafcad7ce08e08fa"
+    },
+    "H2_root_return_shape": {
+      "blob": "4b312d97653b628c08d2da4ee4c7ef446ab0fdbd",
+      "bytes": 477,
+      "sha256": "ae1630a24db91e12ee6ba8bf14fa363156dcc5b7aca5600c64b63575bc5d2baf"
+    },
+    "H2_root_name_bearing_extra_artifact_index": {
+      "blob": "65392405fce46437de44d09c1566c5028e00b899",
+      "bytes": 1424,
+      "sha256": "44d207c3688779c8602e0bf7b276e1503401beee05354374aa9a416b130452a2"
+    },
+    "all_recorded_with_originals": true,
+    "Auth_frame_location": {
+      "blob": "e9371ce564485b5f421c0aef2ca21077a847f138",
+      "bytes": 2177,
+      "sha256": "f492f8513525c94751040800182c61ccd8211d110a50bf1abb94469f7d8a664f"
+    }
+  },
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "continue_work": true,
+  "immutable_page_width_amendment": {
+    "blob": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+    "new_observers_only": 16384,
+    "old_observers_unchanged": 8192
+  }
+}

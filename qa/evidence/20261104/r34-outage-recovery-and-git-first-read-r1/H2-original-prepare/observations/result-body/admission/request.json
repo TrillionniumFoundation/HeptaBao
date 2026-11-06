@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-native-h2-gate-prepare-result-body-4e808-20261105-r2",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1/result.public.json",
+      "offset": 0,
+      "limit": 52937,
+      "expected_version": "2050:7874373:52937:1793925504923522214:1793925504923522214"
+    }
+  }
+}

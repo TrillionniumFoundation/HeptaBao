@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r34-AuthBus-readonly-diagnostic-root-source-review-r1",
+  "records": [
+    {
+      "name": "ROOT-REVIEW.public.json",
+      "blob": "10079e95735e3f2aed63f47db8eceb5aa8cc1148",
+      "bytes": 3767,
+      "sha256": "7df85f3af7d9cb3fbc772040007e4fba45179c5b912d8f09141ee58037e930a9"
+    },
+    {
+      "name": "typed-native-binding.public.json",
+      "blob": "f768f31e3eaa084be803e48aaa79f7b838c4eb2c",
+      "bytes": 314,
+      "sha256": "d14939ad52186a0ac5786793836b99d0098c187b9e49ebbd3026bb8247894fa5"
+    },
+    {
+      "name": "typed-native-binding-helper.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    {
+      "name": "original-jwt-source-commit-read.sdk.json",
+      "blob": "f0e72c030acd4d9690207153406b83fea718bac1",
+      "bytes": 4755,
+      "sha256": "3b875ea3f8c0d1c99448b9234f2044257f8eba4a5fad2c9b1568c00e4ff0b5a5"
+    }
+  ],
+  "expected_data_tree": "f31601ca5687c92ed8668a4e9ebe2452acb0402c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

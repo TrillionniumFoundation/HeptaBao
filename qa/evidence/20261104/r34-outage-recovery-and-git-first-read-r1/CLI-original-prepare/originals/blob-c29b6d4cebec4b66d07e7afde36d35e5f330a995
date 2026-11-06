@@ -1,0 +1,18 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3.12",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py",
+    "--binding",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+    "--binding-sha256",
+    "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+    "--prepare-only"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-10816-20261105-r4",
+  "timeout_seconds": 330
+}

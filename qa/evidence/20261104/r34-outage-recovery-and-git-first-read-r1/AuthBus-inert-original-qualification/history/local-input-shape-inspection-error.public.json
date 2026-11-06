@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.local-inspection-error.v1",
+  "scope": "pure V8 inspection",
+  "error": "TypeError: Cannot convert undefined or null to object at Object.keys(inp.files[0])",
+  "correction": "files/documents are keyed objects; inspect keys without assuming array.",
+  "runtimeCalls": 0
+}

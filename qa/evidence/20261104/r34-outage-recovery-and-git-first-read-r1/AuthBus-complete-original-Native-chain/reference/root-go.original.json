@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.r34.Auth-current-five-agent-original-worker.GO.v1",
+  "decision": "GO_ONE_EXACT_ORIGINAL_COMPLETE_WORKER",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "actualPredecessorQualification": {
+    "blob": "d1b480f14a62252473b547e0a85a5452895091a7",
+    "bytes": 5251,
+    "sha256": "65fd1e2e130c1e086349ce368b180be7133f59847693672e5f06d89edd28dce6"
+  },
+  "sourceQualification": "fb57872b59c10fe82ca348986cd4ddf5ac8bfc58",
+  "exactProcessStart": {
+    "blob": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+    "bytes": 5329,
+    "sha256": "cbb0404036ccaf6c0e03c806de8a569eb4e6143985652428a8f5b6efe1ea6c95"
+  },
+  "nativeBinding": {
+    "sha256": "22cfe25e558dd973d40265b4dc397426b0613d55f56f8821f9b4a79ffc51f7a4",
+    "native_fingerprint": "2508472412258818419"
+  },
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "idempotency_key": "heptabao-mac-current-five-agent-owner-renew-6ad1b80a-20261105-r1",
+  "maximumBusinessStarts": 1,
+  "exactRequestRule": "Whole-read the referenced 5329-byte request and dispatch exactly it, with no argv/path/key/environment/stdin/budget changes. Preserve original November5 key across UTC midnight.",
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "originalBudgets": {
+    "outer": 900,
+    "manager": 600,
+    "managerFailureCleanup": 60,
+    "phase": 120,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "http": 10,
+    "capture": 45,
+    "listenerReady": 30,
+    "tlsCommand": 30,
+    "supervisor": 1080,
+    "publicReportBytes": 2097152
+  },
+  "preservedScope": {
+    "candidateCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "model": "openai/gpt-5.6-sol",
+    "sourceFiles": 22,
+    "proofDocumentsUsedAtRuntime": 7,
+    "fullConfigurationAndActualRegistryOwnerAssertions": true,
+    "originalLoaderAndSelectorOnce": true,
+    "realCurrentCredentialCaptureStaysPrivate": true,
+    "originalFourPhaseGenerations": [
+      "initial",
+      "cold-new-process",
+      "initial-inverse",
+      "cold-new-process-inverse"
+    ],
+    "originalTenNativeLineages": true,
+    "originalAppRoleTLSKVPolicyRenewRevokeChecks": true,
+    "originalRoleTTLSeconds": 180,
+    "originalRoleMaximumTTLSeconds": 600,
+    "renewPOSTBody": {},
+    "noNewSleepRetryOrRoleMutation": true,
+    "J3160": false,
+    "productionServiceOrTrafficChange": false,
+    "oldAssetsDeleted": false
+  },
+  "admission": "Persist exact whole request and an independent external Git START intent before the single process_start. Immediately preserve complete original ACK SDK before parsing, verify exact native digest/fingerprint and original returned job; archive ACK and binding before the first observer. Any missing ACK/error/UNKNOWN stops new admissions; no business replay, alternate key or replacement job.",
+  "observations": {
+    "originalReturnedJobOnly": true,
+    "oneNativeCallAndOneFuturePerLane": true,
+    "maximumRuntimeLanes": 2,
+    "otherLane": "B original H2 prepare then separately approved H2/CLI live",
+    "rootRuntimeCalls": 0,
+    "processReadPerStreamBytes": 16384,
+    "immutablePageBytes": 8192,
+    "originalTerminalAndExactStreamsOnly": true,
+    "wholeStdoutMaximumBytes": 2097152,
+    "stdoutOffsets": "Use only original authoritative observed length and returned next offsets; collect every byte exactly once by contiguous ranges. All original observers must complete, store their original payload, reach EOF and be inactive. No new file, inventory, service or network observation is granted by this GO."
+  },
+  "archivalProtocol": {
+    "appliesOnlyToThisNewWorkerScope": true,
+    "exactOriginalSDKBeforeAnyParsing": "Immediately write and fsync every complete original SDK representation to its local durable journal, preserving embedded native raw text losslessly. A local persistence failure stops admissions. Then inspect isError and parse losslessly.",
+    "sameObserverPages": "Continue only the already returned original operation_id and exact immutable offsets, one call at a time. Do not replay the native read. Each completed observer's original request/ACK/status/pages/payload/native copies are archived as one Git content-tree batch with full SHA/byte readbacks before admitting the next observer.",
+    "error": "On any native tool/RPC/error/missing ACK/UNKNOWN, stop new native admissions, retain and archive all already received original bytes, and reconcile only already returned original observers. Git archival repair may recover identical bytes only and never triggers a native retry.",
+    "STARTIntentAndACKStillExternalBeforeObservation": true,
+    "notPerPageGitCreateBlobRequired": true
+  },
+  "qualificationBoundary": "Require authoritative succeeded/exit0/full/durable/terminal-publication-confirmed, exact complete post-finally public stdout, original deadline after all closure, all owned registrations/lineages/helpers/descriptors/sockets stopped, expected current-source and ten-lineage/five-agent/two-renewal/four-phase assertions, and empty stderr. Pre-finally result.public.json alone is not qualification. No actual worker result, current whole-database backup, production manager or fleet migration is prequalified.",
+  "postRun": "After original terminal and all original observations close, send the minimal complete public report/authority/owner release first. Do not start inventory, production cutover, cleanup, or a replacement worker under this GO.",
+  "productionCutoverAuthorized": false,
+  "legacyCleanupAuthorized": false,
+  "fullReplacement": false
+}

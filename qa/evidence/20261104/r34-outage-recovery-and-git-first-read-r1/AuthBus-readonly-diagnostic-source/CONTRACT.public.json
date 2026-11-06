@@ -1,0 +1,165 @@
+{
+  "schema": "heptabao.mac-owned-launchd-readonly-diagnostic-contract.r1",
+  "status": "SOURCE_ONLY_NO_GO",
+  "actualCallsSubmitted": 0,
+  "localPythonCompilationPerformed": false,
+  "executionBlockedUntilSeparateExactGOAndDurableRuntimeJournalRestored": true,
+  "fixedHost": "mac",
+  "source": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "request": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"
+  },
+  "objective": "Observe the original one-label registration and fixed owned public records; isolate numeric parsing without changing the original parser.",
+  "originalFailurePreserved": true,
+  "originalReadObserversClosed": 10,
+  "originalImmutablePagesClosed": 55,
+  "originalRegisteredServiceClosureStillUnknown": true,
+  "label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+  "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+  "newObservationIsNotOriginalPrintRecovery": true,
+  "originalPrintOnlySizeAndShaPreserved": {
+    "bytes": 4198,
+    "sha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5"
+  },
+  "fixedReadset": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist",
+      "kind": "whole owned plist",
+      "cap": 65536,
+      "required": true,
+      "sha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+      "postParse": "complete original expected dictionary and 17 arguments; only equality is published"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.ready.public.json",
+      "kind": "whole public ready JSON",
+      "cap": 8192,
+      "required": false,
+      "postParse": "exact six keys, original schema/generation/planSHA; seven numeric/executable identity fields and finite monotonic times only"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.exec-ready.public.json",
+      "kind": "whole public pre-finally candidate JSON",
+      "cap": 65536,
+      "required": false,
+      "postParse": "allowlisted typed wrapper summary; ok=false in this pre-finally file is not itself a failure or exec proof"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private",
+      "kind": "PRIVATE LOG PATH; only first LF-delimited wrapper public record",
+      "firstPassCap": 65536,
+      "verificationCap": 65536,
+      "maximumWholeFileSizeWithoutReadingWhole": 2097152,
+      "required": false,
+      "firstPass": "os.read(fd,1), stop immediately on first LF; never read trailing content",
+      "secondPass": "one os.pread of exactly the first-pass prefix; no trailing bytes",
+      "noCompleteLine": "report missing/incomplete first record, never parse or output the partial text",
+      "postParse": "exact wrapper schema and typed allowlist; no raw line, free text, environment, args, config, plan, credentials or later server logs"
+    }
+  ],
+  "closedBodyReturnedBudget": 270340,
+  "successfulMaximumReturnedBodyBytes": 270336,
+  "readSyscallCap": 65560,
+  "maximumRegisteredT5Descriptors": 19,
+  "peakT5Descriptors": 7,
+  "descriptorNotes": "3 held volume anchors; four fixed reads each borrow exactly three parent directories and at most one leaf. Helper pipes/processes are separately covered by the original Commands custody ledger. Standard library/import-internal handles are not individually enumerated.",
+  "metadataPolicy": "Original HeldT5 anchor full9 and UUID; parent object identity first5 with held/named checks; regular uid501 mode0600 nlink1 same-volume leaves. Whole records full9 stable. Prefix only first6 inode/ownership/mode/nlink stable with original <=2MiB bounded append semantics; no whole-log snapshot claim.",
+  "optionalAbsence": "Two ENOENT leaf stats through the same held parent; no missing-parent, permission or other failure becomes absence; absence is only current observation.",
+  "commands": [
+    {
+      "argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5"
+      ],
+      "seconds": 30,
+      "absolute45Clipped": true,
+      "outputPerStream": 262144
+    },
+    {
+      "argv": [
+        "/bin/launchctl",
+        "print",
+        "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+      ],
+      "seconds": 10,
+      "absolute45Clipped": true,
+      "outputPerStream": 262144
+    }
+  ],
+  "custody": "Unchanged actual-qualified Commands/owned_unreaped helpers retain the new diagnostic helper's direct Popen with WNOWAIT and TERM1/wait5/group3/ps4 cleanup. Their inherited fixed numeric ps projections are for those new helpers. No old server PID/PGID is signaled. No bootout, stop, start, or target mutation is called.",
+  "sharedSuccessDeadlineSeconds": 45,
+  "outerSupervisorSeconds": 60,
+  "cleanupMayFinishAfter45ButCannotPublishKnownSuccess": true,
+  "synchronousSyscallHardPreemptionClaim": false,
+  "outputCap": 131072,
+  "diagnosticSuccess": "Bounded fixed reads/typed projection, exact plist, fresh query either exact original registration or exact missing-service grammar, all new descriptors/helpers closed, final deadline and original process authority exit0 plus complete stdout. It grants no old-registration closure or business qualification.",
+  "parsing": {
+    "originalParsePrint": "Byte-exact manager parse_print. Rejection is recorded, never weakened for business.",
+    "separateProjection": "Exact structural prefix through complete_launchctl_arguments, followed by numeric classification. pid/runs/last exit code original integer grammar is kept distinct from literal (never exited) or hash-only unknown strings.",
+    "sentinel": "(never exited) is only a classifier literal, not an observed value, not exit zero, and not a new accepted business state.",
+    "freshState": "Known literals or hash+byte count; no raw environment or full launchctl text.",
+    "otherFieldDisclosure": "Only field presence, original-grammar integer values, fixed equality booleans, byte lengths and SHA256."
+  },
+  "wrapperPublicProjection": {
+    "emitSource": {
+      "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+      "lineDescription": "initial public report; ready emit; exec-ready candidate write; finally JSON stdout first line"
+    },
+    "allowlistedBooleans": [
+      "ok",
+      "outcomeUnknown",
+      "readyToExec",
+      "preparedExecCandidate",
+      "execObservedByWrapper",
+      "managerMustObserveSamePidBirthAndServerExecutable",
+      "productionCurrentPrivateInputsOpened",
+      "ownedPrivateInputReadAttempted",
+      "ownedPrivateInputReadCompleted",
+      "productionChanged",
+      "providerRequestSent",
+      "j3160Contacted"
+    ],
+    "allowlistedOther": [
+      "exact schema",
+      "optional exact generation",
+      "optional fixed wrapperIdentity",
+      "bounded fixed error enum or hash",
+      "fixed original wrapper seconds",
+      "finite elapsed seconds",
+      "candidate receipt SHA",
+      "helper count/allStopped/unknownCount",
+      "volume allDescriptorsClosed/lastAnchorCheckPassed/volumeUUIDVerified/closeErrorCount"
+    ],
+    "omittedOptionalFields": "generation and wrapperIdentity are absent on failures before post-admission report.update, including possible admission deadline refusal; the independent ready file may carry identity.",
+    "neverProof": "ready, exec-ready and first public stdout record do not independently prove current process absence, actual exec, actual exit or group closure."
+  },
+  "prohibitions": [
+    "no private plan/config/capsule body",
+    "no production credentials",
+    "no stdout bytes after first LF",
+    "no stderr log read",
+    "no SDK import or factory",
+    "no provider/model/refresh/quota",
+    "no J3160",
+    "no new fixture",
+    "no label mutation",
+    "no old server signal",
+    "no directory enumeration",
+    "no recursive imports or extra source files",
+    "no product/guard edits"
+  ],
+  "currentProductBudgetsUnchanged": true,
+  "allOldUnknownsPreserved": true,
+  "osSandboxClaim": false,
+  "utilityBinaryQualification": "Uses exact original fixed public utility paths and frozen helper code; this proposal does not add a fresh whole-binary hash observation or claim new utility qualification.",
+  "pureGitArchiveException": "Allowed only for public immutable archival during local service outage; not permission to execute this diagnostic without restored required durable native journaling.",
+  "followup": "Use observed field/identity evidence to propose a separate minimal parser fix or precise same-label cleanup, each subject to separate root review/GO."
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.owner-renew-worker.original-observer-intent.r1",
+  "root_go": "fe53245e77d33c5bea2cff96def394ffaaf3f31e",
+  "request": {
+    "blob": "ad0f0214b00200ee223924bcc417ce1ee5f41b50",
+    "bytes": 222,
+    "sha256": "7c92172de5907d8bcb095dfd29ad00dd37b1e22e0f7cc006e509b2d98df85b33"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-owner-renew-worker-authority-01-20261105-r1",
+    "operation": {
+      "tool": "process_status",
+      "arguments": {
+        "host": "mac",
+        "job_id": "1a1ae51309d-fc05-5ef8"
+      }
+    }
+  },
+  "original_job": "1a1ae51309d-fc05-5ef8",
+  "lane": "A",
+  "maximumNativeAdmissions": 1,
+  "startNotYetCalled": true,
+  "immutablePageLimit": 8192
+}

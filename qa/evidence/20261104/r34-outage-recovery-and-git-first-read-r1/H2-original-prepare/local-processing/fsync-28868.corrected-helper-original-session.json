@@ -1,0 +1,27 @@
+{
+  "label": "h2-prepare-execution-state",
+  "original_session_id": 28868,
+  "returns": [
+    {
+      "kind": "original_exec_yield",
+      "result": {
+        "chunk_id": "156360",
+        "wall_time_seconds": 1.000713788,
+        "session_id": 28868,
+        "original_token_count": 0,
+        "output": ""
+      }
+    },
+    {
+      "kind": "original_session_poll",
+      "result": {
+        "chunk_id": "fd85ce",
+        "wall_time_seconds": 0.000024817,
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": ""
+      }
+    }
+  ],
+  "complete": true
+}

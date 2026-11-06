@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.original-start-call-before.r1",
+  "intent": {
+    "blob": "155e54c7a520ee33b4964406a0365cb8fd5349e8",
+    "bytes": 2015,
+    "sha256": "b705ed48f43efc16b618851be9a9b0878259345c4a6897c5b9d92c23a151703e"
+  },
+  "request": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+  "idempotencyKey": "heptabao-mac-current-owner-renew-inert-d89e5169-20261105-r1",
+  "maximumCalls": 1,
+  "status": "MAY_HAVE_BEEN_SUBMITTED_ONCE_RECONCILE_ONLY",
+  "nativeAckObserved": false
+}

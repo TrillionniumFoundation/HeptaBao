@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.r34.root-Git-SDK-journal-retention-correction.v1",
+  "priorRecoveryRecord": "r34-Auth-status-native-Git-recovery.public.json",
+  "priorStatementCorrected": "originalGitErrorsPreserved=true and the inferred cause that extracted statusNative objects were not yet published",
+  "actualEvidence": "Five original Git fetch attempts returned isError. The old helper wrote a mutable git-blob-SHA-sdk alias and overwrote it when later reads succeeded. Only the five helper-level error strings remain in the functions transcript; the full original error SDK payloads are not recoverable from the retained aliases. The specific error category or cause is therefore not claimed.",
+  "affectedBlobs": [
+    "9f3c4c57c6e014c4ee9ccca1e27e8f3e561e2e38",
+    "e7971af834e07be29b54f6100efd16a0bf10189e",
+    "13c2195af1eef50e252ede4a286223c8d03da8cc",
+    "703c00253186bc37fff12db1ff740d5bdae1330f",
+    "bede55b4cd63f71495d1aa5b96466f3ba5010ad2"
+  ],
+  "originalNativeStatusSDKsStillComplete": true,
+  "allFiveNativeTextsReconstructedExactlyFromThoseSDKs": true,
+  "nativeReadAndBusinessReplay": 0,
+  "productQualificationChanged": false,
+  "rootRuntimeCalls": 0,
+  "fix": "For every future *-sdk journal label, write a content-addressed immutable SDK copy in the same patch before also updating the legacy alias. Distinct response bytes can no longer overwrite prior bytes.",
+  "oldHelper": {
+    "blob": "85878559fd5af179c2d0f7aac8657145513ed204",
+    "bytes": 3680,
+    "sha256": "96d3543afead13f6d80d7c7d0c8392c1b17d62716e219e2401f8206d385cab70"
+  },
+  "newHelper": {
+    "blob": "c8da5d5db882c2e0a8d6165d21e9e0ae886e7e47",
+    "bytes": 3829,
+    "sha256": "de8634e49c329d890e5dccdcc8add172acb16f7586cdd5b442ac7ebccc6d1714"
+  }
+}

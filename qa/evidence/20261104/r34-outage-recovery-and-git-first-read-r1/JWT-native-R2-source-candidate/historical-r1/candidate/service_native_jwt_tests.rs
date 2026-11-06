@@ -1,0 +1,438 @@
+//! Real configured File V6, one JWT verifier, native publication and delivery.
+//! Synthetic credentials stay private; these are new independent regressions.
+use super::*;
+use crate::configuration::NativeStorageProfile;
+use crate::service::tests::Root;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+use ring::signature::{Ed25519KeyPair, KeyPair};
+use std::cell::RefCell;
+use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+
+type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+const LOGIN: &str = "auth/native-jwt/login";
+const ROLE: &str = "auth/native-jwt/role/client";
+const CONFIG: &str = "auth/native-jwt/config";
+const POLICY: &str = r#"
+path "jwt-kv/data/value" { capabilities = ["read"] }
+path "auth/token/lookup-self" { capabilities = ["read"] }
+path "auth/token/renew-self" { capabilities = ["update"] }
+path "auth/token/revoke-self" { capabilities = ["update"] }
+"#;
+
+thread_local! {
+    static BEFORE_PUBLICATION: RefCell<Option<(Duration, Arc<AtomicBool>)>> = const { RefCell::new(None) };
+}
+
+struct PublicationPause(Arc<AtomicBool>);
+impl PublicationPause {
+    fn once(delay: Duration) -> Self {
+        let fired = Arc::new(AtomicBool::new(false));
+        BEFORE_PUBLICATION.with(|slot| {
+            assert!(slot.borrow().is_none());
+            *slot.borrow_mut() = Some((delay, Arc::clone(&fired)));
+        });
+        Self(fired)
+    }
+}
+impl Drop for PublicationPause {
+    fn drop(&mut self) {
+        BEFORE_PUBLICATION.with(|slot| { slot.borrow_mut().take(); });
+    }
+}
+
+// Reached only after the real successful JWT and Identity dispatch, before
+// native planning. This cannot fabricate a token, clock or verifier witness.
+pub(super) fn before_actual_jwt_publication() {
+    if let Some((delay, fired)) = BEFORE_PUBLICATION.with(|slot| slot.borrow_mut().take()) {
+        fired.store(true, Ordering::Release);
+        std::thread::sleep(delay);
+    }
+}
+
+fn status(response: &Response, expected: u16) {
+    assert_eq!(response.status, expected, "JWT error shape={:?}", response.body.get("errors"));
+}
+fn text(response: &Response, pointer: &str) -> TestResult<String> {
+    response.body.pointer(pointer).and_then(Value::as_str)
+        .filter(|v| !v.is_empty()).map(str::to_owned).ok_or_else(|| "synthetic JWT field missing".into())
+}
+fn secret(response: &mut Response, pointer: &str) -> TestResult<Zeroizing<String>> {
+    let value = Zeroizing::new(text(response, pointer)?);
+    erase_json(&mut response.body);
+    Ok(value)
+}
+fn no_credential(response: &Response) {
+    assert!(response.status >= 300);
+    assert!(response.body.get("auth").is_none());
+    assert!(response.body.get("data").is_none());
+    assert!(response.body.get("wrap_info").is_none());
+    assert!(response.unwrapped_json.is_none() && response.consistency_index.is_none());
+}
+
+fn call(service: &mut Service, now: &mut u64, token: &str,
+        method: &str, path: &str, body: Value) -> TestResult<Response> {
+    *now += 1;
+    let started = Instant::now();
+    let clock = RequestClock::anchored(Duration::from_secs(*now), started)?;
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
+    let execution = service.begin_at_mode_precise(RequestDispatch {
+        method, path, namespace: "", token, body, now: *now,
+        allow_forward: true, enforce_namespace: true, wrap_ttl_seconds: None,
+        origin_peer: None, client_certificates: None,
+    }, clock);
+    // Local JWT must not acquire a remote issuer/provider execution capsule.
+    let RequestExecution::Complete(response) = execution else {
+        return Err("local native JWT escaped to external execution".into());
+    };
+    assert!(service.pending_native_auth_delivery.is_none());
+    Ok(response)
+}
+
+struct Fixture {
+    files: Root,
+    service: Service,
+    key: Zeroizing<String>,
+    admin: Zeroizing<String>,
+    now: u64,
+    pair: Ed25519KeyPair,
+}
+impl Fixture {
+    fn new() -> TestResult<Self> {
+        let files = Root::new();
+        let mut service = files.service()?;
+        service.configure_native_v6_storage(NativeStorageProfile::File)?;
+        let mut now = 100;
+        let mut init = call(&mut service, &mut now, "", "POST", "sys/init",
+                            json!({"secret_shares":1,"secret_threshold":1}))?;
+        status(&init, 200);
+        let key = Zeroizing::new(text(&init, "/keys/0")?);
+        let admin = secret(&mut init, "/root_token")?;
+        status(&call(&mut service, &mut now, "", "POST", "sys/unseal", json!({"key":key.as_str()}))?,200);
+        status(&call(&mut service, &mut now, &admin, "POST", "sys/init/ack", json!({}))?,204);
+        let pair = Ed25519KeyPair::from_seed_unchecked(&[67;32]).map_err(|_| "synthetic signing key")?;
+        let mut f = Self { files, service, key, admin, now, pair };
+        status(&f.admin("POST", native_storage::ACTIVATE_PATH, json!({}))?,204);
+        assert!(f.service.native_root.is_some() && f.service.record_root.is_none());
+        status(&f.admin("POST", "sys/mounts/jwt-kv", json!({"type":"kv","options":{"version":"2"}}))?,204);
+        status(&f.admin("POST", "jwt-kv/data/value", json!({"options":{"cas":0},"data":{"value":"jwt-preserved"}}))?,200);
+        status(&f.admin("PUT", "sys/policies/acl/native-jwt", json!({"policy":POLICY}))?,204);
+        // Base 4e808 rejects this actual native mount. Merely exercising the
+        // pre-existing legacy JWT handler cannot make this regression pass.
+        status(&f.admin("POST", "sys/auth/native-jwt", json!({"type":"jwt"}))?,204);
+        let config = f.config(&f.pair);
+        status(&f.admin("POST", CONFIG, config)?,204);
+        status(&f.admin("POST", ROLE, json!({"role_type":"jwt","user_claim":"sub",
+            "bound_audiences":["native"],"token_policies":["native-jwt"],
+            "token_ttl":300,"token_max_ttl":600,"token_type":"service"}))?,204);
+        Ok(f)
+    }
+    fn config(&self, pair: &Ed25519KeyPair) -> Value {
+        json!({"issuer":"https://native-jwt.example","audiences":["native"],
+            "clock_skew_seconds":0,"keys":[{"kid":"key","algorithm":"EdDSA",
+            "key_base64":URL_SAFE_NO_PAD.encode(pair.public_key().as_ref())}]})
+    }
+    fn assertion(&self, expires: u64) -> Zeroizing<String> {
+        let header = URL_SAFE_NO_PAD.encode(br#"{"alg":"EdDSA","kid":"key"}"#);
+        let claims = json!({"iss":"https://native-jwt.example","aud":"native","sub":"alice",
+            "iat":self.now,"exp":expires,"jti":"reusable-not-a-nonce"});
+        let signing = format!("{header}.{}",URL_SAFE_NO_PAD.encode(claims.to_string()));
+        Zeroizing::new(format!("{signing}.{}",URL_SAFE_NO_PAD.encode(self.pair.sign(signing.as_bytes()).as_ref())))
+    }
+    fn admin(&mut self, method: &str, path: &str, body: Value) -> TestResult<Response> {
+        call(&mut self.service, &mut self.now, &self.admin, method, path, body)
+    }
+    fn actor(&mut self, token: &str, method: &str, path: &str, body: Value) -> TestResult<Response> {
+        call(&mut self.service, &mut self.now, token, method, path, body)
+    }
+    fn login(&mut self, assertion: &str) -> TestResult<(Zeroizing<String>,String)> {
+        let mut response = self.actor("", "POST", LOGIN, json!({"role":"client","jwt":assertion}))?;
+        status(&response,200);
+        assert_eq!(response.body["auth"]["token_type"],"service");
+        assert_eq!(response.body["auth"]["renewable"],true);
+        let entity = text(&response,"/auth/entity_id")?;
+        let token = secret(&mut response,"/auth/client_token")?;
+        Ok((token,entity))
+    }
+    fn token(&mut self, policy: &str) -> TestResult<Zeroizing<String>> {
+        let mut response = self.admin("POST", "auth/token/create", json!({
+            "policies":[policy],"no_default_policy":true,"ttl":"600s"
+        }))?;
+        status(&response, 200);
+        secret(&mut response, "/auth/client_token")
+    }
+    fn restart(mut self) -> TestResult<Self> {
+        drop(self.service);
+        let mut service = self.files.service()?;
+        service.configure_native_v6_storage(NativeStorageProfile::File)?;
+        status(&call(&mut service,&mut self.now,"","POST","sys/unseal",json!({"key":self.key.as_str()}))?,200);
+        assert!(service.native_root.is_some() && service.record_root.is_none());
+        assert!(!service.recovery_required);
+        self.service = service;
+        Ok(self)
+    }
+    fn snapshot(&self) -> TestResult<Zeroizing<Vec<u8>>> {
+        let state = self.service.state.as_ref().ok_or("native state")?;
+        let auth_bytes = owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
+        let engine_bytes = owner_store::serialize_owner(&state.engines).map_err(|_| "Identity projection")?;
+        let mut auth: Value = serde_json::from_slice(&auth_bytes)?;
+        let mut engines: Value = serde_json::from_slice(&engine_bytes)?;
+        assert!(auth["auth_mounts"].is_object());
+        assert!(auth["jwt_mounts"].is_object());
+        assert!(auth["tokens"].is_object());
+        assert!(engines["namespaces"][""]["identity"].is_object());
+        // Exclude only unrelated terminal-clock metadata. Compare complete
+        // auth mount/JWT/token and Identity objects, not a handpicked count.
+        let mut projection = json!({"mounts":auth["auth_mounts"].take(),
+            "jwt":auth["jwt_mounts"].take(),"tokens":auth["tokens"].take(),
+            "identity":engines["namespaces"][""]["identity"].take()});
+        let bytes = Zeroizing::new(serde_json::to_vec(&projection)?);
+        erase_json(&mut projection);erase_json(&mut auth);erase_json(&mut engines);
+        Ok(bytes)
+    }
+    fn begin_login(&mut self, assertion: &str, budget: Duration) -> TestResult<(Response,RequestClock,Instant)> {
+        self.now += 1;
+        let started = Instant::now();let until = started + budget;
+        let clock = RequestClock::anchored(Duration::from_secs(self.now),started)?;
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(until);
+        let body = json!({"role":"client","jwt":assertion});
+        let response = self.service.handle_inner(RequestView {
+            method:"POST",path:LOGIN,namespace:"",token:"",body:&body,now:self.now,
+            admission_started:started,token_clock:Some(clock),allow_forward:true,enforce_namespace:true,
+            wrap_ttl_seconds:None,origin_peer:None,client_certificates:None,
+        });
+        let delivery = self.service.pending_native_auth_delivery.as_ref().ok_or("actual JWT owner")?;
+        assert!(delivery.jwt_owner.is_some());
+        assert!(delivery.requires_local_proof() && delivery.tracks_terminal_checkpoint());
+        assert!(delivery.proof.is_none() && delivery.delivery_checkpoint.is_some());
+        assert_eq!(delivery.deadline.instant(),until);
+        Ok((response,clock,until))
+    }
+}
+
+#[test]
+fn native_jwt_local_service_token_identity_renewal_and_cold_reopen() -> TestResult {
+    let mut f=Fixture::new()?;
+    let expires=f.now+30;
+    let assertion=f.assertion(expires);
+    let (first,entity)=f.login(&assertion)?;
+    let (second,same_entity)=f.login(&assertion)?;
+    assert!(first.as_str()!=second.as_str());
+    assert_eq!(entity,same_entity);
+    let mut f=f.restart()?;
+    let read=f.actor(&first,"GET","jwt-kv/data/value",json!({}))?;
+    status(&read,200);assert_eq!(read.body["data"]["data"]["value"],"jwt-preserved");
+    f.now=expires+1;
+    // Renewal follows the issuing role and issued token, not the expired JWT
+    // or the role's later trust keys. No remote issuer execution is permitted.
+    let rotated=Ed25519KeyPair::from_seed_unchecked(&[68;32]).map_err(|_|"rotation key")?;
+    let config=f.config(&rotated);
+    status(&f.admin("POST",CONFIG,config)?,204);
+    let mut renewed=f.actor(&first,"POST","auth/token/renew-self",json!({"increment":120}))?;
+    status(&renewed,200);assert_eq!(renewed.body["auth"]["entity_id"],entity);
+    let echoed=secret(&mut renewed,"/auth/client_token")?;assert!(echoed.as_str()==first.as_str());
+    let mut f=f.restart()?;
+    status(&f.actor(&first,"POST","auth/token/revoke-self",json!({}))?,204);
+    status(&f.actor(&first,"GET","auth/token/lookup-self",json!({}))?,403);
+    status(&f.actor(&second,"GET","auth/token/lookup-self",json!({}))?,200);
+    status(&f.admin("DELETE",ROLE,json!({}))?,204);
+    let missing_role=f.actor(&second,"POST","auth/token/renew-self",json!({}))?;
+    status(&missing_role,500);no_credential(&missing_role);
+    status(&f.admin("DELETE","sys/auth/native-jwt",json!({}))?,204);
+    let mut f=f.restart()?;
+    status(&f.actor(&second,"GET","auth/token/lookup-self",json!({}))?,403);
+    Ok(())
+}
+
+#[test]
+fn native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta() -> TestResult {
+    let mut f=Fixture::new()?;
+    for (path,body) in [(CONFIG,json!({"issuer":"https://native-jwt.example","audiences":["native"],
+        "jwks_url":"https://remote-issuer.invalid/keys"})),
+        (ROLE,json!({"token_type":"batch"})),
+        ("sys/auth/native-jwt/tune",json!({"token_type":"default_batch"}))] {
+        let before=f.snapshot()?;
+        let response=f.admin("POST",path,body)?;
+        status(&response,501);no_credential(&response);
+        assert!(before.as_slice()==f.snapshot()?.as_slice());
+    }
+    let assertion=f.assertion(f.now+60);
+    let mut segments=assertion.split('.').map(str::to_owned).collect::<Vec<_>>();
+    segments[2]=URL_SAFE_NO_PAD.encode([0;64]);
+    let bad=Zeroizing::new(segments.join("."));
+    let before=f.snapshot()?;
+    let response=f.actor("","POST",LOGIN,json!({"role":"client","jwt":bad.as_str()}))?;
+    status(&response,400);no_credential(&response);
+    assert!(before.as_slice()==f.snapshot()?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    Ok(())
+}
+
+#[test]
+fn native_jwt_role_operations_keep_the_existing_legacy_acl_contract() -> TestResult {
+    let mut f = Fixture::new()?;
+    // These are the existing legacy handler's ACLs, not a claim of independently
+    // observed OpenBao 2.7.1 parity. A separate oracle comparison remains due.
+    status(&f.admin("PUT", "sys/policies/acl/jwt-role-manager", json!({"policy":
+        "path \"auth/native-jwt/role\" { capabilities = [\"list\"] } path \"auth/native-jwt/role/client\" { capabilities = [\"read\",\"update\",\"sudo\"] }"
+    }))?, 204);
+    status(&f.admin("PUT", "sys/policies/acl/jwt-role-no-sudo", json!({"policy":
+        "path \"auth/native-jwt/role/client\" { capabilities = [\"read\",\"update\"] }"
+    }))?, 204);
+    let manager = f.token("jwt-role-manager")?;
+    let no_sudo = f.token("jwt-role-no-sudo")?;
+    let listed = f.actor(&manager, "GET", "auth/native-jwt/role", json!({}))?;
+    status(&listed, 200);
+    assert_eq!(listed.body["data"]["keys"], json!(["client"]));
+    let before = f.snapshot()?;
+    let denied = f.actor(&no_sudo, "POST", ROLE, json!({"token_ttl":301}))?;
+    status(&denied, 403);no_credential(&denied);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
+    status(&f.actor(&manager, "POST", ROLE, json!({"token_ttl":301}))?, 204);
+    // No delete capability: the existing named DELETE uses update + sudo.
+    status(&f.actor(&manager, "DELETE", ROLE, json!({}))?, 204);
+    status(&f.admin("GET", ROLE, json!({}))?, 404);
+    Ok(())
+}
+
+#[test]
+fn native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh() -> TestResult {
+    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);
+    let (_,entity)=f.login(&assertion)?;
+    let route=format!("identity/entity/id/{entity}");
+    status(&f.admin("PATCH",&route,json!({"disabled":true}))?,204);
+    let before=f.snapshot()?;
+    let denied=f.actor("","POST",LOGIN,json!({"role":"client","jwt":assertion.as_str()}))?;
+    status(&denied,403);no_credential(&denied);
+    assert!(before.as_slice()==f.snapshot()?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    status(&f.admin("PATCH",&route,json!({"disabled":false}))?,204);
+    let (_,again)=f.login(&assertion)?;assert_eq!(again,entity);
+    Ok(())
+}
+
+#[test]
+fn native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic() -> TestResult {
+    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+2);
+    let before=f.snapshot()?;
+    let pause=PublicationPause::once(Duration::from_millis(2100));
+    let response=f.actor("","POST",LOGIN,json!({"role":"client","jwt":assertion.as_str()}))?;
+    assert!(pause.0.load(Ordering::Acquire));drop(pause);
+    status(&response,503);no_credential(&response);
+    assert!(before.as_slice()==f.snapshot()?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    assert!(!f.service.recovery_required);
+    let f=f.restart()?;assert!(before.as_slice()==f.snapshot()?.as_slice());
+    Ok(())
+}
+
+#[test]
+fn native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root() -> TestResult {
+    let mut f = Fixture::new()?;
+    let assertion = f.assertion(f.now + 60);
+    let before = f.snapshot()?;
+    let root = f.service.native_root.as_ref().ok_or("native root")?;
+    let bytes = root.owners.iter().try_fold(0u64, |sum, owner| {
+        sum.checked_add(owner.owner.total_bytes)
+    }).ok_or("native owner bytes")?;
+    let original_capacity = f.service.opaque_owner_capacity;
+    f.service.opaque_owner_capacity = usize::try_from(bytes)?;
+    // The original root fits; a real newly issued token and Identity require
+    // more opaque-owner space. The existing writer's capacity gate must veto
+    // publication after real authentication, without a partial root or grant.
+    let reached = PublicationPause::once(Duration::ZERO);
+    let response = f.actor("", "POST", LOGIN, json!({"role":"client","jwt":assertion.as_str()}))?;
+    assert!(reached.0.load(Ordering::Acquire));drop(reached);
+    status(&response, 507);no_credential(&response);
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    assert!(!f.service.recovery_required);
+    f.service.opaque_owner_capacity = original_capacity;
+    let f = f.restart()?;
+    assert!(before.as_slice() == f.snapshot()?.as_slice());
+    Ok(())
+}
+
+#[test]
+fn native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback() -> TestResult {
+    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+2);
+    let before=f.snapshot()?;
+    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;
+    status(&response,200);let issued=Zeroizing::new(text(&response,"/auth/client_token")?);
+    let committed=f.snapshot()?;assert!(before.as_slice()!=committed.as_slice());
+    let response=f.service.audit_completed_response_with_receipt(
+        "native-jwt-expiry-after-commit",f.now,Some(clock),response,
+        || std::thread::sleep(Duration::from_millis(2100)));
+    status(&response,200);
+    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-expiry-after-commit");
+    status(&response,503);no_credential(&response);
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    assert!(committed.as_slice()==f.snapshot()?.as_slice());
+    let mut f=f.restart()?;
+    status(&f.actor(&issued,"GET","auth/token/lookup-self",json!({}))?,200);
+    Ok(())
+}
+
+#[test]
+fn native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required() -> TestResult {
+    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);
+    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;
+    status(&response,200);let committed=f.snapshot()?;
+    // Existing cfg(test) audit I/O capacity injection: exercise the actual
+    // mandatory audit failure, not a fabricated Response or forged receipt.
+    f.service.audit_capacity=f.service.audit.metadata()?.len();
+    let response=f.service.audit_completed_response_with_receipt(
+        "native-jwt-audit-failure",f.now,Some(clock),response,||{});
+    status(&response,503);no_credential(&response);
+    assert!(f.service.recovery_required);
+    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-audit-failure");
+    status(&response,503);no_credential(&response);
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    assert!(committed.as_slice()==f.snapshot()?.as_slice());
+    // No retry, replacement token or attempt to erase this committed root.
+    Ok(())
+}
+
+#[test]
+fn native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound() -> TestResult {
+    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);
+    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;
+    let mut response=f.service.audit_completed_response_with_receipt(
+        "native-jwt-status-custody",f.now,Some(clock),response,||{});
+    status(&response,200);response.status=403;
+    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-status-custody");
+    status(&response,503);no_credential(&response);
+    let (response,clock,until)=f.begin_login(&assertion,Duration::from_millis(1500))?;
+    let response=f.service.audit_completed_response_with_receipt(
+        "native-jwt-original-deadline",f.now,Some(clock),response,||{});
+    status(&response,200);
+    std::thread::sleep(until.saturating_duration_since(Instant::now())+Duration::from_millis(2));
+    let response=f.service.complete_native_auth_delivery(true,response,"native-jwt-original-deadline");
+    status(&response,503);no_credential(&response);
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    Ok(())
+}
+
+#[test]
+fn native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof() -> TestResult {
+    let mut f = Fixture::new()?;
+    let assertion = f.assertion(f.now + 60);
+    let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;
+    let response = f.service.audit_completed_response_with_receipt(
+        "native-jwt-original-publication", f.now, Some(clock), response, || {});
+    status(&response, 200);
+    let issued = Zeroizing::new(text(&response, "/auth/client_token")?);
+    // Retain the actual affine owner and proof. The intervening mutation is a
+    // separately authorized real request, not a fabricated checkpoint/token.
+    let original = f.service.pending_native_auth_delivery.take().ok_or("original JWT delivery")?;
+    assert!(matches!(original.proof.as_ref(), Some(native_v6_reader::NativeProof::Single(_))));
+    status(&f.admin("POST", "auth/token/revoke", json!({"token":issued.as_str()}))?, 204);
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    f.service.pending_native_auth_delivery = Some(original);
+    let response = f.service.complete_native_auth_delivery(true, response, "native-jwt-stale-publication");
+    status(&response, 503);no_credential(&response);
+    assert!(!response.body.to_string().contains(issued.as_str()));
+    assert!(f.service.pending_native_auth_delivery.is_none());
+    let mut f = f.restart()?;
+    status(&f.actor(&issued, "GET", "auth/token/lookup-self", json!({}))?, 403);
+    Ok(())
+}

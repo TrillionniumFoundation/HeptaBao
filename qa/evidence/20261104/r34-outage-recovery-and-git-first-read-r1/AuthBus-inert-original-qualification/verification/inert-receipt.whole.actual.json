@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.owner-renew-inert.external-whole.r1",
+  "role": "inert_receipt",
+  "pass": true,
+  "whole": {
+    "blob": "0c10cf65ad0519e4f4de95b95363b93e9d6f4b8b",
+    "bytes": 12994,
+    "sha256": "bf03a4e84c7297b0121c1750997fafe4ca8ea4efe656b9353248dc24b101a1d1"
+  },
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+  "version": "16777244:72671152:12994:1793922263708983153:1793922263708991695",
+  "full9": [
+    "16777244",
+    "72671152",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "12994",
+    "1793922263708983153",
+    "1793922263708991695"
+  ],
+  "rangeStart": 0,
+  "rangeEnd": 12994,
+  "parts": [
+    {
+      "schema": "heptabao.owner-renew-inert.body-chunk.actual.r1",
+      "pass": true,
+      "name": "receipt-body-0",
+      "operation_id": "97f22bee011c2c0a263c61f91177ea1dfc74229f2670505d08545962c3930fb6",
+      "nativePin": {
+        "blob": "0753b8a1cf0e77a8a0a344f37d43c2fb84188f16",
+        "bytes": 17694,
+        "sha256": "bdf136bb95670f94c5eaec119bf2e4e371ccbd748f24bfc7044f187736d3c54c"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+      "version": "16777244:72671152:12994:1793922263708983153:1793922263708991695",
+      "size": 12994,
+      "offset": 0,
+      "next_offset": 12994,
+      "bytes": 12994,
+      "eof": true,
+      "chunk_sha256": "bf03a4e84c7297b0121c1750997fafe4ca8ea4efe656b9353248dc24b101a1d1",
+      "equalsFrozenBytes": null,
+      "originalObserverClosed": true,
+      "proof": {
+        "blob": "90dfb449971e2a941bb02d62e43959537ba01ce4",
+        "bytes": 832,
+        "sha256": "6dbed0d3a956e12efb573a098265a9b49d30bb6dea11f54e397d6a7f70f950b0"
+      }
+    }
+  ],
+  "sameVersion": true,
+  "utf8ByteExact": true,
+  "storedReceiptOk": false,
+  "postFinallyStdoutOk": true,
+  "storedReceiptIsNotAuthority": true,
+  "all30RecordsEqualPostFinally": true,
+  "rootGo": "964c58fa1ae491cad2f815362a2381686e64837a"
+}

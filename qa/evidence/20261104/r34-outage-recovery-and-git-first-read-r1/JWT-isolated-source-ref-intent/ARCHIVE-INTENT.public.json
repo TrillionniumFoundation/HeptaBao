@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r34-JWT-isolated-source-branch-intent-r1",
+  "records": [
+    {
+      "name": "INTENT.public.json",
+      "blob": "25d07c6b7f214c10a8827e30b40dfa9bc003c986",
+      "bytes": 988,
+      "sha256": "6e28c994ed5ec0a1308988a2be6a1b88cd80f09bfa14258d19081dd313ec83e9"
+    },
+    {
+      "name": "original-ref-404.sdk.json",
+      "blob": "47cd51d22561d8222ca1cb3f9fe45fd9c8877060",
+      "bytes": 629,
+      "sha256": "929fdc37b1bd92a54d1a68b22cde5c9ceb70e2eab86f02af7b921970af5aac8b"
+    },
+    {
+      "name": "source-commit-original-read.sdk.json",
+      "blob": "f0e72c030acd4d9690207153406b83fea718bac1",
+      "bytes": 4755,
+      "sha256": "3b875ea3f8c0d1c99448b9234f2044257f8eba4a5fad2c9b1568c00e4ff0b5a5"
+    }
+  ],
+  "expected_data_tree": "9472fad1c9a132615dca5f1cd38ed5b65b709597",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

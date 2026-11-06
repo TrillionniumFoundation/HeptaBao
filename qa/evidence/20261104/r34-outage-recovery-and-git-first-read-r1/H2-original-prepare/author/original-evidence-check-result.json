@@ -1,0 +1,740 @@
+{
+  "schema": "heptabao.h2-prepare-author-original-evidence-check.v1",
+  "checks": [
+    {
+      "name": "schema",
+      "passed": true
+    },
+    {
+      "name": "passed-no-failure",
+      "passed": true
+    },
+    {
+      "name": "prepare-only",
+      "passed": true
+    },
+    {
+      "name": "binding",
+      "passed": true
+    },
+    {
+      "name": "source",
+      "passed": true
+    },
+    {
+      "name": "host",
+      "passed": true
+    },
+    {
+      "name": "budgets",
+      "passed": true
+    },
+    {
+      "name": "distinct-identities",
+      "passed": true
+    },
+    {
+      "name": "artifacts-exact-roles",
+      "passed": true
+    },
+    {
+      "name": "artifacts/combined_tests-binding",
+      "passed": true
+    },
+    {
+      "name": "artifacts/combined_tests-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "artifacts/native_receipt-binding",
+      "passed": true
+    },
+    {
+      "name": "artifacts/native_receipt-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "artifacts/release_receipt-binding",
+      "passed": true
+    },
+    {
+      "name": "artifacts/release_receipt-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "artifacts/server-binding",
+      "passed": true
+    },
+    {
+      "name": "artifacts/server-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "artifacts/test_groups-binding",
+      "passed": true
+    },
+    {
+      "name": "artifacts/test_groups-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client-exact-roles",
+      "passed": true
+    },
+    {
+      "name": "h2_client/build_binding-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/build_binding-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/build_controller-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/build_controller-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/build_receipt-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/build_receipt-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/canonical_lock-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/canonical_lock-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/cargo_lock-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/cargo_lock-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/cargo_manifest-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/cargo_manifest-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/component_list_stdout-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/component_list_stdout-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/component_record-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/component_record-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/component_stdout-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/component_stdout-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/executable-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/executable-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/rust_source-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/rust_source-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "h2_client/test_source-binding",
+      "passed": true
+    },
+    {
+      "name": "h2_client/test_source-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "qa-exact-roles",
+      "passed": true
+    },
+    {
+      "name": "qa/native_fixture_reference_r8.py-binding",
+      "passed": true
+    },
+    {
+      "name": "qa/native_fixture_reference_r8.py-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "qa/native_h2_binding_r1.py-binding",
+      "passed": true
+    },
+    {
+      "name": "qa/native_h2_binding_r1.py-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "qa/native_h2_gate_r1.py-binding",
+      "passed": true
+    },
+    {
+      "name": "qa/native_h2_gate_r1.py-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "qa/official_cli_reference_r4.py-binding",
+      "passed": true
+    },
+    {
+      "name": "qa/official_cli_reference_r4.py-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "qa/phaseb_evidence_r3.py-binding",
+      "passed": true
+    },
+    {
+      "name": "qa/phaseb_evidence_r3.py-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "utilities-exact-roles",
+      "passed": true
+    },
+    {
+      "name": "utilities/git-binding",
+      "passed": true
+    },
+    {
+      "name": "utilities/git-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "utilities/openssl-binding",
+      "passed": true
+    },
+    {
+      "name": "utilities/openssl-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "utilities/python-binding",
+      "passed": true
+    },
+    {
+      "name": "utilities/python-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "six-fences",
+      "passed": true
+    },
+    {
+      "name": "old-fence-0-binding",
+      "passed": true
+    },
+    {
+      "name": "old-fence-0-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "old-fence-1-binding",
+      "passed": true
+    },
+    {
+      "name": "old-fence-1-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "old-fence-2-binding",
+      "passed": true
+    },
+    {
+      "name": "old-fence-2-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "old-fence-3-binding",
+      "passed": true
+    },
+    {
+      "name": "old-fence-3-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "old-fence-4-binding",
+      "passed": true
+    },
+    {
+      "name": "old-fence-4-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "old-fence-5-binding",
+      "passed": true
+    },
+    {
+      "name": "old-fence-5-stage-full9",
+      "passed": true
+    },
+    {
+      "name": "31-input-files",
+      "passed": true
+    },
+    {
+      "name": "8-product-source-rows",
+      "passed": true
+    },
+    {
+      "name": "product-source/Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "product-source/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "passed": true
+    },
+    {
+      "name": "product-source/crates/heptabao-server/src/http_h2.rs",
+      "passed": true
+    },
+    {
+      "name": "product-source/crates/heptabao-server/src/http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "name": "product-source/crates/heptabao-server/src/service.rs",
+      "passed": true
+    },
+    {
+      "name": "product-source/crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "product-source/crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "name": "product-source/crates/heptabao-server/src/snapshot_archive.rs",
+      "passed": true
+    },
+    {
+      "name": "product-normal61",
+      "passed": true
+    },
+    {
+      "name": "instrument-historical-df026",
+      "passed": true
+    },
+    {
+      "name": "instrument-receipt-executable",
+      "passed": true
+    },
+    {
+      "name": "instrument-six-original-components",
+      "passed": true
+    },
+    {
+      "name": "instrument-locked-sources",
+      "passed": true
+    },
+    {
+      "name": "qualification-boundaries",
+      "passed": true
+    },
+    {
+      "name": "three-original-guards",
+      "passed": true
+    },
+    {
+      "name": "three-original-cleanups",
+      "passed": true
+    },
+    {
+      "name": "no-extra-exec-visibility",
+      "passed": true
+    },
+    {
+      "name": "source-commit-argv",
+      "passed": true
+    },
+    {
+      "name": "source-commit-identity",
+      "passed": true
+    },
+    {
+      "name": "source-commit-cleanup",
+      "passed": true
+    },
+    {
+      "name": "source-tree-argv",
+      "passed": true
+    },
+    {
+      "name": "source-tree-identity",
+      "passed": true
+    },
+    {
+      "name": "source-tree-cleanup",
+      "passed": true
+    },
+    {
+      "name": "source-status-argv",
+      "passed": true
+    },
+    {
+      "name": "source-status-identity",
+      "passed": true
+    },
+    {
+      "name": "source-status-cleanup",
+      "passed": true
+    },
+    {
+      "name": "unique-owned-pids",
+      "passed": true
+    },
+    {
+      "name": "all-owned-stopped",
+      "passed": true
+    },
+    {
+      "name": "original-absolute-deadline",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "check_count": 106,
+  "input_files": [
+    {
+      "group": "artifacts",
+      "role": "combined_tests",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/artifacts/normal-release-tests-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+    },
+    {
+      "group": "artifacts",
+      "role": "native_receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/artifacts/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a"
+    },
+    {
+      "group": "artifacts",
+      "role": "release_receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/artifacts/normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+    },
+    {
+      "group": "artifacts",
+      "role": "server",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/artifacts/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+    },
+    {
+      "group": "artifacts",
+      "role": "test_groups",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/artifacts/groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    {
+      "group": "h2_client",
+      "role": "build_binding",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/build-binding.private.json",
+      "bytes": 4039,
+      "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a"
+    },
+    {
+      "group": "h2_client",
+      "role": "build_controller",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/build_native_h2_client_r1.py",
+      "bytes": 59791,
+      "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15"
+    },
+    {
+      "group": "h2_client",
+      "role": "build_receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/build-result.public.json",
+      "bytes": 62314,
+      "sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e"
+    },
+    {
+      "group": "h2_client",
+      "role": "canonical_lock",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/canonical.Cargo.lock",
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    {
+      "group": "h2_client",
+      "role": "cargo_lock",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/Cargo.lock",
+      "bytes": 17409,
+      "sha256": "f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf"
+    },
+    {
+      "group": "h2_client",
+      "role": "cargo_manifest",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/Cargo.toml",
+      "bytes": 957,
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5"
+    },
+    {
+      "group": "h2_client",
+      "role": "component_list_stdout",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/components-list.stdout",
+      "bytes": 507,
+      "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d"
+    },
+    {
+      "group": "h2_client",
+      "role": "component_record",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/components.public.json",
+      "bytes": 804,
+      "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829"
+    },
+    {
+      "group": "h2_client",
+      "role": "component_stdout",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/components.stdout",
+      "bytes": 633,
+      "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274"
+    },
+    {
+      "group": "h2_client",
+      "role": "executable",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/heptabao-native-h2-qa",
+      "bytes": 4616576,
+      "sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13"
+    },
+    {
+      "group": "h2_client",
+      "role": "rust_source",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/native_h2_client.rs",
+      "bytes": 19382,
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd"
+    },
+    {
+      "group": "h2_client",
+      "role": "test_source",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/h2qa/native_h2_client_tests.rs",
+      "bytes": 8942,
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2"
+    },
+    {
+      "group": "qa",
+      "role": "native_fixture_reference_r8.py",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_fixture_reference_r8.py",
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416"
+    },
+    {
+      "group": "qa",
+      "role": "native_h2_binding_r1.py",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_h2_binding_r1.py",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4"
+    },
+    {
+      "group": "qa",
+      "role": "native_h2_gate_r1.py",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_h2_gate_r1.py",
+      "bytes": 62344,
+      "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13"
+    },
+    {
+      "group": "qa",
+      "role": "official_cli_reference_r4.py",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/official_cli_reference_r4.py",
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    },
+    {
+      "group": "qa",
+      "role": "phaseb_evidence_r3.py",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/phaseb_evidence_r3.py",
+      "bytes": 15201,
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024"
+    },
+    {
+      "group": "utilities",
+      "role": "git",
+      "path": "/usr/bin/git",
+      "bytes": 4066232,
+      "sha256": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201"
+    },
+    {
+      "group": "utilities",
+      "role": "openssl",
+      "path": "/usr/bin/openssl",
+      "bytes": 1005368,
+      "sha256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503"
+    },
+    {
+      "group": "utilities",
+      "role": "python",
+      "path": "/usr/bin/python3.12",
+      "bytes": 8020928,
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    {
+      "group": "old_fences",
+      "role": 0,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/result.public.json",
+      "bytes": 270785,
+      "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184"
+    },
+    {
+      "group": "old_fences",
+      "role": 1,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-cli-transport-live-r3/result.public.json",
+      "bytes": 83438,
+      "sha256": "03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68"
+    },
+    {
+      "group": "old_fences",
+      "role": 2,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r3/result.public.json",
+      "bytes": 19915,
+      "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590"
+    },
+    {
+      "group": "old_fences",
+      "role": 3,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json",
+      "bytes": 109148,
+      "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1"
+    },
+    {
+      "group": "old_fences",
+      "role": 4,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/summary.json",
+      "bytes": 45176,
+      "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f"
+    },
+    {
+      "group": "old_fences",
+      "role": 5,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/result.public.json",
+      "bytes": 278829,
+      "sha256": "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e"
+    }
+  ],
+  "original_owned_command_proof": [
+    {
+      "label": "source-commit",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+        "rev-parse",
+        "HEAD"
+      ],
+      "pid": 1688977,
+      "start_ticks": "100316984",
+      "cmdline_sha256": "6f43ce8b7719b1dad5e959949cacd61f41e8121894dc1f0e4b74dc06517199bf",
+      "guard_accepted": true,
+      "cleanup": {
+        "direct_child_reaped": true,
+        "owned_stopped": true,
+        "pid": 1688977,
+        "remaining": [],
+        "start_ticks": 100316984,
+        "stop_terminal_captured": true,
+        "wait_returncode": 0
+      }
+    },
+    {
+      "label": "source-tree",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "pid": 1688983,
+      "start_ticks": "100316993",
+      "cmdline_sha256": "3d99f89e5a46825b57e9cd671d9b4dc2f8b6347f9e3271b98a3ee0300b1cb9d2",
+      "guard_accepted": true,
+      "cleanup": {
+        "direct_child_reaped": true,
+        "owned_stopped": true,
+        "pid": 1688983,
+        "remaining": [],
+        "start_ticks": 100316993,
+        "stop_terminal_captured": true,
+        "wait_returncode": 0
+      }
+    },
+    {
+      "label": "source-status",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "pid": 1688992,
+      "start_ticks": "100317004",
+      "cmdline_sha256": "86c99cf3315c92d95a294f3c35f8db26afc1b7276a73fd468b923d1c435d6ffc",
+      "guard_accepted": true,
+      "cleanup": {
+        "direct_child_reaped": true,
+        "owned_stopped": true,
+        "pid": 1688992,
+        "remaining": [],
+        "start_ticks": 100317004,
+        "stop_terminal_captured": true,
+        "wait_returncode": 0
+      }
+    }
+  ],
+  "completed_after_cleanup_monotonic_ns": "1003170913694611",
+  "deadline_monotonic_ns": "1003469195624497",
+  "remaining_after_cleanup_ns": "298281929886",
+  "historical_components_not_rerun": true,
+  "Runtime_calls": 0,
+  "product_H2_qualification": false
+}

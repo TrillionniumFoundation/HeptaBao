@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.worker-local-archive-error.v1",
+  "observer": "streams-02",
+  "stage": "wfBatch Git whole response local journal",
+  "exception": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server transport disconnected\\\")\" }",
+  "nativeClosed": true,
+  "completePayloadAlreadyVerified": true,
+  "originalNativeReadNotRepeated": true,
+  "localExecutorProbeExit": 0,
+  "recovery": "Resume existing same content-addressed Git tree; reuse already persisted whole responses and fetch only missing immutable Git blobs."
+}

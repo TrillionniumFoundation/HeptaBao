@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.r34.H2-readonly-prepare-and-result.GO.v1",
+  "decision": "GO_EXACT_PREPARE_AFTER_ORIGINAL_CLI_PREPARE_LANE_RELEASE_THEN_CONDITIONAL_RESULT_READ",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "rootReview": {
+    "blob": "e63b44f9cc58c88a3b8e2883144585dad1a073ec",
+    "bytes": 2745,
+    "sha256": "e2e8382cfb54cc8a12f6b6ae42d917698920dfef0674373764baa32640d6d59f"
+  },
+  "conditionalLaneEntry": {
+    "currentOriginalCLIJob": "desktop/1a1ae34b455-fc05-5e28",
+    "currentCLIGO": "dcafbfe0fd0aac7a330109fb8b53e9df533177fa",
+    "require": "Finish the original CLI prepare job and its fixed result reads under the existing GO. Persist actual authority succeeded/exit0/full/durable/terminal-confirmed, complete passed final stdout and passed whole result, original owned cleanup, and a complete owner release proving every original observer closed, zero pending native futures/calls and zero business processes. If any current scope failure/UNKNOWN/missing ACK remains, do not enter H2. Send that exact release to root before H2 admission; no extra confirmation is needed once this condition is proven.",
+    "rootIndependentCLIResultReview": "Root will independently review the completed CLI result; this conditional scope grants H2 prepare only and does not qualify CLI live.",
+    "otherLane": "A retains original AuthBus scope; max2 Runtime lanes; root0."
+  },
+  "exactProcessStart": {
+    "blob": "2059cf884472ae55dc799be4b781f9fe96efd10e",
+    "bytes": 619,
+    "sha256": "c5ef6c140c8687b102c532eaab4bfb5537f01e55d2ed4faa6c050dd2b07c55ef"
+  },
+  "exactRequest": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_h2_gate_r1.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+      "--binding-sha256",
+      "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "idempotency_key": "heptabao-native-h2-gate-prepare-4e808-20261105-r2",
+    "timeout_seconds": 330
+  },
+  "nativeBinding": {
+    "sha256": "29f0f3655298f7addf0140adc251101b3b29f4c8a77a562c3366c18c3a503408",
+    "native_fingerprint": "3022182966468605869"
+  },
+  "maximumBusinessStarts": 1,
+  "originalInternalSeconds": 300,
+  "outerSeconds": 330,
+  "scope": {
+    "freshPrepareDirectory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1",
+    "sourceChanged": false,
+    "productionChanged": false,
+    "servers": 0,
+    "CLISnapshotCommands": 0,
+    "readOnlySourceChecks": [
+      "git rev-parse HEAD",
+      "git rev-parse HEAD^{tree}",
+      "git status --porcelain --untracked-files=all"
+    ],
+    "sourceFullFsckClaimed": false
+  },
+  "preservedPrerequisites": {
+    "actualNormal61": true,
+    "currentCandidate": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "actualTwelveInstrumentTransfers": true,
+    "actualCreateOnlyStageAndFixedTargetsClosed": true,
+    "productAndInstrumentIdentitiesRemainDistinct": true,
+    "originalSixHistoricalFencesRetained": true
+  },
+  "startRule": "Persist the exact request and external intent before a single process_start. Preserve original November5 key across UTC midnight. Store original SDK before parsing; exact native digest/fingerprint; original returned job only; no replay or key replacement.",
+  "observation": {
+    "oneCallAndOneNativeFuture": true,
+    "processReadPerStreamBytes": 16384,
+    "immutablePageBytes": 8192,
+    "allOriginalObserversMustClose": true
+  },
+  "conditionalResultRead": {
+    "enabledOnlyAfter": "Original authoritative succeeded/exit0/full/durable/terminal-publication-confirmed with no timeout/cancel/retry; complete original stdout exactly identifies the fixed result path and actual result_sha256, status=passed, runtime_started=false, all_owned_stopped=true; complete stderr empty.",
+    "metadata": {
+      "idempotency_key": "heptabao-native-h2-gate-prepare-result-info-4e808-20261105-r2",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1/result.public.json"
+        }
+      }
+    },
+    "metadataRequirements": "Original metadata handler closed and payload complete; regular non-symlink single-link file, uid1000/gid1000/0600/linux, size1..65536, whole-file SHA from final stdout; actual immutable version retained losslessly.",
+    "bodyTemplate": {
+      "idempotency_key": "heptabao-native-h2-gate-prepare-result-body-4e808-20261105-r2",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1/result.public.json",
+          "offset": 0,
+          "limit": null,
+          "expected_version": null
+        }
+      }
+    },
+    "allowedTransformation": "Only null limit and expected_version become exact original metadata size and immutable version; persist the exact derived request and intent first.",
+    "maximumBodyAdmissions": 1,
+    "maximumBodyBytes": 65536,
+    "wholeEOFSizeSHAVersionRequired": true,
+    "ifOverCap": "Stop before body admission and report actual metadata. This read admission cap is independent of the original live reader's unchanged 4MiB cap; do not infer a producer size bound.",
+    "contentRequirements": {
+      "status": "passed",
+      "binding_sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8",
+      "all_owned_stopped": true,
+      "runtime_started": false,
+      "server_processes": 0,
+      "cli_snapshot_commands": 0,
+      "production_changed": false
+    },
+    "extraContentChecks": "Verify inputs and original child_provenance/child_exec_visibility/owned_cleanup; compare nanosecond deadlines losslessly; completed_after_cleanup_monotonic_ns < deadline_monotonic_ns."
+  },
+  "failureRule": "Any native failure/refusal/missing ACK/UNKNOWN stops new admissions; close only already returned original observers. Immutable archival failure may recover identical received public bytes via Git content tree, never native replay.",
+  "futureLive": {
+    "authorized": false,
+    "template": "2eabf1e692ca5f64b2bf553af78f02204c3516f5",
+    "unresolvedActualPrepareSHA": true,
+    "originalOuterSeconds": 2400,
+    "H01_H02_H03Unchanged": true,
+    "H2BodyLimitBytes": 8388608
+  },
+  "rootRuntimeCalls": 0,
+  "productionCutover": false,
+  "cleanup": false
+}

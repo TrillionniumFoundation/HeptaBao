@@ -1,0 +1,62 @@
+--- a/observer.R2.js
++++ b/observer.R3.js
+@@ -55,7 +55,7 @@
+ function lt(p){const x=load("h2_live_local_text_"+p.blob);if(typeof x!=="string"||hlH().meta(x).blob!==p.blob)throw Error("recover_exact_Git_blob_without_Runtime:"+p.blob);return x;}
+ async function lp(label,tool,q){
+  const s=load("h2_live_execution_state");
++ if(s.halted||s.Runtime_call_inflight||s.pending_call||s.calls.some(x=>x.label===label)||hgEffectiveArchiveBlock()||!s.git_first_protocol_GO||!s.git_first_bootstrap)throw Error("live_call_state");
+- if(s.halted||s.Runtime_call_inflight||s.pending_call||s.calls.some(x=>x.label===label)||load("h2_live_git_first_archive_blocked")||!s.git_first_protocol_GO||!s.git_first_bootstrap)throw Error("live_call_state");
+  if(!["operation_start","operation_status","operation_result"].includes(tool))throw Error("readonly_tool_only");
+  if(tool==="operation_start"){
+   if(!s.ACK_binding_verified||s.active_operation_id||s.observations.some(o=>!o.archived))throw Error("previous_observer_not_archived");
+@@ -73,7 +73,7 @@
+ }
+ async function ls(){
+  const s=load("h2_live_execution_state"),p=s.pending_call;
++ if(!p||p.submitted||s.Runtime_call_inflight||s.halted||hgEffectiveArchiveBlock()||!s.git_first_protocol_GO||p.Git_first_protocol_GO?.blob!==s.git_first_protocol_GO.blob)throw Error("single_readonly_submit_gate");
+- if(!p||p.submitted||s.Runtime_call_inflight||s.halted||load("h2_live_git_first_archive_blocked")||!s.git_first_protocol_GO||p.Git_first_protocol_GO?.blob!==s.git_first_protocol_GO.blob)throw Error("single_readonly_submit_gate");
+  const names={operation_start:"mcp__codex_apps__heptaruntime_mac_controller_operation_start",operation_status:"mcp__codex_apps__heptaruntime_mac_controller_operation_status",operation_result:"mcp__codex_apps__heptaruntime_mac_controller_operation_result"};
+  if(!names[p.tool])throw Error("closed_readonly_tool_set");
+  const q=JSON.parse(p.request_text);p.submitted=true;s.Runtime_call_inflight=true;await hlState(s);
+@@ -102,7 +102,7 @@
+ }
+ async function lr(){
+  const s=load("h2_live_execution_state"),r=load("h2_live_git_first_returned"),p=s.pending_call;
++ if(hgEffectiveArchiveBlock()||!r?.Native_tool_returned||r.processed||!p?.submitted||p.label!==r.label||p.request.blob!==r.request_blob||s.Runtime_call_inflight||lh().meta(r.raw).blob!==r.raw_pin.blob)throw Error("same_returned_SDK_only");
+- if(load("h2_live_git_first_archive_blocked")||!r?.Native_tool_returned||r.processed||!p?.submitted||p.label!==r.label||p.request.blob!==r.request_blob||s.Runtime_call_inflight||lh().meta(r.raw).blob!==r.raw_pin.blob)throw Error("same_returned_SDK_only");
+  return await lc(s,p,r.raw);
+ }
+ async function laStatus(){
+@@ -163,10 +163,31 @@
+ async function hgAcceptRange(){
+  const s=load("h2_live_execution_state"),o=s.observations.at(-1),n=load("h2_live_observation_native_"+o.operation_id),m=s.result_file_info,off=s.result_body_next_offset,H=lh();
+  const fixed=H2_REMAINING_BODY_REQUESTS.find(x=>x.offset===off),b=H.unb64(n.data_base64);
++ if(!fixed||!o.closed||!o.archived||o.tool!=="binary_read"||s.Runtime_call_inflight||s.pending_call||s.active_operation_id||hgEffectiveArchiveBlock()||n.offset!==off||n.path!==m.path||n.version!==m.version||n.size!==465570||b.length!==fixed.limit||n.next_offset!==off+b.length||n.eof!==(n.next_offset===465570)||H.sha256Latin1(H.byteString(b))!==n.chunk_sha256||s.result_body_chunks.some(x=>x.offset===off))throw Error("original_binary_range_check");
+- if(!fixed||!o.closed||!o.archived||o.tool!=="binary_read"||s.Runtime_call_inflight||s.pending_call||s.active_operation_id||load("h2_live_git_first_archive_blocked")||n.offset!==off||n.path!==m.path||n.version!==m.version||n.size!==465570||b.length!==fixed.limit||n.next_offset!==off+b.length||n.eof!==(n.next_offset===465570)||H.sha256Latin1(H.byteString(b))!==n.chunk_sha256||s.result_body_chunks.some(x=>x.offset===off))throw Error("original_binary_range_check");
+  store("h2_live_body_bytes_"+off,b);
+  s.result_body_chunks.push({offset:off,bytes:b.length,sha256:n.chunk_sha256,next_offset:n.next_offset,eof:n.eof,operation_id:o.operation_id,native:o.native,payload:o.payload,observer_tree:o.archive.tree});
+  s.result_body_next_offset=n.next_offset;await hlState(s);
+  text({range_verified:s.result_body_chunks.at(-1),remaining:465570-n.next_offset});
+  return s.result_body_chunks.at(-1);
+ }
++
++async function hgContinueArmedPage(newRootGO){
++ const s=load("h2_live_execution_state"),p=s.pending_call,b=load("h2_live_git_first_archive_blocked"),r=load("h2_live_armed_new_recovery_verified"),o=s.observations.at(-1);
++ if(load("h2_live_git_first_armed_page_recovery")||!r||r.tree!=="811692431bf219ea0a217a95c43eaab871e75562"||r.files!==8||r.results.length!==8||r.results.some(x=>!x.ok)||!b||hlH().meta(JSON.stringify(b,null,2)+"\n").sha256!=="7505abc72cc2f10c45b0846d95547fd874471e0884b392d489adc06a3aef1db3")throw Error("exact_new_recovery_packet_and_old_unknown_required");
++ if(!newRootGO||!/^[0-9a-f]{40}$/.test(newRootGO.blob)||newRootGO.blob===s.GO.blob||newRootGO.blob===s.git_first_protocol_GO.blob||!Number.isSafeInteger(newRootGO.bytes)||newRootGO.bytes<1||!/^[0-9a-f]{64}$/.test(newRootGO.sha256))throw Error("separate_exact_root_GO_required");
++ const go=await hgBlob(newRootGO),checkpoint=await hgBlob({blob:"d59acffc65587115620facf74cac6ff355da271c",bytes:108137,sha256:"678a63894f84ac58a3b7b914461ce6b62a74c8c73b0e5d982954edd743e57829"});
++ if(s.halted||s.job_id!=="1a1ae76aacd-fc05-5fb4"||!p||p.label!=="result-body-065536-page-016384"||p.tool!=="operation_result"||p.submitted!==true||s.Runtime_call_inflight!==true||s.active_operation_id!=="578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273"||p.request.blob!=="31b413cc3cf3c6878ecb9f0891fa162e3e37f3f6"||p.intent.blob!=="448a82490b0b370b9d845cc7e8b17f3e7728ad99"||s.calls.some(c=>c.label===p.label)||s.last_call.label!=="result-body-065536-page-000000"||s.last_call.SDK.blob!=="55da5401ec82be4515111e69fbd6aaeaa23e9c7a"||load("h2_live_git_first_returned")!==null||!o.native_handler_closed||o.closed||o.next_offset!==16384||o.pages.length!==1)throw Error("unique_not_yet_reached_Native_statement");
++ const q={operation_id:"578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273",offset:16384,limit:16384};
++ if(JSON.stringify(JSON.parse(p.request_text))!==JSON.stringify(q)||hlH().meta(p.request_text).blob!==p.request.blob)throw Error("original_exact_page_request");
++ const context={schema:"heptabao.h2-live.explicit-armed-page-recovery.v1",recovery_tree:r.tree,new_root_GO:{blob:go.blob,bytes:go.bytes,sha256:go.sha256},original_block:b,original_block_sha256:"7505abc72cc2f10c45b0846d95547fd874471e0884b392d489adc06a3aef1db3",old_create_outcome:"UNKNOWN",old_checkpoint_content:checkpoint.blob,original_pending_request:p.request,original_pending_intent:p.intent,Native_tool_statement_attempts:0,submitted_flag_not_reset:true,ls_lp_not_reentered:true};
++ store("h2_live_git_first_armed_page_recovery",context);
++ const intent=await ll("h2-live-original-page-016384-explicit-continuation-intent",JSON.stringify({schema:"heptabao.h2-live.original-page-explicit-continuation-intent.v1",context,request:q,Native_submitted:false,no_old_create_retry:true},null,2)+"\n");
++ context.new_continuation_intent=intent;context.Native_tool_statement_attempts=1;store("h2_live_git_first_armed_page_recovery",context);
++ notify({original_page_continuation_intent:intent,operation_id:q.operation_id,offset:q.offset,limit:q.limit,old_UNKNOWN_preserved:true});
++ let sdk;try{sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_result(q);}catch(e){sdk={local_transport_exception:true,name:e?.name??"Error",message:String(e)};}
++ const raw=JSON.stringify(sdk,null,2)+"\n";
++ store("h2_live_git_first_returned",{label:p.label,request_blob:p.request.blob,raw,raw_pin:lh().meta(raw),Native_tool_returned:true,processed:false});
++ s.Runtime_call_inflight=false;s.explicit_armed_page_recovery={recovery_tree:context.recovery_tree,new_root_GO:context.new_root_GO,old_create_outcome:"UNKNOWN",new_continuation_intent:intent,Native_tool_statement_attempts:1};
++ store("h2_live_git_first_state_shadow",s);
++ return await lc(s,p,raw);
++}

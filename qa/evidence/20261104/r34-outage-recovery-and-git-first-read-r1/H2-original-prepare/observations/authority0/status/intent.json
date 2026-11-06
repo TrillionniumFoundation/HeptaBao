@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.h2-prepare.exact-read-intent.v1",
+  "GO": {
+    "blob": "8271430c9b433fb88968935d388b2b4b4bd7ce37",
+    "bytes": 6727,
+    "sha256": "828cfecd6f9c94b2970ae2a2ddaefb748148bf44ecef5661f216f53e705665ff"
+  },
+  "original_prepare_job": "1a1ae4ad33e-fc05-5ebf",
+  "tool": "operation_status",
+  "request": {
+    "name": "h2-prepare-authority0-status-request",
+    "blob": "7f489e7bd3c550bb1772ecc8b348656e9ff9f5e2",
+    "bytes": 89,
+    "sha256": "4b75dfc6bd99ef92d6fc72605f43a9b62dd685af7d999967c07149bd9accdd8e"
+  },
+  "original_operation_id": "c0b20164193605526de049661faf84e23bf3d62f1a148eef63871557fd36b0c7",
+  "business_replay": false,
+  "external_before_call": true
+}

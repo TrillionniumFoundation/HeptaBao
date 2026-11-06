@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.root-local-intake-correction.v1",
+  "error": "Two local JSON parses passed the verified-blob object rather than its text property.",
+  "affected_blobs": [
+    "3dbf730683887b88b27263513ca61ecca0646e51",
+    "6daa3fbe05af8d945b2f60c087e2de27b50d423f"
+  ],
+  "original_fetches_succeeded": true,
+  "original_verified_objects_reused": true,
+  "additional_Git_fetches": 0,
+  "Runtime_calls": 0,
+  "business_replays": 0,
+  "product_evidence_changed": false
+}

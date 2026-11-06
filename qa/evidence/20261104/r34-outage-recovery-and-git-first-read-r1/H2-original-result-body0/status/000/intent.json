@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.h2-live.original-readonly-intent.v1",
+  "GO": {
+    "blob": "39616822031623661e3db7d5153f9dcb19525842",
+    "bytes": 10177,
+    "sha256": "797d031779441fd8d10563b62200a848c80facd2965dd7b5b0e817163a3b7684"
+  },
+  "job_id": "1a1ae76aacd-fc05-5fb4",
+  "label": "result-body-000000-status0",
+  "tool": "operation_status",
+  "request": {
+    "name": "h2-live-result-body-000000-status0-request",
+    "blob": "8abef441df225101c3cf6b8204ae866cf5489ef7",
+    "bytes": 89,
+    "sha256": "98c8fddcb19a10b36bbdf0ef224835ad98c49894e07678eb24367810e3dc8139",
+    "local_json": "/workspace/scratch/f86faac821c4/r32_recovery/h2-live-result-body-000000-status0-request.json"
+  },
+  "Runtime_submitted": false,
+  "one_future": true,
+  "archive_after_observer": true
+}

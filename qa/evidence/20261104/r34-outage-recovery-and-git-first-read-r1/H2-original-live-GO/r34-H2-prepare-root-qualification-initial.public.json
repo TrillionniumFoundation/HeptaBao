@@ -1,0 +1,464 @@
+{
+  "schema": "heptabao.root-h2-readonly-prepare-qualification.v1",
+  "qualified": false,
+  "checks_count": 102,
+  "checks": [
+    {
+      "name": "original_authority_terminal_success",
+      "passed": true
+    },
+    {
+      "name": "authority_streams_exact",
+      "passed": true
+    },
+    {
+      "name": "original_stream_job",
+      "passed": true
+    },
+    {
+      "name": "stdout_text_hex_EOF",
+      "passed": true
+    },
+    {
+      "name": "stderr_text_hex_EOF",
+      "passed": true
+    },
+    {
+      "name": "pointer_exact",
+      "passed": true
+    },
+    {
+      "name": "result_file_info",
+      "passed": true
+    },
+    {
+      "name": "body_version_range_EOF",
+      "passed": true
+    },
+    {
+      "name": "body_exact_whole",
+      "passed": true
+    },
+    {
+      "name": "prepare_status_and_schema",
+      "passed": true
+    },
+    {
+      "name": "prepare_not_runtime",
+      "passed": true
+    },
+    {
+      "name": "fixed_binding",
+      "passed": true
+    },
+    {
+      "name": "exact_candidate_source",
+      "passed": true
+    },
+    {
+      "name": "host_identity",
+      "passed": true
+    },
+    {
+      "name": "original_action_budgets",
+      "passed": true
+    },
+    {
+      "name": "file_group_keys_artifacts",
+      "passed": true
+    },
+    {
+      "name": "bound_input_artifacts_combined_tests",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_artifacts_combined_tests",
+      "passed": false
+    },
+    {
+      "name": "bound_input_artifacts_native_receipt",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_artifacts_native_receipt",
+      "passed": true
+    },
+    {
+      "name": "bound_input_artifacts_release_receipt",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_artifacts_release_receipt",
+      "passed": true
+    },
+    {
+      "name": "bound_input_artifacts_server",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_artifacts_server",
+      "passed": true
+    },
+    {
+      "name": "bound_input_artifacts_test_groups",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_artifacts_test_groups",
+      "passed": false
+    },
+    {
+      "name": "file_group_keys_h2_client",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_build_binding",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_build_binding",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_build_controller",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_build_controller",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_canonical_lock",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_canonical_lock",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_cargo_lock",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_cargo_lock",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_cargo_manifest",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_cargo_manifest",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_component_list_stdout",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_component_list_stdout",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_component_record",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_component_record",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_component_stdout",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_component_stdout",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_executable",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_executable",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_rust_source",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_rust_source",
+      "passed": true
+    },
+    {
+      "name": "bound_input_h2_client_test_source",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_h2_client_test_source",
+      "passed": true
+    },
+    {
+      "name": "file_group_keys_old_fences",
+      "passed": true
+    },
+    {
+      "name": "bound_input_old_fences_0",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_old_fences_0",
+      "passed": true
+    },
+    {
+      "name": "bound_input_old_fences_1",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_old_fences_1",
+      "passed": true
+    },
+    {
+      "name": "bound_input_old_fences_2",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_old_fences_2",
+      "passed": true
+    },
+    {
+      "name": "bound_input_old_fences_3",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_old_fences_3",
+      "passed": true
+    },
+    {
+      "name": "bound_input_old_fences_4",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_old_fences_4",
+      "passed": true
+    },
+    {
+      "name": "bound_input_old_fences_5",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_old_fences_5",
+      "passed": true
+    },
+    {
+      "name": "file_group_keys_qa",
+      "passed": true
+    },
+    {
+      "name": "bound_input_qa_native_fixture_reference_r8.py",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_qa_native_fixture_reference_r8.py",
+      "passed": true
+    },
+    {
+      "name": "bound_input_qa_native_h2_binding_r1.py",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_qa_native_h2_binding_r1.py",
+      "passed": true
+    },
+    {
+      "name": "bound_input_qa_native_h2_gate_r1.py",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_qa_native_h2_gate_r1.py",
+      "passed": true
+    },
+    {
+      "name": "bound_input_qa_official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_qa_official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "bound_input_qa_phaseb_evidence_r3.py",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_qa_phaseb_evidence_r3.py",
+      "passed": true
+    },
+    {
+      "name": "file_group_keys_utilities",
+      "passed": true
+    },
+    {
+      "name": "bound_input_utilities_git",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_utilities_git",
+      "passed": true
+    },
+    {
+      "name": "bound_input_utilities_openssl",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_utilities_openssl",
+      "passed": true
+    },
+    {
+      "name": "bound_input_utilities_python",
+      "passed": true
+    },
+    {
+      "name": "stage_full9_utilities_python",
+      "passed": true
+    },
+    {
+      "name": "input_count",
+      "passed": true
+    },
+    {
+      "name": "normal_product_61_separate",
+      "passed": true
+    },
+    {
+      "name": "independent_instrument_6_only",
+      "passed": true
+    },
+    {
+      "name": "instrument_binary_binding",
+      "passed": true
+    },
+    {
+      "name": "eight_archive_and_audit_source_proofs",
+      "passed": true
+    },
+    {
+      "name": "only_three_original_git_children",
+      "passed": true
+    },
+    {
+      "name": "git_exact_provenance_0",
+      "passed": true
+    },
+    {
+      "name": "original_child_reaped_0",
+      "passed": true
+    },
+    {
+      "name": "git_exact_provenance_1",
+      "passed": true
+    },
+    {
+      "name": "original_child_reaped_1",
+      "passed": true
+    },
+    {
+      "name": "git_exact_provenance_2",
+      "passed": true
+    },
+    {
+      "name": "original_child_reaped_2",
+      "passed": true
+    },
+    {
+      "name": "all_owned_stopped",
+      "passed": true
+    },
+    {
+      "name": "original_prepare_deadline_after_cleanup",
+      "passed": true
+    },
+    {
+      "name": "owner_originals_closed",
+      "passed": true
+    },
+    {
+      "name": "raw_observer_status_0",
+      "passed": true
+    },
+    {
+      "name": "raw_observer_status_1",
+      "passed": true
+    },
+    {
+      "name": "raw_observer_status_2",
+      "passed": true
+    },
+    {
+      "name": "raw_observer_status_3",
+      "passed": true
+    },
+    {
+      "name": "original_page_chain_adopted_from_owner",
+      "passed": true
+    }
+  ],
+  "inputs": {
+    "actual_result": {
+      "blob": "fd687152d3c89bf4ef8284748ef23082e494f45e",
+      "bytes": 52937,
+      "sha256": "bb5bdec75ad7081910b4ccb39492964e42a0a144f57f3d3ef1a97b0df05613d4"
+    },
+    "authority": {
+      "blob": "571416f9b82947ee71c7a64cdab4cf559d264055",
+      "bytes": 729,
+      "sha256": "88871bf908d03c0c37944efbbc4174dbd56d249e1620205b56a13635a115a7d3"
+    },
+    "file_info": {
+      "blob": "db37decbde71e0fe71e60bb8fbac0126747fa95c",
+      "bytes": 494,
+      "sha256": "17f3f55e98727d2962f234dfab27c4f77ca110a964088f1ee2942e7cc9ea1f16"
+    },
+    "body_native": {
+      "blob": "276167aa5a5fd4a2572daafb5774da7cb7a6e024",
+      "bytes": 70928,
+      "sha256": "dc78afabf075e73a9a5425e7f77b7628927e77469c2ceff3f8d11d008ca78479"
+    },
+    "binding": {
+      "blob": "a11ae732392792888fcf705e3a0ea21c8779f67e",
+      "bytes": 10230,
+      "sha256": "b241c6fc78bbe77ea69fc3b8a707b1747324a81f1da1ade3d9bb15c5cea5b7d8"
+    },
+    "stage": {
+      "blob": "f492ce4e681ba7d5917d1cda1ebd4a3f8d67f13c",
+      "bytes": 28615,
+      "sha256": "f2bcc9227a235a40afa11c1703595180a925fbd39abd29d4550872ed3a05ae6a"
+    },
+    "owner_release": {
+      "blob": "3dbf730683887b88b27263513ca61ecca0646e51",
+      "bytes": 36962,
+      "sha256": "72025c9cc4abbff2f5c4c6868e72694c39aa8f4a9732e5951db7381919e0c64f"
+    }
+  },
+  "scope": {
+    "Runtime_calls": 0,
+    "product_test_cases_run": 0,
+    "whole_original_statuses_read": 4,
+    "whole_original_result_read": true,
+    "all_12_page_payloads_independently_reread": false,
+    "page_chain_adopted_from_complete_owner_journal": true,
+    "H2_live_executed": false,
+    "CLI_live_executed": false,
+    "full_replacement": false
+  },
+  "deadline_remaining_after_cleanup_ns": "298281929886"
+}

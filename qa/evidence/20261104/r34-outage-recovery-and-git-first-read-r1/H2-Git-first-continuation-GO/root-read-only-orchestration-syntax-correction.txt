@@ -1,0 +1,1 @@
+Original root V8 read-only script failed before evaluation: SyntaxError Unexpected token ')'. No Git or Native tool call was submitted. Corrected only the local orchestration parentheses.

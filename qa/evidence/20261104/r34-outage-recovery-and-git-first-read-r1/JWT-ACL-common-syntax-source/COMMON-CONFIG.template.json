@@ -1,0 +1,9 @@
+{
+  "bound_issuer": "https://jwt-acl.before.example",
+  "jwt_validation_pubkeys": [
+    "__FROZEN_PUBLIC_SPKI_RSA2048_E65537_PEM__"
+  ],
+  "jwt_supported_algs": [
+    "RS256"
+  ]
+}

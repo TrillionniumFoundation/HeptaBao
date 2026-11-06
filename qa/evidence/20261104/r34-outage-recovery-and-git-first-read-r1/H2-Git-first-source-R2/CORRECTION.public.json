@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.h2-live.Git-first.source-R2-correction.v1",
+  "R1_tree": "fa0a826b3eccdc862073753c8d8d557ab85cfa5a",
+  "before": {
+    "blob": "d504200624456ac43e1970afbdf5e43b259dc7f9",
+    "bytes": 9024,
+    "sha256": "247833482f2a00d6a5c9a2b46afe0333d9038a3e5575d09dcd9932f12694bd44"
+  },
+  "after": {
+    "blob": "678828a8679e0f0571a842a850c3111421adc1ae",
+    "bytes": 10192,
+    "sha256": "d542f55c62f10d13c10a8b5dcd1b0b30aa684352ebc029e783c4d14bf63aebe5"
+  },
+  "diff": {
+    "blob": "7f034fa993e3ce21877142d3fce801dd05318c68",
+    "bytes": 3703,
+    "sha256": "d73363adcb28e61219636c382cf88d60f16f44e9cbe26cf23ea8ca4e9e8d1815",
+    "hunks": 2
+  },
+  "changes": [
+    "Preserve every returned Git read SDK under its complete original text hash; per-object read history retains each observation. A latest alias never owns the only copy.",
+    "Inspect and record every allSettled result in the batch, preserve immutable aggregate outcomes and per-tree history, then throw once for aggregate failures."
+  ],
+  "observer_unchanged": {
+    "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+    "bytes": 16074,
+    "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+  },
+  "seven_requests_unchanged": [
+    {
+      "offset": 65536,
+      "limit": 65536,
+      "blob": "97fa10f7aa705b265fe0bfa6b1f5a01b7d30c3b4",
+      "bytes": 438,
+      "sha256": "08e2c3baa4e3bae7a65a6e1a2acf83f785764b4084b631fa7eb43d62228737c5"
+    },
+    {
+      "offset": 131072,
+      "limit": 65536,
+      "blob": "e45ec9bc5421e6c6ef1a91e5bba2cf5d8ac22a0f",
+      "bytes": 440,
+      "sha256": "86f2111c36f8d38f9d81817787b3c61bfafe36b19b7ff103506547cf4a9dccdc"
+    },
+    {
+      "offset": 196608,
+      "limit": 65536,
+      "blob": "3dbb58645a1ccf4bc4573373b0aa9e170ab39c4f",
+      "bytes": 440,
+      "sha256": "b09def7abee32c9a014bd25f74b90747aa4d493e7ea883d9ac9d6001ac4c6b41"
+    },
+    {
+      "offset": 262144,
+      "limit": 65536,
+      "blob": "2780c676c0d0fbb9ec30dfe1d8ebff149a09c763",
+      "bytes": 440,
+      "sha256": "08a5c6fe858ec479bd379330507c20d2ce714bed1122c5b82cfaeb42ad89f6b1"
+    },
+    {
+      "offset": 327680,
+      "limit": 65536,
+      "blob": "e7bc24ca34853e1b47ca7cdc035a64a64f3bcdbf",
+      "bytes": 440,
+      "sha256": "7811cb921a12e67f10d2bc28aaca6018abc8b2dd7c21754e720ef62eb6d60bca"
+    },
+    {
+      "offset": 393216,
+      "limit": 65536,
+      "blob": "32e1d307aee89492fe94faf73eb410d10b446a54",
+      "bytes": 440,
+      "sha256": "4a185faba57b528d343fc29471640b53467a3311c7961ef39c696dad940de802"
+    },
+    {
+      "offset": 458752,
+      "limit": 6818,
+      "blob": "b20329116b397801a1834f2348d582fc92d15a93",
+      "bytes": 439,
+      "sha256": "574ba5639b6055626148fd39b88a76c0f8928ff1bd16bb41780f415b6dea57f8"
+    }
+  ],
+  "syntax_compile_only": true,
+  "strict_forward_and_reverse_whole": true,
+  "Native_calls": 0,
+  "executor_calls": 0,
+  "no_candidate_runtime_execution": true
+}

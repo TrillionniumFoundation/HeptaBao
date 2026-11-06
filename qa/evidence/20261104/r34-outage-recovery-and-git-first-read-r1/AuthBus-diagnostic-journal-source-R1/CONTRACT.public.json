@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.mac-owned-launchd-gitfirst-call-source.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE_GO",
+  "helper": {
+    "blob": "78253bc918be09af6c0bbb40da979ed392102986",
+    "bytes": 16934,
+    "sha256": "bed2f0586fb1a11412605afe863172f7250893ecc2d3ecfb54179af73060131d"
+  },
+  "dependencies": [
+    {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "blob": "1de1f00498f2457336f1f324a507ea1c2ac86fe1",
+      "bytes": 4189,
+      "sha256": "7eb14e27df6b8fe1bdb7cd4ae82394f7d5851fa70fd5686c562f85fc97035f28"
+    }
+  ],
+  "fixedDiagnosticRequest": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"
+  },
+  "requiredBeforeInitialization": {
+    "separateExactRootGO": null,
+    "rootGOWholeReadback": false,
+    "rootIndependentlyComputedDigest": null,
+    "rootIndependentlyComputedFingerprintDecimal": null,
+    "noEarlierArmedContextMayBeDiscarded": true
+  },
+  "justification": "Local execution service is unavailable. Root requested a concrete SOURCE-only Git-first substitute; this package does not itself alter any existing native authorization.",
+  "steps": [
+    "After a separate exact GO is whole-read, initialize the unchanged helper once with its exact pin and root-computed typed digest/fingerprint.",
+    "gfPrepareOne creates one immutable three-leaf tree: exact request, intent, armed checkpoint; whole readback completes before any native call.",
+    "Return to a model boundary. gfInvokePreparedOnce may enter only the one armed call; called/inflight are recorded synchronously before dispatch.",
+    "The returned complete original SDK is immediately retained in V8; SDK JSON is stored in one Git content tree and whole-read before isError or native text interpretation.",
+    "gfAcceptArchivedSDK first checks isError and shape, then lossless native fields. Start binds the original mac job/digest/uint64 fingerprint; subsequent native tools are limited to process_status/process_read on this job or status/result on the active original operation_id.",
+    "Every status/page call has its own external exact request+intent+armed checkpoint and SDK whole readback. There is no automatic native retry or multi-call loop.",
+    "Complete original operation payload is reassembled by consecutive offsets, immutable total/SHA and EOF; stored whole in Git; original native response is inspected only afterward.",
+    "The contained native text has a derived pin. That pin is not claimed as an independently created blob until the final observer packet writes it. Its exact bytes already reside in the whole original payload.",
+    "Only after original payload/native success and same job/cursor checks is that observer cleared and the next observer allowed.",
+    "Git uncertainty stops the line. gfReconcileSameGitArchiveReadOnly fetches only original expected immutable tree/blobs and preserves SDKs; it never mutates, dispatches, unpauses, or grants retry.",
+    "Cache loss or lost native ACK requires restoring the external armed record/SDK and root-directed original-ID reconciliation. Never initialize a clean context to erase an earlier call."
+  ],
+  "callsAllowedByHelper": [
+    "process_start exact d14f62155b86924edd5632673d2e73832f7b0af5",
+    "operation_start process_status for actual bound original job",
+    "operation_start process_read with actual next stdout/stderr cursors, limit16384",
+    "operation_status actual active operation_id",
+    "operation_result actual closed/inactive operation_id, exact next offset, limit8192"
+  ],
+  "noOtherRuntimeTool": true,
+  "noFilesystemAPI": true,
+  "noProviderOrCredentialAPI": true,
+  "noNativeReconciliationLoop": true,
+  "oneCallAtATime": true,
+  "oneActiveReadFuture": true,
+  "supervisor60Unchanged": true,
+  "diagnostic45Unchanged": true,
+  "immutablePayloadLimit": 1048576,
+  "originalCallSourceBoundary": "No native function was invoked while constructing, syntax-checking or archiving this helper.",
+  "pureChecks": {
+    "schema": "heptabao.gitfirst-cached-format-checks.r1",
+    "checks": [
+      {
+        "name": "actual_uint64_exact",
+        "ok": true
+      },
+      {
+        "name": "safe_integer_exact",
+        "ok": true
+      },
+      {
+        "name": "actual_process_read_field_names",
+        "ok": true
+      },
+      {
+        "name": "no_bad_data_fields",
+        "ok": true
+      }
+    ],
+    "RuntimeCalls": 0,
+    "NativeHelperFunctionsInvoked": 0,
+    "scope": "JS syntax compilation and four cached-schema/arithmetic checks; not a native dispatch or product test"
+  },
+  "limitations": [
+    "V8 store is volatile. External armed/SDK objects remain the durable record. Transport loss before SDK retention leaves UNKNOWN.",
+    "Git GET wrappers are retained as complete serialized SDKs under the pure_git_once key before interpretation. They must be included in the final archival companion rather than claiming volatile store alone is durable.",
+    "The existing pure helper's processStartBinding is not used; it is not qualified for this typed request. Root supplies the actual digest/fingerprint.",
+    "This is a proposed journaling exception and bounded call wrapper, not a source of authorization or evidence of old registration cleanup."
+  ]
+}

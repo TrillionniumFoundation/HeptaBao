@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"ref\":\"refs/tags/v2.7.1\",\"node_id\":\"REF_kwDOKrhEtLByZWZzL3RhZ3MvdjIuNy4x\",\"url\":\"https://api.github.com/repos/openbao/openbao/git/refs/tags/v2.7.1\",\"object\":{\"sha\":\"a5db72cef75c24b920ade02065b18dd8eb666bac\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/openbao/openbao/git/commits/a5db72cef75c24b920ade02065b18dd8eb666bac\"}}",
+    "title": "v2.7.1",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/openbao/openbao/git/ref/tags/v2.7.1",
+    "display_url": "https://api.github.com/repos/openbao/openbao/git/ref/tags/v2.7.1",
+    "display_title": "v2.7.1",
+    "structuredContent": {
+      "title": "v2.7.1",
+      "content": "{\"ref\":\"refs/tags/v2.7.1\",\"node_id\":\"REF_kwDOKrhEtLByZWZzL3RhZ3MvdjIuNy4x\",\"url\":\"https://api.github.com/repos/openbao/openbao/git/refs/tags/v2.7.1\",\"object\":{\"sha\":\"a5db72cef75c24b920ade02065b18dd8eb666bac\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/openbao/openbao/git/commits/a5db72cef75c24b920ade02065b18dd8eb666bac\"}}",
+      "display_url": "https://api.github.com/repos/openbao/openbao/git/ref/tags/v2.7.1"
+    }
+  },
+  "isError": false
+}

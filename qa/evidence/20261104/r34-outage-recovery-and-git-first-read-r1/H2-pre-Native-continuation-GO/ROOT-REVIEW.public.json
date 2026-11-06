@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.root-H2-explicit-pre-Native-page-recovery-source-review.v1",
+  "source_packet": {
+    "tree": "3eca64daf35cc22562a23bcf26cb094ffeacb536",
+    "files": 14,
+    "bytes": 93377,
+    "merkle": {
+      "root_sha": "3eca64daf35cc22562a23bcf26cb094ffeacb536",
+      "trees_verified": 6,
+      "leaf_count": 14
+    },
+    "whole": true
+  },
+  "recovery_packet": {
+    "tree": "811692431bf219ea0a217a95c43eaab871e75562",
+    "files": 8,
+    "bytes": 119620,
+    "merkle": {
+      "root_sha": "811692431bf219ea0a217a95c43eaab871e75562",
+      "trees_verified": 3,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "durability_strict_forward_reverse",
+      "passed": true,
+      "hunks": 5
+    },
+    {
+      "name": "observer_strict_forward_reverse",
+      "passed": true,
+      "hunks": 4
+    },
+    {
+      "name": "source_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "exact_checkpoint_pending_original_page",
+      "passed": true
+    },
+    {
+      "name": "last_actual_Native_is_previous_page",
+      "passed": true
+    },
+    {
+      "name": "old_block_exact_hash",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "independent_peer": {
+    "blob": "a150fb908aad894892339a3a720755b4f906026c",
+    "bytes": 2743,
+    "sha256": "a0b5d6f7af9fdeed73dbaa13c17b750236f87425b19a0385153c562da4c5d127"
+  },
+  "manual_findings": {
+    "original_ls_await_checkpoint_precedes_sole_Native_statement": true,
+    "that_await_failed_and_original_page_statement_was_not_reached": true,
+    "old_create_remains_UNKNOWN_despite_422_and_404": true,
+    "new_recovery_packet_preserves_exact_original_checkpoint_and_all_errors": true,
+    "continuation_only_original_page_once_without_ls_lp_or_submitted_reset": true,
+    "new_whole_GO_required": true,
+    "exact_historical_block_disposition_only": true,
+    "every_different_new_archive_unknown_still_blocks": true,
+    "historical_original_block_and_unconfirmed_plan_remain": true,
+    "complete_original_SDK_still_external_whole_before_parse": true,
+    "source_lc_laStatus_laPage_lf_unchanged_as_peer_and_diff_show": true,
+    "original_seven_requests_caps_and_product_execution_unchanged": true
+  },
+  "root_Runtime_calls": 0
+}

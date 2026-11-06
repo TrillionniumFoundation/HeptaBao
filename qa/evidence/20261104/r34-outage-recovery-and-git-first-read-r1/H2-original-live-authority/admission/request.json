@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-h2-live-authority-4e808-20261105-r2-0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ae76aacd-fc05-5fb4"
+    }
+  }
+}

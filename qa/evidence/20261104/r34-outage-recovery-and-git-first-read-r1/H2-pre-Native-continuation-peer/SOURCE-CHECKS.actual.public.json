@@ -1,0 +1,197 @@
+{
+  "schema": "heptabao.h2-armed-page-independent-source-peer.v1",
+  "reviewed_tree": "3eca64daf35cc22562a23bcf26cb094ffeacb536",
+  "whole_files": 14,
+  "whole_bytes": 93377,
+  "merkle": 6,
+  "source_checks": 45,
+  "passed": true,
+  "checks": [
+    {
+      "label": "durability strict forward",
+      "passed": true
+    },
+    {
+      "label": "durability strict reverse",
+      "passed": true
+    },
+    {
+      "label": "observer strict forward",
+      "passed": true
+    },
+    {
+      "label": "observer strict reverse",
+      "passed": true
+    },
+    {
+      "label": "lh byte exact",
+      "passed": true
+    },
+    {
+      "label": "ll byte exact",
+      "passed": true
+    },
+    {
+      "label": "lt byte exact",
+      "passed": true
+    },
+    {
+      "label": "lc byte exact",
+      "passed": true
+    },
+    {
+      "label": "laStatus byte exact",
+      "passed": true
+    },
+    {
+      "label": "laPage byte exact",
+      "passed": true
+    },
+    {
+      "label": "lf byte exact",
+      "passed": true
+    },
+    {
+      "label": "hgBootstrap byte exact",
+      "passed": true
+    },
+    {
+      "label": "lp only historical block selector",
+      "passed": true
+    },
+    {
+      "label": "ls only historical block selector",
+      "passed": true
+    },
+    {
+      "label": "lr only historical block selector",
+      "passed": true
+    },
+    {
+      "label": "hgAcceptRange only historical block selector",
+      "passed": true
+    },
+    {
+      "label": "hlH byte exact",
+      "passed": true
+    },
+    {
+      "label": "hgTree byte exact",
+      "passed": true
+    },
+    {
+      "label": "hgRetainGitReadSDK byte exact",
+      "passed": true
+    },
+    {
+      "label": "hgBlob byte exact",
+      "passed": true
+    },
+    {
+      "label": "hgVerifyArchive byte exact",
+      "passed": true
+    },
+    {
+      "label": "hlArchive byte exact",
+      "passed": true
+    },
+    {
+      "label": "hlState byte exact",
+      "passed": true
+    },
+    {
+      "label": "sole native statement",
+      "passed": true
+    },
+    {
+      "label": "no ls/lp/state replay",
+      "passed": true
+    },
+    {
+      "label": "no submitted reset",
+      "passed": true
+    },
+    {
+      "label": "new context before intent",
+      "passed": true
+    },
+    {
+      "label": "external intent before attempt",
+      "passed": true
+    },
+    {
+      "label": "attempt before exact native",
+      "passed": true
+    },
+    {
+      "label": "reentry denied",
+      "passed": true
+    },
+    {
+      "label": "fixed recovery tree",
+      "passed": true
+    },
+    {
+      "label": "fixed old block SHA",
+      "passed": true
+    },
+    {
+      "label": "old outcome explicitly UNKNOWN",
+      "passed": true
+    },
+    {
+      "label": "new GO whole before native",
+      "passed": true
+    },
+    {
+      "label": "separate GO precondition",
+      "passed": true
+    },
+    {
+      "label": "exact q",
+      "passed": true
+    },
+    {
+      "label": "pending raw exact pin checked",
+      "passed": true
+    },
+    {
+      "label": "native closed and next page checked",
+      "passed": true
+    },
+    {
+      "label": "no previous returned SDK",
+      "passed": true
+    },
+    {
+      "label": "SDK saved V8 before callback",
+      "passed": true
+    },
+    {
+      "label": "callback external before parse",
+      "passed": true
+    },
+    {
+      "label": "new archive uncertainty blocks",
+      "passed": true
+    },
+    {
+      "label": "old block only is exempted",
+      "passed": true
+    },
+    {
+      "label": "successful archives retain old block",
+      "passed": true
+    },
+    {
+      "label": "original pre-native await",
+      "passed": true
+    }
+  ],
+  "scope": "source-only, original finite readonly range; no module/candidate/Native execution",
+  "Runtime_calls": 0,
+  "product_cases": 0,
+  "old_Git_create_outcome": "UNKNOWN",
+  "caller_must_supply_exact_root_GO_and_whole_recovery_context": true,
+  "serialized_single_owner_required": true
+}

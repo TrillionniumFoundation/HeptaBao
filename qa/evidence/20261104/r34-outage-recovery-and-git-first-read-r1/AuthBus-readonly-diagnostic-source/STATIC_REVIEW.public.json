@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.mac-owned-launchd-diagnostic-text-binding-review.r1",
+  "scope": "Pure V8 text/hash/arithmetic checks only. Not Python parsing, compilation, module execution, host execution, cleanup, business qualification or root GO.",
+  "passed": 25,
+  "checks": [
+    {
+      "name": "source_no_placeholders",
+      "ok": true
+    },
+    {
+      "name": "request_stdin_exact",
+      "ok": true
+    },
+    {
+      "name": "regular_python_exact",
+      "ok": true
+    },
+    {
+      "name": "no_stdin_text",
+      "ok": true
+    },
+    {
+      "name": "original_parse_whole_exact",
+      "ok": true
+    },
+    {
+      "name": "structural_prefix_exact",
+      "ok": true
+    },
+    {
+      "name": "original_source_anchor_sha",
+      "ok": true
+    },
+    {
+      "name": "original_plan_sha_bound",
+      "ok": true
+    },
+    {
+      "name": "original_plist_sha_bound",
+      "ok": true
+    },
+    {
+      "name": "original_args_17",
+      "ok": true
+    },
+    {
+      "name": "old_plist_python_alias_unchanged",
+      "ok": true
+    },
+    {
+      "name": "readset_fixed_four",
+      "ok": true
+    },
+    {
+      "name": "body_bound_arithmetic",
+      "ok": true
+    },
+    {
+      "name": "fd_bound_arithmetic",
+      "ok": true
+    },
+    {
+      "name": "peak_fd_arithmetic",
+      "ok": true
+    },
+    {
+      "name": "absolute_45_and_supervisor60",
+      "ok": true
+    },
+    {
+      "name": "forbids_registration_closure_claim",
+      "ok": true
+    },
+    {
+      "name": "embedded_whole_mac_owned_unreaped_r1",
+      "ok": true
+    },
+    {
+      "name": "embedded_whole_mac_owned_commands_r1",
+      "ok": true
+    },
+    {
+      "name": "embedded_whole_mac_t5_volume_guard_r1",
+      "ok": true
+    },
+    {
+      "name": "source_fixed_two_explicit_commands",
+      "ok": true
+    },
+    {
+      "name": "no_write_method_call",
+      "ok": true
+    },
+    {
+      "name": "no_new_process_probe",
+      "ok": true
+    },
+    {
+      "name": "first_lf_break",
+      "ok": true
+    },
+    {
+      "name": "no_raw_launchctl_output_in_report",
+      "ok": true
+    }
+  ],
+  "source": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "request": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"
+  },
+  "pythonCompilePerformed": false,
+  "pureMockCasesExecuted": 0,
+  "RuntimeCalls": 0,
+  "knownValidationGap": "Local execution service unavailable. Python compile/source execution must be separately satisfied before any execution GO.",
+  "originalProductSourceModified": false
+}

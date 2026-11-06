@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.cli-current-prepare.execution-intent.v1",
+  "GO": {
+    "blob": "dcafbfe0fd0aac7a330109fb8b53e9df533177fa",
+    "bytes": 6591,
+    "sha256": "19c8dd1d0f2482dfec3f94f8e52213946799729723775a8f08a44826654a5b1d"
+  },
+  "request": {
+    "blob": "c29b6d4cebec4b66d07e7afde36d35e5f330a995",
+    "bytes": 654,
+    "sha256": "098068ceaddb24bb6b2ca246efa9bf7d9a964cd991a629398239aecbac4daca6"
+  },
+  "exact_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+      "--binding-sha256",
+      "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-10816-20261105-r4",
+    "timeout_seconds": 330
+  },
+  "expected_native_binding": {
+    "sha256": "9122a2df5fce0a25b2e521950ab8ba691373f38caf8bcc987365edd14a1365c3",
+    "native_fingerprint": "10458100364976458277"
+  },
+  "maximum_starts": 1,
+  "external_before_submit": true,
+  "process_start_submitted": false,
+  "lane": "B",
+  "host": "desktop",
+  "source_or_product_modified": false,
+  "live_authorized": false
+}

@@ -1,0 +1,107 @@
+--- a/crates/heptabao-server/src/auth_native_jwt.rs
++++ b/crates/heptabao-server/src/auth_native_jwt.rs
+@@ -164,6 +164,8 @@
+             && self.validate_jwt_user_claim_state().is_ok()
+             && self.validate_jwt_renewal_state().is_ok()
+             && self.validate_jwt_batch_state().is_ok()
++            && self.validate_token_api_creation_ttl().is_ok()
++            && self.validate_public_origin_state().is_ok()
+             && self.auth_mounts.iter().all(|(namespace, mounts)| {
+                 mounts.values().all(|mount| mount.kind != "jwt"
+                     || (namespace.is_empty()
+@@ -184,14 +186,79 @@
+                             })
+                     }))
+             })
+-            && self.tokens.values().all(|token| {
+-                let jwt_origin = matches!(token.auth_provenance,
+-                    Some(TokenAuthProvenance::Jwt { .. }));
+-                let jwt_mount = token.auth_mount.as_ref().is_some_and(|mount| {
++            && self.native_v6_jwt_token_edges_supported()
++    }
++
++    // Token API descendants retain their revocation mount, but have their own
++    // issuer and renewal contract. A mount label alone is not that contract:
++    // require the real TokenApi marker, initial grant and public path owner.
++    fn native_v6_jwt_token_origin(&self, token: &Token) -> bool {
++        if !token.namespace.is_empty()
++            || !token.auth_origin_known
++            || token.root
++            || token.policies.contains("root")
++            || token.wrapping.is_some()
++            || token.raw_wrapped_reply_custody.is_some()
++            || token.auth_cert_role.is_some()
++            || token.auth_cert_sha256.is_some()
++            || !token.auth_mount.as_ref().is_some_and(|mount| {
++                self.online_mount_enabled("", mount, "jwt")
++            })
++        {
++            return false;
++        }
++        match token.auth_provenance {
++            Some(TokenAuthProvenance::Jwt { .. }) => token.parent.is_none(),
++            Some(TokenAuthProvenance::TokenApi { issued_creation_ttl: Some(_) }) => {
++                token.public_origin.is_some() && token.validate_public_origin().is_ok()
++            }
++            _ => false,
++        }
++    }
++
++    fn native_v6_jwt_token_edges_supported(&self) -> bool {
++        let mut supported = BTreeSet::new();
++        for (digest, token) in &self.tokens {
++            let relevant = matches!(token.auth_provenance, Some(TokenAuthProvenance::Jwt { .. }))
++                || token.auth_mount.as_ref().is_some_and(|mount| {
+                     self.online_mount_enabled(&token.namespace, mount, "jwt")
+                 });
+-                (!jwt_origin && !jwt_mount) || (jwt_origin && jwt_mount && token.namespace.is_empty())
+-            })
++            if !relevant || supported.contains(digest.as_str()) {
++                continue;
++            }
++            let mut path = BTreeSet::new();
++            let mut current = digest.as_str();
++            loop {
++                if supported.contains(current) {
++                    break;
++                }
++                if !path.insert(current) {
++                    return false;
++                }
++                let Some(member) = self.tokens.get(current) else { return false };
++                if !self.native_v6_jwt_token_origin(member) {
++                    return false;
++                }
++                let Some(parent_digest) = member.parent.as_deref() else {
++                    // A direct JWT is parentless. A TokenApi may also become
++                    // parentless through the real revoke-orphan transition;
++                    // its own validated issuance/path owner remains mandatory.
++                    break;
++                };
++                let Some(parent) = self.tokens.get(parent_digest) else { return false };
++                if parent.namespace != member.namespace
++                    || parent.auth_mount != member.auth_mount
++                    || parent.created_at > member.created_at
++                {
++                    return false;
++                }
++                current = parent_digest;
++            }
++            // Memoize the actual parent graph, so each retained edge is visited
++            // once rather than rescanning every ancestor for every child.
++            supported.extend(path);
++        }
++        true
+     }
+ 
+     fn selected_native_jwt_route(
+@@ -314,8 +381,7 @@
+                 {
+                     return Ok(None);
+                 }
+-                let from_jwt = |token: &Token| matches!(token.auth_provenance,
+-                    Some(TokenAuthProvenance::Jwt { .. }));
++                let from_jwt = |token: &Token| self.native_v6_jwt_token_origin(token);
+                 let actor_origin = actor.and_then(Principal::service_token).is_some_and(from_jwt);
+                 let target_origin = match operation {
+                     "lookup" | "renew" | "revoke" | "revoke-orphan" => body.get("token")

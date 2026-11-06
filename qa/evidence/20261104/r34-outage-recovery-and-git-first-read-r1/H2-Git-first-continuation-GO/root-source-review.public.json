@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.root-H2-public-read-Git-first-source-review.v1",
+  "R1_tree": "fa0a826b3eccdc862073753c8d8d557ab85cfa5a",
+  "R1_files_whole": 25,
+  "R2_tree": "a6f766eeeda2c660fba08d9668f826c7000b3b1f",
+  "R2_files_whole": 8,
+  "R2_bytes": 51429,
+  "R2_merkle": {
+    "root_sha": "a6f766eeeda2c660fba08d9668f826c7000b3b1f",
+    "trees_verified": 5,
+    "leaf_count": 8
+  },
+  "R2_exact_forward_reverse_hunks": 2,
+  "source_syntax_compiles_only": true,
+  "durability": {
+    "blob": "678828a8679e0f0571a842a850c3111421adc1ae",
+    "bytes": 10192,
+    "sha256": "d542f55c62f10d13c10a8b5dcd1b0b30aa684352ebc029e783c4d14bf63aebe5"
+  },
+  "observer": {
+    "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+    "bytes": 16074,
+    "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+  },
+  "pure": {
+    "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+    "bytes": 6684,
+    "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+  },
+  "original_status_handler_unchanged": true,
+  "original_page_handler_unchanged": true,
+  "exact_seven_requests": [
+    {
+      "offset": 65536,
+      "limit": 65536,
+      "passed": true,
+      "blob": "97fa10f7aa705b265fe0bfa6b1f5a01b7d30c3b4",
+      "bytes": 438,
+      "sha256": "08e2c3baa4e3bae7a65a6e1a2acf83f785764b4084b631fa7eb43d62228737c5"
+    },
+    {
+      "offset": 131072,
+      "limit": 65536,
+      "passed": true,
+      "blob": "e45ec9bc5421e6c6ef1a91e5bba2cf5d8ac22a0f",
+      "bytes": 440,
+      "sha256": "86f2111c36f8d38f9d81817787b3c61bfafe36b19b7ff103506547cf4a9dccdc"
+    },
+    {
+      "offset": 196608,
+      "limit": 65536,
+      "passed": true,
+      "blob": "3dbb58645a1ccf4bc4573373b0aa9e170ab39c4f",
+      "bytes": 440,
+      "sha256": "b09def7abee32c9a014bd25f74b90747aa4d493e7ea883d9ac9d6001ac4c6b41"
+    },
+    {
+      "offset": 262144,
+      "limit": 65536,
+      "passed": true,
+      "blob": "2780c676c0d0fbb9ec30dfe1d8ebff149a09c763",
+      "bytes": 440,
+      "sha256": "08a5c6fe858ec479bd379330507c20d2ce714bed1122c5b82cfaeb42ad89f6b1"
+    },
+    {
+      "offset": 327680,
+      "limit": 65536,
+      "passed": true,
+      "blob": "e7bc24ca34853e1b47ca7cdc035a64a64f3bcdbf",
+      "bytes": 440,
+      "sha256": "7811cb921a12e67f10d2bc28aaca6018abc8b2dd7c21754e720ef62eb6d60bca"
+    },
+    {
+      "offset": 393216,
+      "limit": 65536,
+      "passed": true,
+      "blob": "32e1d307aee89492fe94faf73eb410d10b446a54",
+      "bytes": 440,
+      "sha256": "4a185faba57b528d343fc29471640b53467a3311c7961ef39c696dad940de802"
+    },
+    {
+      "offset": 458752,
+      "limit": 6818,
+      "passed": true,
+      "blob": "b20329116b397801a1834f2348d582fc92d15a93",
+      "bytes": 439,
+      "sha256": "574ba5639b6055626148fd39b88a76c0f8928ff1bd16bb41780f415b6dea57f8"
+    }
+  ],
+  "source_review": {
+    "only_remaining_seven_fixed_public_binary_reads": true,
+    "offset_zero_forbidden": true,
+    "same_original_operation_status_pages": true,
+    "complete_raw_Native_SDK_stored_before_any_interpretation": true,
+    "complete_raw_Native_SDK_external_tree_and_whole_before_isError_or_parse": true,
+    "exact_request_and_armed_checkpoint_external_before_submit": true,
+    "one_runtime_call_one_future": true,
+    "Git_create_attempt_one": true,
+    "Git_uncertainty_only_expected_objects_read_reconciliation": true,
+    "no_Native_or_create_replay": true,
+    "immutable_Git_read_SDKs_preserved": true,
+    "all_settled_results_inspected_before_batch_failure": true,
+    "per_observer_all_original_pages_and_payload_Merkle_closed_before_next_range": true,
+    "bootstrap_rederives_offset65536_from_original_body0": true,
+    "all_actions_catch_errors_and_retain_shadow_state": true,
+    "failed_checkpoint_not_blindly_reapplied": true,
+    "executor_dependency_absent": true
+  },
+  "not_qualified_by_this_review": {
+    "H2_actual_case_bodies": true,
+    "CLI_live": true,
+    "any_new_business_or_service_mutation": true
+  },
+  "root_Runtime_calls": 0,
+  "root_product_source_edits": 0,
+  "qualified_for_narrow_GO": true
+}

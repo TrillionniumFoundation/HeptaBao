@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-owner-renew-inert-streams-01-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1ae1968c5-fc05-5d62",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

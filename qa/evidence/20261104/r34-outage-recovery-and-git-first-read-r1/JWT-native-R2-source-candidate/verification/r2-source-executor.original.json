@@ -1,0 +1,16 @@
+{
+  "initial": {
+    "chunk_id": "302dfd",
+    "wall_time_seconds": 1.001192419,
+    "session_id": 51304,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "completion": {
+    "chunk_id": "f91aaf",
+    "wall_time_seconds": 0.00002025,
+    "exit_code": 0,
+    "original_token_count": 84,
+    "output": "{\"status\": \"PASS_OFFLINE_SOURCE_DELTA_ONLY\", \"check_count\": 237, \"base_commit\": \"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec\", \"before_r1_tree\": \"d2edfb6d20788d43c26fee5929120fea6fcfd7ca\", \"unchanged_r1_test_count\": 10, \"total_new_test_source_count\": 15, \"compiled\": false, \"rustfmt\": false, \"Rust_tests_executed\": 0, \"Runtime_calls\": 0}\n"
+  }
+}

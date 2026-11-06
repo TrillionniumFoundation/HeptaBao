@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.h2-prepare.exact-read-intent.v1",
+  "GO": {
+    "blob": "8271430c9b433fb88968935d388b2b4b4bd7ce37",
+    "bytes": 6727,
+    "sha256": "828cfecd6f9c94b2970ae2a2ddaefb748148bf44ecef5661f216f53e705665ff"
+  },
+  "original_prepare_job": "1a1ae4ad33e-fc05-5ebf",
+  "tool": "operation_start",
+  "request": {
+    "name": "h2-prepare-result-body-admission-request",
+    "blob": "2ec5a21b25ec9384978b21d13dea8887071ec903",
+    "bytes": 442,
+    "sha256": "e4cc2682ef81dfcb9db2e3a5de088a436e0484990da0e5dc5cd1a7801eb5dc68"
+  },
+  "original_operation_id": null,
+  "business_replay": false,
+  "external_before_call": true
+}

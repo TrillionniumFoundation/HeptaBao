@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.h2-prepare-local-processing-error.v1",
+  "phase": "result-info-local-gate",
+  "error": "result_metadata_observer_not_closed",
+  "cause": "Local selector used observation.label; actual helper records observation.name='result-info'. Original observation.closed=true, active_operation_id=null, pending_call=null, Runtime_call_inflight=false.",
+  "native_operation_id": "9cf75829e7cdc61c5ee1ad44dd0a705f668146793411a89dcfe368fea862ef9f",
+  "original_native_blob": "db37decbde71e0fe71e60bb8fbac0126747fa95c",
+  "native_error": false,
+  "Runtime_submitted_by_failed_gate": false,
+  "candidate_or_evidence_modified": false,
+  "correction": "Use the actual existing observation.name field, preserving all original metadata predicates and all original bytes."
+}

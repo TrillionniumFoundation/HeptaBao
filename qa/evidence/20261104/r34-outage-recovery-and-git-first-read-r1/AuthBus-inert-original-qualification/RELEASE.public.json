@@ -1,0 +1,570 @@
+{
+  "schema": "heptabao.owner-renew-inert.actual-lane-A-release.r1",
+  "rootGo": "964c58fa1ae491cad2f815362a2381686e64837a",
+  "lane": "A",
+  "owner": "/root/authbus_migration",
+  "businessStarts": 1,
+  "originalJob": "1a1ae1968c5-fc05-5d62",
+  "authoritativeTerminal": {
+    "at_unix_ms": 1793922263728,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ae1968c5-fc05-5d62",
+    "launch_nonce": "e32f0982909562352ddd199c17db14a5",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 15393,
+        "stored": 15393
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "authority": {
+    "blob": "dfb6ec250e1edd584007d6c8a66cc89ad8d493ff",
+    "bytes": 733,
+    "sha256": "67e923f418e80a7c7e9c55e4bd1ea196bc3d01ba8d78d1a8fe47b776eade8d9c"
+  },
+  "stdout": {
+    "blob": "e3fcc5f3d4c1d1da041251dac33e83074356cd43",
+    "bytes": 15393,
+    "sha256": "812b40198f13ec5ae9400beab043b9e16ea2d6a725a94fd164e7d1cda2c36bb8"
+  },
+  "stderrBytes": 0,
+  "inertElapsedSeconds": 0.26003133319318295,
+  "originalShared45AndOuter60Unchanged": true,
+  "allOwnedCommandsStopped": true,
+  "allOwnedDescriptorsClosed": true,
+  "all30PublishedPinsAndFull9Matched": true,
+  "externalWhole": [
+    {
+      "role": "bootstrap_outer",
+      "whole": {
+        "blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+        "bytes": 71506,
+        "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+      },
+      "proof": {
+        "blob": "73d84b902b1cc78d96d6b8381661141f4084fdf3",
+        "bytes": 3006,
+        "sha256": "797012027639d3ff13550b4e27dbd07e3ec409c32adb3ebb54c2028da145d45b"
+      },
+      "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+      "full9": [
+        "16777244",
+        "72671139",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "71506",
+        "1793922263700923595",
+        "1793922263700929887"
+      ]
+    },
+    {
+      "role": "runtime_candidate",
+      "whole": {
+        "blob": "42c540b2922123647362fac75008d8ef875e51bc",
+        "bytes": 7211,
+        "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932"
+      },
+      "proof": {
+        "blob": "fb3f50d4c5278f9306a2345173a909b50be6d8dc",
+        "bytes": 1929,
+        "sha256": "e507fc0825f691a31dec1b33a6f8fb5668e1e23e4f2e2cff95123f48fcc711ce"
+      },
+      "version": "16777244:72671151:7211:1793922263708371886:1793922263708377928",
+      "full9": [
+        "16777244",
+        "72671151",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7211",
+        "1793922263708371886",
+        "1793922263708377928"
+      ]
+    },
+    {
+      "role": "inert_receipt",
+      "whole": {
+        "blob": "0c10cf65ad0519e4f4de95b95363b93e9d6f4b8b",
+        "bytes": 12994,
+        "sha256": "bf03a4e84c7297b0121c1750997fafe4ca8ea4efe656b9353248dc24b101a1d1"
+      },
+      "proof": {
+        "blob": "6fedcf5b92f412085dca45f9e7dfce6e44c7c15d",
+        "bytes": 2068,
+        "sha256": "1817f50b68b3ac422dcd0de73a9696d981bb0e1d85246a0e73211c9df61b8d15"
+      },
+      "version": "16777244:72671152:12994:1793922263708983153:1793922263708991695",
+      "full9": [
+        "16777244",
+        "72671152",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "12994",
+        "1793922263708983153",
+        "1793922263708991695"
+      ]
+    }
+  ],
+  "metadataOperations": 3,
+  "bodyOperations": 4,
+  "returnedBodyBytes": 91711,
+  "bodyCap": 144253,
+  "originalObserverCount": 9,
+  "immutablePageCount": 29,
+  "observers": [
+    {
+      "name": "authority-01",
+      "operation_id": "61c520c15b762d2666c06cf39bad1a7f1f3744faf99b469f01720cf9e5209edd",
+      "tool": "process_status",
+      "request": {
+        "blob": "9e0568a77b1561201d5e00ebe0421531ec1aff36",
+        "bytes": 221,
+        "sha256": "e5d5cafeab66e7c4de82482e271d6087446eff58c4e2963f8a30ad924d1007e5"
+      },
+      "ACKSDK": {
+        "blob": "bf53a057c7fe6cff4e105abafd545b8cb1745915",
+        "bytes": 709,
+        "sha256": "a9b1b706edec528b5dda939d79baecfedb88db9e05eba9addc81f442bf4583d1"
+      },
+      "statusSDK": {
+        "blob": "53bab820b5eb08b8b569bdd115131beeedac240e",
+        "bytes": 980,
+        "sha256": "7618f7151ba7f31b60caa3f6b60a2b89ba6c597fd89b721ac924b999e068f4e4"
+      },
+      "statusNative": {
+        "blob": "9f3c4c57c6e014c4ee9ccca1e27e8f3e561e2e38",
+        "bytes": 805,
+        "sha256": "3955b06dc9cb84a0ec995df783a4c829af1cdac9291db580e874a782692d1f7a"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0
+      ],
+      "payload": {
+        "blob": "e47070327767b0fde2d929bf67dab959a21dc67c",
+        "bytes": 912,
+        "sha256": "899b6d9993069c8e16e6ff70aaaed99c64325672eabbb821bb33958379fb4941"
+      },
+      "native": {
+        "blob": "dfb6ec250e1edd584007d6c8a66cc89ad8d493ff",
+        "bytes": 733,
+        "sha256": "67e923f418e80a7c7e9c55e4bd1ea196bc3d01ba8d78d1a8fe47b776eade8d9c"
+      }
+    },
+    {
+      "name": "streams-01",
+      "operation_id": "b7234718057347cb2685e8a12b91e03a95f2f48a37bb8e774f242e42785f4ddb",
+      "tool": "process_read",
+      "request": {
+        "blob": "70e367c9fbbf38563ba42990b172c941e092fd92",
+        "bytes": 291,
+        "sha256": "44b4dafd252bfa6684e95d54bbc464c0f411c85e48ed76c38afabb33ab218ce9"
+      },
+      "ACKSDK": {
+        "blob": "64e074bcea39e59495834cd8b776a3cd2f110fc4",
+        "bytes": 707,
+        "sha256": "55556bb19b908e78f6c4adbba1e898fd4930b6294415f6a3dcf4e5d9c127e1d1"
+      },
+      "statusSDK": {
+        "blob": "178f88afd7615285801ba94830bd4f087743bb4c",
+        "bytes": 978,
+        "sha256": "f923a95996e4b7200c39874b0daccd354ffabc2c5ebb73e4c14d3829a9cdf137"
+      },
+      "statusNative": {
+        "blob": "e7971af834e07be29b54f6100efd16a0bf10189e",
+        "bytes": 803,
+        "sha256": "433e8092feaff3133ce3b11be64b98c8b358feb28e47c445f546d6caf359df20"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0,
+        8192,
+        16384,
+        24576,
+        32768,
+        40960,
+        49152
+      ],
+      "payload": {
+        "blob": "eb4353060e4b7c821fcf4ef877fa058679fd0f76",
+        "bytes": 51644,
+        "sha256": "131f5e26e880dc7fcaf1078b0891ee3c53ed8418b40fdd91fd48e4362367b79a"
+      },
+      "native": {
+        "blob": "b495299743dd5c65cbfe39aeffc0bf807b7b679d",
+        "bytes": 48171,
+        "sha256": "b31f0d1eb80881944f0ad03a2f81ae875b29065ee9985b98d7e00d12924d74a8"
+      }
+    },
+    {
+      "name": "outer-info",
+      "operation_id": "5217c8a2ea11ff7e3709c69407c0bcf5f08c66f49918f0dd4618bf909500d8c5",
+      "tool": "file_info",
+      "request": {
+        "blob": "56c177329ca38cbcdf84ab992e27c5283d843552",
+        "bytes": 313,
+        "sha256": "9c866d9897e81b01b259bade8ca4850b9d77ebdddb21502206a6052d12aa53df"
+      },
+      "ACKSDK": {
+        "blob": "0fc7b609f79201f2b27e2ad196a6fa4cc6cfe7b4",
+        "bytes": 704,
+        "sha256": "a5a1f3d85d4de0dc2a62bbaeafde8a73476b7aa42286ea8b07c4592d470b3a8a"
+      },
+      "statusSDK": {
+        "blob": "8101f19acb6b972aaa65c572a14da7368ef3b05a",
+        "bytes": 975,
+        "sha256": "6de14eaffa2d9fddfaadd47f9d34106f36ae20e7e00c19ab26d98fda2ac01955"
+      },
+      "statusNative": {
+        "blob": "13c2195af1eef50e252ede4a286223c8d03da8cc",
+        "bytes": 800,
+        "sha256": "7e5c75988ed9e8bea74fe3b015d940ed932b71dda2c41c2d19769ef2bdb76a5f"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0
+      ],
+      "payload": {
+        "blob": "1240a42b45e2349d9fe303abbafa1ead600bd19b",
+        "bytes": 618,
+        "sha256": "f6031f87ed1c46ef5639445eb5f6193415ddb967bdb9ab98612ac4b1ece46461"
+      },
+      "native": {
+        "blob": "d651a87ba51820f75ac330359c3429072866a0f6",
+        "bytes": 501,
+        "sha256": "cc944e553f6354d2a6297ad7cb658c60f0071573b9146498de6a9692529390c7"
+      }
+    },
+    {
+      "name": "candidate-info",
+      "operation_id": "f8cdaf67d13ba7f10c39faeacef6a86c36292454e0e899bbd345b9beb0d7defd",
+      "tool": "file_info",
+      "request": {
+        "blob": "2263db35a8e968afb6344b539edf630cb4fef109",
+        "bytes": 329,
+        "sha256": "734cec4b2f5534b999ff30d97262fb72bd4427ce62e6afa191b759302fa71052"
+      },
+      "ACKSDK": {
+        "blob": "a83a526e03f95672894a1b157ad731ef49d08492",
+        "bytes": 704,
+        "sha256": "4a49573c0a98a8ec6e181506cbf7ca02b5b021c76f17733301ea71c9353e9555"
+      },
+      "statusSDK": {
+        "blob": "128e95ce341049b656c310fd276dcc890f84b65b",
+        "bytes": 975,
+        "sha256": "c32001651d8d05df2a8bc4c9790a30d826f885fbc2b06c8d874a81e6e10e4ce1"
+      },
+      "statusNative": {
+        "blob": "703c00253186bc37fff12db1ff740d5bdae1330f",
+        "bytes": 800,
+        "sha256": "2c3b890a226034983a49f85dbfcc4ca3b595c331cb82310813d135ddd7ceef85"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0
+      ],
+      "payload": {
+        "blob": "1563637d60e9ba2adce1616a19632532bef896d9",
+        "bytes": 630,
+        "sha256": "ec85cfbae74221cd2493380cd448a4fbc9c0e1bc4281742fbae7fd99bba43579"
+      },
+      "native": {
+        "blob": "30e0b13becfd06772eb2c7e2f3c53948c2b74e90",
+        "bytes": 513,
+        "sha256": "947a7abac9164b0e82b5b2358198b30b5a874aa92f434454205bbdd12b514cac"
+      }
+    },
+    {
+      "name": "receipt-info",
+      "operation_id": "27b8e2d7bebffbfa9467a89f0b2de94e8b1a69a164c1c3d8abf25a9d2ea2ae35",
+      "tool": "file_info",
+      "request": {
+        "blob": "27f448937660c77a2b8a578e2024d2d56db9f31f",
+        "bytes": 324,
+        "sha256": "59be3479f40bd0a7d950932480f4863bf780236aa2ed1d9a28753e42a7e5baa7"
+      },
+      "ACKSDK": {
+        "blob": "5100a0d0dc83ecdc92202e1599ae8a49fe637740",
+        "bytes": 704,
+        "sha256": "a59edfc88977752d469445a2ca86a59e5de0dcc56832bad98636560da376185c"
+      },
+      "statusSDK": {
+        "blob": "78211e4a220cacdfb1ef746f6f87d7b9c33d79ba",
+        "bytes": 975,
+        "sha256": "23d6bcbd567d41cc4e40eb1e5b6250de3971ced069a24edde213bf4ed0aa5958"
+      },
+      "statusNative": {
+        "blob": "bede55b4cd63f71495d1aa5b96466f3ba5010ad2",
+        "bytes": 800,
+        "sha256": "e02239f13a49dd803f0902c6f4e5c740929cbe7e35a726f971bb447eee74bb9f"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0
+      ],
+      "payload": {
+        "blob": "21e58485d843a6529fb7feb0ed5c2a9b79707c99",
+        "bytes": 631,
+        "sha256": "08b963473a697cf74133c72d30552bcdaf514752e77dbaaa6c7e0bbc33f9d9e1"
+      },
+      "native": {
+        "blob": "b2c686da5c2900a8e88b8ec865f2347200463670",
+        "bytes": 514,
+        "sha256": "10137ac5331067fa3b153c2bc807e28930402c3fb2432a7e70c551da2f9dc2a7"
+      }
+    },
+    {
+      "name": "outer-body-0",
+      "operation_id": "4246638cb66bf68174d3266aaf46ddfc49e0e7b79d3bb7bfc1e10565fcccec41",
+      "tool": "binary_read",
+      "request": {
+        "blob": "5a237c7eb074e27985f532a7f0486ed19af349e1",
+        "bytes": 446,
+        "sha256": "a1ff26a0908ded8b2b7ed48d27986f217c7adb7c7c8521a94034403cb7c2b3a7"
+      },
+      "ACKSDK": {
+        "blob": "9d1a01cae914f702c119c204d4cb7e71eb0749e0",
+        "bytes": 706,
+        "sha256": "c1e22e71295ce6214bcfc27bcfd61148bb6c25fa7cfc366433945327b845c140"
+      },
+      "statusSDK": {
+        "blob": "d7a3733bae6f958944c517668a23b7f094720924",
+        "bytes": 977,
+        "sha256": "8dd750dcb6a871342338ccdb9a79e64780ddc463b7c688e9ba03d13fc78f8dda"
+      },
+      "statusNative": {
+        "blob": "4f6924756ea4dc7917d858fa82c16f01c9062f94",
+        "bytes": 802,
+        "sha256": "2a4a34fef0842fa39f98a684089c1d52fae2d75e7bb9f9578eb77996c823c5ee"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0,
+        8192,
+        16384,
+        24576,
+        32768,
+        40960,
+        49152,
+        57344,
+        65536,
+        73728,
+        81920
+      ],
+      "payload": {
+        "blob": "1c4211dbe2533999a3bd6a608277786ad87e58e7",
+        "bytes": 87841,
+        "sha256": "25bacf316cf1168f90236d4e05ac93a29e9f2384032cbc368cd51e57f3c41c81"
+      },
+      "native": {
+        "blob": "2a7f19fe91bdf46076513dc31345e9fc91b132aa",
+        "bytes": 87738,
+        "sha256": "8342306dce96f0d76dbefc185a97918767faa2682073040620ceb725fb2d1025"
+      }
+    },
+    {
+      "name": "outer-body-65536",
+      "operation_id": "855b6489b764b9c922cd634d38d60fbfb30cb7ebe5f7afd34842055984730aeb",
+      "tool": "binary_read",
+      "request": {
+        "blob": "e71cb1d750bf6b42d0923e6f0acd8804ef8fe1ef",
+        "bytes": 449,
+        "sha256": "1c4ccd0ae06a6a2c2ebc9ad74e7080ae6d80b3131e55bb0ccf0d7a9bc2cef667"
+      },
+      "ACKSDK": {
+        "blob": "7e0059aff4909dbec72e1090ae0f6eb2e342ec71",
+        "bytes": 706,
+        "sha256": "2c70ccf7405f6aea81845d7175e29e82f46aba0986a7f2f55810411e528fe3a3"
+      },
+      "statusSDK": {
+        "blob": "00fe175a46e4859e8ec51388fb5062fea9714775",
+        "bytes": 977,
+        "sha256": "504960702b263e43320ed105b381598e16d9169d39d623ea9a256b50eeca658a"
+      },
+      "statusNative": {
+        "blob": "880da5ebe2d9ac98b9eeb2d875cd22b11219354a",
+        "bytes": 802,
+        "sha256": "fdc583fd5222769dcbb1646763f38187c656fca84448583b407de77d2cdad5a7"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0,
+        8192
+      ],
+      "payload": {
+        "blob": "5201e5bb34ed1efd026b72e0ea077654be2cdc69",
+        "bytes": 8420,
+        "sha256": "31b200b4f507864b3abc954d506747d787eeb92bb966be56859376fcb2f4111c"
+      },
+      "native": {
+        "blob": "db30160887463419e70ff1f053e2ad000e9430ef",
+        "bytes": 8317,
+        "sha256": "1b1dc1c7595af963f0ffb1b30bb0f4c5af0d9633d25791bad65418daf016b120"
+      }
+    },
+    {
+      "name": "candidate-body-0",
+      "operation_id": "42a0a4a266ce9f35211c973b9bc467968fb19d61e2c18895a8cd03710facfcc0",
+      "tool": "binary_read",
+      "request": {
+        "blob": "6154291c4ded622d5a68888d7d79a8ce2da700db",
+        "bytes": 455,
+        "sha256": "899808466e852bea1cc37c0ea6f56df19264142e767382459dc2bd36a1990855"
+      },
+      "ACKSDK": {
+        "blob": "ebc8ade3e42869e29ae47d8a39bc79c36f299b2c",
+        "bytes": 706,
+        "sha256": "7b00da6d4ade5f7c7405344c869064c46336b75dc0b985144545204fc68b6b76"
+      },
+      "statusSDK": {
+        "blob": "1d3d33d7eb2eaa70974589792b157bcbf4d729be",
+        "bytes": 977,
+        "sha256": "5f60b0807edd870ce5fffcb572c3e6da034563152fc8f25aa6b4a37619140d07"
+      },
+      "statusNative": {
+        "blob": "216b0ca1ba2d284fe16b4f255f70a84d72c91509",
+        "bytes": 802,
+        "sha256": "ec888b0332e43982534922d73cba224064a05b93dc4b7e999bc4c4a1a91aead0"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0,
+        8192
+      ],
+      "payload": {
+        "blob": "db5fa8bfd1029f9b97bf178fb0ad6794c9c695a3",
+        "bytes": 10083,
+        "sha256": "1ef829377578b5b89d22c340f45f21f4bc5d672121c31b9a27ef16b6a08e0237"
+      },
+      "native": {
+        "blob": "148f557c3de313fdda4a216cfd4f95178685d3dc",
+        "bytes": 9980,
+        "sha256": "ada1c1af2f7ffcc4a6f8f182a9a929180dbe793e4685441d2874bf793d511050"
+      }
+    },
+    {
+      "name": "receipt-body-0",
+      "operation_id": "97f22bee011c2c0a263c61f91177ea1dfc74229f2670505d08545962c3930fb6",
+      "tool": "binary_read",
+      "request": {
+        "blob": "bf36a27519bb8db1421ed3b3935a9267836b221a",
+        "bytes": 454,
+        "sha256": "9d10d04cf1662d9810499e3bb392dc4408204d2ed75681a07ff473b71ead2cc5"
+      },
+      "ACKSDK": {
+        "blob": "cf06330ce16a32a15fc27c4b8c1324780e99bb92",
+        "bytes": 706,
+        "sha256": "5e3ec6f9a036404e506e1f18f73b55869e0fcb5e13f07f71fa47b2407614bc10"
+      },
+      "statusSDK": {
+        "blob": "6bd24b391518fcae4f26ba24098cdfa4399116e9",
+        "bytes": 977,
+        "sha256": "e0a1d2c2b74e9ef1e7a8499256ed92bd28762c6d59226d6da4a28db922cbcb64"
+      },
+      "statusNative": {
+        "blob": "db57fb33443f52a92e872e28f8de8ba9fdcb927a",
+        "bytes": 802,
+        "sha256": "013d384cde0a032c69066799a83d2fc8c559a9b0df0a7b41f4c374ccfde716ef"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_available": true,
+      "complete": true,
+      "futureClosed": true,
+      "immutableOffsets": [
+        0,
+        8192,
+        16384
+      ],
+      "payload": {
+        "blob": "4b156a8e8b62af885c0bde774348f23c6e195589",
+        "bytes": 17797,
+        "sha256": "38dc0b7e7d56f03e1a2c6091419f2277069acdabf9be19e68efc95822a264646"
+      },
+      "native": {
+        "blob": "0753b8a1cf0e77a8a0a344f37d43c2fb84188f16",
+        "bytes": 17694,
+        "sha256": "bdf136bb95670f94c5eaec119bf2e4e371ccbd748f24bfc7044f187736d3c54c"
+      }
+    }
+  ],
+  "runtimeCallsInFlight": 0,
+  "knownNativeFuturesActive": 0,
+  "newNativeAdmissionsStopped": true,
+  "nativeErrorsThisRun": 0,
+  "oldUnknownRecordsUnchanged": true,
+  "fullWorkerSubmitted": false,
+  "fullWorkerAuthorized": false,
+  "releaseScope": "Only this current inert and its approved fixed observations; root coordinates next lane use."
+}

@@ -1,0 +1,11 @@
+--- a/crates/heptabao-server/src/federated_auth.rs
++++ b/crates/heptabao-server/src/federated_auth.rs
+@@ -38,7 +38,7 @@
+ 
+ #[path = "federated_native_jwt.rs"]
+ mod native_jwt;
+-pub(crate) use native_jwt::NativeJwtTimePolicy;
++pub(crate) use native_jwt::{NativeJwtLifetime, NativeJwtTimePolicy};
+ #[path = "federated_jwt_bound_claims.rs"]
+ mod bound_claims;
+ pub(crate) use bound_claims::{NativeJwtBoundClaims, NativeJwtBoundClaimsType};

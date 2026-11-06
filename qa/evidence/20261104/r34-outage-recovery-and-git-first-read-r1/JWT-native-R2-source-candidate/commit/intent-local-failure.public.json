@@ -1,0 +1,11 @@
+{
+  "cell_id": "g4:295",
+  "status": "Script failed",
+  "wall_seconds": 644,
+  "output": "Script error:\nExit code: 1\nWall time: 644 seconds\nOutput:\nFailed to write file /workspace/scratch/f86faac821c4/r32_recovery/pending-d3a01757a0f71278bdb90bebb732e9b55d9e4734.json",
+  "boundary": "local pending write before Git mutation",
+  "source_commit_submitted": false,
+  "Runtime_calls": 0,
+  "record_source": "Recorded from the actual functions.wait return; not a recreated missing executor SDK.",
+  "helper_save_prefix": "meta -> await H.persist(pending-blob) -> only then github_create_tree; actual error was in first await."
+}

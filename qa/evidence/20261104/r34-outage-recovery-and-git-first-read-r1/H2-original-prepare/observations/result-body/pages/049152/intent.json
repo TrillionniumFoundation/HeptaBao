@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.h2-prepare.exact-read-intent.v1",
+  "GO": {
+    "blob": "8271430c9b433fb88968935d388b2b4b4bd7ce37",
+    "bytes": 6727,
+    "sha256": "828cfecd6f9c94b2970ae2a2ddaefb748148bf44ecef5661f216f53e705665ff"
+  },
+  "original_prepare_job": "1a1ae4ad33e-fc05-5ebf",
+  "tool": "operation_result",
+  "request": {
+    "name": "h2-prepare-result-body-page-049152-request",
+    "blob": "b4502ce1d5ffeedaac923a6247b94fa86ad2d00a",
+    "bytes": 125,
+    "sha256": "98800adbb7841e2a2b256dd7a2dec4c655bcc9c9db4b50b611f7e46eb277e821"
+  },
+  "original_operation_id": "d63a94d1a4c0ab614305777a85346fca49bd547125c31578403f671871d89ce8",
+  "business_replay": false,
+  "external_before_call": true
+}

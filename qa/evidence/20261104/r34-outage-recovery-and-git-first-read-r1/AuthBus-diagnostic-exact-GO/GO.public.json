@@ -1,0 +1,188 @@
+{
+  "schema": "heptabao.root-GO.Mac-original-label-readonly-diagnostic-Git-first.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 02:40:36 UTC",
+  "agent": "/root/authbus_migration",
+  "purpose": "Fresh read-only diagnosis of the exact original owned test registration after original worker failure; no original failure is reclassified",
+  "source_packet": "b5e18906ed27f2738dda403ce16eb8a3f53fb848",
+  "source_review": "10079e95735e3f2aed63f47db8eceb5aa8cc1148",
+  "journal_packet": "eba526f5688393d4f61760c4bbc581bc10b705cd",
+  "journal_review": {
+    "blob": "f75eef3ae1654ac9b0b314b491f46d9675cea91d",
+    "bytes": 3716,
+    "sha256": "a333d0a78613e6457a2f92564dbede102fc5e2c143e1da3d57f0be0de9900635"
+  },
+  "helpers": {
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "native": {
+      "blob": "c61872aff6529e34ca89121d5c09702f8d56792c",
+      "bytes": 19027,
+      "sha256": "1aa2e506fd68673b182339194f47b091ec4c2c6b810498d69e2e0dec0970503c"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "steps": {
+      "blob": "0a9de9aeef35470ff28150949c8a5e341b7688cb",
+      "bytes": 1815,
+      "sha256": "f865f3154992ae1f29cc1a0b77d4970238f7f9e55faf6d0ca237f6822d5c2799"
+    }
+  },
+  "exact_request": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4"
+  },
+  "source": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "native_binding": {
+    "sha256": "27412a077919b5f988477d9a0fcd4bdd7e5d049f21d2c1367ff35bd56f0d67ec",
+    "native_fingerprint": "2828588252550247929",
+    "typed_stdin_field": "stdin"
+  },
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-launchd-readonly-e573407b-20261106-r1",
+    "maximum_START_count": 1
+  },
+  "original_binding": {
+    "job": "mac/1a1ae51309d-fc05-5ef8",
+    "label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "plist_sha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+    "plan_sha256": "5b94c4b970dec5e3550b66b22700b9fff507f08062fc2a860c0399ed38802aab",
+    "original_failure_and_registration_UNKNOWN_preserved": true
+  },
+  "allowed_readset": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist",
+      "kind": "whole owned plist",
+      "cap": 65536,
+      "required": true,
+      "sha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+      "postParse": "complete original expected dictionary and 17 arguments; only equality is published"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.ready.public.json",
+      "kind": "whole public ready JSON",
+      "cap": 8192,
+      "required": false,
+      "postParse": "exact six keys, original schema/generation/planSHA; seven numeric/executable identity fields and finite monotonic times only"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.exec-ready.public.json",
+      "kind": "whole public pre-finally candidate JSON",
+      "cap": 65536,
+      "required": false,
+      "postParse": "allowlisted typed wrapper summary; ok=false in this pre-finally file is not itself a failure or exec proof"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private",
+      "kind": "PRIVATE LOG PATH; only first LF-delimited wrapper public record",
+      "firstPassCap": 65536,
+      "verificationCap": 65536,
+      "maximumWholeFileSizeWithoutReadingWhole": 2097152,
+      "required": false,
+      "firstPass": "os.read(fd,1), stop immediately on first LF; never read trailing content",
+      "secondPass": "one os.pread of exactly the first-pass prefix; no trailing bytes",
+      "noCompleteLine": "report missing/incomplete first record, never parse or output the partial text",
+      "postParse": "exact wrapper schema and typed allowlist; no raw line, free text, environment, args, config, plan, credentials or later server logs"
+    }
+  ],
+  "allowed_helpers": [
+    {
+      "argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5"
+      ],
+      "seconds": 30,
+      "absolute45Clipped": true,
+      "outputPerStream": 262144
+    },
+    {
+      "argv": [
+        "/bin/launchctl",
+        "print",
+        "gui/501/org.heptabao.qa.mac-authbus-4e808-owner-r1.server"
+      ],
+      "seconds": 10,
+      "absolute45Clipped": true,
+      "outputPerStream": 262144
+    }
+  ],
+  "read_scope": {
+    "private_log_path": "Only the first LF-delimited wrapper public record; one-byte first pass then identical-length pread; strict typed public projection. No later bytes or raw line exported.",
+    "original_parse_print_unchanged": true,
+    "old_server_signal_or_label_mutation": false,
+    "private_plan_config_capsule_read": false,
+    "directory_enumeration": false
+  },
+  "budgets": {
+    "diagnostic_seconds": 45,
+    "outer_seconds": 60,
+    "body_returned_bytes": 270340,
+    "read_syscalls": 65560,
+    "max_T5_descriptor_rows": 19,
+    "peak_T5_descriptors": 7,
+    "output_bytes": 131072,
+    "process_read_limit": 16384,
+    "new_observer_page_bytes": 8192,
+    "original_payload_cap": 1048576,
+    "max_Runtime_lanes": 2,
+    "one_call_and_one_future_per_lane": true
+  },
+  "journal": {
+    "invoke_only_through": "gfRun",
+    "initialize_only_once_with_this_whole_GO_and_root_digest": true,
+    "prepare_exact_request_intent_armed_external_tree_and_all_blobs_whole": true,
+    "separate_model_boundary_before_invoke": true,
+    "full_returned_SDK_retained_then_external_whole_before_any_interpretation": true,
+    "errors_return_normally_with_immutable_history": true,
+    "original_job_after_ACK": "Only this actual returned job_id for process_status/process_read; never infer or substitute another job",
+    "original_operations": "Only the active original operation_id for status and exact next 8192-byte immutable pages; complete payload SHA/EOF and no active future before next observer",
+    "Git_unknown": "Preserve original SDK/expected tree/blob and stop; exact read-only reconciliation only. No create replay, Native replay or automatic unpause.",
+    "Native_unknown": "Preserve original SDK/exception and armed binding; stop. Never change key or rerun start.",
+    "local_executor_required": false
+  },
+  "qualification": {
+    "requires_authority_exit0_complete_durable_stdout": true,
+    "requires_actual_new_helper_and_descriptor_closure": true,
+    "requires_final_45_second_deadline_after_closure": true,
+    "does_not_grant_old_registration_or_lineage_closure": true,
+    "does_not_grant_AppRole_TLS_KV_Policy_renew_revoke_or_provider_qualification": true
+  },
+  "excluded": [
+    "bootout",
+    "old PID or PGID signals",
+    "restart or re-run original worker",
+    "new fixture or production change",
+    "provider/J3160 calls",
+    "private credential export",
+    "deadline or parser weakening",
+    "CLI or build work"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.native-jwt.acl-oracle.primary-source.v1",
+  "official_root_report": "295980f0394775b8dcccdfd90ce0d389ee369f62",
+  "references": [
+    {
+      "packet_path": "references/official/config.go",
+      "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+      "bytes": 24654,
+      "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80",
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/builtin/credential/jwt/path_config.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/path_config.go"
+    },
+    {
+      "packet_path": "references/official/role.go",
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+      "bytes": 25759,
+      "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d",
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/builtin/credential/jwt/path_role.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/path_role.go"
+    },
+    {
+      "packet_path": "references/official/backend.go",
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a",
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/builtin/credential/jwt/backend.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/backend.go"
+    },
+    {
+      "packet_path": "references/official/http_logical.go",
+      "blob": "7c091863ff2496db948ad945060d320d66b4bb7f",
+      "bytes": 15421,
+      "sha256": "5d474557d9dd8a28f0dfa3a83eb3c8e2fac502fae8b3404a3df1cc81c438f451",
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/http/logical.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/logical.go"
+    },
+    {
+      "packet_path": "references/official/acl.go",
+      "blob": "2251475f3161a7eca462c0098b0ef6f8c970a553",
+      "bytes": 27409,
+      "sha256": "6e75975d1f7ad3dd52eea2e9a87febcd3c4d7ea0c15965c20bf8b7ed6ecc3a17",
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/vault/policy/acl.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/policy/acl.go"
+    },
+    {
+      "packet_path": "references/current/auth.rs",
+      "blob": "19646b7848e5588d72f5514400d607696549611d",
+      "bytes": 397709,
+      "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+      "path": "crates/heptabao-server/src/auth.rs",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/e3afc157447d35c861f275a761b29da3e42aff8e/crates/heptabao-server/src/auth.rs"
+    },
+    {
+      "packet_path": "references/current/auth_native_jwt.rs",
+      "blob": "2e76f906edefb92406328459fd6c5711dfa7ad2b",
+      "bytes": 17391,
+      "sha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/e3afc157447d35c861f275a761b29da3e42aff8e/crates/heptabao-server/src/auth_native_jwt.rs"
+    },
+    {
+      "packet_path": "references/current/auth_jwt_pem.rs",
+      "blob": "9ea3ae19b523bd9e0b05e08feca98e8be338464c",
+      "bytes": 7687,
+      "sha256": "418e033a050fc13433d7351b47b40f4f2a648411252282007e979bdad5571254",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "path": "crates/heptabao-server/src/auth_jwt_pem.rs",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/auth_jwt_pem.rs"
+    },
+    {
+      "packet_path": "references/current/http.rs",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825",
+      "bytes": 231923,
+      "sha256": "6d90383db0dabca25b6f6806e2b5923352976f4c4a69b2cce9a0a2dde7d727eb",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "path": "crates/heptabao-server/src/http.rs",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/4e808d0ecb1bcded22870a7ec960dfb2491cf6ec/crates/heptabao-server/src/http.rs"
+    }
+  ],
+  "no_candidate_changed": true,
+  "Runtime_calls": 0,
+  "compile": false
+}

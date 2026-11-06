@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.owner-renew-inert.original-ack-binding.r1",
+  "job_id": "1a1ae1968c5-fc05-5d62",
+  "host": "mac",
+  "request": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+  "intent": "155e54c7a520ee33b4964406a0365cb8fd5349e8",
+  "sdk": {
+    "blob": "4296ffd163d29e4220461629c529c6ff6ae81016",
+    "bytes": 18020,
+    "sha256": "2a306ddb044e11d5419b9121fa54c5f70ad3a143f6b8ed72daa55e4132cb540e"
+  },
+  "native": {
+    "blob": "2bbf1b1d4c04e70a1e127a4eb910b4cf3bfa3f6b",
+    "bytes": 17185,
+    "sha256": "62b17a9bfb2bb698bc9befd7fe265bae25f71fca646a91b08720bc480265a514"
+  },
+  "request_digest": "e267418ec6d90ed3d5f9ae3fb2f3fb6cc2346e69e6b70be905777edefa05e38a",
+  "request_fingerprint": "16314080256650186451",
+  "reused": false,
+  "launch_state": "launched",
+  "exactArgvCwdExecutable": true,
+  "stageQualified": false
+}

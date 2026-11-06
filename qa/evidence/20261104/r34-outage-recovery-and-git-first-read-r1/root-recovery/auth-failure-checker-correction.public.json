@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.root-auth-failure-page-count-checker-correction.v1",
+  "original_verifier": {
+    "blob": "92608bed7297f85009b13e7c7e96393f9c332f32",
+    "bytes": 6973,
+    "sha256": "911933fae7b395be4be52c3c8743b8ae0d6e8250bd93b1d269384e536c1a759d"
+  },
+  "original_result": {
+    "blob": "c96c1600d38e1d583e246513bc7a9203ecc6c96c",
+    "bytes": 6470,
+    "sha256": "9922625bc13789dee8cb3e7ee17aacdf442efaba77ad74f9f80cb36ce281477d"
+  },
+  "original_passed": 64,
+  "original_total": 65,
+  "original_failure": "fifty_five_original_pages",
+  "cause": "Owner release pages is an integer count, not an array; root incorrectly used .length.",
+  "corrected_verifier": {
+    "blob": "4ba5a8ec7e78a209749cd6148943895a7d8642db",
+    "bytes": 7057,
+    "sha256": "4c811503694b87d8104fe9f6b681193d4fea481607ffa703fb3bf5ffe2b51e14"
+  },
+  "corrected_result": {
+    "blob": "b0e399383e1ea4285711acd902bb6f61202a7658",
+    "bytes": 6468,
+    "sha256": "eca0dfc6cd5bb100b525a1425e4bb22979442f30468a1bb3307996bfa401eaac"
+  },
+  "corrected_passed": 65,
+  "all_actual_inputs_unchanged": true,
+  "product_success": false,
+  "root_Runtime_calls": 0
+}

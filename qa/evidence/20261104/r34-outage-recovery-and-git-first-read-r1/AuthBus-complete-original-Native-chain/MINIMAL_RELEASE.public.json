@@ -1,0 +1,652 @@
+{
+  "schema": "heptabao.mac-owner-renew-original-worker-minimal-closure.v1",
+  "scope": "Original full worker and its read observers only; known outer failure and UNKNOWN original server registration are separate.",
+  "rootGO": "fe53245e77d33c5bea2cff96def394ffaaf3f31e",
+  "pageAmendment": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+  "original": {
+    "host": "mac",
+    "job_id": "1a1ae51309d-fc05-5ef8",
+    "request": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+    "intent": "ca0a1e2b19d294f1e01f619cdcfaad8ea7f041c5",
+    "ACK_SDK": "ac69e3dfe1ce47d2db9f28ced3739ecf7f9b9114",
+    "ACK_native": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+    "authority": {
+      "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+      "bytes": 732,
+      "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+    },
+    "stdout": {
+      "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+      "bytes": 132132,
+      "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+    },
+    "stderr": {
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "authority": {
+    "state": "failed",
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "cancelled": false
+  },
+  "failure": {
+    "ok": false,
+    "outcomeUnknown": true,
+    "errorCode": null,
+    "errorType": "ManagerRefused",
+    "errorFrames": [
+      {
+        "file": "mac_current_outer_wal_r1.py",
+        "line": 1030
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 374
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 263
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 143
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 76
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 39
+      }
+    ],
+    "cleanupErrorCode": "typed_launchctl_integer",
+    "cleanupErrorType": "ManagerRefused",
+    "elapsedSeconds": 1.5912203337065876,
+    "completedOperationCount": 0,
+    "ownedPhaseCount": 0,
+    "businessChecks": 0,
+    "originalPrintRawAvailableInReport": false,
+    "integerFieldActuallyRejected": null,
+    "firstFailureCauseValueNotReconstructed": true
+  },
+  "actualScope": {
+    "productionCaptureAttempted": true,
+    "beforeCaptureKnownExitZero": true,
+    "beforeCaptureLibraryClosed": true,
+    "privateFrozenInputsAttempted": true,
+    "privateCapsuleBytes": 195155,
+    "credentialValuesPublished": false,
+    "productionChangedByController": false,
+    "productionServiceOperationDispatched": false,
+    "providerRequested": false,
+    "j3160Contacted": false,
+    "selectedOwnerQualified": false,
+    "AppRoleTLSKVPolicyRenewRevokeQualified": false,
+    "fullReplacementQualified": false
+  },
+  "closure": {
+    "allPublicProofAndCaptureLibraryClosuresKnown": true,
+    "allFiniteInputDescriptorsClosed": true,
+    "allOuterReadDescriptorsClosed": true,
+    "outerDescriptorCount": 34,
+    "allEphemeralPortReservationSocketsClosed": true,
+    "allT5DescriptorsClosed": true,
+    "allManagerReadDescriptorsClosed": true,
+    "uniqueHelperCommandCount": 11,
+    "managerAndOuterReferenceSameCommandLedger": true,
+    "allHelperDirectChildrenReaped": true,
+    "allHelperGroupsObservedEmpty": true,
+    "allHelperStreamsClosed": true,
+    "allHelperOutcomesKnown": true,
+    "originalDeadlineMetAfterClosure": true,
+    "allRegistrationsClosed": false,
+    "allKnownLineagesClosed": false,
+    "allOwnedRegistrationsLineagesHelpersClosed": false
+  },
+  "registration": {
+    "label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "generation": "server-initial",
+    "kind": "server",
+    "bootstrapExit": 0,
+    "onlyAttempt": [
+      "bootstrap"
+    ],
+    "wrapperIdentity": null,
+    "execIdentity": null,
+    "knownOwnedGroups": [],
+    "registrationClosed": false,
+    "lineagesClosed": false,
+    "plistSha256": "b40bef763f9073aa70ff27fd76d694df3c1a777795f6015596ad125aa4926fc1",
+    "planSha256": "5b94c4b970dec5e3550b66b22700b9fff507f08062fc2a860c0399ed38802aab",
+    "terminationNotInferredFromTimeoutSource": true,
+    "originalPrints": [
+      {
+        "helperPid": 82502,
+        "exitCode": 0,
+        "stdoutBytes": 4198,
+        "stdoutSha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5",
+        "streamsClosed": true
+      },
+      {
+        "helperPid": 82511,
+        "exitCode": 0,
+        "stdoutBytes": 4198,
+        "stdoutSha256": "588b9781cf64a432ab5ef8378de462bc7b3b4cce64f618257c89fa82e6018ae5",
+        "streamsClosed": true
+      }
+    ]
+  },
+  "readClosure": {
+    "originalObserverCount": 10,
+    "immutablePageCount": 55,
+    "stdoutContinuousBytes": 132132,
+    "stderrContinuousBytes": 0,
+    "stdoutHexEqualsText": true,
+    "stderrHexEqualsText": true,
+    "stdoutEOF": true,
+    "stderrEOF": true,
+    "currentRuntimeCalls": 0,
+    "currentNativeFutures": 0,
+    "allOriginalObservers": [
+      {
+        "name": "authority-01",
+        "tool": "process_status",
+        "operation_id": "699d47a9e3d9b41862095c487aa91730a006247f5dc5064c6426d9a38ad0af6e",
+        "request": {
+          "blob": "ad0f0214b00200ee223924bcc417ce1ee5f41b50",
+          "bytes": 222,
+          "sha256": "7c92172de5907d8bcb095dfd29ad00dd37b1e22e0f7cc006e509b2d98df85b33"
+        },
+        "intent": {
+          "blob": "a22d1361872fd551913999e4eb966f10d87349ec",
+          "bytes": 715,
+          "sha256": "1ebb413764cbea8a1918a0f2dea3b3302bb352a67a1cd37ed3805eca418305da"
+        },
+        "ACK": {
+          "blob": "44e92e1ae3e50ae38a6cf8ee712fb6b181b1c0e0",
+          "bytes": 709,
+          "sha256": "5fed08c2b17e07f6065f83ddff28274020af801d1530337742a00ecdafd3b8b7"
+        },
+        "status": {
+          "blob": "9b53f34f33054b04ac6ffa90e3edc76edc9c32f3",
+          "bytes": 805,
+          "sha256": "422241139facf46fe7492d4c6242e31368dac7f4b7f240d1fc76df8d8c8b1534"
+        },
+        "native": {
+          "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+          "bytes": 732,
+          "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+        },
+        "payload": {
+          "blob": "663f5732c5ed3a6f9178d3f49bd1d126b0731ff1",
+          "bytes": 911,
+          "sha256": "6139cd3945fbdb87ff3e9e6412f3cd5ec81bb09f6150a57834cc657c2ea4ae5a"
+        },
+        "pages": 1,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "bc475504089d25ffeed2ad5bf07f7398d492e0de",
+        "stdoutRange": null
+      },
+      {
+        "name": "streams-01",
+        "tool": "process_read",
+        "operation_id": "947ff8979eb386dc6cc6f1364f45829fda99bfa761d7b3abfcc79ce38ae926fe",
+        "request": {
+          "blob": "c46fe9c15b8c5f94a4d473cd40c3301d2459722c",
+          "bytes": 292,
+          "sha256": "00c92a3dfd901e78796ef01eea89179dea321b2b7eeaed3c9c43d641886ad7b0"
+        },
+        "intent": {
+          "blob": "147346e458fe4a3bb302dc62beaa484baa273192",
+          "bytes": 791,
+          "sha256": "b1dffa8be12e42e56601726d057b1462497dda91eb5c2a3e1e2c1042dc22b488"
+        },
+        "ACK": {
+          "blob": "d38fbf54b9263bd48bd538a50c8efdfd8eeb3855",
+          "bytes": 707,
+          "sha256": "a3a985549d1c9a93148271cb345b6f96a55729a0a0087f7ae41a91c1786635f6"
+        },
+        "status": {
+          "blob": "2abd3e084dd80b5961ca90955e477f77dfe0dfa9",
+          "bytes": 803,
+          "sha256": "03a370fe206729ded6608ff54f5549302983c18e03da8d3fae9a493cb320a80d"
+        },
+        "native": {
+          "blob": "9cee861c13ec2df05f58c14b75a8db33e38ea827",
+          "bytes": 50362,
+          "sha256": "e536db81163bc367ee4e20243b28937bfb4bcd138e7abe355601d9a927ac2bbd"
+        },
+        "payload": {
+          "blob": "e3a481ecfa3ec95c98e44301edf45359693a8186",
+          "bytes": 52268,
+          "sha256": "5103e2ddb06a4f77f3796a6725104fd5c939eb2d9b0fa0f180eeffaa9861cdcc"
+        },
+        "pages": 7,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "27f086de691f557c9fcb585aac8b2d693b3f6d08",
+        "stdoutRange": [
+          0,
+          16384
+        ]
+      },
+      {
+        "name": "streams-02",
+        "tool": "process_read",
+        "operation_id": "156780d3049e1852407b08254293cd0082dd3b3c50215e0f3bc35bef1583f026",
+        "request": {
+          "blob": "c4ab32292b1f46faf904ed82bdb9b37a4f4d256e",
+          "bytes": 296,
+          "sha256": "62f618ad2e0aa776cda53883023d679a21f3e4ae80d67895c9627295b6c86268"
+        },
+        "intent": {
+          "blob": "8dc81d1d68aa24994ab637629bf9775febd9d1df",
+          "bytes": 795,
+          "sha256": "60ef60a7ca28c6c77d4df80a3d1d2f2efa736c0aed5bc3226538cbaa7f8a87cb"
+        },
+        "ACK": {
+          "blob": "00f73e4016981f18c7626185660dc6bdfb07a1d6",
+          "bytes": 707,
+          "sha256": "f374f89de236390bcf178f3086440d0394a116f9e7f568e1a38e76f38ac83820"
+        },
+        "status": {
+          "blob": "cc6eddb2f2cd853b2c01b3a2c289e2127e89b519",
+          "bytes": 803,
+          "sha256": "6dfaceebacc320e8f9052b1150f47653726912b436314ed26e3116ea92662b8a"
+        },
+        "native": {
+          "blob": "5dcb6032498788b2d59e735bb23fa631a170502c",
+          "bytes": 51054,
+          "sha256": "2ca286dd52312007897918cb0d0cb11fe99fadc103d534a00181cffbab2f933a"
+        },
+        "payload": {
+          "blob": "674984dd9c0c7c267a7e60ef672cf6dac6cd9f7d",
+          "bytes": 54336,
+          "sha256": "717a8d3d806d319d27c1df81dcf68cb28c4e09acc8ac636a46d91f34d3629697"
+        },
+        "pages": 7,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "9de2072480bf6563de8efbd919ea097882c9cfff",
+        "stdoutRange": [
+          16384,
+          32768
+        ]
+      },
+      {
+        "name": "streams-03",
+        "tool": "process_read",
+        "operation_id": "01d5710553ea6100931010dfbcc0eaa5f07071c9ea50ed114d15a2aac9e7a17f",
+        "request": {
+          "blob": "cb587dbf5433edfdfb64f8dd33d12ced0eef825b",
+          "bytes": 296,
+          "sha256": "0a011ca635faa4f8ff701c0934eacc9409970844b7a0ede74a483dc663c66143"
+        },
+        "intent": {
+          "blob": "58ff22308b1f0b78ee01213555fca114a6a2e89c",
+          "bytes": 795,
+          "sha256": "46a4f8da6e8ca1ef755a912e4fbea2e56f0594d26a1104f5cdad43407445148f"
+        },
+        "ACK": {
+          "blob": "87ef830b25e664d0050c7da316e35d1f09ef2da3",
+          "bytes": 707,
+          "sha256": "4dbb29347c5dd19c138011a65fbf42727d70a5d03e7df502ca5153e808cc186d"
+        },
+        "status": {
+          "blob": "dbd23b7b7f4f735244e1a81e63b1c1b79cfaa30b",
+          "bytes": 803,
+          "sha256": "b9c94e45afbe12bc4f3a18f9c7243abf4e961bb05454b6e9dfd144d8a4527794"
+        },
+        "native": {
+          "blob": "96e6ba4bb39e8255d99531c60369dfb83fdb531a",
+          "bytes": 50962,
+          "sha256": "15511b577fa602a485622cd7c977d9f3c1d863c9b2dd21f62e9cac4eab410e58"
+        },
+        "payload": {
+          "blob": "1dfb2a357360eba6b85ad1cb9a6733849482ade9",
+          "bytes": 54060,
+          "sha256": "f087c3f339d50db5d6c25b558179f6645f08e83a8b8596632398e9d5b23251ee"
+        },
+        "pages": 7,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "70491dd7be6bcd8506d5b03e64affc39d4024091",
+        "stdoutRange": [
+          32768,
+          49152
+        ]
+      },
+      {
+        "name": "streams-04",
+        "tool": "process_read",
+        "operation_id": "1a8129e38f27d5421659ab0709fbdad5459d4bc64a6b707d5286f4601537c706",
+        "request": {
+          "blob": "dddd431dff2e3bdd6ab3e2b75235789c18c4e463",
+          "bytes": 296,
+          "sha256": "022760f93cabea705cc662d956fe75fa84773c49d51e8ffc711c9709e2bfb7c9"
+        },
+        "intent": {
+          "blob": "02716acc0d3214b5f443554279d6d855ab08caf2",
+          "bytes": 795,
+          "sha256": "fb5e658eba6a43b4a4036d20c02fd0e3d11b551c22abcda039cb9cf8aa40a8b3"
+        },
+        "ACK": {
+          "blob": "059a8b3e1ceaef4a18c3fe3269ce283cbcd1fc38",
+          "bytes": 707,
+          "sha256": "a74d34d9001306d76355ffe763fcd8628fddd6cf2848bb082754ce6c57d3b8a7"
+        },
+        "status": {
+          "blob": "fc17d5103383aedeaa992f4f84f42e41b38bd59f",
+          "bytes": 803,
+          "sha256": "d9a5a291a36f1e4df0db9089b1c6c19d1a739c6376680b53d882871ef6a4c95a"
+        },
+        "native": {
+          "blob": "a1144130a294c79317a3a780c39e292730129126",
+          "bytes": 50902,
+          "sha256": "4ed47d5635a515f99fe2d6a938f8ac1497ae1fffd47e173cbd67ebcea02ad6be"
+        },
+        "payload": {
+          "blob": "f769beb2e602472351ecc880b464831ffb601ee0",
+          "bytes": 53880,
+          "sha256": "643bbe3841b5e02b99f95324ec48eadcfbe1ad8a1098e812e300bdd2dad5e084"
+        },
+        "pages": 7,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "0d5caa4db150a816192bb29497d399940d6332c0",
+        "stdoutRange": [
+          49152,
+          65536
+        ]
+      },
+      {
+        "name": "streams-05",
+        "tool": "process_read",
+        "operation_id": "06fdffb3a4243f90b62cd6f14a18975c7aed003b464db6dd0fb92194d2d248b7",
+        "request": {
+          "blob": "41c4d6ce63a94d1158b2dbb3eebc1074348317cb",
+          "bytes": 296,
+          "sha256": "682a7ba1190adb5f3ce6d7d5776141df913307c785cb690255ef6ef6b11dfadb"
+        },
+        "intent": {
+          "blob": "e94d2d79ebbfbeb99996cab9be500fb23a4bc93c",
+          "bytes": 795,
+          "sha256": "b00371297b487784a7e9beee7acd7b17b4b591a6c5313fd6eca3f8e19db25143"
+        },
+        "ACK": {
+          "blob": "b1962898897e9ee02633f03b33c2c2e96e08f26d",
+          "bytes": 707,
+          "sha256": "3fd249fcd50884996c82db4d46ac06eb70a9a880697e46609f908e14e6a3dbe8"
+        },
+        "status": {
+          "blob": "6d0bb8d763728754d8dba209b32e4d0864d577e4",
+          "bytes": 803,
+          "sha256": "3130d957a26f7b8cab624c8ecec6780c4c71e36368912a814c68a016c4acccde"
+        },
+        "native": {
+          "blob": "67f65aff51a10e2dce82080d9cee8ec3ae8a1171",
+          "bytes": 51008,
+          "sha256": "ba1b8fd3896b844c6cd38bea7c719d8a3b9461549c0c98bf4e8d28ebd7fc68d8"
+        },
+        "payload": {
+          "blob": "c2a98213c498fa83bea7c28aadd87d3a4db62cd3",
+          "bytes": 54198,
+          "sha256": "ac4d7702ff3b08df3567f314dc02e479162602abcd234ca5213f1b9b1a42fa3a"
+        },
+        "pages": 7,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "df02e21b1da749b9f296b25a74c324371ff62c51",
+        "stdoutRange": [
+          65536,
+          81920
+        ]
+      },
+      {
+        "name": "streams-06",
+        "tool": "process_read",
+        "operation_id": "f0b361a01166b07cb2a01f40108b03a6f490822a84d7f8cc61acc65605489df8",
+        "request": {
+          "blob": "3c27845905110efd8c0a120e50b84712d17fa976",
+          "bytes": 296,
+          "sha256": "3490c1eb5aaa440ea3c06321ec668408f03385a85e61ace2670a1360bbd7d9d7"
+        },
+        "intent": {
+          "blob": "7c88bc734c5b766dbef7abd07cd87c9506fe78d6",
+          "bytes": 795,
+          "sha256": "c97f0572b35ccf650b9c97cd47d0bb01e8ac4fd67b096dd7a5e857f0e69a833c"
+        },
+        "ACK": {
+          "blob": "8b306947763bd09379bebc682c3aab2def850e3a",
+          "bytes": 707,
+          "sha256": "94d309bcd9e9231d9a98667fc4d0888dba74ef4538b8a21bd35a40598f7f1e6b"
+        },
+        "status": {
+          "blob": "3b10cd5990a2c4ab336d59d5223b35ab3189790d",
+          "bytes": 803,
+          "sha256": "acc6df40edbde660db21191b0985c682f607478cd767398d4f8c860b74145333"
+        },
+        "native": {
+          "blob": "f9ad6fc328048e682b92b7f37fa8bedfcb906e69",
+          "bytes": 50454,
+          "sha256": "9ef46667f6260d77d743356031f3d39e1b6f500dada070ffe2d2f4d6afc6bae7"
+        },
+        "payload": {
+          "blob": "15bbd36748ee095615860b378e231887491ef6ca",
+          "bytes": 52536,
+          "sha256": "8397e808af217efa0a2f778412976e2839a81ad58272b592474c9eb59448f6b2"
+        },
+        "pages": 7,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "d811d5d438c735d5ec05571f821fd9834c0b6ee8",
+        "stdoutRange": [
+          81920,
+          98304
+        ]
+      },
+      {
+        "name": "streams-07",
+        "tool": "process_read",
+        "operation_id": "7d4983dd3b864a0317d20599f4831b760995bed2f68d08d1e83fb2beb2f71ef6",
+        "request": {
+          "blob": "cbabc81c740428540c39388b3fccd8de31bf9763",
+          "bytes": 296,
+          "sha256": "49456a8ea36a80e8af93257e166fb2d29bb63a34c45ae4c18ccdf251490c3877"
+        },
+        "intent": {
+          "blob": "180cb999829d8d501b3453fb116e664aa43b4731",
+          "bytes": 795,
+          "sha256": "982a05b521bc8d6b38ac5134836794d669ae4174619017847ca1d3aba8cd6128"
+        },
+        "ACK": {
+          "blob": "cb98deb62180bbed7843b845606267985fd10daa",
+          "bytes": 707,
+          "sha256": "9a9919f1bbd177b7559866d8b7ed3bbfe4ee91980909b85b1b8ffba286a5b989"
+        },
+        "status": {
+          "blob": "c26d04efe8f552d2234f79714a76276984fefc16",
+          "bytes": 803,
+          "sha256": "77389782c1965713a242d60852ec1f7dbaa8accd1dec7733bb93ac8c6b8570f9"
+        },
+        "native": {
+          "blob": "1960cd2d72d446c1794df57ceae2f8268bc488e6",
+          "bytes": 50425,
+          "sha256": "18197169d4c52c1325dc2c7dbbe0a1b60e6a32f30a7be87f84ea797c2db7afcf"
+        },
+        "payload": {
+          "blob": "912699b694cc43c9055b99bdf24f18ac76fe5778",
+          "bytes": 52447,
+          "sha256": "dac8ba023f1daf15cc327c4397188a60d151b920df4964ff7ab90a12d322789d"
+        },
+        "pages": 7,
+        "pageWidth": 8192,
+        "pageAmendment": null,
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "bcdc8fd8287d2e67d5a070bd20f6107cc8aa9544",
+        "stdoutRange": [
+          98304,
+          114688
+        ]
+      },
+      {
+        "name": "streams-08",
+        "tool": "process_read",
+        "operation_id": "fd6ea79f5f570509084f3e837ebdf3cacbae7a096cb8a19cbcb6b9153d836e7d",
+        "request": {
+          "blob": "f6f786fcd8135beeca93edb6216926c8ddad0bf1",
+          "bytes": 297,
+          "sha256": "04a864f7e83a2954674a8121311481640dfd5b6fb31a33cb6c9016c502693f1a"
+        },
+        "intent": {
+          "blob": "d614593a78ba084c4d4539b4997f232d596456f5",
+          "bytes": 869,
+          "sha256": "cce0a10878ff867e3ba957b4bfe7d89f61950d861afd649b63408237e2af8608"
+        },
+        "ACK": {
+          "blob": "996a369078a8aae4ea6bb1ec0de365b1da3185ba",
+          "bytes": 707,
+          "sha256": "c89faef4e0bc0e5c5affdadf0945e0f9579874e15e7ef298aeaee49710440fae"
+        },
+        "status": {
+          "blob": "7f80860a27664b18d6ae539bc194b4e450222cb9",
+          "bytes": 803,
+          "sha256": "eb917c3f390cf5b557a9561767d55149ba2337fd14a439bf84b476a09c6d17c6"
+        },
+        "native": {
+          "blob": "fcb52466419b214268384910b47f50371f1c899a",
+          "bytes": 50881,
+          "sha256": "60e9af6f1ae5dc46ad93c4263259ed9e8c6872c60e0ffa1948efa52342d9f563"
+        },
+        "payload": {
+          "blob": "ebe507f771aabaa8a9b07938b5d46bf903d26629",
+          "bytes": 53813,
+          "sha256": "3950d2a0cb9524d5366e44dafb8c5c3a9e39d13bf087c68b4ea3a3acdfefc433"
+        },
+        "pages": 4,
+        "pageWidth": 16384,
+        "pageAmendment": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "d315d8e273176c3005c4bc86e445c85016c8a221",
+        "stdoutRange": [
+          114688,
+          131072
+        ]
+      },
+      {
+        "name": "streams-09",
+        "tool": "process_read",
+        "operation_id": "a3b02dea1ff105379b09da69d4b1d869e3fa455304961b587f1e71c095138bd1",
+        "request": {
+          "blob": "3f24852b2ec5c8a14407d1aa7bc19b5791a5113b",
+          "bytes": 297,
+          "sha256": "05cbd5db60544a62c5be29faeea144e5824a82570efea8e558e33887d1aa0b3e"
+        },
+        "intent": {
+          "blob": "ce3e97c7a1bb8561f8dade45981e173ad66dd739",
+          "bytes": 869,
+          "sha256": "06ee84ef8343f0aa62e1ff05c9f067e189d059b18925754f889797ccefcb1ee8"
+        },
+        "ACK": {
+          "blob": "63c8cea5d88dd577c195438edb8f34c814e57c1f",
+          "bytes": 707,
+          "sha256": "9a3b83a0155b02e9b26303fbfc832b8a2234cb1c9490cb81936e2af5aafa6611"
+        },
+        "status": {
+          "blob": "6aadd18ef52c97b866da6ba30cfbbbd2791ca3b4",
+          "bytes": 803,
+          "sha256": "2887107b3047f8d77a01edb1d73aa9deeb2eaf801f4ab0b32659e6c88863eeba"
+        },
+        "native": {
+          "blob": "2c755bf7fd0561baa81284e5bafeefad5dd40fb3",
+          "bytes": 3572,
+          "sha256": "cb2909fd48e3b4867205f83d50ff6925fdb3b53997d1d81ab39a4a796b588aea"
+        },
+        "payload": {
+          "blob": "076c7d175098ef9a97eba285c62c7b5f6dab6b39",
+          "bytes": 3831,
+          "sha256": "9e215048293a73639e49c3b9e713fc3f6064c5fb57ef31be37149be9532c72fa"
+        },
+        "pages": 1,
+        "pageWidth": 16384,
+        "pageAmendment": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+        "completed": true,
+        "stored": true,
+        "ownedFutureActive": false,
+        "fullPayloadVerified": true,
+        "archiveWholeVerified": true,
+        "tree": "7e270b680885f3e01b9d71ef449c28a6e8a4f6c6",
+        "stdoutRange": [
+          131072,
+          132132
+        ]
+      }
+    ]
+  },
+  "handoff": {
+    "readLaneIdle": true,
+    "productOwnedRegistrationClosureQualified": false,
+    "newDiagnosticAuthorized": false,
+    "newCleanupAuthorized": false,
+    "newBusinessAuthorized": false,
+    "oldUnknownsPreserved": true
+  },
+  "archiveBoundary": {
+    "nativeSDKsLocallyFsyncedBeforeParsing": true,
+    "allOriginalObserversGitBatchWholeBeforeNext": true,
+    "environmentUnavailableOnlyAfterAllOriginalRuntimeReturned": true,
+    "localYieldAndExecutorErrorsAreNotMacUnknown": true,
+    "minimalReleaseArchivedUsingRootApprovedPureGitRecovery": true
+  }
+}

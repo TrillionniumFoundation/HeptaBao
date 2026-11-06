@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r34-H2-explicit-original-page-recovery-GO-r1",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "6f5209101dcdc9d29f8d5b3cd6d57d32319dedff",
+      "bytes": 4325,
+      "sha256": "156b2cbe5dc3bdc78c1ad6fec62cb21ab606526dd587fad2e63ab028049c0ed5"
+    },
+    {
+      "name": "ROOT-REVIEW.public.json",
+      "blob": "bb5f68a834d9fc63712a1a9dc4f2afc482581496",
+      "bytes": 2242,
+      "sha256": "f036b35edcdf20b92d155b1c88761d1f36b72baa3da5462c82d35d7ca284b97e"
+    },
+    {
+      "name": "independent-peer-review.public.json",
+      "blob": "a150fb908aad894892339a3a720755b4f906026c",
+      "bytes": 2743,
+      "sha256": "a0b5d6f7af9fdeed73dbaa13c17b750236f87425b19a0385153c562da4c5d127"
+    }
+  ],
+  "expected_data_tree": "19c3475e4c55f6beaaf6a1a3717547ae64cec32a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

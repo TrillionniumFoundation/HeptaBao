@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.exact-public-files.v1",
+  "scope": "minimal original closure release",
+  "files": [
+    {
+      "path": "MINIMAL_RELEASE.public.json",
+      "blob": "d8150a0340521c6e4a5b421b1a367dd319ef22a5",
+      "bytes": 23408,
+      "sha256": "556a5441f70acb97cf9f9ab20ec05cea33d4ffb6a0d2959e14cade0b0c2d7425"
+    },
+    {
+      "path": "LOCAL_ARCHIVE_AND_LOCATION_HISTORY.public.json",
+      "blob": "fd31a6681597d63d9d6b51fee9b2a9099387ed37",
+      "bytes": 1159,
+      "sha256": "0a5cb2850fb6d5dd9703d5b9bbf2c85e964cdb6dce3648c8db10eff2efa0bc69"
+    },
+    {
+      "path": "stdout.original.txt",
+      "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+      "bytes": 132132,
+      "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+    },
+    {
+      "path": "stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+      "bytes": 732,
+      "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "heptabao.existing-Git-batch-reconciliation-during-executor-outage.v1",
+  "tree": "bbebf79f4e89b5c40621316bb8965a96785435a5",
+  "records": [
+    {
+      "name": "official-source-jwt_role.go",
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+      "bytes": 25759,
+      "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d"
+    },
+    {
+      "name": "official-source-jwt_role-original-SDK.public.json",
+      "blob": "ede5844ceb7c2a7413e8226889fa7b623bd19682",
+      "bytes": 57273,
+      "sha256": "e0ce5f5bf1837e77ed3c3c77bf296e8706f9a255b2b1a49ad0d7081aea50f763"
+    },
+    {
+      "name": "official-source-jwt_backend.go",
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a"
+    },
+    {
+      "name": "official-source-jwt_backend-original-SDK.public.json",
+      "blob": "609b89edc584aafef3577da8fde0a859d353d8e4",
+      "bytes": 10019,
+      "sha256": "7045cf0376f036d1d41f4f516d9930a43a88edefa6e84c50695bd9e513993d89"
+    },
+    {
+      "name": "official-source-http_logical.go",
+      "blob": "7c091863ff2496db948ad945060d320d66b4bb7f",
+      "bytes": 15421,
+      "sha256": "5d474557d9dd8a28f0dfa3a83eb3c8e2fac502fae8b3404a3df1cc81c438f451"
+    },
+    {
+      "name": "official-source-http_logical-original-SDK.public.json",
+      "blob": "bb8679aa25d4e5027f377bb85906f1d7e3e79d78",
+      "bytes": 34899,
+      "sha256": "2c9a25843d43288cfa779980bc3e80b8a50dbb11ccc7d139fc60c3e716dc733f"
+    },
+    {
+      "name": "official-source-policy_acl.go",
+      "blob": "2251475f3161a7eca462c0098b0ef6f8c970a553",
+      "bytes": 27409,
+      "sha256": "6e75975d1f7ad3dd52eea2e9a87febcd3c4d7ea0c15965c20bf8b7ed6ecc3a17"
+    },
+    {
+      "name": "official-source-policy_acl-original-SDK.public.json",
+      "blob": "1b5159105efb14e25e523bb228691ca44137d488",
+      "bytes": 30495,
+      "sha256": "135cc62333d985dd2aa0512c24a31d31df4d9a6db584da87092d2bd5c6ceeb13"
+    },
+    {
+      "name": "official-source-request_handling.go",
+      "blob": "c31daccabf24d0ec6064012d995fb0e3d5b759f9",
+      "bytes": 101673,
+      "sha256": "f539e14e846b22649eb0af207e71171919c3d0cd99a4e81a109b7446f7e8511e"
+    },
+    {
+      "name": "official-source-request_handling-original-SDK.public.json",
+      "blob": "f59cdeb5f5812aa1d35afed6486550a55c9a84ca",
+      "bytes": 110445,
+      "sha256": "75a936682c67d1afe47d053431fc3aab5f8a11c8bf8700b9479e3fca706a6982"
+    },
+    {
+      "name": "official-v2.7.1-tag-original-SDK.public.json",
+      "blob": "77b455d6b0eac7f0fb96658f6740b9a33511b353",
+      "bytes": 1288,
+      "sha256": "7984096663322592f7470f703793f18825b1c9c940f7a48610310ec5f036ff56"
+    },
+    {
+      "name": "OpenBao271-JWT-ACL-source-review.public.json",
+      "blob": "295980f0394775b8dcccdfd90ce0d389ee369f62",
+      "bytes": 5388,
+      "sha256": "aa8fe8f20f9b52108335ad0e16660763b2c7ced03379cd6120ac8d3afc6eb60b"
+    },
+    {
+      "name": "source-path-404-wrong-bao-path-original-SDK.public.json",
+      "blob": "938ecab54978bb07a24477ef7fdec1ba86621690",
+      "bytes": 668,
+      "sha256": "541962a04b1743a860cec249747b9ed93465c096bb802b5305968775ae7577df"
+    },
+    {
+      "name": "source-path-404-wrong-vault-path-original-SDK.public.json",
+      "blob": "938ecab54978bb07a24477ef7fdec1ba86621690",
+      "bytes": 668,
+      "sha256": "541962a04b1743a860cec249747b9ed93465c096bb802b5305968775ae7577df"
+    }
+  ],
+  "merkle": {
+    "root_sha": "bbebf79f4e89b5c40621316bb8965a96785435a5",
+    "trees_verified": 1,
+    "leaf_count": 14
+  },
+  "original_create_tree_not_repeated": true,
+  "original_creation_reached_whole_readback_before_local_saved_journal_failure": true,
+  "original_local_SDK_journals_temporarily_unavailable": true,
+  "new_read_SDK": {
+    "blob": "382749ca309fd8dc7f601a3e0c8378bd14f32ecd",
+    "bytes": 9377,
+    "sha256": "aee7f3d9bdcaf3e262186b740cc79fe91e18ce33520569b8c70d262003f2c18d"
+  },
+  "root_Runtime_calls": 0,
+  "whole_verified_count": 14,
+  "pending": [],
+  "wholeVerified": true
+}

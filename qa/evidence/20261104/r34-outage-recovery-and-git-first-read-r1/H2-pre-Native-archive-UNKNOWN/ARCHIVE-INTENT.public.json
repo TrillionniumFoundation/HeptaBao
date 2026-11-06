@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r34-H2-pre-Native-archive-unknown-disposition-r1",
+  "records": [
+    {
+      "name": "original-exact-blob-404.sdk.json",
+      "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+      "bytes": 617,
+      "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+    },
+    {
+      "name": "DISPOSITION.public.json",
+      "blob": "336479c6cb0d12add1f62910000044e291596373",
+      "bytes": 1575,
+      "sha256": "ae1416ed08ec5fc80646bcbc98113e3256e21f3f29811d41c76c5c852875f976"
+    }
+  ],
+  "expected_data_tree": "3a453d11a24421d80568dfb45aead422b2453ac9",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.gitfirst-cached-format-checks.r1",
+  "checks": [
+    {
+      "name": "actual_uint64_exact",
+      "ok": true
+    },
+    {
+      "name": "safe_integer_exact",
+      "ok": true
+    },
+    {
+      "name": "actual_process_read_field_names",
+      "ok": true
+    },
+    {
+      "name": "no_bad_data_fields",
+      "ok": true
+    }
+  ],
+  "RuntimeCalls": 0,
+  "NativeHelperFunctionsInvoked": 0,
+  "scope": "JS syntax compilation and four cached-schema/arithmetic checks; not a native dispatch or product test"
+}

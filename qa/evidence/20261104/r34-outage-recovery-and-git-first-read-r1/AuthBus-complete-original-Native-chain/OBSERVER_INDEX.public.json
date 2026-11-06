@@ -1,0 +1,697 @@
+{
+  "schema": "heptabao.full-worker-original-read-index.r1",
+  "job": "mac/1a1ae51309d-fc05-5ef8",
+  "originalReadObservers": 10,
+  "originalImmutablePages": 55,
+  "observers": [
+    {
+      "name": "authority-01",
+      "operation_id": "699d47a9e3d9b41862095c487aa91730a006247f5dc5064c6426d9a38ad0af6e",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-authority-01-20261105-r1",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8"
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "ad0f0214b00200ee223924bcc417ce1ee5f41b50",
+        "bytes": 222,
+        "sha256": "7c92172de5907d8bcb095dfd29ad00dd37b1e22e0f7cc006e509b2d98df85b33"
+      },
+      "intentPin": {
+        "blob": "a22d1361872fd551913999e4eb966f10d87349ec",
+        "bytes": 715,
+        "sha256": "1ebb413764cbea8a1918a0f2dea3b3302bb352a67a1cd37ed3805eca418305da"
+      },
+      "ackSDK": {
+        "blob": "44e92e1ae3e50ae38a6cf8ee712fb6b181b1c0e0",
+        "bytes": 709,
+        "sha256": "5fed08c2b17e07f6065f83ddff28274020af801d1530337742a00ecdafd3b8b7"
+      },
+      "ackNative": {
+        "blob": "4abc1fc327ba5058fcbcf5babd27576e2c11b3b5",
+        "bytes": 548,
+        "sha256": "2666b6e9be2c8aa8e76323621bab03e21a356c232ff5aa1632bd89e6c3d31fa2"
+      },
+      "statusSDK": {
+        "blob": "2b8572fbfd950d537e4ff948ff070ecb04782919",
+        "bytes": 980,
+        "sha256": "72ab52b326e6491bca6362044b4a8a3560fa01e4aa1d2dd3653a7e09bf5ba59f"
+      },
+      "statusNative": {
+        "blob": "9b53f34f33054b04ac6ffa90e3edc76edc9c32f3",
+        "bytes": 805,
+        "sha256": "422241139facf46fe7492d4c6242e31368dac7f4b7f240d1fc76df8d8c8b1534"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 1,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "663f5732c5ed3a6f9178d3f49bd1d126b0731ff1",
+        "bytes": 911,
+        "sha256": "6139cd3945fbdb87ff3e9e6412f3cd5ec81bb09f6150a57834cc657c2ea4ae5a"
+      },
+      "native": {
+        "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+        "bytes": 732,
+        "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+      },
+      "originalBatch": {
+        "tree": "bc475504089d25ffeed2ad5bf07f7398d492e0de",
+        "files": 12,
+        "uniqueBlobs": 12,
+        "bytes": 9797
+      }
+    },
+    {
+      "name": "streams-01",
+      "operation_id": "947ff8979eb386dc6cc6f1364f45829fda99bfa761d7b3abfcc79ce38ae926fe",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-01-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 0,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "c46fe9c15b8c5f94a4d473cd40c3301d2459722c",
+        "bytes": 292,
+        "sha256": "00c92a3dfd901e78796ef01eea89179dea321b2b7eeaed3c9c43d641886ad7b0"
+      },
+      "intentPin": {
+        "blob": "147346e458fe4a3bb302dc62beaa484baa273192",
+        "bytes": 791,
+        "sha256": "b1dffa8be12e42e56601726d057b1462497dda91eb5c2a3e1e2c1042dc22b488"
+      },
+      "ackSDK": {
+        "blob": "d38fbf54b9263bd48bd538a50c8efdfd8eeb3855",
+        "bytes": 707,
+        "sha256": "a3a985549d1c9a93148271cb345b6f96a55729a0a0087f7ae41a91c1786635f6"
+      },
+      "ackNative": {
+        "blob": "256a533988c53b56dd3964ff5ee27846bbdb9ab4",
+        "bytes": 546,
+        "sha256": "0b59d12a15db7678de6e72cb60cc9e527f527ee75122225f945b4a4a9a2fc25b"
+      },
+      "statusSDK": {
+        "blob": "048260968fea43db163a46eea7d209dfbb670ffa",
+        "bytes": 978,
+        "sha256": "3b1652716422b03eec1eea24efd71b2cd0aa4bf9117a5bcb6b46e3e3b4c22de1"
+      },
+      "statusNative": {
+        "blob": "2abd3e084dd80b5961ca90955e477f77dfe0dfa9",
+        "bytes": 803,
+        "sha256": "03a370fe206729ded6608ff54f5549302983c18e03da8d3fae9a493cb320a80d"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 7,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "e3a481ecfa3ec95c98e44301edf45359693a8186",
+        "bytes": 52268,
+        "sha256": "5103e2ddb06a4f77f3796a6725104fd5c939eb2d9b0fa0f180eeffaa9861cdcc"
+      },
+      "native": {
+        "blob": "9cee861c13ec2df05f58c14b75a8db33e38ea827",
+        "bytes": 50362,
+        "sha256": "e536db81163bc367ee4e20243b28937bfb4bcd138e7abe355601d9a927ac2bbd"
+      },
+      "originalBatch": {
+        "tree": "27f086de691f557c9fcb585aac8b2d693b3f6d08",
+        "files": 30,
+        "uniqueBlobs": 30,
+        "bytes": 257949
+      }
+    },
+    {
+      "name": "streams-02",
+      "operation_id": "156780d3049e1852407b08254293cd0082dd3b3c50215e0f3bc35bef1583f026",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-02-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 16384,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "c4ab32292b1f46faf904ed82bdb9b37a4f4d256e",
+        "bytes": 296,
+        "sha256": "62f618ad2e0aa776cda53883023d679a21f3e4ae80d67895c9627295b6c86268"
+      },
+      "intentPin": {
+        "blob": "8dc81d1d68aa24994ab637629bf9775febd9d1df",
+        "bytes": 795,
+        "sha256": "60ef60a7ca28c6c77d4df80a3d1d2f2efa736c0aed5bc3226538cbaa7f8a87cb"
+      },
+      "ackSDK": {
+        "blob": "00f73e4016981f18c7626185660dc6bdfb07a1d6",
+        "bytes": 707,
+        "sha256": "f374f89de236390bcf178f3086440d0394a116f9e7f568e1a38e76f38ac83820"
+      },
+      "ackNative": {
+        "blob": "d8a35fb3cd2a7700d486307f13ee48243149e6e0",
+        "bytes": 546,
+        "sha256": "59b0d70a0cb7aac12309260ff5cb85664d9bf2e7f47515a702c5f89c1ff887be"
+      },
+      "statusSDK": {
+        "blob": "ac05150315f9c61744075b6e26765da51a186ede",
+        "bytes": 978,
+        "sha256": "09580c98aea55da08ae45bc478a340b760c34b40492efb8611a60201a3db9ee3"
+      },
+      "statusNative": {
+        "blob": "cc6eddb2f2cd853b2c01b3a2c289e2127e89b519",
+        "bytes": 803,
+        "sha256": "6dfaceebacc320e8f9052b1150f47653726912b436314ed26e3116ea92662b8a"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 7,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "674984dd9c0c7c267a7e60ef672cf6dac6cd9f7d",
+        "bytes": 54336,
+        "sha256": "717a8d3d806d319d27c1df81dcf68cb28c4e09acc8ac636a46d91f34d3629697"
+      },
+      "native": {
+        "blob": "5dcb6032498788b2d59e735bb23fa631a170502c",
+        "bytes": 51054,
+        "sha256": "2ca286dd52312007897918cb0d0cb11fe99fadc103d534a00181cffbab2f933a"
+      },
+      "originalBatch": {
+        "tree": "9de2072480bf6563de8efbd919ea097882c9cfff",
+        "files": 30,
+        "uniqueBlobs": 30,
+        "bytes": 266229
+      }
+    },
+    {
+      "name": "streams-03",
+      "operation_id": "01d5710553ea6100931010dfbcc0eaa5f07071c9ea50ed114d15a2aac9e7a17f",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-03-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 32768,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "cb587dbf5433edfdfb64f8dd33d12ced0eef825b",
+        "bytes": 296,
+        "sha256": "0a011ca635faa4f8ff701c0934eacc9409970844b7a0ede74a483dc663c66143"
+      },
+      "intentPin": {
+        "blob": "58ff22308b1f0b78ee01213555fca114a6a2e89c",
+        "bytes": 795,
+        "sha256": "46a4f8da6e8ca1ef755a912e4fbea2e56f0594d26a1104f5cdad43407445148f"
+      },
+      "ackSDK": {
+        "blob": "87ef830b25e664d0050c7da316e35d1f09ef2da3",
+        "bytes": 707,
+        "sha256": "4dbb29347c5dd19c138011a65fbf42727d70a5d03e7df502ca5153e808cc186d"
+      },
+      "ackNative": {
+        "blob": "b2921e8a90bd3bfb54ae7164af4608d7ab9014d2",
+        "bytes": 546,
+        "sha256": "dca66db9695fe29bb5aff8face4a35dfd3989013ff4f60307208d46c3a470ccd"
+      },
+      "statusSDK": {
+        "blob": "410290cb15e9a884beec7c55d1dd17df5511acbc",
+        "bytes": 978,
+        "sha256": "bdde8c443365a68b55ba744d1708b57110b69371ad7b586483afeac97775ab81"
+      },
+      "statusNative": {
+        "blob": "dbd23b7b7f4f735244e1a81e63b1c1b79cfaa30b",
+        "bytes": 803,
+        "sha256": "b9c94e45afbe12bc4f3a18f9c7243abf4e961bb05454b6e9dfd144d8a4527794"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 7,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "1dfb2a357360eba6b85ad1cb9a6733849482ade9",
+        "bytes": 54060,
+        "sha256": "f087c3f339d50db5d6c25b558179f6645f08e83a8b8596632398e9d5b23251ee"
+      },
+      "native": {
+        "blob": "96e6ba4bb39e8255d99531c60369dfb83fdb531a",
+        "bytes": 50962,
+        "sha256": "15511b577fa602a485622cd7c977d9f3c1d863c9b2dd21f62e9cac4eab410e58"
+      },
+      "originalBatch": {
+        "tree": "70491dd7be6bcd8506d5b03e64affc39d4024091",
+        "files": 30,
+        "uniqueBlobs": 30,
+        "bytes": 265125
+      }
+    },
+    {
+      "name": "streams-04",
+      "operation_id": "1a8129e38f27d5421659ab0709fbdad5459d4bc64a6b707d5286f4601537c706",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-04-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 49152,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "dddd431dff2e3bdd6ab3e2b75235789c18c4e463",
+        "bytes": 296,
+        "sha256": "022760f93cabea705cc662d956fe75fa84773c49d51e8ffc711c9709e2bfb7c9"
+      },
+      "intentPin": {
+        "blob": "02716acc0d3214b5f443554279d6d855ab08caf2",
+        "bytes": 795,
+        "sha256": "fb5e658eba6a43b4a4036d20c02fd0e3d11b551c22abcda039cb9cf8aa40a8b3"
+      },
+      "ackSDK": {
+        "blob": "059a8b3e1ceaef4a18c3fe3269ce283cbcd1fc38",
+        "bytes": 707,
+        "sha256": "a74d34d9001306d76355ffe763fcd8628fddd6cf2848bb082754ce6c57d3b8a7"
+      },
+      "ackNative": {
+        "blob": "febb813b7687a84932632a22c1c3ba35b233ff18",
+        "bytes": 546,
+        "sha256": "f1d9e77c17790e8d1d4d15a073b8e0954257d0a1670619796240b1950314c8b3"
+      },
+      "statusSDK": {
+        "blob": "11484de45222c55ac993c40b9abce9dc25876387",
+        "bytes": 978,
+        "sha256": "5d00d519b3242784b710d85fa5575b2224a61da2221c97721010544b5d49f771"
+      },
+      "statusNative": {
+        "blob": "fc17d5103383aedeaa992f4f84f42e41b38bd59f",
+        "bytes": 803,
+        "sha256": "d9a5a291a36f1e4df0db9089b1c6c19d1a739c6376680b53d882871ef6a4c95a"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 7,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "f769beb2e602472351ecc880b464831ffb601ee0",
+        "bytes": 53880,
+        "sha256": "643bbe3841b5e02b99f95324ec48eadcfbe1ad8a1098e812e300bdd2dad5e084"
+      },
+      "native": {
+        "blob": "a1144130a294c79317a3a780c39e292730129126",
+        "bytes": 50902,
+        "sha256": "4ed47d5635a515f99fe2d6a938f8ac1497ae1fffd47e173cbd67ebcea02ad6be"
+      },
+      "originalBatch": {
+        "tree": "0d5caa4db150a816192bb29497d399940d6332c0",
+        "files": 30,
+        "uniqueBlobs": 30,
+        "bytes": 264405
+      }
+    },
+    {
+      "name": "streams-05",
+      "operation_id": "06fdffb3a4243f90b62cd6f14a18975c7aed003b464db6dd0fb92194d2d248b7",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-05-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 65536,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "41c4d6ce63a94d1158b2dbb3eebc1074348317cb",
+        "bytes": 296,
+        "sha256": "682a7ba1190adb5f3ce6d7d5776141df913307c785cb690255ef6ef6b11dfadb"
+      },
+      "intentPin": {
+        "blob": "e94d2d79ebbfbeb99996cab9be500fb23a4bc93c",
+        "bytes": 795,
+        "sha256": "b00371297b487784a7e9beee7acd7b17b4b591a6c5313fd6eca3f8e19db25143"
+      },
+      "ackSDK": {
+        "blob": "b1962898897e9ee02633f03b33c2c2e96e08f26d",
+        "bytes": 707,
+        "sha256": "3fd249fcd50884996c82db4d46ac06eb70a9a880697e46609f908e14e6a3dbe8"
+      },
+      "ackNative": {
+        "blob": "5e30e8d762f9c2c35d178229c906c22642c03705",
+        "bytes": 546,
+        "sha256": "7e432f994070068891f0ddbf38a6adf297291a6ee07d60adeba42ecaa6d9e4a1"
+      },
+      "statusSDK": {
+        "blob": "8e30003910025cf9afbfc6acb265da63cb99c22c",
+        "bytes": 978,
+        "sha256": "852c4be37383bed5f18e2b6e1bd166c80a5906c9f6aaa9123d70f3cb78c8131a"
+      },
+      "statusNative": {
+        "blob": "6d0bb8d763728754d8dba209b32e4d0864d577e4",
+        "bytes": 803,
+        "sha256": "3130d957a26f7b8cab624c8ecec6780c4c71e36368912a814c68a016c4acccde"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 7,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "c2a98213c498fa83bea7c28aadd87d3a4db62cd3",
+        "bytes": 54198,
+        "sha256": "ac4d7702ff3b08df3567f314dc02e479162602abcd234ca5213f1b9b1a42fa3a"
+      },
+      "native": {
+        "blob": "67f65aff51a10e2dce82080d9cee8ec3ae8a1171",
+        "bytes": 51008,
+        "sha256": "ba1b8fd3896b844c6cd38bea7c719d8a3b9461549c0c98bf4e8d28ebd7fc68d8"
+      },
+      "originalBatch": {
+        "tree": "df02e21b1da749b9f296b25a74c324371ff62c51",
+        "files": 30,
+        "uniqueBlobs": 30,
+        "bytes": 265677
+      }
+    },
+    {
+      "name": "streams-06",
+      "operation_id": "f0b361a01166b07cb2a01f40108b03a6f490822a84d7f8cc61acc65605489df8",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-06-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 81920,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "3c27845905110efd8c0a120e50b84712d17fa976",
+        "bytes": 296,
+        "sha256": "3490c1eb5aaa440ea3c06321ec668408f03385a85e61ace2670a1360bbd7d9d7"
+      },
+      "intentPin": {
+        "blob": "7c88bc734c5b766dbef7abd07cd87c9506fe78d6",
+        "bytes": 795,
+        "sha256": "c97f0572b35ccf650b9c97cd47d0bb01e8ac4fd67b096dd7a5e857f0e69a833c"
+      },
+      "ackSDK": {
+        "blob": "8b306947763bd09379bebc682c3aab2def850e3a",
+        "bytes": 707,
+        "sha256": "94d309bcd9e9231d9a98667fc4d0888dba74ef4538b8a21bd35a40598f7f1e6b"
+      },
+      "ackNative": {
+        "blob": "bcd127ffa7a4c7fd903c0e36e2de8e9f2ac91133",
+        "bytes": 546,
+        "sha256": "e442465641e898f99eda802a6f0d3c82818876f6e48ac2f1831ccdcc81db54f9"
+      },
+      "statusSDK": {
+        "blob": "528102538bf4027e8219bd8dfc447622144cc2fe",
+        "bytes": 978,
+        "sha256": "3699e7eb26a6af0f542640aab109231edafdd1a893f5a115d2b9d93bcd441b23"
+      },
+      "statusNative": {
+        "blob": "3b10cd5990a2c4ab336d59d5223b35ab3189790d",
+        "bytes": 803,
+        "sha256": "acc6df40edbde660db21191b0985c682f607478cd767398d4f8c860b74145333"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 7,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "15bbd36748ee095615860b378e231887491ef6ca",
+        "bytes": 52536,
+        "sha256": "8397e808af217efa0a2f778412976e2839a81ad58272b592474c9eb59448f6b2"
+      },
+      "native": {
+        "blob": "f9ad6fc328048e682b92b7f37fa8bedfcb906e69",
+        "bytes": 50454,
+        "sha256": "9ef46667f6260d77d743356031f3d39e1b6f500dada070ffe2d2f4d6afc6bae7"
+      },
+      "originalBatch": {
+        "tree": "d811d5d438c735d5ec05571f821fd9834c0b6ee8",
+        "files": 30,
+        "uniqueBlobs": 30,
+        "bytes": 259029
+      }
+    },
+    {
+      "name": "streams-07",
+      "operation_id": "7d4983dd3b864a0317d20599f4831b760995bed2f68d08d1e83fb2beb2f71ef6",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-07-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 98304,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "cbabc81c740428540c39388b3fccd8de31bf9763",
+        "bytes": 296,
+        "sha256": "49456a8ea36a80e8af93257e166fb2d29bb63a34c45ae4c18ccdf251490c3877"
+      },
+      "intentPin": {
+        "blob": "180cb999829d8d501b3453fb116e664aa43b4731",
+        "bytes": 795,
+        "sha256": "982a05b521bc8d6b38ac5134836794d669ae4174619017847ca1d3aba8cd6128"
+      },
+      "ackSDK": {
+        "blob": "cb98deb62180bbed7843b845606267985fd10daa",
+        "bytes": 707,
+        "sha256": "9a9919f1bbd177b7559866d8b7ed3bbfe4ee91980909b85b1b8ffba286a5b989"
+      },
+      "ackNative": {
+        "blob": "33f060a32b8a435f18833414aab00feace276b30",
+        "bytes": 546,
+        "sha256": "a02388c7129f6c131d1d542c5c5dcea3e5d3ff922da6a729c0af5d487cdf34fd"
+      },
+      "statusSDK": {
+        "blob": "77ad3e3da9a861f5cd9a91472f2616017abcaa02",
+        "bytes": 978,
+        "sha256": "99618bf5d2a8bf0964523748c1f55458e6446ea86d56946e3b926a31cdc2fdb8"
+      },
+      "statusNative": {
+        "blob": "c26d04efe8f552d2234f79714a76276984fefc16",
+        "bytes": 803,
+        "sha256": "77389782c1965713a242d60852ec1f7dbaa8accd1dec7733bb93ac8c6b8570f9"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 7,
+      "immutablePageWidth": 8192,
+      "immutablePageAmendment": null,
+      "payload": {
+        "blob": "912699b694cc43c9055b99bdf24f18ac76fe5778",
+        "bytes": 52447,
+        "sha256": "dac8ba023f1daf15cc327c4397188a60d151b920df4964ff7ab90a12d322789d"
+      },
+      "native": {
+        "blob": "1960cd2d72d446c1794df57ceae2f8268bc488e6",
+        "bytes": 50425,
+        "sha256": "18197169d4c52c1325dc2c7dbbe0a1b60e6a32f30a7be87f84ea797c2db7afcf"
+      },
+      "originalBatch": {
+        "tree": "bcdc8fd8287d2e67d5a070bd20f6107cc8aa9544",
+        "files": 30,
+        "uniqueBlobs": 30,
+        "bytes": 258679
+      }
+    },
+    {
+      "name": "streams-08",
+      "operation_id": "fd6ea79f5f570509084f3e837ebdf3cacbae7a096cb8a19cbcb6b9153d836e7d",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-08-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 114688,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "f6f786fcd8135beeca93edb6216926c8ddad0bf1",
+        "bytes": 297,
+        "sha256": "04a864f7e83a2954674a8121311481640dfd5b6fb31a33cb6c9016c502693f1a"
+      },
+      "intentPin": {
+        "blob": "d614593a78ba084c4d4539b4997f232d596456f5",
+        "bytes": 869,
+        "sha256": "cce0a10878ff867e3ba957b4bfe7d89f61950d861afd649b63408237e2af8608"
+      },
+      "ackSDK": {
+        "blob": "996a369078a8aae4ea6bb1ec0de365b1da3185ba",
+        "bytes": 707,
+        "sha256": "c89faef4e0bc0e5c5affdadf0945e0f9579874e15e7ef298aeaee49710440fae"
+      },
+      "ackNative": {
+        "blob": "37cebd698da1bc5f9df20bbc41f81969a7d9b703",
+        "bytes": 546,
+        "sha256": "18fe983f1523f124f29cb7056b9e3802622bfc90374e1fec98d374fa1e80f390"
+      },
+      "statusSDK": {
+        "blob": "0667720804ae47ddb0ac80bcea91fbc7e6fbf97c",
+        "bytes": 978,
+        "sha256": "9246d3ea4af00e51d245c279325726cffab4bb8278ea1d77f21888f6c0441bee"
+      },
+      "statusNative": {
+        "blob": "7f80860a27664b18d6ae539bc194b4e450222cb9",
+        "bytes": 803,
+        "sha256": "eb917c3f390cf5b557a9561767d55149ba2337fd14a439bf84b476a09c6d17c6"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 4,
+      "immutablePageWidth": 16384,
+      "immutablePageAmendment": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+      "payload": {
+        "blob": "ebe507f771aabaa8a9b07938b5d46bf903d26629",
+        "bytes": 53813,
+        "sha256": "3950d2a0cb9524d5366e44dafb8c5c3a9e39d13bf087c68b4ea3a3acdfefc433"
+      },
+      "native": {
+        "blob": "fcb52466419b214268384910b47f50371f1c899a",
+        "bytes": 50881,
+        "sha256": "60e9af6f1ae5dc46ad93c4263259ed9e8c6872c60e0ffa1948efa52342d9f563"
+      },
+      "originalBatch": {
+        "tree": "d315d8e273176c3005c4bc86e445c85016c8a221",
+        "files": 21,
+        "uniqueBlobs": 21,
+        "bytes": 259197
+      }
+    },
+    {
+      "name": "streams-09",
+      "operation_id": "a3b02dea1ff105379b09da69d4b1d869e3fa455304961b587f1e71c095138bd1",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-worker-streams-09-20261105-r1",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "mac",
+            "job_id": "1a1ae51309d-fc05-5ef8",
+            "stdout_offset": 131072,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "3f24852b2ec5c8a14407d1aa7bc19b5791a5113b",
+        "bytes": 297,
+        "sha256": "05cbd5db60544a62c5be29faeea144e5824a82570efea8e558e33887d1aa0b3e"
+      },
+      "intentPin": {
+        "blob": "ce3e97c7a1bb8561f8dade45981e173ad66dd739",
+        "bytes": 869,
+        "sha256": "06ee84ef8343f0aa62e1ff05c9f067e189d059b18925754f889797ccefcb1ee8"
+      },
+      "ackSDK": {
+        "blob": "63c8cea5d88dd577c195438edb8f34c814e57c1f",
+        "bytes": 707,
+        "sha256": "9a3b83a0155b02e9b26303fbfc832b8a2234cb1c9490cb81936e2af5aafa6611"
+      },
+      "ackNative": {
+        "blob": "23fdb5cbea6b1e9e3c1f411b157e7eec377446de",
+        "bytes": 546,
+        "sha256": "8bc882755d9467b773227b08436f8d56e2860aae76d4ad205629790cbb9a32ea"
+      },
+      "statusSDK": {
+        "blob": "74d3e489b7e70e59054858dbcfeeb7d41695f5fd",
+        "bytes": 978,
+        "sha256": "33b381911647a9ce3c9efc5e53ca694897be79b51c86b689143b6b4af90cea7d"
+      },
+      "statusNative": {
+        "blob": "6aadd18ef52c97b866da6ba30cfbbbd2791ca3b4",
+        "bytes": 803,
+        "sha256": "2887107b3047f8d77a01edb1d73aa9deeb2eaf801f4ab0b32659e6c88863eeba"
+      },
+      "completed": true,
+      "ownedFutureInactive": true,
+      "archiveVerified": true,
+      "immutablePages": 1,
+      "immutablePageWidth": 16384,
+      "immutablePageAmendment": "508c2fa2d6f662b7494438283f8d62be1ceba51d",
+      "payload": {
+        "blob": "076c7d175098ef9a97eba285c62c7b5f6dab6b39",
+        "bytes": 3831,
+        "sha256": "9e215048293a73639e49c3b9e713fc3f6064c5fb57ef31be37149be9532c72fa"
+      },
+      "native": {
+        "blob": "2c755bf7fd0561baa81284e5bafeefad5dd40fb3",
+        "bytes": 3572,
+        "sha256": "cb2909fd48e3b4867205f83d50ff6925fdb3b53997d1d81ab39a4a796b588aea"
+      },
+      "originalBatch": {
+        "tree": "7e270b680885f3e01b9d71ef449c28a6e8a4f6c6",
+        "files": 12,
+        "uniqueBlobs": 12,
+        "bytes": 23567
+      }
+    }
+  ],
+  "RuntimeCallsInFlight": 0,
+  "nativeFuturesActive": 0
+}

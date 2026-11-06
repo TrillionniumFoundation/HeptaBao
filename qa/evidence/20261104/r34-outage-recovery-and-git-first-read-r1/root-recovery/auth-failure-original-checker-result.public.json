@@ -1,0 +1,291 @@
+{
+  "schema": "heptabao.root-original-AuthBus-failure-qualification.v1",
+  "qualified_original_complete_failure": false,
+  "checks": [
+    {
+      "name": "whole_original_stdout_bytes",
+      "passed": true
+    },
+    {
+      "name": "whole_original_stdout_sha256",
+      "passed": true
+    },
+    {
+      "name": "same_original_job",
+      "passed": true
+    },
+    {
+      "name": "authority_output_complete",
+      "passed": true
+    },
+    {
+      "name": "authority_output_durable",
+      "passed": true
+    },
+    {
+      "name": "authority_terminal_publication_confirmed",
+      "passed": true
+    },
+    {
+      "name": "authority_audit_recorded",
+      "passed": true
+    },
+    {
+      "name": "authority_automatic_retry_false",
+      "passed": true
+    },
+    {
+      "name": "authority_cancelled_false",
+      "passed": true
+    },
+    {
+      "name": "authority_timed_out_false",
+      "passed": true
+    },
+    {
+      "name": "original_failed_exit_1",
+      "passed": true
+    },
+    {
+      "name": "stdout_actual_lengths",
+      "passed": true
+    },
+    {
+      "name": "stdout_synced_untruncated",
+      "passed": true
+    },
+    {
+      "name": "stderr_actual_lengths",
+      "passed": true
+    },
+    {
+      "name": "stderr_synced_untruncated",
+      "passed": true
+    },
+    {
+      "name": "actual_failure",
+      "passed": true
+    },
+    {
+      "name": "exact_failure_frames",
+      "passed": true
+    },
+    {
+      "name": "bound_manager_source",
+      "passed": true
+    },
+    {
+      "name": "line_76_is_typed_integer",
+      "passed": true
+    },
+    {
+      "name": "line_73_is_separate_arguments_check",
+      "passed": true
+    },
+    {
+      "name": "no_completed_business_operations",
+      "passed": true
+    },
+    {
+      "name": "single_registration",
+      "passed": true
+    },
+    {
+      "name": "original_exact_label",
+      "passed": true
+    },
+    {
+      "name": "single_original_bootstrap",
+      "passed": true
+    },
+    {
+      "name": "cleanup_integer_parser_error",
+      "passed": true
+    },
+    {
+      "name": "wrapper_exec_unobserved",
+      "passed": true
+    },
+    {
+      "name": "registration_and_lineage_not_closed",
+      "passed": true
+    },
+    {
+      "name": "single_shared_helper_ledger",
+      "passed": true
+    },
+    {
+      "name": "eleven_unique_helpers",
+      "passed": true
+    },
+    {
+      "name": "helpers_known_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_0_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_1_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_2_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_3_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_4_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_5_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_6_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_7_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_8_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_9_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "helper_10_reaped_empty_known_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "all_34_outer_descriptors_closed",
+      "passed": true
+    },
+    {
+      "name": "ephemeral_socket_closed",
+      "passed": true
+    },
+    {
+      "name": "finite_inputs_closed",
+      "passed": true
+    },
+    {
+      "name": "T5_descriptors_closed",
+      "passed": true
+    },
+    {
+      "name": "manager_read_descriptors_closed",
+      "passed": true
+    },
+    {
+      "name": "public_proof_capture_libraries_closed",
+      "passed": true
+    },
+    {
+      "name": "original_deadline_flag",
+      "passed": true
+    },
+    {
+      "name": "failure_release_matches_frames",
+      "passed": true
+    },
+    {
+      "name": "specific_rejected_literal_unknown",
+      "passed": true
+    },
+    {
+      "name": "original_prints_hash_only",
+      "passed": true
+    },
+    {
+      "name": "actual_credentialValuesPublished_false",
+      "passed": true
+    },
+    {
+      "name": "actual_productionChangedByController_false",
+      "passed": true
+    },
+    {
+      "name": "actual_productionServiceOperationDispatched_false",
+      "passed": true
+    },
+    {
+      "name": "actual_providerRequested_false",
+      "passed": true
+    },
+    {
+      "name": "actual_j3160Contacted_false",
+      "passed": true
+    },
+    {
+      "name": "actual_allAccountsQualified_false",
+      "passed": true
+    },
+    {
+      "name": "actual_fullReplacementQualified_false",
+      "passed": true
+    },
+    {
+      "name": "actual_currentProviderAvailabilityQualified_false",
+      "passed": true
+    },
+    {
+      "name": "ten_original_observers",
+      "passed": true
+    },
+    {
+      "name": "all_observers_closed_original_payloads_archived",
+      "passed": true
+    },
+    {
+      "name": "fifty_five_original_pages",
+      "passed": false
+    },
+    {
+      "name": "continuous_original_stdout_EOF",
+      "passed": true
+    },
+    {
+      "name": "continuous_empty_stderr_EOF",
+      "passed": true
+    },
+    {
+      "name": "lane_idle",
+      "passed": true
+    }
+  ],
+  "original_stdout": {
+    "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+    "bytes": 132132,
+    "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+  },
+  "original_authority": {
+    "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+    "bytes": 732,
+    "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+  },
+  "owner_release": {
+    "blob": "d8150a0340521c6e4a5b421b1a367dd319ef22a5",
+    "bytes": 23408,
+    "sha256": "556a5441f70acb97cf9f9ab20ec05cea33d4ffb6a0d2959e14cade0b0c2d7425"
+  },
+  "failure": "typed launchctl integer parser frame; rejected field and literal remain unobserved",
+  "actual_registration_closed": false,
+  "actual_wrapper_or_exec_identity_observed": false,
+  "helper_and_descriptor_closure_qualified": true,
+  "AuthBus_business_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "cleanup": false,
+  "root_Runtime_calls": 0,
+  "diagnostic_required_before_cleanup_or_worker_rerun": true
+}

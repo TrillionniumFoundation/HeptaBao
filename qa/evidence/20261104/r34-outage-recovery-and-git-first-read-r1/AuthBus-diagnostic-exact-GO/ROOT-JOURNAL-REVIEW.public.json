@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.root-AuthBus-diagnostic-Git-first-journal-review.v1",
+  "packet": {
+    "tree": "eba526f5688393d4f61760c4bbc581bc10b705cd",
+    "files": 11,
+    "bytes": 67283,
+    "merkle": {
+      "root_sha": "eba526f5688393d4f61760c4bbc581bc10b705cd",
+      "trees_verified": 1,
+      "leaf_count": 11
+    },
+    "whole": true
+  },
+  "diagnostic_source_review": "10079e95735e3f2aed63f47db8eceb5aa8cc1148",
+  "helpers": {
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "native": {
+      "blob": "c61872aff6529e34ca89121d5c09702f8d56792c",
+      "bytes": 19027,
+      "sha256": "1aa2e506fd68673b182339194f47b091ec4c2c6b810498d69e2e0dec0970503c"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "steps": {
+      "blob": "0a9de9aeef35470ff28150949c8a5e341b7688cb",
+      "bytes": 1815,
+      "sha256": "f865f3154992ae1f29cc1a0b77d4970238f7f9e55faf6d0ca237f6822d5c2799"
+    }
+  },
+  "checks": [
+    {
+      "name": "git_archive_once_strict_forward_reverse",
+      "passed": true,
+      "hunks": 3
+    },
+    {
+      "name": "native_gitfirst_strict_forward_reverse",
+      "passed": true,
+      "hunks": 4
+    },
+    {
+      "name": "combined_JS_syntax_only_no_helper_invocation",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_request_unchanged",
+      "passed": true
+    },
+    {
+      "name": "actual_original_process_start_ACK_shape",
+      "passed": true
+    }
+  ],
+  "all_checks_passed": true,
+  "reviewed_properties": {
+    "separate_prepare_model_boundary_then_invoke": true,
+    "exact_request_intent_and_armed_checkpoint_external_whole_before_Native": true,
+    "no_await_between_called_marker_and_sole_Native_statement": true,
+    "one_exact_diagnostic_start": true,
+    "only_same_actual_job_and_original_operation_reads": true,
+    "whole_original_SDK_external_before_isError_or_native_parse": true,
+    "immutable_original_SDK_hash_keys_with_history": true,
+    "normal_returning_outer_catch_closed_actions": true,
+    "all_batch_results_recorded_before_rejection": true,
+    "expected_flat_tree_Merkle_and_membership_verified": true,
+    "original_payload_contiguous_hash_EOF_before_close": true,
+    "no_reinitialization_or_automatic_retry": true,
+    "Git_unknown_only_exact_object_read_reconciliation_without_unpause": true
+  },
+  "original_ACK_schema_witness": {
+    "blob": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+    "bytes": 6200,
+    "sha256": "eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86"
+  },
+  "original_ACK_shape": {
+    "audit_recorded": true,
+    "local_record_pending": false,
+    "reused": false,
+    "launch_ok": true,
+    "host": "mac",
+    "execution_mode": "operator",
+    "job_keys": [
+      "args",
+      "created_unix_ms",
+      "cwd",
+      "env_keys",
+      "executable",
+      "execution_mode",
+      "host",
+      "id",
+      "idempotency_key",
+      "launch_error",
+      "launch_state",
+      "remote_job_dir",
+      "request_digest",
+      "request_fingerprint",
+      "ssh_target",
+      "system_jobctl",
+      "unit"
+    ],
+    "fingerprint": {
+      "$exactInteger": "2508472412258818419"
+    }
+  },
+  "root_orchestration_correction": "The first root review cell was rejected by V8 for a missing object-property name before JSON.parse; no Git or Native call occurred. Reissued only the pure review and read-only historical ACK check.",
+  "root_Runtime_calls": 0,
+  "Python_compilations": 0,
+  "qualified_for_exact_diagnostic_GO": true
+}

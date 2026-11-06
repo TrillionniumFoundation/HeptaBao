@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.owner-renew-inert.body-chunk.actual.r1",
+  "pass": true,
+  "name": "outer-body-65536",
+  "operation_id": "855b6489b764b9c922cd634d38d60fbfb30cb7ebe5f7afd34842055984730aeb",
+  "nativePin": {
+    "blob": "db30160887463419e70ff1f053e2ad000e9430ef",
+    "bytes": 8317,
+    "sha256": "1b1dc1c7595af963f0ffb1b30bb0f4c5af0d9633d25791bad65418daf016b120"
+  },
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+  "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+  "size": 71506,
+  "offset": 65536,
+  "next_offset": 71506,
+  "bytes": 5970,
+  "eof": true,
+  "chunk_sha256": "82dde7e5e5e733ae3b75a429c3daeb30ec5a8ed0dfa9e1dcaf3b0cc64859b2af",
+  "equalsFrozenBytes": true,
+  "originalObserverClosed": true
+}

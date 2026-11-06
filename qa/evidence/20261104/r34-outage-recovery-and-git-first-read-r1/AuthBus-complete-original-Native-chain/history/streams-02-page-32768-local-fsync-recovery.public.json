@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.worker-observer-local-fsync-session-recovery.v1",
+  "scope": "local archive only; no Runtime request repeated",
+  "observer": "streams-02",
+  "operation_id": "156780d3049e1852407b08254293cd0082dd3b3c50215e0f3bc35bef1583f026",
+  "offset": 32768,
+  "failedStage": "wfCheckpoint before Runtime operation_result",
+  "originalExecResponse": {
+    "chunk_id": "b8d0da",
+    "wall_time_seconds": 10.001019672,
+    "session_id": 42122,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "originalSessionCompletion": {
+    "chunk_id": "8541a5",
+    "wall_time_seconds": 0.000021792,
+    "exit_code": 0,
+    "original_token_count": 2,
+    "output": "fsynced\n"
+  },
+  "originalNativeOperationClosed": true,
+  "pageRuntimeCallAlreadyIssued": false,
+  "action": "Keep immutable before checkpoint; continue same original operation and exact page once. Helper now waits on its own existing local exec session.",
+  "productSourceUnchanged": true,
+  "originalBusinessNotReplayed": true
+}

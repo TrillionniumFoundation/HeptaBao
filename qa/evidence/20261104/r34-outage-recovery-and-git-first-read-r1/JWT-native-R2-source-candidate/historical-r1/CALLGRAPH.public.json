@@ -1,0 +1,118 @@
+{
+  "source_only": true,
+  "edges": [
+    {
+      "file": "service_native_auth.rs",
+      "pin": {
+        "blob": "7d57534f61443aa14569456341747a2916ea8542",
+        "bytes": 142229,
+        "sha256": "876834cf66ccc22451800309fd80be406c13f1a7ddb678c0be62a33864c02bf7"
+      },
+      "function": "dispatch_native_auth_request",
+      "contract": "Select Userpass first, then JWT. R1 Token API composition gaps are explicit in CROSS-REVIEW.md."
+    },
+    {
+      "file": "service_native_auth.rs",
+      "pin": {
+        "blob": "7d57534f61443aa14569456341747a2916ea8542",
+        "bytes": 142229,
+        "sha256": "876834cf66ccc22451800309fd80be406c13f1a7ddb678c0be62a33864c02bf7"
+      },
+      "function": "dispatch_native_owner_request_with_pki",
+      "contract": "Capture original source proof; fresh jwt_lifetime=None; pass private output only for JWT login."
+    },
+    {
+      "file": "service.rs",
+      "pin": {
+        "blob": "c75adfe47637c5b2b559e515a754521e93238445",
+        "bytes": 519054,
+        "sha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a"
+      },
+      "function": "dispatch_native_authorized_subrequest",
+      "contract": "Forward the request-local optional output; ordinary wrapper passes None."
+    },
+    {
+      "file": "service.rs",
+      "pin": {
+        "blob": "c75adfe47637c5b2b559e515a754521e93238445",
+        "bytes": 519054,
+        "sha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a"
+      },
+      "function": "dispatch_authorized_subrequest_inner",
+      "contract": "Fresh authenticated_jwt_lifetime=None; actual Auth then finish_identity_response_observed; export only after successful finalization/candidate installation."
+    },
+    {
+      "file": "auth.rs",
+      "pin": {
+        "blob": "19646b7848e5588d72f5514400d607696549611d",
+        "bytes": 397709,
+        "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97"
+      },
+      "function": "handle_with_connection_clock_and_native_jwt_lifetime_for_cluster",
+      "contract": "Reject prefilled optional output; forward to actual JWT route."
+    },
+    {
+      "file": "auth.rs",
+      "pin": {
+        "blob": "19646b7848e5588d72f5514400d607696549611d",
+        "bytes": 397709,
+        "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97"
+      },
+      "function": "jwt_route_with_native_lifetime",
+      "contract": "Select exactly one verifier branch. All original role/key/body/claim/token candidate processing remains in actual handler."
+    },
+    {
+      "file": "federated_native_jwt.rs",
+      "pin": {
+        "blob": "0b4f4b18be19951e6744e1202f2fb1561351add2",
+        "bytes": 7709,
+        "sha256": "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e"
+      },
+      "function": "verify_native_with_user_claim_and_lifetime",
+      "contract": "One self.verified_claims call; return private lifetime with identity only after original predicates succeed."
+    },
+    {
+      "file": "federated_auth.rs",
+      "pin": {
+        "blob": "21c48f7d50d30076d1aae82d51ce2b782a9739dc",
+        "bytes": 56677,
+        "sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb"
+      },
+      "function": "verified_claims",
+      "contract": "Existing PEM-key search may try multiple cryptographic keys; no second verifier invocation was added."
+    },
+    {
+      "file": "auth_native_jwt.rs",
+      "pin": {
+        "blob": "6f20bf520acdbd093d152ec6a5855dc4373f35db",
+        "bytes": 14576,
+        "sha256": "bcca035d7a05c6ec9d4053ad450a9f35388ec3e8c13c41a100afffa1d40b00ba"
+      },
+      "function": "bind_successful_login",
+      "contract": "Consume private lifetime once; bind actual issued token/root/role/accessor/entity/source; never reverify assertion."
+    },
+    {
+      "file": "service_native_auth.rs",
+      "pin": {
+        "blob": "7d57534f61443aa14569456341747a2916ea8542",
+        "bytes": 142229,
+        "sha256": "876834cf66ccc22451800309fd80be406c13f1a7ddb678c0be62a33864c02bf7"
+      },
+      "function": "dispatch_native_owner_request_with_pki",
+      "contract": "Bind original status/body before plan; retain source gate, Identity-only engine delta, real commit and terminal custody."
+    },
+    {
+      "file": "service_native_auth.rs",
+      "pin": {
+        "blob": "7d57534f61443aa14569456341747a2916ea8542",
+        "bytes": 142229,
+        "sha256": "876834cf66ccc22451800309fd80be406c13f1a7ddb678c0be62a33864c02bf7"
+      },
+      "function": "complete_native_auth_delivery",
+      "contract": "Require mandatory actual audit and retained original publication proof; do not roll back a known durable root on later denial."
+    }
+  ],
+  "verification_claim": "One existing verifier invocation; PEM primitive may iterate matching keys. No second authentication pass.",
+  "no_durable_witness_schema": true,
+  "zero_runtime_and_compile": true
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-h2-live-result-info-4e808-20261105-r2",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2/result.public.json"
+    }
+  }
+}

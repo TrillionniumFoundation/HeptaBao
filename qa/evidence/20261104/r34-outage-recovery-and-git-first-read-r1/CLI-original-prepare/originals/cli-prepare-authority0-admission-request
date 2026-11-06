@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-authority0-20261105-r4",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ae34b455-fc05-5e28"
+    }
+  }
+}

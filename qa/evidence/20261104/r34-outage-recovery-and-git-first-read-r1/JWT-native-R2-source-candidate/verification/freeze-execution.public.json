@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.native-jwt.r2.pure-v8-execution.v1",
+  "execution": "functions.exec V8; source text and original observed metadata only",
+  "verifier": {
+    "blob": "9e1409d78ace1c67f6dce483b51400bd76b5f4ef",
+    "bytes": 6784,
+    "sha256": "2fbfc66c3d3d5ee54e960e430064a910a106865297494aa3b2da8c9fefad6712"
+  },
+  "hash_helper": {
+    "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+    "bytes": 6684,
+    "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+  },
+  "hash_functions_selected": [
+    "gitBlobMeta",
+    "sha1Bytes",
+    "utf8Bytes"
+  ],
+  "processStartBinding_invoked": false,
+  "local_executor_required": false,
+  "candidate_code_executed": false,
+  "completed": true,
+  "result": {
+    "blob": "3da530160e387c1ad280721496520d7815ef020f",
+    "bytes": 18011,
+    "sha256": "217a6d69fc2ecc97a4f32d9246d8d81c14bbff31ab8a65caddbedb02fcd00068"
+  },
+  "check_count": 179,
+  "Rust_tests_executed": 0,
+  "Runtime_calls": 0
+}

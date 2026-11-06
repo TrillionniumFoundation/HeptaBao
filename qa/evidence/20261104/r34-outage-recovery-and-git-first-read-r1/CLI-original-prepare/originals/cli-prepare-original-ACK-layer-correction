@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.local-ACK-layer-selection-correction.v1",
+  "scope": "Local parsing of already saved original process_start ACK",
+  "original_SDK": {
+    "name": "cli-prepare-start-original-SDK",
+    "blob": "821ae73ce043490cff759310b7baaacdacfea5cc",
+    "bytes": 1692,
+    "sha256": "026435bff7b7b73ec8cf51428ac277ce69f6fcc389d045a6fa249215740885e1"
+  },
+  "original_native": {
+    "name": "cli-prepare-start-original-native",
+    "blob": "16d077373c48645d0374035f63d1ee8517df462a",
+    "bytes": 1434,
+    "sha256": "40ae1ddfbe0aba58e591d08e621b62c9287b4feeca752503818ff613ccc1e456"
+  },
+  "incorrect_selector": "native.job_id",
+  "actual_schema_selector": "native.job.id",
+  "actual_job_id": "1a1ae34b455-fc05-5e28",
+  "original_native_launch": "launched/launch.ok=true/reused=false/local_record_pending=false",
+  "binding_exact": {
+    "digest": "9122a2df5fce0a25b2e521950ab8ba691373f38caf8bcc987365edd14a1365c3",
+    "fingerprint": "10458100364976458277"
+  },
+  "original_halted_flag_reason": "Only the local wrong-layer selector found no top-level job_id; the original SDK itself was not an error and contains the exact valid ACK.",
+  "correction": "Select the existing original native.job record and validate host/executable/argv/cwd/key/digest/fingerprint/launch fields. No Runtime call or business retry.",
+  "Runtime_calls_during_correction": 0,
+  "original_request_or_ACK_changed": false
+}

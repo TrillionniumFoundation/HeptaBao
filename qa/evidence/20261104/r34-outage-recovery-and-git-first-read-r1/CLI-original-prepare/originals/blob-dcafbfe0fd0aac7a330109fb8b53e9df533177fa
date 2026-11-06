@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.r34.CLI-readonly-prepare-and-result.GO.v1",
+  "decision": "GO_ORIGINAL_READONLY_PREPARE_ONCE_THEN_CONDITIONAL_FIXED_RESULT_READ",
+  "as_of_utc": "2026-11-06T00:00:06Z",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "rootReview": {
+    "blob": "b59b2c3f043280e1f0dd98ee1387aa7e1bdabe5c",
+    "bytes": 3656,
+    "sha256": "558436bfca39a37b5f859d036ff27694e1a2eb1d1daac6dd7cd1ee29db5ae8b7"
+  },
+  "handoffOwnerRelease": {
+    "blob": "8ed819a77bb6b05cf1a2aec3fdf32ea8c8293824",
+    "bytes": 20240,
+    "sha256": "587ccc52182b540024f802b69ba033d41731e6a52d29a06a3ebac647e683dfff"
+  },
+  "exactProcessStart": {
+    "blob": "c29b6d4cebec4b66d07e7afde36d35e5f330a995",
+    "bytes": 654,
+    "sha256": "098068ceaddb24bb6b2ca246efa9bf7d9a964cd991a629398239aecbac4daca6"
+  },
+  "exactRequest": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+      "--binding-sha256",
+      "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-10816-20261105-r4",
+    "timeout_seconds": 330
+  },
+  "nativeBinding": {
+    "sha256": "9122a2df5fce0a25b2e521950ab8ba691373f38caf8bcc987365edd14a1365c3",
+    "native_fingerprint": "10458100364976458277"
+  },
+  "maximumBusinessStarts": 1,
+  "originalInternalPrepareSeconds": 300,
+  "outerSeconds": 330,
+  "otherLane": "A remains original AuthBus inert/three-target closure",
+  "scope": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+    "freshPrepareDirectory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/prepare-r1",
+    "candidateCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "serverProcesses": 0,
+    "cliSnapshotCommands": 0,
+    "productionChanges": false,
+    "sourceChanges": false,
+    "allowedOwnedReadOnlyCommands": [
+      "git rev-parse HEAD",
+      "git rev-parse HEAD^{tree}",
+      "git status --porcelain --untracked-files=all"
+    ],
+    "sourceFullFsckClaimed": false
+  },
+  "originalPreconditionsPreserved": [
+    "Root acceptance of actual 4e808 Linux normal release plus original44, original7, existing9 and separate same-root publication1 as exact sets, authoritative termination and owned cleanup.",
+    "Completed standalone canonical desktop import and exact readback; no source qualification inferred from planned paths.",
+    "Completed shared normal artifact transfer; actual five-artifact local stage; byte-preserved official CLI identity; exact new binding.private.json and reviewed source pins.",
+    "Independent explicit ALPN=h2 fixture qualification reviewed separately; neither it nor thread components substitutes for this five-window official CLI experiment.",
+    "Root acceptance of actual readonly prepare and exclusive new fixture window; no action from this unresolved template."
+  ],
+  "startRule": "Whole exact request and external intent persist before the single process_start. Original key/paths/argv/budgets unchanged across UTC midnight. Save complete original SDK before parsing and require exact native digest/fingerprint. Any missing ACK/UNKNOWN stops new admissions; no business replay/new key.",
+  "observation": {
+    "originalReturnedJobOnly": true,
+    "oneCallAndOneNativeFuture": true,
+    "processReadPerStreamBytes": 16384,
+    "immutablePageBytes": 8192,
+    "allOriginalObserversMustClose": true
+  },
+  "conditionalResultRead": {
+    "enabledOnlyAfter": "Original authoritative succeeded/exit0/full/durable/terminal-publication-confirmed, no timeout/cancel/retry, complete original stdout JSON status=passed/runtime_started=false/all_owned_stopped=true, exact fixed result path and actual result_sha256; complete stderr empty.",
+    "metadata": {
+      "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-result-info-20261105-r4",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/prepare-r1/result.public.json"
+        }
+      }
+    },
+    "metadataCap": "One exact file_info. Original payload complete and handler closed; regular/no symlink/single link/uid1000/gid1000/0600/linux; size1..65536; SHA exactly from original final stdout. file_info hashes the whole file.",
+    "bodyTemplate": {
+      "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-result-body-20261105-r4",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/prepare-r1/result.public.json",
+          "offset": 0,
+          "limit": null,
+          "expected_version": null
+        }
+      }
+    },
+    "allowedTransformation": "Only limit and expected_version null become the exact original metadata size and immutable version; fixed path/host/offset/key unchanged. Persist exact derived request and external intent first.",
+    "bodyAdmissions": 1,
+    "maximumBodyBytes": 65536,
+    "completeEOFAndWholeSizeSHAVersionRequired": true,
+    "ifOverCap": "Stop before body admission and report exact metadata; do not silently broaden or claim result qualification."
+  },
+  "failureRule": "Native failure/refusal/missing ACK/UNKNOWN stops new native admissions; retain/close only already returned original observers. Immutable Git archival failures are separate and may recover identical already-received public bytes via create_tree content before continuing. No native replay for archival repair.",
+  "futureLive": {
+    "template": {
+      "blob": "3256b51db719dc4710ed94f32cb5d1289e189ee5",
+      "bytes": 721,
+      "sha256": "0aac8749058ed41d3dde58549d3c47ac2f5ed0d757dda04f939486b35b3ee910"
+    },
+    "authorized": false,
+    "unresolved": "UNRESOLVED_ACTUAL_PREPARE_RESULT_SHA256",
+    "requires": "Actual prepare complete-result root acceptance; separate H2 qualification remains a distinct pending gate and cannot be substituted by this prepare."
+  },
+  "rootRuntimeCalls": 0,
+  "productionCutover": false,
+  "cleanup": false
+}

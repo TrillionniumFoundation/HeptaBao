@@ -1,0 +1,74 @@
+--- a/crates/heptabao-server/src/service.rs
++++ b/crates/heptabao-server/src/service.rs
+@@ -6756,6 +6756,7 @@
+             origin_peer,
+             approle_secret_consumption,
+             false,
++            None,
+         )
+     }
+ 
+@@ -6775,6 +6776,7 @@
+         client_certificates: Option<&[Vec<u8>]>,
+         origin_peer: Option<std::net::IpAddr>,
+         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
++        native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+     ) -> Response {
+         Self::dispatch_authorized_subrequest_inner(
+             state,
+@@ -6791,6 +6793,7 @@
+             origin_peer,
+             approle_secret_consumption,
+             true,
++            native_jwt_lifetime,
+         )
+     }
+ 
+@@ -6810,7 +6813,11 @@
+         origin_peer: Option<std::net::IpAddr>,
+         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+         defer_mount_quota_retirement: bool,
++        native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+     ) -> Response {
++        if native_jwt_lifetime.as_deref().is_some_and(Option::is_some) {
++            return Response::error(503, "native JWT output slot is not fresh");
++        }
+         if path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/") {
+             return Self::ui_mounts_route(state, principal, namespace, method, path, now);
+         }
+@@ -6979,6 +6986,8 @@
+         // earlier second after the original HA proof. Completion below still
+         // checks the continuing original clock without extending the grant.
+         let auth_dispatch_seconds = auth.token_api_observed_time(time).seconds();
++        // Export this request-local witness only after real Identity finalization.
++        let mut authenticated_jwt_lifetime = None;
+         let auth_result = if path == "sys/quotas/config"
+             || path == "sys/quotas/rate-limit"
+             || path.starts_with("sys/quotas/rate-limit/")
+@@ -6995,7 +7004,7 @@
+             )
+             .map(Some)
+         } else {
+-            auth.handle_with_connection_clock_for_cluster(
++            auth.handle_with_connection_clock_and_native_jwt_lifetime_for_cluster(
+                 principal,
+                 namespace,
+                 method,
+@@ -7006,6 +7015,7 @@
+                 client_certificates,
+                 origin_peer,
+                 Some(&state.cluster_id),
++                native_jwt_lifetime.is_some().then_some(&mut authenticated_jwt_lifetime),
+             )
+         };
+         match auth_result {
+@@ -7112,6 +7122,9 @@
+                     state.engines = engines;
+                     state.namespaces = namespaces;
+                 }
++                if response.status == 200 && let Some(output) = native_jwt_lifetime {
++                    *output = authenticated_jwt_lifetime;
++                }
+                 return Response {
+                     unwrapped_json: response.unwrapped_json,
+                     response_headers: Default::default(),

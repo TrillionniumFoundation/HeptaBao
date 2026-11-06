@@ -1,0 +1,658 @@
+{
+  "schema": "heptabao.r34-recovery-immutable-tree-reference-manifest.v1",
+  "facts_frozen_at": "2026-11-06 02:48:00 UTC",
+  "prefix": "qa/evidence/20261104/r34-outage-recovery-and-git-first-read-r1",
+  "mounts": [
+    {
+      "name": "root-recovery",
+      "tree": "56f43ae1528657699ff952f14b09302a6c630be4"
+    },
+    {
+      "name": "AuthBus-inert-original-qualification",
+      "tree": "ead18951b17648cbc6278e4e1e62be9af692a9b6"
+    },
+    {
+      "name": "AuthBus-original-live-failure",
+      "tree": "abfb64b76b7c933351972aba214e2f3eac42987e"
+    },
+    {
+      "name": "AuthBus-original-authority-01",
+      "tree": "bc475504089d25ffeed2ad5bf07f7398d492e0de"
+    },
+    {
+      "name": "AuthBus-original-streams-01",
+      "tree": "27f086de691f557c9fcb585aac8b2d693b3f6d08"
+    },
+    {
+      "name": "AuthBus-original-streams-02",
+      "tree": "9de2072480bf6563de8efbd919ea097882c9cfff"
+    },
+    {
+      "name": "AuthBus-original-streams-03",
+      "tree": "70491dd7be6bcd8506d5b03e64affc39d4024091"
+    },
+    {
+      "name": "AuthBus-original-streams-04",
+      "tree": "0d5caa4db150a816192bb29497d399940d6332c0"
+    },
+    {
+      "name": "AuthBus-original-streams-05",
+      "tree": "df02e21b1da749b9f296b25a74c324371ff62c51"
+    },
+    {
+      "name": "AuthBus-original-streams-06",
+      "tree": "d811d5d438c735d5ec05571f821fd9834c0b6ee8"
+    },
+    {
+      "name": "AuthBus-original-streams-07",
+      "tree": "bcdc8fd8287d2e67d5a070bd20f6107cc8aa9544"
+    },
+    {
+      "name": "AuthBus-original-streams-08",
+      "tree": "d315d8e273176c3005c4bc86e445c85016c8a221"
+    },
+    {
+      "name": "AuthBus-original-streams-09",
+      "tree": "7e270b680885f3e01b9d71ef449c28a6e8a4f6c6"
+    },
+    {
+      "name": "CLI-original-prepare",
+      "tree": "8ae5958ff87929da33235fc2f9ed5790265a4871"
+    },
+    {
+      "name": "H2-original-prepare",
+      "tree": "d3eaa7be5a25c0f4c1d504116705b4a059aae35b"
+    },
+    {
+      "name": "H2-original-live-GO",
+      "tree": "ebac33b9ac45afaf6b896079c6ac0902e2920d27"
+    },
+    {
+      "name": "H2-original-recovery-state",
+      "tree": "88e46a69416f448d034b007370e343c04d4a7081"
+    },
+    {
+      "name": "H2-original-live-authority",
+      "tree": "fad0c79aeb9deaee1b6f05046935654e388a6442"
+    },
+    {
+      "name": "H2-original-live-streams",
+      "tree": "c54a43eb1c26f7d7edfaf59b188102e408d4dbcd"
+    },
+    {
+      "name": "H2-original-result-info",
+      "tree": "db85bd8e3c0935b4a5e02df7340f827d3b94a805"
+    },
+    {
+      "name": "H2-original-result-body0",
+      "tree": "78fe39b0035c3a38c4762e0efc4d6a8384d5661d"
+    },
+    {
+      "name": "H2-Git-first-source-R1",
+      "tree": "fa0a826b3eccdc862073753c8d8d557ab85cfa5a"
+    },
+    {
+      "name": "H2-Git-first-source-R2",
+      "tree": "a6f766eeeda2c660fba08d9668f826c7000b3b1f"
+    },
+    {
+      "name": "H2-Git-first-continuation-GO",
+      "tree": "e755a251a203f9e1f418f063dc0772410b448645"
+    },
+    {
+      "name": "H2-pre-Native-archive-UNKNOWN",
+      "tree": "cb5b7227b5549ff5c5a4ba0f72f00d01deb482ee"
+    },
+    {
+      "name": "JWT-native-R2-source-candidate",
+      "tree": "5b23ec2c3100fb26121b913bcd20058692bd5afd"
+    },
+    {
+      "name": "official-2.7.1-JWT-ACL-sources",
+      "tree": "bbebf79f4e89b5c40621316bb8965a96785435a5"
+    },
+    {
+      "name": "immutable-page-width-amendment",
+      "tree": "3b9e79c2dc19ccc9c02e0da04ae9c7bca35bad0b"
+    },
+    {
+      "name": "root-AuthBus-frame-correction",
+      "tree": "3818fb813cd5968284e40154827cc5eeea3e264a"
+    },
+    {
+      "name": "CLI-live-source-only-request",
+      "tree": "1dba7ba4623e523212c480b129a78d3176b9ca31"
+    },
+    {
+      "name": "AuthBus-readonly-diagnostic-source",
+      "tree": "b5e18906ed27f2738dda403ce16eb8a3f53fb848"
+    },
+    {
+      "name": "AuthBus-complete-original-Native-chain",
+      "tree": "ea8b1302819c113397b58147c800e9dbe1b0cde1"
+    },
+    {
+      "name": "AuthBus-diagnostic-root-source-review",
+      "tree": "749138c5b70b6e9a8eb4c28d9f7308c58727cfb6"
+    },
+    {
+      "name": "AuthBus-diagnostic-journal-source-R1",
+      "tree": "9ba3e5f9935047c4715a7a6a6139885b42c5a2f2"
+    },
+    {
+      "name": "AuthBus-diagnostic-journal-source-R2",
+      "tree": "eba526f5688393d4f61760c4bbc581bc10b705cd"
+    },
+    {
+      "name": "AuthBus-diagnostic-exact-GO",
+      "tree": "c39306ec16a0da78fde8e32c9df306b86379ed0a"
+    },
+    {
+      "name": "H2-pre-Native-checkpoint-new-recovery",
+      "tree": "811692431bf219ea0a217a95c43eaab871e75562"
+    },
+    {
+      "name": "H2-pre-Native-continuation-source",
+      "tree": "3eca64daf35cc22562a23bcf26cb094ffeacb536"
+    },
+    {
+      "name": "H2-pre-Native-continuation-peer",
+      "tree": "3e74b229f2c3c4bafc3f6b08a09fb1b7d3c6ca7a"
+    },
+    {
+      "name": "H2-pre-Native-continuation-GO",
+      "tree": "7be5cf580204ba672e7782f0ec1f240192fc81c9"
+    },
+    {
+      "name": "JWT-ACL-common-syntax-source",
+      "tree": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384"
+    },
+    {
+      "name": "JWT-isolated-source-ref-intent",
+      "tree": "f32d278849f7998930c046bbaf7a7e3e763f69a4"
+    },
+    {
+      "name": "JWT-isolated-source-ref-proof",
+      "tree": "3274901930d5d26a52058d642bea9a16c8fbd596"
+    }
+  ],
+  "packet_tree_references": 43,
+  "all_referenced_immediate_trees_independently_hash_verified": true,
+  "verification": [
+    {
+      "name": "root-recovery",
+      "tree": "56f43ae1528657699ff952f14b09302a6c630be4",
+      "immediate_entries": 15,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "9b9a69e5034a39e67058d2ed446e599a04fe83e0",
+        "bytes": 9643,
+        "sha256": "16c3dbadf90430b95063668ed3c9b1edbe61b1a392e7a85fedc60b7f22ad480a"
+      }
+    },
+    {
+      "name": "AuthBus-inert-original-qualification",
+      "tree": "ead18951b17648cbc6278e4e1e62be9af692a9b6",
+      "immediate_entries": 14,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "bb3cc8815e3943d6e7d8e8a0b94ca77eaf0b989a",
+        "bytes": 8231,
+        "sha256": "2d3d18e754f0cf7271d1a639d5913e87d9ffde6da897cdb965dba50dff9192bc"
+      }
+    },
+    {
+      "name": "AuthBus-original-live-failure",
+      "tree": "abfb64b76b7c933351972aba214e2f3eac42987e",
+      "immediate_entries": 6,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "3e0f9cc5cc2b8c14a14901dc1ce2795467c6149b",
+        "bytes": 4481,
+        "sha256": "e9521421969143341e9050ec65ca43c2809c3e6ae0c7c2a9d037e96a648af15e"
+      }
+    },
+    {
+      "name": "AuthBus-original-authority-01",
+      "tree": "bc475504089d25ffeed2ad5bf07f7398d492e0de",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "194c307b43722d383d26f101e3d159ac648f7668",
+        "bytes": 5383,
+        "sha256": "a75cf803c8e7b4846299bd143e6f550bd481637377b2d7c19ddf9988ff17d9f2"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-01",
+      "tree": "27f086de691f557c9fcb585aac8b2d693b3f6d08",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "4fe772bd594b55ea0b1bcb684756d0219aafa038",
+        "bytes": 5391,
+        "sha256": "8add9082d0959ee6236b460414fb9b07ce6f14f4f70f8c6a40f443bb3560a88b"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-02",
+      "tree": "9de2072480bf6563de8efbd919ea097882c9cfff",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "cde069ec53ec82b2521c4520d2c53df8ed1fc63c",
+        "bytes": 5391,
+        "sha256": "663c1dc674ac0edbfce24ddd1c7bc71c995c4ea9adb0ae1a6193ca2946427b0c"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-03",
+      "tree": "70491dd7be6bcd8506d5b03e64affc39d4024091",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "85b880b967340c3cbb3df0bae77fd5624b343ffb",
+        "bytes": 5391,
+        "sha256": "f05fb075ce5b8e35a3a4479ba0364a24bbeee29c4e164a25a6060372e2e25611"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-04",
+      "tree": "0d5caa4db150a816192bb29497d399940d6332c0",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "c92b980cbc9f5f4aef74d699a2378f168e011916",
+        "bytes": 5391,
+        "sha256": "e27859c9ce4998fb672390c7e9507702591b977600c82432bbfef4b678ae91c1"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-05",
+      "tree": "df02e21b1da749b9f296b25a74c324371ff62c51",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "23404abfd6f65f079cba8e9f6c3957d83ece7470",
+        "bytes": 5391,
+        "sha256": "e819cef71ccf3f2931a133919837615f8b049ba22bcb1d9155b69c2ececb64e0"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-06",
+      "tree": "d811d5d438c735d5ec05571f821fd9834c0b6ee8",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "1e039fe7de9fa58b89df0f276f14c30cb5a656c2",
+        "bytes": 5391,
+        "sha256": "6f56ecb289e67a809a3e469481d88987072a880cedf256eab684c058d97cbe98"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-07",
+      "tree": "bcdc8fd8287d2e67d5a070bd20f6107cc8aa9544",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "d7eabda52a68f03df1d28566758cedb0baed2455",
+        "bytes": 5391,
+        "sha256": "239921bc0c51f089e5b4582cdc87fdb88d022e8a30d89754724b1cb46399efa7"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-08",
+      "tree": "d315d8e273176c3005c4bc86e445c85016c8a221",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "d6239057b71fee487b82f93ebc68f27728000a8f",
+        "bytes": 5391,
+        "sha256": "4471e60d846b2f5a207f2ee6be19c8ae7ffae36f1582e0a2fe3b6936d01082e2"
+      }
+    },
+    {
+      "name": "AuthBus-original-streams-09",
+      "tree": "7e270b680885f3e01b9d71ef449c28a6e8a4f6c6",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "249ac4472247d31e8bb29e323abc70b42bb01e46",
+        "bytes": 5387,
+        "sha256": "8d46767d6d422a7c9c81bf60dceaac8a5ea8b29a7878522a96b7d809239e80ee"
+      }
+    },
+    {
+      "name": "CLI-original-prepare",
+      "tree": "8ae5958ff87929da33235fc2f9ed5790265a4871",
+      "immediate_entries": 4,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "6993cec11d4ee8d5d4d0af6534ea253a01589068",
+        "bytes": 3339,
+        "sha256": "aa78d80addbd0a49cdb8432594e0a606fdbe137d72ef765061f1ebc83801d478"
+      }
+    },
+    {
+      "name": "H2-original-prepare",
+      "tree": "d3eaa7be5a25c0f4c1d504116705b4a059aae35b",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "8d4d04e74490c127d26972cb954b8c58e17e71f1",
+        "bytes": 5143,
+        "sha256": "0d9d69cc946db46f24da2b0c9f08c3db15c350538553a8069096a58c96f09394"
+      }
+    },
+    {
+      "name": "H2-original-live-GO",
+      "tree": "ebac33b9ac45afaf6b896079c6ac0902e2920d27",
+      "immediate_entries": 10,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "77eb0c75cb645247e575ae5a438f68f26df68991",
+        "bytes": 6995,
+        "sha256": "9b5748e04ddff2f27d09f7d171d88674dae491a89f771d07d3fd033aa103aa2d"
+      }
+    },
+    {
+      "name": "H2-original-recovery-state",
+      "tree": "88e46a69416f448d034b007370e343c04d4a7081",
+      "immediate_entries": 4,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "e72718ea1ca8ae5d9a4c8e1c18a07631f66bd08a",
+        "bytes": 3299,
+        "sha256": "9326e53482d026bf36a55af40c00c1aaab56347186f34ceab6dfbc51c675223f"
+      }
+    },
+    {
+      "name": "H2-original-live-authority",
+      "tree": "fad0c79aeb9deaee1b6f05046935654e388a6442",
+      "immediate_entries": 6,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "f6a1fab6a2fbf4ccb105cdf9b5e26751aef54279",
+        "bytes": 4273,
+        "sha256": "5723b8f2987b5fb24501889ac531117fb1a9ace8ed01dea44bb8df84b4b41e35"
+      }
+    },
+    {
+      "name": "H2-original-live-streams",
+      "tree": "c54a43eb1c26f7d7edfaf59b188102e408d4dbcd",
+      "immediate_entries": 6,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "e2d51a092b610df08a4f8a7092ee6b1fab8c8e3c",
+        "bytes": 4277,
+        "sha256": "6b6e1e2f5580fb2c6946dbfa1d6c74aa8204fad525efb713b3fba73a6d8eecc9"
+      }
+    },
+    {
+      "name": "H2-original-result-info",
+      "tree": "db85bd8e3c0935b4a5e02df7340f827d3b94a805",
+      "immediate_entries": 6,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "8df86702fb62716ae075d7582ecf661f5eae9310",
+        "bytes": 4273,
+        "sha256": "5a20f0d56678c4f1964d084907431cb6fded9569fb1e0c4a9cd66f8ae602ec76"
+      }
+    },
+    {
+      "name": "H2-original-result-body0",
+      "tree": "78fe39b0035c3a38c4762e0efc4d6a8384d5661d",
+      "immediate_entries": 6,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "e17ce5d48a422e7d51f9da4ac6cf38cb82454d49",
+        "bytes": 4283,
+        "sha256": "87058444317e53f03d5c91968d3371219e82e99dcbd0b327afe6c5fe583d819b"
+      }
+    },
+    {
+      "name": "H2-Git-first-source-R1",
+      "tree": "fa0a826b3eccdc862073753c8d8d557ab85cfa5a",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "04aa76a39111807dae8ad15e23f75785edb97d43",
+        "bytes": 5155,
+        "sha256": "3b9a6a4d035d4495872d313d131f20078a0984e4afebe30ab232cf9098904719"
+      }
+    },
+    {
+      "name": "H2-Git-first-source-R2",
+      "tree": "a6f766eeeda2c660fba08d9668f826c7000b3b1f",
+      "immediate_entries": 7,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "91181ca9e8172caeb706f2573a427fc315efad3f",
+        "bytes": 4739,
+        "sha256": "fb09664e9d741a2336f63b08ecfd1c78f7cae15a0b7a98511cd2a6db18e91d40"
+      }
+    },
+    {
+      "name": "H2-Git-first-continuation-GO",
+      "tree": "e755a251a203f9e1f418f063dc0772410b448645",
+      "immediate_entries": 5,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "2beee05cd53df02821125949a23127ca39cffd7b",
+        "bytes": 3993,
+        "sha256": "3209a19af309ca1b8c0ff91a473918bbd3008421aac02eb37e3a48d2b064c21d"
+      }
+    },
+    {
+      "name": "H2-pre-Native-archive-UNKNOWN",
+      "tree": "cb5b7227b5549ff5c5a4ba0f72f00d01deb482ee",
+      "immediate_entries": 3,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "17727a7be5f909a931b17053f392e77b62581e88",
+        "bytes": 2863,
+        "sha256": "415a76b4cff769452186784ea27bcfcf2dfed3a1f3eba47cd61e1793d695fe7a"
+      }
+    },
+    {
+      "name": "JWT-native-R2-source-candidate",
+      "tree": "5b23ec2c3100fb26121b913bcd20058692bd5afd",
+      "immediate_entries": 17,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "b41a99d27826e6e46eadb0cc8dc3c96a643d006e",
+        "bytes": 9893,
+        "sha256": "3f32597d0b5579fc139a5c9638b2eaaf2b7e5b52336051fbc9362c7c61de4460"
+      }
+    },
+    {
+      "name": "official-2.7.1-JWT-ACL-sources",
+      "tree": "bbebf79f4e89b5c40621316bb8965a96785435a5",
+      "immediate_entries": 14,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "aa75c0a3df78feb6b1cc7fe46521c76593f6df93",
+        "bytes": 9341,
+        "sha256": "0804a74f480cd5d472e335433556aac3a5cf7000c8434968f6ec72b4c686329f"
+      }
+    },
+    {
+      "name": "immutable-page-width-amendment",
+      "tree": "3b9e79c2dc19ccc9c02e0da04ae9c7bca35bad0b",
+      "immediate_entries": 2,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "e947641f9d90651003b5c53aaf8aec6a973db092",
+        "bytes": 2399,
+        "sha256": "c48444a988ab9c1c0b3b38af8a9f81aaf94ca25a96fb4dfb6f138733d9a7bce9"
+      }
+    },
+    {
+      "name": "root-AuthBus-frame-correction",
+      "tree": "3818fb813cd5968284e40154827cc5eeea3e264a",
+      "immediate_entries": 2,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "4af6cf45ab0b6a3f079dc37c6074ee0e8cce7005",
+        "bytes": 2421,
+        "sha256": "d1519bac148222b5d94af8d2d801906c9b0a6c65f0f5cb391798bbca9e026468"
+      }
+    },
+    {
+      "name": "CLI-live-source-only-request",
+      "tree": "1dba7ba4623e523212c480b129a78d3176b9ca31",
+      "immediate_entries": 2,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "d90236e1e72ab7087c33de4b825a8c560fde5563",
+        "bytes": 2409,
+        "sha256": "77d09874f4aca2d7f5df98b4c0135073990d00e642ddd05ffafcb5185f5665e7"
+      }
+    },
+    {
+      "name": "AuthBus-readonly-diagnostic-source",
+      "tree": "b5e18906ed27f2738dda403ce16eb8a3f53fb848",
+      "immediate_entries": 15,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "51c1b663cb88fb08c6bfe84d17d4c338aa86a86d",
+        "bytes": 9243,
+        "sha256": "f55c5e5b13f2a9c70188b34310436ec90eac29e5a8cc7e2014274bb7fc78d7aa"
+      }
+    },
+    {
+      "name": "AuthBus-complete-original-Native-chain",
+      "tree": "ea8b1302819c113397b58147c800e9dbe1b0cde1",
+      "immediate_entries": 13,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "4ae698ce7d2b673ad8aadceee18e1a8c10a1ee22",
+        "bytes": 7943,
+        "sha256": "db8cae92777acfd8cfa69d34305634b6cecd1e9212de1815a9fd83d066c7def9"
+      }
+    },
+    {
+      "name": "AuthBus-diagnostic-root-source-review",
+      "tree": "749138c5b70b6e9a8eb4c28d9f7308c58727cfb6",
+      "immediate_entries": 5,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "3625d019ec26162d023045779b3cd048e2c87760",
+        "bytes": 3983,
+        "sha256": "660a43e8c1b73e36d2ab00d9023375ff30dbf36d705e70b6c87242a93eed68d8"
+      }
+    },
+    {
+      "name": "AuthBus-diagnostic-journal-source-R1",
+      "tree": "9ba3e5f9935047c4715a7a6a6139885b42c5a2f2",
+      "immediate_entries": 8,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "8f6008b67761ddbd6f45ead395d69f11c6d4fd69",
+        "bytes": 5491,
+        "sha256": "03a71af29b8659d1522580a557be328e491df1b081eb963f9e8e1d5b27fb5334"
+      }
+    },
+    {
+      "name": "AuthBus-diagnostic-journal-source-R2",
+      "tree": "eba526f5688393d4f61760c4bbc581bc10b705cd",
+      "immediate_entries": 11,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "b5a9b74cf9978d7e06e680686d91f2eb0d294d42",
+        "bytes": 7095,
+        "sha256": "0c37951689ff0d18262fa6d18a7cc10a687af53880e2e15a42cb83e10a8e9ee3"
+      }
+    },
+    {
+      "name": "AuthBus-diagnostic-exact-GO",
+      "tree": "c39306ec16a0da78fde8e32c9df306b86379ed0a",
+      "immediate_entries": 5,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "485bd2d93806d4fb1ba05bccc1cc9854c049619c",
+        "bytes": 3953,
+        "sha256": "8e95eb41c2a0cfbdc06c2c435694b3f9f9448138c51a7ffe41aae8ad585f01ae"
+      }
+    },
+    {
+      "name": "H2-pre-Native-checkpoint-new-recovery",
+      "tree": "811692431bf219ea0a217a95c43eaab871e75562",
+      "immediate_entries": 5,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "87fdb6b81e840c59c3431cd061918376f30fae64",
+        "bytes": 3793,
+        "sha256": "ec8a7598187648a42bd3033acb500d309d73df9c9101b6e316aac8ae668c1524"
+      }
+    },
+    {
+      "name": "H2-pre-Native-continuation-source",
+      "tree": "3eca64daf35cc22562a23bcf26cb094ffeacb536",
+      "immediate_entries": 7,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "811b5092be105182b068384e64b7e45f4dc3f675",
+        "bytes": 4677,
+        "sha256": "afb92adc311187ee7ab2d0ca34f38dd66527ee355f9b9ed327760be78bf4cadc"
+      }
+    },
+    {
+      "name": "H2-pre-Native-continuation-peer",
+      "tree": "3e74b229f2c3c4bafc3f6b08a09fb1b7d3c6ca7a",
+      "immediate_entries": 3,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "9143778c0d0bf2355adf1b5b44ca838e807a10a9",
+        "bytes": 2819,
+        "sha256": "bb7c2978cda5e414204772e7fcdf915d9c5e181a26e2d554ef5a5bcc8f838b3d"
+      }
+    },
+    {
+      "name": "H2-pre-Native-continuation-GO",
+      "tree": "7be5cf580204ba672e7782f0ec1f240192fc81c9",
+      "immediate_entries": 4,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "3da6fa60dfce2c30e5468afdc01f9c536510335a",
+        "bytes": 3389,
+        "sha256": "70e1cf9c4d6523c5963eeb60728ff88860c0f9981bb728f42f3df116bc38c4a7"
+      }
+    },
+    {
+      "name": "JWT-ACL-common-syntax-source",
+      "tree": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+      "immediate_entries": 9,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "3966fbd313ef01b117abcdf6ccadadd4b51c269c",
+        "bytes": 5913,
+        "sha256": "1758ae7890e9a928bc17edf38c7153a95c91f2c65a13b30752b1d97355898558"
+      }
+    },
+    {
+      "name": "JWT-isolated-source-ref-intent",
+      "tree": "f32d278849f7998930c046bbaf7a7e3e763f69a4",
+      "immediate_entries": 4,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "3aee7cc4d29055989c00ed1a77b9646799109dc1",
+        "bytes": 3399,
+        "sha256": "108322d30ab404f0542f762972669f0040bd4fb06a7b64d4fcff5dbc2293a167"
+      }
+    },
+    {
+      "name": "JWT-isolated-source-ref-proof",
+      "tree": "3274901930d5d26a52058d642bea9a16c8fbd596",
+      "immediate_entries": 4,
+      "root_tree_verified": true,
+      "SDK": {
+        "blob": "3602d16a1a0a6c5276b3806d295e832693c3722d",
+        "bytes": 3375,
+        "sha256": "768697e2477d35b27f1608a1d83821919a6af319be3dec0b6c22dfc1a3a53ae6"
+      }
+    }
+  ],
+  "coverage": "Each original packet retains its own exact whole-readback and qualification scope. Repeated content/path references are not extra product cases.",
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-owner-renew-inert-candidate-body-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+      "expected_version": "16777244:72671151:7211:1793922263708371886:1793922263708377928",
+      "offset": 0,
+      "limit": 7211
+    }
+  }
+}

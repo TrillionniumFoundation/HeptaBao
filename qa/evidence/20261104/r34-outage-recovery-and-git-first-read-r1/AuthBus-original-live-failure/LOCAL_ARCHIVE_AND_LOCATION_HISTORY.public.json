@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.owner-worker-local-archive-history.v1",
+  "events": [
+    {
+      "stage": "streams-02 page32768 pre-call checkpoint",
+      "localSession": 42122,
+      "originalYieldWasMisclassified": true,
+      "recoveredSameSessionExit": 0,
+      "RuntimePageNotYetCalled": true
+    },
+    {
+      "stage": "streams-02 Git batch local journal",
+      "error": "exec-server transport disconnected",
+      "sameImmutableGitBatchResumed": true,
+      "noRuntimeRepeated": true
+    },
+    {
+      "stage": "post-final-read pure local rg",
+      "error": "exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 45s",
+      "RuntimeCalls": 0,
+      "originalObserversAllAlreadyClosed": true
+    }
+  ],
+  "sourceLocationCorrection": {
+    "originalFramesUnchanged": true,
+    "withdrawnInterpretation": "complete_launchctl_arguments at line76",
+    "correctedInterpretation": "bound manager line76 typed_launchctl_integer; complete_launchctl_arguments at line73",
+    "actualCleanupCode": "typed_launchctl_integer",
+    "actualBadIntegerField": null,
+    "neverExitedSentinelNotObservedOrAssumed": true
+  }
+}

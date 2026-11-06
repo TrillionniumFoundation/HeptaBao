@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.owner-renew-inert.original-start-intent.r1",
+  "status": "INTENT_ONLY_NOT_SUBMITTED",
+  "lane": "A",
+  "created_at_utc": "2026-11-05 23:42:05 UTC",
+  "exactRootGo": {
+    "blob": "964c58fa1ae491cad2f815362a2381686e64837a",
+    "bytes": 12272,
+    "sha256": "a6cd32eb138e7a0d78cb61faf81ca2b3f26db77e221f570bbf9e749b35a977e6"
+  },
+  "rootHandoff": {
+    "blob": "c2545057a868ae12869df0dc8e904398118a5ab8",
+    "bytes": 3203,
+    "sha256": "d53aeba884654133127632231125e5a0f51bf82a51c8513d142dc4aabaa1f3ec"
+  },
+  "exactRequest": {
+    "blob": "521c4700c9896ef48c8b710f7b787b5cfb5d1504",
+    "bytes": 818377,
+    "sha256": "6ffc5db0c3d9cf79f00d9484b1d54162b75b7e975e594a1d5ca5d8566d3b9cf4"
+  },
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-current-owner-renew-inert-d89e5169-20261105-r1",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "cwd": "/Users/qianqi",
+  "timeout_seconds": 60,
+  "publisher": {
+    "blob": "f7a4a54c204fa2cc01590fb29f1317cc1a2ba531",
+    "bytes": 15541,
+    "sha256": "d89e5169c68a1867738824d87549e6f26635e2c55f31bdbf7d58375f8a5b3fc4"
+  },
+  "stdin": {
+    "blob": "b4caba908690e8b774aa8ee913247d2f9b7cf25d",
+    "bytes": 801859,
+    "sha256": "c84a7e6ba807f90c98f5a8a9e375aff86b9a287281d8e2d001e8566315a3b7d9"
+  },
+  "expectedNativeBinding": {
+    "canonicalBytes": 818309,
+    "sha256": "e267418ec6d90ed3d5f9ae3fb2f3fb6cc2346e69e6b70be905777edefa05e38a",
+    "native_fingerprint": "16314080256650186451"
+  },
+  "maximumBusinessStarts": 1,
+  "actualBusinessStarts": 0,
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "sourcePacket": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+  "requestCorrectionPacket": "2f213b0e8de72fac88fec0039761390f34f9e946",
+  "original45And60BudgetsUnchanged": true,
+  "conditionalThreeReadsOnlyAfterActualSuccess": true,
+  "privateCredentialSqliteSdkConsumerServiceCalls": 0,
+  "fullWorkerAuthorized": false
+}

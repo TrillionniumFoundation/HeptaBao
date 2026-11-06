@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.r34.CLI-actual-target-and-prepare-root-review.v1",
+  "checks": [
+    {
+      "name": "original B inactive",
+      "ok": true
+    },
+    {
+      "name": "original4observer7pages",
+      "ok": true
+    },
+    {
+      "name": "closed:stage-result-info",
+      "ok": true
+    },
+    {
+      "name": "closed:stage-binding-info",
+      "ok": true
+    },
+    {
+      "name": "closed:stage-result-body",
+      "ok": true
+    },
+    {
+      "name": "closed:stage-binding-body",
+      "ok": true
+    },
+    {
+      "name": "whole original native body:stage_result",
+      "ok": true
+    },
+    {
+      "name": "independent metadata exact:stage_result",
+      "ok": true
+    },
+    {
+      "name": "permissions and owner:stage_result",
+      "ok": true
+    },
+    {
+      "name": "whole original native body:binding",
+      "ok": true
+    },
+    {
+      "name": "independent metadata exact:binding",
+      "ok": true
+    },
+    {
+      "name": "permissions and owner:binding",
+      "ok": true
+    },
+    {
+      "name": "binding original writer version",
+      "ok": true
+    },
+    {
+      "name": "binding fixed source",
+      "ok": true
+    },
+    {
+      "name": "original binaries and budgets",
+      "ok": true
+    },
+    {
+      "name": "preclose receipt still preclose",
+      "ok": true
+    },
+    {
+      "name": "only original args7 bound",
+      "ok": true
+    },
+    {
+      "name": "prepare original finite scope",
+      "ok": true
+    }
+  ],
+  "passed": 18,
+  "failed": 0,
+  "ownerRelease": {
+    "blob": "8ed819a77bb6b05cf1a2aec3fdf32ea8c8293824",
+    "bytes": 20240,
+    "sha256": "587ccc52182b540024f802b69ba033d41731e6a52d29a06a3ebac647e683dfff"
+  },
+  "stageQualification": {
+    "blob": "762a6571965a74d0be6d53727c542346925d3135",
+    "bytes": 3942,
+    "sha256": "566b034d4bad7a41f16d428429d3a7774d2adf89f8603d3f7a5825e9ac9008ec"
+  },
+  "actualBinding": {
+    "blob": "ba3181396f849c4863a2b3f5a0387271362362c0",
+    "bytes": 6944,
+    "sha256": "7ef3458f4a54b74336941229307c0ffb6778e581c18b27518dc03a8fe6107eea"
+  },
+  "actualReceipt": {
+    "blob": "37e74ae01fe9d9e8a329f81b7a4a322ef5484c76",
+    "bytes": 16380,
+    "sha256": "c8ac928d71bb968d6b8a10d1dd1ea9f6ed8c30f4207626eb0544ac40aaa457ab"
+  },
+  "actualNativeBodiesIndependentlyDecoded": true,
+  "originalStatusesWholeAndClosed": 4,
+  "originalImmutablePageChain": "Owner complete86 packet acf4d2c6866b4c3d32c7d7a986dc3986151d0ab6; this root review independently checks full native results and statuses, not a second full replay of all7 page SDKs.",
+  "prepareRequest": {
+    "blob": "c29b6d4cebec4b66d07e7afde36d35e5f330a995",
+    "bytes": 654,
+    "sha256": "098068ceaddb24bb6b2ca246efa9bf7d9a964cd991a629398239aecbac4daca6"
+  },
+  "nativeBinding": {
+    "sha256": "9122a2df5fce0a25b2e521950ab8ba691373f38caf8bcc987365edd14a1365c3",
+    "native_fingerprint": "10458100364976458277"
+  },
+  "controller": {
+    "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+    "bytes": 61210,
+    "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+  },
+  "binder": {
+    "blob": "8ea43b812f6b466646ea32a044dd300a1445573f",
+    "bytes": 28134,
+    "sha256": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d"
+  },
+  "prepareSourcePacket": "f7ed1c56827f5356bc69facf21e0be11ed2518a8",
+  "sourceReview": "Original prepare/main and binder read checks inspected. Main has300s prepare binding budget; prepare report retains runtime_started=false/server_processes0/cli_snapshot_commands0 and owned cleanup. Only actual binding SHA changes in the request.",
+  "rootRuntimeCalls": 0,
+  "authorCodeExecuted": false,
+  "liveQualified": false
+}

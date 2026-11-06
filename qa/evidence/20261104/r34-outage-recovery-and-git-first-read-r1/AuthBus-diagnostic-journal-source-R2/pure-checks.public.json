@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.gitfirst-two-fixes-pure-v8-checks.r1",
+  "checks": [
+    {
+      "name": "outer_catch_returns_failure_normally",
+      "ok": true
+    },
+    {
+      "name": "original_failure_state_retained",
+      "ok": true
+    },
+    {
+      "name": "different_sdk_raws_keep_both_hash_keys",
+      "ok": true
+    },
+    {
+      "name": "alias_changes_without_history_loss",
+      "ok": true
+    },
+    {
+      "name": "zero_tools",
+      "ok": true
+    }
+  ],
+  "passed": 5,
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "productCases": 0
+}

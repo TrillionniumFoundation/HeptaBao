@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.owner-renew-inert.three-info.actual-binding.r1",
+  "rootGo": "964c58fa1ae491cad2f815362a2381686e64837a",
+  "pass": true,
+  "metadata": [
+    {
+      "name": "outer-info",
+      "role": "bootstrap_outer",
+      "operation_id": "5217c8a2ea11ff7e3709c69407c0bcf5f08c66f49918f0dd4618bf909500d8c5",
+      "nativePin": {
+        "blob": "d651a87ba51820f75ac330359c3429072866a0f6",
+        "bytes": 501,
+        "sha256": "cc944e553f6354d2a6297ad7cb658c60f0071573b9146498de6a9692529390c7"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+      "bytes": 71506,
+      "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5",
+      "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+      "full9": [
+        "16777244",
+        "72671139",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "71506",
+        "1793922263700923595",
+        "1793922263700929887"
+      ],
+      "pass": true
+    },
+    {
+      "name": "candidate-info",
+      "role": "runtime_candidate",
+      "operation_id": "f8cdaf67d13ba7f10c39faeacef6a86c36292454e0e899bbd345b9beb0d7defd",
+      "nativePin": {
+        "blob": "30e0b13becfd06772eb2c7e2f3c53948c2b74e90",
+        "bytes": 513,
+        "sha256": "947a7abac9164b0e82b5b2358198b30b5a874aa92f434454205bbdd12b514cac"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7211,
+      "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932",
+      "version": "16777244:72671151:7211:1793922263708371886:1793922263708377928",
+      "full9": [
+        "16777244",
+        "72671151",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7211",
+        "1793922263708371886",
+        "1793922263708377928"
+      ],
+      "pass": true
+    },
+    {
+      "name": "receipt-info",
+      "role": "inert_receipt",
+      "operation_id": "27b8e2d7bebffbfa9467a89f0b2de94e8b1a69a164c1c3d8abf25a9d2ea2ae35",
+      "nativePin": {
+        "blob": "b2c686da5c2900a8e88b8ec865f2347200463670",
+        "bytes": 514,
+        "sha256": "10137ac5331067fa3b153c2bc807e28930402c3fb2432a7e70c551da2f9dc2a7"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+      "bytes": 12994,
+      "sha256": "bf03a4e84c7297b0121c1750997fafe4ca8ea4efe656b9353248dc24b101a1d1",
+      "version": "16777244:72671152:12994:1793922263708983153:1793922263708991695",
+      "full9": [
+        "16777244",
+        "72671152",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "12994",
+        "1793922263708983153",
+        "1793922263708991695"
+      ],
+      "pass": true
+    }
+  ],
+  "regularTypeModeConstruction": "S_IFREG | permissions",
+  "sourceOfFull9": "final post-finally stdout matched independently observed file_info version/metadata",
+  "newBodyMaximum": 144253,
+  "newBodyActual": 91711,
+  "bodyOperationsMaximum": 4,
+  "metadataWholeHashCostNotBodyCap": true,
+  "fullWorkerAuthorized": false
+}

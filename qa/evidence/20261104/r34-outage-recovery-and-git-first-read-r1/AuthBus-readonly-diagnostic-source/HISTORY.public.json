@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.mac-owned-launchd-diagnostic-history.r1",
+  "originalJob": "mac/1a1ae51309d-fc05-5ef8",
+  "originalTopExit": 1,
+  "originalOutcomeUnknown": true,
+  "originalReadClosure": {
+    "observers": 10,
+    "immutablePages": 55,
+    "RuntimeCallsInFlight": 0,
+    "nativeFuturesActive": 0
+  },
+  "sourceLocationCorrection": {
+    "incorrectPriorClaim": "manager line76 complete_launchctl_arguments",
+    "correct": "manager line73 complete_launchctl_arguments; line76 typed_launchctl_integer",
+    "rawOriginalOutputsUnchanged": true
+  },
+  "localServiceOutage": {
+    "current": "unavailable; exec-server recovery failure",
+    "newNativeGO": false,
+    "pureGitException": "Only cached public originals and new SOURCE proposal saved by one create_tree plus whole readback; no host action"
+  },
+  "originalNumericValueUnknown": true,
+  "neverExitedSentinelNotObserved": true,
+  "diagnosticProposalDoesNotResumeOriginalWorker": true
+}

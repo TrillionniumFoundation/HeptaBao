@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.root-isolated-JWT-source-branch-intent.v1",
+  "purpose": "Make the independently verified uncompiled source candidate reachable for an exact isolated host checkout",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-native-jwt-r2-source-20261106",
+    "sha": "e3afc157447d35c861f275a761b29da3e42aff8e"
+  },
+  "tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "sole_parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "prior_exact_ref_read": "47cd51d22561d8222ca1cb3f9fe45fd9c8877060",
+  "ref_absence_observed": true,
+  "source_packet": "5b23ec2c3100fb26121b913bcd20058692bd5afd",
+  "formatter_runs": 0,
+  "compile_runs": 0,
+  "test_runs": 0,
+  "changes_PR159": false,
+  "changes_validation_branch": false,
+  "changes_production_branch": false,
+  "source_qualification": false,
+  "root_Runtime_calls": 0,
+  "one_create_only": true,
+  "lost_ack_requires_exact_ref_read_not_create_replay": true
+}

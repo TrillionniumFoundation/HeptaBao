@@ -1,0 +1,195 @@
+{
+  "schema": "heptabao.r34.CLI-actual-readonly-prepare-root-qualification.v1",
+  "ok": true,
+  "checkCount": 41,
+  "checks": [
+    {
+      "name": "original_terminal",
+      "pass": true
+    },
+    {
+      "name": "complete_stdout",
+      "pass": true
+    },
+    {
+      "name": "complete_stderr",
+      "pass": true
+    },
+    {
+      "name": "whole_stdout",
+      "pass": true
+    },
+    {
+      "name": "stdout_contract",
+      "pass": true
+    },
+    {
+      "name": "metadata_result",
+      "pass": true
+    },
+    {
+      "name": "whole_native_body",
+      "pass": true
+    },
+    {
+      "name": "actual_prepare_contract",
+      "pass": true
+    },
+    {
+      "name": "actual_source",
+      "pass": true
+    },
+    {
+      "name": "input_membership_qa",
+      "pass": true
+    },
+    {
+      "name": "input_pin_qa/native_fixture_reference_r8.py",
+      "pass": true
+    },
+    {
+      "name": "input_pin_qa/official_cli_reference_r4.py",
+      "pass": true
+    },
+    {
+      "name": "input_pin_qa/phaseb_binding_r3.py",
+      "pass": true
+    },
+    {
+      "name": "input_pin_qa/phaseb_controller_r3.py",
+      "pass": true
+    },
+    {
+      "name": "input_pin_qa/phaseb_evidence_r3.py",
+      "pass": true
+    },
+    {
+      "name": "input_membership_artifacts",
+      "pass": true
+    },
+    {
+      "name": "input_pin_artifacts/combined_tests",
+      "pass": true
+    },
+    {
+      "name": "input_pin_artifacts/native_receipt",
+      "pass": true
+    },
+    {
+      "name": "input_pin_artifacts/release_receipt",
+      "pass": true
+    },
+    {
+      "name": "input_pin_artifacts/server",
+      "pass": true
+    },
+    {
+      "name": "input_pin_artifacts/test_groups",
+      "pass": true
+    },
+    {
+      "name": "input_membership_utilities",
+      "pass": true
+    },
+    {
+      "name": "input_pin_utilities/git",
+      "pass": true
+    },
+    {
+      "name": "input_pin_utilities/openssl",
+      "pass": true
+    },
+    {
+      "name": "input_pin_utilities/python",
+      "pass": true
+    },
+    {
+      "name": "official_cli_exact",
+      "pass": true
+    },
+    {
+      "name": "old_fences",
+      "pass": true
+    },
+    {
+      "name": "exact_three_commands",
+      "pass": true
+    },
+    {
+      "name": "exact_owned_git_0",
+      "pass": true
+    },
+    {
+      "name": "exact_owned_cleanup_0",
+      "pass": true
+    },
+    {
+      "name": "exact_owned_git_1",
+      "pass": true
+    },
+    {
+      "name": "exact_owned_cleanup_1",
+      "pass": true
+    },
+    {
+      "name": "exact_owned_git_2",
+      "pass": true
+    },
+    {
+      "name": "exact_owned_cleanup_2",
+      "pass": true
+    },
+    {
+      "name": "initial_pending_not_success",
+      "pass": true
+    },
+    {
+      "name": "original_visibility_closes_same_child",
+      "pass": true
+    },
+    {
+      "name": "original_observer_closed_0",
+      "pass": true
+    },
+    {
+      "name": "original_observer_closed_1",
+      "pass": true
+    },
+    {
+      "name": "original_observer_closed_2",
+      "pass": true
+    },
+    {
+      "name": "original_observer_closed_3",
+      "pass": true
+    },
+    {
+      "name": "original_scope_released",
+      "pass": true
+    }
+  ],
+  "actualResult": {
+    "blob": "7863a78e16ae4477dde87deca23e47c9a26208e2",
+    "bytes": 25893,
+    "sha256": "8d9809f9da2493cb7f9d1ae8855ff31dab8464cc3919ea7fcd02163087cac615",
+    "version": "2050:7874356:25893:1793924058330002412:1793924058330002412"
+  },
+  "ownerRelease": {
+    "blob": "aadd8b222cec4a0b44a33638b919fb55b8837b45",
+    "bytes": 18991,
+    "sha256": "2b8bdabc9d9c266817388e800dafbadc449b9aec4c4fd8c81ca5268d81b59842"
+  },
+  "originalJob": "desktop/1a1ae34b455-fc05-5e28",
+  "threeOriginalReadonlyGitChildrenClosed": true,
+  "initialEmptyCmdlineObservationRetained": true,
+  "sourceFullFsckNotClaimed": true,
+  "all4OriginalStatusesIndependentlyRead": true,
+  "originalNativeBodyIndependentlyDecoded": true,
+  "original8PageChainAdoptedFromOwnerJournal": true,
+  "CLI_live_qualified": false,
+  "H2_live_qualified": false,
+  "rootRuntimeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "cleanup": false
+}

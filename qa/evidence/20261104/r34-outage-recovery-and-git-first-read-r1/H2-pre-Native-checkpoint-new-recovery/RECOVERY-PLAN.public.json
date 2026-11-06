@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.h2-live.explicit-new-armed-checkpoint-recovery-packet.v1",
+  "source_disposition": "336479c6cb0d12add1f62910000044e291596373",
+  "previous_unknown": {
+    "tree": "57bf417be264a07210b8d3a601c7d84354cbf801",
+    "blob": "d59acffc65587115620facf74cac6ff355da271c",
+    "create_SDK": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+    "tree_read_422_SDK": "738250ce2f4ed06b398bcc6884a32c31e5c7b288",
+    "root_blob_404_SDK": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+    "original_create_outcome": "UNKNOWN"
+  },
+  "new_publication": "One new recovery packet under distinct paths and a new precomputed tree. This is not a retry or claimed recovery of the old create invocation.",
+  "original_checkpoint_bytes_source": "The exact retained expected text before the original create; same 108137 bytes/SHA678a6389, never regenerated from parsed numeric values.",
+  "original_pending": {
+    "operation_id": "578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273",
+    "offset": 16384,
+    "limit": 16384,
+    "tool": "operation_result",
+    "actual_Native_statement_reached": false,
+    "pending_label": "result-body-065536-page-016384",
+    "armed_submitted_flag": true
+  },
+  "recovery_sequence": [
+    "Whole-save this new recovery packet once and preserve the old unknown plan/block untouched.",
+    "Submit a minimal SOURCE-only successor for the one not-yet-reached original operation_result statement; no ls/lp replay and no resetting submitted=false.",
+    "After a separate exact root GO and new packet whole verification, invoke only that original Native statement once, retaining full returned SDK externally before isError/parse.",
+    "Do not assume the old tree exists or mark its create as succeeded; subsequent protocol progress must explicitly cite the new recovery decision."
+  ],
+  "existing_read_scope_unchanged": {
+    "result_size": 465570,
+    "version": "2050:7876768:465570:1793928419424368582:1793928419424368582",
+    "sha256": "6b51bc97ea77b2574eab86ddee638c69818773d54211c25bcb8a018c02ca107e",
+    "body0_no_replay": true,
+    "remaining_range_admission_count": 1,
+    "body65536_page0_archived": true
+  },
+  "no_Native_calls_in_packet": true,
+  "no_executor_calls": true,
+  "old_block_state_unchanged": true,
+  "Native_continuation_GO": false
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.owner-renew-inert.external-whole.r1",
+  "role": "runtime_candidate",
+  "pass": true,
+  "whole": {
+    "blob": "42c540b2922123647362fac75008d8ef875e51bc",
+    "bytes": 7211,
+    "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932"
+  },
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+  "version": "16777244:72671151:7211:1793922263708371886:1793922263708377928",
+  "full9": [
+    "16777244",
+    "72671151",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "7211",
+    "1793922263708371886",
+    "1793922263708377928"
+  ],
+  "rangeStart": 0,
+  "rangeEnd": 7211,
+  "parts": [
+    {
+      "schema": "heptabao.owner-renew-inert.body-chunk.actual.r1",
+      "pass": true,
+      "name": "candidate-body-0",
+      "operation_id": "42a0a4a266ce9f35211c973b9bc467968fb19d61e2c18895a8cd03710facfcc0",
+      "nativePin": {
+        "blob": "148f557c3de313fdda4a216cfd4f95178685d3dc",
+        "bytes": 9980,
+        "sha256": "ada1c1af2f7ffcc4a6f8f182a9a929180dbe793e4685441d2874bf793d511050"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+      "version": "16777244:72671151:7211:1793922263708371886:1793922263708377928",
+      "size": 7211,
+      "offset": 0,
+      "next_offset": 7211,
+      "bytes": 7211,
+      "eof": true,
+      "chunk_sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932",
+      "equalsFrozenBytes": true,
+      "originalObserverClosed": true,
+      "proof": {
+        "blob": "16fa933e6a3c4df794160b9b7ff7e15c16ccae6c",
+        "bytes": 830,
+        "sha256": "881111174431a7bfdd8e194d51e34a862ddfe5aa776515c6d79953aaaa3b2144"
+      }
+    }
+  ],
+  "sameVersion": true,
+  "utf8ByteExact": true,
+  "rootGo": "964c58fa1ae491cad2f815362a2381686e64837a"
+}

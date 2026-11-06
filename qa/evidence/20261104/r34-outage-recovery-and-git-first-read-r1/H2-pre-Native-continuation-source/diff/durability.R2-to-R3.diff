@@ -1,0 +1,69 @@
+--- a/durability.R2.js
++++ b/durability.R3.js
+@@ -61,11 +61,24 @@
+  plan.phase="whole_verified";plan.merkle=merkle;store("h2_live_git_first_archive_"+plan.expected_tree,plan);
+  return {tree:plan.expected_tree,files:plan.entries.length,bytes:plan.entries.reduce((a,p)=>a+p.bytes,0),merkle,Git_batch_SDK:plan.create_SDK_pin};
+ }
++
++function hgEffectiveArchiveBlock(){
++ const b=load("h2_live_git_first_archive_blocked"),r=load("h2_live_git_first_armed_page_recovery");
++ if(!b)return null;
++ if(r?.schema==="heptabao.h2-live.explicit-armed-page-recovery.v1"&&r.recovery_tree==="811692431bf219ea0a217a95c43eaab871e75562"&&r.original_block_sha256==="7505abc72cc2f10c45b0846d95547fd874471e0884b392d489adc06a3aef1db3"&&r.new_root_GO?.blob&&r.old_create_outcome==="UNKNOWN"&&hlH().meta(JSON.stringify(b,null,2)+"\n").sha256===r.original_block_sha256)return null;
++ return b;
++}
++function hgRetainHistoricalBlockAfterVerifiedArchive(){
++ const r=load("h2_live_git_first_armed_page_recovery");
++ if(r?.schema==="heptabao.h2-live.explicit-armed-page-recovery.v1")store("h2_live_git_first_archive_blocked",r.original_block);
++ else store("h2_live_git_first_archive_blocked",null);
++}
++
+ async function hgArchive(entries,purpose){
+  const H=hlH(),pins=entries.map(e=>({path:e.path,...H.meta(e.text)})),geometry=hgTree(pins);
+  let plan=load("h2_live_git_first_archive_"+geometry.root);
+  if(plan?.phase==="whole_verified")return {tree:plan.expected_tree,files:plan.entries.length,bytes:plan.entries.reduce((a,p)=>a+p.bytes,0),merkle:plan.merkle,Git_batch_SDK:plan.create_SDK_pin};
++ if(hgEffectiveArchiveBlock()||plan)throw Error("Git_reconcile_exact_objects_only");
+- if(load("h2_live_git_first_archive_blocked")||plan)throw Error("Git_reconcile_exact_objects_only");
+  for(let i=0;i<pins.length;i++)store("h2_live_git_first_expected_text_"+pins[i].blob,entries[i].text);
+  plan={schema:"heptabao.h2-live.Git-first.archive-intent.v1",purpose,expected_tree:geometry.root,entries:pins,phase:"create_intent",create_attempts:0};
+  store("h2_live_git_first_archive_"+geometry.root,plan);
+@@ -76,7 +89,7 @@
+   const raw=JSON.stringify(sdk,null,2)+"\n";store("h2_live_git_first_Git_create_SDK_"+geometry.root,raw);plan.create_SDK_pin=H.meta(raw);
+   store("h2_live_git_first_archive_"+geometry.root,plan);
+   if(sdk.isError||sdk.structuredContent?.sha!==geometry.root)throw Error("Git_create_unconfirmed");
++  const result=await hgVerifyArchive(plan);hgRetainHistoricalBlockAfterVerifiedArchive();return result;
+-  const result=await hgVerifyArchive(plan);store("h2_live_git_first_archive_blocked",null);return result;
+  }catch(e){
+   plan.phase="unconfirmed";plan.error=String(e);store("h2_live_git_first_archive_"+geometry.root,plan);
+   store("h2_live_git_first_archive_blocked",{expected_tree:geometry.root,entries:pins,error:String(e),only_exact_read_reconcile:true});
+@@ -86,7 +99,7 @@
+ async function hgReconcile(expected_tree){
+  const b=load("h2_live_git_first_archive_blocked"),p=load("h2_live_git_first_archive_"+expected_tree);
+  if(!b||b.expected_tree!==expected_tree||!p||p.create_attempts!==1)throw Error("Git_exact_pending_plan_required");
++ const out=await hgVerifyArchive(p);hgRetainHistoricalBlockAfterVerifiedArchive();
+- const out=await hgVerifyArchive(p);store("h2_live_git_first_archive_blocked",null);
+  text({Git_reconciliation:out,Native_replayed:false,create_repeated:false,automatic_continuation:false});return out;
+ }
+ async function hlArchive(name,text){
+@@ -108,7 +121,7 @@
+ }
+ async function hgRun(action,arg){
+  try{
++  if(hgEffectiveArchiveBlock()&&action!=="reconcile-Git"&&action!=="continue-armed-page")throw Error("Git_unknown_all_actions_blocked_except_exact_read_reconcile");
+-  if(load("h2_live_git_first_archive_blocked")&&action!=="reconcile-Git")throw Error("Git_unknown_all_actions_blocked_except_exact_read_reconcile");
+   let out;
+   if(action==="prepare")out=await lp(arg.label,arg.tool,arg.request);
+   else if(action==="submit")out=await ls();
+@@ -119,11 +132,12 @@
+   else if(action==="bootstrap")out=await hgBootstrap(arg);
+   else if(action==="reconcile-Git")out=await hgReconcile(arg);
+   else if(action==="resume-returned")out=await lr();
++  else if(action==="continue-armed-page")out=await hgContinueArmedPage(arg);
+   else throw Error("closed_action_set");
+   text({Git_first_action:action,ok:true});return out;
+  }catch(e){
+   const shadow=load("h2_live_git_first_state_shadow")??load("h2_live_execution_state");
++  if(shadow){if(!hgEffectiveArchiveBlock()){shadow.halted=true;shadow.Git_first_protocol_error={action,error:String(e)};}store("h2_live_execution_state",shadow);}
+-  if(shadow){if(!load("h2_live_git_first_archive_blocked")){shadow.halted=true;shadow.Git_first_protocol_error={action,error:String(e)};}store("h2_live_execution_state",shadow);}
+   const errors=load("h2_live_git_first_errors")??[];
+   errors.push({action,error:String(e),archive_blocked:load("h2_live_git_first_archive_blocked"),Native_returned_unparsed:!!load("h2_live_git_first_returned")});
+   store("h2_live_git_first_errors",errors);

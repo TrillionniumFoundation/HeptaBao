@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.full-worker-original-complete-native-archive-boundary.r1",
+  "nativeEvidenceComplete": true,
+  "sourceRequestIntentACKComplete": true,
+  "nativeAuthorities": 1,
+  "nativeStreamObservers": 9,
+  "immutablePages": 55,
+  "stdoutBytes": 132132,
+  "stderrBytes": 0,
+  "rootGo": "fe53245e77d33c5bea2cff96def394ffaaf3f31e",
+  "request": "ca9a3b37ca8c8a55458460a35a4b183b4356901f",
+  "allOriginalSDKsAlreadyReturnedAndDurablySavedBeforeLocalOutage": true,
+  "noNewNativeCallsForPacket": true,
+  "readLaneIdle": true,
+  "registeredServiceClosureQualified": false,
+  "outcomeUnknownPreserved": true,
+  "deferredAncillaryLocalFiles": [
+    {
+      "path": "reference/root-go.original.sdk.json",
+      "blob": "ede18be491bf558d158ea1c120195f89f866a8ae",
+      "bytes": 6210,
+      "sha256": "3fdca34ede57f97324604ebbf2e584ad000e4f9083576e67d9398495887f3f28",
+      "local": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-bound-renew-r1/actual-worker-r1/reference/root-go.original.sdk.json",
+      "reason": "local ancillary archival file unavailable; Git blob GET returned404; no missing Runtime SDK"
+    },
+    {
+      "path": "reference/local-fixed-request-read.executor.json",
+      "blob": "a4565df623432b3b1539f23c9f72db8b7cfe2eb8",
+      "bytes": 6099,
+      "sha256": "f2c9eb61236c087ce81441216e7a0a4e4433828a834d0fdcf2965bb71b7e3de3",
+      "local": "/workspace/scratch/f86faac821c4/authbus_registration_body4_recovery_r1/owner-bound-renew-r1/actual-worker-r1/reference/local-fixed-request-read.executor.json",
+      "reason": "local ancillary archival file unavailable; Git blob GET returned404; no missing Runtime SDK"
+    }
+  ],
+  "deferredScope": "Only the earlier Git GO-fetch transport wrapper and local exec receipt that read the fixed request file. Their exact GO/request bodies are preserved and whole. They are not process_start, observer ACK/status/page, original payload, authority or stream records. No reconstructed SDK is substituted.",
+  "originalLocalJournalAndBatchArchivePathsRetainedInSourceIndex": true,
+  "reuseOriginalWholeReadbacks": 266,
+  "localServiceUnavailable": true,
+  "pureGitAssemblyOnly": true,
+  "diagnosticSourceSeparate": "b5e18906ed27f2738dda403ce16eb8a3f53fb848"
+}

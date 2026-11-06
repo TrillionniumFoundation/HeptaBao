@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.local-checker-correction.v1",
+  "originalVerifier": {
+    "blob": "ff35e22bce2bbf2b8e29c3258b6620a55ec0a64c",
+    "bytes": 7193,
+    "sha256": "a9c332e67245d2a8c36cc1644293bed3e866b2e71a922e342aaaa103d25c77b7"
+  },
+  "originalExecution": "Script error:\nError: T5_all27_exact\n    at need (eval at <anonymous> (exec_main.mjs:61:14), <anonymous>:2:84)\n    at qualifyInertFinal (eval at <anonymous> (exec_main.mjs:61:14), <anonymous>:42:1)\n    at exec_main.mjs:61:45",
+  "cause": "JSON.stringify object key order comparison; exact path/full9 values all equal",
+  "mapping": [
+    {
+      "path": "/",
+      "identityExact": true,
+      "expectedKeys": [
+        "path",
+        "identity"
+      ],
+      "actualKeys": [
+        "identity",
+        "path"
+      ]
+    },
+    {
+      "path": "/Volumes",
+      "identityExact": true,
+      "expectedKeys": [
+        "path",
+        "identity"
+      ],
+      "actualKeys": [
+        "identity",
+        "path"
+      ]
+    },
+    {
+      "path": "/Volumes/T5",
+      "identityExact": true,
+      "expectedKeys": [
+        "path",
+        "identity"
+      ],
+      "actualKeys": [
+        "identity",
+        "path"
+      ]
+    }
+  ],
+  "change": "Only verifier equality canonicalizes object keys; array order and all scalar values retained",
+  "runtimeCalls": 0,
+  "originalCandidateAndRuntimeEvidenceUnchanged": true
+}

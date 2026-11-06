@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-result-info-20261105-r4",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/prepare-r1/result.public.json"
+    }
+  }
+}

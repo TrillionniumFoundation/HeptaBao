@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.owner-renew-inert.original-observer-intent.r1",
+  "root_go": "964c58fa1ae491cad2f815362a2381686e64837a",
+  "request": {
+    "blob": "2263db35a8e968afb6344b539edf630cb4fef109",
+    "bytes": 329,
+    "sha256": "734cec4b2f5534b999ff30d97262fb72bd4427ce62e6afa191b759302fa71052"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-owner-renew-inert-runtime-candidate-info-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json"
+      }
+    }
+  },
+  "original_job": "1a1ae1968c5-fc05-5d62",
+  "lane": "A",
+  "maximumNativeAdmissions": 1,
+  "startNotYetCalled": true,
+  "immutablePageLimit": 8192
+}

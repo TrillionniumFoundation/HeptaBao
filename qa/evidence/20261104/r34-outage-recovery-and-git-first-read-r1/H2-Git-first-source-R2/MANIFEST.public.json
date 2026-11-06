@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.h2-live.Git-first-source-R2-delta-manifest.v1",
+  "entries": [
+    {
+      "path": "CORRECTION.public.json",
+      "blob": "bd8a8d0322a5887f1db0a5a27805f3c25b828df5",
+      "bytes": 2945,
+      "sha256": "228c6d91ca8fc64efe8a405c50712aa92742cc35fdf1ad0b0c1e1d9cf15fe7ad"
+    },
+    {
+      "path": "before/git-first-durability.R1.js",
+      "blob": "d504200624456ac43e1970afbdf5e43b259dc7f9",
+      "bytes": 9024,
+      "sha256": "247833482f2a00d6a5c9a2b46afe0333d9038a3e5575d09dcd9932f12694bd44"
+    },
+    {
+      "path": "candidate/git-first-durability.R2.js",
+      "blob": "678828a8679e0f0571a842a850c3111421adc1ae",
+      "bytes": 10192,
+      "sha256": "d542f55c62f10d13c10a8b5dcd1b0b30aa684352ebc029e783c4d14bf63aebe5"
+    },
+    {
+      "path": "candidate/git-first-observer.unchanged.js",
+      "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+      "bytes": 16074,
+      "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+    },
+    {
+      "path": "diff/durability.R1-to-R2.diff",
+      "blob": "7f034fa993e3ce21877142d3fce801dd05318c68",
+      "bytes": 3703,
+      "sha256": "d73363adcb28e61219636c382cf88d60f16f44e9cbe26cf23ea8ca4e9e8d1815"
+    },
+    {
+      "path": "reference/R1-MANIFEST.public.json",
+      "blob": "b7c172314fd49f08e71cb0e1c8c4d852b91903b7",
+      "bytes": 5513,
+      "sha256": "648661796d6e07f61e84786b9f45429c990a6beb11ef26b3558debf8d2e7c3e7"
+    },
+    {
+      "path": "COMPOSITION.public.json",
+      "blob": "6e9e8dc59f4588d4ecc7a4173b54cccb2cba514e",
+      "bytes": 2316,
+      "sha256": "7ce01813c293d9a11190151d55e89e85d467d47996a2240d099c98df29541583"
+    }
+  ]
+}

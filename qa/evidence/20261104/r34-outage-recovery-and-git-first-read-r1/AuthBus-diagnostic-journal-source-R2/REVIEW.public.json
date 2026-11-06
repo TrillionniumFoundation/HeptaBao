@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.launchd-gitfirst-narrow-r2.r1",
+  "status": "SOURCE_ONLY_NO_RUNTIME",
+  "previousPacket": "9ba3e5f9935047c4715a7a6a6139885b42c5a2f2",
+  "changes": [
+    "gfRun closed-action outer catch stores complete failure/state, appends immutable failure history and returns normally; no rethrow.",
+    "Original Git create, successful whole reads, fresh tree reads and recovery reads have complete SDK serialization hashed to immutable store keys with ordered history. Native returned SDK also uses this recorder before interpretation.",
+    "Successful archive additionally reads the exact expected flat Git tree, independently verifies Merkle/leaf membership before blob whole checks. No extra mutation."
+  ],
+  "archive": {
+    "before": {
+      "blob": "1de1f00498f2457336f1f324a507ea1c2ac86fe1",
+      "bytes": 4189,
+      "sha256": "7eb14e27df6b8fe1bdb7cd4ae82394f7d5851fa70fd5686c562f85fc97035f28"
+    },
+    "after": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "diff": {
+      "blob": "7268e87382e0c309c8b3a891bc156ad4516dbf9c",
+      "bytes": 3155,
+      "sha256": "aa1344358c94f5719ae94c18c1d1d30c8729b1350245c25b646fde65ce9d34db"
+    },
+    "hunks": 3,
+    "strictReconstruction": true
+  },
+  "native": {
+    "before": {
+      "blob": "78253bc918be09af6c0bbb40da979ed392102986",
+      "bytes": 16934,
+      "sha256": "bed2f0586fb1a11412605afe863172f7250893ecc2d3ecfb54179af73060131d"
+    },
+    "after": {
+      "blob": "c61872aff6529e34ca89121d5c09702f8d56792c",
+      "bytes": 19027,
+      "sha256": "1aa2e506fd68673b182339194f47b091ec4c2c6b810498d69e2e0dec0970503c"
+    },
+    "diff": {
+      "blob": "3ea6c9f8e1f5c69b0084b1e91a2a694f03e0aadf",
+      "bytes": 3317,
+      "sha256": "8a298ff04f0c5409eb4ea847ea5849b1fce0965d01f3d708719a8eb20d7334cc"
+    },
+    "hunks": 4,
+    "strictReconstruction": true
+  },
+  "originalDiagnostic": {
+    "blob": "9858ace064c11d4bc679b64ed35910015bc834e3",
+    "bytes": 75721,
+    "sha256": "e573407b3e092216694f0cbf4a8a526809dc64822b570bf29dd29585c025c233"
+  },
+  "originalRequest": {
+    "blob": "d14f62155b86924edd5632673d2e73832f7b0af5",
+    "bytes": 76816,
+    "sha256": "ab9afbcbbdc150acd11ad9451e35e2785f8fe086d4a371c3a63d4cf0f2a087b4",
+    "changed": false
+  },
+  "rootComputedNativeDigest": "27412a077919b5f988477d9a0fcd4bdd7e5d049f21d2c1367ff35bd56f0d67ec",
+  "rootComputedNativeFingerprint": "2828588252550247929",
+  "pureChecks": {
+    "schema": "heptabao.gitfirst-two-fixes-pure-v8-checks.r1",
+    "checks": [
+      {
+        "name": "outer_catch_returns_failure_normally",
+        "ok": true
+      },
+      {
+        "name": "original_failure_state_retained",
+        "ok": true
+      },
+      {
+        "name": "different_sdk_raws_keep_both_hash_keys",
+        "ok": true
+      },
+      {
+        "name": "alias_changes_without_history_loss",
+        "ok": true
+      },
+      {
+        "name": "zero_tools",
+        "ok": true
+      }
+    ],
+    "passed": 5,
+    "NativeCalls": 0,
+    "GitCalls": 0,
+    "productCases": 0
+  },
+  "NativeCalls": 0,
+  "unchanged": "Diagnostic source, request, host/path/key/stdin/45/60, old guard and old UNKNOWN unchanged.",
+  "mutationFailure": "All Git creates are still once. Recovery is only expected immutable tree/blob GET; any failed read stops. No native replay."
+}

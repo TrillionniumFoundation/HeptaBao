@@ -1,0 +1,30 @@
+{
+  "expected_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "sole_parent": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "canonical_base_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "four_original_trees_rebuilt": {
+    "root": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "crates": "fd50f52f2beb3cef919ad86194955a3e32090e80",
+    "heptabao-server": "19f9a6ab211357e04e17266636279843921be619",
+    "src": "de426e481e192ca774a4c9fef252d8c1d4b71b92"
+  },
+  "four_proposed_trees": {
+    "src": "b8eb1822fac3e4c3d180c8ac12eee9fbf34db766",
+    "heptabao-server": "4d9ba7fd1715b657c0593300215eb4f8070f4b13",
+    "crates": "03358596ce22e16aa902655108805b86d08095cf",
+    "root": "5497775d9d473541e13e1603be8c893a3e27681b"
+  },
+  "modified": 7,
+  "added": 2,
+  "deleted": 0,
+  "original_unchanged_leaves": 3907,
+  "proposed_leaves": 3916,
+  "proposed_total_blob_bytes": 62287650,
+  "count_basis": "Base 3914 / 62227757 actual canonical inventory plus the nine exact leaf replacements; all unmentioned tree IDs unchanged.",
+  "Git_create_tree_observed": false,
+  "source_commit_created": false,
+  "branch_changed": false,
+  "formatter_executed": false,
+  "compile_executed": false,
+  "Runtime_calls": 0
+}

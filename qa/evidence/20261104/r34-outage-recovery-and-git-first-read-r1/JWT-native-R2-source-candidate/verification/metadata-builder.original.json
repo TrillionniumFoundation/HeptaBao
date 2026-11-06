@@ -1,0 +1,7 @@
+{
+  "chunk_id": "272bcd",
+  "wall_time_seconds": 0.237675641,
+  "exit_code": 0,
+  "original_token_count": 40,
+  "output": "{\"files\": 9, \"regressions\": 15, \"old_tests_exact\": 10, \"source_tree\": \"5497775d9d473541e13e1603be8c893a3e27681b\", \"leaf_count\": 3916, \"blob_bytes\": 62287650}\n"
+}

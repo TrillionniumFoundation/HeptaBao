@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.native-jwt.r2.pure-git-recovery.v1",
+  "executor_unavailable": true,
+  "zero_Runtime": true,
+  "zero_formatter_compile_tests": true,
+  "ref_updates": 0,
+  "original_pending_write_failed_before_Git": true,
+  "original_error_record": "commit/intent-local-failure.public.json",
+  "original_cell": "g4:295",
+  "same_exact_intent": "d3a01757a0f71278bdb90bebb732e9b55d9e4734",
+  "confirmed_git_intent_tree": "cc2d2e404f300448eee4ea9c003747659730018a",
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "source_commit_submissions": 1,
+  "unavailable_local_artifacts_not_claimed_archived": [
+    "Detailed R2 VERIFY.result.public.json",
+    "Original local R2 verify_source_delta.py",
+    "Pre-unavailability local DESIGN-R2/FORMAT-BUILD-TEST-GATE metadata-builder output files"
+  ],
+  "replacement_public_docs": "New pure-V8 descriptions authored after executor unavailability, not claimed byte-identical to unavailable local files.",
+  "source_files_exact_same_as_pre_unavailability": true
+}

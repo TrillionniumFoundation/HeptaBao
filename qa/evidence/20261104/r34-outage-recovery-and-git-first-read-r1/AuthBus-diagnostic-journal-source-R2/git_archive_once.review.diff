@@ -1,0 +1,56 @@
+--- a/git_archive_once.js
++++ b/git_archive_once.js
+@@ -1,3 +1,17 @@
++/* Full original SDK bytes are immutable by Git-blob hash; aliases are only convenience. */
++function recordGitSDKImmutable(prefix,stage,sdk) {
++ store(prefix+":pending_sdk",sdk);
++ const raw=JSON.stringify(sdk,null,2)+"\n",pin=gitBlobMeta(raw);
++ const immutable="original-sdk-by-blob:"+pin.blob,previous=load(immutable);
++ if(previous!==undefined && previous!==raw)throw new Error("immutable_SDK_key_collision");
++ if(previous===undefined)store(immutable,raw);
++ const history=load(prefix+":sdk_history")||[];
++ const event={ordinal:history.length+1,stage,pin,immutableStoreKey:immutable};
++ history.push(event);store(prefix+":sdk_history",history);
++ store(prefix+":sdk_alias:"+stage,event);
++ return event;
++}
++
+ /* Pure Git archival helper. Requires exact public pure_helpers.js symbols:
+  * gitBlobMeta, utf8Bytes, utf8Text, sha1Bytes; functions store/load and tools.
+  * This is not a Runtime helper and does not satisfy local-first native journaling.
+@@ -38,10 +52,25 @@
+     store(prefix+":transport_exception",{name:error.name,message:String(error.message)});
+     throw error;
+   }
++  recordGitSDKImmutable(prefix,"create_tree",sdk);
+   store(prefix+":create_sdk",sdk);
+   if(sdk.isError===true) throw new Error("git_create_returned_error_preserved");
+   if(sdk.structuredContent?.sha!==expectedTree)
+     throw new Error("git_create_tree_exact_sha");
++  const treeSDK=await tools.mcp__codex_apps__github_fetch({
++    url:"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/"
++      +expectedTree+"?recursive=1"});
++  recordGitSDKImmutable(prefix,"tree_whole",treeSDK);
++  store(prefix+":tree_sdk",treeSDK);
++  if(treeSDK.isError===true || typeof treeSDK.structuredContent?.content!=="string")
++    throw new Error("git_tree_read_error_preserved");
++  const fetchedTree=JSON.parse(treeSDK.structuredContent.content),treeAudit=gitTreeAudit(fetchedTree);
++  if(treeAudit.root_sha!==expectedTree||treeAudit.leaf_count!==entries.length
++      ||treeAudit.trees_verified!==1)throw new Error("git_expected_flat_tree_merkle");
++  const exactMap=new Map(entries.map(x=>[x.path,x.blob]));
++  if(!fetchedTree.tree.every(x=>x.type==="blob"&&x.mode==="100644"&&exactMap.get(x.path)===x.sha))
++    throw new Error("git_expected_flat_tree_members");
++  store(prefix+":tree_whole_verified",treeAudit);
+   const verified=[];
+   for(let start=0;start<entries.length;start+=2) {
+     const results=await Promise.allSettled(entries.slice(start,start+2).map(async x=>{
+@@ -52,7 +81,8 @@
+         store(prefix+":whole_exception:"+x.path,{name:error.name,message:String(error.message)});
+         throw error;
+       }
+-      store(prefix+":whole_sdk:"+x.path,response); // Before isError/content parsing.
++      recordGitSDKImmutable(prefix,"whole:"+x.path,response);
++      store(prefix+":whole_sdk:"+x.path,response); // Alias; immutable history is authoritative.
+       if(response.isError===true) throw new Error("git_whole_error_preserved:"+x.path);
+       const content=response.structuredContent?.content;
+       if(typeof content!=="string"||content!==texts[x.path])

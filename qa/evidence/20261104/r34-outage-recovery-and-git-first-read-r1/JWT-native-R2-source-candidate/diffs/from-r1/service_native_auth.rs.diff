@@ -1,0 +1,12 @@
+--- a/crates/heptabao-server/src/service_native_auth.rs
++++ b/crates/heptabao-server/src/service_native_auth.rs
+@@ -1739,7 +1739,8 @@
+             );
+         let select_batch_issuer = request.namespace.is_empty()
+             && (matches!(&owner, NativeLocalOwner::Auth)
+-                || matches!(&owner, NativeLocalOwner::Userpass(owner) if !owner.is_login()))
++                || matches!(&owner, NativeLocalOwner::Userpass(owner) if !owner.is_login())
++                || matches!(&owner, NativeLocalOwner::Jwt(owner) if !owner.is_login()))
+             && !request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0);
+         let (
+             mount_owner,

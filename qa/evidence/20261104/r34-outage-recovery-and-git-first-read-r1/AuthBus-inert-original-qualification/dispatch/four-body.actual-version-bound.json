@@ -1,0 +1,205 @@
+{
+  "schema": "heptabao.owner-renew-inert.conditional-four-body.r1",
+  "rootGo": "964c58fa1ae491cad2f815362a2381686e64837a",
+  "allMetadataClosedAndAccepted": true,
+  "returnedBodyBytes": 91711,
+  "maximumBodyBytes": 144253,
+  "requests": [
+    {
+      "ordinal": 1,
+      "name": "outer-body-0",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-inert-outer-body-000000-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+            "expected_version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+            "offset": 0,
+            "limit": 65536
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "5a237c7eb074e27985f532a7f0486ed19af349e1",
+        "bytes": 446,
+        "sha256": "a1ff26a0908ded8b2b7ed48d27986f217c7adb7c7c8521a94034403cb7c2b3a7"
+      },
+      "info": {
+        "name": "outer-info",
+        "role": "bootstrap_outer",
+        "operation_id": "5217c8a2ea11ff7e3709c69407c0bcf5f08c66f49918f0dd4618bf909500d8c5",
+        "nativePin": {
+          "blob": "d651a87ba51820f75ac330359c3429072866a0f6",
+          "bytes": 501,
+          "sha256": "cc944e553f6354d2a6297ad7cb658c60f0071573b9146498de6a9692529390c7"
+        },
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+        "bytes": 71506,
+        "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5",
+        "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+        "full9": [
+          "16777244",
+          "72671139",
+          "501",
+          "20",
+          "33152",
+          "1",
+          "71506",
+          "1793922263700923595",
+          "1793922263700929887"
+        ],
+        "pass": true
+      },
+      "expectedEof": false
+    },
+    {
+      "ordinal": 2,
+      "name": "outer-body-65536",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-inert-outer-body-065536-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+            "expected_version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+            "offset": 65536,
+            "limit": 5970
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "e71cb1d750bf6b42d0923e6f0acd8804ef8fe1ef",
+        "bytes": 449,
+        "sha256": "1c4ccd0ae06a6a2c2ebc9ad74e7080ae6d80b3131e55bb0ccf0d7a9bc2cef667"
+      },
+      "info": {
+        "name": "outer-info",
+        "role": "bootstrap_outer",
+        "operation_id": "5217c8a2ea11ff7e3709c69407c0bcf5f08c66f49918f0dd4618bf909500d8c5",
+        "nativePin": {
+          "blob": "d651a87ba51820f75ac330359c3429072866a0f6",
+          "bytes": 501,
+          "sha256": "cc944e553f6354d2a6297ad7cb658c60f0071573b9146498de6a9692529390c7"
+        },
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py",
+        "bytes": 71506,
+        "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5",
+        "version": "16777244:72671139:71506:1793922263700923595:1793922263700929887",
+        "full9": [
+          "16777244",
+          "72671139",
+          "501",
+          "20",
+          "33152",
+          "1",
+          "71506",
+          "1793922263700923595",
+          "1793922263700929887"
+        ],
+        "pass": true
+      },
+      "expectedEof": true
+    },
+    {
+      "ordinal": 3,
+      "name": "candidate-body-0",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-inert-candidate-body-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+            "expected_version": "16777244:72671151:7211:1793922263708371886:1793922263708377928",
+            "offset": 0,
+            "limit": 7211
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "6154291c4ded622d5a68888d7d79a8ce2da700db",
+        "bytes": 455,
+        "sha256": "899808466e852bea1cc37c0ea6f56df19264142e767382459dc2bd36a1990855"
+      },
+      "info": {
+        "name": "candidate-info",
+        "role": "runtime_candidate",
+        "operation_id": "f8cdaf67d13ba7f10c39faeacef6a86c36292454e0e899bbd345b9beb0d7defd",
+        "nativePin": {
+          "blob": "30e0b13becfd06772eb2c7e2f3c53948c2b74e90",
+          "bytes": 513,
+          "sha256": "947a7abac9164b0e82b5b2358198b30b5a874aa92f434454205bbdd12b514cac"
+        },
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json",
+        "bytes": 7211,
+        "sha256": "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932",
+        "version": "16777244:72671151:7211:1793922263708371886:1793922263708377928",
+        "full9": [
+          "16777244",
+          "72671151",
+          "501",
+          "20",
+          "33152",
+          "1",
+          "7211",
+          "1793922263708371886",
+          "1793922263708377928"
+        ],
+        "pass": true
+      },
+      "expectedEof": true
+    },
+    {
+      "ordinal": 4,
+      "name": "receipt-body-0",
+      "request": {
+        "idempotency_key": "heptabao-mac-owner-renew-inert-receipt-body-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+            "expected_version": "16777244:72671152:12994:1793922263708983153:1793922263708991695",
+            "offset": 0,
+            "limit": 12994
+          }
+        }
+      },
+      "requestPin": {
+        "blob": "bf36a27519bb8db1421ed3b3935a9267836b221a",
+        "bytes": 454,
+        "sha256": "9d10d04cf1662d9810499e3bb392dc4408204d2ed75681a07ff473b71ead2cc5"
+      },
+      "info": {
+        "name": "receipt-info",
+        "role": "inert_receipt",
+        "operation_id": "27b8e2d7bebffbfa9467a89f0b2de94e8b1a69a164c1c3d8abf25a9d2ea2ae35",
+        "nativePin": {
+          "blob": "b2c686da5c2900a8e88b8ec865f2347200463670",
+          "bytes": 514,
+          "sha256": "10137ac5331067fa3b153c2bc807e28930402c3fb2432a7e70c551da2f9dc2a7"
+        },
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/inert-registry-wal-4e808-result.public.json",
+        "bytes": 12994,
+        "sha256": "bf03a4e84c7297b0121c1750997fafe4ca8ea4efe656b9353248dc24b101a1d1",
+        "version": "16777244:72671152:12994:1793922263708983153:1793922263708991695",
+        "full9": [
+          "16777244",
+          "72671152",
+          "501",
+          "20",
+          "33152",
+          "1",
+          "12994",
+          "1793922263708983153",
+          "1793922263708991695"
+        ],
+        "pass": true
+      },
+      "expectedEof": true
+    }
+  ]
+}

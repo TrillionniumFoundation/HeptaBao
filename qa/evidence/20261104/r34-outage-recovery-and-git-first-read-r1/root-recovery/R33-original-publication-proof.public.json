@@ -1,0 +1,152 @@
+{
+  "schema": "heptabao.R33.publication-proof.v1",
+  "published": true,
+  "verified_at_utc": "2026-11-06 00:19:00 UTC",
+  "facts_frozen_at": "2026-11-05T23:43:28Z",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "refs/heads/codex/heptabao-validation-20261104",
+  "actual_commit": "b2a93ed797229674346c77f28d7a828fa1f96dfc",
+  "actual_tree": "c05c16d4b7e188159a99b9f9c83b0fa028b2f3f3",
+  "sole_parent": "f4a47f951cd39e0f75797a6224f42837a4369044",
+  "compare_and_swap_expected": "f4a47f951cd39e0f75797a6224f42837a4369044",
+  "force": false,
+  "PR159_merged": false,
+  "artifacts": [
+    {
+      "name": "STATE.public.json",
+      "blob": "926b8a567ccdd593fe1b4330ae86b888f0887c85",
+      "bytes": 19752,
+      "sha256": "9290b91306df779b27c1b102e926b153640fc8458a6cc0a07b92105fc9c51cb5"
+    },
+    {
+      "name": "MANIFEST.public.json",
+      "blob": "32f0e2dcdbef1129928eecd2362f89c0c5d53ebc",
+      "bytes": 59836,
+      "sha256": "c3981179f6021f1412aee964ebce47a9140000298191a118b076d17f616c2875"
+    },
+    {
+      "name": "HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "blob": "6960e8c0dcceeda78277154963d4d415ec2a8e7a",
+      "bytes": 322243,
+      "sha256": "858e37ff7e92641de7905c1fe16f85cf0ecb83ad8fe8895bfc6ffa2ee7f4653d"
+    },
+    {
+      "name": "36076-checkpoint.public.json",
+      "blob": "d17b235677a3faeaf848f350da6a8a045c00d7f7",
+      "bytes": 919305,
+      "sha256": "6d36538a219ad87af4f813c747d72afc42ece5ec59359b9425e87d36b3321786"
+    }
+  ],
+  "counts": {
+    "packet_mounts": 26,
+    "packet_leaf_paths": 1453,
+    "packet_bytes": 15759818,
+    "packet_Merkle_nodes": 388,
+    "root_artifact_paths": 90,
+    "root_artifact_bytes": 2240679,
+    "state_and_manifest_paths": 2,
+    "new_evidence_leaf_paths": 1545,
+    "previous_total_leaf_paths": 24277,
+    "previous_non_document_leaf_paths_preserved": 24275,
+    "replaced_document_paths": 2,
+    "deleted_paths": 0,
+    "new_total_leaf_paths": 25822,
+    "counts_are_path_occurrences_not_unique_blobs": true
+  },
+  "independent_immediate_tree_checks": {
+    "schema": "heptabao.R33.changed-tree-independent-readback.v1",
+    "ok": true,
+    "results": [
+      {
+        "path": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/packets",
+        "sha": "15c2629a17a4184c383a15e5064f546c74d35fd0",
+        "immediate_entries": 26,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1/roots",
+        "sha": "c4a0ef6370b8381360e30f9a32883c7ca1986536",
+        "immediate_entries": 90,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "qa/evidence/20261104/r33-formal-kv2-and-auth-snapshot-gates-r1",
+        "sha": "77cb8880d1ee0c73d19452115fec0ee5be0def0b",
+        "immediate_entries": 4,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "docs/validation",
+        "sha": "8e8e8125d3dd57d8ed5469c44e1512e004006843",
+        "immediate_entries": 1,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "docs",
+        "sha": "ac69864cf9b6a356dde037840c10d9eb7a5c4460",
+        "immediate_entries": 51,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "qa/evidence/20261104",
+        "sha": "7033cddffe024983d98b16eba505fc586d4e90af",
+        "immediate_entries": 110,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "qa/evidence",
+        "sha": "00e9619d68b07e4092113840e9c631f3ed9ace48",
+        "immediate_entries": 1,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "qa",
+        "sha": "27e93f36cf45584e33075897cf6b6b92120b9831",
+        "immediate_entries": 3,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      },
+      {
+        "path": "",
+        "sha": "c05c16d4b7e188159a99b9f9c83b0fa028b2f3f3",
+        "immediate_entries": 26,
+        "independent_read": true,
+        "merkle_verified": true,
+        "exact_membership": true
+      }
+    ],
+    "failures": [],
+    "full_repository_recursive_tree_refetched": false,
+    "root_Runtime_calls": 0
+  },
+  "whole_artifact_readback": true,
+  "original_R32_document_bytes_preserved": 311472,
+  "old_index_top_level_keys": 95,
+  "new_index_top_level_keys": 96,
+  "old_index_value_lexemes_preserved": 94,
+  "as_of_utc_only_old_value_changed": true,
+  "all_prior_nondocument_subtrees_preserved": true,
+  "deleted_paths": [],
+  "production_source_changed": false,
+  "root_Runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "cleanup": false,
+  "task_continues": true
+}

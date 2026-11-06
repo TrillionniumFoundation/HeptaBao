@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.h2-live.local-checkpoint-failure.v1",
+  "original_functions_exec_cell": "g2:239",
+  "original_wait_terminal": "Script failed\nWall time 5.3 seconds\nOutput:\nScript error:\nExit code: 1\nWall time: 347.3 seconds\nOutput:\nFailed to write file /workspace/scratch/f86faac821c4/r32_recovery/h2-live-execution-state.json",
+  "original_cell_naturally_returned": true,
+  "termination_requested": false,
+  "failed_stage": "hlState -> H.persist -> apply_patch existing local checkpoint write; hlSync was not reached",
+  "previous_progress_wording_correction": "The prior messages called this a fsync wait. Actual returned failure is the preceding checkpoint write.",
+  "local_durability_of_failed_write": "unknown; no success asserted",
+  "original_cell_contains_no_Runtime_submission": true,
+  "following_local_lp_not_reached": true,
+  "same_original_call_retried": false,
+  "local_command_replayed": false,
+  "native_error_or_UNKNOWN": false,
+  "new_Runtime_admissions_since_body0": 0
+}

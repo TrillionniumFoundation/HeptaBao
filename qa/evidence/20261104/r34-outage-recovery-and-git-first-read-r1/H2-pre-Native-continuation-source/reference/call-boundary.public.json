@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.h2-live.pre-Native-armed-checkpoint-archive-failure.v1",
+  "original_submit_exec": "g2:271",
+  "original_job": "1a1ae76aacd-fc05-5fb4",
+  "original_active_operation": "578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273",
+  "operation_handler_already_closed": true,
+  "pending_label": "result-body-065536-page-016384",
+  "pending_request": {
+    "name": "h2-live-result-body-065536-page-016384-request",
+    "blob": "31b413cc3cf3c6878ecb9f0891fa162e3e37f3f6",
+    "bytes": 126,
+    "sha256": "89eae41a5f0c8b771357c0719cb8a126637955d61f61174762dfbae8467307f9",
+    "archive_tree": "60c0e061ca2e208e486ed1a96c121c167d4629a6",
+    "external_whole": true
+  },
+  "pending_arguments": {
+    "operation_id": "578b890a5d01fa69c3942b262706f7aeadba3165a3c2eeb0aa51bc06ec884273",
+    "offset": 16384,
+    "limit": 16384
+  },
+  "exact_approved_observer_source": {
+    "blob": "f3f5721bb20ff5cd227f7d3f28f878fd6e8f1d1a",
+    "bytes": 16074,
+    "sha256": "f9ae6770375a8f45c04c8b6cf76a8d36bc4c5e0336495855bf4d8d48929f1d8a"
+  },
+  "ls_order": {
+    "await_hlState_character": 709,
+    "Native_tool_statement_character": 740,
+    "await_strictly_precedes_Native": true
+  },
+  "Git_archive_plan": {
+    "schema": "heptabao.h2-live.Git-first.archive-intent.v1",
+    "purpose": "single:h2-live-execution-state",
+    "expected_tree": "57bf417be264a07210b8d3a601c7d84354cbf801",
+    "entries": [
+      {
+        "path": "original.txt",
+        "blob": "d59acffc65587115620facf74cac6ff355da271c",
+        "bytes": 108137,
+        "sha256": "678a63894f84ac58a3b7b914461ce6b62a74c8c73b0e5d982954edd743e57829"
+      }
+    ],
+    "phase": "unconfirmed",
+    "create_attempts": 1,
+    "create_SDK_pin": {
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    },
+    "error": "Error: Git_create_unconfirmed"
+  },
+  "returned_before_tools_statement": "Error: Git_create_unconfirmed from awaited hlState archive",
+  "Native_submitted_for_this_pending_request": false,
+  "no_ls_retry": true,
+  "no_lp_retry": true,
+  "submitted_flag_not_reset": true,
+  "original_last_Native_call": "result-body-065536-page-000000",
+  "original_last_Native_SDK": {
+    "name": "h2-live-result-body-065536-page-000000-original-SDK",
+    "blob": "55da5401ec82be4515111e69fbd6aaeaa23e9c7a",
+    "bytes": 22705,
+    "sha256": "d48d13cdb29cc99cf57868407a9becdb6b25835d77fce86be87176a5fecdfcbf",
+    "archive_tree": "e5d7fb308501bb929339b823425ab0a8587b552d",
+    "external_whole": true
+  },
+  "returned_unparsed_Native_SDK_slot": null,
+  "checkpoint_expected_blob": "d59acffc65587115620facf74cac6ff355da271c",
+  "original_Git_create_SDK": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"RemoteProtocolError: Server disconnected without sending a response.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"error\": \"RemoteProtocolError: Server disconnected without sending a response.\",\n    \"error_code\": \"UNKNOWN\"\n  },\n  \"isError\": true\n}\n",
+  "sole_expected_tree_reconcile_original_SDK": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"GitHub API error 422: {\\\"message\\\":\\\"Invalid object requested. SHA must identify a commit or a tree.\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/trees#get-a-tree\\\",\\\"status\\\":\\\"422\\\"}\"\n    }\n  ],\n  \"structuredContent\": {\n    \"error\": \"GitHub API error 422: {\\\"message\\\":\\\"Invalid object requested. SHA must identify a commit or a tree.\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/trees#get-a-tree\\\",\\\"status\\\":\\\"422\\\"}\",\n    \"error_code\": \"INVALID_ARGUMENT\",\n    \"error_data\": {\n      \"message\": \"Invalid object requested. SHA must identify a commit or a tree.\",\n      \"documentation_url\": \"https://docs.github.com/rest/git/trees#get-a-tree\",\n      \"status\": \"422\"\n    }\n  },\n  \"isError\": true\n}\n",
+  "unresolved": "Expected tree is unconfirmed after one 422 read; exact expected blob has not yet been read. Armed flags are not proof of a Native call.",
+  "new_Native_calls": 0
+}

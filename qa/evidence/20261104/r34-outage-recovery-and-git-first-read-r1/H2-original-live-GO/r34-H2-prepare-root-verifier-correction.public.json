@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.root-H2-prepare-verifier-correction.v1",
+  "before_verifier": {
+    "blob": "cb3f75bfa8409c686172723da81ddd3567d8842f",
+    "bytes": 8584,
+    "sha256": "4cd00fb1aadab23b5c22b3cc24096499c07de46317aecb773724829a48e2a87a"
+  },
+  "before_result": {
+    "blob": "7769e4613acb218aaca3f45f62bb2a2105812957",
+    "bytes": 10154,
+    "sha256": "bdcd0cd36ba40c7d4ab79fc93b5c5c48857d4f66209b27755b00e57c299223d6"
+  },
+  "failed_checks": [
+    {
+      "name": "stage_full9_artifacts_combined_tests",
+      "passed": false
+    },
+    {
+      "name": "stage_full9_artifacts_test_groups",
+      "passed": false
+    }
+  ],
+  "cause": "The first root verifier indexed stage path-bearing records and qa_files but omitted the two name-bearing stage.extra_artifacts. All original bytes already matched.",
+  "change": "Index stage.extra_artifacts only at the original binding control/artifacts/name path and retain all full9, content and binding comparisons.",
+  "after_verifier": {
+    "blob": "ba1c35d8cbe3dbd1a56bd4e8476ebebeade027d6",
+    "bytes": 8723,
+    "sha256": "3e2122c117560811d582b06f9790c283a0f1d0afbaf2de306b0f80eda32e2a19"
+  },
+  "after_result": {
+    "blob": "5aebec1a485dc62d5b0251c4c9e2f6e3963a58f0",
+    "bytes": 10151,
+    "sha256": "08591684a14287d6b6904680ba09418a348bb1f4387c57bf3619ab485429b1d0"
+  },
+  "runtime_calls": 0,
+  "source_or_evidence_modified": false,
+  "assertions_relaxed": false
+}

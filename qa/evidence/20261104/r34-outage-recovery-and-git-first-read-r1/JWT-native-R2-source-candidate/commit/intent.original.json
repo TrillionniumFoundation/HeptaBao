@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.native-jwt.r2.isolated-commit-intent.v1",
+  "source_tree_readback": "four actual trees equal independent canonical reconstruction",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree_sha": "5497775d9d473541e13e1603be8c893a3e27681b",
+    "message": "Add isolated native root JWT custody and Token API composition\n\nRetain one real JWT verification through request-local lifetime custody, actual Identity finalization, native publication and audited delivery. Admit the root local-key service-token profile and reuse the existing Token API child and batch issuer contracts with closed parent/provenance checks.\n\nAdd fifteen independent regression sources, preserving the original ten R1 tests and all existing qualified denominators. This is an unformatted, uncompiled source candidate; actual formatter/build/test and official JWT ACL parity gates remain outstanding. No current validation or production ref is changed."
+  },
+  "branch_update": false,
+  "Runtime_calls": 0,
+  "Rust_tests_executed": 0
+}
