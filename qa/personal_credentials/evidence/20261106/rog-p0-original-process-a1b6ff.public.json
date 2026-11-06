@@ -1,0 +1,387 @@
+{
+  "business_finished_ns": 275886176282012,
+  "business_scenarios_not_qualified_by_this_receipt": true,
+  "children": [
+    {
+      "SID_observation_gaps": [],
+      "SID_survivors": [],
+      "admission_released": true,
+      "admitted_ns": 275881129086170,
+      "argv_SHA256": "c7f8d1e11d81903e4d2cab40c17d4337182b500913c8e6dba51685d848a67da8",
+      "birth": {
+        "PGID": 105978,
+        "PID": 105978,
+        "PPID": 105964,
+        "SID": 105978,
+        "UIDs": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "boot_id": "fcdd2477-a952-4ef2-9bdc-2237255080f1",
+        "image": {
+          "SHA256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+          "path": "/usr/bin/python3.14",
+          "stat8": {
+            "ctime_ns": 1791090998714626345,
+            "dev": 66306,
+            "ino": 17174579,
+            "mode": 33261,
+            "mtime_ns": 1787222518000000000,
+            "nlink": 1,
+            "size": 7477160,
+            "uid": 0
+          }
+        },
+        "starttick": 27588111
+      },
+      "completed_original_wait_count": 1,
+      "declared_stop_action": "KILL",
+      "declared_stop_timeout": 5,
+      "exec_input_guard_acknowledged": true,
+      "exit_code": 0,
+      "fallback": false,
+      "gaps": [],
+      "kind": "utility",
+      "label": "smoke.57",
+      "original_PID": 105978,
+      "original_SID_retired_observed": true,
+      "original_wait_attempts": [
+        {
+          "entered_ns": 275881142265587,
+          "returncode": 0,
+          "returned_ns": 275881206626348,
+          "timeout": 359.972184994
+        }
+      ],
+      "registered_ns": 275881119482197,
+      "same_original_Popen_wait": true,
+      "signals": [],
+      "target_exec_input": {
+        "SHA256": "1d72cbc5bf62be3f3dbd7626c295b63c5fdc1dd8439f323ac47998d8a062b4c9",
+        "path": "/usr/bin/openssl",
+        "stat8": {
+          "ctime_ns": 1791091075029346046,
+          "dev": 66306,
+          "ino": 17195207,
+          "mode": 33261,
+          "mtime_ns": 1790793990000000000,
+          "nlink": 1,
+          "size": 1132128,
+          "uid": 0
+        }
+      }
+    },
+    {
+      "SID_observation_gaps": [],
+      "SID_survivors": [],
+      "admission_released": true,
+      "admitted_ns": 275881217656227,
+      "argv_SHA256": "4c495569262ce7952dbb50d5877b4b1e7ff86b58f626d865c506679e45ecf2b3",
+      "birth": {
+        "PGID": 105979,
+        "PID": 105979,
+        "PPID": 105964,
+        "SID": 105979,
+        "UIDs": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "boot_id": "fcdd2477-a952-4ef2-9bdc-2237255080f1",
+        "image": {
+          "SHA256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+          "path": "/usr/bin/python3.14",
+          "stat8": {
+            "ctime_ns": 1791090998714626345,
+            "dev": 66306,
+            "ino": 17174579,
+            "mode": 33261,
+            "mtime_ns": 1787222518000000000,
+            "nlink": 1,
+            "size": 7477160,
+            "uid": 0
+          }
+        },
+        "starttick": 27588120
+      },
+      "completed_original_wait_count": 1,
+      "declared_stop_action": "KILL",
+      "declared_stop_timeout": 5,
+      "exec_input_guard_acknowledged": true,
+      "exit_code": 0,
+      "fallback": false,
+      "gaps": [],
+      "kind": "utility",
+      "label": "smoke.65",
+      "original_PID": 105979,
+      "original_SID_retired_observed": true,
+      "original_wait_attempts": [
+        {
+          "entered_ns": 275881231102062,
+          "returncode": 0,
+          "returned_ns": 275881294642069,
+          "timeout": 359.88334873
+        }
+      ],
+      "registered_ns": 275881209289236,
+      "same_original_Popen_wait": true,
+      "signals": [],
+      "target_exec_input": {
+        "SHA256": "1d72cbc5bf62be3f3dbd7626c295b63c5fdc1dd8439f323ac47998d8a062b4c9",
+        "path": "/usr/bin/openssl",
+        "stat8": {
+          "ctime_ns": 1791091075029346046,
+          "dev": 66306,
+          "ino": 17195207,
+          "mode": 33261,
+          "mtime_ns": 1790793990000000000,
+          "nlink": 1,
+          "size": 1132128,
+          "uid": 0
+        }
+      }
+    },
+    {
+      "SID_observation_gaps": [],
+      "SID_survivors": [],
+      "admission_released": true,
+      "admitted_ns": 275881305827759,
+      "argv_SHA256": "33782958fee60dffd4657edd00b911d1ccb9544960589197e0c5940c6b995fa4",
+      "birth": {
+        "PGID": 105980,
+        "PID": 105980,
+        "PPID": 105964,
+        "SID": 105980,
+        "UIDs": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "boot_id": "fcdd2477-a952-4ef2-9bdc-2237255080f1",
+        "image": {
+          "SHA256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+          "path": "/usr/bin/python3.14",
+          "stat8": {
+            "ctime_ns": 1791090998714626345,
+            "dev": 66306,
+            "ino": 17174579,
+            "mode": 33261,
+            "mtime_ns": 1787222518000000000,
+            "nlink": 1,
+            "size": 7477160,
+            "uid": 0
+          }
+        },
+        "starttick": 27588129
+      },
+      "completed_original_wait_count": 1,
+      "declared_stop_action": "KILL",
+      "declared_stop_timeout": 5,
+      "exec_input_guard_acknowledged": true,
+      "exit_code": 0,
+      "fallback": false,
+      "gaps": [],
+      "kind": "utility",
+      "label": "smoke.71",
+      "original_PID": 105980,
+      "original_SID_retired_observed": true,
+      "original_wait_attempts": [
+        {
+          "entered_ns": 275881319427711,
+          "returncode": 0,
+          "returned_ns": 275881326664018,
+          "timeout": 359.795021948
+        }
+      ],
+      "registered_ns": 275881297187938,
+      "same_original_Popen_wait": true,
+      "signals": [],
+      "target_exec_input": {
+        "SHA256": "1d72cbc5bf62be3f3dbd7626c295b63c5fdc1dd8439f323ac47998d8a062b4c9",
+        "path": "/usr/bin/openssl",
+        "stat8": {
+          "ctime_ns": 1791091075029346046,
+          "dev": 66306,
+          "ino": 17195207,
+          "mode": 33261,
+          "mtime_ns": 1790793990000000000,
+          "nlink": 1,
+          "size": 1132128,
+          "uid": 0
+        }
+      }
+    },
+    {
+      "SID_observation_gaps": [],
+      "SID_survivors": [],
+      "admission_released": true,
+      "admitted_ns": 275881400690539,
+      "argv_SHA256": "9961a18818b2c8805db7533f4808006f1941c970e01d151eeafbc8f550e6b24d",
+      "birth": {
+        "PGID": 105981,
+        "PID": 105981,
+        "PPID": 105964,
+        "SID": 105981,
+        "UIDs": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "boot_id": "fcdd2477-a952-4ef2-9bdc-2237255080f1",
+        "image": {
+          "SHA256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+          "path": "/usr/bin/python3.14",
+          "stat8": {
+            "ctime_ns": 1791090998714626345,
+            "dev": 66306,
+            "ino": 17174579,
+            "mode": 33261,
+            "mtime_ns": 1787222518000000000,
+            "nlink": 1,
+            "size": 7477160,
+            "uid": 0
+          }
+        },
+        "starttick": 27588139
+      },
+      "completed_original_wait_count": 1,
+      "declared_stop_action": "KILL",
+      "declared_stop_timeout": 5,
+      "exec_input_guard_acknowledged": true,
+      "exit_code": -9,
+      "fallback": false,
+      "gaps": [],
+      "kind": "server",
+      "label": "smoke.95",
+      "original_PID": 105981,
+      "original_SID_retired_observed": true,
+      "original_wait_attempts": [
+        {
+          "entered_ns": 275885627836022,
+          "returncode": -9,
+          "returned_ns": 275885631004415,
+          "timeout": 5
+        }
+      ],
+      "registered_ns": 275881393415659,
+      "same_original_Popen_wait": true,
+      "signals": [
+        {
+          "authority": "original_kernel_pidfd",
+          "fallback": false,
+          "requested_ns": 275885627816215,
+          "sent": true,
+          "signal": 9
+        }
+      ],
+      "target_exec_input": {
+        "SHA256": "c27a0c223d227d3b2b5292e1e3ab6cf0230562baee36b6465b22a7ddf17be172",
+        "path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/server-build-r1/bin/heptabao-server",
+        "stat8": {
+          "ctime_ns": 1793945503896609243,
+          "dev": 66306,
+          "ino": 30842816,
+          "mode": 33216,
+          "mtime_ns": 1793945503896609243,
+          "nlink": 1,
+          "size": 133550368,
+          "uid": 1000
+        }
+      }
+    },
+    {
+      "SID_observation_gaps": [],
+      "SID_survivors": [],
+      "admission_released": true,
+      "admitted_ns": 275885700147536,
+      "argv_SHA256": "9961a18818b2c8805db7533f4808006f1941c970e01d151eeafbc8f550e6b24d",
+      "birth": {
+        "PGID": 106040,
+        "PID": 106040,
+        "PPID": 105964,
+        "SID": 106040,
+        "UIDs": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "boot_id": "fcdd2477-a952-4ef2-9bdc-2237255080f1",
+        "image": {
+          "SHA256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+          "path": "/usr/bin/python3.14",
+          "stat8": {
+            "ctime_ns": 1791090998714626345,
+            "dev": 66306,
+            "ino": 17174579,
+            "mode": 33261,
+            "mtime_ns": 1787222518000000000,
+            "nlink": 1,
+            "size": 7477160,
+            "uid": 0
+          }
+        },
+        "starttick": 27588569
+      },
+      "completed_original_wait_count": 1,
+      "declared_stop_action": "KILL",
+      "declared_stop_timeout": 5,
+      "exec_input_guard_acknowledged": true,
+      "exit_code": -9,
+      "fallback": false,
+      "gaps": [],
+      "kind": "server",
+      "label": "smoke.95",
+      "original_PID": 106040,
+      "original_SID_retired_observed": true,
+      "original_wait_attempts": [
+        {
+          "entered_ns": 275886170210001,
+          "returncode": -9,
+          "returned_ns": 275886173340673,
+          "timeout": 5
+        }
+      ],
+      "registered_ns": 275885692739689,
+      "same_original_Popen_wait": true,
+      "signals": [
+        {
+          "authority": "original_kernel_pidfd",
+          "fallback": false,
+          "requested_ns": 275886170195223,
+          "sent": true,
+          "signal": 9
+        }
+      ],
+      "target_exec_input": {
+        "SHA256": "c27a0c223d227d3b2b5292e1e3ab6cf0230562baee36b6465b22a7ddf17be172",
+        "path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/server-build-r1/bin/heptabao-server",
+        "stat8": {
+          "ctime_ns": 1793945503896609243,
+          "dev": 66306,
+          "ino": 30842816,
+          "mode": 33216,
+          "mtime_ns": 1793945503896609243,
+          "nlink": 1,
+          "size": 133550368,
+          "uid": 1000
+        }
+      }
+    }
+  ],
+  "controls": [],
+  "external_original_deadline": false,
+  "finished_ns": 275886208637074,
+  "original_deadline_ns": 276241114448317,
+  "passed_process_method": true,
+  "profile": "method_control",
+  "profile_seconds": 360,
+  "same_originals_closed": true,
+  "schema": "heptabao.qa.original-process.v1",
+  "started_ns": 275881114448317
+}

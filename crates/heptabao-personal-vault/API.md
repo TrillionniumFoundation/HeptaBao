@@ -1,0 +1,16 @@
+# Personal vault API
+
+- `VaultSession::create(root: &Path, password: &[u8], ttl: Duration) -> Result<(VaultSession, Zeroizing<[u8;32]>)>`: root must already be a mode 0700, current-user-owned directory, absolute and without symlink components.
+- `VaultSession::create_with_recovery_file(root, password, ttl, recovery_output) -> Result<VaultSession>`: CLI initialization writes and fsyncs the recovery document in a separate private directory before publishing initial ciphertext. Output failure leaves no committed vault. A later vault-publication failure may leave an unused recovery document and requires inspection.
+- `VaultSession::open(root, password, ttl)`, `unlock(root, password, ttl)` (an alias), and `open_with_recovery(root, recovery_key, ttl)`.
+- `metadata() -> Result<VaultMetadata>`; `summaries() -> Result<Vec<ItemSummary>>`.
+- `login_for_origin(id: &str, exact_https_origin: &str) -> Result<&VaultItem>`: explicit plaintext access, Login kind, validated exact origin equality; no suffix, wildcard or path matching.
+- `get(id: &str) -> Result<&VaultItem>`; `put(item: VaultItem, expected_revision: u64)`, `delete(id, expected_revision)`, `change_password(new_password, expected_revision)`.
+- `lock()` clears plaintext/key. `is_expired()` checks the monotonic absolute deadline (not activity extended); all access checks reject an expired session. SDK callers must call `lock()` or drop the session at their timer deadline to clear an idle session without waiting for the next operation; borrowing an item cannot be retroactively revoked. The CLI locks and exits after each command. TTL must be greater than zero and at most one hour.
+- `encrypted_backup() -> Result<Vec<u8>>`; `restore(root, encrypted_bytes, password, ttl)` and `restore_with_recovery` create a new state location after AEAD validation, refusing existing state.
+- `export_plaintext() -> Result<Zeroizing<Vec<u8>>>`; `import_plaintext(bytes, expected_revision)` validates all entries and atomically replaces entry set only with matching vault_id / explicit same-vault export.
+- `generate_password(length) -> Result<Zeroizing<String>>`; `totp(config, unix_seconds) -> Result<Zeroizing<String>>`.
+- `VaultItem { id: String, kind: ItemKind (Login|Note|Api), title: String, username: Option<String>, origin: Option<String>, secret: String, notes: String, totp: Option<TotpConfig> }`.
+- `TotpConfig { secret_base32: String, algorithm: TotpAlgorithm(Sha1|Sha256|Sha512), digits: u32, period: u64 }`.
+
+On-disk filename `vault.hbv`; envelope uses mature Argon2id 0.5.3, RFC9106 64MiB/t3/p4, AES-256-GCM with random per-write nonces, random vault DEK and separate random recovery key wrapper. Server needs only encrypted file. Header authenticated (version, cipher, KDF params, vault_id, revision and wrappers). IDs use URL-safe ASCII [a-zA-Z0-9_-], max64. Origins require strict canonical lowercase ASCII HTTPS origins with a dotted DNS host, an optional nondefault port, and no path, userinfo, query, fragment, IP literal or wildcard. The browser broker must independently validate top-frame and page origin; this library does not attest caller identity. Entry `secret`, `notes`, username, TOTP material zeroized on drop. Default CLI output metadata only; stdin JSON command input, outputs with secrets only explicit create-only owner-private files.

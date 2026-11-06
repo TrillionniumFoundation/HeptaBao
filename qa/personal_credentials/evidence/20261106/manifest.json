@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.personal-credentials.evidence-index.v1",
+  "synthetic_only": true,
+  "production_qualified": false,
+  "entries": [
+    {
+      "file": "ai395-core-build.public.json",
+      "sha256": "1726602e78f1fd04cd953996d3b3a70158743b815d38d40c4d870539af5658aa",
+      "bytes": 14046,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "ai395-core-final-artifacts.public.json",
+      "sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+      "bytes": 11000,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r10.public.json",
+      "sha256": "4a17028cd0683d0bca13c000af42a8425f7098f0ec201691a3fa696698cce99b",
+      "bytes": 1125,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r5.public.json",
+      "sha256": "6b4e2347e7890889756b1b4fb302b58d0061f3f9e0c840eb78071531a44c95df",
+      "bytes": 690,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r6.public.json",
+      "sha256": "b09abe0c41ce576cbc4e9a1d1c337581b6775e348536aa992e18f3138e300d43",
+      "bytes": 1758,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r8.public.json",
+      "sha256": "b3c86aa6beac736e2cd13905458075a2ddcdcb4d46fdc9c69b2e9edbe172841d",
+      "bytes": 1658,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r9.public.json",
+      "sha256": "5bb38873403816f64d990daca5a7a958631462a6e47b57808ddcf5d7e3ceda6f",
+      "bytes": 2487,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r1.public.json",
+      "sha256": "f86041a346aa534d8163ef3e0ace87d141f6f58b81983be9db9de312ff845f9a",
+      "bytes": 870,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r10.public.json",
+      "sha256": "9517ac358ca1b9ff8ef9cf2f0b497f4a9f2da9a923b808736a004311a174b4a7",
+      "bytes": 6813,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r2.public.json",
+      "sha256": "b32fd26558a4c3d3e409465d24ac43d3f5ad1a79b714075a09f7e1c20264b61a",
+      "bytes": 6374,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r3.public.json",
+      "sha256": "898a5766efd57f1dd065d1ee3a291e0bce2b5dcbf1709d9e8e127c7ab482884b",
+      "bytes": 5862,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r4.public.json",
+      "sha256": "914550840c3cace40aeca8a8420f74a2d6297595e9b9f736a81ec54900e318ce",
+      "bytes": 6596,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r6.public.json",
+      "sha256": "6fd57756916b063a36cb9f37d7cbbd1f1941ab53cd919767d885c1e195230237",
+      "bytes": 6594,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r8.public.json",
+      "sha256": "05a36029a4e32042a50bd460067de1101f4e345ae2e34336254a1bf67ec254f0",
+      "bytes": 6450,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r9.public.json",
+      "sha256": "d14c693bef8b8a02de586756c53c38817baf33dbce3a6089ae369576ea443795",
+      "bytes": 7233,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "native-backpressure-fixed.public.json",
+      "sha256": "7b3ccd812f2446b081e9cf91589ab259ee0c32c427c63e078feeda6a2416dbde",
+      "bytes": 1922,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-edge-build-a1b6ff.public.json",
+      "sha256": "9df70573ff4b7b02c689a8007cfdc0fdc236fd0ca8b0049369564f592e191ed3",
+      "bytes": 5519,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-57-a1b6ff.public.json",
+      "sha256": "289338861eaea104c296844a6553a5b4e55d3813577dd9a0d81cb8448b16a6f3",
+      "bytes": 7294,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-admission-a1b6ff.public.json",
+      "sha256": "96b26d9e222c66f5ddc2f176909b8b675ad383d4501785b517d15e94e774b38b",
+      "bytes": 4284,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-build-bound-a1b6ff.public.json",
+      "sha256": "a2798606458240e23f6fd99b9f1aaa6b41bc33583ccf1e6f44d1d970a6400f30",
+      "bytes": 4272,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-original-process-a1b6ff.public.json",
+      "sha256": "4ca27ef723062e17a2daef15d30d88d107d40cf50b2858a855d6aeddb00b666f",
+      "bytes": 11266,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-server-build-a1b6ff.public.json",
+      "sha256": "96bad2644072717e73e08440afe65470ff542d159a2d85340951581a4c17ead5",
+      "bytes": 5048,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "source-a1b6ff4.bundle",
+      "sha256": "5c28331b252478bb3072efcaf16f550f35b26b2510270862beaa5d99b265208e",
+      "bytes": 105505,
+      "base_required": "8f3dd8353aaf9642ad58f7716b0c14813d09983d",
+      "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be"
+    },
+    {
+      "file": "source-browser-802c57c.bundle",
+      "sha256": "e521c19a4886ff0631d6491f73830000e7d897980e8683c75b0353e50c2cbedb",
+      "bytes": 14581,
+      "base_required": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+      "source_commit": "802c57cdf386e2dbfb4da9c20dbdd37700343197"
+    },
+    {
+      "file": "two-device-sync-r4.public.json",
+      "sha256": "a2a2d98267afc4eb64f457722cd16c2846b60e9fd29b28f79bc92af3bf224f19",
+      "bytes": 84076,
+      "transformation": "none; byte-identical original public receipt"
+    }
+  ]
+}
