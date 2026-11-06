@@ -254,7 +254,7 @@ def run(binary, output):
                 "non_root_visibility_fails_closed",
                 restricted.status == 200
                 and restricted.body.get("x-heptabao-policy-filtering")
-                == "fail_closed_non_root_subset"
+                == "current_mount_acl_or_unauth_listing"
                 and "/sys/health" in restricted_paths
                 and "/sys/internal/specs/openapi" in restricted_paths
                 and "/auth/token/create" not in restricted_paths
