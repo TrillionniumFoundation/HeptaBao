@@ -1,0 +1,35 @@
+name: HeptaBao official profile owner root exact-head source control (HOLD)
+on:
+  push:
+    branches:
+      - fix/heptabao-owned-private-root-official-profiles-20261106-gpt6-01
+  pull_request:
+    branches:
+      - codex/heptabao-retained-a-regression-eba5e650-20261105-r1
+permissions:
+  contents: read
+jobs:
+  private-owner-source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify fixed owner-only roots and original fail-closed profile gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git hash-object .github/workflows/codex-openbao-replacement-ci.yml)" = c3850843b2892780a213e784dab6e7bcd0af2e46
+          test "$(git hash-object qa/openbao-acceptance/test_official_private_owner_root_workflow.py)" = baae7cdeb1e64d73f5abd190eb00ebb5d033ccac
+          python3 -B -m unittest discover -s qa/openbao-acceptance -p test_official_private_owner_root_workflow.py -v
+          scratch="$(mktemp -d "$RUNNER_TEMP/heptabao-owner-selftest.XXXXXXXX")"
+          test -d "$scratch" && test ! -L "$scratch"
+          test "$(stat -c %a "$scratch")" = 700
+          test "$(stat -c %u "$scratch")" = "$(id -u)"
+          git diff --exit-code
+          echo 'HOLD: source-only owner root control is not official Oracle, HA or replacement qualification'
