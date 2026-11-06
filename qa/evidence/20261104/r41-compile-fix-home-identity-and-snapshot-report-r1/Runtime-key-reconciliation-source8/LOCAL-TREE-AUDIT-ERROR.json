@@ -1,0 +1,6 @@
+{
+  "originalCell": "previous pure Git exec",
+  "message": "tree mismatch during gitTreeAudit; no Native or mutation",
+  "firstReturnedSDKDurability": "not claimed; uncaught local checker prevented confirmed store commit",
+  "next": "same exact public Git tree reads only, caught per-result audit"
+}

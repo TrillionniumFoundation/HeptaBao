@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_twoNone_freeze_commit_intent_packet",
+  "records": [
+    {
+      "name": "COMMIT-INTENT.public.json",
+      "blob": "364b6bcb43cd807dd565ffead0a95c9182530683",
+      "bytes": 1562,
+      "sha256": "fa0007df03cc397f3f5e8fda47ea30f588a08e99a8942d86de9434abd8bbb7fc"
+    },
+    {
+      "name": "TREE-READBACK-VERIFICATION.public.json",
+      "blob": "cabdcd95c07bd0e7a9575060888c7b938bc99c9c",
+      "bytes": 541,
+      "sha256": "054e5ae4c9cc8834761cf5763c1bebcbe4f22804769044053b1d9d757cfffcb4"
+    },
+    {
+      "name": "tree.original.json",
+      "blob": "34375b62bf8f8d37486a3ede0287581d2336cf84",
+      "bytes": 1204148,
+      "sha256": "608698e55e8baaee1ada706f306fe6aabad6a2d3a99c238f67b3c47ca411c8a5"
+    }
+  ],
+  "expected_data_tree": "876e0c9bce7cd3a2a4a874c2a592e5936b5bd035",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

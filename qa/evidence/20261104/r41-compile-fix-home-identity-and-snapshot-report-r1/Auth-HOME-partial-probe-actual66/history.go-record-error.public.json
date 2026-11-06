@@ -1,0 +1,5 @@
+{
+  "stage": "recordGitSDKImmutable wrapper call",
+  "error": "Only plain serializable objects can be stored; original SDK had already been stored as JSON text",
+  "NativeCalls": 0
+}

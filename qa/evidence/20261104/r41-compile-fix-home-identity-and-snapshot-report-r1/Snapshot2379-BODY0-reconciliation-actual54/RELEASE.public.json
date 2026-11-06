@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.snapshot2379.formatter.BODY0-admission-reconciliation-release.v1",
+  "rootGO": {
+    "blob": "96933215ab2dab141a647427388b9ba670dc29b6",
+    "bytes": 6420,
+    "sha256": "d833419dfd56c8369a6a2563231a65d1ded4000886f15ba111b7b39c8f153b8d"
+  },
+  "source": {
+    "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+    "bytes": 23211,
+    "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af"
+  },
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "oldUnknownPacket": "29b6302cc3cb329566b6f66c0441c0899b0cc811",
+  "oldUnknownState": {
+    "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+    "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+  },
+  "originalAttemptOutcome": "UNKNOWN",
+  "originalContextPausedPreserved": true,
+  "originalContextPendingPreserved": true,
+  "originalContextBodyStarted": 1,
+  "originalContextRanges": 0,
+  "currentReceipt": {
+    "operationId": "36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af",
+    "reused": true,
+    "classification": "existing_binding_returned",
+    "originalAttemptOutcome": "UNKNOWN",
+    "lookupOnly": false,
+    "nativeCompletionProven": false,
+    "bodyDeliveryProven": false
+  },
+  "observedBinding": {
+    "id": "36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "5d83a1967b3f42bfd4047fc5624388aa292ebebb",
+      "bytes": 87821,
+      "sha256": "1707f4a8548bdeb47e51fd7f561401281d63c1425c43b3ad9fdd0906093e08af"
+    },
+    "payloadTree": "419137db3ead6ad24c69e42ecdc1085c6cbe375f",
+    "nativeText": {
+      "blob": "895256e05b1517b7a5563600bf179a556bebdccd",
+      "bytes": 87718,
+      "sha256": "2024d49a365dba55814300dab9b07049c2a27ffc88f7b196a5a71623dfae433b"
+    },
+    "pages": 6,
+    "completedInactive": true,
+    "reconciliationOnly": true,
+    "oldAttemptOutcome": "UNKNOWN",
+    "closureTree": "650dc69f7645f9b783d0688019e1577ec8c8baa6"
+  },
+  "originalPayloadWhole": {
+    "blob": "5d83a1967b3f42bfd4047fc5624388aa292ebebb",
+    "bytes": 87821,
+    "sha256": "1707f4a8548bdeb47e51fd7f561401281d63c1425c43b3ad9fdd0906093e08af"
+  },
+  "originalRangeNativeWhole": {
+    "blob": "895256e05b1517b7a5563600bf179a556bebdccd",
+    "bytes": 87718,
+    "sha256": "2024d49a365dba55814300dab9b07049c2a27ffc88f7b196a5a71623dfae433b"
+  },
+  "decodedRange": {
+    "offset": 0,
+    "bytes": 65536,
+    "next_offset": 65536,
+    "eof": false,
+    "chunk_sha256": "e18d09bf4ecf8ad38c46d8ee3c46c5fa7d7816f680b98bce43f493053ce6f09e",
+    "fileVersion": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "wholeFileBody": false
+  },
+  "calls": 8,
+  "operationStartCalls": 1,
+  "operationStatusCalls": 1,
+  "immutablePageCalls": 6,
+  "observersClosed": 1,
+  "allOriginalSDKsWhole": true,
+  "currentToolCallsInFlight": 0,
+  "currentOwnedFutureObservedActive": false,
+  "currentPending": null,
+  "currentActiveObserver": null,
+  "secondBodySubmitted": false,
+  "processStartCalls": 0,
+  "hostWrites": 0,
+  "compilerOrProductCalls": 0,
+  "lineBReleased": true,
+  "scopeCompleted": "Only recovered existing BODY0 binding plus full original payload and 65536-byte range. No full report or BODY1 qualification."
+}

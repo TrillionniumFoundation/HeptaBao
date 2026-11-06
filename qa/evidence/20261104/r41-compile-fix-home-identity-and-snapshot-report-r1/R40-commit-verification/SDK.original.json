@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"515bfe24879798f0117859c11492112bae9c3cee\",\"node_id\":\"C_kwDOUGncwNoAKDUxNWJmZTI0ODc5Nzk4ZjAxMTc4NTljMTE0OTIxMTJiYWU5YzNjZWU\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/515bfe24879798f0117859c11492112bae9c3cee\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/515bfe24879798f0117859c11492112bae9c3cee\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T10:11:39Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T10:11:39Z\"},\"tree\":{\"sha\":\"a527113b4645b61081a386d718c9f93a5ef7c77e\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/a527113b4645b61081a386d718c9f93a5ef7c77e\"},\"message\":\"docs(qa): preserve R40 cleanup, build failure and ACL source evidence\\n\\nRecord the original current Mac QA-label removal, complete snapshot stage and formatter terminal, failed PKI build and immutable-read timeouts. Retain exact original journals and add the JWT ACL source correction with its independent peer review. The original failed build and unknown admission remain distinct from source checks; no production switch, full replacement or legacy cleanup is claimed.\",\"parents\":[{\"sha\":\"1badf75b2c541abcebad269adc7be8020bf9e63c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/1badf75b2c541abcebad269adc7be8020bf9e63c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/1badf75b2c541abcebad269adc7be8020bf9e63c\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "515bfe24879798f0117859c11492112bae9c3cee",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/515bfe24879798f0117859c11492112bae9c3cee",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/515bfe24879798f0117859c11492112bae9c3cee",
+    "display_title": "515bfe24879798f0117859c11492112bae9c3cee",
+    "structuredContent": {
+      "title": "515bfe24879798f0117859c11492112bae9c3cee",
+      "content": "{\"sha\":\"515bfe24879798f0117859c11492112bae9c3cee\",\"node_id\":\"C_kwDOUGncwNoAKDUxNWJmZTI0ODc5Nzk4ZjAxMTc4NTljMTE0OTIxMTJiYWU5YzNjZWU\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/515bfe24879798f0117859c11492112bae9c3cee\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/515bfe24879798f0117859c11492112bae9c3cee\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T10:11:39Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T10:11:39Z\"},\"tree\":{\"sha\":\"a527113b4645b61081a386d718c9f93a5ef7c77e\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/a527113b4645b61081a386d718c9f93a5ef7c77e\"},\"message\":\"docs(qa): preserve R40 cleanup, build failure and ACL source evidence\\n\\nRecord the original current Mac QA-label removal, complete snapshot stage and formatter terminal, failed PKI build and immutable-read timeouts. Retain exact original journals and add the JWT ACL source correction with its independent peer review. The original failed build and unknown admission remain distinct from source checks; no production switch, full replacement or legacy cleanup is claimed.\",\"parents\":[{\"sha\":\"1badf75b2c541abcebad269adc7be8020bf9e63c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/1badf75b2c541abcebad269adc7be8020bf9e63c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/1badf75b2c541abcebad269adc7be8020bf9e63c\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/515bfe24879798f0117859c11492112bae9c3cee"
+    }
+  },
+  "isError": false
+}

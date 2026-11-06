@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.home-partial-readonly-fixed-inputs.v1",
+  "root": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+  "originalFailedJob": "1a1b0702e84-fc05-708a",
+  "originalStdout": {
+    "blob": "905b50d39c980b7c9c4041825dd815131490f344",
+    "bytes": 6966,
+    "sha256": "acf89e2a45e1efe26a7b0a3b9b51123b36832a3e113821dc4cec86c631314874"
+  },
+  "parents": [
+    {
+      "path": "/",
+      "identity": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "22",
+        "704",
+        "1786589515000000000",
+        "1786589515000000000"
+      ]
+    },
+    {
+      "path": "/Users",
+      "identity": [
+        "16777233",
+        "18326",
+        "0",
+        "80",
+        "16877",
+        "6",
+        "192",
+        "1790904461743063380",
+        "1790904461743063380"
+      ]
+    },
+    {
+      "path": "/Users/qianqi",
+      "identity": [
+        "16777233",
+        "6929812",
+        "501",
+        "20",
+        "16877",
+        "298",
+        "9536",
+        "1793960981148958120",
+        "1793960981148958120"
+      ]
+    }
+  ],
+  "rootOriginalFull9": [
+    "16777233",
+    "593068531",
+    "501",
+    "20",
+    "16832",
+    "2",
+    "64",
+    "1793961504844318705",
+    "1793961504844318705"
+  ],
+  "serverCopy": {
+    "name": "mac_current_server_owner_r1.py",
+    "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1/mac_current_server_owner_r1.py",
+    "bytes": 14052,
+    "sha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+  },
+  "absenceNames": [
+    "mac_current_phase_owner_r2.py",
+    "server-initial.plist",
+    "server-initial.stdout.private",
+    "server-initial.stderr.private",
+    "server-cold-new-process.plist",
+    "server-cold-new-process.stdout.private",
+    "server-cold-new-process.stderr.private",
+    "initial.plist",
+    "initial.stdout.private",
+    "initial.stderr.private",
+    "cold-new-process.plist",
+    "cold-new-process.stdout.private",
+    "cold-new-process.stderr.private",
+    "initial-inverse.plist",
+    "initial-inverse.stdout.private",
+    "initial-inverse.stderr.private",
+    "cold-new-process-inverse.plist",
+    "cold-new-process-inverse.stdout.private",
+    "cold-new-process-inverse.stderr.private"
+  ]
+}

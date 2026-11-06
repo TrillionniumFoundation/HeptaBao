@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "snapshot2379-format-body0-reconcile-admit-r1",
+  "kind": "operation_start",
+  "request": {
+    "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+    "bytes": 432,
+    "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+  },
+  "rootGo": {
+    "blob": "96933215ab2dab141a647427388b9ba670dc29b6",
+    "bytes": 6420,
+    "sha256": "d833419dfd56c8369a6a2563231a65d1ded4000886f15ba111b7b39c8f153b8d"
+  },
+  "oldUnknown": {
+    "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+    "bytes": 1629,
+    "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+  },
+  "originalErrorSDK": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "lookupOnly": false,
+  "mayCreateFirstAdmission": true,
+  "oldAttemptRemainsUNKNOWN": true,
+  "oldContextWillNotBeChanged": true,
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

@@ -1,0 +1,233 @@
+{
+  "schema": "heptabao.root-source-review.snapshot-BODY0-conditional-admission-reconciliation.v1",
+  "status": "PASS_SOURCE_ONE_IDENTICAL_KEY_CONDITIONAL_ADMISSION_ONLY",
+  "checks": [
+    {
+      "name": "wholeSOURCE18_194831",
+      "passed": true
+    },
+    {
+      "name": "original_BODY_journal_whole_unchanged",
+      "passed": true
+    },
+    {
+      "name": "strict9hunk_forward_and_reverse",
+      "passed": true
+    },
+    {
+      "name": "12_exact_replacements",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_one-reconciliation-prelude",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_assert-old-context-unchanged",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_separate-context-initialize",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_closed-three-kind-native-set",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_intent-discloses-conditional-admission",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_armed-no-retry",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_one-admission-marker",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_no-business-dispatch",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_reused-true-and-false-do-not-rewrite-old",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_only-new-body16K-pages",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_close-only-range0",
+      "passed": true
+    },
+    {
+      "name": "unique_source_edit_remove-other-authorize-actions",
+      "passed": true
+    },
+    {
+      "name": "12_replacements_equal_whole_candidate",
+      "passed": true
+    },
+    {
+      "name": "original_UNKNOWN_request_SDK_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "original_INFO_exact_known_version",
+      "passed": true
+    },
+    {
+      "name": "only_start_status_result_methods",
+      "passed": true
+    },
+    {
+      "name": "new_context_no_original_context_writes",
+      "passed": true
+    },
+    {
+      "name": "explicit_conditional_admission_never_lookup_only",
+      "passed": true
+    },
+    {
+      "name": "one_marker_before_exact_invocation",
+      "passed": true
+    },
+    {
+      "name": "both_receipt_branches_preserve_unknown",
+      "passed": true
+    },
+    {
+      "name": "same_returned_ID_only_inactive_before_pages",
+      "passed": true
+    },
+    {
+      "name": "caps_16KiB_1MiB_original_payload_and_range0",
+      "passed": true
+    },
+    {
+      "name": "payload_external_whole_before_original_native_parse",
+      "passed": true
+    },
+    {
+      "name": "current_tool_contract_retains_key_no_replay",
+      "passed": true
+    },
+    {
+      "name": "offline_exact_original_request_accepted_without_tool",
+      "passed": true
+    },
+    {
+      "name": "offline_no_process_start_or_file_info_scope",
+      "passed": true
+    },
+    {
+      "name": "offline_BODY1_rejected",
+      "passed": true
+    },
+    {
+      "name": "offline_rekey_rejected",
+      "passed": true
+    },
+    {
+      "name": "offline_once_marker_rejects_second_start",
+      "passed": true
+    },
+    {
+      "name": "offline_original_context_unmodified",
+      "passed": true
+    },
+    {
+      "name": "offline_reused_true_classification_only",
+      "passed": true
+    },
+    {
+      "name": "offline_reused_false_classification_only",
+      "passed": true
+    },
+    {
+      "name": "author48_claim_is_SOURCE_only",
+      "passed": true
+    }
+  ],
+  "check_count": 37,
+  "packet": {
+    "tree": "d2f19cf39aefdc83407b7fa18424b87b3c631916",
+    "files": 18,
+    "bytes": 194831,
+    "merkle": {
+      "root_sha": "d2f19cf39aefdc83407b7fa18424b87b3c631916",
+      "trees_verified": 1,
+      "leaf_count": 18
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+    "bytes": 23211,
+    "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af"
+  },
+  "original_unknown": {
+    "tree": "29b6302cc3cb329566b6f66c0441c0899b0cc811",
+    "state": {
+      "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+      "bytes": 1629,
+      "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+    },
+    "sdk": {
+      "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "bytes": 247,
+      "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+    }
+  },
+  "exact_request": {
+    "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+    "bytes": 432,
+    "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+  },
+  "scope": {
+    "lookup_only": false,
+    "may_create_first_admission_if_no_binding": true,
+    "identical_key_and_typed_arguments": true,
+    "maximum_additional_operation_start_calls": 1,
+    "reused_true": "Return of an existing immutable binding under the current tool contract; old transport error is still retained.",
+    "reused_false": "Observation of a new admission receipt. It does not prove that the original call never occurred, nor that the native handler ran.",
+    "no_original_unknown_reclassification": true,
+    "no_old_context_reset": true
+  },
+  "expected_range": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "infoOperation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "infoNative": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    },
+    "offset": 0,
+    "limit": 65536,
+    "next_offset": 65536,
+    "eof": false
+  },
+  "original_source_diff_hunks": 9,
+  "exact_source_replacements": 12,
+  "offline_guard_tests": "Synthetic V8-only request and ACK fixtures; no Native method called and no claim of host execution.",
+  "contract_basis": "Current exposed operation_start contract guarantees retained immutable keys and identical-typed retries return original operation_id without replay. Public source8 is supporting source review, not deployed-version attestation.",
+  "limits": [
+    "This is an explicitly authorized same-key admission reconciliation, not lookup-only. If no binding exists it may create one first read admission.",
+    "reused=false records a new receipt observation and does not prove the original request never arrived or the native read ran.",
+    "Original paused context, original SDK and UNKNOWN remain unchanged; only an actually returned ID permits status and immutable pages.",
+    "Only range0 is included. Its original immutable payload and chunk SHA must close; full118925 report and range1 remain unqualified.",
+    "Root verified public old evidence and static no-write paths; it did not inspect the agent live state. The candidate checks its unchanged original state view on every entry."
+  ],
+  "new_business_processes": 0,
+  "host_file_writes": 0,
+  "automatic_retry": false,
+  "root_Runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

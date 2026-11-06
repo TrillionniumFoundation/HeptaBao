@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.root.twoNone-product-freeze-proof.r1",
+  "qualified": true,
+  "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "soleParent": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "branch": "refs/heads/codex/heptabao-jwt-pki-compile-fix-20261106",
+  "branchHead": "025b05a340de841b8161c1120344e86eae30eb97",
+  "treeVerified": {
+    "schema": "heptabao.root.twoNone-product-tree-readback.r1",
+    "passed": true,
+    "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "audit": {
+      "root_sha": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+      "trees_verified": 358,
+      "leaf_count": 3916
+    },
+    "trackedBytes": 62297399,
+    "exactLeaves": 3916,
+    "changed": 2,
+    "unchanged": 3914,
+    "originalReadback": {
+      "blob": "34375b62bf8f8d37486a3ede0287581d2336cf84",
+      "bytes": 1204148,
+      "sha256": "608698e55e8baaee1ada706f306fe6aabad6a2d3a99c238f67b3c47ca411c8a5"
+    }
+  },
+  "sourceReview": {
+    "blob": "9ccae892699a08f5e3744b6a7aa28059fa7b1c10",
+    "bytes": 4597,
+    "sha256": "9fb2329fb5f190f4c9a3fd342980774a0b653706c05a53e7b253f62a58350723"
+  },
+  "changedPaths": [
+    {
+      "path": "crates/heptabao-server/src/service_native_pki.rs",
+      "before": {
+        "blob": "281f74233d0d7ab36aec9e03ec2830f099a9988d",
+        "bytes": 29605,
+        "sha256": "7a19cdaf368062272550d35df9af9a47ed9cc0df111c106ec40166aa36ed8c93"
+      },
+      "after": {
+        "blob": "b11309ef29cc1328657b4645045008fc57bcd628",
+        "bytes": 29631,
+        "sha256": "a73eac54021903a103a207d727c122641de068e38937995084419b10ee1e0581"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh.rs",
+      "before": {
+        "blob": "3b03ce4da8d5b5f7779096397ee9f7e6915ce075",
+        "bytes": 19996,
+        "sha256": "485fa77ae90f484a4ac039aeb249447c4b15f5fae48d18f22103aaef41132d16"
+      },
+      "after": {
+        "blob": "6d347777f8fa6a45eb570bd080aed96a5487e975",
+        "bytes": 20022,
+        "sha256": "211bcc92758f9fb92699640aabb721a86e180f7d5bbd6c9ab3ff2267e280b318"
+      }
+    }
+  ],
+  "exactCalls": {
+    "createTree": 1,
+    "createCommit": 1,
+    "createBranch": 1
+  },
+  "allACKsWholeBeforeInterpretation": true,
+  "treeAll3916LeavesVerified": true,
+  "commitGETVerified": true,
+  "branchGETVerified": true,
+  "artifacts": {
+    "treeIntent": "6135d209758ceb006ace12625fc3c3f00dd5712e",
+    "treeSDK": "5abf9f33c9f1363c785448c8e1a972b387cee77f",
+    "commitIntent": "cc82d75c362de24311fab84e88f2c2845c91e98c",
+    "commitSDK": "bcf2ee6622591697a9aaed9d9174a337ed485bf4",
+    "branchIntent": "d3ef06eab82d99af65062a7bd770f54f59543b9f",
+    "branchSDK": "4243b47e61e85c623e18a03c41c57a02281aae5f"
+  },
+  "originalCompilerFailureRetained": true,
+  "normalBuildPassed": false,
+  "runtimeTestsPassed": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "allClientsAndBackupsMigrated": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.025b-stage-INFO-actual-verification.r1",
+  "status": "PASS",
+  "checks": 30,
+  "results": [
+    {
+      "code": "three_original_INFO_calls",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-start:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-start:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-start:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-start:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-start:accepted_once",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-start:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-status:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-status:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-status:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-status:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-status:accepted_once",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-status:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-page0:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-page0:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-page0:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-page0:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-page0:accepted_once",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-info0-page0:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "one_exact_fixed_INFO",
+      "pass": true
+    },
+    {
+      "code": "same_original_closed_future",
+      "pass": true
+    },
+    {
+      "code": "one_original_immutable_page",
+      "pass": true
+    },
+    {
+      "code": "whole_payload_exact",
+      "pass": true
+    },
+    {
+      "code": "original_native_payload_success",
+      "pass": true
+    },
+    {
+      "code": "actual_native_info_pin",
+      "pass": true
+    },
+    {
+      "code": "actual_content_identity",
+      "pass": true
+    },
+    {
+      "code": "actual_permission_owner_links_platform",
+      "pass": true
+    },
+    {
+      "code": "lossless_full9_version",
+      "pass": true
+    },
+    {
+      "code": "closure_original_chain_counts",
+      "pass": true
+    },
+    {
+      "code": "closed_NO_BODY_NO_CARGO",
+      "pass": true
+    }
+  ],
+  "Runtime_calls": 0,
+  "product_tests": 0,
+  "scope": "original3calls/1page and actual fixed metadata only"
+}

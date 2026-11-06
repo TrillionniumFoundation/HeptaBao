@@ -1,0 +1,70 @@
+{
+  "source": [
+    [
+      "\"\"\"Stage the exact formatted native JWT and PKI source independently; no Cargo or product.\"\"\"",
+      "\"\"\"Stage the exact native JWT and PKI compile-fix source independently; no Cargo or product.\"\"\""
+    ],
+    [
+      "ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1')",
+      "ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1')"
+    ],
+    [
+      "COMMIT = '33b814c7034ec853151b1ff13e7529c83f65ea70'",
+      "COMMIT = '025b05a340de841b8161c1120344e86eae30eb97'"
+    ],
+    [
+      "TREE = 'b7f276f70e0da1a33306564f385ab7bc12fd44f6'",
+      "TREE = '1d8160c9385f8053b9a683cc1834da0f912e2d37'"
+    ],
+    [
+      "PARENT = '808e45d690f177ecb922e13d1ed19f7877156094'",
+      "PARENT = '33b814c7034ec853151b1ff13e7529c83f65ea70'"
+    ],
+    [
+      "ANCESTRY = (\n",
+      "ANCESTRY = (\n    ('025b05a340de841b8161c1120344e86eae30eb97', '33b814c7034ec853151b1ff13e7529c83f65ea70'),\n"
+    ],
+    [
+      "'stage_purpose': 'formatted_jwt_pki_source_for_separate_build_admission'",
+      "'stage_purpose': 'jwt_pki_compile_fix_source_for_separate_build_admission'"
+    ],
+    [
+      "'canonical_history_count': 3766",
+      "'canonical_history_count': 3767"
+    ],
+    [
+      "assert len(added) == 14 and set(added)",
+      "assert len(added) == 15 and set(added)"
+    ],
+    [
+      "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3766'",
+      "assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3767'"
+    ],
+    [
+      "assert result['full_worktree']['tracked_bytes'] == 62297347",
+      "assert result['full_worktree']['tracked_bytes'] == 62297399"
+    ],
+    [
+      "assert result['full_worktree']['full_leaf_index_sha256'] == '7a2ab1d97a5140120034276c0d21547ffa935867055a0c5af95f7f061f8f3df0'",
+      "assert result['full_worktree']['full_leaf_index_sha256'] == 'aa43f995605190e7f0f7b6215e17eb73ccd923ff53f54dfcf44ba0c89e70e02b'"
+    ],
+    [
+      "canonical_path = CONTROL / 'canonical-native-jwt-pki-33b814c7-from495.bundle'",
+      "canonical_path = CONTROL / 'canonical-native-jwt-pki-025b05a3-from495.bundle'"
+    ]
+  ],
+  "journal": [
+    [
+      "\"jwt_pki_33b814c7_rog_source_gitfirst_r1\"",
+      "\"jwt_pki_025b05a3_rog_source_gitfirst_r1\""
+    ],
+    [
+      "{blob:\"1b3da82ecf429adc5d816a2ff2cb78810059ac90\",\n bytes:111811,sha256:\"576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4\"}",
+      "{blob:\"853a68efffe7308239adf59c3cf29d1dabf355b2\",\n bytes:111910,sha256:\"1ed8f541e793261ed5684093cebd76917fbad7c26b661d876547e1fd0b3cda0e\"}"
+    ],
+    [
+      "/^heptabao-native-jwt-pki-33b814c7-rog-source-observe-r1-/",
+      "/^heptabao-native-jwt-pki-025b05a3-rog-source-observe-r1-/"
+    ]
+  ]
+}

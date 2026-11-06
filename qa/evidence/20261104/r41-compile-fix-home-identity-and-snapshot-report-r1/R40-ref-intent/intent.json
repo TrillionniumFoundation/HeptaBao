@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.r40.nonforce-ref-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-validation-20261104",
+    "sha": "515bfe24879798f0117859c11492112bae9c3cee",
+    "expected_sha": "1badf75b2c541abcebad269adc7be8020bf9e63c",
+    "force": false
+  },
+  "commit_verified": true,
+  "tree_verified": true,
+  "original_call_once": true,
+  "replay_allowed": false,
+  "scope": "validation evidence only; no product deployment"
+}

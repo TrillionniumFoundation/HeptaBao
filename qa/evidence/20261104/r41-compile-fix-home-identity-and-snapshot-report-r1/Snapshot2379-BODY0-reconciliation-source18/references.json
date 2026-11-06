@@ -1,0 +1,32 @@
+{
+  "original_unknown_packet": "29b6302cc3cb329566b6f66c0441c0899b0cc811",
+  "runtime_source_review_packet": "8e548a322b7585fd0e7f514f1831a7f749fedc77",
+  "runtime_source_report": {
+    "blob": "c08c41228c8a88dc1d660ee44e928aa3a1b97484",
+    "bytes": 7389,
+    "sha256": "7e7844b31acc9bb56bbe5ebb6b61f1d22ebd84d6faf1e4ab1ecd509c3eb1644c"
+  },
+  "exact_current_contract": {
+    "path": "EXPOSED-TOOLS.json",
+    "blob": "9e02ad7445518b9fd107402274c29f7ddbe5163e",
+    "bytes": 8018,
+    "sha256": "1a60dee0ee81f2aba9b15538bde04b61d86f13c6f60a2d77ea8f77d38b0e02a2",
+    "whole": true
+  },
+  "original_body_source": "2765b4e9fcec26762c41391f361c462a211a5723",
+  "original_BODY0_arm": "2421f0b5231e2f2d240de8d59d6d8db229474285",
+  "original_SDK_archive": "b47e9ddb57c646147c0bcd40fed017d965e806cd",
+  "original_info_qualification": "6f38396fbb7fbd3874aefa964ec91d997d4347e4",
+  "untouched_report_file": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "infoOperation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "infoNative": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Error",
+    "message": "nonunique single_new_root_scope_intent",
+    "scope": "pure_SOURCE_construction",
+    "nativeCalls": 0
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.snapshot2379-formatter49-report-admission-UNKNOWN.v1",
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "originalSlot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "rootGo": {
+    "blob": "f3a26514a3b4156e0bb27211df518018a24291fd",
+    "bytes": 4342,
+    "sha256": "b709c7af700ac09ba103a5a4d8668cd14670a8d351fedd3c8d6a582f7e1b2e37"
+  },
+  "uniqueRequest": {
+    "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+    "bytes": 432,
+    "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+  },
+  "uniqueCallKey": "snapshot-2379-formatter-body0-admit",
+  "phase": "native_interpretation_refused",
+  "called": true,
+  "wholeArmedTree": "2421f0b5231e2f2d240de8d59d6d8db229474285",
+  "originalSDK": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "originalSDKTree": "b47e9ddb57c646147c0bcd40fed017d965e806cd",
+  "toolFailure": "MCP -32603 request timed out",
+  "observedOperationId": null,
+  "observedReportBodyBytes": 0,
+  "acceptedBodyRanges": 0,
+  "secondBodySubmitted": false,
+  "toolCallInFlight": false,
+  "readonlyFutureKnownClosed": false,
+  "readonlyAdmissionOutcome": "UNKNOWN",
+  "paused": true,
+  "pendingUnchanged": "snapshot-2379-formatter-body0-admit",
+  "automaticReplay": false,
+  "originalFormatterTerminal": "known exit0/full/durable; unchanged",
+  "originalMetadataQualification": "6f38396fbb7fbd3874aefa964ec91d997d4347e4; unchanged",
+  "next": "No new Native request. Await parent handling of this original typed/key admission; do not reset state."
+}

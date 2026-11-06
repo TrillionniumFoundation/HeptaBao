@@ -1,0 +1,228 @@
+{
+  "schema": "heptabao.root.partial-HOME-readonly-source-review.r1",
+  "passed": true,
+  "checkCount": 22,
+  "checks": [
+    {
+      "name": "whole14_109800",
+      "passed": true
+    },
+    {
+      "name": "exact_source_request_journal_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_failed_job_stdout_and_root52",
+      "passed": true
+    },
+    {
+      "name": "original_partial_root_and_parent_first5",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_embedded_input_object",
+      "passed": true
+    },
+    {
+      "name": "one_public_copy_matches_reviewed_source",
+      "passed": true
+    },
+    {
+      "name": "nineteen_only_known_flat_absence_names",
+      "passed": true
+    },
+    {
+      "name": "exact_regular_python_inline_scope",
+      "passed": true
+    },
+    {
+      "name": "only_readonly_file_operations",
+      "passed": true
+    },
+    {
+      "name": "fixed_readonly_open_flags",
+      "passed": true
+    },
+    {
+      "name": "FD_pending_reserved_before_syscall",
+      "passed": true
+    },
+    {
+      "name": "entire_once_close_loop_protected",
+      "passed": true
+    },
+    {
+      "name": "held_named_full9_and_first5_object_fences",
+      "passed": true
+    },
+    {
+      "name": "full_copy_before_after_and_EOF",
+      "passed": true
+    },
+    {
+      "name": "raw_or_unmatched_copy_content_never_published",
+      "passed": true
+    },
+    {
+      "name": "finite_hard_caps_unchanged",
+      "passed": true
+    },
+    {
+      "name": "returned_bytes_accounted_and_nonzero_progress",
+      "passed": true
+    },
+    {
+      "name": "init_and_all_closure_before_success",
+      "passed": true
+    },
+    {
+      "name": "historical_unknown_not_rewritten",
+      "passed": true
+    },
+    {
+      "name": "original_observation_journal_exact_bidirectional",
+      "passed": true
+    },
+    {
+      "name": "exact_request_allowed_by_closed_journal",
+      "passed": true
+    },
+    {
+      "name": "modified_request_refused",
+      "passed": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "abf63e2f6bd459947b036ad531be09beea628ff0",
+    "files": 14,
+    "bytes": 109800,
+    "merkle": {
+      "root_sha": "abf63e2f6bd459947b036ad531be09beea628ff0",
+      "trees_verified": 1,
+      "leaf_count": 14
+    },
+    "whole": true
+  },
+  "originalFailedJob": "1a1b0702e84-fc05-708a",
+  "originalStdout": {
+    "blob": "905b50d39c980b7c9c4041825dd815131490f344",
+    "bytes": 6966,
+    "sha256": "acf89e2a45e1efe26a7b0a3b9b51123b36832a3e113821dc4cec86c631314874"
+  },
+  "source": {
+    "blob": "2b3130d39f5f09fd326e77e83d26130c9712ce70",
+    "bytes": 15788,
+    "sha256": "1a3d11d90b3d4cb7245d400f120da778487185521fe05510e0ecd62c5c57a821"
+  },
+  "request": {
+    "blob": "1b0d23c8b1dc1a9957108cd4918bfba4522bf2a6",
+    "bytes": 16748,
+    "sha256": "06979f3430d83bae7131f117d7ea757ba40ef2df30680cb6df717f9e94faa5bd"
+  },
+  "journal": {
+    "blob": "6a285178e317e1f4df8b2543bca9ad1dce6854b3",
+    "bytes": 19048,
+    "sha256": "e71f9471e56682c7bddeee1f6922d373198dd7c2eb101b1c2ff75cd9f3dc71b4"
+  },
+  "slot": "owner_authbus_home_partial_readonly_gitfirst_r1",
+  "idempotencyKey": "heptabao-mac-home-partial-readonly-1a3d11d9-20261106-r1",
+  "typedBinding": {
+    "sha256": "201e7606d8c746471e8175d4998cf5125ca7232c0fa903ffdf9bc2016b1ca7cc",
+    "native_fingerprint": "2314417030293833287"
+  },
+  "scope": {
+    "root": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+    "expectedRootObjectFirst5": [
+      "16777233",
+      "593068531",
+      "501",
+      "20",
+      "16832"
+    ],
+    "parents": [
+      {
+        "path": "/",
+        "first5": [
+          "16777233",
+          "2",
+          "0",
+          "0",
+          "16877"
+        ]
+      },
+      {
+        "path": "/Users",
+        "first5": [
+          "16777233",
+          "18326",
+          "0",
+          "80",
+          "16877"
+        ]
+      },
+      {
+        "path": "/Users/qianqi",
+        "first5": [
+          "16777233",
+          "6929812",
+          "501",
+          "20",
+          "16877"
+        ]
+      }
+    ],
+    "serverCopy": {
+      "name": "mac_current_server_owner_r1.py",
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1/mac_current_server_owner_r1.py",
+      "bytes": 14052,
+      "sha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+    },
+    "absenceNames": [
+      "mac_current_phase_owner_r2.py",
+      "server-initial.plist",
+      "server-initial.stdout.private",
+      "server-initial.stderr.private",
+      "server-cold-new-process.plist",
+      "server-cold-new-process.stdout.private",
+      "server-cold-new-process.stderr.private",
+      "initial.plist",
+      "initial.stdout.private",
+      "initial.stderr.private",
+      "cold-new-process.plist",
+      "cold-new-process.stdout.private",
+      "cold-new-process.stderr.private",
+      "initial-inverse.plist",
+      "initial-inverse.stdout.private",
+      "initial-inverse.stderr.private",
+      "cold-new-process-inverse.plist",
+      "cold-new-process-inverse.stdout.private",
+      "cold-new-process-inverse.stderr.private"
+    ],
+    "bodyOutput": false,
+    "unknownContentHashOutput": false,
+    "directoryListing": false,
+    "writes": false,
+    "childOrService": false,
+    "T5": false,
+    "privateCapsule": false,
+    "SDK": false
+  },
+  "bounds": {
+    "sharedSourceSeconds": 5,
+    "outerSeconds": 60,
+    "openAttempts": 5,
+    "statCalls": 128,
+    "completePathStatCalls": 82,
+    "readCalls": 8,
+    "returnedBodyBytesIncludingEOF": 14053,
+    "publicOutput": 16384,
+    "observerImmutablePage": 8192
+  },
+  "NativeCalls": 0,
+  "actualObservation": false,
+  "originalEffectUnknownPreserved": true,
+  "continuationAuthorized": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

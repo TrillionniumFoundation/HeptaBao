@@ -1,0 +1,213 @@
+{
+  "schema": "heptabao.snapshot2379.formatter.BODY1-source-checks.v1",
+  "mode": "pure V8 hashes/strict diff plus selected pure validators only; no gfInitialize/gfRun/Native/Git called",
+  "checks": [
+    {
+      "name": "whole base",
+      "passed": true
+    },
+    {
+      "name": "whole candidate",
+      "passed": true
+    },
+    {
+      "name": "whole BODY0 original request",
+      "passed": true
+    },
+    {
+      "name": "whole BODY1 original request",
+      "passed": true
+    },
+    {
+      "name": "whole BODY0 actual native",
+      "passed": true
+    },
+    {
+      "name": "whole BODY0 root qualification",
+      "passed": true
+    },
+    {
+      "name": "unique edit new independent BODY1 slot and source-only scope",
+      "passed": true
+    },
+    {
+      "name": "unique edit separate historical BODY0 and future BODY1 exact request pins",
+      "passed": true
+    },
+    {
+      "name": "unique edit historical request guard remains BODY0",
+      "passed": true
+    },
+    {
+      "name": "unique edit verify closed predecessor without replay or writes",
+      "passed": true
+    },
+    {
+      "name": "unique edit initialize only new separately authorized BODY1 context",
+      "passed": true
+    },
+    {
+      "name": "unique edit single fixed BODY1 validation and finite original observation limits",
+      "passed": true
+    },
+    {
+      "name": "unique edit intent labels exact new read and immutable predecessor",
+      "passed": true
+    },
+    {
+      "name": "unique edit ACK uses BODY1-specific admission ledger",
+      "passed": true
+    },
+    {
+      "name": "unique edit ACK classification remains actual and nonhistorical",
+      "passed": true
+    },
+    {
+      "name": "unique edit close original BODY1 then whole join and archive before semantic parse",
+      "passed": true
+    },
+    {
+      "name": "literal edit replay whole",
+      "passed": true
+    },
+    {
+      "name": "strict forward whole",
+      "passed": true
+    },
+    {
+      "name": "strict backward whole",
+      "passed": true
+    },
+    {
+      "name": "explicit reverse whole",
+      "passed": true
+    },
+    {
+      "name": "original BODY1 range exact",
+      "passed": true
+    },
+    {
+      "name": "original BODY1 key exact",
+      "passed": true
+    },
+    {
+      "name": "native tool set only start/status/result",
+      "passed": true
+    },
+    {
+      "name": "new slot only; never initialize old slot",
+      "passed": true
+    },
+    {
+      "name": "old UNKNOWN guarded not cleared",
+      "passed": true
+    },
+    {
+      "name": "BODY0 actual context guarded",
+      "passed": true
+    },
+    {
+      "name": "separate GO fields exact",
+      "passed": true
+    },
+    {
+      "name": "once Native invoke and SDK archiver unchanged",
+      "passed": true
+    },
+    {
+      "name": "read-only Git reconcile unchanged",
+      "passed": true
+    },
+    {
+      "name": "catch boundary unchanged",
+      "passed": true
+    },
+    {
+      "name": "report whole archive precedes success",
+      "passed": true
+    },
+    {
+      "name": "no report JSON parse before archival",
+      "passed": true
+    },
+    {
+      "name": "selected pure validator accepts exact original BODY1",
+      "passed": true
+    },
+    {
+      "name": "selected pure validator refuses BODY0",
+      "passed": true
+    },
+    {
+      "name": "refuse rekey",
+      "passed": true
+    },
+    {
+      "name": "refuse wrong offset",
+      "passed": true
+    },
+    {
+      "name": "refuse wrong limit",
+      "passed": true
+    },
+    {
+      "name": "refuse changed version",
+      "passed": true
+    },
+    {
+      "name": "refuse different path",
+      "passed": true
+    },
+    {
+      "name": "refuse different host",
+      "passed": true
+    },
+    {
+      "name": "refuse business process_start",
+      "passed": true
+    },
+    {
+      "name": "refuse metadata tool entry",
+      "passed": true
+    },
+    {
+      "name": "refuse second BODY1 admission",
+      "passed": true
+    },
+    {
+      "name": "16KiB immutable page accepted for returned ID",
+      "passed": true
+    },
+    {
+      "name": "unexpected page offset refused",
+      "passed": true
+    },
+    {
+      "name": "different returned ID refused",
+      "passed": true
+    },
+    {
+      "name": "unclosed future page refused",
+      "passed": true
+    },
+    {
+      "name": "64-page limit refused",
+      "passed": true
+    },
+    {
+      "name": "actual BODY0 decoded bytes reverified",
+      "passed": true
+    },
+    {
+      "name": "altered BODY0 original refused",
+      "passed": true
+    },
+    {
+      "name": "root48 and release establish predecessor closed",
+      "passed": true
+    }
+  ],
+  "passed": 51,
+  "NativeCalls": 0,
+  "candidateRuntimeInvoked": false
+}

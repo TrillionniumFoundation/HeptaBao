@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "count": 25,
+  "checks": [
+    {
+      "name": "original_status_exit0_full_durable_confirmed",
+      "pass": true
+    },
+    {
+      "name": "whole_stdout_8624",
+      "pass": true
+    },
+    {
+      "name": "stdout_original_hex_equals_UTF8",
+      "pass": true
+    },
+    {
+      "name": "both_streams_EOF_and_empty_stderr",
+      "pass": true
+    },
+    {
+      "name": "source_observationComplete_known",
+      "pass": true
+    },
+    {
+      "name": "original_effect_unknown_preserved",
+      "pass": true
+    },
+    {
+      "name": "shared5_after_closure_deadline",
+      "pass": true
+    },
+    {
+      "name": "5_open_5closed_once",
+      "pass": true
+    },
+    {
+      "name": "ledger_unknown_zero",
+      "pass": true
+    },
+    {
+      "name": "82metadata_2reads_14052bytes",
+      "pass": true
+    },
+    {
+      "name": "restore_and_pending_clear",
+      "pass": true
+    },
+    {
+      "name": "4_fixed_root_stages",
+      "pass": true
+    },
+    {
+      "name": "all_current_root_full9_equal",
+      "pass": true
+    },
+    {
+      "name": "all_root_first5_original",
+      "pass": true
+    },
+    {
+      "name": "field_comparison_exact",
+      "pass": true
+    },
+    {
+      "name": "19_exact_absence_before_copy",
+      "pass": true
+    },
+    {
+      "name": "19_exact_absence_after_copy",
+      "pass": true
+    },
+    {
+      "name": "server_copy_fixed_full_hash",
+      "pass": true
+    },
+    {
+      "name": "copy_full9_all_equal",
+      "pass": true
+    },
+    {
+      "name": "copy_regular_uid_gid_mode_nlink_size",
+      "pass": true
+    },
+    {
+      "name": "no_write_child_private_T5_SDK_or_scan",
+      "pass": true
+    },
+    {
+      "name": "10_original_calls_2observers_5pages",
+      "pass": true
+    },
+    {
+      "name": "original_observers_closed",
+      "pass": true
+    },
+    {
+      "name": "no_new_admission_or_native_future",
+      "pass": true
+    },
+    {
+      "name": "all10_sdk_whole_before_accept",
+      "pass": true
+    }
+  ],
+  "scope": "pure original returned-data checks; not new host work",
+  "NativeCalls": 0
+}

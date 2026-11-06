@@ -1,0 +1,653 @@
+--- a/source88/inert-publisher.py
++++ b/fresh-home/inert-publisher.py
+@@ -1,59 +1,29 @@
+ #!/usr/bin/env python3
++"""Create fresh T5 ROOT plus HOME public controls, 22 sources and eight public documents.
+-"""Create only a fresh Mac WAL-current ROOT, 22 sources and eight public documents.
+ 
+ No current credentials, production SQLite, consumer, manager or server is read
+ or executed. Three pinned import-safe custody libraries are loaded from the
+ already verified stdin bytes to guard diskutil and descriptor-relative writes.
++The finite HomeControl definition creates two public wrapper copies only. No
++wrapper, manager, SDK or candidate entrypoint executes during this publisher.
+ """
+ from __future__ import annotations
++import ast, base64, hashlib, json, os, re, select, signal, stat, sys, time, types
+-import ast, base64, hashlib, json, os, select, signal, sys, time, types
+ from contextlib import contextmanager
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+45.0
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1')
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ QA=ROOT/'qa'
+ PROOFS=ROOT/'proofs'
+ PINS={
++    "mac_auth_rows_cas_r1.mjs": [
++        3108,
++        "9a121d58a9d5d1a331f2cfd5acc15ab162a487da6dead43019b84a6686e9e30e"
+-    "mac_current_fixture_materializer_r1.py": [
+-        25972,
+-        "cf0b78ed54648525b873d91473d603f115e84013c38ba4abaa42771dfa5d1ccf"
+     ],
++    "mac_authbus_cache_cas_r1.mjs": [
++        6846,
++        "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+-    "mac_current_capture_entry_wal_r1.py": [
+-        42082,
+-        "f0600e0b8fe1f01a3d68559e724e19d0f76272c2febd4d362b9012d84b1177e2"
+     ],
+-    "mac_owned_launchd_r3.py": [
+-        35736,
+-        "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+-    ],
+-    "mac_current_server_owner_r1.py": [
+-        13394,
+-        "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+-    ],
+-    "mac_current_phase_owner_r2.py": [
+-        24975,
+-        "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+-    ],
+-    "mac_native_process_observer_r1.py": [
+-        13423,
+-        "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+-    ],
+-    "mac_guarded_current_capture_r3.py": [
+-        23578,
+-        "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+-    ],
+-    "mac_owned_commands_r1.py": [
+-        5965,
+-        "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+-    ],
+-    "mac_t5_volume_guard_r1.py": [
+-        13391,
+-        "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+-    ],
+-    "mac_owned_unreaped_r1.py": [
+-        10990,
+-        "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+-    ],
+     "mac_capture_sqlite_synthetic_r1.py": [
+         16476,
+         "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+@@ -62,86 +32,119 @@
+         16915,
+         "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+     ],
++    "mac_current_capture_entry_wal_r1.py": [
++        42083,
++        "3d015ef9d916948a6d9f2c96d89c9ebb6352929243018abb6fba7ba2e2b4c4f1"
++    ],
+     "mac_current_cycle_r2.mjs": [
++        24012,
++        "4dc34661acc16e7e565c9818c159f912bdb713d8efbe0f4f3958add7641fd23e"
+-        24011,
+-        "d8ce076b75794b2ca495ef37c310d9995f092c0563eae262fcaab1582c543878"
+     ],
++    "mac_current_fixture_materializer_r1.py": [
++        25973,
++        "f32271748b60a0660170b7b739c209e715c72e5038fe19bcfbd6c7f4fe5c2813"
+-    "mac_single_native_r2.mjs": [
+-        33147,
+-        "c2cf0eaa0c2b4b925bca02e82059152cfe4288786e15c71d49fc09fc54494c4b"
+     ],
++    "mac_current_outer_inputs_r2.py": [
++        33001,
++        "6fd9b5f5a54ed4f40770bb95d017e836d21f51efff10d90beaaeb133b34a82b5"
+-    "mac_auth_rows_cas_r1.mjs": [
+-        3107,
+-        "dd3d02675212f6e513a4f93573566646c55a1d27cb21ac7bbb528058a96db8b7"
+     ],
++    "mac_current_outer_wal_r1.py": [
++        73918,
++        "a594ccebcbe251b066e574327ec7a64d30d84fd630292c436178d45524a60f53"
+-    "mac_authbus_cache_cas_r1.mjs": [
+-        6846,
+-        "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+     ],
++    "mac_current_phase_owner_r2.py": [
++        25647,
++        "afe225c67d455f5324a5923cac0efc0ffa2393e1619a5cf169d6cf33d4540154"
+-    "mac_current_outer_inputs_r2.py": [
+-        33000,
+-        "97db953e7324e31a9bb162d1ee508ed5f2e2a58c98a181131988e9dd3c3cfdce"
+     ],
++    "mac_current_server_owner_r1.py": [
++        14052,
++        "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+-    "mac_current_outer_wal_r1.py": [
+-        71506,
+-        "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+     ],
+     "mac_darwin_owned_projection_r1.py": [
+         12858,
+         "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+     ],
++    "mac_guarded_current_capture_r3.py": [
++        23578,
++        "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
++    ],
++    "mac_native_owned_commands_r1.py": [
++        5972,
++        "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
++    ],
+     "mac_native_owned_unreaped_r1.py": [
+         10761,
+         "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+     ],
++    "mac_native_process_observer_r1.py": [
++        13423,
++        "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
++    ],
++    "mac_owned_commands_r1.py": [
++        5965,
++        "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
++    ],
++    "mac_owned_launchd_r3.py": [
++        57914,
++        "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
++    ],
++    "mac_owned_unreaped_r1.py": [
++        10990,
++        "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+-    "mac_native_owned_commands_r1.py": [
+-        5972,
+-        "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+     ],
+     "mac_registry_readonly_wal_r1.py": [
+         31776,
+         "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
++    ],
++    "mac_single_native_r2.mjs": [
++        33148,
++        "713a177b5b6be6dcadadb2d3c69fb1abfff841999cd0204b433e01fac30ed141"
++    ],
++    "mac_t5_volume_guard_r1.py": [
++        13392,
++        "13cbc97c63625f6302914b9c4ff5f2582874d6989c1cdfe2bc49e874a600fdb4"
+     ]
+ }
+ DOCUMENT_PINS={
++    "candidate-current-manager-wal-r1.public.json": [
++        7499,
++        "52daef9aca0216070a88bb2b6da2babfe0a6e1ac84b8f9452dbe4e35eb0021d4"
+-    "proofs/synthetic-r2.stdout.public.json": [
+-        16228,
+-        "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+     ],
++    "proofs/native-proc-r2.authority.public.json": [
+-    "proofs/synthetic-r2.authority.public.json": [
+         733,
++        "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23"
++    ],
++    "proofs/native-proc-r2.child-stdout.public.json": [
++        11066,
++        "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644"
+-        "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd"
+     ],
+     "proofs/native-proc-r2.stdout.public.json": [
+         24032,
+         "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f"
+     ],
++    "proofs/registry-wal-r1.authority.public.json": [
+-    "proofs/native-proc-r2.authority.public.json": [
+         733,
++        "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f"
+-        "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23"
+     ],
+-    "proofs/native-proc-r2.child-stdout.public.json": [
+-        11066,
+-        "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644"
+-    ],
+     "proofs/registry-wal-r1.stdout.public.json": [
+         62662,
+         "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82"
+     ],
++    "proofs/synthetic-r2.authority.public.json": [
+-    "proofs/registry-wal-r1.authority.public.json": [
+         733,
++        "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd"
+-        "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f"
+     ],
++    "proofs/synthetic-r2.stdout.public.json": [
++        16228,
++        "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+-    "candidate-current-manager-wal-r1.public.json": [
+-        7211,
+-        "1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932"
+     ]
+ }
++PAYLOAD_BYTES=836804
++PAYLOAD_SHA="3cdb898c0aad6c5e8ad0f5e20fe525c73f26a50273689078f0ff2e6e4d49cb99"
+-PAYLOAD_BYTES=801859
+-PAYLOAD_SHA="c84a7e6ba807f90c98f5a8a9e375aff86b9a287281d8e2d001e8566315a3b7d9"
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass
++ManagerRefused=Refused
+ def need(value,code):
+     if not value:raise Refused(code)
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+@@ -159,6 +162,344 @@
+     protected+=1
+     try:yield
+     finally:protected-=1
++def file_identity(s):
++    return tuple(str(x) for x in (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,
++        s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns))
++
++
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1')
++HOME_COPY_NAMES=('mac_current_server_owner_r1.py','mac_current_phase_owner_r2.py')
++HOME_GENERATIONS=('server-initial','server-cold-new-process','initial',
++                  'cold-new-process','initial-inverse','cold-new-process-inverse')
++HOME_FD_ATTEMPTS=64
++HOME_METADATA_CALLS=4096
++HOME_READ_CALLS=256
++HOME_READ_BYTES=2*1024*1024
++HOME_WRITE_CALLS=64
++HOME_WRITE_BYTES=131072
++
++class HomeControl:
++    """Finite public launchd controls; private plans and business data stay on T5."""
++    def __init__(self,*,remaining,critical,copy_pins,binding=None,create=False):
++        self.rows=[];self.parents=[];self.root_row=None;self.files={}
++        self.open_attempts=0;self.open_pending=0;self.registration_unknown=False
++        self.close_errors=[];self.closed=False;self.init_started=True;self.init_complete=False;self.io_ready=False
++        self.root_creation_attempted=False;self.root_created=False;self.effect_unknown=False
++        self.counts={'metadata':0,'readCalls':0,'readBytes':0,'writeCalls':0,'writeBytes':0}
++        self.remaining=remaining;self.critical=critical;self.create=create
++        self.copy_pins=dict(copy_pins);self.root_identity=None
++        need(type(create) is bool and set(self.copy_pins)==set(HOME_COPY_NAMES),
++             'home_exact_copy_inventory')
++        need(all(isinstance(p,(list,tuple)) and len(p)==2 and type(p[0]) is int
++             and 0<p[0]<=1048576 and isinstance(p[1],str)
++             and re.fullmatch(r'[0-9a-f]{64}',p[1]) for p in self.copy_pins.values()),
++             'home_copy_size_hash_contract')
++        need((create and binding is None) or (not create and isinstance(binding,dict)),
++             'home_create_or_actual_binding')
++        if not create:
++            need(set(binding)=={'schema','root','parents','copies'}
++                 and binding['schema']=='heptabao.mac-owned-home-control-binding.r1'
++                 and set(binding['root'])=={'path','identity'}
++                 and binding['root']['path']==str(HOME_CONTROL)
++                 and isinstance(binding['parents'],list) and len(binding['parents'])==3
++                 and set(binding['copies'])==set(HOME_COPY_NAMES),'home_exact_actual_binding')
++        chain=(Path('/'),Path('/Users'),Path('/Users/qianqi'))
++        for index,path in enumerate(chain):
++            self.remaining()
++            parent=None if index==0 else self.parents[-1]['fd']
++            row=self._open(str(path) if index==0 else path.name,
++                os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,
++                parent=parent,path=path,kind='shared_parent')
++            info=self._fstat(row['fd']);named=self._stat(path if index==0 else path.name,parent)
++            ident=file_identity(info)
++            need(ident==file_identity(named) and stat.S_ISDIR(info.st_mode)
++                 and info.st_uid in (0,501) and not stat.S_IMODE(info.st_mode)&0o022,
++                 'home_parent_fd_name_owner_mode')
++            row['identity']=ident;self.parents.append(row)
++            if not create:
++                expected=binding['parents'][index]
++                need(set(expected)=={'path','identity'} and expected['path']==str(path)
++                     and self._identity(expected['identity'])[:5]==ident[:5],
++                     'home_parent_actual_first5_binding')
++        parent=self.parents[-1]['fd']
++        self._check_parents()
++        if create:
++            for _ in range(2):
++                self.remaining()
++                try:self._stat(HOME_CONTROL.name,parent)
++                except FileNotFoundError:pass
++                else:raise ManagerRefused('home_create_only_root_already_exists')
++            self._check_parents()
++            with self.critical():
++                self.remaining();self.root_creation_attempted=True;self.effect_unknown=True
++                os.mkdir(HOME_CONTROL.name,0o700,dir_fd=parent)
++                self.root_created=True
++        self.root_row=self._open(HOME_CONTROL.name,
++            os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,
++            parent=parent,path=HOME_CONTROL,kind='owned_root')
++        info=self._fstat(self.root_row['fd']);named=self._stat(HOME_CONTROL.name,parent)
++        ident=file_identity(info)
++        need(ident==file_identity(named) and stat.S_ISDIR(info.st_mode)
++             and info.st_uid==501 and info.st_gid==20 and stat.S_IMODE(info.st_mode)==0o700,
++             'home_owned_root_fd_name_mode')
++        self.root_row['identity']=ident;self.root_identity=ident
++        if not create:
++            need(ident==self._identity(binding['root']['identity']),'home_actual_root_full9_before_effects')
++            for name in HOME_COPY_NAMES:
++                entry=binding['copies'][name]
++                need(set(entry)=={'path','identity','bytes','sha256'}
++                     and entry['path']==str(HOME_CONTROL/name)
++                     and entry['bytes']==self.copy_pins[name][0]
++                     and entry['sha256']==self.copy_pins[name][1],'home_actual_copy_binding')
++                identity=self._identity(entry['identity'])
++                self.files[name]={'kind':'copy','identity':identity,
++                    'bytes':entry['bytes'],'sha256':entry['sha256']}
++            self.io_ready=True
++            for name in HOME_COPY_NAMES:
++                need(sha(self.read(HOME_CONTROL/name,1048576))==self.copy_pins[name][1],
++                     'home_actual_copy_whole_before_private_inputs')
++        else:self.io_ready=True
++        self.effect_unknown=False;self.check();self.remaining();self.init_complete=True
++
++    @staticmethod
++    def _identity(value):
++        need(isinstance(value,(list,tuple)) and len(value)==9
++             and all(isinstance(x,str) and re.fullmatch(r'[0-9]{1,30}',x) for x in value),
++             'home_full9_decimal_strings')
++        return tuple(value)
++
++    def _metadata(self):
++        need(self.counts['metadata']<HOME_METADATA_CALLS,'home_metadata_bound')
++        self.counts['metadata']+=1
++
++    def _fstat(self,fd):
++        self._metadata();return os.fstat(fd)
++
++    def _stat(self,name,parent=None):
++        self._metadata()
++        return os.stat(name,dir_fd=parent,follow_symlinks=False)
++
++    def _open(self,name,flags,*,parent,path,kind,mode=0o600):
++        self.remaining()
++        with self.critical():
++            need(self.open_attempts<HOME_FD_ATTEMPTS,'home_fd_attempt_bound')
++            self.open_attempts+=1;self.open_pending+=1
++            try:fd=os.open(name,flags,mode,dir_fd=parent)
++            except OSError:
++                self.open_pending-=1
++                raise
++            try:
++                row={'fd':fd,'path':str(path),'kind':kind,
++                     'closeAttempted':False,'closed':False}
++                self.rows.append(row);self.open_pending-=1
++            except BaseException:
++                self.registration_unknown=True
++                raise
++        return row
++
++    def _close_one(self,row):
++        if row['closeAttempted']:return
++        with self.critical():
++            row['closeAttempted']=True
++            try:os.close(row['fd']);row['closed']=True
++            except BaseException as error:
++                self.close_errors.append({'path':row['path'],'type':type(error).__name__,
++                                          'errno':getattr(error,'errno',None)})
++
++    def _check_parents(self):
++        for index,row in enumerate(self.parents):
++            info=self._fstat(row['fd'])
++            named=self._stat(Path(row['path']) if index==0 else Path(row['path']).name,
++                             None if index==0 else self.parents[index-1]['fd'])
++            actual=file_identity(info)
++            need(actual==file_identity(named) and actual[:5]==row['identity'][:5],
++                 'home_shared_parent_held_named_first5')
++
++    def check(self,*,check_deadline=True):
++        if check_deadline:self.remaining()
++        need(self.io_ready and not self.closed and self.root_row is not None,
++             'home_initialized_held_root')
++        self._check_parents()
++        info=self._fstat(self.root_row['fd'])
++        named=self._stat(HOME_CONTROL.name,self.parents[-1]['fd'])
++        need(file_identity(info)==file_identity(named)==self.root_identity,
++             'home_owned_root_held_named_current_full9')
++        for name,row in self.files.items():
++            actual=file_identity(self._stat(name,self.root_row['fd']))
++            expected=row['identity']
++            need((actual[:6]==expected[:6] if row['kind']=='stdio' else actual==expected),
++                 'home_fixed_leaf_identity')
++        if check_deadline:self.remaining()
++
++    def _name(self,path):
++        path=Path(path)
++        need(path.is_absolute() and path.parent==HOME_CONTROL
++             and path==Path(os.path.normpath(str(path))),'home_fixed_flat_path')
++        name=path.name
++        allowed=set(HOME_COPY_NAMES)|{g+s for g in HOME_GENERATIONS
++                                    for s in ('.plist','.stdout.private','.stderr.private')}
++        need(name in allowed,'home_finite_leaf_name')
++        return name
++
++    def write_new(self,path,raw,*,copy=False):
++        self.remaining();self.check()
++        name=self._name(path)
++        need(isinstance(raw,bytes) and len(raw)<=65536 and name not in self.files
++             and not self.effect_unknown,'home_bounded_once_create')
++        need((self.create and copy and name in HOME_COPY_NAMES)
++             or (not self.create and not copy and name not in HOME_COPY_NAMES),
++             'home_exact_write_role')
++        kind='copy' if copy else ('stdio' if name.endswith('.private') else 'plist')
++        need(kind!='stdio' or raw==b'','home_precreated_empty_stdio_only')
++        need(self.counts['writeBytes']+len(raw)<=HOME_WRITE_BYTES,'home_total_write_bound')
++        self.effect_unknown=True
++        row=self._open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,
++                       parent=self.root_row['fd'],path=path,kind='write')
++        try:
++            before=self._fstat(row['fd'])
++            need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_gid==20
++                 and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600
++                 and before.st_size==0,'home_new_regular_600')
++            offset=0
++            while offset<len(raw):
++                self.remaining()
++                need(self.counts['writeCalls']<HOME_WRITE_CALLS,'home_write_call_bound')
++                self.counts['writeCalls']+=1
++                amount=os.write(row['fd'],raw[offset:])
++                need(type(amount) is int and 0<amount<=len(raw)-offset,'home_write_progress')
++                offset+=amount;self.counts['writeBytes']+=amount
++            os.fsync(row['fd']);self.remaining()
++            info=self._fstat(row['fd']);named=self._stat(name,self.root_row['fd'])
++            identity=file_identity(info)
++            need(identity==file_identity(named) and identity[:6]==file_identity(before)[:6]
++                 and info.st_size==len(raw),'home_created_leaf_full9')
++            result={'kind':kind,'identity':identity,'bytes':len(raw),'sha256':sha(raw)}
++            self.files[name]=result
++            os.fsync(self.root_row['fd']);self.remaining()
++            current=file_identity(self._fstat(self.root_row['fd']))
++            named_root=file_identity(self._stat(HOME_CONTROL.name,self.parents[-1]['fd']))
++            need(current==named_root and current[:6]==self.root_identity[:6],
++                 'home_own_create_preserves_root_object')
++            self.root_identity=current
++            self.effect_unknown=False
++            return {'path':str(path),'identity':list(identity),'bytes':len(raw),'sha256':sha(raw)}
++        finally:
++            self._close_one(row)
++            self.remaining()
++            need(row['closed'],'home_write_fd_close_known')
++
++    def _read(self,fd,count,offset=None):
++        self.remaining()
++        need(type(count) is int and 0<count<=65536 and self.counts['readCalls']<HOME_READ_CALLS
++             and self.counts['readBytes']+count<=HOME_READ_BYTES,'home_read_remaining_bound')
++        self.counts['readCalls']+=1
++        raw=os.read(fd,count) if offset is None else os.pread(fd,count,offset)
++        self.counts['readBytes']+=len(raw)
++        need(len(raw)<=count,'home_read_return_bound');self.remaining()
++        return raw
++
++    def read(self,path,maximum=2*1024*1024):
++        self.remaining();self.check()
++        name=self._name(path);entry=self.files.get(name)
++        need(entry is not None and not name.endswith('.stderr.private')
++             and type(maximum) is int and 0<maximum<=2*1024*1024
++             and not self.effect_unknown,'home_finite_body_read')
++        row=self._open(name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC,
++                       parent=self.root_row['fd'],path=path,kind='read')
++        try:
++            info=self._fstat(row['fd']);before=file_identity(info)
++            need(stat.S_ISREG(info.st_mode) and info.st_uid==501 and info.st_gid==20
++                 and info.st_nlink==1 and stat.S_IMODE(info.st_mode)==0o600
++                 and 0<=info.st_size<=maximum
++                 and (before[:6]==entry['identity'][:6] if entry['kind']=='stdio'
++                      else before==entry['identity']),'home_read_leaf_custody')
++            need(self.counts['readBytes']+info.st_size+1<=HOME_READ_BYTES,
++                 'home_read_whole_plus_eof_remaining')
++            raw=bytearray()
++            while len(raw)<info.st_size:
++                block=self._read(row['fd'],min(65536,info.st_size-len(raw)))
++                need(bool(block),'home_nonempty_progress');raw.extend(block)
++            need(self._read(row['fd'],1)==b'','home_whole_eof')
++            after=file_identity(self._fstat(row['fd']))
++            named=file_identity(self._stat(name,self.root_row['fd']))
++            need(len(raw)==info.st_size and before==after==named,'home_read_full9_interval')
++            if entry['kind']!='stdio':
++                need(sha(raw)==entry['sha256'],'home_known_file_whole_hash')
++            self.check();return bytes(raw)
++        finally:
++            self._close_one(row)
++            self.remaining()
++            need(row['closed'],'home_read_fd_close_known')
++
++    def prefix(self,path):
++        self.remaining();self.check()
++        name=self._name(path);entry=self.files.get(name)
++        need(name in ('server-initial.stdout.private','server-cold-new-process.stdout.private')
++             and entry is not None and entry['kind']=='stdio' and not self.effect_unknown,
++             'home_only_two_server_public_prefixes')
++        row=self._open(name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC,
++                       parent=self.root_row['fd'],path=path,kind='prefix')
++        try:
++            first=self._fstat(row['fd'])
++            need(file_identity(first)[:6]==entry['identity'][:6]
++                 and 0<first.st_size<=2*1024*1024,'home_server_prefix_size_identity')
++            block=self._read(row['fd'],min(65536,first.st_size),0)
++            position=block.find(b'\n');need(position>=0,'complete_wrapper_prefix')
++            raw=block[:position+1]
++            need(self._read(row['fd'],len(raw),0)==raw,'wrapper_prefix_same_fd_exact')
++            after=self._fstat(row['fd']);named=self._stat(name,self.root_row['fd'])
++            need(file_identity(first)[:6]==file_identity(after)[:6]==file_identity(named)[:6]
++                 and first.st_size<=after.st_size<=2*1024*1024
++                 and named.st_size>=len(raw),'server_stdout_name_and_prefix_fence')
++            self.check();return raw
++        finally:
++            self._close_one(row)
++            self.remaining()
++            need(row['closed'],'home_prefix_fd_close_known')
++
++    def actual_binding(self):
++        need(self.create and set(self.files)==set(HOME_COPY_NAMES),'home_stage_copy_set')
++        self.check()
++        return {'schema':'heptabao.mac-owned-home-control-binding.r1',
++            'root':{'path':str(HOME_CONTROL),'identity':list(self.root_identity)},
++            'parents':[{'path':r['path'],'identity':list(r['identity'])} for r in self.parents],
++            'copies':{name:{'path':str(HOME_CONTROL/name),'identity':list(self.files[name]['identity']),
++                'bytes':self.files[name]['bytes'],'sha256':self.files[name]['sha256']}
++                for name in HOME_COPY_NAMES}}
++
++    def leaf_closure_known(self):
++        return bool(self.init_complete and self.open_pending==0 and not self.registration_unknown
++            and not self.effect_unknown and not self.close_errors
++            and all(r['closed'] for r in self.rows if r['kind'] not in ('shared_parent','owned_root')))
++
++    def close(self):
++        if self.closed:return self.public()
++        with self.critical():
++            for row in reversed(self.rows):self._close_one(row)
++            self.closed=True
++        return self.public()
++
++    def public(self):
++        return {'schema':'heptabao.mac-owned-home-control-closure.r1',
++            'path':str(HOME_CONTROL),
++            'currentRootIdentity':None if self.root_identity is None else list(self.root_identity),
++            'initStarted':self.init_started,
++            'initComplete':self.init_complete,'rootCreationAttempted':self.root_creation_attempted,
++            'rootCreated':self.root_created,'effectUnknown':self.effect_unknown,
++            'openAttempts':self.open_attempts,'openPending':self.open_pending,
++            'registrationUnknown':self.registration_unknown,'fdRows':[dict(r) for r in self.rows],
++            'closeErrors':list(self.close_errors),'counts':dict(self.counts),
++            'allReturnedDescriptorsClosed':bool(self.closed and self.init_complete
++                and self.open_pending==0 and not self.registration_unknown and not self.close_errors
++                and all(r['closed'] for r in self.rows)),
++            'allFiniteLeavesClosed':self.leaf_closure_known(),
++            'sharedParentsUseFirst5ObjectIdentity':True,
++            'directoryContentsExhaustivelyInventoried':False,
++            'currentRootFull9UpdatedOnlyAfterOwnExclusiveCreate':True,
++            'privateCredentialPlansMovedHere':False,
++            'descriptorScope':'returned HomeControl application descriptors only',
++            'interpreterAndDynamicLoaderInternalFdsNotEnumerated':True}
++
+ def stdin_once():
+     need(sys.stdin.fileno()==0,'fixed_stdin')
+     os.set_blocking(0,False);parts=[];size=0
+@@ -219,20 +560,21 @@
+ def main():
+     os.umask(0o077)
+     for signum in (signal.SIGTERM,signal.SIGINT):signal.signal(signum,on_signal)
++    report={'schema':'heptabao.mac-current-home-launch-inert.r1','ok':False,'files':[],'homeCopies':[],
+-    report={'schema':'heptabao.mac-current-registry-wal-4e808-inert.r1','ok':False,'files':[],
+         'currentPrivateInputsOpened':False,'productionSqliteOpened':False,'sqliteExecuted':False,
+         'consumerExecuted':False,'serviceStarted':False,'gitStarted':False,'cargoStarted':False,
+         'fixedLibraryDefinitionsLoadedOnly':True,'newOriginalInertSeconds':45,
+         'sourceCount':22,'publicDocumentCount':8,'compiledPythonCountExpected':18,
+         'candidateFileAloneIsNotQualification':True}
+     guard=None;commands=None;candidate=None;prepared=False
++    home=None;home_init_started=False;home_init_complete=False
+     try:
+         need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_inert_owner')
+         raw=stdin_once()
+         need(len(raw)==PAYLOAD_BYTES and sha(raw)==PAYLOAD_SHA,'entire_fixed_public_payload')
+         payload=json.loads(raw)
+         need(set(payload)=={'schema','files','documents','anchorBase64'}
++            and payload['schema']=='heptabao.mac-current-home-launch-inert-public-inputs.r1',
+-            and payload['schema']=='heptabao.mac-current-registry-wal-4e808-inert-public-inputs.r1',
+             'exact_public_payload_schema')
+         need(isinstance(payload['files'],dict) and set(payload['files'])==set(PINS),'exact_22_sources')
+         need(isinstance(payload['documents'],dict) and set(payload['documents'])==set(DOCUMENT_PINS),
+@@ -281,6 +623,20 @@
+         need(query['exitCode']==0 and not query['outcomeUnknown'],'actual_prewrite_t5_complete')
+         guard.accept_diskutil(out);report['volumeProbe']=query
+         report['freshRootAbsence']=fresh_root_absent(guard)
++        home_init_started=True;home=HomeControl.__new__(HomeControl)
++        home.__init__(remaining=remaining,critical=critical,
++            copy_pins={name:PINS[name] for name in HOME_COPY_NAMES},binding=None,create=True)
++        home_init_complete=True
++        for name in HOME_COPY_NAMES:
++            content=decoded[name]
++            written=home.write_new(HOME_CONTROL/name,content,copy=True)
++            need(home.read(HOME_CONTROL/name,1048576)==content
++                 and written['bytes']==PINS[name][0] and written['sha256']==PINS[name][1],
++                 'home_staged_copy_separate_held_whole_readback')
++            report['homeCopies'].append({'name':name,**written,
++                'wholeReadbackVerified':True,'readbackUsesSeparateHeldFd':True})
++        report['homeControlBinding']=home.actual_binding()
++        report['homePublicOnly']=True;report['privatePlansAndBusinessDataRemainOnT5']=True
+         guard.mkdir_new(ROOT);report['createdRoot']=str(ROOT)
+         guard.mkdir_new(QA);report['createdQa']=str(QA)
+         guard.mkdir_new(PROOFS);report['createdProofs']=str(PROOFS)
+@@ -300,11 +656,22 @@
+         report['errorCode']=str(error) if isinstance(error,Refused) else None
+     finally:
+         signal.signal(signal.SIGTERM,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN)
++        if home is not None:
++            try:home.close();report['homeControlFinal']=home.public()
++            except BaseException as error:
++                report['homeControlClosureErrorType']=type(error).__name__
++        home_closed=bool(home_init_complete
++            and report.get('homeControlFinal',{}).get('allReturnedDescriptorsClosed') is True
++            and report['homeControlFinal'].get('allFiniteLeavesClosed') is True
++            and report['homeControlFinal'].get('effectUnknown') is False)
++        report['homeControlInitializationStarted']=home_init_started
++        report['homeControlInitializationComplete']=home_init_complete
++        report['allReturnedHomeControlDescriptorsClosed']=home_closed
+         if guard is not None:
+             guard.close();report['heldT5Final']=guard.public_state()
+         report['commands']=None if commands is None else commands.public()
+         stopped=commands is not None and report['commands']['allOwnedCommandsStopped']
++        closed=bool(guard is not None and report['heldT5Final']['allDescriptorsClosed'] and home_closed)
+-        closed=guard is not None and report['heldT5Final']['allDescriptorsClosed']
+         final_anchor=guard is not None and report['heldT5Final']['lastAnchorCheckPassed']
+         report['allOwnedCommandsStopped']=stopped
+         report['allOwnedDescriptorsClosed']=closed
+@@ -316,6 +683,7 @@
+         report['originalDeadlineMetAfterClosure']=completed<UNTIL
+         report['authoritativeExitZeroRequired']=True
+         report['ok']=bool(prepared and candidate is not None and len(report['files'])==30
++            and len(report['homeCopies'])==2 and report.get('homePublicOnly') is True
+             and sum(x['kind']=='source' for x in report['files'])==22
+             and sum(x['kind']=='public_document' for x in report['files'])==8
+             and stopped and closed and final_anchor and not report['outcomeUnknown'] and completed<UNTIL)

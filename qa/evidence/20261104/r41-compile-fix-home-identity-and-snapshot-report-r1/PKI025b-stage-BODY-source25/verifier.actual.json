@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.025b-stage-body-source-verification.r1",
+  "status": "PASS",
+  "checks": 23,
+  "results": [
+    {
+      "code": "old_body_strict_forward",
+      "pass": true
+    },
+    {
+      "code": "old_body_strict_reverse",
+      "pass": true
+    },
+    {
+      "code": "current_info_strict_forward",
+      "pass": true
+    },
+    {
+      "code": "current_info_strict_reverse",
+      "pass": true
+    },
+    {
+      "code": "literal_generator_full_byte_reproduction",
+      "pass": true
+    },
+    {
+      "code": "candidate_full_pin",
+      "pass": true
+    },
+    {
+      "code": "exact_request_pin",
+      "pass": true
+    },
+    {
+      "code": "only_fixed_public_body",
+      "pass": true
+    },
+    {
+      "code": "actual_fixed_extent_version",
+      "pass": true
+    },
+    {
+      "code": "actual_original_INFO_identity",
+      "pass": true
+    },
+    {
+      "code": "original_caps_and_one_start",
+      "pass": true
+    },
+    {
+      "code": "pure_exact_closed_INFO_to_body_positive",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:missing_body_GO",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:wrong_version",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:changed_INFO_native",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:future_unclosed",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:paused_state",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:already_started",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:wrong_scope",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:wrong_exact_request",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:wrong_range",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:new_INFO",
+      "pass": true
+    },
+    {
+      "code": "pure_guard_reject:new_START",
+      "pass": true
+    }
+  ],
+  "Runtime_calls": 0,
+  "body_observed": false,
+  "product_tests": 0
+}

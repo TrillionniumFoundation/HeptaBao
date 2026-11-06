@@ -1,0 +1,245 @@
+{
+  "checks": 59,
+  "passed": 59,
+  "newNativeCalls": 0,
+  "observedCalls": 8,
+  "observedPages": 6,
+  "checksDetail": [
+    {
+      "name": "snapshot2379-format-body0-reconcile-admit-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-admit-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-admit-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-admit-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "actual reused existing binding",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-status0-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-status0-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-status0-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-status0-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "actual closed original payload",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page0-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page0-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page0-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page0-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page1-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page1-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page1-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page1-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page2-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page2-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page2-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page2-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page3-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page3-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page3-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page3-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page4-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page4-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page4-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page4-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page5-r1 request equals archived arm",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page5-r1 once/whole/accepted",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page5-r1 SDK complete whole pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot2379-format-body0-reconcile-page5-r1 lossless original native extraction",
+      "passed": true
+    },
+    {
+      "name": "page 0 same ID/offset/cap",
+      "passed": true
+    },
+    {
+      "name": "page 0 immutable envelope identity",
+      "passed": true
+    },
+    {
+      "name": "page 0 exact extent/EOF/hash identity",
+      "passed": true
+    },
+    {
+      "name": "page 1 same ID/offset/cap",
+      "passed": true
+    },
+    {
+      "name": "page 1 immutable envelope identity",
+      "passed": true
+    },
+    {
+      "name": "page 1 exact extent/EOF/hash identity",
+      "passed": true
+    },
+    {
+      "name": "page 2 same ID/offset/cap",
+      "passed": true
+    },
+    {
+      "name": "page 2 immutable envelope identity",
+      "passed": true
+    },
+    {
+      "name": "page 2 exact extent/EOF/hash identity",
+      "passed": true
+    },
+    {
+      "name": "page 3 same ID/offset/cap",
+      "passed": true
+    },
+    {
+      "name": "page 3 immutable envelope identity",
+      "passed": true
+    },
+    {
+      "name": "page 3 exact extent/EOF/hash identity",
+      "passed": true
+    },
+    {
+      "name": "page 4 same ID/offset/cap",
+      "passed": true
+    },
+    {
+      "name": "page 4 immutable envelope identity",
+      "passed": true
+    },
+    {
+      "name": "page 4 exact extent/EOF/hash identity",
+      "passed": true
+    },
+    {
+      "name": "page 5 same ID/offset/cap",
+      "passed": true
+    },
+    {
+      "name": "page 5 immutable envelope identity",
+      "passed": true
+    },
+    {
+      "name": "page 5 exact extent/EOF/hash identity",
+      "passed": true
+    },
+    {
+      "name": "six pages reconstruct original whole payload",
+      "passed": true
+    },
+    {
+      "name": "native exact payload extraction",
+      "passed": true
+    },
+    {
+      "name": "range0 source identity exact",
+      "passed": true
+    },
+    {
+      "name": "range0 extent/actual SHA",
+      "passed": true
+    },
+    {
+      "name": "range0 whole native externally published",
+      "passed": true
+    },
+    {
+      "name": "old UNKNOWN remains exact",
+      "passed": true
+    },
+    {
+      "name": "new boundary closed with BODY1 untouched",
+      "passed": true
+    }
+  ]
+}

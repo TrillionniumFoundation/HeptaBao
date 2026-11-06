@@ -1,0 +1,374 @@
+{
+  "schema": "heptabao.jwt-pki-025b-stage-original-chain-verification.r1",
+  "status": "PASS",
+  "checks": 91,
+  "results": [
+    {
+      "code": "seven_original_native_calls",
+      "pass": true
+    },
+    {
+      "code": "one_process_start",
+      "pass": true
+    },
+    {
+      "code": "two_read_admissions",
+      "pass": true
+    },
+    {
+      "code": "two_original_status_calls",
+      "pass": true
+    },
+    {
+      "code": "two_original_payload_pages",
+      "pass": true
+    },
+    {
+      "code": "local_closed_boundary",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:sdk_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:sdk_success_first",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:native_exact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:native_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:one_accepted_call",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:pre_dispatch_intent",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-start:armed_original",
+      "pass": true
+    },
+    {
+      "code": "typed_start_digest_fp",
+      "pass": true
+    },
+    {
+      "code": "unique_start_identity",
+      "pass": true
+    },
+    {
+      "code": "lossless_ack_binding",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:sdk_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:sdk_success_first",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:native_exact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:native_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:one_accepted_call",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:pre_dispatch_intent",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-start:armed_original",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:sdk_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:sdk_success_first",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:native_exact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:native_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:one_accepted_call",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:pre_dispatch_intent",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-status:armed_original",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:sdk_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:sdk_success_first",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:native_exact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:native_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:one_accepted_call",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:pre_dispatch_intent",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-authority0-page0:armed_original",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:sdk_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:sdk_success_first",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:native_exact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:native_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:one_accepted_call",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:pre_dispatch_intent",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-start:armed_original",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:sdk_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:sdk_success_first",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:native_exact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:native_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:one_accepted_call",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:pre_dispatch_intent",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-status:armed_original",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:sdk_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:sdk_success_first",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:native_exact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:native_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:one_accepted_call",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:pre_dispatch_intent",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-streams0-page0:armed_original",
+      "pass": true
+    },
+    {
+      "code": "two_original_closed_observers",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:admission_binding",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:original_inactive_status",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:original_immutable_page",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:whole_payload_byteexact",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:whole_payload_range_hash",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:original_payload_success",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:native_payload_exact",
+      "pass": true
+    },
+    {
+      "code": "aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4:closed_index",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:admission_binding",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:original_inactive_status",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:original_immutable_page",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:whole_payload_byteexact",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:whole_payload_range_hash",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:original_payload_success",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:native_payload_exact",
+      "pass": true
+    },
+    {
+      "code": "35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5:closed_index",
+      "pass": true
+    },
+    {
+      "code": "known_success_full_durable",
+      "pass": true
+    },
+    {
+      "code": "stdout:hex_text_exact",
+      "pass": true
+    },
+    {
+      "code": "stdout:full_eof_authority",
+      "pass": true
+    },
+    {
+      "code": "stderr:hex_text_exact",
+      "pass": true
+    },
+    {
+      "code": "stderr:full_eof_authority",
+      "pass": true
+    },
+    {
+      "code": "complete_374_stdout_zero_stderr",
+      "pass": true
+    },
+    {
+      "code": "exact_source_commit_tree_summary",
+      "pass": true
+    },
+    {
+      "code": "terminal_summary_no_product",
+      "pass": true
+    },
+    {
+      "code": "fixed_report_path_summary",
+      "pass": true
+    }
+  ],
+  "Runtime_calls": 0,
+  "product_tests": 0,
+  "scope": "original 7 calls / 2 observers / 2 pages / whole summary; detailed report and build remain pending"
+}

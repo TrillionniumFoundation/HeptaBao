@@ -1,0 +1,9 @@
+{
+  "formerUnsubmittedDraft": {
+    "blob": "3ab97f658e3001a1b07164184813fc6455ef6806",
+    "bytes": 72551,
+    "sha256": "eb6b5bf95ccd91033ca03bd6d3fdf8bca7d7122b738e001f3f295debf46497e7"
+  },
+  "reason": "check the next request before called/inflight marker; structured pin comparisons avoid property-order dependency",
+  "NativeCalls": 0
+}

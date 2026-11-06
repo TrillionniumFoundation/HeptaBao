@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.r40.commit-intent.v1",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "1badf75b2c541abcebad269adc7be8020bf9e63c",
+    "tree_sha": "a527113b4645b61081a386d718c9f93a5ef7c77e",
+    "message": "docs(qa): preserve R40 cleanup, build failure and ACL source evidence\n\nRecord the original current Mac QA-label removal, complete snapshot stage and formatter terminal, failed PKI build and immutable-read timeouts. Retain exact original journals and add the JWT ACL source correction with its independent peer review. The original failed build and unknown admission remain distinct from source checks; no production switch, full replacement or legacy cleanup is claimed."
+  },
+  "verified_layers": [
+    {
+      "name": "prefix",
+      "sha": "b2a1f2878ce94c4fabb9fe900cafa781a6869798",
+      "entry_count": 57,
+      "whole": true
+    },
+    {
+      "name": "day",
+      "sha": "639a48d885016d1510d965ceaf2ae693bbdf0f37",
+      "entry_count": 117,
+      "whole": true
+    },
+    {
+      "name": "evidence",
+      "sha": "dd6b202e11163aa925aae73f0a9c5ac0cb2184b1",
+      "entry_count": 1,
+      "whole": true
+    },
+    {
+      "name": "qa",
+      "sha": "2e41ddfa9391c4eca386c6db6035fe539ab41b90",
+      "entry_count": 3,
+      "whole": true
+    },
+    {
+      "name": "root",
+      "sha": "a527113b4645b61081a386d718c9f93a5ef7c77e",
+      "entry_count": 26,
+      "whole": true
+    }
+  ],
+  "root_current": "5d72a533923f32ddd4a7494389c7cd9cfe128d83",
+  "original_call_once": true,
+  "replay_allowed": false
+}

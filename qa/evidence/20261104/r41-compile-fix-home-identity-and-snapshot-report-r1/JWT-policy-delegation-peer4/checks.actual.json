@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.jwt-role-policy-source-peer-checks.v1",
+  "checks": [
+    {
+      "name": "whole token",
+      "passed": true
+    },
+    {
+      "name": "whole policy",
+      "passed": true
+    },
+    {
+      "name": "whole role",
+      "passed": true
+    },
+    {
+      "name": "whole backend",
+      "passed": true
+    },
+    {
+      "name": "whole current auth.rs",
+      "passed": true
+    },
+    {
+      "name": "ParseTokenFields req only signature",
+      "passed": true
+    },
+    {
+      "name": "direct typed policies slice assignment",
+      "passed": true
+    },
+    {
+      "name": "no TokenPolicies default-appending or sanitization here",
+      "passed": true
+    },
+    {
+      "name": "read serialization emits empty policy slice",
+      "passed": true
+    },
+    {
+      "name": "legacy alias parses supplied policies with ParsePolicies",
+      "passed": true
+    },
+    {
+      "name": "ParsePolicies has nil default exception",
+      "passed": true
+    },
+    {
+      "name": "ParsePolicies empty string stays empty",
+      "passed": true
+    },
+    {
+      "name": "ParsePolicies slice flows addDefault false",
+      "passed": true
+    },
+    {
+      "name": "sanitizer conditional default gate",
+      "passed": true
+    },
+    {
+      "name": "role handler parse before storage",
+      "passed": true
+    },
+    {
+      "name": "role handler alias upgrade before storage",
+      "passed": true
+    },
+    {
+      "name": "handler req accesses only operation and storage",
+      "passed": true
+    },
+    {
+      "name": "backend has no privileged role Root list",
+      "passed": true
+    },
+    {
+      "name": "current JWT sets add_default true",
+      "passed": true
+    },
+    {
+      "name": "current JWT validates caller assignment",
+      "passed": true
+    },
+    {
+      "name": "current helper injects default",
+      "passed": true
+    },
+    {
+      "name": "current helper rejects non-subset",
+      "passed": true
+    }
+  ],
+  "passed": 22,
+  "NativeCalls": 0,
+  "GoOrRustExecuted": false,
+  "priorCheckerErrorRetained": true
+}

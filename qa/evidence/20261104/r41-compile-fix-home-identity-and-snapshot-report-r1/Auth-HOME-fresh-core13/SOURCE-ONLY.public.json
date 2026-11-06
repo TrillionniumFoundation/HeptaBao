@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.home-t5-full-auth-core-source-only.v1",
+  "scope": "draft core for whole independent source review",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "actualHomeBinding": null,
+  "runtimeRequest": null,
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1",
+  "homeRoot": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+  "requestPin": {
+    "blob": "28c074223f3f6a720df8400314aeede7cfea67de",
+    "bytes": 874132,
+    "sha256": "c3f1302bd8b3bbc0d9d77a24a681f79f11b37af81bec57edf51cc214889fd3d7"
+  },
+  "fullPacketPending": true,
+  "originalFailureAndUnknownUnchanged": true
+}

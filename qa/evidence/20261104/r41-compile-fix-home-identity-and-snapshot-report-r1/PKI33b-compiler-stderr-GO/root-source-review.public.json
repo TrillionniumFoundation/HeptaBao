@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.root-source-review.PKI33b-one-original-stderr-body.v1",
+  "status": "PASS_SOURCE_SINGLE14696_ORIGINAL_COMPILER_STDERR",
+  "checks": [
+    {
+      "name": "wholeSOURCE17_162633",
+      "passed": true
+    },
+    {
+      "name": "author30_pure_checks_reproduced",
+      "passed": true
+    },
+    {
+      "name": "same_actual_INFO_journal_state_and_natives",
+      "passed": true
+    },
+    {
+      "name": "actual_failed_report_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "8hunks_roundtrip_exact_source_and_request",
+      "passed": true
+    },
+    {
+      "name": "exact_root_qualified_stderr14696_identity",
+      "passed": true
+    },
+    {
+      "name": "old_INFO_calls_and_caps_remain",
+      "passed": true
+    },
+    {
+      "name": "offline_actual_complete_INFO_allows_exact_stderr_only",
+      "passed": true
+    },
+    {
+      "name": "offline_stdout_fallback_rejected",
+      "passed": true
+    },
+    {
+      "name": "offline_new_process_and_metadata_rejected",
+      "passed": true
+    },
+    {
+      "name": "offline_once_marker_blocks_repeat",
+      "passed": true
+    },
+    {
+      "name": "SDK_payload_body_whole_before_diagnostics",
+      "passed": true
+    }
+  ],
+  "check_count": 12,
+  "author_pure_checks_reproduced": 30,
+  "packet": {
+    "tree": "c73436932f06b812e6fd9b281afaf548089b90f6",
+    "files": 17,
+    "bytes": 162633,
+    "merkle": {
+      "root_sha": "c73436932f06b812e6fd9b281afaf548089b90f6",
+      "trees_verified": 1,
+      "leaf_count": 17
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "52fccacedef3382ee1db167d7fe47fead3a8da4a",
+    "bytes": 29496,
+    "sha256": "66c1ef69c178d88f392e84427a7025fa1d0b85eab7cceaf61f2c0d9f689851e3"
+  },
+  "exact_request": {
+    "blob": "597a81f1a88e5af1b4ef9632003de0e96a364f13",
+    "bytes": 437,
+    "sha256": "7883f2e97d6dfc4f4f98a713a891072a239c8cddece41c930624d55feb87617c"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+    "bytes": 14696,
+    "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+    "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+    "infoOperation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+    "infoNative": {
+      "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+      "bytes": 489,
+      "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+    },
+    "full9Strings": [
+      "66306",
+      "31364213",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "14696",
+      "1793957207629499769",
+      "1793957207629499769"
+    ]
+  },
+  "metadata_qualification": {
+    "blob": "60ec5bcf12b1bdaa0e4bae7ff2e958446e363b82",
+    "bytes": 7216,
+    "sha256": "cb24ccdb3028fc4211a0edd6ef2ca6b32aea8b613f187ba638db41689a9cfb2e"
+  },
+  "limits": [
+    "Attach one separate body GO to the completed metadata context; do not initialize or reset it.",
+    "One fixed-version14696-byte stderr binary read only. No stdout body, file_info refresh, process, lock or build.",
+    "Only new binary immutable pages use16KiB; six historical metadata calls retain original8KiB rules and original GO.",
+    "Whole original payload and exact decoded stderr SHA must be externally preserved before diagnostics."
+  ],
+  "root_Runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

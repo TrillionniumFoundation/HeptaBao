@@ -1,0 +1,80 @@
+[
+  {
+    "name": "constants",
+    "before": {
+      "blob": "53b29407a02488fafdb84c04aabbf55124566406",
+      "bytes": 209,
+      "sha256": "d0f950acbe86a7fafe3c1cf9079327fadfe8a215bac076ccb5086dd21c04f34d"
+    },
+    "after": {
+      "blob": "75fe38e5750d0095adff01e1c753fc546c266cc0",
+      "bytes": 1574,
+      "sha256": "735c1c247a67e54e9a6b8d5b0084cf2ceb54f7bc64fb76da2269f69a59d75ff8"
+    }
+  },
+  {
+    "name": "initialize_fresh_two_metadata_scope",
+    "before": {
+      "blob": "df143f24ae43ac195c009eb63cd1786c0b144772",
+      "bytes": 1695,
+      "sha256": "b68ff62cc497fe3ab8e6eddc1b7249490e168e9d93068d53551bf1ac6d70aea4"
+    },
+    "after": {
+      "blob": "4670317919527061f95e8c5e6318773443ad1256",
+      "bytes": 2755,
+      "sha256": "e031ff2c3a116dc668559264d6b2dff2f23c8895e9cab880014e94f2d4ecb6c4"
+    }
+  },
+  {
+    "name": "each_action_keeps_two_previous_contexts",
+    "before": {
+      "blob": "b18b7aee5ab2f8f509ad212595abbe532382ba44",
+      "bytes": 73,
+      "sha256": "23afabd31daa49f959008db5331ca378936816b0bb0aac1095fc8a05212bd64a"
+    },
+    "after": {
+      "blob": "2c97a125effbaf48004f9c815dfb60679884da17",
+      "bytes": 309,
+      "sha256": "7071e1e61802b7a1fabe87eee29a0aa76c0235b4fa5000d2619c202cdf23be37"
+    }
+  },
+  {
+    "name": "metadata_request_admission",
+    "before": {
+      "blob": "c1ccab67562a0cc03e47cd188ed3ff80c5bbcf6d",
+      "bytes": 655,
+      "sha256": "33138b2fd0e25ba9c3604905b1dfb575bfe9b7973514c0019cdef61bb14be630"
+    },
+    "after": {
+      "blob": "1b8b7b630caa0bec0b2fb87246215cb0dda480ce",
+      "bytes": 784,
+      "sha256": "8d258505d075430d77b6223daffec45f60fd91270ca067f872e1a54b1d5a65b1"
+    }
+  },
+  {
+    "name": "record_once_started_before_dispatch",
+    "before": {
+      "blob": "7d4ceb1f070d33f725e2bd85aa42bc58d4f2699b",
+      "bytes": 60,
+      "sha256": "bbde9cdda785b179d6ea8527074e9344454ffbcd31a3786f658dcfdfbbeedd26"
+    },
+    "after": {
+      "blob": "9dc10682369a2b9d65a7d0d6fd33f553020408f3",
+      "bytes": 133,
+      "sha256": "19303849932368cbd4580c71f6adfa61f702488c8df04e7e29036930718974d3"
+    }
+  },
+  {
+    "name": "native_metadata_binding",
+    "before": {
+      "blob": "a11be22f829f4c677a766941872c977dcb9ae1dd",
+      "bytes": 508,
+      "sha256": "ae9834de616e26e7dc27a21d2cf7d4443754d27e3a15684419beb85af835fd6b"
+    },
+    "after": {
+      "blob": "a13b997178e167a4ffa4977774f31c6eb8045c5a",
+      "bytes": 1163,
+      "sha256": "605e175fc500b8c8d74db00e99ac59fbc21a45d2182a8761e5f7ed7749e9dff4"
+    }
+  }
+]

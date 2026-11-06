@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.r41-root-pure-checker-history.v1",
+  "NativeCalls": 0,
+  "items": [
+    {
+      "key": "r41_local_inspection_index_shape_failure",
+      "value": {
+        "scope": "root_pure_cache_inspection",
+        "error": "TypeError reading idx.calls[0]; original CALL-INDEX shape not yet inspected",
+        "NativeCalls": 0,
+        "effects": false
+      }
+    },
+    {
+      "key": "r41_pki025b_stage_INFO_root_checker_correction",
+      "value": {
+        "originalFailure": {
+          "message": "Error: strict_context",
+          "NativeCalls": 0
+        },
+        "correction": "Reverse strict application must use the after body; initial root checker passed the before body. Product/source/requests unchanged. No external action had occurred.",
+        "NativeCalls": 0
+      }
+    },
+    {
+      "key": "r41_snapshot_whole_report_checker_correction",
+      "value": {
+        "failure": {
+          "error": "TypeError: Cannot read properties of undefined (reading 'blob')",
+          "NativeCalls": 0
+        },
+        "correction": "Root wrapper used pins but the existing GO cache has top-level blob/bytes/sha256; derive the identical pin from whole GO text. No candidate change or external call.",
+        "NativeCalls": 0
+      }
+    },
+    {
+      "key": "r41_checkpoint_index_shape_correction",
+      "value": {
+        "originalFailure": {
+          "error": "whole_members_R40-publication-proof",
+          "causePending": true,
+          "externalCheckpointMutation": false,
+          "NativeCalls": 0
+        },
+        "correction": "Writer records use name; reader pins use path. Normalize each member to path before index verification. No packet content, tree, total or external checkpoint mutation changed.",
+        "NativeCalls": 0
+      }
+    }
+  ],
+  "note": "Only root inspection/verifier code was corrected. Original candidates, requests, results and errors remain unchanged in their packets."
+}

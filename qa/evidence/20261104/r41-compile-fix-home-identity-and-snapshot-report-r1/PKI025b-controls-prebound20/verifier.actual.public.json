@@ -1,0 +1,215 @@
+{
+  "schema": "heptabao.native-jwt-pki.025b.controls-prebind.pure-checks.v1",
+  "pass": true,
+  "checks": [
+    {
+      "name": "runner_unique_0",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_1",
+      "pass": true
+    },
+    {
+      "name": "runner_unique_2",
+      "pass": true
+    },
+    {
+      "name": "runner_inverse_original",
+      "pass": true
+    },
+    {
+      "name": "runner_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "runner_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "runner_all_definitions_unchanged",
+      "pass": true
+    },
+    {
+      "name": "runner_first_ready_false",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_8",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_9",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_10",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_11",
+      "pass": true
+    },
+    {
+      "name": "launcher_unique_12",
+      "pass": true
+    },
+    {
+      "name": "launcher_inverse_original",
+      "pass": true
+    },
+    {
+      "name": "launcher_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "launcher_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "launcher_all_definitions_unchanged",
+      "pass": true
+    },
+    {
+      "name": "launcher_first_ready_false",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_18",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_19",
+      "pass": true
+    },
+    {
+      "name": "publisher_unique_20",
+      "pass": true
+    },
+    {
+      "name": "publisher_inverse_original",
+      "pass": true
+    },
+    {
+      "name": "publisher_forward_strict",
+      "pass": true
+    },
+    {
+      "name": "publisher_reverse_strict",
+      "pass": true
+    },
+    {
+      "name": "publisher_all_definitions_unchanged",
+      "pass": true
+    },
+    {
+      "name": "publisher_first_ready_false",
+      "pass": true
+    },
+    {
+      "name": "original_payload_schema",
+      "pass": true
+    },
+    {
+      "name": "three_exact_files",
+      "pass": true
+    },
+    {
+      "name": "native_jwt_build.py_whole_payload",
+      "pass": true
+    },
+    {
+      "name": "native_jwt_build.py_publisher_pin",
+      "pass": true
+    },
+    {
+      "name": "launch_native_jwt_build.py_whole_payload",
+      "pass": true
+    },
+    {
+      "name": "launch_native_jwt_build.py_publisher_pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-test-groups.public.json_whole_payload",
+      "pass": true
+    },
+    {
+      "name": "jwt-test-groups.public.json_publisher_pin",
+      "pass": true
+    },
+    {
+      "name": "original_groups_hash",
+      "pass": true
+    },
+    {
+      "name": "runner_groups_gate",
+      "pass": true
+    },
+    {
+      "name": "launcher_groups_gate",
+      "pass": true
+    },
+    {
+      "name": "166_profile_instances",
+      "pass": true
+    },
+    {
+      "name": "149_unique_names",
+      "pass": true
+    },
+    {
+      "name": "four_original600_budgets",
+      "pass": true
+    },
+    {
+      "name": "new17_twice",
+      "pass": true
+    },
+    {
+      "name": "legacy_acl_test_not_replaced",
+      "pass": true
+    },
+    {
+      "name": "new_root_only",
+      "pass": true
+    },
+    {
+      "name": "new_source_root",
+      "pass": true
+    },
+    {
+      "name": "original_target",
+      "pass": true
+    },
+    {
+      "name": "original_fresh_NB_probe",
+      "pass": true
+    },
+    {
+      "name": "original_probe_close_before_exec",
+      "pass": true
+    },
+    {
+      "name": "original_all_deadlines_literal",
+      "pass": true
+    },
+    {
+      "name": "explicit_actual_unknowns",
+      "pass": true
+    },
+    {
+      "name": "template_no_dispatch",
+      "pass": true
+    },
+    {
+      "name": "payload_measured_cap",
+      "pass": true
+    }
+  ],
+  "total": 51,
+  "unchangedDefinitions": 25,
+  "Runtime": 0,
+  "PythonExecuted": false,
+  "Cargo": false
+}

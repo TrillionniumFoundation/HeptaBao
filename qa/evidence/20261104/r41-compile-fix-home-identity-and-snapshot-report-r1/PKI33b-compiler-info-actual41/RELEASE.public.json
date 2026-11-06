@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.compiler-log-infos.release.r1",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "slot": "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1",
+  "metadata_only": true,
+  "calls": 6,
+  "original_observers": [
+    {
+      "id": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "tool": "file_info",
+      "payload": {
+        "blob": "39e4636f04091c50bd868ffff8b3acba330a6a6d",
+        "bytes": 606,
+        "sha256": "66630702346d364eb274d11dc5df98af5d2aef4447397147c22cbf933e771b2a"
+      },
+      "payloadTree": "ef7bc69d41f5035541df2b59565bf7c81f6ba11f",
+      "nativeText": {
+        "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+        "bytes": 489,
+        "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "tool": "file_info",
+      "payload": {
+        "blob": "25782a8cf4193bfd59737aa0ab2abf05f5dd4a5b",
+        "bytes": 608,
+        "sha256": "0d00a3d69b037eb2a9efb82237b854cf186a0ce2139d1b1a0a8451bada60a011"
+      },
+      "payloadTree": "7d3414cfc7fe5642391d0f45ef4194fce17f71f8",
+      "nativeText": {
+        "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+        "bytes": 491,
+        "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "infos": [
+    {
+      "index": 0,
+      "role": "compiler-stderr",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+      "size": 14696,
+      "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+      "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+      "full9Strings": [
+        "66306",
+        "31364213",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "14696",
+        "1793957207629499769",
+        "1793957207629499769"
+      ],
+      "originalOperation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "nativeText": {
+        "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+        "bytes": 489,
+        "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+      },
+      "regularFileFromNativeFileInfoContract": true,
+      "expectedVersionBeforeObservation": null,
+      "bodyReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "role": "compiler-json-stdout",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stdout",
+      "size": 388177,
+      "sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+      "version": "66306:31364212:388177:1793957207629499769:1793957207629499769",
+      "full9Strings": [
+        "66306",
+        "31364212",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "388177",
+        "1793957207629499769",
+        "1793957207629499769"
+      ],
+      "originalOperation": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "nativeText": {
+        "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+        "bytes": 491,
+        "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+      },
+      "regularFileFromNativeFileInfoContract": true,
+      "expectedVersionBeforeObservation": null,
+      "bodyReadAuthorized": false
+    }
+  ],
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "activeFutureCount": 0,
+  "NativeCallsInFlight": 0,
+  "lane_released": true,
+  "old_paused_BUILD_unchanged": {
+    "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+    "bytes": 120307,
+    "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+  },
+  "prior_complete_retrieval_unchanged": {
+    "blob": "89dc4a1a78028d99ae0ac3d626564532d2f40098",
+    "bytes": 80686,
+    "sha256": "b227ac22523c59737f83f38da259e1139f6e8a62b483749be8a9cf6c0f3e4387"
+  },
+  "body_read_count": 0,
+  "compiler_diagnostics_observed": false,
+  "BUILD_replayed": false,
+  "Cargo_target_reuse_qualified": false,
+  "next_scope": "SOURCE only: one exact14696 stderr binary read after separate root GO; stdout body excluded"
+}

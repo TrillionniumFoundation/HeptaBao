@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-source-peer-checker-error.v1",
+  "originalCheckFailure": "no default sanitizer inside ParseTokenFields",
+  "reason": "Overbroad text check also matched the unrelated token_type default literal.",
+  "originalExecutorFailure": "ReferenceError: parse is not defined at exec_main.mjs:38:52",
+  "sourceChanged": false,
+  "NativeCalls": 0,
+  "correction": "Restrict the default-injection check to TokenPolicies parsing; keep section variables in scope."
+}

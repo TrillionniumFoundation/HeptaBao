@@ -1,0 +1,45 @@
+{
+  "authorization": "Proposal for a separate R2 acceptance GO; no old 952f, 964c, 8072 or partial HOME observer authorization is inherited.",
+  "requireFinalAuthorityExitZeroFullDurable": true,
+  "requireFinalStdoutKnownClosureAnd30T5Plus2Home": true,
+  "independentTargets": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_current_outer_wal_r1.py",
+      "expected": {
+        "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+        "bytes": 73918,
+        "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+      },
+      "chunks": [
+        65536,
+        8382
+      ]
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/candidate-current-manager-wal-r1.public.json",
+      "expected": {
+        "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
+        "bytes": 7499,
+        "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+      },
+      "chunks": [
+        7499
+      ]
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json",
+      "maximumBytes": 65536,
+      "expectedWhole": "must equal actual final stdout candidateReceipt",
+      "chunks": "one after actual size/version"
+    }
+  ],
+  "metadataOperations": 3,
+  "conditionalBodyOperationsMaximum": 4,
+  "bodyChunkBytesMaximum": 65536,
+  "totalBodyBytesMaximum": 146953,
+  "metadataWholeHashCostSeparate": true,
+  "expectedVersionRequired": true,
+  "originalRuntime22SourceAnd7ProofPreflightsPreserved": true,
+  "receiptIsPreFinallyOkFalse": true,
+  "readThenExecTOCTOUClaim": false
+}

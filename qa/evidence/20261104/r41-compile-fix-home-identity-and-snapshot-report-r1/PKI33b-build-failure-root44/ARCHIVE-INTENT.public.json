@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_pki33b_failure_body_qualification_packet",
+  "records": [
+    {
+      "name": "root-qualification.public.json",
+      "blob": "b5fbe46e1cb24605cd1180a48ed7a54e95fef3c7",
+      "bytes": 7563,
+      "sha256": "fade029ae7842d05055c763ed43cb01d0a7343b7e75cd2ceb2594b856731bb48"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "cdde353133747a8398eb98ba9d7a8efb28f9869d",
+      "bytes": 12266,
+      "sha256": "0e43002f82a404af1508bdb4e1b79544abb8a108db4313bb94ce32f57b85a936"
+    },
+    {
+      "name": "author33.root-reproduced.json",
+      "blob": "0c124db202cdf24a98f32f4c4623838b268da149",
+      "bytes": 2671,
+      "sha256": "b6fb825a44414c7da77ac534f23ec0211a5d2ec9969ccea4cc8883f5cd15dba2"
+    }
+  ],
+  "expected_data_tree": "5efe86b4322e08415b29ec43ec7375a8bde9a189",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

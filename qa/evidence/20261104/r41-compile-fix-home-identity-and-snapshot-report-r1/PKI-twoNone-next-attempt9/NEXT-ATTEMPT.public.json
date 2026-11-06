@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.native-jwt-pki.E0061-next-attempt.source-plan.v1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "Native": 0,
+  "failedAttempt": {
+    "commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "job": "1a1b029a998-fc05-6eb2",
+    "controlsRoot": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1",
+    "outputRoot": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1",
+    "result": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+    "stderr": "b9b08ddd0a6ee0451cff1993e75ff80e7569e53a",
+    "exit": 101,
+    "runtimeTestsStarted": false,
+    "allOriginalDirectoriesAndLogsPreserved": true
+  },
+  "successor": {
+    "soleParent": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "expectedTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "commit": null,
+    "ref": null,
+    "rootFreezeRequired": true,
+    "onlyTwoNonJWTCalleeNoneArguments": true,
+    "ACLChanges": false,
+    "newTests": false
+  },
+  "freshAttempt": {
+    "controlsRootProposal": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2",
+    "outputRootProposal": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1",
+    "admissionRootProposal": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-control-r1",
+    "sourceStageRoot": null,
+    "stageReport": null,
+    "publishedControlsReceipt": null,
+    "actualInputVersions": null,
+    "processRequest": null,
+    "idempotencyKey": null,
+    "actualJob": null,
+    "allFreshCreateOnly": true
+  },
+  "immutableControlsBases": {
+    "runner": {
+      "blob": "cf25a5f2a3f75b63374f99f7b0245ecfdf2c13e9",
+      "bytes": 30397,
+      "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add"
+    },
+    "launcher": {
+      "blob": "4c90f7e5dba00636f7e08840e892db679c7d2600",
+      "bytes": 38565,
+      "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056"
+    },
+    "groups": {
+      "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+    }
+  },
+  "matrix": {
+    "unique": 149,
+    "profileInstances": 166,
+    "existingUnique": 132,
+    "newJWTUnique": 15,
+    "newPKIUnique": 2,
+    "groupsUnchanged": true,
+    "oldLegacyACLTestPreserved": true,
+    "actualPassed": null
+  },
+  "target": {
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "lock": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/.cargo-lock",
+    "behavior": "Reuse the original fresh O_NOFOLLOW/O_NONBLOCK regular-owner-single-link + LOCK_EX|LOCK_NB admission probe and bounded compiler-holder checks for the new attempt.",
+    "probeHeldForBuildLifetime": false,
+    "probeCloseBeforeSamePIDExec": true,
+    "rootCoordinatesExclusiveCargoUse": true,
+    "priorReportDoesNotProveCurrentLockState": true,
+    "noExtraLockProbeNow": true
+  },
+  "budgets": {
+    "outerSeconds": 12000,
+    "releaseSeconds": 1800,
+    "sharedCompileSeconds": 3600,
+    "compileDeadlineReset": false,
+    "listingSeconds": 30,
+    "runtimeFamilyCount": 4,
+    "eachRuntimeFamilySeconds": 600,
+    "termCleanupSeconds": 5,
+    "killCleanupSeconds": 5,
+    "unchanged": true
+  },
+  "gates": [
+    "Root reviews/finalizes exact two-leaf successor and isolated ref; no old ref/source mutation.",
+    "Bind the original stager to the new source in one fresh checkout with original full-tree/source/fence/child guards.",
+    "Bind existing runner/launcher/publisher only to new commit/tree/fresh roots and actual stage report; groups bytes unchanged.",
+    "Create and independently observe fresh controls using the already reviewed publication interface.",
+    "Single explicitly authorized new build runs the original fresh nonblocking target probe then original same-PID runner; preserved old failed attempt is not replayed.",
+    "Observe actual normal release compilation before any passed-test claim; run all unchanged149/166 and retain every failure."
+  ],
+  "runtimeReady": false,
+  "stageGO": false,
+  "controlsGO": false,
+  "buildGO": false,
+  "unknowns": [
+    "successor commit/ref",
+    "actual new source stage identity",
+    "actual published controls identity",
+    "exact new typed build request"
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "schema": "heptabao.root.025b-stage-result-INFO-source-qualification.r1",
+  "passed": true,
+  "checkCount": 46,
+  "checks": [
+    {
+      "code": "whole22_source_packet",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:MANIFEST.public.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:PLAN.public.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:README.public.md",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:helper.archive.original.js",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:helper.pure.original.js",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:helper.strict-diff.original.js",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:journal.025b.info.after.js",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:journal.33b.info.before.js",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:journal.strict.diff",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:literal-bindings.public.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:reference.authority.native.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:reference.current-stage-GO.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:reference.current-stage-release.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:reference.current-stage-state.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:reference.old-INFO-GO.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:reference.streams.native.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:request.025b.exact.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:request.33b.before.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:verifier.actual.json",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:verifier.input-builder.js",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:verifier.source.js",
+      "pass": true
+    },
+    {
+      "code": "whole_pin:verifier.state-input.public.json",
+      "pass": true
+    },
+    {
+      "code": "original_stage_terminal_root_qualification",
+      "pass": true
+    },
+    {
+      "code": "author32_root_reproduced_pure_only",
+      "pass": true
+    },
+    {
+      "code": "exact_old_and_new_journal",
+      "pass": true
+    },
+    {
+      "code": "bidirectional_strict_two_hunks",
+      "pass": true
+    },
+    {
+      "code": "seven_literal_groups",
+      "pass": true
+    },
+    {
+      "code": "one_binding:attach only new stage existing state",
+      "pass": true
+    },
+    {
+      "code": "one_binding:keep exact new stage START as historical identity",
+      "pass": true
+    },
+    {
+      "code": "one_binding:only new owned report path",
+      "pass": true
+    },
+    {
+      "code": "one_binding:one new exact file_info request identity",
+      "pass": true
+    },
+    {
+      "code": "one_binding:actual two newly closed observer identities",
+      "pass": true
+    },
+    {
+      "code": "one_binding:actual new original process identity",
+      "pass": true
+    },
+    {
+      "code": "one_binding:new fixed observer key prefix only",
+      "pass": true
+    },
+    {
+      "code": "all_other_bytes_unchanged",
+      "pass": true
+    },
+    {
+      "code": "single_fixed_public_report_path",
+      "pass": true
+    },
+    {
+      "code": "exact_once_info_request",
+      "pass": true
+    },
+    {
+      "code": "current_closed_stage_state",
+      "pass": true
+    },
+    {
+      "code": "actual_closed_observers_preserved",
+      "pass": true
+    },
+    {
+      "code": "two_actual_prerequisites_exact",
+      "pass": true
+    },
+    {
+      "code": "prior_native_full_bodies_match_terminal_qualification",
+      "pass": true
+    },
+    {
+      "code": "attach_existing_slot_only",
+      "pass": true
+    },
+    {
+      "code": "fixed_metadata_guards_unchanged",
+      "pass": true
+    },
+    {
+      "code": "actual_metadata_not_manufactured",
+      "pass": true
+    },
+    {
+      "code": "bounded_original_observer_caps",
+      "pass": true
+    }
+  ],
+  "sourceTree": "8f350d50067d528ff00529870c8ae82831f9aed6",
+  "sourceFiles": 22,
+  "sourceBytes": 106252,
+  "originalStagePacket": "d607324241907153d146d1ddf16818e71c061b18",
+  "originalJob": "1a1b07b7e0b-fc05-70ca",
+  "exactRequest": {
+    "blob": "fc32f742294b7781e795273c16c6aed453f6072c",
+    "bytes": 309,
+    "sha256": "07634b88d93a6460e02fa15cdc6a1a85abf18501faa72efdf152a0f6cfea1e5d"
+  },
+  "journal": {
+    "blob": "69a754dee5fc0fa48d6f2bbf8e356914b0332551",
+    "bytes": 23888,
+    "sha256": "fd4cfa5d0c5a0bfc6c31305413dad01ff931c2c3b48daeac53d8aa1e6cab7f4b"
+  },
+  "slot": "jwt_pki_025b05a3_rog_source_gitfirst_r1",
+  "scope": "stage_result_file_info_only",
+  "actualMetadataObserved": false,
+  "binaryReadAuthorized": false,
+  "productionChanged": false,
+  "NativeCalls": 0
+}

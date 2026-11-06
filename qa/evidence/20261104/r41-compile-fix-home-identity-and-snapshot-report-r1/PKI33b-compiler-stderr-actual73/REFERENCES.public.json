@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.native-jwt-pki.compiler-stderr-original-chain.references.v1",
+  "originalCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "originalBuildJob": "1a1b029a998-fc05-6eb2",
+  "infoOriginal41": "9521d91aa291a7d25943e03f50d1f4a187c5142e",
+  "infoRoot33": "60ec5bcf12b1bdaa0e4bae7ff2e958446e363b82",
+  "bodySource17": "c73436932f06b812e6fd9b281afaf548089b90f6",
+  "bodyGO": "e8aabd26cfd0b5d6a41b63e3958e8d3847be2f6e",
+  "failedBuildResult": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+  "failedBuildResultRoot44": "b5fbe46e1cb24605cd1180a48ed7a54e95fef3c7",
+  "originalPausedBuildState": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+  "originalTailRetrievalState": "89dc4a1a78028d99ae0ac3d626564532d2f40098",
+  "firstSixCallsUnchanged": true,
+  "stdoutBodyRead": false,
+  "testsExecuted": 0,
+  "diagnostics": {
+    "code": "E0061",
+    "count": 2,
+    "files": [
+      "service_native_pki.rs:270",
+      "service_native_ssh.rs:326"
+    ],
+    "missing": "14th native_jwt_lifetime argument"
+  },
+  "limits": {
+    "notAProductPass": true,
+    "noNewBuild": true,
+    "noCurrentGlobalTargetLockObservation": true
+  },
+  "newCalls": 4,
+  "newObservers": 1,
+  "newPages": 2,
+  "totalCalls": 10,
+  "totalObservers": 3,
+  "totalPages": 4
+}

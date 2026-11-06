@@ -1,0 +1,322 @@
+{
+  "schema": "heptabao.root.AuthBus-partial-HOME-readonly-actual-qualification.r1",
+  "passed": true,
+  "checkCount": 59,
+  "checks": [
+    {
+      "name": "whole66_original_packet",
+      "passed": true
+    },
+    {
+      "name": "exact_root_GO",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-start",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-start",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-status-01-state",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-status-01-state",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-status-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-status-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-streams-01-state",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-streams-01-state",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-streams-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-streams-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-streams-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-streams-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-streams-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-streams-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_call_home-partial-ro-r1-streams-01-p24576",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_armed_tree_home-partial-ro-r1-streams-01-p24576",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_observer_f38bf38170c94d99e259a29e7b16bd125a4c5350612bc43aecbfcf149d8305f4",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_page_f38bf38170c94d99e259a29e7b16bd125a4c5350612bc43aecbfcf149d8305f4_0",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_payload_f38bf38170c94d99e259a29e7b16bd125a4c5350612bc43aecbfcf149d8305f4",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_observer_3bddb9e421531cf889f5b7c569d7dbef040c8b218f97d7877d412a822b21b8d4",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_page_3bddb9e421531cf889f5b7c569d7dbef040c8b218f97d7877d412a822b21b8d4_0",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_page_3bddb9e421531cf889f5b7c569d7dbef040c8b218f97d7877d412a822b21b8d4_8192",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_page_3bddb9e421531cf889f5b7c569d7dbef040c8b218f97d7877d412a822b21b8d4_16384",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_page_3bddb9e421531cf889f5b7c569d7dbef040c8b218f97d7877d412a822b21b8d4_24576",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_payload_3bddb9e421531cf889f5b7c569d7dbef040c8b218f97d7877d412a822b21b8d4",
+      "passed": true
+    },
+    {
+      "name": "HOME_probe_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "10_calls_2_observers_5_pages",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_0",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_1",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_2",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_3",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_4",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_5",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_6",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_7",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_8",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_9",
+      "passed": true
+    },
+    {
+      "name": "actual_original_START_bound",
+      "passed": true
+    },
+    {
+      "name": "known_original_exit0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "stdout_exact8624_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "original_hex_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "current_observation_known_within5",
+      "passed": true
+    },
+    {
+      "name": "prior_failure_stays_UNKNOWN",
+      "passed": true
+    },
+    {
+      "name": "four_current_root_observations_exact",
+      "passed": true
+    },
+    {
+      "name": "19_exact_names_ENOENT_twice",
+      "passed": true
+    },
+    {
+      "name": "only_expected_copy_whole_hash_and_EOF",
+      "passed": true
+    },
+    {
+      "name": "copy_full9_stable_and_single_link",
+      "passed": true
+    },
+    {
+      "name": "5_open_FDs_once_closed",
+      "passed": true
+    },
+    {
+      "name": "bounded82_metadata2_reads14052",
+      "passed": true
+    },
+    {
+      "name": "no_hidden_business_or_t5_actions",
+      "passed": true
+    },
+    {
+      "name": "current_A_lane_released",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "57ddb55e073d0b9b0b4cf1db898be35cfc92d9b5",
+    "files": 66,
+    "bytes": 336064,
+    "merkle": {
+      "root_sha": "57ddb55e073d0b9b0b4cf1db898be35cfc92d9b5",
+      "trees_verified": 1,
+      "leaf_count": 66
+    },
+    "whole": true
+  },
+  "job": "1a1b0889605-fc05-7138",
+  "GO": {
+    "blob": "0bb1f2b41ebde8384612178dfd4d19f882abd78c",
+    "bytes": 6778,
+    "sha256": "c9b0a62268e131bc9e1fefb2cf58d4a542c3ad9d137c9cd05d63a4226a03af67"
+  },
+  "exactRequest": {
+    "blob": "1b0d23c8b1dc1a9957108cd4918bfba4522bf2a6",
+    "bytes": 16748,
+    "sha256": "06979f3430d83bae7131f117d7ea757ba40ef2df30680cb6df717f9e94faa5bd"
+  },
+  "authority": {
+    "blob": "90c16a2df6129426a9a7ab92f203f814d6bad64c",
+    "bytes": 731,
+    "sha256": "afaf420410328ce84c79fb640c28eb04f43a876ce3ffead4ea2eefc10703371f"
+  },
+  "stdout": {
+    "blob": "33496fbb64a7222c136652b1d56fe1e43a677fca",
+    "bytes": 8624,
+    "sha256": "1248f283f7029cc1fff14432d1f70a6d00ab9c935415fab4bcadedcbfee1f537"
+  },
+  "knownExit": 0,
+  "fullDurable": true,
+  "actualCalls": 10,
+  "closedObservers": 2,
+  "immutablePages": 5,
+  "currentRootFull9": [
+    "16777233",
+    "593068531",
+    "501",
+    "20",
+    "16832",
+    "3",
+    "96",
+    "1793961504844444664",
+    "1793961504844444664"
+  ],
+  "oldPrewriteRootFull9": [
+    "16777233",
+    "593068531",
+    "501",
+    "20",
+    "16832",
+    "2",
+    "64",
+    "1793961504844318705",
+    "1793961504844318705"
+  ],
+  "currentFirst5MatchesOld": true,
+  "currentNlink": 3,
+  "oldPrewriteNlink": 2,
+  "currentCopyWhole": true,
+  "absenceChecks": 38,
+  "descriptorClosure": {
+    "opened": 5,
+    "closedOnce": 5,
+    "metadataCalls": 82,
+    "reads": 2,
+    "bytes": 14052
+  },
+  "originalFailurePointValuesRecovered": false,
+  "originalPartialEffectUnknownPreserved": true,
+  "currentObservationKnown": true,
+  "currentLineAReleased": true,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "snapshot2379-format-body0-reconcile-page3-r1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "759fed5aaaf481e0eda9af6dccf6ff14dc378f79",
+    "bytes": 126,
+    "sha256": "e8c7a5e7b78a8837d497a6ee296c3b2ce657f9dc55371d3b7f01bb156db462df"
+  },
+  "rootGo": {
+    "blob": "96933215ab2dab141a647427388b9ba670dc29b6",
+    "bytes": 6420,
+    "sha256": "d833419dfd56c8369a6a2563231a65d1ded4000886f15ba111b7b39c8f153b8d"
+  },
+  "oldUnknown": {
+    "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+    "bytes": 1629,
+    "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+  },
+  "originalErrorSDK": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "lookupOnly": false,
+  "mayCreateFirstAdmission": false,
+  "oldAttemptRemainsUNKNOWN": true,
+  "oldContextWillNotBeChanged": true,
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "originalOperation": "36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Never repeat this admission; preserve the original UNKNOWN and this attempt separately. Only an actually returned binding ID permits status/pages."
+}

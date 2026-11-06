@@ -1,0 +1,138 @@
+{
+  "schema": "heptabao.jwt-pki-025b-stage-INFO-source-checks.r1",
+  "status": "PASS",
+  "checks": 32,
+  "results": [
+    {
+      "code": "strict_forward",
+      "pass": true
+    },
+    {
+      "code": "strict_reverse",
+      "pass": true
+    },
+    {
+      "code": "two_literal_hunks",
+      "pass": true
+    },
+    {
+      "code": "one_literal:attach only new stage existing state",
+      "pass": true
+    },
+    {
+      "code": "one_literal:keep exact new stage START as historical identity",
+      "pass": true
+    },
+    {
+      "code": "one_literal:only new owned report path",
+      "pass": true
+    },
+    {
+      "code": "one_literal:one new exact file_info request identity",
+      "pass": true
+    },
+    {
+      "code": "one_literal:actual two newly closed observer identities",
+      "pass": true
+    },
+    {
+      "code": "one_literal:actual new original process identity",
+      "pass": true
+    },
+    {
+      "code": "one_literal:new fixed observer key prefix only",
+      "pass": true
+    },
+    {
+      "code": "entire_source_only_seven_literals",
+      "pass": true
+    },
+    {
+      "code": "exact_fixed_file_info",
+      "pass": true
+    },
+    {
+      "code": "exact_new_read_key",
+      "pass": true
+    },
+    {
+      "code": "request_whole_pin",
+      "pass": true
+    },
+    {
+      "code": "actual_closed_stage_input",
+      "pass": true
+    },
+    {
+      "code": "all_old_caps_unchanged",
+      "pass": true
+    },
+    {
+      "code": "actual_info_remains_unobserved",
+      "pass": true
+    },
+    {
+      "code": "pure_positive_separate_GO_gate",
+      "pass": true
+    },
+    {
+      "code": "pure_positive_exact_INFO_gate",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:missing_new_GO",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:paused",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:active_future",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:wrong_actual_job",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:changed_closed_native",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:wrong_GO_scope",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:body_GO_rejected",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:wrong_GO_request",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:reinitialize_existing_slot",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:repeat_INFO",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:process_START",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:other_path",
+      "pass": true
+    },
+    {
+      "code": "guard_reject:binary_read",
+      "pass": true
+    }
+  ],
+  "pure_guard_only": true,
+  "actual_Native_calls": 0,
+  "actual_file_info_observed": false
+}

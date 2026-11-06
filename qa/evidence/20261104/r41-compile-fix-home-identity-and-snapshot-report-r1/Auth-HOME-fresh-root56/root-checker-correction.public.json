@@ -1,0 +1,10 @@
+{
+  "scope": "root_checker_only",
+  "reason": "Strict publisher forward and independently generated reverse patches have 7 and 8 hunks respectively; both reconstruct exact whole before/after. Hunk partition symmetry is not required.",
+  "sourceChanged": false,
+  "NativeCalls": 0,
+  "publisherForwardHunks": 7,
+  "publisherReverseHunks": 8,
+  "journalForwardHunks": 2,
+  "journalReverseHunks": 2
+}

@@ -1,0 +1,26 @@
+{
+  "sourcePacket": "74deadc6eaa97085b124515a703b6b386f3d3a20",
+  "source": {
+    "blob": "fc40ff27b6657aee025162e0db547d501f327c8a",
+    "bytes": 35976,
+    "sha256": "c273bce27b99840c3d6fcd92ca7cf281ea803d043f7eff38da58428b9dea0768"
+  },
+  "request": {
+    "blob": "28c074223f3f6a720df8400314aeede7cfea67de",
+    "bytes": 874132,
+    "sha256": "c3f1302bd8b3bbc0d9d77a24a681f79f11b37af81bec57edf51cc214889fd3d7"
+  },
+  "journal": {
+    "blob": "4cd38a02494c5bb4f1e3129d778de92aa2eb43fb",
+    "bytes": 19050,
+    "sha256": "c2f19faaa84ade3e240900e0dede09fdf2c7a9fddc02b18838f7f1462e99b16f"
+  },
+  "rootGO": {
+    "blob": "8072d63658e5e36775b42be64216e663e4e9faab",
+    "bytes": 5792,
+    "sha256": "17ef9a48d6d1e0105f5672210bf8c5adc4ffda98c29dda7e2fd21b78f47f3533"
+  },
+  "postInertReadsAuthorized": false,
+  "newRuntimeAuthorized": false,
+  "historicalUnknownsUnchanged": true
+}

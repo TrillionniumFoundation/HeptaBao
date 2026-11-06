@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.compiler-stderr-body.source-checks.r1",
+  "status": "PASS",
+  "checks": 30,
+  "results": [
+    {
+      "name": "before_exact",
+      "pass": true
+    },
+    {
+      "name": "after_exact",
+      "pass": true
+    },
+    {
+      "name": "diff_exact",
+      "pass": true
+    },
+    {
+      "name": "request_exact",
+      "pass": true
+    },
+    {
+      "name": "eight_hunks_forward",
+      "pass": true
+    },
+    {
+      "name": "eight_hunks_reverse",
+      "pass": true
+    },
+    {
+      "name": "only_one_binary",
+      "pass": true
+    },
+    {
+      "name": "typed_exact_keys",
+      "pass": true
+    },
+    {
+      "name": "metadata_state_whole",
+      "pass": true
+    },
+    {
+      "name": "two_metadata_originals_closed",
+      "pass": true
+    },
+    {
+      "name": "info_native_0",
+      "pass": true
+    },
+    {
+      "name": "original_info_0",
+      "pass": true
+    },
+    {
+      "name": "info_native_1",
+      "pass": true
+    },
+    {
+      "name": "original_info_1",
+      "pass": true
+    },
+    {
+      "name": "actual_stderr_whole_binding",
+      "pass": true
+    },
+    {
+      "name": "report_log_SHA",
+      "pass": true
+    },
+    {
+      "name": "old_metadata8k_new_binary16k",
+      "pass": true
+    },
+    {
+      "name": "once_marker_before_tool",
+      "pass": true
+    },
+    {
+      "name": "separate_GO_in_new_intent",
+      "pass": true
+    },
+    {
+      "name": "whole_body_archive_before_store",
+      "pass": true
+    },
+    {
+      "name": "no_stderr_semantics_parser",
+      "pass": true
+    },
+    {
+      "name": "one_new_authorizer_only",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfState",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfSave",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "unchanged_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "construct_only",
+      "pass": true
+    }
+  ],
+  "Native": 0,
+  "candidate_invoked": false
+}

@@ -1,0 +1,257 @@
+{
+  "schema": "heptabao.current-home-t5-full-auth-source-contract.v1",
+  "status": "SOURCE_ONLY_NOT_DISPATCHED",
+  "NativeCalls": 0,
+  "baseline": {
+    "sourcePacket": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+    "componentFixes": "5a3ed3e81167e38fa92379765d25c23535dfec8c",
+    "componentRootReview": "92b3aa3fc6f1c23d258699ac5cb8c7a0b5a36544",
+    "cleanupActual": "fdf37f49bd3285771197d55a5eea0aa6728e0f25",
+    "cleanupRootReview": "e7a74a5f2e08c5a316ff2ea06b13ad7bd97423d6",
+    "publicSourceQualification": "65b6f2235fcf055ff15fc9177fd6f80727449462",
+    "productCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "productTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "locations": {
+    "t5BusinessRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1",
+    "homeControlRoot": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+    "oldRootUntouched": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+    "newServerLabel": "org.heptabao.qa.mac-authbus-4e808-home-r1.server",
+    "newConsumerLabel": "org.heptabao.qa.mac-authbus-4e808-home-r1.consumer",
+    "precondition": "Both new roots and both new labels must pass the existing finite create-only/absence guards. No alternate root, label, permission change or retry."
+  },
+  "partition": {
+    "sourceCount": 22,
+    "wholeUnchanged": 11,
+    "rootLiteralOnly": 7,
+    "functional": 4,
+    "strictChangedSourceHunks": 38,
+    "originalPublicProofs": 7,
+    "publicDocumentsIncludingCandidate": 8,
+    "t5StageObjects": 30,
+    "homeStageCopies": 2
+  },
+  "launcher": {
+    "regularPython": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "observedKernelImage": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "kernelImageFileQualified": false,
+    "scope": "Keep launcher full9/hash and ProgramArguments checks. Compare observed process executable to the separately observed kernel-image string; no basename allowance."
+  },
+  "home": {
+    "helper": {
+      "blob": "617a5dff5118482095792e368e128016fe817435",
+      "bytes": 18270,
+      "sha256": "dffafd0f5588bbe6ad2daa7ab7ae53f0f8eb6e093974811b584ff18969f44f70"
+    },
+    "sharedParents": [
+      "/",
+      "/Users",
+      "/Users/qianqi"
+    ],
+    "sharedParentBinding": "captured first five dev/ino/uid/gid/type-mode fields plus same-observation fd/name full9; mutable shared directory timestamps/nlink are not stable identity or absence authority",
+    "ownedRoot": "0700, owner 501:20, exact actual full9 before runtime effects; full9 changes only after own create-only leaves and is rechecked by held/name fence",
+    "copyNames": [
+      "mac_current_server_owner_r1.py",
+      "mac_current_phase_owner_r2.py"
+    ],
+    "generations": [
+      "server-initial",
+      "server-cold-new-process",
+      "initial",
+      "cold-new-process",
+      "initial-inverse",
+      "cold-new-process-inverse"
+    ],
+    "runtimeLeaves": "For each of the six fixed generations: plist, stdout.private and stderr.private only. Each is create-only 0600; stderr body is never read by HomeControl.",
+    "caps": {
+      "fdAttempts": 64,
+      "metadataCalls": 4096,
+      "readCalls": 256,
+      "readReturnedBytesIncludingEOF": 2097152,
+      "writeCalls": 64,
+      "writeBytes": 131072,
+      "firstLfBytes": 65536,
+      "appendStdoutMaximumBytes": 2097152
+    },
+    "deadline": "Uses original publisher or outer remaining callback; no new deadline or retry.",
+    "closure": "Reserve pending before open; only OSError from os.open means no returned descriptor. Registration exceptions remain unknown. Whole close loop protected, each once-close marked first; constructor completion and resource closure separately required. Only application-owned FD enumeration is claimed; Python/dynamic-loader internals are outside this ledger."
+  },
+  "route": {
+    "home": [
+      "two public launcher copies",
+      "plist",
+      "stdio files (private mode; only existing bounded public projection may be read)",
+      "launchd WorkingDirectory"
+    ],
+    "t5": [
+      "22 canonical QA sources and 8 public documents",
+      "all private plans and admissions",
+      "current capture and private capsules",
+      "credential files and CA/server material",
+      "business data",
+      "phase worker cwd",
+      "ready/result/cleanup-intent/events"
+    ],
+    "wrapperOrder": "Launchd begins in HOME. After the original HeldT5 and actual diskutil UUID admission, before private plan read, each wrapper fchdir's the held T5 root and verifies cwd full identity/path; subsequent worker cwd and business paths remain T5."
+  },
+  "runtime": {
+    "actualHomeBinding": null,
+    "exactRequest": null,
+    "readyForRuntime": false,
+    "deriver": {
+      "blob": "ce503be30571f5435f3a7781addfe64cb696f140",
+      "bytes": 7131,
+      "sha256": "861aa7376b36e884384add4c1991c9cae3fcc6fa1542711f48cb9c61ac9e9955"
+    },
+    "deriverInputs": {
+      "blob": "2110245c23c692221d032b237e228fccb7d4f037",
+      "bytes": 15274,
+      "sha256": "bd5734ead17f0915ffd3b74ae68bd67dfa5decc402ee2e80eaba6a6781b863f3"
+    },
+    "requirements": "Independent actual inert qualification and exact public HOME binding required before deriving request; runtime needs its own exact GO.",
+    "agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "preserved": "Full five-agent config/provider/model/flags, one loader/selector path with actual same global registry instance, owner-vs-harness-plugin clone semantics, selected entry/root/source pins, native unsupported guards and all original capture constraints remain.",
+    "workflow": [
+      "actual bounded current before capture",
+      "isolated local TLS/AppRole server bootstrap",
+      "initial five consumer native lineages",
+      "pre-lookup, existing KV/Policy/canonical operations, empty-JSON renew, same-credential post-lookup, revoke and denied403",
+      "actual cold new server and five consumer native lineages",
+      "cold same-credential renewal/revoke chain",
+      "independent initial and cold inverse rollback paths",
+      "bounded current after capture and original equality checks",
+      "all manager/input/HTTP/FD closures, then both expiry-extension predicates"
+    ],
+    "productionSwitch": false,
+    "wholeDatabaseBackupQualified": false,
+    "credentialsOrSelectedOwnerProvenByThisSource": false
+  },
+  "preservedCaps": {
+    "outerSeconds": 900,
+    "runtimeControllerSeconds": 1080,
+    "managerSeconds": 600,
+    "managerFailureCleanupSeconds": 60,
+    "phaseSeconds": 120,
+    "nativeSeconds": [
+      15,
+      8,
+      3
+    ],
+    "httpSeconds": 10,
+    "captureSeconds": 45,
+    "registryQuerySuccessDeadlineSeconds": 3,
+    "registryWalBytes": 5969912,
+    "rowBytes": 1048576,
+    "aggregateCaptureBytes": 8388608,
+    "legacyPrivateBodyBytes": 4194304,
+    "listenerReadySeconds": 30,
+    "tlsCommandSeconds": 30,
+    "roleTokenTTLSeconds": 180,
+    "roleTokenMaximumTTLSeconds": 600,
+    "renewRequestBody": {},
+    "newSleepOrRetry": false
+  },
+  "inert": {
+    "publisher": {
+      "blob": "fc40ff27b6657aee025162e0db547d501f327c8a",
+      "bytes": 35976,
+      "sha256": "c273bce27b99840c3d6fcd92ca7cf281ea803d043f7eff38da58428b9dea0768"
+    },
+    "payload": {
+      "blob": "9ba762c6f2b54c45c796627453f0efdd466668e6",
+      "bytes": 836804,
+      "sha256": "3cdb898c0aad6c5e8ad0f5e20fe525c73f26a50273689078f0ff2e6e4d49cb99"
+    },
+    "exactRequest": {
+      "blob": "28c074223f3f6a720df8400314aeede7cfea67de",
+      "bytes": 874132,
+      "sha256": "c3f1302bd8b3bbc0d9d77a24a681f79f11b37af81bec57edf51cc214889fd3d7"
+    },
+    "idempotencyKey": "heptabao-mac-current-home-launch-inert-c273bce2-20261106-r1",
+    "journal": {
+      "blob": "4cd38a02494c5bb4f1e3129d778de92aa2eb43fb",
+      "bytes": 19050,
+      "sha256": "c2f19faaa84ade3e240900e0dede09fdf2c7a9fddc02b18838f7f1462e99b16f"
+    },
+    "slot": "owner_authbus_current_home_inert_gitfirst_r1",
+    "slotInitialized": false,
+    "seconds": 45,
+    "originalDiskutilClippedSeconds": 30,
+    "controllerSeconds": 60,
+    "stdinField": "stdin",
+    "compileBeforeEffects": "18 Python sources compile-only before any HOME or T5 creation; four JavaScript sources byte-verified only. No input entrypoint, service, consumer, SQL, SDK or credential execution.",
+    "publicEffects": "Fresh HOME root and two public launcher copies, fresh T5 root/qa/proofs, 30 fixed public objects and one pre-finally candidate receipt. No rollback/delete on unknown or existing entries."
+  },
+  "proposedPostInertAcceptance": {
+    "authorization": "Proposal for a new exact GO; not inherited from the old 952f scope.",
+    "requireFinalAuthorityExitZeroFullDurable": true,
+    "requireFinalStdoutKnownClosureAnd30T5Plus2Home": true,
+    "independentTargets": [
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1/qa/mac_current_outer_wal_r1.py",
+        "expected": {
+          "blob": "35c4b527bf3d111269649d88c4603715facae4dd",
+          "bytes": 73918,
+          "sha256": "a594ccebcbe251b066e574327ec7a64d30d84fd630292c436178d45524a60f53"
+        },
+        "chunks": [
+          65536,
+          8382
+        ]
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1/candidate-current-manager-wal-r1.public.json",
+        "expected": {
+          "blob": "2e5860cc7e3b13ce985f815a3f2567b6ee155a1c",
+          "bytes": 7499,
+          "sha256": "52daef9aca0216070a88bb2b6da2babfe0a6e1ac84b8f9452dbe4e35eb0021d4"
+        },
+        "chunks": [
+          7499
+        ]
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1/inert-registry-wal-4e808-result.public.json",
+        "maximumBytes": 65536,
+        "expectedWhole": "must equal actual final stdout candidateReceipt",
+        "chunks": "one after actual size/version"
+      }
+    ],
+    "metadataOperations": 3,
+    "conditionalBodyOperationsMaximum": 4,
+    "bodyChunkBytesMaximum": 65536,
+    "totalBodyBytesMaximum": 146953,
+    "metadataWholeHashCostSeparate": true,
+    "expectedVersionRequired": true,
+    "originalRuntime22SourceAnd7ProofPreflightsPreserved": true,
+    "receiptIsPreFinallyOkFalse": true,
+    "readThenExecTOCTOUClaim": false
+  },
+  "failureSemantics": {
+    "parser": "Only exact additional last-exit syntax '78: EX_CONFIG' is parsed as integer 78; it remains failure, not readiness or exit0.",
+    "publicManagerErrorCodes": "Closed source-derived literal allowlist only, no arbitrary exception message.",
+    "unknowns": "Original AuthBus registration/EX_CONFIG cause, original R4 lifetime, helper 87650 and old Git archive8916 UNKNOWN are unchanged. Current separate QA label cleanup qualification does not upgrade them.",
+    "newFailure": "Known/unknown follows original ownership and closure rules; no automatic new root, retry, cap change or permission change."
+  },
+  "verification": {
+    "pureV8Result": {
+      "blob": "2fec05ae0ceb1586529d0a8a4bbf29030fbdf0d6",
+      "bytes": 20547,
+      "sha256": "90e5e8d485f4d78e324df02f9b85f5dab55ef798830008c5233541807b40b110"
+    },
+    "checks": 222,
+    "strictSourceForwardAndReverse": true,
+    "journalLiteralDiffHunks": 2,
+    "journalDefinitionsUnchanged": true,
+    "pythonAstOrModuleExecuted": false,
+    "authorProductTests": 0,
+    "localExecUnavailableRecorded": true,
+    "sourceOnly": true
+  }
+}

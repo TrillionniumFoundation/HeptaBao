@@ -1,0 +1,493 @@
+{
+  "schema": "heptabao.snapshot2379.formatter.BODY1-source-plan.v1",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "source": {
+    "blob": "0d24dad24762e7a96432bb5c590a0ba8d2a232dd",
+    "bytes": 28520,
+    "sha256": "db8c7ab8fbc79d78bd25c8f465e31c41e08ee560efcb803824468bdd7595d84b"
+  },
+  "base": {
+    "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+    "bytes": 23211,
+    "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af"
+  },
+  "edits": [
+    {
+      "label": "new independent BODY1 slot and source-only scope",
+      "before": {
+        "blob": "6c0fade022964eec8ffe514d50a5c3f34bbfb141",
+        "bytes": 563,
+        "sha256": "036ab9b9d177af9fd5544b832551ebcc6c2c9572c1a20c2a723b791a5f2f8eb6"
+      },
+      "after": {
+        "blob": "153869b78ec095d89314d9a4c6825d9bc6849d7f",
+        "bytes": 539,
+        "sha256": "9eedf3d3e3244841ef1e40305d88b0e2f77ec85b35f8f693fd96c1c237335452"
+      }
+    },
+    {
+      "label": "separate historical BODY0 and future BODY1 exact request pins",
+      "before": {
+        "blob": "e4deb907c58f233c2625b0a754f3e70c93df38bb",
+        "bytes": 155,
+        "sha256": "f2453d2d3861cbf59795d5987597e86fc18e493a579982bb3c04ddbcaa94adb1"
+      },
+      "after": {
+        "blob": "0e3644ff69eb913aa391d7c2e04ac7aaa74b4323",
+        "bytes": 1013,
+        "sha256": "82e8c9260a6d891cfe57daf6aa94ab828ca09d6197724b844c2bb209be82df92"
+      }
+    },
+    {
+      "label": "historical request guard remains BODY0",
+      "before": {
+        "blob": "7af4a153b753fd7a603e72a02d8ac24ff5df91ce",
+        "bytes": 76,
+        "sha256": "fe2f73acf55fefa720e3c270939e438630592c662abfe1fbef13fa978981f9bf"
+      },
+      "after": {
+        "blob": "c0496776de84e66355862c5db1997312bfc101c9",
+        "bytes": 85,
+        "sha256": "647471201fac1cfffbcdc8bbb90cf12136c485950f765196e259cb38fbdde159"
+      }
+    },
+    {
+      "label": "verify closed predecessor without replay or writes",
+      "before": {
+        "blob": "fdb3a4e923d61a1438a39ade18f8ac2dbc315fdc",
+        "bytes": 247,
+        "sha256": "455877cdad9b602035fe68f56e201cdcc8c55e80657039eef8cfe318099f3a07"
+      },
+      "after": {
+        "blob": "9210e9d6ad6ac507eff5fc85f1856ed65700ef33",
+        "bytes": 2223,
+        "sha256": "bd075e26918e8357a0480c36127b90ff5f2fbb7cbc127974081cfecb5818800b"
+      }
+    },
+    {
+      "label": "initialize only new separately authorized BODY1 context",
+      "before": {
+        "blob": "ce63770e4cbf1e64c2f2879000d2eedbdbd981d7",
+        "bytes": 2137,
+        "sha256": "f2a1f1b93c2218c157e57993d5b9cb853826ff42b39a6deae67f79f1e48df32f"
+      },
+      "after": {
+        "blob": "c7c806831f1c3cdf1d513d1cc720808dc327d27c",
+        "bytes": 3309,
+        "sha256": "455b9a38fb2be7b024e98bf598a25639e699db30ab42b1110724cc19bc1c9ff9"
+      }
+    },
+    {
+      "label": "single fixed BODY1 validation and finite original observation limits",
+      "before": {
+        "blob": "f76d737f2b95a79278248eef88a96b944620dc8f",
+        "bytes": 1567,
+        "sha256": "32caf272900a0e1bc7e18c2a790edc190131f047cb2c5e4735138a2f6913884d"
+      },
+      "after": {
+        "blob": "8bec4f19a306907271b0a174d1c0f2a6f8393525",
+        "bytes": 1724,
+        "sha256": "77f2147ffd209a2087fefb0be33e51d985aa4c70973044c8ad20001f4d4b73c4"
+      }
+    },
+    {
+      "label": "intent labels exact new read and immutable predecessor",
+      "before": {
+        "blob": "1c92d847138e0102abcccdc9098b644115ae9288",
+        "bytes": 131,
+        "sha256": "93909d1600454383cc336b8a9f48adfde029bbe63c21d1bfa49ae6040b1eea4f"
+      },
+      "after": {
+        "blob": "697eccc512cb2923e9f823bfc432b8ce7ad42a51",
+        "bytes": 240,
+        "sha256": "1142f5662f5083ee72dcab9279ea850a6702b5f215d4e343f0ad2f3f22215dcc"
+      }
+    },
+    {
+      "label": "ACK uses BODY1-specific admission ledger",
+      "before": {
+        "blob": "bcd300bac2b83cd3ba6646383ce0d0964eb37cae",
+        "bytes": 70,
+        "sha256": "f150e6a96cdb2a2906808696489a048d3af625af41feef534706c946f154c059"
+      },
+      "after": {
+        "blob": "d786136ebb3724bb72f5fb2ef846e5c1832b3c27",
+        "bytes": 60,
+        "sha256": "4193a86da4654ef1244982d150995b36b4e895eaacf3505535468d71cfdf3411"
+      }
+    },
+    {
+      "label": "ACK classification remains actual and nonhistorical",
+      "before": {
+        "blob": "7a0b93b1151097bac1a02f8ac4a275b84f4bde18",
+        "bytes": 61,
+        "sha256": "5fcd674a9d2994c05a4c13c441b9c827518ef60c0886a3bfe77aa8f2cd95aa53"
+      },
+      "after": {
+        "blob": "5bbfe693d18fbc0154d5c596e1f71fd2641f3ab2",
+        "bytes": 52,
+        "sha256": "de200a44bb68bb2d924bc6733ca10c53d57c31ae9f3580e890b6b5d5388d7150"
+      }
+    },
+    {
+      "label": "close original BODY1 then whole join and archive before semantic parse",
+      "before": {
+        "blob": "744ef404968155fd3b10e7d799807ec464e9fef6",
+        "bytes": 3095,
+        "sha256": "db1d67726f801f1c98e1bf5d7c822c3c0a0535ec1a3804ea6acc8e2f86b8b2db"
+      },
+      "after": {
+        "blob": "e1b65be586c5976ac70c1384e28f70452e664d00",
+        "bytes": 4166,
+        "sha256": "eaff0df9500bda044c52aba727c28f7f490e065528bb9e94f05020c5e4987c7c"
+      }
+    }
+  ],
+  "forward": {
+    "blob": "111a8a4e7efe414f04fb8cc91baf5d3742644fba",
+    "bytes": 18843,
+    "sha256": "2340a60f79e5764a7ab10c22a163d6368f83e3338bffa494c247d4db563f7b29"
+  },
+  "reverse": {
+    "blob": "9927561c608d62ca609dd958bbb2b241d699326d",
+    "bytes": 18843,
+    "sha256": "6fa0bf335b8eaaf60ac694adebe66b44792b8b98be2bcf2b9a3ba22b9f2b4325"
+  },
+  "strictHunks": 8,
+  "exactOriginalRequest": {
+    "blob": "c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a",
+    "bytes": 436,
+    "sha256": "978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128"
+  },
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "file": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8"
+  },
+  "predecessor": {
+    "slot": "snapshot_2379_formatter_body0_admission_reconcile_r1",
+    "operation": "36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af",
+    "rootQualification": {
+      "blob": "a290ba81a6164a082d6f1f4c5b98d82b783e6cbe",
+      "bytes": 6373,
+      "sha256": "bbdee84c298f47b2d7b11bfd47ce09bec01fc8b096cc5d959de0e535aac25748"
+    },
+    "release": {
+      "blob": "8d0b9e5b142d744be9b54413d0889c558e9e50e8",
+      "bytes": 3237,
+      "sha256": "3518d4011d35fbfef306f1b0f14c591a07be086b45629b967ac941fdac11f9fa"
+    },
+    "native": {
+      "blob": "895256e05b1517b7a5563600bf179a556bebdccd",
+      "bytes": 87718,
+      "sha256": "2024d49a365dba55814300dab9b07049c2a27ffc88f7b196a5a71623dfae433b"
+    },
+    "range": {
+      "offset": 0,
+      "bytes": 65536,
+      "next": 65536,
+      "eof": false,
+      "chunkSHA256": "e18d09bf4ecf8ad38c46d8ee3c46c5fa7d7816f680b98bce43f493053ce6f09e"
+    },
+    "rootQualified": true,
+    "currentFutureClosed": true,
+    "oldHistoricalAttempt": "UNKNOWN_PRESERVED",
+    "fullActualPacket": "d87a8a11c329d76639c6d9caf6537319d7298977"
+  },
+  "newRead": {
+    "slot": "snapshot_2379_formatter_body1_completion_r1",
+    "offset": 65536,
+    "limit": 53389,
+    "expectedNext": 118925,
+    "expectedEOF": true,
+    "actualFutureOperationId": null,
+    "actualFutureChunkSHA256": null,
+    "submitted": false,
+    "originalKeyUnchanged": true
+  },
+  "serialization": {
+    "oneNativeCallAtATime": true,
+    "oneFuture": true,
+    "originalSDKBeforeInterpretation": true,
+    "completeExternalArmBeforeNativeBoundary": true,
+    "newAdmissionAfterUnknown": false,
+    "gitCreateRetry": false,
+    "gitUnknownRecovery": "only exact expected immutable Git GET; no repeated creation or Native"
+  },
+  "immutableOldEvidence": {
+    "oldSlot": "snapshot_2379_rog_formatter_gitfirst_r1",
+    "oldPaused": true,
+    "oldPending": "snapshot-2379-formatter-body0-admit",
+    "oldCallPhase": "native_interpretation_refused",
+    "oldUnknown": {
+      "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+      "bytes": 1629,
+      "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+    },
+    "oldSDK": {
+      "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "bytes": 247,
+      "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+    },
+    "modified": false
+  },
+  "goTemplate": "root-go-contract.template.json",
+  "sequence": [
+    "Root separately reviews and issues a whole exact GO for this candidate and this one original BODY1 request; SOURCE is not authorization.",
+    "In a fresh BODY1 slot only, initialize with whole root GO, original UNKNOWN, qualified BODY0 native/release/root48. Require predecessor context closed/inactive and unchanged.",
+    "Prepare the exact original BODY1 request, intent and armed record; finish whole Git archive before the unique Native invocation in a later tool boundary.",
+    "Save each complete raw SDK to immutable storage and whole Git before isError/native interpretation. Any error pauses the new context and stops all new admissions.",
+    "Only the actually returned operation ID admits status and continuous original immutable pages. Close that observer before any later action.",
+    "Verify decoded BODY1 length/SHA/EOF, reverify the pinned cached BODY0 bytes without a host read, join 65536+53389, and require exact 118925 bytes and original whole SHA.",
+    "Archive complete report bytes and the raw BODY1 native response before JSON/semantic interpretation. Return explicit closed state; no further Native scopes exist."
+  ],
+  "limits": {
+    "nativeCalls": {
+      "operation_start": 1,
+      "operation_status": 8,
+      "operation_result": 64
+    },
+    "pageBytes": 16384,
+    "payloadBytes": 1048576,
+    "decodedBody1Bytes": 53389,
+    "wholeFileBytes": 118925,
+    "businessStart": false,
+    "metadataRefresh": false,
+    "BODY0Again": false,
+    "extraPath": false,
+    "Cargo": false,
+    "sourceOrToolchainMutation": false,
+    "oldContextReset": false,
+    "oldUNKNOWNReclassification": false
+  },
+  "preservedDefinitions": [
+    "gfNeed",
+    "gfMetaEquals",
+    "gfSave",
+    "gfIntegerText",
+    "gfInvokePreparedOnce",
+    "gfReconcileSameGitArchiveReadOnly",
+    "gfRun"
+  ],
+  "sourceVerification": {
+    "schema": "heptabao.snapshot2379.formatter.BODY1-source-checks.v1",
+    "mode": "pure V8 hashes/strict diff plus selected pure validators only; no gfInitialize/gfRun/Native/Git called",
+    "checks": [
+      {
+        "name": "whole base",
+        "passed": true
+      },
+      {
+        "name": "whole candidate",
+        "passed": true
+      },
+      {
+        "name": "whole BODY0 original request",
+        "passed": true
+      },
+      {
+        "name": "whole BODY1 original request",
+        "passed": true
+      },
+      {
+        "name": "whole BODY0 actual native",
+        "passed": true
+      },
+      {
+        "name": "whole BODY0 root qualification",
+        "passed": true
+      },
+      {
+        "name": "unique edit new independent BODY1 slot and source-only scope",
+        "passed": true
+      },
+      {
+        "name": "unique edit separate historical BODY0 and future BODY1 exact request pins",
+        "passed": true
+      },
+      {
+        "name": "unique edit historical request guard remains BODY0",
+        "passed": true
+      },
+      {
+        "name": "unique edit verify closed predecessor without replay or writes",
+        "passed": true
+      },
+      {
+        "name": "unique edit initialize only new separately authorized BODY1 context",
+        "passed": true
+      },
+      {
+        "name": "unique edit single fixed BODY1 validation and finite original observation limits",
+        "passed": true
+      },
+      {
+        "name": "unique edit intent labels exact new read and immutable predecessor",
+        "passed": true
+      },
+      {
+        "name": "unique edit ACK uses BODY1-specific admission ledger",
+        "passed": true
+      },
+      {
+        "name": "unique edit ACK classification remains actual and nonhistorical",
+        "passed": true
+      },
+      {
+        "name": "unique edit close original BODY1 then whole join and archive before semantic parse",
+        "passed": true
+      },
+      {
+        "name": "literal edit replay whole",
+        "passed": true
+      },
+      {
+        "name": "strict forward whole",
+        "passed": true
+      },
+      {
+        "name": "strict backward whole",
+        "passed": true
+      },
+      {
+        "name": "explicit reverse whole",
+        "passed": true
+      },
+      {
+        "name": "original BODY1 range exact",
+        "passed": true
+      },
+      {
+        "name": "original BODY1 key exact",
+        "passed": true
+      },
+      {
+        "name": "native tool set only start/status/result",
+        "passed": true
+      },
+      {
+        "name": "new slot only; never initialize old slot",
+        "passed": true
+      },
+      {
+        "name": "old UNKNOWN guarded not cleared",
+        "passed": true
+      },
+      {
+        "name": "BODY0 actual context guarded",
+        "passed": true
+      },
+      {
+        "name": "separate GO fields exact",
+        "passed": true
+      },
+      {
+        "name": "once Native invoke and SDK archiver unchanged",
+        "passed": true
+      },
+      {
+        "name": "read-only Git reconcile unchanged",
+        "passed": true
+      },
+      {
+        "name": "catch boundary unchanged",
+        "passed": true
+      },
+      {
+        "name": "report whole archive precedes success",
+        "passed": true
+      },
+      {
+        "name": "no report JSON parse before archival",
+        "passed": true
+      },
+      {
+        "name": "selected pure validator accepts exact original BODY1",
+        "passed": true
+      },
+      {
+        "name": "selected pure validator refuses BODY0",
+        "passed": true
+      },
+      {
+        "name": "refuse rekey",
+        "passed": true
+      },
+      {
+        "name": "refuse wrong offset",
+        "passed": true
+      },
+      {
+        "name": "refuse wrong limit",
+        "passed": true
+      },
+      {
+        "name": "refuse changed version",
+        "passed": true
+      },
+      {
+        "name": "refuse different path",
+        "passed": true
+      },
+      {
+        "name": "refuse different host",
+        "passed": true
+      },
+      {
+        "name": "refuse business process_start",
+        "passed": true
+      },
+      {
+        "name": "refuse metadata tool entry",
+        "passed": true
+      },
+      {
+        "name": "refuse second BODY1 admission",
+        "passed": true
+      },
+      {
+        "name": "16KiB immutable page accepted for returned ID",
+        "passed": true
+      },
+      {
+        "name": "unexpected page offset refused",
+        "passed": true
+      },
+      {
+        "name": "different returned ID refused",
+        "passed": true
+      },
+      {
+        "name": "unclosed future page refused",
+        "passed": true
+      },
+      {
+        "name": "64-page limit refused",
+        "passed": true
+      },
+      {
+        "name": "actual BODY0 decoded bytes reverified",
+        "passed": true
+      },
+      {
+        "name": "altered BODY0 original refused",
+        "passed": true
+      },
+      {
+        "name": "root48 and release establish predecessor closed",
+        "passed": true
+      }
+    ],
+    "passed": 51,
+    "NativeCalls": 0,
+    "candidateRuntimeInvoked": false
+  },
+  "historicalConstructionError": "construction-error.original.json",
+  "fullReportCurrentlyQualified": false,
+  "sourceFunctionRuntimeInvoked": false,
+  "futureOutputCollection": "Root may later bind all 49 actual output identities, link 26 unchanged whole sources and admit only 23 changed bodies. That scope is absent here."
+}

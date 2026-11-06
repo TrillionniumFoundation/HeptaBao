@@ -1,0 +1,245 @@
+{
+  "schema": "heptabao.root.snapshot2379-body0-reconciliation-actual-qualification.r1",
+  "passed": true,
+  "checkCount": 48,
+  "checks": [
+    {
+      "name": "complete54MerklePacket",
+      "passed": true
+    },
+    {
+      "name": "exactPreviouslyQualifiedSource",
+      "passed": true
+    },
+    {
+      "name": "exactConditionalRootGO",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-admit-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-admit-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-page4-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-page4-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_call_snapshot2379-format-body0-reconcile-page5-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_armed_tree_snapshot2379-format-body0-reconcile-page5-r1",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_observer_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_page_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af_0",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_page_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af_16384",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_page_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af_32768",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_page_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af_49152",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_page_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af_65536",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_page_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af_81920",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_payload_36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af",
+      "passed": true
+    },
+    {
+      "name": "body0_reused_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_0",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_1",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_2",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_3",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_4",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_5",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_6",
+      "passed": true
+    },
+    {
+      "name": "sdk_tree_7",
+      "passed": true
+    },
+    {
+      "name": "exactOriginal432ByteRequest",
+      "passed": true
+    },
+    {
+      "name": "reusedExistingImmutableBinding",
+      "passed": true
+    },
+    {
+      "name": "oneStartOneStatusSixPages",
+      "passed": true
+    },
+    {
+      "name": "exactOriginalPathAndVersion",
+      "passed": true
+    },
+    {
+      "name": "range0ExtentAndHash",
+      "passed": true
+    },
+    {
+      "name": "nativeAndPayloadWholeIdentity",
+      "passed": true
+    },
+    {
+      "name": "preservedOriginalUnknownWhole",
+      "passed": true
+    },
+    {
+      "name": "preservedOriginalErrorWhole",
+      "passed": true
+    },
+    {
+      "name": "oldHistoricalAttemptNotRewritten",
+      "passed": true
+    },
+    {
+      "name": "currentLaneClosedAndBody1Absent",
+      "passed": true
+    }
+  ],
+  "source": {
+    "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+    "bytes": 23211,
+    "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af"
+  },
+  "rootGO": {
+    "blob": "96933215ab2dab141a647427388b9ba670dc29b6",
+    "bytes": 6420,
+    "sha256": "d833419dfd56c8369a6a2563231a65d1ded4000886f15ba111b7b39c8f153b8d"
+  },
+  "packet": {
+    "tree": "d87a8a11c329d76639c6d9caf6537319d7298977",
+    "files": 54,
+    "bytes": 519955,
+    "merkle": {
+      "root_sha": "d87a8a11c329d76639c6d9caf6537319d7298977",
+      "trees_verified": 1,
+      "leaf_count": 54
+    },
+    "whole": true
+  },
+  "originalHistoricalAttempt": "UNKNOWN_PRESERVED",
+  "actualBinding": "36a74adfd7493cdb489a3426c421ac9d83e772f674a3aaab3c83fb3deea207af",
+  "reused": true,
+  "originalPayload": {
+    "blob": "5d83a1967b3f42bfd4047fc5624388aa292ebebb",
+    "bytes": 87821,
+    "sha256": "1707f4a8548bdeb47e51fd7f561401281d63c1425c43b3ad9fdd0906093e08af"
+  },
+  "range": {
+    "offset": 0,
+    "bytes": 65536,
+    "next_offset": 65536,
+    "eof": false,
+    "chunk_sha256": "e18d09bf4ecf8ad38c46d8ee3c46c5fa7d7816f680b98bce43f493053ce6f09e",
+    "fileVersion": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "wholeFileBody": false
+  },
+  "NativeCalls": 0,
+  "actualCalls": 8,
+  "completedObservers": 1,
+  "immutablePages": 6,
+  "body1Submitted": false,
+  "wholeReportQualified": false,
+  "currentLineBReleased": true,
+  "productionSwitch": false
+}

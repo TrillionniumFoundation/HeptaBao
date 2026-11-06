@@ -1,0 +1,802 @@
+{
+  "schema": "heptabao.snapshot-formatted23-source-checks.v1",
+  "passed": true,
+  "checks": 198,
+  "rows": [
+    {
+      "name": "strict_forward_whole",
+      "passed": true
+    },
+    {
+      "name": "strict_reverse_whole",
+      "passed": true
+    },
+    {
+      "name": "selected_twenty_three",
+      "passed": true
+    },
+    {
+      "name": "fixed_thirty_six_ranges",
+      "passed": true
+    },
+    {
+      "name": "fixed_body_total",
+      "passed": true
+    },
+    {
+      "name": "actual_changed_set_exact",
+      "passed": true
+    },
+    {
+      "name": "unchanged26_whole_reference_count_and_bytes",
+      "passed": true
+    },
+    {
+      "name": "actual_formatter_output_path_expression",
+      "passed": true
+    },
+    {
+      "name": "output0_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output0_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output0_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output0_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output0_range1_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output0_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output1_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output1_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output1_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output1_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output1_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output2_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output2_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output2_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output2_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output2_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output3_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output3_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output3_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output3_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output3_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output4_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output4_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output4_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output4_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output4_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output5_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output5_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output5_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output5_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output5_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output6_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output6_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output6_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output6_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output6_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output7_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output7_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output7_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output7_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output7_range1_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output7_range2_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output7_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output8_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output8_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output8_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output8_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output8_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output9_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output9_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output9_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output9_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output9_range1_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output9_range2_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output9_range3_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output9_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output10_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output10_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output10_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output10_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output10_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output11_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output11_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output11_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output11_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range1_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range2_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range3_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range4_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range5_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range6_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range7_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output11_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output12_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output12_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output12_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output12_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output12_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output13_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output13_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output13_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output13_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output13_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output14_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output14_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output14_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output14_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output14_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output15_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output15_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output15_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output15_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output15_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output16_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output16_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output16_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output16_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output16_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output17_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output17_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output17_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output17_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output17_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output18_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output18_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output18_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output18_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output18_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output19_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output19_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output19_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output19_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output19_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output20_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output20_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output20_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output20_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output20_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output21_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output21_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output21_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output21_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output21_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "output22_canonical_source_pin",
+      "passed": true
+    },
+    {
+      "name": "output22_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "output22_exact_info_request",
+      "passed": true
+    },
+    {
+      "name": "output22_range0_fixed_template",
+      "passed": true
+    },
+    {
+      "name": "output22_range_coverage",
+      "passed": true
+    },
+    {
+      "name": "all59_unique_bounded_keys",
+      "passed": true
+    },
+    {
+      "name": "reuse_authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_forward_delivery.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "reuse_service_native_v6_ha_pipeline_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "first_info_selects_exact",
+      "passed": true
+    },
+    {
+      "name": "first_info_validator_accepts",
+      "passed": true
+    },
+    {
+      "name": "rekey_refused",
+      "passed": true
+    },
+    {
+      "name": "process_start_refused",
+      "passed": true
+    },
+    {
+      "name": "body_without_actual_metadata_refused",
+      "passed": true
+    },
+    {
+      "name": "same_info_second_call_refused",
+      "passed": true
+    },
+    {
+      "name": "large_inode_and_ns_lossless",
+      "passed": true
+    },
+    {
+      "name": "no_source_identity_substitution",
+      "passed": true
+    },
+    {
+      "name": "metadata_path_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "metadata_size_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "metadata_sha_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "metadata_mode_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "metadata_uid_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "metadata_nlink_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "metadata_version_size_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "body_version_only_actual_derivation",
+      "passed": true
+    },
+    {
+      "name": "bound_first_body_accepts",
+      "passed": true
+    },
+    {
+      "name": "duplicate_body_refused",
+      "passed": true
+    },
+    {
+      "name": "paused_refuses_new_admission",
+      "passed": true
+    },
+    {
+      "name": "ninth_status_refused",
+      "passed": true
+    },
+    {
+      "name": "body16K_next_page_accepts",
+      "passed": true
+    },
+    {
+      "name": "old_page_or_wrong_width_refused",
+      "passed": true
+    },
+    {
+      "name": "metadata8K_preserved",
+      "passed": true
+    },
+    {
+      "name": "metadata16K_refused",
+      "passed": true
+    },
+    {
+      "name": "first_UTF8_split_is_not_individually_decodable",
+      "passed": true
+    },
+    {
+      "name": "cross_range_UTF8_whole_exact",
+      "passed": true
+    },
+    {
+      "name": "whole_truncation_refused",
+      "passed": true
+    },
+    {
+      "name": "whole_SHA_mismatch_refused",
+      "passed": true
+    },
+    {
+      "name": "retained_chunk_drift_refused",
+      "passed": true
+    },
+    {
+      "name": "only_three_Native_methods",
+      "passed": true
+    },
+    {
+      "name": "no_original_context_reset_or_reference",
+      "passed": true
+    },
+    {
+      "name": "SDK_whole_precedes_parse",
+      "passed": true
+    },
+    {
+      "name": "precall_validation_precedes_called_marker",
+      "passed": true
+    },
+    {
+      "name": "full_output_external_before_next_file",
+      "passed": true
+    },
+    {
+      "name": "original_format_budgets_retained",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "candidateInitializeOrDispatchCalls": 0,
+  "scope": "strict source/data and selected pure request/metadata/byte guards; no host/IO/tool invocation"
+}

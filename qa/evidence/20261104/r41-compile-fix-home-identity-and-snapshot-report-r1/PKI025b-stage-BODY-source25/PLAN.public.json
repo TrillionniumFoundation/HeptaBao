@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.025b-stage-report-body-source.r1",
+  "authorization": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "scope": "stage_result_binary_read_only",
+  "slot": "jwt_pki_025b05a3_rog_source_gitfirst_r1",
+  "original_job": "1a1b07b7e0b-fc05-70ca",
+  "source": {
+    "blob": "3d3d0d971b65d251ca2657ee9c3005d5a9e795ed",
+    "bytes": 28270,
+    "sha256": "0a529ed15fc5e743e0efe360ca7b99ef62d14b11d934a08e04f9dd23fa00ca0c"
+  },
+  "before": {
+    "blob": "068abfcedf4a9116e618389f31213b4e31185b72",
+    "bytes": 28270,
+    "sha256": "65d8ad457fa07cf9312ac03e914bf949ba1e04ef15a88d0840b34aaa6234b4f3"
+  },
+  "current_info_before": {
+    "blob": "69a754dee5fc0fa48d6f2bbf8e356914b0332551",
+    "bytes": 23888,
+    "sha256": "fd4cfa5d0c5a0bfc6c31305413dad01ff931c2c3b48daeac53d8aa1e6cab7f4b"
+  },
+  "exact_request": {
+    "blob": "b607255d87740a1546b80f61dd3976e2307916d3",
+    "bytes": 442,
+    "sha256": "ca77438f66c8dde836c377de8404252b41fa59230673c7b73ea8c14b4ad110fc"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+    "bytes": 28125,
+    "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf",
+    "version": "66306:31508577:28125:1793962266025244208:1793962266025244208",
+    "infoOperation": "a8f9b286304cc6fafd99310ef325ec14621741e939929bdd493f45eecd321aa5",
+    "infoNative": {
+      "blob": "980b13f824670a6426777d4d7b556bcdfcddd1e8",
+      "bytes": 486,
+      "sha256": "e72056f5517a54687e030d08e4e832f9ab24be6936a68254a5f6525c3587f648"
+    }
+  },
+  "actualInfoPacket": "eaf68e6f316704f84151eafeb020a3bba5411eca",
+  "oldLiteralDiff": {
+    "blob": "da1afb2b5c449934f75e173549de6cfc529300e0",
+    "bytes": 5955,
+    "sha256": "b0158aff7d1733cbf6cbd9dd6b87b562d4b0bd9e31276916e1a1647056b681c0"
+  },
+  "oldLiteralHunks": 3,
+  "infoIncrementalDiff": {
+    "blob": "847f93a94110c414ee979654376db11edfd47b57",
+    "bytes": 7065,
+    "sha256": "5d14c7e3c6468a9d326731c5279f1adbdfaa699dce590aa4ea6923b9478c5be7"
+  },
+  "maximum_binary_read_starts": 1,
+  "limits": {
+    "offset": 0,
+    "limit": 28125,
+    "maximum_single_binary_bytes": 65536,
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576
+  },
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "no_new_file_info": true,
+  "actual_body_observed": false,
+  "actual_build_submitted": false,
+  "old_failures_preserved": "Original33b page-preparation error/root recovery and failed build stay unchanged in original contexts; no UNKNOWN is replaced."
+}

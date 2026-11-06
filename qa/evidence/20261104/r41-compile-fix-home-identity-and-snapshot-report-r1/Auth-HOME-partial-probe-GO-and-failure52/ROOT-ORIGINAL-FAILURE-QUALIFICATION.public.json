@@ -1,0 +1,290 @@
+{
+  "schema": "heptabao.root.mac-fresh-HOME-inert-failure-qualification.r1",
+  "passed": true,
+  "checkCount": 52,
+  "checks": [
+    {
+      "name": "whole63_2109300",
+      "passed": true
+    },
+    {
+      "name": "complete_manifest62_whole",
+      "passed": true
+    },
+    {
+      "name": "exact_root_GO_and_request_reference",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-start",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-start",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-status-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-status-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-status-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-status-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-streams-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-streams-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-streams-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-streams-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-streams-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-streams-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_call_home-auth-inert-r1-streams-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_armed_tree_home-auth-inert-r1-streams-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_observer_7b63605a67ab552c070ee13f25fc63074362e9957e812e768838ccf8bedc7e54",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_page_7b63605a67ab552c070ee13f25fc63074362e9957e812e768838ccf8bedc7e54_0",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_payload_7b63605a67ab552c070ee13f25fc63074362e9957e812e768838ccf8bedc7e54",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_observer_32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_page_32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63_0",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_page_32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63_8192",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_page_32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63_16384",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_payload_32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63",
+      "passed": true
+    },
+    {
+      "name": "MacInertFailure_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "one_START9calls2observers4pages",
+      "passed": true
+    },
+    {
+      "name": "unique_actual_mac_launch",
+      "passed": true
+    },
+    {
+      "name": "typed_request_payload_and_source",
+      "passed": true
+    },
+    {
+      "name": "original_authority_and_streams_payloads",
+      "passed": true
+    },
+    {
+      "name": "known_failed_exit1_full_durable",
+      "passed": true
+    },
+    {
+      "name": "full_original_stream_authority_counts",
+      "passed": true
+    },
+    {
+      "name": "complete_original_stdout",
+      "passed": true
+    },
+    {
+      "name": "complete_original_stderr",
+      "passed": true
+    },
+    {
+      "name": "unique_actual_FAILURE_no_success_substitution",
+      "passed": true
+    },
+    {
+      "name": "18_python_compiled4_JS_byte_verified",
+      "passed": true
+    },
+    {
+      "name": "exact_payload_and_original_deadline",
+      "passed": true
+    },
+    {
+      "name": "owned_HOME_root_creation_and_init_observed",
+      "passed": true
+    },
+    {
+      "name": "one_partial_copy_write_no_independent_readback",
+      "passed": true
+    },
+    {
+      "name": "five_returned_HOME_descriptors_once_closed",
+      "passed": true
+    },
+    {
+      "name": "effect_unknown_kept_in_failure_conjunction",
+      "passed": true
+    },
+    {
+      "name": "T5_descriptors_closed_anchor_retained",
+      "passed": true
+    },
+    {
+      "name": "one_original_diskutil_helper_closed",
+      "passed": true
+    },
+    {
+      "name": "no_private_credential_or_business_effect_branch",
+      "passed": true
+    },
+    {
+      "name": "T5_creation_not_reached_source_inference_only",
+      "passed": true
+    },
+    {
+      "name": "original_new_stage_and_observers_closed",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "1c360c303e249709a2dddd6941f110abad5c16c5",
+    "files": 63,
+    "bytes": 2109300,
+    "merkle": {
+      "root_sha": "1c360c303e249709a2dddd6941f110abad5c16c5",
+      "trees_verified": 1,
+      "leaf_count": 63
+    },
+    "whole": true
+  },
+  "rootGO": {
+    "blob": "8072d63658e5e36775b42be64216e663e4e9faab",
+    "bytes": 5792,
+    "sha256": "17ef9a48d6d1e0105f5672210bf8c5adc4ffda98c29dda7e2fd21b78f47f3533"
+  },
+  "exactRequest": {
+    "blob": "28c074223f3f6a720df8400314aeede7cfea67de",
+    "bytes": 874132,
+    "sha256": "c3f1302bd8b3bbc0d9d77a24a681f79f11b37af81bec57edf51cc214889fd3d7"
+  },
+  "originalJob": "1a1b0702e84-fc05-708a",
+  "authority": {
+    "state": "failed",
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "cancelled": false,
+    "stdoutBytes": 6966,
+    "stderrBytes": 0
+  },
+  "stdout": {
+    "blob": "905b50d39c980b7c9c4041825dd815131490f344",
+    "bytes": 6966,
+    "sha256": "acf89e2a45e1efe26a7b0a3b9b51123b36832a3e113821dc4cec86c631314874"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "knownStageFailure": true,
+  "errorCode": "home_own_create_preserves_root_object",
+  "effectUnknown": true,
+  "returnedApplicationFDsClosed": true,
+  "allFiniteLeafEffectsClosed": false,
+  "currentRootLastBoundIdentity": [
+    "16777233",
+    "593068531",
+    "501",
+    "20",
+    "16832",
+    "2",
+    "64",
+    "1793961504844318705",
+    "1793961504844318705"
+  ],
+  "observedWriteBytes": 14052,
+  "independentCopyReadback": false,
+  "T5CreationReached": false,
+  "T5CreationConclusion": "source-control-flow inference, not current filesystem absence",
+  "sameRootNlinkChange": "suspected_from_source_only; failing observed current/named tuples were not captured",
+  "actualCalls": 9,
+  "observers": 2,
+  "immutablePages": 4,
+  "currentLaneReleased": true,
+  "currentNativeCalls": 0,
+  "sourceOnlyPassDidNotEstablishRuntimeSuccess": true,
+  "historicalUnknownsUnchanged": true,
+  "credentialsQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

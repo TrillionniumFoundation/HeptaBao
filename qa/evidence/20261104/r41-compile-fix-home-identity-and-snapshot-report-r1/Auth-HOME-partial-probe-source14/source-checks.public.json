@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.home-partial-readonly-source-checks.v1",
+  "passed": true,
+  "count": 27,
+  "checks": [
+    {
+      "name": "source_exact_request",
+      "passed": true
+    },
+    {
+      "name": "regular_python_original",
+      "passed": true
+    },
+    {
+      "name": "mac_home_cwd60",
+      "passed": true
+    },
+    {
+      "name": "slot_uninitialized",
+      "passed": true
+    },
+    {
+      "name": "fixed_existing_root_first5",
+      "passed": true
+    },
+    {
+      "name": "actual_original_root_reference",
+      "passed": true
+    },
+    {
+      "name": "three_actual_parent_rows",
+      "passed": true
+    },
+    {
+      "name": "server_exact_source_hash",
+      "passed": true
+    },
+    {
+      "name": "absence_fixed_cardinality",
+      "passed": true
+    },
+    {
+      "name": "closed_os_call_set",
+      "passed": true
+    },
+    {
+      "name": "no_child_sdk_sql_import",
+      "passed": true
+    },
+    {
+      "name": "single_shared_5s",
+      "passed": true
+    },
+    {
+      "name": "caps_5fd128meta8calls14053bytes16koutput",
+      "passed": true
+    },
+    {
+      "name": "82_complete_path_stat_bound",
+      "passed": true
+    },
+    {
+      "name": "open_pending_before_syscall",
+      "passed": true
+    },
+    {
+      "name": "oserror_only_exact_open_no_return",
+      "passed": true
+    },
+    {
+      "name": "registration_exception_unknown",
+      "passed": true
+    },
+    {
+      "name": "close_loop_entire_critical",
+      "passed": true
+    },
+    {
+      "name": "once_close_marked_first",
+      "passed": true
+    },
+    {
+      "name": "constructor_owned_before_init",
+      "passed": true
+    },
+    {
+      "name": "root_full9_current_interval",
+      "passed": true
+    },
+    {
+      "name": "current_and_named_fence",
+      "passed": true
+    },
+    {
+      "name": "copy_hash_no_unknown_hash_output",
+      "passed": true
+    },
+    {
+      "name": "copy_double_full9_interval",
+      "passed": true
+    },
+    {
+      "name": "explicit_no_original_predicate_recovery",
+      "passed": true
+    },
+    {
+      "name": "pending_and_restore_prevent_complete",
+      "passed": true
+    },
+    {
+      "name": "no_t5_path_in_input",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "scope": "pure source binding and finite capability checks"
+}

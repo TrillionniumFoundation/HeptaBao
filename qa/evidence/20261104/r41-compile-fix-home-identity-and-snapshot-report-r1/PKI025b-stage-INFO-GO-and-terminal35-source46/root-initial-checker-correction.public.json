@@ -1,0 +1,8 @@
+{
+  "originalFailure": {
+    "message": "Error: strict_context",
+    "NativeCalls": 0
+  },
+  "correction": "Reverse strict application must use the after body; initial root checker passed the before body. Product/source/requests unchanged. No external action had occurred.",
+  "NativeCalls": 0
+}

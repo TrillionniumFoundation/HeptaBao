@@ -1,0 +1,225 @@
+{
+  "schema": "heptabao.native-jwt-pki.E0061-known-call-sites.v1",
+  "baseCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "baseTree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "scope": {
+    "files": [
+      "crates/heptabao-server/src/service.rs",
+      "crates/heptabao-server/src/service_native_auth.rs",
+      "crates/heptabao-server/src/service_native_pki.rs",
+      "crates/heptabao-server/src/service_native_ssh.rs",
+      "crates/heptabao-server/src/auth_native_jwt.rs"
+    ],
+    "count": 5,
+    "fullRepositorySearch": false,
+    "basis": "Existing private definition, original JWT dispatcher and both compiler-reported non-JWT callers; auth_native_jwt reference has no direct call."
+  },
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "source": {
+        "blob": "671bb42fa71e7a29b78b7e48355c9024c1ec7d73",
+        "bytes": 519132,
+        "sha256": "6df7278a7b90363fe25a563e10e29db35f47868a2d1d1ea225c91c1b9b6add7d"
+      },
+      "before": [
+        {
+          "line": 6765,
+          "kind": "definition",
+          "parameters": 14
+        }
+      ],
+      "after": [
+        {
+          "line": 6765,
+          "kind": "definition",
+          "parameters": 14
+        }
+      ],
+      "changed": false
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "source": {
+        "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+        "bytes": 143153,
+        "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165"
+      },
+      "before": [
+        {
+          "line": 2420,
+          "kind": "call",
+          "arguments": 14,
+          "lastArgument": "delivery\n                    .jwt_owner\n                    .as_ref()\n                    .is_some_and(|owner| owner.is_login())\n                    .then_some(&mut jwt_lifetime)",
+          "argumentList": [
+            "&mut candidate",
+            "delivery.principal.as_ref()",
+            "request.namespace",
+            "request.method",
+            "request.path",
+            "request.body",
+            "token_fields",
+            "None",
+            "request.now",
+            "request.token_clock",
+            "request.client_certificates",
+            "request.origin_peer",
+            "&mut consumption",
+            "delivery\n                    .jwt_owner\n                    .as_ref()\n                    .is_some_and(|owner| owner.is_login())\n                    .then_some(&mut jwt_lifetime)"
+          ]
+        }
+      ],
+      "after": [
+        {
+          "line": 2420,
+          "kind": "call",
+          "arguments": 14,
+          "lastArgument": "delivery\n                    .jwt_owner\n                    .as_ref()\n                    .is_some_and(|owner| owner.is_login())\n                    .then_some(&mut jwt_lifetime)",
+          "argumentList": [
+            "&mut candidate",
+            "delivery.principal.as_ref()",
+            "request.namespace",
+            "request.method",
+            "request.path",
+            "request.body",
+            "token_fields",
+            "None",
+            "request.now",
+            "request.token_clock",
+            "request.client_certificates",
+            "request.origin_peer",
+            "&mut consumption",
+            "delivery\n                    .jwt_owner\n                    .as_ref()\n                    .is_some_and(|owner| owner.is_login())\n                    .then_some(&mut jwt_lifetime)"
+          ]
+        }
+      ],
+      "changed": false
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki.rs",
+      "source": {
+        "blob": "281f74233d0d7ab36aec9e03ec2830f099a9988d",
+        "bytes": 29605,
+        "sha256": "7a19cdaf368062272550d35df9af9a47ed9cc0df111c106ec40166aa36ed8c93"
+      },
+      "before": [
+        {
+          "line": 270,
+          "kind": "call",
+          "arguments": 13,
+          "lastArgument": "&mut consumption",
+          "argumentList": [
+            "candidate",
+            "actor",
+            "\"\"",
+            "&self.method",
+            "&self.path",
+            "&self.body",
+            "None",
+            "role_fields",
+            "request.now",
+            "request.token_clock",
+            "request.client_certificates",
+            "request.origin_peer",
+            "&mut consumption"
+          ]
+        }
+      ],
+      "after": [
+        {
+          "line": 270,
+          "kind": "call",
+          "arguments": 14,
+          "lastArgument": "None",
+          "argumentList": [
+            "candidate",
+            "actor",
+            "\"\"",
+            "&self.method",
+            "&self.path",
+            "&self.body",
+            "None",
+            "role_fields",
+            "request.now",
+            "request.token_clock",
+            "request.client_certificates",
+            "request.origin_peer",
+            "&mut consumption",
+            "None"
+          ]
+        }
+      ],
+      "changed": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh.rs",
+      "source": {
+        "blob": "3b03ce4da8d5b5f7779096397ee9f7e6915ce075",
+        "bytes": 19996,
+        "sha256": "485fa77ae90f484a4ac039aeb249447c4b15f5fae48d18f22103aaef41132d16"
+      },
+      "before": [
+        {
+          "line": 326,
+          "kind": "call",
+          "arguments": 13,
+          "lastArgument": "&mut consumption",
+          "argumentList": [
+            "candidate",
+            "actor",
+            "\"\"",
+            "&self.method",
+            "&self.path",
+            "&self.body",
+            "None",
+            "None",
+            "request.now",
+            "request.token_clock",
+            "request.client_certificates",
+            "request.origin_peer",
+            "&mut consumption"
+          ]
+        }
+      ],
+      "after": [
+        {
+          "line": 326,
+          "kind": "call",
+          "arguments": 14,
+          "lastArgument": "None",
+          "argumentList": [
+            "candidate",
+            "actor",
+            "\"\"",
+            "&self.method",
+            "&self.path",
+            "&self.body",
+            "None",
+            "None",
+            "request.now",
+            "request.token_clock",
+            "request.client_certificates",
+            "request.origin_peer",
+            "&mut consumption",
+            "None"
+          ]
+        }
+      ],
+      "changed": true
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "source": {
+        "blob": "4856333932541f0da1b02cf1065b22532ee3fe96",
+        "bytes": 18771,
+        "sha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641"
+      },
+      "before": [],
+      "after": [],
+      "changed": false
+    }
+  ],
+  "knownCallsBefore": 3,
+  "knownCallsAfter": 3,
+  "allKnownAfterHave14": true
+}

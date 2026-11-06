@@ -1,0 +1,146 @@
+--- a/compiler-log-info.before.js
++++ b/compiler-stderr-body.after.js
+@@ -15,6 +15,49 @@
+ const GF_REQUESTS = [{"blob":"e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8","bytes":302,"sha256":"fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"},{"blob":"008beb6807a40811762b005eb20cd396755775eb","bytes":302,"sha256":"b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"}];
+ const GF_LOG_METADATA_MAX_BYTES = 1048576;
+ 
++
++/* Separate exact GO: one14696-byte compiler stderr body after both INFOs.
++ * The stdout body remains excluded. Only new binary payload pages use16KiB.
++ */
++const GF_STDERR_BODY_REQUEST = {"blob":"597a81f1a88e5af1b4ef9632003de0e96a364f13","bytes":437,"sha256":"7883f2e97d6dfc4f4f98a713a891072a239c8cddece41c930624d55feb87617c"};
++const GF_STDERR_BODY_EXPECTED = {"path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr","bytes":14696,"sha256":"448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964","version":"66306:31364213:14696:1793957207629499769:1793957207629499769","infoOperation":"2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239","infoNative":{"blob":"3b3be972c3155c9e31eeab4199bfc4ce77f691d5","bytes":489,"sha256":"0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"},"full9Strings":["66306","31364213","1000","1000","33152","1","14696","1793957207629499769","1793957207629499769"]};
++const GF_LOG_INFO_PREREQUISITES = [{"id":"2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239","tool":"file_info","nativeText":{"blob":"3b3be972c3155c9e31eeab4199bfc4ce77f691d5","bytes":489,"sha256":"0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"}},{"id":"7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56","tool":"file_info","nativeText":{"blob":"2c7e69490c7634ca461d909bc749ac1edc7a6c76","bytes":491,"sha256":"9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"}}];
++function gfAuthorizeCompilerStderrBodyOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState(),need=GF_STDERR_BODY_EXPECTED,info=s.logInfos[0];
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null && s.activeObserver===null
++   && s.onlyFixedCompilerLogInfos===true && s.logInfos.length===2
++   && s.completedObservers.length===2 && s.logInfoStarted.every(x=>x===true)
++   && s.compilerStderrBodyGO===undefined && s.compilerStderrBodyStarted!==true,
++   "both_original_log_infos_closed_before_stderr_body");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin) && goPin.blob!==s.goPin.blob,
++   "separate_whole_stderr_body_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="build_compiler_stderr_binary_read_only"
++   && g.original_job==="1a1b029a998-fc05-6eb2" && g.info_operation===need.infoOperation
++   && g.maximum_binary_read_starts===1 && g.maximum_file_info_starts===0
++   && g.maximum_process_start_calls===0 && g.stdout_body_authorized===false
++   && g.immutable_body_page_bytes===16384
++   && g.exact_request?.blob===GF_STDERR_BODY_REQUEST.blob
++   && g.exact_request?.bytes===GF_STDERR_BODY_REQUEST.bytes
++   && g.exact_request?.sha256===GF_STDERR_BODY_REQUEST.sha256,
++   "one_exact_stderr_body_only_scope");
++ for(const p of GF_LOG_INFO_PREREQUISITES) {
++  const o=s.completedObservers.find(x=>x.id===p.id);
++  gfNeed(o?.completedInactive===true && o.tool==="file_info"
++   && o.nativeText.blob===p.nativeText.blob
++   && gfMetaEquals(load(GF_SLOT+":closed_native:"+p.id),p.nativeText),
++   "both_independent_log_infos_whole");
++ }
++ gfNeed(info.path===need.path && info.size===need.bytes && info.sha256===need.sha256
++   && info.version===need.version && info.originalOperation===need.infoOperation
++   && JSON.stringify(info.full9Strings)===JSON.stringify(need.full9Strings)
++   && need.bytes===14696 && need.bytes<=65536,"whole_actual_stderr_info_binding");
++ s.compilerStderrBodyGO={pin:goPin,raw:goRaw,whole:true};
++ gfSave(s);
++ return {exactRequest:GF_STDERR_BODY_REQUEST,infoOperation:need.infoOperation,
++   maximumBinaryReads:1,bytes:need.bytes,stdoutBodyAuthorized:false};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -81,6 +124,20 @@
+  if(kind==="process_start") {
+   throw new Error("metadata_scope_has_no_process_start_authorization");
+  } else if(kind==="operation_start") {
++  if(s.compilerStderrBodyGO?.whole===true) {
++   const need=GF_STDERR_BODY_EXPECTED,a=q.operation?.arguments;
++   gfNeed(s.activeObserver===null && s.compilerStderrBodyStarted!==true
++     && s.compilerStderrBody===undefined && s.logInfos.length===2
++     && s.completedObservers.length===2 && gfMetaEquals(raw,GF_STDERR_BODY_REQUEST)
++     && Object.keys(q).sort().join(",")==="idempotency_key,operation"
++     && q.operation?.tool==="binary_read"
++     && Object.keys(q.operation).sort().join(",")==="arguments,tool"
++     && a && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
++     && a.host==="rog" && a.path===need.path && a.offset===0
++     && a.limit===need.bytes && a.expected_version===need.version,
++     "one_exact_actual_stderr_body_no_stdout_fallback");
++   return;
++  }
+   const i=s.logInfos.length,need=GF_LOG_TARGETS[i];
+   gfNeed(s.onlyFixedCompilerLogInfos===true && s.job===null && s.activeObserver===null
+     && i<2 && s.completedObservers.length===i && s.logInfoStarted[i]===false
+@@ -101,7 +158,7 @@
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
++   && q.operation_id===s.activeObserver.id && q.limit===(s.activeObserver.tool==="binary_read"?16384:8192)
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
+    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+    "same_closed_original_operation_next_page");
+  } else throw new Error("closed_native_tool_set");
+@@ -113,7 +170,7 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
++  callKey,kind,request:requestPin,rootGo:s.compilerStderrBodyGO?.pin??s.goPin,originalJob:s.job,
+-  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -143,7 +200,8 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
++ if(c.kind==="operation_start" && q.operation.tool==="file_info")s.logInfoStarted[s.logInfos.length]=true;
++ if(c.kind==="operation_start" && q.operation.tool==="binary_read")s.compilerStderrBodyStarted=true;
+- if(c.kind==="operation_start")s.logInfoStarted[s.logInfos.length]=true;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -227,7 +285,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
++   gfNeed(b.length<=(a.tool==="binary_read"?16384:8192) && v.next_offset===q.offset+b.length
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -269,7 +327,24 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
++  if(a.tool==="binary_read") {
++   const need=GF_STDERR_BODY_EXPECTED;
++   gfNeed(s.compilerStderrBodyGO?.whole===true && s.compilerStderrBodyStarted===true
++    && a.request.operation.arguments.path===need.path
++    && v.path===need.path && v.size===need.bytes && v.offset===0
++    && v.next_offset===need.bytes && v.eof===true
++    && v.version===need.version && v.chunk_sha256===need.sha256,
++    "exact_versioned_stderr_native_body");
++   const b=unb64(v.data_base64),bodyRaw=utf8Text(b),bodyPin=gitBlobMeta(bodyRaw);
++   gfNeed(b.length===need.bytes && bodyPin.bytes===need.bytes
++     && bodyPin.sha256===need.sha256,"whole_original_stderr_bytes");
++   const bodyArchive=await archiveFlatPublicTextsOnce({
++    key:"gcc-stderr-"+a.id,repository:"TrillionniumFoundation/HeptaBao",
++    texts:{"stderr.original.txt":bodyRaw,"native.original.json":nativeRaw}});
++   s.compilerStderrBody={...bodyPin,archiveTree:bodyArchive.tree,whole:true,
++     originalOperation:a.id,version:need.version,path:need.path};
++   store(GF_SLOT+":compiler_stderr_original",bodyRaw);
++  } else if(a.tool==="file_info") {
+-  if(a.tool==="file_info") {
+    const i=s.logInfos.length,need=GF_LOG_TARGETS[i],md=v.metadata;
+    const parts=typeof v.version==="string"?v.version.split(":"):[];
+    gfNeed(i<2 && s.onlyFixedCompilerLogInfos===true && s.logInfoStarted[i]===true
+@@ -371,7 +446,8 @@
+ async function gfRun(action,args) {
+  try {
+   let value;
++  if(action==="authorize_compiler_stderr_body")value=gfAuthorizeCompilerStderrBodyOnly(args);
++  else if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+-  if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

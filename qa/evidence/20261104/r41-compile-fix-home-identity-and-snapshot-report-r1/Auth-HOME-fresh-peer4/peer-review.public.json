@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.home-t5-core-independent-source-peer.v1",
+  "source_packet": "c572455d47e53327ecc7fdf74c7d38933b3b9d34",
+  "conclusion": "No new SOURCE blocker found in the bounded HomeControl/manager-lifecycle/wrapper-cwd review.",
+  "execution": {
+    "native_calls": 0,
+    "python_execution": 0,
+    "candidate_execution": 0,
+    "old_components_rerun": 0,
+    "source_modifications": 0
+  },
+  "scope": {
+    "whole_selected_leaves": [
+      "SOURCE-ONLY.public.json",
+      "candidate.public.json",
+      "home-control.py",
+      "mac_current_outer_wal_r1.py.diff",
+      "mac_current_phase_owner_r2.py",
+      "mac_current_phase_owner_r2.py.diff",
+      "mac_current_server_owner_r1.py",
+      "mac_current_server_owner_r1.py.diff",
+      "mac_owned_launchd_r3.py",
+      "mac_owned_launchd_r3.py.diff"
+    ],
+    "whole_selected_count": 10,
+    "source_packet_total_leaves": 13,
+    "full_outer_publisher_and_journal_review": false,
+    "root_owns_remaining_outer_and_manager_review": true,
+    "primary_home": {
+      "blob": "617a5dff5118482095792e368e128016fe817435",
+      "bytes": 18270,
+      "sha256": "dffafd0f5588bbe6ad2daa7ab7ae53f0f8eb6e093974811b584ff18969f44f70"
+    },
+    "manager": {
+      "blob": "72432815fd3f7cd77ba70e8d6461cd4f739fcbc8",
+      "bytes": 57914,
+      "sha256": "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
+    },
+    "old_manager": {
+      "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+      "bytes": 35736,
+      "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+    },
+    "selected_mechanical_checks": 66
+  },
+  "findings": [
+    {
+      "boundary": "Fixed public HOME paths",
+      "source": "home-control.py",
+      "lines": "2-11, 166-185, 233-238",
+      "analysis": "The fixed root accepts exactly two public Python copies and six generations of plist/stdout/stderr names. Normalized flat absolute paths are required. Copy writes are create-only publisher operations; runtime writes cannot replace the copies. Stdio is created empty at 0600. Stderr body extraction is refused."
+    },
+    {
+      "boundary": "FD acquire and registration failure",
+      "source": "home-control.py",
+      "lines": "114-139, 302-327",
+      "analysis": "The protected section records openAttempts/openPending before os.open. Only an OSError from that syscall clears pending without a returned row. After an FD returns, constructing/appending its row precedes pending release; a registration exception leaves pending and registrationUnknown. Success closure requires complete initialization, zero pending, no registration unknown, and all once-close rows closed. An untracked FD is not blindly retried or declared closed."
+    },
+    {
+      "boundary": "Whole lifecycle close",
+      "source": "home-control.py + mac_current_outer_wal_r1.py.diff",
+      "lines": "307-327 + new finally hunk",
+      "analysis": "The entire reverse close loop runs under the caller's critical section; each row marks closeAttempted before os.close. Outer records init started before __new__ and init complete only after __init__ returns. Failure during construction cannot make allReturnedHomeControlDescriptorsClosed true. Outer finally closes HomeControl and includes home_closed/effectUnknown in its complete and unknown conjunctions."
+    },
+    {
+      "boundary": "Held path and content binding",
+      "source": "home-control.py",
+      "lines": "38-94, 141-164, 188-221, 239-264",
+      "analysis": "Each parent is opened relative to the held preceding directory with NOFOLLOW. Current named and FD full9 agree; shared parents retain first-five object identity while the owned HOME root is full9-bound. Known copies/plists retain full identity and whole SHA. Stdio permits append via first-six identity, then whole reads independently require a stable full9 interval and real EOF. Root identity only advances after the controller's own exclusive create and directory fsync."
+    },
+    {
+      "boundary": "Finite caps and original deadlines",
+      "source": "home-control.py + manager + outer diff",
+      "lines": "6-11, 176-231; manager 456-477",
+      "analysis": "Finite FD-attempt, metadata, read-call/read-byte and write-call/write-byte limits remain explicit. Reads reserve remaining bytes, count returned bytes before validation, and include an EOF probe; writes enforce source length, aggregate bytes and positive bounded progress. HomeControl uses the original outer remaining callback, not a fresh per-method timer. The manager retains its 600-second checks at original operation boundaries and separate 60-second failure cleanup. This is not a claim that every HOME syscall is independently hard-preempted at the manager deadline."
+    },
+    {
+      "boundary": "HOME controls versus T5 business",
+      "source": "manager",
+      "lines": "511-538, 540-580, 652-659, 765-800, 875-915",
+      "analysis": "The manager whole-compares the T5 public wrapper to its HOME copy before registration. Only ProgramArguments wrapper, WorkingDirectory, plist and private-mode stdio use HOME. Plans, cleanup intents, event records, capture and result paths remain T5-owned. Registration checks fence both directories. Final manager success requires leaf closure; final HOME directory descriptors remain explicitly owned by the outer controller."
+    },
+    {
+      "boundary": "Held T5 cwd before private inputs",
+      "source": "mac_current_phase_owner_r2.py + mac_current_server_owner_r1.py",
+      "lines": "phase 271-301; server 123-163",
+      "analysis": "Both wrappers first admit public guard code and the actual volume/UUID gate. They fchdir using the held parent of the fixed launchd leaf, compare cwd stat to the held FD and the exact T5 ROOT, then recheck the volume before reading the private plan. The manager requires the resulting held-business-cwd marker. Actual kernel image and Python launcher checks remain distinct."
+    }
+  ],
+  "limits": [
+    "This review is source-only. It does not prove actual HOME/T5 access, launchd startup, current registration closure, inherited OS behavior or production qualification.",
+    "The full publisher, inert request/journal, and the remainder of outer business/manager logic remain under root review; the peer read the exact outer diff and selected complete manager/wrapper sources.",
+    "Fresh actual HOME root/copy metadata and runtime binding remain absent in this core. No ready execution, source stage or live request was authorized by this peer.",
+    "No old UNKNOWN, process or cleanup evidence is reclassified. Historical source and failure packets remain immutable.",
+    "Directory contents are explicitly not exhaustively inventoried and interpreter/dynamic-loader internal FDs are outside HomeControl's returned-application-descriptor ledger."
+  ],
+  "source_table": {
+    "SOURCE-ONLY.public.json": {
+      "blob": "32366ea51488a76c4374d86cdff57a634189018a",
+      "bytes": 660,
+      "sha256": "3d45a6dd37a9a210d9138e024d3d3909c29e47ba2bcf6b8323ae4f46f8f78798"
+    },
+    "candidate.public.json": {
+      "blob": "2e5860cc7e3b13ce985f815a3f2567b6ee155a1c",
+      "bytes": 7499,
+      "sha256": "52daef9aca0216070a88bb2b6da2babfe0a6e1ac84b8f9452dbe4e35eb0021d4"
+    },
+    "home-control.py": {
+      "blob": "617a5dff5118482095792e368e128016fe817435",
+      "bytes": 18270,
+      "sha256": "dffafd0f5588bbe6ad2daa7ab7ae53f0f8eb6e093974811b584ff18969f44f70"
+    },
+    "mac_current_outer_wal_r1.py.diff": {
+      "blob": "ed7887831507fe8a3c768222408cf3df448933d4",
+      "bytes": 10245,
+      "sha256": "c857bcea71d7a614ea0a7bbe7ee866f06ee3ce3ae03674189e6fe698884ac957"
+    },
+    "mac_current_phase_owner_r2.py": {
+      "blob": "5541a1b403b1f2febb907d931966e1de1f934efd",
+      "bytes": 25647,
+      "sha256": "afe225c67d455f5324a5923cac0efc0ffa2393e1619a5cf169d6cf33d4540154"
+    },
+    "mac_current_phase_owner_r2.py.diff": {
+      "blob": "3bb965b38d7f0a5ac34f340c99f344fd61648ca9",
+      "bytes": 2232,
+      "sha256": "b185ad457aaa8d976f6c5bff6d1b422834eb52b5432c502c7b681f4410c3ea27"
+    },
+    "mac_current_server_owner_r1.py": {
+      "blob": "f077c11fd5163e693f44c3faa6192d31b70d6f73",
+      "bytes": 14052,
+      "sha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+    },
+    "mac_current_server_owner_r1.py.diff": {
+      "blob": "fa9727922838fa84bf28a87a427ef4a8325de638",
+      "bytes": 2252,
+      "sha256": "22798602cababb16d44d6ad9cfcc17377ac356f5823f4a3ac8fb06511d7c1327"
+    },
+    "mac_owned_launchd_r3.py": {
+      "blob": "72432815fd3f7cd77ba70e8d6461cd4f739fcbc8",
+      "bytes": 57914,
+      "sha256": "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
+    },
+    "mac_owned_launchd_r3.py.diff": {
+      "blob": "0a5ef1607d2c9cbcc0b541d1c6cd0444a73d2651",
+      "bytes": 36624,
+      "sha256": "bc0374117dcd542a5d32b8fe30246429f8ad4ac9de8ad88c1a3fbf0be5c10750"
+    }
+  },
+  "verifier_pin": {
+    "blob": "cf3b666d792c4198e1deb10595193b58e9021044",
+    "bytes": 6815,
+    "sha256": "7baa2300b6f0e9c738ed9becfb44804468929e87896d0f0565c6f85ec2727e96"
+  },
+  "result_pin": {
+    "blob": "832129b7ceb6555cb5539d1ff1403d2c2d71a74e",
+    "bytes": 6252,
+    "sha256": "23d3b81ab91b0818f0ee9faa10decf4bbaeec92a2e827cd09c365717c48b05a3"
+  }
+}

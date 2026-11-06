@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-current-home-launch-inert-c273bce2-status-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b0702e84-fc05-708a"
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "heptabao.root-exact-GO.fresh-home-t5-inert.r1",
+  "decision": "GO",
+  "scope": "one_exact_public_inert_stage_only",
+  "userAuthorization": "Continue HeptaBao Mac external-drive work and complete the remaining migration/validation blockers; this is an isolated preparatory stage.",
+  "reviewedSourcePacket": {
+    "tree": "74deadc6eaa97085b124515a703b6b386f3d3a20",
+    "files": 107,
+    "bytes": 7295005,
+    "merkle": {
+      "root_sha": "74deadc6eaa97085b124515a703b6b386f3d3a20",
+      "trees_verified": 1,
+      "leaf_count": 107
+    },
+    "whole": true
+  },
+  "rootSourceReview": {
+    "blob": "62bdd7cbd122d34ae350623a4ac86bdf6db7a015",
+    "bytes": 8067,
+    "sha256": "79f057568e7db30bc00197bf59e4ecd13dcf61e46846750707e9d8bf128269fe"
+  },
+  "rootSourceChecks": 56,
+  "authorChecksReproduced": 222,
+  "peer": {
+    "packet": {
+      "tree": "4081f3507f14b9d8224fca302ee84b5d7dc5d22c",
+      "files": 4,
+      "bytes": 24825,
+      "merkle": {
+        "root_sha": "4081f3507f14b9d8224fca302ee84b5d7dc5d22c",
+        "trees_verified": 1,
+        "leaf_count": 4
+      },
+      "whole": true
+    },
+    "review": {
+      "blob": "38e89c62db79112d93eaf4870603e88519c1adbc",
+      "bytes": 9263,
+      "sha256": "23d01706894f2874ed2b9a74a4d1dc6d50b9a543f16b54a4c63ff862aeb7253d"
+    },
+    "checksReproduced": 66,
+    "scope": "HomeControl, manager lifecycle, wrapper cwd; source only"
+  },
+  "exactRequest": {
+    "blob": "28c074223f3f6a720df8400314aeede7cfea67de",
+    "bytes": 874132,
+    "sha256": "c3f1302bd8b3bbc0d9d77a24a681f79f11b37af81bec57edf51cc214889fd3d7"
+  },
+  "source": {
+    "blob": "fc40ff27b6657aee025162e0db547d501f327c8a",
+    "bytes": 35976,
+    "sha256": "c273bce27b99840c3d6fcd92ca7cf281ea803d043f7eff38da58428b9dea0768"
+  },
+  "payload": {
+    "blob": "9ba762c6f2b54c45c796627453f0efdd466668e6",
+    "bytes": 836804,
+    "sha256": "3cdb898c0aad6c5e8ad0f5e20fe525c73f26a50273689078f0ff2e6e4d49cb99"
+  },
+  "journal": {
+    "blob": "4cd38a02494c5bb4f1e3129d778de92aa2eb43fb",
+    "bytes": 19050,
+    "sha256": "c2f19faaa84ade3e240900e0dede09fdf2c7a9fddc02b18838f7f1462e99b16f"
+  },
+  "slot": "owner_authbus_current_home_inert_gitfirst_r1",
+  "idempotencyKey": "heptabao-mac-current-home-launch-inert-c273bce2-20261106-r1",
+  "typedRequestDigest": "042bcf68044c67c47c65a6422f39aa0b41165106634761cf2334f5bfef64725a",
+  "typedRequestFingerprint": "300561845805934532",
+  "canonicalBytes": 874064,
+  "fixedHost": "mac",
+  "fixedRoots": {
+    "HOME": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+    "T5": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1"
+  },
+  "maximumProcessStarts": 1,
+  "originalPublisherSeconds": 45,
+  "controllerSeconds": 60,
+  "originalDiskutilSeconds": 30,
+  "authorizedEffects": [
+    "Compile exactly eighteen public Python inputs in memory before creation; byte-verify four JavaScript inputs.",
+    "Run the original fixed diskutil volume query under the existing owned child/descriptor custody.",
+    "Create the two fresh fixed HOME/T5 roots, two public HOME copies and thirty fixed T5 public objects plus pre-finally candidate receipt; exclusive creation only.",
+    "Read back each staged public body through a separate held descriptor; record actual HOME parent/root/copy metadata."
+  ],
+  "excludedEffects": [
+    "No launchctl, server, consumer, SQL, SDK, credential capture, private capsule read, production switch, cleanup/deletion, permission change, replacement root or alternate idempotency key."
+  ],
+  "initialAbsenceRequired": true,
+  "existingPathOrUnclearEffectStopsWithoutAutomaticReplay": true,
+  "originalObservation": {
+    "onlyKnownOriginalJob": true,
+    "allowedTools": [
+      "process_status",
+      "process_read"
+    ],
+    "maximumStatusObservers": 8,
+    "maximumStreamObservers": 8,
+    "streamLimit": 16384,
+    "stdoutMaximum": 65536,
+    "stderrMaximum": 65536,
+    "operationResultLimit": 8192,
+    "maximumImmutablePayload": 1048576,
+    "oneNativeCallAtATime": true,
+    "oneOwnedObserverAtATime": true,
+    "wholeSDKBeforeInterpretation": true,
+    "wholePayloadBeforeNativeInterpretation": true
+  },
+  "successRequires": [
+    "Original typed process admission, final exit0/full/durable authority and exact complete streams.",
+    "Post-finally ok=true, original deadline met after closure, thirty T5 public objects and two HOME copies whole-verified.",
+    "All owned command/process and application-returned descriptor closure, actual T5 anchor and no unknown state.",
+    "Candidate receipt alone is pre-finally ok=false and does not establish success."
+  ],
+  "independentPostInertFileReadsAuthorized": false,
+  "runtimeExactRequestAuthorized": false,
+  "actualHomeBindingMustComeFromThisRun": true,
+  "next": "After the original stage is known closed, root qualifies the result; separately prepare the three exact independent read targets and derive actual runtime request only from qualified actual evidence.",
+  "historicalUnknownsUnchanged": [
+    "original AuthBus registration/EX_CONFIG78/PID11754",
+    "original R4 lifetime and helper87650",
+    "old Git archive uncertainties"
+  ],
+  "allocation": {
+    "line": "A",
+    "maximumNativeCallsInFlight": 1,
+    "maximumOwnedFutures": 1,
+    "globalMaximumNativeLanes": 2,
+    "rootNativeCalls": 0
+  },
+  "qualification": {
+    "sourceOnlyBeforeThisGO": true,
+    "credentialsProven": false,
+    "fullReplacement": false,
+    "productionCutover": false,
+    "allClientsAndBackupsMigrated": false,
+    "legacyCleanup": false
+  },
+  "recovery": "Whole external armed record before the one call; preserve any ambiguous ACK/transport state and original key. No automatic retry, re-key or reinitialize. Same original job/operation reads only when an actual ID is known."
+}

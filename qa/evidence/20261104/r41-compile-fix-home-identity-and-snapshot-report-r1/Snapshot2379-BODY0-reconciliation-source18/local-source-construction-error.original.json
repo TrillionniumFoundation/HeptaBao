@@ -1,0 +1,8 @@
+{
+  "phase": "pure_SOURCE_construction",
+  "error": "unique:explicit-new-admission-semantics-in-intent",
+  "cause": "local string indentation did not match the original block",
+  "candidateStored": false,
+  "nativeCalls": 0,
+  "compiledOrExecutedCandidate": false
+}

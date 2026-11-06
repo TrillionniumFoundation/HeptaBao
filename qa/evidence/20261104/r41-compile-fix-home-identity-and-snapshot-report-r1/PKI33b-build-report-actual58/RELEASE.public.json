@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.result-retrieval.release.r1",
+  "status": "ORIGINAL_RESULT_DELIVERED_ORIGINAL_BUILD_FAILED",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "source_tree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "original_binary_read_operation": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+  "original_effect_completed_stored_inactive": true,
+  "retrieval_slot": "jwt_pki_33b814c7_build149_body_tail_retrieval_r1",
+  "all_two_retrieval_calls_returned_and_whole": true,
+  "pending": null,
+  "native_call_in_flight": false,
+  "active_future_count": 0,
+  "Native_calls_in_flight": 0,
+  "lane_released": true,
+  "old_slot": "jwt_pki_33b814c7_build149_gitfirst_r1",
+  "old_slot_state_unchanged": {
+    "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+    "bytes": 120307,
+    "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+  },
+  "old_slot_paused": true,
+  "old_slot_pending": "jwt-pki-33b814c7-build149-report-body-page2-r1",
+  "old_timeout": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "old_timeout_not_erased": true,
+  "original_old_pending_is_a_failed_delivery_call_not_a_new_running_effect": true,
+  "source_packet": "e41fe5667d78dbefc64836329b24bde704937493",
+  "GO": {
+    "blob": "8a2bed4d6c163fb78540f21f97910a43656d2b94",
+    "bytes": 5163,
+    "sha256": "5a451a46f50ba6862062b040fa4e2b97e01977528270e3631b3c43578ceea099"
+  },
+  "original_payload": {
+    "blob": "70dc4b6edcf37644333b85335a2b59dc2ba0772f",
+    "bytes": 49765,
+    "sha256": "ca4321b37d698c2078c193087b4e76e56c4cdb8f79955aff236e3033d7188b07",
+    "tree": "1a0b67d2ac460ce83750a823dc4fb4b964d5cb6f"
+  },
+  "original_native": {
+    "blob": "e8d93d04c5ddd4d6ce9a5adbf1befd34d42a0680",
+    "bytes": 49662,
+    "sha256": "17d6822d08b9f8fcfef994fad597a1c06f56d2a46147e1a2bc70137fa0f9b213"
+  },
+  "original_body": {
+    "blob": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "tree": "80d572bec4a316e06f47956f4a04bb8e83ee79bd"
+  },
+  "body_identity": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "version": "66306:31364220:36998:1793957208077081949:1793957208077081949",
+    "infoOperation": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+    "infoNative": {
+      "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+      "bytes": 480,
+      "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+    },
+    "full9Strings": [
+      "66306",
+      "31364220",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36998",
+      "1793957208077081949",
+      "1793957208077081949"
+    ]
+  },
+  "original_status": {
+    "blob": "fd2986505afda7e210666b3de197dd6d14e1f3ce",
+    "bytes": 802,
+    "sha256": "205ce509413641005f059b9cbc3ba5616e3dd5ef16fcd2bbb65d535785e1d8f6"
+  },
+  "observations": {
+    "original_body_calls": 5,
+    "original_payload_pages_delivered_before_error": 2,
+    "original_error_responses": 1,
+    "new_authorized_immutable_retrieval_calls": 2,
+    "new_admissions": 0,
+    "new_builds": 0,
+    "new_status_queries": 0,
+    "original_payload_final_pages": 4,
+    "original_payload_final_bytes": 49765,
+    "decoded_body_bytes": 36998
+  },
+  "semantics": {
+    "status": "failed",
+    "failure_type": "AssertionError",
+    "failure": "normal production binary compilation failed",
+    "normal_release_build": {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ],
+      "direct_child_reaped": true,
+      "elapsed_seconds": 316.2226926150033,
+      "exit_code": 101,
+      "label": "normal-release-build",
+      "outer_cap_seconds": 1800,
+      "owned_pgid": 811413,
+      "remaining": [],
+      "stderr_sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+      "stdout_sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+      "timed_out": false
+    },
+    "cleanup": [
+      {
+        "direct_child_reaped": true,
+        "exit_code": 101,
+        "label": "normal-release-build",
+        "pid": 811413,
+        "remaining": []
+      }
+    ],
+    "runtime_tests_started": false,
+    "selected_unique_test_total": 149,
+    "selected_profile_instance_total": 166,
+    "actual_test_pass_count": 0,
+    "all_149_166_passed": false,
+    "compiler_diagnostic_text_observed": false,
+    "retained_before": "unchanged",
+    "retained_after": "unchanged"
+  },
+  "limits": {
+    "full_replacement": false,
+    "source_compiled_successfully": false,
+    "original_failed_BUILD_not_replayed": true,
+    "target_flock_receipt_independently_read": false,
+    "no_new_target_qualification_claimed": true
+  },
+  "next_source_only": "Two known normal-release-build logs and launch-preflight evidence can be proposed from exact runner/launcher paths; no new host read authorized by this release."
+}

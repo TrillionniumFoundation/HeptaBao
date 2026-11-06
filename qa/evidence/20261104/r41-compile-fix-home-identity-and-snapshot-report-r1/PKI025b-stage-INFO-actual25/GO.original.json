@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.root.025b-stage-result-INFO-GO.r1",
+  "authorization": "GO",
+  "scope": "stage_result_file_info_only",
+  "original_job": "1a1b07b7e0b-fc05-70ca",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "fc32f742294b7781e795273c16c6aed453f6072c",
+    "bytes": 309,
+    "sha256": "07634b88d93a6460e02fa15cdc6a1a85abf18501faa72efdf152a0f6cfea1e5d"
+  },
+  "source_tree": "8f350d50067d528ff00529870c8ae82831f9aed6",
+  "journal": {
+    "blob": "69a754dee5fc0fa48d6f2bbf8e356914b0332551",
+    "bytes": 23888,
+    "sha256": "fd4cfa5d0c5a0bfc6c31305413dad01ff931c2c3b48daeac53d8aa1e6cab7f4b"
+  },
+  "slot": "jwt_pki_025b05a3_rog_source_gitfirst_r1",
+  "attach_action": "authorize_stage_result_info",
+  "reinitialize": false,
+  "rootSourceQualification": {
+    "blob": "72c7c34697152e40ebfa85cb221421d50e049527",
+    "bytes": 4859,
+    "sha256": "a1ec85ba7b43cef01c4e1b81e4c6de69b4f809fe558595a3bc5771b5425d4c8b"
+  },
+  "rootTerminalQualification": {
+    "blob": "16091afbb8e0cdce0a8720e626317d28830c180e",
+    "bytes": 6436,
+    "sha256": "b00c586b1f583bf7f341ad36d1ddfccbe053401d3b567916ab7d02e33954edd5"
+  },
+  "metadata_guards": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+    "mode": 384,
+    "full_mode": 33152,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "platform": "linux",
+    "max_bytes": 150000
+  },
+  "observation_caps": {
+    "maximum_status_calls": 8,
+    "immutable_page_bytes": 8192,
+    "maximum_pages": 128,
+    "original_payload_bytes": 1048576,
+    "one_active_observer": true
+  },
+  "error_rule": "Preserve original request, returned SDK, operation ID and original state; any uncertain ACK remains UNKNOWN; no replay, no rekey, no slot reset.",
+  "next_step": "After actual closed INFO freeze one exact version-bound body SOURCE for review.",
+  "author32PureReproduced": true,
+  "NativeCallsByRoot": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

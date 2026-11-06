@@ -1,0 +1,33 @@
+--- a/manager.before.py
++++ b/manager.after.py
+@@ -110,6 +110,7 @@
+         self.open_attempts=0;self.open_pending=0;self.registration_unknown=False
+         self.close_errors=[];self.closed=False;self.init_started=True;self.init_complete=False;self.io_ready=False
+         self.root_creation_attempted=False;self.root_created=False;self.effect_unknown=False
++        self.last_own_create_root_observation=None
+         self.counts={'metadata':0,'readCalls':0,'readBytes':0,'writeCalls':0,'writeBytes':0}
+         self.remaining=remaining;self.critical=critical;self.create=create
+         self.copy_pins=dict(copy_pins);self.root_identity=None
+@@ -303,7 +304,13 @@
+             os.fsync(self.root_row['fd']);self.remaining()
+             current=file_identity(self._fstat(self.root_row['fd']))
+             named_root=file_identity(self._stat(HOME_CONTROL.name,self.parents[-1]['fd']))
++            before_root=self.root_identity
++            self.last_own_create_root_observation={
++                'beforeFull9':list(before_root),'currentFull9':list(current),
++                'namedFull9':list(named_root),'heldNamedFull9Equal':current==named_root,
++                'sameRootObjectFirst5':current[:5]==before_root[:5],
++                'fieldEqualToBefore':[x==y for x,y in zip(current,before_root)]}
++            need(current==named_root and current[:5]==before_root[:5],
+-            need(current==named_root and current[:6]==self.root_identity[:6],
+                  'home_own_create_preserves_root_object')
+             self.root_identity=current
+             self.effect_unknown=False
+@@ -408,6 +415,7 @@
+         return {'schema':'heptabao.mac-owned-home-control-closure.r1',
+             'path':str(HOME_CONTROL),
+             'currentRootIdentity':None if self.root_identity is None else list(self.root_identity),
++            'lastOwnCreateRootObservation':self.last_own_create_root_observation,
+             'initStarted':self.init_started,
+             'initComplete':self.init_complete,'rootCreationAttempted':self.root_creation_attempted,
+             'rootCreated':self.root_created,'effectUnknown':self.effect_unknown,

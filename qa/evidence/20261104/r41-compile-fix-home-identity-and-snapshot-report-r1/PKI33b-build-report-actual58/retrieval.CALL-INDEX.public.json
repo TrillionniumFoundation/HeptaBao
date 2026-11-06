@@ -1,0 +1,64 @@
+[
+  {
+    "key": "jwt-pki-build149-tail-page2-retrieval-r1",
+    "index": 0,
+    "kind": "operation_result",
+    "original_effect": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+    "request": {
+      "blob": "8448c7b5701f7551c847f55a66ae9c10892f2de1",
+      "bytes": 126,
+      "sha256": "10316b66ee044e51b3ed82b00be6b702335b06af50588df900417ce38a3a1b1c"
+    },
+    "armed": {
+      "path": "armed.original.json",
+      "blob": "0c58be0969fd72b32b8ce90d4cc527cef710ae8e",
+      "bytes": 1014,
+      "sha256": "a85351fbd3052f606ead9f072b10129a69cfce9a5b03686f35a36abbabe3d920",
+      "whole": true
+    },
+    "sdk": {
+      "blob": "2055c4359d5c7cc12cffeba435a4b765d1bc35cc",
+      "bytes": 22709,
+      "sha256": "789ef2958a1ea6fb3c2b1b8e53d3f650597f18334127672b06d019afdc83a2da"
+    },
+    "sdk_tree": "b21fc7f300b8e46005157f3c56ba7588925279ad",
+    "native": {
+      "blob": "57e02b14e34470aa84f571146ec8231faf0aefb8",
+      "bytes": 22538,
+      "sha256": "3fa3ffa15f050af2dc98f47e085b9f07b86c029dae20475c2ba8c2d4b144374d"
+    },
+    "called": true,
+    "phase": "accepted"
+  },
+  {
+    "key": "jwt-pki-build149-tail-page3-retrieval-r1",
+    "index": 1,
+    "kind": "operation_result",
+    "original_effect": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+    "request": {
+      "blob": "42d9eb94225c869f57e0fb52061456f1a8736b0e",
+      "bytes": 126,
+      "sha256": "a18c4e3504e35482d16a3b2d94e20c0ca9fb7675f615d4ddd659d3050bc4a539"
+    },
+    "armed": {
+      "path": "armed.original.json",
+      "blob": "aef88626259554d5fd76a25554495b6922b316b4",
+      "bytes": 1014,
+      "sha256": "95e14f07ef8460a23a6da1fc436b798c1c83803c91bee6f33497961acc318384",
+      "whole": true
+    },
+    "sdk": {
+      "blob": "2d8551a9a759bb55026c6fe38c7ef549188971e2",
+      "bytes": 1680,
+      "sha256": "17831e2ac7fd71cc723013b7b85e0aea96d8ac9517fb6df540b57f738842f75f"
+    },
+    "sdk_tree": "2ac3f9c78a2fec6a6acc4310adf6c24a6e967900",
+    "native": {
+      "blob": "be34c92b05b99e1382083d10d9f3f6fe99fae042",
+      "bytes": 1509,
+      "sha256": "b6213f3bd3c1dc00fb69e0def7e274cad0060ea859152feb23fa771a90eb7ca9"
+    },
+    "called": true,
+    "phase": "accepted"
+  }
+]

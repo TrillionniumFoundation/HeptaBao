@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.home-t5-inert-three-target-proposal.v1",
+  "status": "SOURCE_ONLY_UNSUBMITTED",
+  "authorization": "Proposal for a new exact GO; not inherited from the old 952f scope.",
+  "requireFinalAuthorityExitZeroFullDurable": true,
+  "requireFinalStdoutKnownClosureAnd30T5Plus2Home": true,
+  "independentTargets": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1/qa/mac_current_outer_wal_r1.py",
+      "expected": {
+        "blob": "35c4b527bf3d111269649d88c4603715facae4dd",
+        "bytes": 73918,
+        "sha256": "a594ccebcbe251b066e574327ec7a64d30d84fd630292c436178d45524a60f53"
+      },
+      "chunks": [
+        65536,
+        8382
+      ]
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1/candidate-current-manager-wal-r1.public.json",
+      "expected": {
+        "blob": "2e5860cc7e3b13ce985f815a3f2567b6ee155a1c",
+        "bytes": 7499,
+        "sha256": "52daef9aca0216070a88bb2b6da2babfe0a6e1ac84b8f9452dbe4e35eb0021d4"
+      },
+      "chunks": [
+        7499
+      ]
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1/inert-registry-wal-4e808-result.public.json",
+      "maximumBytes": 65536,
+      "expectedWhole": "must equal actual final stdout candidateReceipt",
+      "chunks": "one after actual size/version"
+    }
+  ],
+  "metadataOperations": 3,
+  "conditionalBodyOperationsMaximum": 4,
+  "bodyChunkBytesMaximum": 65536,
+  "totalBodyBytesMaximum": 146953,
+  "metadataWholeHashCostSeparate": true,
+  "expectedVersionRequired": true,
+  "originalRuntime22SourceAnd7ProofPreflightsPreserved": true,
+  "receiptIsPreFinallyOkFalse": true,
+  "readThenExecTOCTOUClaim": false
+}

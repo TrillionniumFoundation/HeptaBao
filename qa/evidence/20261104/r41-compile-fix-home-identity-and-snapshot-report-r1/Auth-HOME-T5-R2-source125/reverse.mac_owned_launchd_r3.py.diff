@@ -1,0 +1,58 @@
+--- a/after/mac_owned_launchd_r3.py
++++ b/before/mac_owned_launchd_r3.py
+@@ -13,12 +13,12 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1')
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
+ DOMAIN='gui/501'
++LABELS={'server':'org.heptabao.qa.mac-authbus-4e808-home-r1.server',
++        'consumer':'org.heptabao.qa.mac-authbus-4e808-home-r1.consumer'}
+-LABELS={'server':'org.heptabao.qa.mac-authbus-4e808-home-r2.server',
+-        'consumer':'org.heptabao.qa.mac-authbus-4e808-home-r2.consumer'}
+ SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server')
+ SERVER_SHA='c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63'
+ GRAPH=(('server-start','server-initial'),('phase','initial'),
+@@ -92,7 +92,7 @@
+     return lines in ([exact],['Bad request.',exact])
+ 
+ 
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1')
+-HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2')
+ HOME_COPY_NAMES=('mac_current_server_owner_r1.py','mac_current_phase_owner_r2.py')
+ HOME_GENERATIONS=('server-initial','server-cold-new-process','initial',
+                   'cold-new-process','initial-inverse','cold-new-process-inverse')
+@@ -110,7 +110,6 @@
+         self.open_attempts=0;self.open_pending=0;self.registration_unknown=False
+         self.close_errors=[];self.closed=False;self.init_started=True;self.init_complete=False;self.io_ready=False
+         self.root_creation_attempted=False;self.root_created=False;self.effect_unknown=False
+-        self.last_own_create_root_observation=None
+         self.counts={'metadata':0,'readCalls':0,'readBytes':0,'writeCalls':0,'writeBytes':0}
+         self.remaining=remaining;self.critical=critical;self.create=create
+         self.copy_pins=dict(copy_pins);self.root_identity=None
+@@ -304,13 +303,7 @@
+             os.fsync(self.root_row['fd']);self.remaining()
+             current=file_identity(self._fstat(self.root_row['fd']))
+             named_root=file_identity(self._stat(HOME_CONTROL.name,self.parents[-1]['fd']))
++            need(current==named_root and current[:6]==self.root_identity[:6],
+-            before_root=self.root_identity
+-            self.last_own_create_root_observation={
+-                'beforeFull9':list(before_root),'currentFull9':list(current),
+-                'namedFull9':list(named_root),'heldNamedFull9Equal':current==named_root,
+-                'sameRootObjectFirst5':current[:5]==before_root[:5],
+-                'fieldEqualToBefore':[x==y for x,y in zip(current,before_root)]}
+-            need(current==named_root and current[:5]==before_root[:5],
+                  'home_own_create_preserves_root_object')
+             self.root_identity=current
+             self.effect_unknown=False
+@@ -415,7 +408,6 @@
+         return {'schema':'heptabao.mac-owned-home-control-closure.r1',
+             'path':str(HOME_CONTROL),
+             'currentRootIdentity':None if self.root_identity is None else list(self.root_identity),
+-            'lastOwnCreateRootObservation':self.last_own_create_root_observation,
+             'initStarted':self.init_started,
+             'initComplete':self.init_complete,'rootCreationAttempted':self.root_creation_attempted,
+             'rootCreated':self.root_created,'effectUnknown':self.effect_unknown,

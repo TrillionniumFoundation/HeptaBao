@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-home-partial-readonly-1a3d11d9-status-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b0889605-fc05-7138"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_twoNone_product_freeze_proof_packet",
+  "records": [
+    {
+      "name": "PRODUCT-FREEZE-PROOF.public.json",
+      "blob": "13eab23bdd29743ebf450dfdb88442bc91406c38",
+      "bytes": 2973,
+      "sha256": "fb3aa8d33f054bb384b0fe9cd40cd61d08f69ef197571ce8f920df04e90f5eae"
+    },
+    {
+      "name": "branch.original.json",
+      "blob": "13b056d5e2ddefc6871390addd81e47533a66793",
+      "bytes": 493,
+      "sha256": "a323386900766d39e0aa0ab10197a8910d821c33adddb5a5f2c29a7cbaedb95d"
+    },
+    {
+      "name": "branch-readback.original.sdk.json",
+      "blob": "ca7a1eb44f0ae0514d05d33d4e8d998c9820cd6e",
+      "bytes": 1867,
+      "sha256": "637d95d5096dd70f122057969268d5bda4ebb8f754a0b287f57f4c2a177c1917"
+    }
+  ],
+  "expected_data_tree": "74cfd52ee4c5cdc6c4e4991744e1cbc84ef930dc",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,34 @@
+{
+  "sourcePackets": [
+    "14188d30affb94a730f9dee445a4683d10337b1f",
+    "15a9b763cc1163226b392d7b9a93d5a2ff3e5384"
+  ],
+  "sources": {
+    "tokenutil.go": {
+      "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+      "bytes": 14196,
+      "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969"
+    },
+    "policyutil.go": {
+      "blob": "9fe0c93d2c4c32e650dcb1919e3e4e3ce70468fa",
+      "bytes": 3409,
+      "sha256": "dc76454791f26542b9cd49f72f0e9fdaf36b0332e84676eff64bf15d68461118"
+    },
+    "references/official/role.go": {
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+      "bytes": 25759,
+      "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d"
+    },
+    "references/official/backend.go": {
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a"
+    },
+    "current-auth.rs": {
+      "path": "source1.after.rs",
+      "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+      "bytes": 398708,
+      "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+    }
+  }
+}

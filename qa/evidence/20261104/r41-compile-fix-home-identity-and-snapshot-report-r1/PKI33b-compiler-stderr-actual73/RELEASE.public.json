@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.compiler-stderr.release.r1",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "slot": "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1",
+  "new_body_calls": 4,
+  "new_body_observers": 1,
+  "new_body_pages": 2,
+  "total_metadata_and_body_calls": 10,
+  "all_completed_observers": [
+    {
+      "id": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "tool": "file_info",
+      "payload": {
+        "blob": "39e4636f04091c50bd868ffff8b3acba330a6a6d",
+        "bytes": 606,
+        "sha256": "66630702346d364eb274d11dc5df98af5d2aef4447397147c22cbf933e771b2a"
+      },
+      "payloadTree": "ef7bc69d41f5035541df2b59565bf7c81f6ba11f",
+      "nativeText": {
+        "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+        "bytes": 489,
+        "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "tool": "file_info",
+      "payload": {
+        "blob": "25782a8cf4193bfd59737aa0ab2abf05f5dd4a5b",
+        "bytes": 608,
+        "sha256": "0d00a3d69b037eb2a9efb82237b854cf186a0ce2139d1b1a0a8451bada60a011"
+      },
+      "payloadTree": "7d3414cfc7fe5642391d0f45ef4194fce17f71f8",
+      "nativeText": {
+        "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+        "bytes": 491,
+        "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "38aefd32b3958e30cfa2cde772bfd4d5345e26b0",
+        "bytes": 20038,
+        "sha256": "5fd50b43b2c01f5df900ce90fbae683746ee611456696048b6f90a8178687d20"
+      },
+      "payloadTree": "1234c8e89ab20b2faa34c12299364040ceb65ca8",
+      "nativeText": {
+        "blob": "8bc5cc525146254af328865923b106dc11a04655",
+        "bytes": 19935,
+        "sha256": "a1749845775bc302afd14d5b1f4c18e82dba6cf6eb3782cb13c652c7718cf304"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "body": {
+    "blob": "b9b08ddd0a6ee0451cff1993e75ff80e7569e53a",
+    "bytes": 14696,
+    "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+    "archiveTree": "b4a72265c7f1cafb500009e3941f49c313caea7d",
+    "whole": true,
+    "originalOperation": "2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a",
+    "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr"
+  },
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "activeFutureCount": 0,
+  "NativeCallsInFlight": 0,
+  "lane_released": true,
+  "failed_BUILD_original_exit101": true,
+  "tests_executed": 0,
+  "selected149_166_not_passed": true,
+  "stdout_body_read": false,
+  "no_new_BUILD": true,
+  "observed_diagnostics": [
+    {
+      "code": "E0061",
+      "path": "crates/heptabao-server/src/service_native_pki.rs",
+      "line": 270,
+      "provided_arguments": 13,
+      "required_arguments": 14
+    },
+    {
+      "code": "E0061",
+      "path": "crates/heptabao-server/src/service_native_ssh.rs",
+      "line": 326,
+      "provided_arguments": 13,
+      "required_arguments": 14
+    }
+  ],
+  "missing_argument": "native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>",
+  "root_cause_scope": "Two production call sites omitted the new private JWT lifetime argument. Candidate did not compile; no runtime test result is inferred.",
+  "next_work": "SOURCE-only minimal None operands for the two non-login callers; separate future compilation gate required.",
+  "original_timeout_preserved": true,
+  "old_paused_BUILD_state_unchanged": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc"
+}

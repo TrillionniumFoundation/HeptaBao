@@ -1,0 +1,229 @@
+{
+  "schema": "heptabao.inert-original-preservation-checks.v1",
+  "passed": true,
+  "count": 55,
+  "checks": [
+    {
+      "name": "home-auth-inert-r1-start:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-start:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-start:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-start:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-start:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-admit:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-admit:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-admit:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-admit:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-admit:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-state:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-state:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-state:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-state:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-state:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-p00000:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-p00000:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-p00000:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-p00000:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-status-01-p00000:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-admit:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-admit:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-admit:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-admit:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-admit:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-state:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-state:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-state:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-state:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-state:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p00000:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p00000:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p00000:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p00000:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p00000:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p08192:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p08192:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p08192:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p08192:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p08192:native_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p16384:accepted_once",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p16384:request_pin",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p16384:arm_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p16384:sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "home-auth-inert-r1-streams-01-p16384:native_pin",
+      "passed": true
+    },
+    {
+      "name": "7b63605a67ab552c070ee13f25fc63074362e9957e812e768838ccf8bedc7e54:payload_pin",
+      "passed": true
+    },
+    {
+      "name": "7b63605a67ab552c070ee13f25fc63074362e9957e812e768838ccf8bedc7e54:native_pin",
+      "passed": true
+    },
+    {
+      "name": "32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63:payload_pin",
+      "passed": true
+    },
+    {
+      "name": "32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63:native_pin",
+      "passed": true
+    },
+    {
+      "name": "exact_calls_observers_pages",
+      "passed": true
+    },
+    {
+      "name": "whole_original_stdout",
+      "passed": true
+    },
+    {
+      "name": "whole_original_stderr",
+      "passed": true
+    },
+    {
+      "name": "actual_known_failed_terminal",
+      "passed": true
+    },
+    {
+      "name": "all_observations_closed",
+      "passed": true
+    },
+    {
+      "name": "original_effect_unknown_not_rewritten",
+      "passed": true
+    }
+  ],
+  "productSuccess": false,
+  "newNativeCalls": 0
+}

@@ -1,0 +1,143 @@
+{
+  "schema": "heptabao.root.snapshot2379-BODY1-source-review.r1",
+  "passed": true,
+  "checkCount": 24,
+  "checks": [
+    {
+      "name": "whole21_303556_exact_packet",
+      "passed": true
+    },
+    {
+      "name": "qualified_body0_source_preserved_as_baseline",
+      "passed": true
+    },
+    {
+      "name": "exact_candidate_and_request_pins",
+      "passed": true
+    },
+    {
+      "name": "strict_forward_and_reverse_exact",
+      "passed": true
+    },
+    {
+      "name": "single_edit_new independent BODY1 slot and source-only scope",
+      "passed": true
+    },
+    {
+      "name": "single_edit_separate historical BODY0 and future BODY1 exact request pins",
+      "passed": true
+    },
+    {
+      "name": "single_edit_historical request guard remains BODY0",
+      "passed": true
+    },
+    {
+      "name": "single_edit_verify closed predecessor without replay or writes",
+      "passed": true
+    },
+    {
+      "name": "single_edit_initialize only new separately authorized BODY1 context",
+      "passed": true
+    },
+    {
+      "name": "single_edit_single fixed BODY1 validation and finite original observation limits",
+      "passed": true
+    },
+    {
+      "name": "single_edit_intent labels exact new read and immutable predecessor",
+      "passed": true
+    },
+    {
+      "name": "single_edit_ACK uses BODY1-specific admission ledger",
+      "passed": true
+    },
+    {
+      "name": "single_edit_ACK classification remains actual and nonhistorical",
+      "passed": true
+    },
+    {
+      "name": "single_edit_close original BODY1 then whole join and archive before semantic parse",
+      "passed": true
+    },
+    {
+      "name": "ten_declared_edits_only",
+      "passed": true
+    },
+    {
+      "name": "exact_root48_actual_proof",
+      "passed": true
+    },
+    {
+      "name": "actual_range0_native_whole_preserved",
+      "passed": true
+    },
+    {
+      "name": "actual_range0_release_preserved",
+      "passed": true
+    },
+    {
+      "name": "old_unknown_error_original_request_preserved",
+      "passed": true
+    },
+    {
+      "name": "author51_independently_reproduced",
+      "passed": true
+    },
+    {
+      "name": "template_scope_and_limits_match_source",
+      "passed": true
+    },
+    {
+      "name": "historical_slots_read_only",
+      "passed": true
+    },
+    {
+      "name": "both_ranges_rehash_before_whole_report_archive",
+      "passed": true
+    },
+    {
+      "name": "closed_remaining_scope_no_additional_calls",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "458c494e2a9270ac6787af4d7ece85b99ca3a2a1",
+    "files": 21,
+    "bytes": 303556,
+    "merkle": {
+      "root_sha": "458c494e2a9270ac6787af4d7ece85b99ca3a2a1",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "0d24dad24762e7a96432bb5c590a0ba8d2a232dd",
+    "bytes": 28520,
+    "sha256": "db8c7ab8fbc79d78bd25c8f465e31c41e08ee560efcb803824468bdd7595d84b"
+  },
+  "request": {
+    "blob": "c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a",
+    "bytes": 436,
+    "sha256": "978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128"
+  },
+  "wholeReportExpected": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8"
+  },
+  "body0RootQualification": {
+    "blob": "a290ba81a6164a082d6f1f4c5b98d82b783e6cbe",
+    "bytes": 6373,
+    "sha256": "bbdee84c298f47b2d7b11bfd47ce09bec01fc8b096cc5d959de0e535aac25748"
+  },
+  "authorChecksReproduced": 51,
+  "sourceDiffHunks": 8,
+  "NativeCalls": 0,
+  "body1Submitted": false,
+  "fullReportQualified": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

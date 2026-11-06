@@ -1,0 +1,140 @@
+[
+  {
+    "index": 0,
+    "key": "jwt-pki-build149-compiler-stderr-info-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8",
+      "bytes": 302,
+      "sha256": "fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"
+    },
+    "sdk": {
+      "blob": "369e01329925c5c572e1bed30646e802b8d5f1bf",
+      "bytes": 704,
+      "sha256": "09f9c775044ae5f82e3f723a875e9db520b36378da2d23d9c79324fd96d1ef25"
+    },
+    "native": {
+      "blob": "387a4217c1d111f482f7bd3f2a370f072c203b07",
+      "bytes": 543,
+      "sha256": "7c5e097733284eecb3c55aa76a4645708e779b11845621a56228a5c6680420c8"
+    },
+    "sdk_tree": "c54b23cfdc849786792dbfa029db3c2b7fa4f7ed",
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "index": 1,
+    "key": "jwt-pki-build149-compiler-stderr-info-status-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "866cd6d40d9d6db90d82fcc0a2b05570ef861bc8",
+      "bytes": 89,
+      "sha256": "93eec17c147ed7ca95a24ca81922bc6260c12aa4af3ccb30e51a6bf7f33c17af"
+    },
+    "sdk": {
+      "blob": "7d12af30f5184edd5daad0df4018e1001b9bfa9c",
+      "bytes": 975,
+      "sha256": "89d317c276bcc436e994e8306e9945bae3f61f97c0acd4503b819383799e75c2"
+    },
+    "native": {
+      "blob": "c6158d635c48dc4948c9bfc274bb39f3231a7bac",
+      "bytes": 800,
+      "sha256": "486ca275e1924edf8d6924a30e463d13931323b92f69714265e212bd5f80e206"
+    },
+    "sdk_tree": "84b298f95339b3b6bd74fa47c6ee561538ad67d7",
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "index": 2,
+    "key": "jwt-pki-build149-compiler-stderr-info-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "1ecc49cdcfc5b07797354dce35ec985fd56ece93",
+      "bytes": 121,
+      "sha256": "a4afe6dd16ea6d4c3a469815cc736852372d18ce61763ea8e6502b0ba4c5856f"
+    },
+    "sdk": {
+      "blob": "eab072190679fba578ef64e2c1766a13242f48db",
+      "bytes": 1660,
+      "sha256": "b1a6276a894a496eb80e8a2044c4662d3d4e4aef3f51d9d821b40321fa7e024c"
+    },
+    "native": {
+      "blob": "2ac63aa2b7fe2c0974f887b11e17f016e05f5b00",
+      "bytes": 1489,
+      "sha256": "ce42a6e6a31d5bc7b881c4a84b47575a725bd5e905a93fd4e407a88eac4e834f"
+    },
+    "sdk_tree": "6026699d86c5f701e9b24943091f8fb8eba9dec8",
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "index": 3,
+    "key": "jwt-pki-build149-compiler-stdout-info-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "008beb6807a40811762b005eb20cd396755775eb",
+      "bytes": 302,
+      "sha256": "b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"
+    },
+    "sdk": {
+      "blob": "ab04bdbc7d9ba734acb2063c7d69e1e2226e0ae5",
+      "bytes": 704,
+      "sha256": "86ac2593678b26532f32e4b38aae4cf0a708f87dc58f294ce98c7aab1e883d60"
+    },
+    "native": {
+      "blob": "96cac81fba3cebd8e03cd122db39ad45e0548c23",
+      "bytes": 543,
+      "sha256": "93c0ad19c2ffea888309fc1ad991fc4fd51c7a244481d42663510653cfc72260"
+    },
+    "sdk_tree": "3660ecc5b10b55c84c3eb623df6dbac3a409d228",
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "index": 4,
+    "key": "jwt-pki-build149-compiler-stdout-info-status-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "dfb596023a37705be8cf18e23b3b66ee49c5ae5b",
+      "bytes": 89,
+      "sha256": "cb180fbef1264e59a031206725d2a4aaf540f35d2e9b8ed3e57a8e0171ef1252"
+    },
+    "sdk": {
+      "blob": "ab37d00ffb16e409ccc1770b7e4c271b04612432",
+      "bytes": 975,
+      "sha256": "78d4fc2fad302c23cb9ea52f7d516f868576744dce431727860d913febd7c0cb"
+    },
+    "native": {
+      "blob": "0a3eb1375b51baeb72c9cda2cb8519c7924af8b3",
+      "bytes": 800,
+      "sha256": "15c05c6bd7da077c9fba2635f1ed8cc0bc803b0ccb74dd5ed3c61846742b8665"
+    },
+    "sdk_tree": "87e876313fac4985aa8726cab3fea3324e3e45d9",
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "index": 5,
+    "key": "jwt-pki-build149-compiler-stdout-info-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "b30b767d49051e5b7f56f495ecf1ad46e40520cf",
+      "bytes": 121,
+      "sha256": "972b4f37334346e68709bde7c180bae517888c892ed385d391899f877283716d"
+    },
+    "sdk": {
+      "blob": "c4744e28986e921e89a07a3fc4401ea8369d5a1e",
+      "bytes": 1664,
+      "sha256": "ac0b480243b15842e8962d1e18cc010f071ee0b8322c51f1f53b874cb02bf631"
+    },
+    "native": {
+      "blob": "b7e1fd27807d5ea9faa5e7f8568cde6732130630",
+      "bytes": 1493,
+      "sha256": "47d36c0fa31b85bfacde4145793bd00490de9c8e89751b537127e49c3984a602"
+    },
+    "sdk_tree": "1f8b41330e172bf73222d7f8c24443258b19272c",
+    "phase": "accepted",
+    "called": true
+  }
+]

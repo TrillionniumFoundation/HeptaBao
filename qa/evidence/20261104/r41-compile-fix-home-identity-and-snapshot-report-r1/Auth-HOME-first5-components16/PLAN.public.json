@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.home-owned-create-first5-correction-source.v1",
+  "status": "COMPONENT_SOURCE_ONLY_NOT_DISPATCHABLE",
+  "originalSource": "74deadc6eaa97085b124515a703b6b386f3d3a20",
+  "originalActual": "1c360c303e249709a2dddd6941f110abad5c16c5",
+  "originalError": "home_own_create_preserves_root_object",
+  "actualScope": "Known first public write14052 followed by this composite refusal; original current/named tuples and which conjunct failed were not emitted. A nlink change is not asserted as the observed cause.",
+  "oldPredicate": "current == named_root and current[:6] == self.root_identity[:6]",
+  "newPredicate": "current == named_root and current[:5] == before_root[:5]",
+  "invariant": "Preserve dev/ino/uid/gid/type-mode object identity after only this own exclusive create, require held/name full9 equal, then update owned root full9. Every subsequent operation still checks exact current owned-root full9. No first5 relaxation is applied to the existing before-operation full9 fence or file nlink==1.",
+  "newProjection": {
+    "lastOwnCreateRootObservation": [
+      "beforeFull9",
+      "currentFull9",
+      "namedFull9",
+      "heldNamedFull9Equal",
+      "sameRootObjectFirst5",
+      "fieldEqualToBefore"
+    ],
+    "namesAndValues": "Only the fixed public HOME root's numeric stat metadata; no directory contents, arbitrary path, raw code or unknown text."
+  },
+  "exactComponentScope": {
+    "helper": {
+      "before": {
+        "blob": "617a5dff5118482095792e368e128016fe817435",
+        "bytes": 18270,
+        "sha256": "dffafd0f5588bbe6ad2daa7ab7ae53f0f8eb6e093974811b584ff18969f44f70"
+      },
+      "after": {
+        "blob": "9b57e0324d70728df2d3e041ae695c90702ba8e3",
+        "bytes": 18808,
+        "sha256": "2703ffef7b2eb66e53f6eb9775ba9dc6c13ced8d42d7e64da6880267bc29855c"
+      },
+      "forwardHunks": 3,
+      "reverseHunks": 3
+    },
+    "manager": {
+      "before": {
+        "blob": "72432815fd3f7cd77ba70e8d6461cd4f739fcbc8",
+        "bytes": 57914,
+        "sha256": "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
+      },
+      "after": {
+        "blob": "fb0f0d2ba6fbab618c6ce23801677d8e90f880ae",
+        "bytes": 58452,
+        "sha256": "f730e37ca6560a3a47aea3577a595f1059cf1821d8f6e232d57d66ed225ca707"
+      },
+      "forwardHunks": 3,
+      "reverseHunks": 3
+    },
+    "publisher": {
+      "before": {
+        "blob": "fc40ff27b6657aee025162e0db547d501f327c8a",
+        "bytes": 35976,
+        "sha256": "c273bce27b99840c3d6fcd92ca7cf281ea803d043f7eff38da58428b9dea0768"
+      },
+      "after": {
+        "blob": "8e3470d115b4139787963e57c47bd28309bac107",
+        "bytes": 36514,
+        "sha256": "2dfb23a0f1e62b3f5b8feb2791b2d0b4a68f27c0631a86d5cec357aea016f858"
+      },
+      "forwardHunks": 3,
+      "reverseHunks": 3
+    }
+  },
+  "unchanged": "All HOME capabilities/caps, before-operation full9 checks, copy body/file nlink checks, pending/registrationUnknown and once-close/init flags, signals, original 45/30/60 stage, 900/1080 worker, five-agent configs, original native/renew/revoke/rollback paths remain exact.",
+  "nondispatchable": "These are focused full-file component successors only. Embedded source/payload pins and candidate are not rebound. No new publisher request or runtime request is produced. Original partial HOME exists; it must not be fed to the old create-only initializer again or silently renamed. A continuation/cleanup/fresh isolated scope requires a later explicit decision from actual fixed-read evidence.",
+  "originalHistoriesRetained": true,
+  "actualRootTupleAtOriginalFailure": null,
+  "newRootOrRepairWritesPerformed": 0,
+  "NativeCalls": 0,
+  "PythonModuleOrTestExecuted": false
+}

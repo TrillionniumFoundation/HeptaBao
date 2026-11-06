@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_pki025b_stage_INFO_GO_packet",
+  "records": [
+    {
+      "name": "root-GO.public.json",
+      "blob": "4fb81ed6ff55e93f74ad9a2e145a7244e1784c28",
+      "bytes": 2051,
+      "sha256": "3937fefc23430e840b5497252a3ebd30afc1e4f41557d982888177085dd89d83"
+    },
+    {
+      "name": "root-source-qualification.public.json",
+      "blob": "72c7c34697152e40ebfa85cb221421d50e049527",
+      "bytes": 4859,
+      "sha256": "a1ec85ba7b43cef01c4e1b81e4c6de69b4f809fe558595a3bc5771b5425d4c8b"
+    },
+    {
+      "name": "root-source-verifier.js",
+      "blob": "a27e2c59a2180655810889bc779539857fea9d98",
+      "bytes": 4002,
+      "sha256": "e67ffa7d7acda94b3f2c4b5da5c3136daae0bc827b66f961de00138caa1d6124"
+    },
+    {
+      "name": "root-terminal-qualification.public.json",
+      "blob": "16091afbb8e0cdce0a8720e626317d28830c180e",
+      "bytes": 6436,
+      "sha256": "b00c586b1f583bf7f341ad36d1ddfccbe053401d3b567916ab7d02e33954edd5"
+    },
+    {
+      "name": "root-terminal-verifier.js",
+      "blob": "c4ea39aab344f8edd926dc4f459904f8092bfe3f",
+      "bytes": 5231,
+      "sha256": "5d922a5d033b206ddf007ef1777e6ec6361a4be88f3701cbc61edb80d72c4243"
+    },
+    {
+      "name": "root-reproduced-author32.public.json",
+      "blob": "fbefff20e2f6e0b4be735e9e00c062ac79f3c0f6",
+      "bytes": 2790,
+      "sha256": "43fd8359dc88c69a5e1ac737e4f5dced2d7f6f6e222e13256e537e51c20c3719"
+    },
+    {
+      "name": "root-initial-checker-correction.public.json",
+      "blob": "6bf2690d2bf70128b87ed3ef80c90717cd3f35a0",
+      "bytes": 296,
+      "sha256": "e5df01caea10ed3c202f7380c9099a8e461fb45542b380c156a7fe9cc4147c34"
+    },
+    {
+      "name": "root-initial-source-verifier.js",
+      "blob": "22fb3b46a882401f6d14c6a6d439a48853a3de76",
+      "bytes": 4003,
+      "sha256": "8f285cfb15d64420ef03ddb096168bed581ca2e4785d3db369096c5eefc45fc5"
+    }
+  ],
+  "expected_data_tree": "f1f880cf3377a52e834584cca126a2c3f42a2bbe",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.native-jwt-pki.compile-E0061-fix.source.v1",
+  "baseCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "baseTree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "rootControlledCommit": true,
+  "sourceOnly": true,
+  "fmt": false,
+  "compile": false,
+  "testsRun": 0,
+  "Native": 0,
+  "edits": [
+    {
+      "path": "crates/heptabao-server/src/service_native_pki.rs",
+      "before": {
+        "blob": "281f74233d0d7ab36aec9e03ec2830f099a9988d",
+        "bytes": 29605,
+        "sha256": "7a19cdaf368062272550d35df9af9a47ed9cc0df111c106ec40166aa36ed8c93"
+      },
+      "after": {
+        "blob": "b11309ef29cc1328657b4645045008fc57bcd628",
+        "bytes": 29631,
+        "sha256": "a73eac54021903a103a207d727c122641de068e38937995084419b10ee1e0581"
+      },
+      "diff": {
+        "blob": "63f8369e48f9a3f0549fcd428291f8d08e23b8bf",
+        "bytes": 380,
+        "sha256": "2adb0364a3e2e0f301eb1e8cb2ce07fa51994857b5e9e6ac10f820c990705b59"
+      },
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh.rs",
+      "before": {
+        "blob": "3b03ce4da8d5b5f7779096397ee9f7e6915ce075",
+        "bytes": 19996,
+        "sha256": "485fa77ae90f484a4ac039aeb249447c4b15f5fae48d18f22103aaef41132d16"
+      },
+      "after": {
+        "blob": "6d347777f8fa6a45eb570bd080aed96a5487e975",
+        "bytes": 20022,
+        "sha256": "211bcc92758f9fb92699640aabb721a86e180f7d5bbd6c9ab3ff2267e280b318"
+      },
+      "diff": {
+        "blob": "bea5ff2c7f25a518dc669135d349d9819e6c4e9e",
+        "bytes": 380,
+        "sha256": "554684bb131d81f62b8db27e608212a392d2c48ea393edac81e387c00d3a5c18"
+      },
+      "additions": 1,
+      "deletions": 0
+    }
+  ],
+  "change": "Pass explicit None as the 14th native_jwt_lifetime argument in the two existing non-JWT owner dispatch calls.",
+  "preserved": [
+    "all prior arguments",
+    "original candidate/actor/body/source identity checks",
+    "PKI/SSH prepare/execute/lease/signing/commit/deadline/error paths",
+    "request-local JWT lifetime production and consumption",
+    "all tests and groups149/166",
+    "original failed attempt and logs",
+    "ACL/policy behavior"
+  ],
+  "evidence": {
+    "stderr": {
+      "blob": "b9b08ddd0a6ee0451cff1993e75ff80e7569e53a",
+      "bytes": 14696,
+      "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964"
+    },
+    "stderrOriginalChain": "4f0d687d092bf8f3bb767638ee94f81edca16a1e"
+  },
+  "obligation": "Requires a new actual release compilation and then the unchanged 149 unique / 166 profile invocations; no source review substitutes for that gate.",
+  "knownCallSites": {
+    "count": 3,
+    "allAfter14": true,
+    "scopeFiles": 5,
+    "fullRepositorySearch": false,
+    "definitionAndJWTCallerUnchanged": true
+  }
+}

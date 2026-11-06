@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.native-jwt-pki.E0061-minimal-source-checks.v1",
+  "pass": true,
+  "checks": [
+    {
+      "name": "crates/heptabao-server/src/service_native_pki.rs:canonical_before",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_pki.rs:one_hunk",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_pki.rs:one_added_None",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_pki.rs:zero_removed",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_pki.rs:delta26",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_ssh.rs:canonical_before",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_ssh.rs:one_hunk",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_ssh.rs:one_added_None",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_ssh.rs:zero_removed",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_ssh.rs:delta26",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service.rs:reference_pin",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_auth.rs:reference_pin",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_pki.rs:reference_pin",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/service_native_ssh.rs:reference_pin",
+      "pass": true
+    },
+    {
+      "name": "crates/heptabao-server/src/auth_native_jwt.rs:reference_pin",
+      "pass": true
+    },
+    {
+      "name": "known_calls_three",
+      "pass": true
+    },
+    {
+      "name": "known_calls_after14",
+      "pass": true
+    },
+    {
+      "name": "base_full_tree",
+      "pass": true
+    },
+    {
+      "name": "successor_full_tree",
+      "pass": true
+    },
+    {
+      "name": "only_two_modified",
+      "pass": true
+    },
+    {
+      "name": "only_52_bytes_added",
+      "pass": true
+    },
+    {
+      "name": "matrix_unchanged",
+      "pass": true
+    },
+    {
+      "name": "same_groups_pin",
+      "pass": true
+    },
+    {
+      "name": "fresh_attempt_old_preserved",
+      "pass": true
+    },
+    {
+      "name": "target_probe_not_lifetime_lock",
+      "pass": true
+    },
+    {
+      "name": "no_runtime_or_commit",
+      "pass": true
+    }
+  ],
+  "total": 26,
+  "strictBothDirections": true,
+  "runtime": 0,
+  "compile": 0,
+  "tests": 0,
+  "scope": "Pure source/hash/Merkle/known-call checks only"
+}

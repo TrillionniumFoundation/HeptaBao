@@ -1,0 +1,170 @@
+{
+  "schema": "heptabao.root-source-review.PKI33b-original-compiler-log-INFO.v1",
+  "status": "PASS_SOURCE_TWO_ORIGINAL_LOG_METADATA_OPERATIONS_ONLY",
+  "checks": [
+    {
+      "name": "wholeSOURCE18_397282",
+      "passed": true
+    },
+    {
+      "name": "author38_checks_reproduced",
+      "passed": true
+    },
+    {
+      "name": "exact5hunks_and_original_metadata_reference",
+      "passed": true
+    },
+    {
+      "name": "previous_contexts_and_report_exact_original",
+      "passed": true
+    },
+    {
+      "name": "executed_runner_and_launcher_pins",
+      "passed": true
+    },
+    {
+      "name": "only_two_fixed_actual_log_paths",
+      "passed": true
+    },
+    {
+      "name": "original_log_creation_and_closure_mechanism_in_executed_runner",
+      "passed": true
+    },
+    {
+      "name": "metadata_unknown_until_observed",
+      "passed": true
+    },
+    {
+      "name": "metadata_full9_from_observed_typed_fields",
+      "passed": true
+    },
+    {
+      "name": "only_new_context_may_change",
+      "passed": true
+    },
+    {
+      "name": "offline_exact_first_request_passes_guard_without_tool",
+      "passed": true
+    },
+    {
+      "name": "offline_process_start_rejected",
+      "passed": true
+    },
+    {
+      "name": "offline_out_of_order_stdout_rejected",
+      "passed": true
+    },
+    {
+      "name": "offline_binary_read_rejected",
+      "passed": true
+    },
+    {
+      "name": "offline_once_marker_blocks_second_admission",
+      "passed": true
+    },
+    {
+      "name": "offline_original_paused_context_unchanged",
+      "passed": true
+    },
+    {
+      "name": "fixed_two_metadata_operations_8kpages_1MiBpayload",
+      "passed": true
+    }
+  ],
+  "check_count": 17,
+  "author_checks_reproduced": 38,
+  "packet": {
+    "tree": "14ba1481003106bfa56b378f3b0ddb0870127b71",
+    "files": 18,
+    "bytes": 397282,
+    "merkle": {
+      "root_sha": "14ba1481003106bfa56b378f3b0ddb0870127b71",
+      "trees_verified": 1,
+      "leaf_count": 18
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "850d83d091d21699713f26dba9489e0789c9bc12",
+    "bytes": 23663,
+    "sha256": "82456b23001187d1b86b3bd23e82c8a70b4baac74d5642a5f91982f527716667"
+  },
+  "exact_requests": [
+    {
+      "blob": "e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8",
+      "bytes": 302,
+      "sha256": "fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"
+    },
+    {
+      "blob": "008beb6807a40811762b005eb20cd396755775eb",
+      "bytes": 302,
+      "sha256": "b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"
+    }
+  ],
+  "targets": [
+    {
+      "role": "compiler-stderr",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+      "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+      "expected_mode": 384,
+      "expected_full_mode": 33152,
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_link_count": 1,
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false
+    },
+    {
+      "role": "compiler-json-stdout",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stdout",
+      "sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+      "expected_mode": 384,
+      "expected_full_mode": 33152,
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_link_count": 1,
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false
+    }
+  ],
+  "actual_failed_report": {
+    "blob": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "packet": "db9226138ba61edc94c08ef141f15cc7c61b58a3"
+  },
+  "prior_contexts": {
+    "complete_retrieval": {
+      "blob": "89dc4a1a78028d99ae0ac3d626564532d2f40098",
+      "bytes": 80686,
+      "sha256": "b227ac22523c59737f83f38da259e1139f6e8a62b483749be8a9cf6c0f3e4387"
+    },
+    "old_paused_BUILD": {
+      "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+      "bytes": 120307,
+      "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+    },
+    "both_read_only": true,
+    "old_timeout_preserved": true
+  },
+  "metadata_size_post_observation_cap": 1048576,
+  "immutable_payload_cap": 1048576,
+  "immutable_page_cap": 8192,
+  "limits": [
+    "Exactly two sequential file_info operations on the original normal-release-build logs; no body read, directory scan, Cargo or process start.",
+    "Mode/owner/link/version/size are unobserved until each original immutable metadata payload is whole-preserved.",
+    "The reported1MiB file-size predicate is an after-observation admission guard, not a transport body read budget.",
+    "Both original paused BUILD and completed retrieval contexts remain byte-identical. Any failure stops the new context.",
+    "Original failed build is not retried and target lock reuse is not qualified."
+  ],
+  "root_Runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

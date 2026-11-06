@@ -1,0 +1,24 @@
+--- a/journal.before.js
++++ b/journal.after.js
+@@ -5,9 +5,9 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "jwt_pki_025b05a3_rog_source_gitfirst_r1";
++const GF_REQUEST = {blob:"853a68efffe7308239adf59c3cf29d1dabf355b2",
++ bytes:111910,sha256:"1ed8f541e793261ed5684093cebd76917fbad7c26b661d876547e1fd0b3cda0e"};
+-const GF_SLOT = "jwt_pki_33b814c7_rog_source_gitfirst_r1";
+-const GF_REQUEST = {blob:"1b3da82ecf429adc5d816a2ff2cb78810059ac90",
+- bytes:111811,sha256:"576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,7 +46,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-native-jwt-pki-025b05a3-rog-source-observe-r1-/.test(q.idempotency_key),
+-    && /^heptabao-native-jwt-pki-33b814c7-rog-source-observe-r1-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

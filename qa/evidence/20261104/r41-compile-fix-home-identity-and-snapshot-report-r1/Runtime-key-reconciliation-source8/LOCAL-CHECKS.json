@@ -1,0 +1,145 @@
+{
+  "source_only": true,
+  "native_calls": 0,
+  "checks": [
+    {
+      "name": "async whole bytes/hash",
+      "passed": true,
+      "details": {
+        "blob": "7636673d55ab4e3eb6c861be021d47a1c36fc227",
+        "bytes": 57879,
+        "sha256": "610879ccdcb477da688030f507baa64541d7439fdc157aa543af9d63d04c534c"
+      }
+    },
+    {
+      "name": "async exact canonical member",
+      "passed": true,
+      "details": {
+        "path": "src/mcp/runtime/operation_async.rs",
+        "sha": "7636673d55ab4e3eb6c861be021d47a1c36fc227",
+        "size": 57879
+      }
+    },
+    {
+      "name": "crypto whole bytes/hash",
+      "passed": true,
+      "details": {
+        "blob": "0c07318a6d85efb920069ce4f190c4f2ed56e84f",
+        "bytes": 15524,
+        "sha256": "a48463ef35ca41d0aa8ef64fcaeb9d3245773052221789a38d18d52ced891633"
+      }
+    },
+    {
+      "name": "crypto exact canonical member",
+      "passed": true,
+      "details": {
+        "path": "src/mcp/runtime/operation_crypto.rs",
+        "sha": "0c07318a6d85efb920069ce4f190c4f2ed56e84f",
+        "size": 15524
+      }
+    },
+    {
+      "name": "tests whole bytes/hash",
+      "passed": true,
+      "details": {
+        "blob": "74192e39b71e8d4fba9f762f3465541e57471f1a",
+        "bytes": 30757,
+        "sha256": "671019d889592f7993679916f022058a19ca9b5e1859140552b80f107f51e65d"
+      }
+    },
+    {
+      "name": "tests exact canonical member",
+      "passed": true,
+      "details": {
+        "path": "src/mcp/runtime/operation_async_tests.rs",
+        "sha": "74192e39b71e8d4fba9f762f3465541e57471f1a",
+        "size": 30757
+      }
+    },
+    {
+      "name": "source has no start lookup-only parameter",
+      "passed": true,
+      "details": "operation + idempotency_key only; deny_unknown_fields"
+    },
+    {
+      "name": "Unix key lookup is module private",
+      "passed": true,
+      "details": "not pub; source scope"
+    },
+    {
+      "name": "three existing-binding early returns",
+      "passed": true,
+      "details": "two lookup returns and Reservation::Existing"
+    },
+    {
+      "name": "only one dispatch invocation in start",
+      "passed": true,
+      "details": "after tokio::spawn and New reservation"
+    },
+    {
+      "name": "absence path can create and dispatch",
+      "passed": true,
+      "details": "New/active/receipt/spawn/dispatch sequence"
+    },
+    {
+      "name": "published record and directory fsync",
+      "passed": true,
+      "details": "publish lines 440-483"
+    },
+    {
+      "name": "historical intent precedes occupancy and primary",
+      "passed": true,
+      "details": "reserve_at lines 1096-1108"
+    },
+    {
+      "name": "partial graph refuses",
+      "passed": true,
+      "details": "no automatic reconstruction from partial graph"
+    },
+    {
+      "name": "ID is random rather than derived from public request",
+      "passed": true,
+      "details": "next_id lines 304-307"
+    },
+    {
+      "name": "idempotency/request MAC keys independent",
+      "passed": true,
+      "details": "operation_crypto lines 280-340"
+    },
+    {
+      "name": "known ID required for status/result",
+      "passed": true,
+      "details": "no key selector"
+    },
+    {
+      "name": "reused=false can exist before dispatch",
+      "passed": true,
+      "details": "request audit failure branch at 1569-1572"
+    },
+    {
+      "name": "checked receipt performs no dispatch",
+      "passed": true,
+      "details": "1663-1666"
+    },
+    {
+      "name": "history tests cover missing graph refusal source only",
+      "passed": true,
+      "details": "tests read, not run"
+    },
+    {
+      "name": "current discovered operation family contains only four exposed methods",
+      "passed": true,
+      "details": [
+        "mcp__codex_apps__heptaruntime_mac_controller_operation_cancel",
+        "mcp__codex_apps__heptaruntime_mac_controller_operation_result",
+        "mcp__codex_apps__heptaruntime_mac_controller_operation_start",
+        "mcp__codex_apps__heptaruntime_mac_controller_operation_status"
+      ]
+    },
+    {
+      "name": "no exposed lookup-only tool discovered in bounded name scan",
+      "passed": true,
+      "details": "catalog check only; not global source absence claim"
+    }
+  ]
+}

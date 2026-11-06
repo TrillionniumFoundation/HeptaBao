@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.home-launch-r2.pure-construction-history.r1",
+  "events": [
+    {
+      "stage": "draft1 namespace binding before SOURCE freeze",
+      "finding": "Two composed ROOT literals in mac_t5_volume_guard_r1.py and mac_current_outer_inputs_r2.py retained the original basename because draft1 replaced only absolute T5 root.",
+      "fix": "Add the exact original T5 root basename to the finite namespace map; no general suffix replacement. Regenerate all dependent source/document/payload/request/journal pins.",
+      "oldDraftRetained": true,
+      "NativeCalls": 0,
+      "PythonOrSDKExecuted": false,
+      "oldDraftWholeArchived": false,
+      "originalR1FailureUnchanged": true
+    }
+  ]
+}

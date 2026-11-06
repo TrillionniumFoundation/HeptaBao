@@ -1,0 +1,24 @@
+
+function verifyBody1SourceRoot(p,body0,root48,author){
+ const checks=[];const ck=(n,v)=>{checks.push({name:n,passed:v===true});if(v!==true)throw Error(n)};
+ const raw=p.raw,plan=JSON.parse(raw["PLAN.public.json"]),template=JSON.parse(raw["root-go-contract.template.json"]),source=raw["candidate.journal.js"];
+ const eq=(s,pin)=>{const x=gitBlobMeta(s);return ["blob","bytes","sha256"].every(k=>x[k]===pin[k])};
+ ck("whole21_303556_exact_packet",p.audit.whole===true&&p.audit.files===21&&p.audit.bytes===303556&&p.audit.tree==="458c494e2a9270ac6787af4d7ece85b99ca3a2a1");
+ ck("qualified_body0_source_preserved_as_baseline",raw["before.journal.js"]===body0.raw["journal.executed.js"]&&eq(raw["before.journal.js"],plan.base));
+ ck("exact_candidate_and_request_pins",eq(source,plan.source)&&eq(raw["BODY1.exact-request.json"],plan.exactOriginalRequest)&&plan.exactOriginalRequest.blob==="c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a"&&plan.exactOriginalRequest.bytes===436&&plan.exactOriginalRequest.sha256==="978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128");
+ const f=strictApply(raw["before.journal.js"],raw["source.forward.diff"]),r=strictApply(source,raw["source.reverse.diff"]);
+ ck("strict_forward_and_reverse_exact",f.text===source&&r.text===raw["before.journal.js"]&&f.hunks===8&&r.hunks===8);
+ let transformed=raw["before.journal.js"];const edits=JSON.parse(raw["edits.public.json"]);
+ for(const e of edits){ck("single_edit_"+e.label,transformed.split(e.before).length===2);transformed=transformed.replace(e.before,e.after);}
+ ck("ten_declared_edits_only",edits.length===10&&transformed===source);
+ ck("exact_root48_actual_proof",raw["reference-BODY0-root48.public.json"]===root48.text&&eq(root48.text,plan.predecessor.rootQualification));
+ ck("actual_range0_native_whole_preserved",raw["reference-BODY0.native.original.json"]===body0.raw["range0.native.original.json"]&&eq(raw["reference-BODY0.native.original.json"],plan.predecessor.native));
+ ck("actual_range0_release_preserved",raw["reference-BODY0-release.public.json"]===body0.raw["RELEASE.public.json"]&&eq(raw["reference-BODY0-release.public.json"],plan.predecessor.release));
+ ck("old_unknown_error_original_request_preserved",raw["reference-old-UNKNOWN.public.json"]===body0.raw["old-UNKNOWN.original.json"]&&raw["reference-old-error.original.sdk.json"]===body0.raw["old-error.SDK.original.json"]&&raw["reference-original-BODY0.request.json"]===body0.raw["00-operation_start.request.original.json"]);
+ ck("author51_independently_reproduced",author.passed===51&&author.NativeCalls===0&&author.candidateRuntimeInvoked===false);
+ ck("template_scope_and_limits_match_source",template.authorization==="UNAUTHORIZED_SOURCE_PROPOSAL"&&template.scope==="format_body1_exact_completion"&&template.slot==="snapshot_2379_formatter_body1_completion_r1"&&template.maximum_operation_start_calls===1&&template.maximum_status_calls===8&&template.maximum_result_pages===64&&template.immutable_page_bytes===16384&&template.maximum_retained_payload_bytes===1048576&&template.maximum_decoded_range_bytes===53389&&template.whole_file_bytes===118925&&template.process_start_authorized===false&&template.file_info_authorized===false&&template.body0_repeat_authorized===false);
+ ck("historical_slots_read_only",!source.includes("store(GF_ORIGINAL_SLOT,")&&!source.includes("store(GF_BODY0.slot,")&&source.includes("original_paused_context_must_remain_unchanged")&&source.includes("BODY0_reconciliation_context_must_remain_closed_and_unchanged"));
+ ck("both_ranges_rehash_before_whole_report_archive",source.indexOf("sha256Latin1(byteString(range0))===GF_BODY0.chunkSha256")<source.indexOf("const joined=range0.concat(bodyBytes)")&&source.indexOf("sha256Latin1(byteString(joined))===need.sha256")<source.indexOf('"report.original.public.json":reportRaw')&&source.indexOf('"report.original.public.json":reportRaw')<source.indexOf("s.wholeReport={"));
+ ck("closed_remaining_scope_no_additional_calls",!source.includes("JSON.parse(reportRaw)")&&!source.includes("parseLosslessIntegers(reportRaw)")&&source.includes("additionalRangeAuthorized:false")&&plan.newRead.actualFutureOperationId===null&&plan.newRead.submitted===false&&plan.fullReportCurrentlyQualified===false);
+ return {schema:"heptabao.root.snapshot2379-BODY1-source-review.r1",passed:true,checkCount:checks.length,checks,packet:p.audit,source:plan.source,request:plan.exactOriginalRequest,wholeReportExpected:plan.file,body0RootQualification:plan.predecessor.rootQualification,authorChecksReproduced:51,sourceDiffHunks:8,NativeCalls:0,body1Submitted:false,fullReportQualified:false,productionCutover:false,legacyCleanup:false};
+}

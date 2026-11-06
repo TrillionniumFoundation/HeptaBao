@@ -1,0 +1,140 @@
+--- a/after/publisher
++++ b/before/publisher
+@@ -12,13 +12,13 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+45.0
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1')
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2')
+ QA=ROOT/'qa'
+ PROOFS=ROOT/'proofs'
+ PINS={
+     "mac_auth_rows_cas_r1.mjs": [
+         3108,
++        "9a121d58a9d5d1a331f2cfd5acc15ab162a487da6dead43019b84a6686e9e30e"
+-        "f77ecb7fd607b2cc377619e050f89c7460420df96d42110de142bdadbf33ce73"
+     ],
+     "mac_authbus_cache_cas_r1.mjs": [
+         6846,
+@@ -34,31 +34,31 @@
+     ],
+     "mac_current_capture_entry_wal_r1.py": [
+         42083,
++        "3d015ef9d916948a6d9f2c96d89c9ebb6352929243018abb6fba7ba2e2b4c4f1"
+-        "f13e9a727d51d91184e97ee0b2042824706664db5ac7366ee7adf26bffa43203"
+     ],
+     "mac_current_cycle_r2.mjs": [
+         24012,
++        "4dc34661acc16e7e565c9818c159f912bdb713d8efbe0f4f3958add7641fd23e"
+-        "04ab9aab3b6ee292835c97f2b208c054e3089814ecc40a493ce21a157e41f092"
+     ],
+     "mac_current_fixture_materializer_r1.py": [
+         25973,
++        "f32271748b60a0660170b7b739c209e715c72e5038fe19bcfbd6c7f4fe5c2813"
+-        "070642a2fecc974794ace1b1cba8eac4672b789aecd4d00a3b4944fb773e853e"
+     ],
+     "mac_current_outer_inputs_r2.py": [
+         33001,
++        "6fd9b5f5a54ed4f40770bb95d017e836d21f51efff10d90beaaeb133b34a82b5"
+-        "cd7fcc48fc6eff9c4d166eab996e40723e6918fabf4815e55e2080096129734d"
+     ],
+     "mac_current_outer_wal_r1.py": [
+         73918,
++        "a594ccebcbe251b066e574327ec7a64d30d84fd630292c436178d45524a60f53"
+-        "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+     ],
+     "mac_current_phase_owner_r2.py": [
+         25647,
++        "afe225c67d455f5324a5923cac0efc0ffa2393e1619a5cf169d6cf33d4540154"
+-        "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855"
+     ],
+     "mac_current_server_owner_r1.py": [
+         14052,
++        "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+-        "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+     ],
+     "mac_darwin_owned_projection_r1.py": [
+         12858,
+@@ -85,8 +85,8 @@
+         "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+     ],
+     "mac_owned_launchd_r3.py": [
++        57914,
++        "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
+-        58452,
+-        "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+     ],
+     "mac_owned_unreaped_r1.py": [
+         10990,
+@@ -98,17 +98,17 @@
+     ],
+     "mac_single_native_r2.mjs": [
+         33148,
++        "713a177b5b6be6dcadadb2d3c69fb1abfff841999cd0204b433e01fac30ed141"
+-        "d89f77d412c4394b40f0eba09e17354234cf7362b79bf1450521ff0a390b33ef"
+     ],
+     "mac_t5_volume_guard_r1.py": [
+         13392,
++        "13cbc97c63625f6302914b9c4ff5f2582874d6989c1cdfe2bc49e874a600fdb4"
+-        "1480cc85311f39a037ccd7ab3f7bb51b847fbd1211eccb77d92b4d3e592d4dd7"
+     ]
+ }
+ DOCUMENT_PINS={
+     "candidate-current-manager-wal-r1.public.json": [
+         7499,
++        "52daef9aca0216070a88bb2b6da2babfe0a6e1ac84b8f9452dbe4e35eb0021d4"
+-        "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+     ],
+     "proofs/native-proc-r2.authority.public.json": [
+         733,
+@@ -139,8 +139,8 @@
+         "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+     ]
+ }
++PAYLOAD_BYTES=836804
++PAYLOAD_SHA="3cdb898c0aad6c5e8ad0f5e20fe525c73f26a50273689078f0ff2e6e4d49cb99"
+-PAYLOAD_BYTES=837520
+-PAYLOAD_SHA="f68c2a291856da7fe9d2145d420b16fbcd68f1b9b165af509f9881bd996ba423"
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass
+@@ -167,7 +167,7 @@
+         s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns))
+ 
+ 
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1')
+-HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2')
+ HOME_COPY_NAMES=('mac_current_server_owner_r1.py','mac_current_phase_owner_r2.py')
+ HOME_GENERATIONS=('server-initial','server-cold-new-process','initial',
+                   'cold-new-process','initial-inverse','cold-new-process-inverse')
+@@ -185,7 +185,6 @@
+         self.open_attempts=0;self.open_pending=0;self.registration_unknown=False
+         self.close_errors=[];self.closed=False;self.init_started=True;self.init_complete=False;self.io_ready=False
+         self.root_creation_attempted=False;self.root_created=False;self.effect_unknown=False
+-        self.last_own_create_root_observation=None
+         self.counts={'metadata':0,'readCalls':0,'readBytes':0,'writeCalls':0,'writeBytes':0}
+         self.remaining=remaining;self.critical=critical;self.create=create
+         self.copy_pins=dict(copy_pins);self.root_identity=None
+@@ -379,13 +378,7 @@
+             os.fsync(self.root_row['fd']);self.remaining()
+             current=file_identity(self._fstat(self.root_row['fd']))
+             named_root=file_identity(self._stat(HOME_CONTROL.name,self.parents[-1]['fd']))
++            need(current==named_root and current[:6]==self.root_identity[:6],
+-            before_root=self.root_identity
+-            self.last_own_create_root_observation={
+-                'beforeFull9':list(before_root),'currentFull9':list(current),
+-                'namedFull9':list(named_root),'heldNamedFull9Equal':current==named_root,
+-                'sameRootObjectFirst5':current[:5]==before_root[:5],
+-                'fieldEqualToBefore':[x==y for x,y in zip(current,before_root)]}
+-            need(current==named_root and current[:5]==before_root[:5],
+                  'home_own_create_preserves_root_object')
+             self.root_identity=current
+             self.effect_unknown=False
+@@ -490,7 +483,6 @@
+         return {'schema':'heptabao.mac-owned-home-control-closure.r1',
+             'path':str(HOME_CONTROL),
+             'currentRootIdentity':None if self.root_identity is None else list(self.root_identity),
+-            'lastOwnCreateRootObservation':self.last_own_create_root_observation,
+             'initStarted':self.init_started,
+             'initComplete':self.init_complete,'rootCreationAttempted':self.root_creation_attempted,
+             'rootCreated':self.root_created,'effectUnknown':self.effect_unknown,

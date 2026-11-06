@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_pki33b_stderr_body_GO_packet",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "e8aabd26cfd0b5d6a41b63e3958e8d3847be2f6e",
+      "bytes": 4494,
+      "sha256": "6255e0aeab9d72b4ae9e29fa65faae1bd1a0311119344f858cb2dcbe8e9ad9da"
+    },
+    {
+      "name": "root-source-review.public.json",
+      "blob": "1a4c5403114d4e11d162afcb9b2275161ffbd3f9",
+      "bytes": 3462,
+      "sha256": "a35a83c9c5e75ee134616ca6ec097a94d2b1a4fc68ddafa1eeb733a3a496cd1a"
+    },
+    {
+      "name": "root-source-verifier.js",
+      "blob": "6a6dc7a24a434f6b425b67df4f7eae4a0e8749a8",
+      "bytes": 5558,
+      "sha256": "7c0e0b1cd9dc99e1c2e945c9fdeea70cb2c97ee64557b8ea019c1b9cd454f4f7"
+    },
+    {
+      "name": "author30.root-reproduced.json",
+      "blob": "d748c6ee5970ea9de0561d30f1d70c14731e958d",
+      "bytes": 2270,
+      "sha256": "ee6ba2ea286138f4796e2578e3f7a1ee108dfe2066974b8da2a4b861a667d21c"
+    }
+  ],
+  "expected_data_tree": "8ca05032ed67f45ee23ea821b637405fd1117891",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

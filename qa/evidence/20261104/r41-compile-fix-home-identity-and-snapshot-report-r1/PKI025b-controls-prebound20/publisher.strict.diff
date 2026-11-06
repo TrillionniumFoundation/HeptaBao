@@ -1,0 +1,30 @@
+--- a/publisher.before.py
++++ b/publisher.prebound.py
+@@ -3,21 +3,21 @@
+ from pathlib import Path
+ import base64, hashlib, json, os, stat, sys, time
+ 
++BINDING_READY = False
+-BINDING_READY = True
+ assert BINDING_READY, 'final formatted source and build control pins are not yet bound'
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi')
++BASE = PARENT / 'heptabao-native-jwt-pki-controls-20261106-r2'
+-BASE = PARENT / 'heptabao-native-jwt-pki-controls-20261106-r1'
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "native_jwt_build.py": [
++        30398,
++        "21e68720529b134a6734e15817a803bcf36efef60b638da5b00e752310ac1bbd"
+-        30397,
+-        "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add"
+     ],
+     "launch_native_jwt_build.py": [
++        38566,
++        "021a072bd346c0f590e53c5e49604990ef5435301994d2ba3eaafec914b269f9"
+-        38565,
+-        "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056"
+     ],
+     "jwt-test-groups.public.json": [
+         19789,

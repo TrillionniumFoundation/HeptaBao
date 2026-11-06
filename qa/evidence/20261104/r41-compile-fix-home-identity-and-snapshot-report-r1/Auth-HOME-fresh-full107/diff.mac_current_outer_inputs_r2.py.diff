@@ -1,0 +1,11 @@
+--- a/source88/mac_current_outer_inputs_r2.py
++++ b/fresh-home/mac_current_outer_inputs_r2.py
+@@ -13,7 +13,7 @@
+ from contextlib import contextmanager
+ 
+ BASE=Path('/Volumes/T5/hepta-vnext-recovery-20261013')
++ROOT=BASE/'mac-authbus-4e808-current-home-launch-r1'
+-ROOT=BASE/'mac-authbus-4e808-current-owner-bind-r1'
+ BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
+ LIVE=Path('/Users/qianqi/.openclaw')
+ PLUGIN=LIVE/'extensions/openclaw-authbus'

@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.exact-immutable-tail-retrieval.intent.r1",
+  "callKey": "jwt-pki-build149-tail-page2-retrieval-r1",
+  "index": 0,
+  "tool": "operation_result",
+  "exactRequest": {
+    "blob": "8448c7b5701f7551c847f55a66ae9c10892f2de1",
+    "bytes": 126,
+    "sha256": "10316b66ee044e51b3ed82b00be6b702335b06af50588df900417ce38a3a1b1c"
+  },
+  "originalOperation": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+  "originalFutureCompletedInactive": true,
+  "rootGO": {
+    "blob": "8a2bed4d6c163fb78540f21f97910a43656d2b94",
+    "bytes": 5163,
+    "sha256": "5a451a46f50ba6862062b040fa4e2b97e01977528270e3631b3c43578ceea099"
+  },
+  "originalState": {
+    "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+    "bytes": 120307,
+    "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+  },
+  "maximumToolCalls": 1,
+  "dispatchesNativeOperation": false,
+  "originalTimeoutPreserved": true
+}

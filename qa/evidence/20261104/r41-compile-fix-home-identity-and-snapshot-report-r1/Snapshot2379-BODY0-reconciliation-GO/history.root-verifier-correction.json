@@ -1,0 +1,8 @@
+{
+  "error": {
+    "message": "only_start_status_result_methods"
+  },
+  "correction": "Filter the Native dispatch method set to heptaruntime. The candidate also retains the reviewed Git-only reconciliation fetch calls; those are not Native operations.",
+  "candidate_unchanged": true,
+  "Native_calls": 0
+}

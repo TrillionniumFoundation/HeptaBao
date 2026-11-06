@@ -1,0 +1,51 @@
+--- a/after/candidate
++++ b/before/candidate
+@@ -3,28 +3,28 @@
+   "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+   "sourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+   "sourcePins": {
++    "mac_auth_rows_cas_r1.mjs": "9a121d58a9d5d1a331f2cfd5acc15ab162a487da6dead43019b84a6686e9e30e",
+-    "mac_auth_rows_cas_r1.mjs": "f77ecb7fd607b2cc377619e050f89c7460420df96d42110de142bdadbf33ce73",
+     "mac_authbus_cache_cas_r1.mjs": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+     "mac_capture_sqlite_synthetic_r1.py": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+     "mac_capture_sqlite_synthetic_r2.py": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
++    "mac_current_capture_entry_wal_r1.py": "3d015ef9d916948a6d9f2c96d89c9ebb6352929243018abb6fba7ba2e2b4c4f1",
++    "mac_current_cycle_r2.mjs": "4dc34661acc16e7e565c9818c159f912bdb713d8efbe0f4f3958add7641fd23e",
++    "mac_current_fixture_materializer_r1.py": "f32271748b60a0660170b7b739c209e715c72e5038fe19bcfbd6c7f4fe5c2813",
++    "mac_current_outer_inputs_r2.py": "6fd9b5f5a54ed4f40770bb95d017e836d21f51efff10d90beaaeb133b34a82b5",
++    "mac_current_outer_wal_r1.py": "a594ccebcbe251b066e574327ec7a64d30d84fd630292c436178d45524a60f53",
++    "mac_current_phase_owner_r2.py": "afe225c67d455f5324a5923cac0efc0ffa2393e1619a5cf169d6cf33d4540154",
++    "mac_current_server_owner_r1.py": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27",
+-    "mac_current_capture_entry_wal_r1.py": "f13e9a727d51d91184e97ee0b2042824706664db5ac7366ee7adf26bffa43203",
+-    "mac_current_cycle_r2.mjs": "04ab9aab3b6ee292835c97f2b208c054e3089814ecc40a493ce21a157e41f092",
+-    "mac_current_fixture_materializer_r1.py": "070642a2fecc974794ace1b1cba8eac4672b789aecd4d00a3b4944fb773e853e",
+-    "mac_current_outer_inputs_r2.py": "cd7fcc48fc6eff9c4d166eab996e40723e6918fabf4815e55e2080096129734d",
+-    "mac_current_outer_wal_r1.py": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7",
+-    "mac_current_phase_owner_r2.py": "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855",
+-    "mac_current_server_owner_r1.py": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1",
+     "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+     "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+     "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+     "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+     "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+     "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
++    "mac_owned_launchd_r3.py": "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b",
+-    "mac_owned_launchd_r3.py": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4",
+     "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+     "mac_registry_readonly_wal_r1.py": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
++    "mac_single_native_r2.mjs": "713a177b5b6be6dcadadb2d3c69fb1abfff841999cd0204b433e01fac30ed141",
++    "mac_t5_volume_guard_r1.py": "13cbc97c63625f6302914b9c4ff5f2582874d6989c1cdfe2bc49e874a600fdb4"
+-    "mac_single_native_r2.mjs": "d89f77d412c4394b40f0eba09e17354234cf7362b79bf1450521ff0a390b33ef",
+-    "mac_t5_volume_guard_r1.py": "1480cc85311f39a037ccd7ab3f7bb51b847fbd1211eccb77d92b4d3e592d4dd7"
+   },
+   "syntheticBinding": {
+     "schema": "heptabao.mac-capture-synthetic-input-binding.r1",
+@@ -134,7 +134,7 @@
+     }
+   },
+   "homeControl": {
++    "root": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+-    "root": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+     "copySourceNames": [
+       "mac_current_server_owner_r1.py",
+       "mac_current_phase_owner_r2.py"

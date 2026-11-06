@@ -1,0 +1,11 @@
+--- a/before/mac_current_outer_wal_r1.py
++++ b/after/mac_current_outer_wal_r1.py
+@@ -12,7 +12,7 @@
+ import socket, ssl, stat, sys, time, traceback
+ from pathlib import Path
+ 
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2')
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Actual source pins and fresh candidate are bound; host execution requires separate root GO.
+ COMMIT='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'

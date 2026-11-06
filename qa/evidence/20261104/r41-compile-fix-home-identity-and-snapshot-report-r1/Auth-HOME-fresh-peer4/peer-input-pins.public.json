@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.home-t5-peer-source-input-pins.v1",
+  "source_packet": "c572455d47e53327ecc7fdf74c7d38933b3b9d34",
+  "files": {
+    "SOURCE-ONLY.public.json": {
+      "blob": "32366ea51488a76c4374d86cdff57a634189018a",
+      "bytes": 660,
+      "sha256": "3d45a6dd37a9a210d9138e024d3d3909c29e47ba2bcf6b8323ae4f46f8f78798"
+    },
+    "candidate.public.json": {
+      "blob": "2e5860cc7e3b13ce985f815a3f2567b6ee155a1c",
+      "bytes": 7499,
+      "sha256": "52daef9aca0216070a88bb2b6da2babfe0a6e1ac84b8f9452dbe4e35eb0021d4"
+    },
+    "home-control.py": {
+      "blob": "617a5dff5118482095792e368e128016fe817435",
+      "bytes": 18270,
+      "sha256": "dffafd0f5588bbe6ad2daa7ab7ae53f0f8eb6e093974811b584ff18969f44f70"
+    },
+    "mac_current_outer_wal_r1.py.diff": {
+      "blob": "ed7887831507fe8a3c768222408cf3df448933d4",
+      "bytes": 10245,
+      "sha256": "c857bcea71d7a614ea0a7bbe7ee866f06ee3ce3ae03674189e6fe698884ac957"
+    },
+    "mac_current_phase_owner_r2.py": {
+      "blob": "5541a1b403b1f2febb907d931966e1de1f934efd",
+      "bytes": 25647,
+      "sha256": "afe225c67d455f5324a5923cac0efc0ffa2393e1619a5cf169d6cf33d4540154"
+    },
+    "mac_current_phase_owner_r2.py.diff": {
+      "blob": "3bb965b38d7f0a5ac34f340c99f344fd61648ca9",
+      "bytes": 2232,
+      "sha256": "b185ad457aaa8d976f6c5bff6d1b422834eb52b5432c502c7b681f4410c3ea27"
+    },
+    "mac_current_server_owner_r1.py": {
+      "blob": "f077c11fd5163e693f44c3faa6192d31b70d6f73",
+      "bytes": 14052,
+      "sha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+    },
+    "mac_current_server_owner_r1.py.diff": {
+      "blob": "fa9727922838fa84bf28a87a427ef4a8325de638",
+      "bytes": 2252,
+      "sha256": "22798602cababb16d44d6ad9cfcc17377ac356f5823f4a3ac8fb06511d7c1327"
+    },
+    "mac_owned_launchd_r3.py": {
+      "blob": "72432815fd3f7cd77ba70e8d6461cd4f739fcbc8",
+      "bytes": 57914,
+      "sha256": "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
+    },
+    "mac_owned_launchd_r3.py.diff": {
+      "blob": "0a5ef1607d2c9cbcc0b541d1c6cd0444a73d2651",
+      "bytes": 36624,
+      "sha256": "bc0374117dcd542a5d32b8fe30246429f8ad4ac9de8ad88c1a3fbf0be5c10750"
+    }
+  },
+  "old_manager": {
+    "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+    "bytes": 35736,
+    "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+  },
+  "source_executor": "Pure V8 string/hash/strict-patch analysis. No Python or candidate function invoked."
+}

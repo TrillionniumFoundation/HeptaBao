@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_pki025b_stage_GO_packet",
+  "records": [
+    {
+      "name": "EXACT-GO.public.json",
+      "blob": "1caeaced15a64a91f7fd85451f3e4759b9c41b20",
+      "bytes": 5046,
+      "sha256": "cc5fff8dec7aa98a011d844506865fd6003614b756ccd01583e7882e77e14339"
+    },
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "548c102427f3f7f19ee98e331ca7bd0380d39764",
+      "bytes": 3834,
+      "sha256": "758ad5859b573d8dfcb33864fc578d1c679adfe33d0baec8f90574b24ed0d496"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "5d9ce48cc62a012356a8b43fe64241055f6a1941",
+      "bytes": 5808,
+      "sha256": "d9d2c6f0b5259d4b27d4000c5432852d358066cbad56f4f448c23b41c1a5d5d4"
+    },
+    {
+      "name": "root-git-index-helper.js",
+      "blob": "553e42ba3dc12c80219f1ac97059b47c43ef7231",
+      "bytes": 495,
+      "sha256": "411b7ff1cdc9f710a4b9a4fe952b33aee0956003fd506cacdbb663b325f5bac8"
+    },
+    {
+      "name": "root-reproduced-author67.public.json",
+      "blob": "37f5271c5986ea6013a4e4e8324fda3ed0b2c720",
+      "bytes": 5102,
+      "sha256": "594e395833bc1395eb0c96efb0b4ffe2d84243574a51e12d4f71b2ce13b27301"
+    }
+  ],
+  "expected_data_tree": "623246902adc9b139c4aed6cbb1cec84078424bc",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

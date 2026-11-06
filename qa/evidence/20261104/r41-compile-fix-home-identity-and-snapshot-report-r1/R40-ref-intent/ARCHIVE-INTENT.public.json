@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40_checkpoint_ref_intent_packet",
+  "records": [
+    {
+      "name": "intent.json",
+      "blob": "4dc11564da01d8ce0df2ba70e5bb546d91bb9937",
+      "bytes": 503,
+      "sha256": "73d1dd3313912ec3e4e6a64149266e60b5205566cacf7d99f61b517d58de6508"
+    }
+  ],
+  "expected_data_tree": "c74f8e72b2f321c8f0d559e04c1d29984795c126",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

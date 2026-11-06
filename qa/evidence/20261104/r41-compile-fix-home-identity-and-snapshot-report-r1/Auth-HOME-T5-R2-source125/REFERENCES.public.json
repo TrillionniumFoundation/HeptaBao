@@ -1,0 +1,40 @@
+{
+  "baseline": {
+    "tree": "74deadc6eaa97085b124515a703b6b386f3d3a20",
+    "rootReview": "62bdd7cbd122d34ae350623a4ac86bdf6db7a015",
+    "BPeer": "38e89c62db79112d93eaf4870603e88519c1adbc"
+  },
+  "first5Component": {
+    "tree": "7592e1176e1634cf4b8259f53860ec0bc35786e3",
+    "BPeer": "b728564f1548fd6fec7af6493261e4e5a5ba9175",
+    "BPeerTree": "b11bb56ce5db86048fed2dc016861d7d5a9820fa",
+    "unchangedThreeHunkOriginals": true
+  },
+  "originalFailedInert": {
+    "tree": "1c360c303e249709a2dddd6941f110abad5c16c5",
+    "rootQualification": "d30cfb9acc09966661e4739c19517dc518b7a43a",
+    "job": "1a1b0702e84-fc05-708a",
+    "effectUnknown": true
+  },
+  "currentReadonly": {
+    "tree": "57ddb55e073d0b9b0b4cf1db898be35cfc92d9b5",
+    "stdout": {
+      "blob": "33496fbb64a7222c136652b1d56fe1e43a677fca",
+      "bytes": 8624,
+      "sha256": "1248f283f7029cc1fff14432d1f70a6d00ab9c935415fab4bcadedcbfee1f537"
+    },
+    "job": "1a1b0889605-fc05-7138",
+    "currentNlink": 3,
+    "originalPrewriteNlink": 2,
+    "originalFailurePointRecovered": false,
+    "authorChecksOnly": [
+      25,
+      35
+    ]
+  },
+  "publicSourceQualification": "65b6f2235fcf055ff15fc9177fd6f80727449462",
+  "currentProductCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "futureActualHOME": null,
+  "selectedOwnerQualified": false,
+  "credentialsQualified": false
+}

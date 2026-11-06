@@ -1,0 +1,74 @@
+[
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-info0-start",
+    "kind": "operation_start",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "fc32f742294b7781e795273c16c6aed453f6072c",
+      "bytes": 309,
+      "sha256": "07634b88d93a6460e02fa15cdc6a1a85abf18501faa72efdf152a0f6cfea1e5d"
+    },
+    "sdk": {
+      "blob": "197e08b056d488cba9e94f9df11d7daa84116506",
+      "bytes": 704,
+      "sha256": "cf9e4d5d44e9969b2ddf05a9f3600c12c7219a81c6b188063e0a688278549f20"
+    },
+    "native": {
+      "blob": "8c53909bd470aa340ff1cb9795fb32f52721e7bf",
+      "bytes": 543,
+      "sha256": "d0fe3d5523a53fb195dd0f037e976946d1b612905cbcab21cb84884ecdc548b7"
+    },
+    "armedTree": "d0b8d268d88c68bf673145854b4df1bc23dc38dc",
+    "sdkTree": "74ed202acf82ec154603fe94f8b51a741696a62c",
+    "sdkWhole": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-info0-status",
+    "kind": "operation_status",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "8f3484c62a12dc413bc8417f8a3d02ac7fccd979",
+      "bytes": 89,
+      "sha256": "e1081e8495aa09d8045dbfd0f5eb90bb02c7ec74577ba9b09594c86929732c84"
+    },
+    "sdk": {
+      "blob": "3151de1c6a138bbbc953f0a4cf10b27413323fd2",
+      "bytes": 975,
+      "sha256": "10abedb10b60dd386c7c66fd3b7de7e3517b420a24f53dae10d466ee3f3da334"
+    },
+    "native": {
+      "blob": "db68e9dbc6992a17a7cca044f6c8f6798a048d23",
+      "bytes": 800,
+      "sha256": "1597f8194cf8a6e490f919215ad58ecb1731ac2be47212b5c89f0315d7765605"
+    },
+    "armedTree": "e122d7da3b1a2ead2ecbbabb0affe2f8f8340d15",
+    "sdkTree": "1fb2e72eedac8fb6b5a0754280c6c9a1cf122da3",
+    "sdkWhole": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-info0-page0",
+    "kind": "operation_result",
+    "phase": "accepted",
+    "called": true,
+    "request": {
+      "blob": "3b98c95eb7738ff6a9ed4b30da82730d7b22598f",
+      "bytes": 121,
+      "sha256": "72b806d44d87ac3aa511a3b04db3850bc9f89d0a9e02ee59ee1e95f6fa3a4259"
+    },
+    "sdk": {
+      "blob": "62b149c01b0e5aee26bc858e6f2daa08225b5acc",
+      "bytes": 1656,
+      "sha256": "f2127ec110d76211ba6f6555dabece6876f45286245623c8d0d53e924fcec2ed"
+    },
+    "native": {
+      "blob": "bb06f38fd4210d20cf94d5c263fb3e00ee515d26",
+      "bytes": 1485,
+      "sha256": "0e934d655c62b338c782876e2d7a64e1fdc3e2d25416e4084333d590f83a3176"
+    },
+    "armedTree": "214a362191c4c45d7afb06b8dd505c57f773d1d3",
+    "sdkTree": "790bbabec2e4a42dd3660e806db7d070ce31e99a",
+    "sdkWhole": true
+  }
+]

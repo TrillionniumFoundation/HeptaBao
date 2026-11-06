@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.body-whole-verification.r1",
+  "status": "PASS",
+  "checks": 33,
+  "results": [
+    {
+      "name": "old_state_exact",
+      "pass": true
+    },
+    {
+      "name": "old_paused_pending_preserved",
+      "pass": true
+    },
+    {
+      "name": "independent_context_complete",
+      "pass": true
+    },
+    {
+      "name": "exact_two_retrievals",
+      "pass": true
+    },
+    {
+      "name": "old_timeout_isError_preserved",
+      "pass": true
+    },
+    {
+      "name": "page_0_SDK_native",
+      "pass": true
+    },
+    {
+      "name": "page_0_sameID_immutable",
+      "pass": true
+    },
+    {
+      "name": "page_0_contiguous",
+      "pass": true
+    },
+    {
+      "name": "page_0_total_digest_EOF",
+      "pass": true
+    },
+    {
+      "name": "page_1_SDK_native",
+      "pass": true
+    },
+    {
+      "name": "page_1_sameID_immutable",
+      "pass": true
+    },
+    {
+      "name": "page_1_contiguous",
+      "pass": true
+    },
+    {
+      "name": "page_1_total_digest_EOF",
+      "pass": true
+    },
+    {
+      "name": "page_2_SDK_native",
+      "pass": true
+    },
+    {
+      "name": "page_2_sameID_immutable",
+      "pass": true
+    },
+    {
+      "name": "page_2_contiguous",
+      "pass": true
+    },
+    {
+      "name": "page_2_total_digest_EOF",
+      "pass": true
+    },
+    {
+      "name": "page_3_SDK_native",
+      "pass": true
+    },
+    {
+      "name": "page_3_sameID_immutable",
+      "pass": true
+    },
+    {
+      "name": "page_3_contiguous",
+      "pass": true
+    },
+    {
+      "name": "page_3_total_digest_EOF",
+      "pass": true
+    },
+    {
+      "name": "four_pages_exact_original_payload",
+      "pass": true
+    },
+    {
+      "name": "whole_payload",
+      "pass": true
+    },
+    {
+      "name": "payload_native_success",
+      "pass": true
+    },
+    {
+      "name": "body_exact_native",
+      "pass": true
+    },
+    {
+      "name": "whole_body",
+      "pass": true
+    },
+    {
+      "name": "native_version_SHA",
+      "pass": true
+    },
+    {
+      "name": "source_identity",
+      "pass": true
+    },
+    {
+      "name": "known_compilation_failure",
+      "pass": true
+    },
+    {
+      "name": "runtime_tests_not_started",
+      "pass": true
+    },
+    {
+      "name": "single_direct_compile_child_reaped",
+      "pass": true
+    },
+    {
+      "name": "retained_before_after_unchanged",
+      "pass": true
+    },
+    {
+      "name": "finite_archived_calls",
+      "pass": true
+    }
+  ],
+  "scope": "immutable original chain and failure summary",
+  "new_Runtime_calls": 0,
+  "product_tests_executed_by_verifier": 0,
+  "compiler_success": false,
+  "flock_observed": false
+}

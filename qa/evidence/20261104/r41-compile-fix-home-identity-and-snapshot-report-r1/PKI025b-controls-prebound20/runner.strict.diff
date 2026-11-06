@@ -1,0 +1,22 @@
+--- a/runner.before.py
++++ b/runner.prebound.py
+@@ -11,7 +11,7 @@
+ import subprocess
+ import time
+ 
++BINDING_READY = False
+-BINDING_READY = True
+ assert BINDING_READY, 'formatter, final source and control publication require separate admission'
+ os.umask(0o077)
+ parser = argparse.ArgumentParser()
+@@ -26,8 +26,8 @@
+ OUTER_UNTIL = args.outer_started_monotonic + ORIGINAL_OUTER_SECONDS
+ assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before runner'
+ source, output = Path(args.source), Path(args.output)
++DIAGNOSTIC_COMMIT = '025b05a340de841b8161c1120344e86eae30eb97'
++DIAGNOSTIC_TREE = '1d8160c9385f8053b9a683cc1834da0f912e2d37'
+-DIAGNOSTIC_COMMIT = '33b814c7034ec853151b1ff13e7529c83f65ea70'
+-DIAGNOSTIC_TREE = 'b7f276f70e0da1a33306564f385ab7bc12fd44f6'
+ children = []
+ protected = 0
+ pending_signal = None

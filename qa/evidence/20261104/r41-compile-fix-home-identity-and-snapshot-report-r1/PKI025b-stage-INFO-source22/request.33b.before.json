@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-jwt-pki-33b814c7-rog-source-observe-r1-stage-result-info0",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json"
+    }
+  }
+}

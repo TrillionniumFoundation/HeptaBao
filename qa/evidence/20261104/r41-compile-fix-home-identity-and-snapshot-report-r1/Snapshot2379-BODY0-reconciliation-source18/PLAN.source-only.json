@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.snapshot2379.formatter.body0-admission-reconciliation-source.v1",
+  "authorization": "SOURCE_ONLY_NOT_GO",
+  "no_runtime_dispatch_in_this_packet": true,
+  "candidate": {
+    "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+    "bytes": 23211,
+    "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af"
+  },
+  "base": {
+    "blob": "12488e539c55f7be153e20857e162b3f80d49caf",
+    "bytes": 31928,
+    "sha256": "80a9b150c851e024e811edafe8dd9af6af4e17e4fa9606f1e7f91142e3076fba"
+  },
+  "sourceDiff": {
+    "blob": "1246d62bd5c0b0ed7ed632cc1ea2a9fb60e6a93c",
+    "bytes": 33535,
+    "sha256": "25878bbd704c22acdfa8bdef74acfcdcd8a594b27019ab70c3606c895e29b14b"
+  },
+  "separate_context": "snapshot_2379_formatter_body0_admission_reconcile_r1",
+  "original_context": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "original_unknown": {
+    "tree": "29b6302cc3cb329566b6f66c0441c0899b0cc811",
+    "state": {
+      "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+      "bytes": 1629,
+      "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+    },
+    "sdk": {
+      "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "bytes": 247,
+      "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+    }
+  },
+  "exact_request": {
+    "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+    "bytes": 432,
+    "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+  },
+  "exact_typed_request": {
+    "idempotency_key": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-result-body0",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+        "offset": 0,
+        "limit": 65536,
+        "expected_version": "66306:31236133:118925:1793956739343592677:1793956739343592677"
+      }
+    }
+  },
+  "admission_semantics": {
+    "lookup_only": false,
+    "may_create_first_admission_if_no_binding": true,
+    "identical_key_and_typed_arguments": true,
+    "maximum_additional_operation_start_calls": 1,
+    "reused_true": "Return of an existing immutable binding under the current tool contract; old transport error is still retained.",
+    "reused_false": "Observation of a new admission receipt. It does not prove that the original call never occurred, nor that the native handler ran.",
+    "no_original_unknown_reclassification": true,
+    "no_old_context_reset": true
+  },
+  "permitted_tools": [
+    "operation_start for exact original BODY0 only",
+    "operation_status for actually returned ID only",
+    "operation_result for actually returned ID only"
+  ],
+  "prohibited": [
+    "process_start",
+    "file_info refresh",
+    "binary_read with different typed arguments",
+    "BODY1",
+    "new idempotency key",
+    "operation_cancel",
+    "private ledger/key lookup",
+    "local executor"
+  ],
+  "one_native_call_and_one_binding_at_a_time": true,
+  "original_possible_future_not_claimed_closed": true,
+  "request_and_arm_external_whole_before_single_invoke": true,
+  "complete_original_SDK_external_whole_before_isError_or_parse": true,
+  "status_requires": {
+    "async_state": "completed",
+    "owned_future_active": false,
+    "result_state": "stored_observed",
+    "payload_available": true
+  },
+  "immutable_pages": {
+    "bytes": 16384,
+    "payload_bytes_maximum": 1048576,
+    "contiguous_from_zero": true,
+    "complete_payload_sha256_and_eof_required": true
+  },
+  "original_binary_result": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "infoOperation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "infoNative": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    },
+    "offset": 0,
+    "limit": 65536,
+    "next_offset": 65536,
+    "eof": false
+  },
+  "final_output": "Exactly one actual range0 native result plus closed original payload and immutable chain. Whole report and BODY1 remain unqualified/unsubmitted.",
+  "unknown_handling": "Stop this new context on transport, SDK, status, identity, SHA or Git ambiguity. Never repeat the new admission, clear old paused state, change key or infer first-attempt absence.",
+  "archive_failure": "Only exact expected tree/blob reads may reconcile a Git unknown. No mutation replay or automatic unpause.",
+  "source_validation": {
+    "checks": 48,
+    "candidateFunctionsExecuted": 0,
+    "RustExecutions": 0,
+    "NativeCalls": 0,
+    "testsOrMocksExecuted": 0,
+    "JavaScriptSyntaxOnly": true
+  },
+  "prerequisites": [
+    "Separate exact root GO and lane activation",
+    "Whole old UNKNOWN/error/request evidence",
+    "Unchanged current old paused context; cache loss requires an explicit recovery path, not a fresh reset"
+  ]
+}

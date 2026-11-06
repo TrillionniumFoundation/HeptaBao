@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.independent-peer.home-own-create-first5-source.v1",
+  "reviewer": "/root/compatibility_audit",
+  "scope": "Three focused SOURCE successors only, no dispatchable request or execution qualification.",
+  "source_tree": "7592e1176e1634cf4b8259f53860ec0bc35786e3",
+  "whole": {
+    "files": 16,
+    "bytes": 254786,
+    "Merkle": 1
+  },
+  "verdict": "No new blocker within the three-hunk helper change and its two exact embedded copies.",
+  "candidate_pins": {
+    "helper": {
+      "blob": "9b57e0324d70728df2d3e041ae695c90702ba8e3",
+      "bytes": 18808,
+      "sha256": "2703ffef7b2eb66e53f6eb9775ba9dc6c13ced8d42d7e64da6880267bc29855c"
+    },
+    "manager": {
+      "blob": "fb0f0d2ba6fbab618c6ce23801677d8e90f880ae",
+      "bytes": 58452,
+      "sha256": "f730e37ca6560a3a47aea3577a595f1059cf1821d8f6e232d57d66ed225ca707"
+    },
+    "publisher": {
+      "blob": "8e3470d115b4139787963e57c47bd28309bac107",
+      "bytes": 36514,
+      "sha256": "2dfb23a0f1e62b3f5b8feb2791b2d0b4a68f27c0631a86d5cec357aea016f858"
+    }
+  },
+  "findings": [
+    {
+      "topic": "Own-create object relation",
+      "detail": "The changed guard applies only after write_new's own exclusive public leaf create, its file fsync/full identity checks and root directory fsync. It now requires current held root and named root to match in all nine fields, plus current first five fields to match the recorded prior root. The exact source identity order makes those five dev, ino, uid, gid and full st_mode; nlink is field six."
+    },
+    {
+      "topic": "Before-operation and leaf gates",
+      "detail": "The original check() still requires held root == named root == current stored root in all nine fields before each operation. New/read leaves still require regular mode0600, uid501/gid20 and nlink1. The newly created leaf keeps its original first-six relation and full held/name equality. None of those guards changed."
+    },
+    {
+      "topic": "Failure projection",
+      "detail": "The new lastOwnCreateRootObservation records before/current/named full9, heldNamedFull9Equal, sameRootObjectFirst5 and a nine-field equality vector before evaluating the changed guard. file_identity returns decimal strings, so this projection does not round inode or nanosecond values."
+    },
+    {
+      "topic": "UNKNOWN and cleanup",
+      "detail": "Root identity is updated and effect_unknown is cleared only after the composite guard succeeds. Any failure while constructing the observation or at the guard retains the existing UNKNOWN path. The original finally once-close, pending-registration ledger, caps, deadline callbacks and complete-init/closed predicates are byte unchanged."
+    },
+    {
+      "topic": "Embedded source equivalence",
+      "detail": "manager.before→after and publisher.before→after are each exactly replacement of the one complete old HomeControl text by the complete new text, with no other byte change. Each forward and reverse diff has exactly three hunks and strictly reconstructs the full corresponding file."
+    },
+    {
+      "topic": "Original actual boundary",
+      "detail": "The original failure stdout still records home_own_create_preserves_root_object, ok=false and outcomeUnknown=true. It did not emit the old rejection-point current/named tuples, so this peer makes no claim which conjunct failed or that nlink change was the proven original cause. Later readonly metadata supplied by A is outside this limited source review."
+    }
+  ],
+  "unchanged_method_count": 15,
+  "total_helper_methods": 18,
+  "mechanical_checks": {
+    "count": 64,
+    "passed": true,
+    "verifier": {
+      "blob": "95164bab1ad04debd05fe87fc0ce219f8af5e606",
+      "bytes": 4928,
+      "sha256": "fa974c2ed4e3041921723cd1092992992eb667dd31f8bfc5b375893a67ea8fbb"
+    }
+  },
+  "no_rerun": [
+    "old core13/66 review",
+    "author synthetic relation examples",
+    "Python compile or components",
+    "new HOME stage/inert request",
+    "Native filesystem or process API"
+  ],
+  "admission_boundary": "Component-only SOURCE remains non-dispatchable. Embedded source hashes, complete publisher carrier/request and disposition of the existing partial HOME root require the owner's separately reviewed successor. This peer does not authorize replay, overwrite, cleanup or a new root.",
+  "original_error_not_reclassified": true,
+  "NativeCalls": 0,
+  "PythonCalls": 0
+}

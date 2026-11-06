@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.original-build-report-partial-and-recovery-source.r1",
+  "status": "PARTIAL_READONLY_TRANSPORT_TIMEOUT",
+  "originalBodyOperation": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+  "originalBodyFutureClosed": true,
+  "originalBodyState": "completed/stored_observed/inactive",
+  "originalFailedBuildKnownExit1": true,
+  "payloadTotalBytes": 49765,
+  "payloadReceivedBytes": 32768,
+  "payloadSha256": "ca4321b37d698c2078c193087b4e76e56c4cdb8f79955aff236e3033d7188b07",
+  "originalUniquePagesReceived": 2,
+  "bodyBytesExpected": 36998,
+  "wholePayload": false,
+  "bodyDecoded": false,
+  "actualFailureCause": null,
+  "originalBodyReadStarts": 1,
+  "bodyObserverCalls": 5,
+  "errorType": "MCP -32603 timeout on operation_result offset32768 limit16384; original SDK full externally whole before isError refusal",
+  "failedSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "failedSDKArchive": "e675db61e07e6dfbb6d7f12b44e0f33c3fc4d6bc",
+  "paused": true,
+  "pending": "jwt-pki-33b814c7-build149-report-body-page2-r1",
+  "nativeCallInFlight": false,
+  "newNativeAdmissionsStopped": true,
+  "futureActive": false,
+  "remainingExactPages": [
+    {
+      "offset": 32768,
+      "limit": 16384,
+      "previousAttempt": "timed_out_RPC_returned_and_preserved",
+      "needsSeparateRootReconciliationGO": true
+    },
+    {
+      "offset": 49152,
+      "limit": 16384,
+      "submitted": false
+    }
+  ],
+  "recoveryProposal": {
+    "source": {
+      "blob": "732e9c020c506f9e99bca6f9594546d4261f6af5",
+      "bytes": 3027,
+      "sha256": "0583896df2cf452905cc4927f9f579f56ebdbcbaa1e3b902bfce2e2e16729d7c"
+    },
+    "sameRequest": {
+      "blob": "8448c7b5701f7551c847f55a66ae9c10892f2de1",
+      "bytes": 126,
+      "sha256": "10316b66ee044e51b3ed82b00be6b702335b06af50588df900417ce38a3a1b1c"
+    },
+    "beforeState": {
+      "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+      "bytes": 120307,
+      "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+    },
+    "newCallKey": "jwt-pki-33b814c7-build149-report-body-page2-reconcile1",
+    "oneLocalStateRecoveryOnly": true,
+    "noGitOrNativeInRecoveryFunction": true,
+    "originalCallsAndObserverUnchanged": true,
+    "oldErrorAndHistoryPreserved": true,
+    "separateExactRootGORequired": true,
+    "followingPage3OnlyAfterRecoveredPage2WholeAccepted": true
+  },
+  "NativeCallsInThisProposal": 0,
+  "productReplay": false
+}

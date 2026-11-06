@@ -1,0 +1,490 @@
+{
+  "schema": "heptabao.home-launch-r2.strict-change-index.r1",
+  "newT5": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2",
+  "newHome": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+  "namespaces": [
+    [
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2"
+    ],
+    [
+      "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+      "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2"
+    ],
+    [
+      "mac-authbus-4e808-current-home-launch-r1",
+      "mac-authbus-4e808-current-home-launch-r2"
+    ],
+    [
+      "org.heptabao.qa.mac-authbus-4e808-home-r1.server",
+      "org.heptabao.qa.mac-authbus-4e808-home-r2.server"
+    ],
+    [
+      "org.heptabao.qa.mac-authbus-4e808-home-r1.consumer",
+      "org.heptabao.qa.mac-authbus-4e808-home-r2.consumer"
+    ]
+  ],
+  "sources": [
+    {
+      "name": "mac_auth_rows_cas_r1.mjs",
+      "before": {
+        "blob": "39e6eb63815cfeb3400b7ce0b6d93bb693c5d2de",
+        "bytes": 3108,
+        "sha256": "9a121d58a9d5d1a331f2cfd5acc15ab162a487da6dead43019b84a6686e9e30e"
+      },
+      "after": {
+        "blob": "e1054c6a5786280e901f7f94661d06187021e774",
+        "bytes": 3108,
+        "sha256": "f77ecb7fd607b2cc377619e050f89c7460420df96d42110de142bdadbf33ce73"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs",
+      "before": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "after": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py",
+      "before": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "after": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py",
+      "before": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "after": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py",
+      "before": {
+        "blob": "e46616291bf408512674ee83720423d72cfb5ab7",
+        "bytes": 42083,
+        "sha256": "3d015ef9d916948a6d9f2c96d89c9ebb6352929243018abb6fba7ba2e2b4c4f1"
+      },
+      "after": {
+        "blob": "80b204f30eaba8f77970da8d829bab6c707c924b",
+        "bytes": 42083,
+        "sha256": "f13e9a727d51d91184e97ee0b2042824706664db5ac7366ee7adf26bffa43203"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs",
+      "before": {
+        "blob": "918a22b61dfe334c08b4695bed7a46d8dfc9fa01",
+        "bytes": 24012,
+        "sha256": "4dc34661acc16e7e565c9818c159f912bdb713d8efbe0f4f3958add7641fd23e"
+      },
+      "after": {
+        "blob": "6b0765788c4718e5cc57f069bcfa4b0c8d2c5a5c",
+        "bytes": 24012,
+        "sha256": "04ab9aab3b6ee292835c97f2b208c054e3089814ecc40a493ce21a157e41f092"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py",
+      "before": {
+        "blob": "6db21ca889f19b6b0f49fde5bbe916991d9a028a",
+        "bytes": 25973,
+        "sha256": "f32271748b60a0660170b7b739c209e715c72e5038fe19bcfbd6c7f4fe5c2813"
+      },
+      "after": {
+        "blob": "b4a71d3cd6f619af4041bfc06b8142da9b97c7c2",
+        "bytes": 25973,
+        "sha256": "070642a2fecc974794ace1b1cba8eac4672b789aecd4d00a3b4944fb773e853e"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py",
+      "before": {
+        "blob": "08a7ee522fb719df71c9dca9356e160a2033c98e",
+        "bytes": 33001,
+        "sha256": "6fd9b5f5a54ed4f40770bb95d017e836d21f51efff10d90beaaeb133b34a82b5"
+      },
+      "after": {
+        "blob": "83014d12575d853b5fca8f149d4ce49c7fb6509c",
+        "bytes": 33001,
+        "sha256": "cd7fcc48fc6eff9c4d166eab996e40723e6918fabf4815e55e2080096129734d"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py",
+      "before": {
+        "blob": "35c4b527bf3d111269649d88c4603715facae4dd",
+        "bytes": 73918,
+        "sha256": "a594ccebcbe251b066e574327ec7a64d30d84fd630292c436178d45524a60f53"
+      },
+      "after": {
+        "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+        "bytes": 73918,
+        "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py",
+      "before": {
+        "blob": "5541a1b403b1f2febb907d931966e1de1f934efd",
+        "bytes": 25647,
+        "sha256": "afe225c67d455f5324a5923cac0efc0ffa2393e1619a5cf169d6cf33d4540154"
+      },
+      "after": {
+        "blob": "60cdb68fa9f0a436b3b3ab7a1114493ca9739594",
+        "bytes": 25647,
+        "sha256": "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_current_server_owner_r1.py",
+      "before": {
+        "blob": "f077c11fd5163e693f44c3faa6192d31b70d6f73",
+        "bytes": 14052,
+        "sha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+      },
+      "after": {
+        "blob": "031d410286a2aa4ed26c6512af3ee57be17ce687",
+        "bytes": 14052,
+        "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_darwin_owned_projection_r1.py",
+      "before": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "after": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py",
+      "before": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "after": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_native_owned_commands_r1.py",
+      "before": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "after": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_native_owned_unreaped_r1.py",
+      "before": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "after": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_native_process_observer_r1.py",
+      "before": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "after": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_owned_commands_r1.py",
+      "before": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "after": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_owned_launchd_r3.py",
+      "before": {
+        "blob": "72432815fd3f7cd77ba70e8d6461cd4f739fcbc8",
+        "bytes": 57914,
+        "sha256": "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
+      },
+      "after": {
+        "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+        "bytes": 58452,
+        "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+      },
+      "changed": true,
+      "category": "reviewed_first5_component_plus_namespace",
+      "forwardHunks": 5,
+      "reverseHunks": 5
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py",
+      "before": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "after": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_registry_readonly_wal_r1.py",
+      "before": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "after": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "changed": false,
+      "category": "whole_unchanged",
+      "forwardHunks": 0,
+      "reverseHunks": 0
+    },
+    {
+      "name": "mac_single_native_r2.mjs",
+      "before": {
+        "blob": "b05c375374407b71c9b807dd446e002478b42c7b",
+        "bytes": 33148,
+        "sha256": "713a177b5b6be6dcadadb2d3c69fb1abfff841999cd0204b433e01fac30ed141"
+      },
+      "after": {
+        "blob": "f5395025f281c2b35015ede1d9ff3beb3826a671",
+        "bytes": 33148,
+        "sha256": "d89f77d412c4394b40f0eba09e17354234cf7362b79bf1450521ff0a390b33ef"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "before": {
+        "blob": "5cba8bb112f97de5a68133462667e1329fa747f1",
+        "bytes": 13392,
+        "sha256": "13cbc97c63625f6302914b9c4ff5f2582874d6989c1cdfe2bc49e874a600fdb4"
+      },
+      "after": {
+        "blob": "d1725fcdb850fa457d8e19906838d46f1b409ee5",
+        "bytes": 13392,
+        "sha256": "1480cc85311f39a037ccd7ab3f7bb51b847fbd1211eccb77d92b4d3e592d4dd7"
+      },
+      "changed": true,
+      "category": "namespace_only",
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    }
+  ],
+  "extras": {
+    "publisher": {
+      "before": {
+        "blob": "fc40ff27b6657aee025162e0db547d501f327c8a",
+        "bytes": 35976,
+        "sha256": "c273bce27b99840c3d6fcd92ca7cf281ea803d043f7eff38da58428b9dea0768"
+      },
+      "after": {
+        "blob": "ea84d70d3c434a33d0f216de8b0b002633650a0a",
+        "bytes": 36514,
+        "sha256": "19b91f34d98b8056a4921e400dc3e87200581043ce7df7531db81be6a0982a69"
+      },
+      "forwardHunks": 9,
+      "reverseHunks": 9
+    },
+    "home": {
+      "before": {
+        "blob": "617a5dff5118482095792e368e128016fe817435",
+        "bytes": 18270,
+        "sha256": "dffafd0f5588bbe6ad2daa7ab7ae53f0f8eb6e093974811b584ff18969f44f70"
+      },
+      "after": {
+        "blob": "26eadc0d6ac5048d379ad8230a803c7e809bd05e",
+        "bytes": 18808,
+        "sha256": "7af1e5ed1feb9b50b26e6023256f120203126688101ebeae7f81bd5d4c430bae"
+      },
+      "forwardHunks": 4,
+      "reverseHunks": 4
+    },
+    "journal": {
+      "before": {
+        "blob": "4cd38a02494c5bb4f1e3129d778de92aa2eb43fb",
+        "bytes": 19050,
+        "sha256": "c2f19faaa84ade3e240900e0dede09fdf2c7a9fddc02b18838f7f1462e99b16f"
+      },
+      "after": {
+        "blob": "52c2735d9eae38cf4745f89802fcf25c3b5738c1",
+        "bytes": 19050,
+        "sha256": "70254ca18f378f03ce6abe2788d1cfbf512989671a26ee83fbe33c60ca814b9f"
+      },
+      "forwardHunks": 2,
+      "reverseHunks": 2
+    },
+    "runtime-deriver": {
+      "before": {
+        "blob": "ce503be30571f5435f3a7781addfe64cb696f140",
+        "bytes": 7131,
+        "sha256": "861aa7376b36e884384add4c1991c9cae3fcc6fa1542711f48cb9c61ac9e9955"
+      },
+      "after": {
+        "blob": "47c30a8833171ecc52679a25a913c71ca7a35eac",
+        "bytes": 7131,
+        "sha256": "67b551c147ccfd0fa42d3e37da1c547a94308e03da3a03d3f4fce9565b9a4dbe"
+      },
+      "forwardHunks": 1,
+      "reverseHunks": 1
+    },
+    "candidate": {
+      "before": {
+        "blob": "2e5860cc7e3b13ce985f815a3f2567b6ee155a1c",
+        "bytes": 7499,
+        "sha256": "52daef9aca0216070a88bb2b6da2babfe0a6e1ac84b8f9452dbe4e35eb0021d4"
+      },
+      "after": {
+        "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
+        "bytes": 7499,
+        "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+      },
+      "forwardHunks": 2,
+      "reverseHunks": 2
+    }
+  },
+  "originalFirst5ComponentHunks": {
+    "home": [
+      3,
+      3
+    ],
+    "manager": [
+      3,
+      3
+    ],
+    "publisher": [
+      3,
+      3
+    ]
+  },
+  "NativeCalls": 0
+}

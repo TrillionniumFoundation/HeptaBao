@@ -1,0 +1,138 @@
+{
+  "schema": "heptabao.root-GO.snapshot-BODY0-explicit-conditional-admission-reconciliation.v1",
+  "authorization": "GO",
+  "scope": "format_body0_exact_admission_reconciliation",
+  "slot": "snapshot_2379_formatter_body0_admission_reconcile_r1",
+  "original_slot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "lookup_only": false,
+  "may_create_first_admission": true,
+  "maximum_operation_start_calls": 1,
+  "process_start_authorized": false,
+  "second_body_range_authorized": false,
+  "immutable_page_bytes": 16384,
+  "maximum_retained_payload_bytes": 1048576,
+  "old_unknown": {
+    "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+    "bytes": 1629,
+    "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+  },
+  "original_error_sdk": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "exact_request": {
+    "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+    "bytes": 432,
+    "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+  },
+  "agent": "/root/compatibility_audit",
+  "source_packet": "d2f19cf39aefdc83407b7fa18424b87b3c631916",
+  "source": {
+    "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+    "bytes": 23211,
+    "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af"
+  },
+  "source_review": {
+    "blob": "74873695154017ba962b10e6c52ce22695f8383b",
+    "bytes": 7305,
+    "sha256": "c7984b04cb6e0010a464fde5ac888cca1b34cdf28a52dd5504b0a4409ee40d29"
+  },
+  "source_review_checks": 37,
+  "exact_typed_request": {
+    "idempotency_key": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-result-body0",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+        "offset": 0,
+        "limit": 65536,
+        "expected_version": "66306:31236133:118925:1793956739343592677:1793956739343592677"
+      }
+    }
+  },
+  "original_unknown_packet": "29b6302cc3cb329566b6f66c0441c0899b0cc811",
+  "original_body_GO": {
+    "blob": "f3a26514a3b4156e0bb27211df518018a24291fd",
+    "bytes": 4342,
+    "sha256": "b709c7af700ac09ba103a5a4d8668cd14670a8d351fedd3c8d6a582f7e1b2e37"
+  },
+  "explicit_same_key_reissue_authorized": true,
+  "automatic_retry": false,
+  "existing_binding_must_not_redispatch": true,
+  "original_attempt_outcome_remains": "UNKNOWN",
+  "reused_false_does_not_prove_first_call_absent": true,
+  "reused_receipt_does_not_prove_completion_or_delivery": true,
+  "old_context_reset_authorized": false,
+  "old_context_write_authorized": false,
+  "new_context_only": true,
+  "contract_basis": "The current exposed operation_start contract retains immutable idempotency bindings; an identical key plus identical typed arguments returns the original ID without replay. If no binding exists, this explicitly authorized call may admit the first fixed public read. No lookup-only claim is made.",
+  "public_Runtime_source_review": "8e548a322b7585fd0e7f514f1831a7f749fedc77",
+  "deployed_Runtime_revision_attested": false,
+  "original_report_identity": {
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+    "version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+    "infoOperation": "6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff",
+    "infoNative": {
+      "blob": "45d1709e3bbbf74caee996369a1eefdfbf855a31",
+      "bytes": 483,
+      "sha256": "8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"
+    },
+    "offset": 0,
+    "limit": 65536,
+    "next_offset": 65536,
+    "eof": false
+  },
+  "expected_closed_result": {
+    "offset": 0,
+    "bytes": 65536,
+    "next_offset": 65536,
+    "eof": false,
+    "whole_file_body": false
+  },
+  "maximum_operation_status_calls": 8,
+  "maximum_immutable_result_pages": 64,
+  "maximum_simultaneous_calls_or_future_per_lane": 1,
+  "helpers": {
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    }
+  },
+  "lane_activation": "B may perform this one explicit same-key reconciliation while C completes its two fixed compiler-log INFO observations. The existing possibly admitted B read and this reconciliation remain one immutable binding under the tool contract; no new key or independent B read is authorized. Maximum2 lanes, A/root0.",
+  "sequence": [
+    "Whole this GO and exact frozen candidate/helpers; initialize only the separate reconciliation slot while preserving original paused view, original timeout SDK and published UNKNOWN.",
+    "Whole the identical original432-byte request, intent and arm; disclose conditional admission and return across an independent invocation boundary.",
+    "Invoke the exact same key and typed BODY0 once. Archive the whole original SDK before isError/native parsing. Any ambiguity stops; no second reconciliation invocation.",
+    "A returned receipt may say reused=true or false. Preserve that actual boolean and original UNKNOWN; neither branch proves completion or dispatch.",
+    "Use only the actually returned ID for bounded status and contiguous16KiB immutable result pages; require completed/stored/inactive and whole payload SHA/EOF before decoding.",
+    "Verify original report path/version/size, exact65536 range0 extent and actual chunk SHA. Whole archive original native text and closure; stop with BODY1 and full report still unauthorized."
+  ],
+  "prohibited": [
+    "process_start",
+    "file_info refresh",
+    "binary_read with different typed arguments",
+    "BODY1",
+    "new idempotency key",
+    "operation_cancel",
+    "private ledger/key lookup",
+    "local executor"
+  ],
+  "whole_report_qualification": false,
+  "host_file_writes": 0,
+  "process_start": 0,
+  "compiler_or_product_execution": 0,
+  "root_Runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.snapshot2379.formatter.BODY1-verifier-input-map.v1",
+  "construction": "Build input for verifyBody1SuccessorSource from these exact UTF-8 leaves; no network/Native is part of that verifier.",
+  "fields": {
+    "before": "before.journal.js",
+    "after": "candidate.journal.js",
+    "beforePin": {
+      "blob": "2708256540fc7476705c9bbb95f9f8b9e0637e49",
+      "bytes": 23211,
+      "sha256": "dde3323415dd2490da5825bf5d9685edaaf0ee6acd7b243a512e369bd2fce5af"
+    },
+    "afterPin": {
+      "blob": "0d24dad24762e7a96432bb5c590a0ba8d2a232dd",
+      "bytes": 28520,
+      "sha256": "db8c7ab8fbc79d78bd25c8f465e31c41e08ee560efcb803824468bdd7595d84b"
+    },
+    "edits": "edits.public.json",
+    "forward": "source.forward.diff",
+    "reverse": "source.reverse.diff",
+    "originalBody0Request": {
+      "rawFile": "reference-original-BODY0.request.json",
+      "pin": {
+        "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+        "bytes": 432,
+        "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+      }
+    },
+    "futureBody1Request": {
+      "rawFile": "BODY1.exact-request.json",
+      "pin": {
+        "blob": "c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a",
+        "bytes": 436,
+        "sha256": "978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128"
+      }
+    },
+    "body0NativeRaw": "reference-BODY0.native.original.json",
+    "body0NativePin": {
+      "blob": "895256e05b1517b7a5563600bf179a556bebdccd",
+      "bytes": 87718,
+      "sha256": "2024d49a365dba55814300dab9b07049c2a27ffc88f7b196a5a71623dfae433b"
+    },
+    "rootBody0Qualification": {
+      "rawFile": "reference-BODY0-root48.public.json",
+      "pin": {
+        "blob": "a290ba81a6164a082d6f1f4c5b98d82b783e6cbe",
+        "bytes": 6373,
+        "sha256": "bbdee84c298f47b2d7b11bfd47ce09bec01fc8b096cc5d959de0e535aac25748"
+      }
+    },
+    "body0ReleaseRaw": "reference-BODY0-release.public.json"
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.compiler-logs-info.source.r1",
+  "status": "SOURCE_ONLY_UNAUTHORIZED_UNOBSERVED",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "scope": "build_compile_logs_file_info_only",
+  "new_slot": "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1",
+  "order": [
+    "compiler-stderr",
+    "compiler-json-stdout"
+  ],
+  "requests": [
+    {
+      "blob": "e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8",
+      "bytes": 302,
+      "sha256": "fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"
+    },
+    {
+      "blob": "008beb6807a40811762b005eb20cd396755775eb",
+      "bytes": 302,
+      "sha256": "b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"
+    }
+  ],
+  "targets": [
+    {
+      "role": "compiler-stderr",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+      "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+      "expected_mode": 384,
+      "expected_full_mode": 33152,
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_link_count": 1,
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false
+    },
+    {
+      "role": "compiler-json-stdout",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stdout",
+      "sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+      "expected_mode": 384,
+      "expected_full_mode": 33152,
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_link_count": 1,
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false
+    }
+  ],
+  "authorization": {
+    "new_root_GO_required": true,
+    "maximum_file_info_operations": 2,
+    "sequential": true,
+    "maximum_active_future": 1,
+    "operation_status_same_returned_ID_only": true,
+    "immutable_result_page_bytes": 8192,
+    "immutable_payload_cap": 1048576,
+    "metadata_reported_file_size_admission_cap": 1048576,
+    "process_start": 0,
+    "binary_read": 0,
+    "read_multiple_files": 0,
+    "scan": 0,
+    "Cargo": 0,
+    "automatic_retry": false
+  },
+  "metadata_cap_boundary": "file_info is a full-file hash observation, not a body budget. The 1 MiB size predicate applies after the original immutable metadata payload is preserved. A mismatch/size refusal remains preserved and stops; it does not authorize changing path or retries.",
+  "go_required_shape": {
+    "authorization": "GO",
+    "scope": "build_compile_logs_file_info_only",
+    "original_job": "1a1b029a998-fc05-6eb2",
+    "maximum_file_info_operations": 2,
+    "maximum_process_start_calls": 0,
+    "maximum_binary_read_operations": 0,
+    "exact_requests": [
+      {
+        "blob": "e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8",
+        "bytes": 302,
+        "sha256": "fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"
+      },
+      {
+        "blob": "008beb6807a40811762b005eb20cd396755775eb",
+        "bytes": 302,
+        "sha256": "b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"
+      }
+    ]
+  },
+  "source": {
+    "blob": "850d83d091d21699713f26dba9489e0789c9bc12",
+    "bytes": 23663,
+    "sha256": "82456b23001187d1b86b3bd23e82c8a70b4baac74d5642a5f91982f527716667"
+  },
+  "reference": {
+    "blob": "f51079fe3f72378e4868af185a088bdc398d5e45",
+    "bytes": 20145,
+    "sha256": "6549e8f700476020fb3d05cf60d1f5a3e6fe4d958fcce75b579242778730b2c5"
+  },
+  "diff": {
+    "blob": "3197dbf20ad7cf8a47ef417c702573ad09956698",
+    "bytes": 10567,
+    "sha256": "914bf098e0a6cd32fb79c717297546333ed64dfd0454bc9eafb4b3e4dbf260e0"
+  },
+  "hunks": 5,
+  "actual_report": {
+    "blob": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "packet": "db9226138ba61edc94c08ef141f15cc7c61b58a3"
+  },
+  "previous_contexts": {
+    "complete_retrieval": {
+      "blob": "89dc4a1a78028d99ae0ac3d626564532d2f40098",
+      "bytes": 80686,
+      "sha256": "b227ac22523c59737f83f38da259e1139f6e8a62b483749be8a9cf6c0f3e4387"
+    },
+    "old_paused_BUILD": {
+      "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+      "bytes": 120307,
+      "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+    },
+    "both_read_only": true,
+    "old_timeout_preserved": true
+  },
+  "original_executed_runner": {
+    "blob": "cf25a5f2a3f75b63374f99f7b0245ecfdf2c13e9",
+    "bytes": 30397,
+    "sha256": "023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add",
+    "path_derivation": "output / (label + '.stderr' or '.stdout'), label actual normal-release-build; original output is fixed build-tests-r1",
+    "creation": "open('xb'), original umask077; fsync and context close before record whole SHA"
+  },
+  "original_executed_launcher": {
+    "blob": "4c90f7e5dba00636f7e08840e892db679c7d2600",
+    "bytes": 38565,
+    "sha256": "5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056",
+    "lock_scope": "source describes nonblocking exclusive probe then close in finally before same-PID exec; this plan does not claim actual launch-preflight fields were read"
+  },
+  "changed_definitions": [
+    "gfState",
+    "gfInitializeOnlyAfterRootGO",
+    "gfValidateRequest",
+    "gfInvokePreparedOnce",
+    "gfCloseOriginalObserver"
+  ],
+  "whole_unchanged_definitions": [
+    "gfNeed",
+    "gfMetaEquals",
+    "gfSave",
+    "gfIntegerText",
+    "gfPrepareOne",
+    "gfAcceptArchivedSDK",
+    "gfReconcileSameGitArchiveReadOnly",
+    "gfRun"
+  ],
+  "source_boundary": "Original reference carries legacy process_start dispatch/accept branches; public validation unconditionally rejects that kind. No new callable admission exposes them. No additional native method or body read is introduced.",
+  "failure_boundary": "SDK is stored and whole archived before isError/interpretation; each original immutable payload is whole archived before metadata fields. Any error pauses only this new context; no automatic operation replay, path expansion, or size relaxation.",
+  "actual_metadata": [
+    null,
+    null
+  ],
+  "actual_logs_body": [
+    null,
+    null
+  ],
+  "no_BUILD_replay": true,
+  "compiler_cause_only_known_as_exit101": true,
+  "unobserved_compiler_diagnostic": true,
+  "Cargo_target_reuse_not_qualified": true,
+  "Runtime_calls": 0
+}

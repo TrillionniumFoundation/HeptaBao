@@ -1,0 +1,492 @@
+{
+  "schema": "heptabao.snapshot2379.BODY1-actual-transport-checks.v1",
+  "passed": 121,
+  "checks": [
+    {
+      "name": "7 original native calls",
+      "passed": true
+    },
+    {
+      "name": "accepted and archived snapshot2379-format-body1-complete-admit-r1",
+      "passed": true
+    },
+    {
+      "name": "present 00-operation_start.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole 00-operation_start.request.json",
+      "passed": true
+    },
+    {
+      "name": "present 00-operation_start.intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole 00-operation_start.intent.json",
+      "passed": true
+    },
+    {
+      "name": "present 00-operation_start.armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole 00-operation_start.armed.json",
+      "passed": true
+    },
+    {
+      "name": "present 00-operation_start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole 00-operation_start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present 00-operation_start.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole 00-operation_start.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "accepted and archived snapshot2379-format-body1-complete-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "present 01-operation_status.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole 01-operation_status.request.json",
+      "passed": true
+    },
+    {
+      "name": "present 01-operation_status.intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole 01-operation_status.intent.json",
+      "passed": true
+    },
+    {
+      "name": "present 01-operation_status.armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole 01-operation_status.armed.json",
+      "passed": true
+    },
+    {
+      "name": "present 01-operation_status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole 01-operation_status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present 01-operation_status.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole 01-operation_status.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "accepted and archived snapshot2379-format-body1-complete-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "present 02-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole 02-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "present 02-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole 02-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "present 02-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole 02-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "present 02-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole 02-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present 02-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole 02-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "accepted and archived snapshot2379-format-body1-complete-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "present 03-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole 03-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "present 03-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole 03-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "present 03-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole 03-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "present 03-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole 03-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present 03-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole 03-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "accepted and archived snapshot2379-format-body1-complete-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "present 04-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole 04-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "present 04-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole 04-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "present 04-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole 04-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "present 04-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole 04-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present 04-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole 04-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "accepted and archived snapshot2379-format-body1-complete-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "present 05-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole 05-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "present 05-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole 05-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "present 05-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole 05-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "present 05-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole 05-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present 05-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole 05-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "accepted and archived snapshot2379-format-body1-complete-page4-r1",
+      "passed": true
+    },
+    {
+      "name": "present 06-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole 06-operation_result.request.json",
+      "passed": true
+    },
+    {
+      "name": "present 06-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole 06-operation_result.intent.json",
+      "passed": true
+    },
+    {
+      "name": "present 06-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole 06-operation_result.armed.json",
+      "passed": true
+    },
+    {
+      "name": "present 06-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole 06-operation_result.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present 06-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole 06-operation_result.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "1 start 1 status 5 pages",
+      "passed": true
+    },
+    {
+      "name": "exact original BODY1 request",
+      "passed": true
+    },
+    {
+      "name": "same original operation known completed/inactive",
+      "passed": true
+    },
+    {
+      "name": "continuous actual page 0",
+      "passed": true
+    },
+    {
+      "name": "same payload identity 0",
+      "passed": true
+    },
+    {
+      "name": "continuous actual page 16384",
+      "passed": true
+    },
+    {
+      "name": "same payload identity 16384",
+      "passed": true
+    },
+    {
+      "name": "continuous actual page 32768",
+      "passed": true
+    },
+    {
+      "name": "same payload identity 32768",
+      "passed": true
+    },
+    {
+      "name": "continuous actual page 49152",
+      "passed": true
+    },
+    {
+      "name": "same payload identity 49152",
+      "passed": true
+    },
+    {
+      "name": "continuous actual page 65536",
+      "passed": true
+    },
+    {
+      "name": "same payload identity 65536",
+      "passed": true
+    },
+    {
+      "name": "whole original payload",
+      "passed": true
+    },
+    {
+      "name": "present BODY1.payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole BODY1.payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "present BODY1.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole BODY1.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "range0 and range1 extents",
+      "passed": true
+    },
+    {
+      "name": "range0 hash reverified",
+      "passed": true
+    },
+    {
+      "name": "range1 hash reverified",
+      "passed": true
+    },
+    {
+      "name": "same file version and path",
+      "passed": true
+    },
+    {
+      "name": "whole joined original report exact",
+      "passed": true
+    },
+    {
+      "name": "present report.original.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole report.original.public.json",
+      "passed": true
+    },
+    {
+      "name": "present release.public.json",
+      "passed": true
+    },
+    {
+      "name": "present current-chain-index.public.json",
+      "passed": true
+    },
+    {
+      "name": "present status.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "present admission.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "present root-GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole root-GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "present candidate.journal.js",
+      "passed": true
+    },
+    {
+      "name": "whole candidate.journal.js",
+      "passed": true
+    },
+    {
+      "name": "present archive-helper.original.js",
+      "passed": true
+    },
+    {
+      "name": "present pure-helper.original.js",
+      "passed": true
+    },
+    {
+      "name": "present reference-old-UNKNOWN.public.json",
+      "passed": true
+    },
+    {
+      "name": "present reference-old-error.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "present reference-BODY0.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole reference-BODY0.native.original.json",
+      "passed": true
+    },
+    {
+      "name": "present reference-BODY0-release.public.json",
+      "passed": true
+    },
+    {
+      "name": "present reference-BODY0-root48.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole reference-BODY0-root48.public.json",
+      "passed": true
+    },
+    {
+      "name": "new observer and old histories unchanged",
+      "passed": true
+    }
+  ],
+  "NativeRerun": false,
+  "semanticQualification": false
+}

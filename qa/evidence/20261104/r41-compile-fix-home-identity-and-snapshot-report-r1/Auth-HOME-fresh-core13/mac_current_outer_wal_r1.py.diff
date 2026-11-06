@@ -1,0 +1,142 @@
+--- a/source88/mac_current_outer_wal_r1.py
++++ b/fresh-home/mac_current_outer_wal_r1.py
+@@ -12,7 +12,7 @@
+ import socket, ssl, stat, sys, time, traceback
+ from pathlib import Path
+ 
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1')
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Actual source pins and fresh candidate are bound; host execution requires separate root GO.
+ COMMIT='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+@@ -891,9 +891,12 @@
+     parser.add_argument('--public-source-pins-sha256',required=True)
+     parser.add_argument('--public-volume-anchor-base64',required=True)
+     parser.add_argument('--public-volume-anchor-sha256',required=True)
++    parser.add_argument('--public-home-control-binding-base64',required=True)
++    parser.add_argument('--public-home-control-binding-sha256',required=True)
+     args=parser.parse_args()
+     guard=None;commands=None;inputs=None;materializer=None;manager=None;client=None
++    public_proof_inputs=None;home_control=None;home_init_started=False;home_init_complete=False
++    manager_failure_code=None
+-    public_proof_inputs=None
+     manager_terminal=None;candidate_result=None;completed=False;capsule_before=None;output_created=False
+     secrets=set();qa_identities={};proof=None;packet=None;capture_reports=ctx.capture_attempts;phase_results=[]
+     report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.wal-r1','ok':False,
+@@ -926,7 +929,9 @@
+             admitted_synthetic,admitted_native,admitted_wal,library_resources_closed)
+         from mac_current_outer_inputs_r2 import Inputs,PLUGIN_FILES
+         from mac_current_fixture_materializer_r1 import Materializer
++        from mac_owned_launchd_r3 import (OwnedLaunchd,HomeControl,HOME_CONTROL,HOME_COPY_NAMES,
++            public_failure_code)
++        manager_failure_code=public_failure_code
+-        from mac_owned_launchd_r3 import OwnedLaunchd
+         ctx.signals=Signals();ctx.signals.install();commands=Commands(ctx.signals)
+         for path,value in FIXED_UTILITIES.items():read_system_tool(ctx,Path(path),value)
+         anchor_raw=base64.b64decode(args.public_volume_anchor_base64,validate=True)
+@@ -940,12 +945,14 @@
+         candidate_raw=guard.read(args.candidate,65536);need(sha(candidate_raw)==args.candidate_sha256,'whole_public_candidate')
+         candidate=exact_json(candidate_raw)
+         need(isinstance(candidate,dict) and set(candidate)=={'schema','sourceCommit','sourceTree','sourcePins',
++            'syntheticBinding','nativeBinding','walBinding','publicVolumeAnchorSha256','utilityPins','budgets','homeControl'}
+-            'syntheticBinding','nativeBinding','walBinding','publicVolumeAnchorSha256','utilityPins','budgets'}
+             and candidate['schema']=='heptabao.mac-current-manager-candidate.wal-r1'
+             and candidate['sourceCommit']==COMMIT and candidate['sourceTree']==TREE
+             and candidate['sourcePins']==pins and candidate['syntheticBinding']==SYNTHETIC
+             and candidate['nativeBinding']==NATIVE_BINDING and candidate['walBinding']==WAL_BINDING
+             and candidate['utilityPins']=={path:value['sha256'] for path,value in FIXED_UTILITIES.items()}
++            and candidate['homeControl']=={'root':str(HOME_CONTROL),'copySourceNames':list(HOME_COPY_NAMES),
++                'privateInputsRemainOnT5':True,'bindingRequiredAtRuntime':True}
+             and candidate['publicVolumeAnchorSha256']==args.public_volume_anchor_sha256
+             and candidate['budgets']=={'outer':900,'manager':600,'managerFailureCleanup':60,
+                 'phase':120,'native':[15,8,3],'http':10,'capture':45,'listenerReady':30,'tlsCommand':30},
+@@ -973,6 +980,19 @@
+         report['publicProofClosure']=public_proof_inputs.public()
+         need(library_resources_closed(report['publicProofClosure']),'tracked_public_proof_code_closure')
+         ctx.remaining()
++        home_binding_raw=base64.b64decode(args.public_home_control_binding_base64,validate=True)
++        need(len(home_binding_raw)<=8192 and valid_pin(args.public_home_control_binding_sha256)
++             and sha(home_binding_raw)==args.public_home_control_binding_sha256,
++             'exact_actual_public_home_control_binding')
++        home_binding=exact_json(home_binding_raw)
++        home_init_started=True;home_control=HomeControl.__new__(HomeControl)
++        home_control.__init__(remaining=ctx.remaining,critical=ctx.critical,
++            copy_pins={name:[int(qa_identities[name][6]),pins[name]] for name in HOME_COPY_NAMES},
++            binding=home_binding,create=False)
++        home_init_complete=True
++        report['homeControlBindingSha256']=sha(home_binding_raw)
++        report['homeControlRoot']=str(HOME_CONTROL)
++        report['privatePlansAndBusinessDataRemainOnT5']=True
+         inputs=Inputs(guard,ctx.signals,ctx.until)
+         report['utilityPins']=inputs.admit_utilities(candidate['utilityPins'])
+         runtime,report['normalSourceBinding']=inputs.normal_and_base_sources()
+@@ -1026,7 +1046,7 @@
+         manager=OwnedLaunchd(guard=guard,commands=commands,signals=ctx.signals,
+             until=min(ctx.until,time.monotonic()+600),anchor_raw=anchor_raw,
+             anchor_sha256=args.public_volume_anchor_sha256,qa_pins=pins,
++            python_runtime=proof['runtime']['pythonExecutable'],home_control=home_control)
+-            python_runtime=proof['runtime']['pythonExecutable'])
+         manager.start_server('server-initial')
+         client=LoopbackHTTP(ctx,port,ca,peer_sha);client.ready(501)
+         docs,managed=seed_documents(packet)
+@@ -1091,7 +1111,8 @@
+         ctx.remaining();guard.check();completed=True
+     except BaseException as error:
+         report['errorType']=type(error).__name__
++        report['errorCode']=(str(error) if isinstance(error,Refused) else
++            (manager_failure_code(error) if manager_failure_code is not None else None))
+-        report['errorCode']=str(error) if isinstance(error,Refused) else None
+         report['errorFrames']=[{'file':Path(f.filename).name,'line':f.lineno}
+             for f in traceback.extract_tb(error.__traceback__)[-6:]]
+         report['outcomeUnknown']=bool(ctx.unknown or isinstance(error,KeyboardInterrupt)
+@@ -1106,6 +1127,18 @@
+             except BaseException as error:
+                 report['managerCleanupErrorType']=type(error).__name__;report['outcomeUnknown']=True
+             finally:ctx.cleanup_mode=False
++        if home_control is not None:
++            try:
++                home_control.close();report['homeControlFinal']=home_control.public()
++            except BaseException as error:
++                report['homeControlClosureErrorType']=type(error).__name__
++                report['outcomeUnknown']=True
++        home_closed=(not home_init_started or (home_init_complete
++            and report.get('homeControlFinal',{}).get('allReturnedDescriptorsClosed') is True
++            and report['homeControlFinal'].get('allFiniteLeavesClosed') is True
++            and report['homeControlFinal'].get('effectUnknown') is False))
++        report['homeControlInitializationCompleted']=home_init_complete
++        report['allReturnedHomeControlDescriptorsClosed']=home_closed
+         if client is not None:client.close_all();report['controlHttp']=client.public()
+         if materializer is not None:materializer.close();report['materializerClosure']=materializer.public()
+         if inputs is not None:inputs.close();report['finiteInputClosure']=inputs.public()
+@@ -1134,12 +1167,12 @@
+         socket_closed=(ctx.public()['allEphemeralPortReservationSocketsClosed']
+             and (client is None or report['controlHttp']['allOwnedSocketsClosed']))
+         report['outcomeUnknown']=bool(report['outcomeUnknown'] or ctx.unknown
++            or not manager_closed or not helpers_closed or not input_closed or not home_closed
+-            or not manager_closed or not helpers_closed or not input_closed
+             or not materializer_closed or not socket_closed or not public_proof_closed or not captures_closed
+             or (client is not None and client.unknown)
+             or (manager_terminal is not None and manager_terminal.get('outcomeUnknown') is True))
+         report['allOwnedRegistrationsLineagesHelpersClosed']=bool(
++            manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed and public_proof_closed and captures_closed and home_closed)
+-            manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed and public_proof_closed and captures_closed)
+         report['ok']=bool(completed and not report['outcomeUnknown'] and time.monotonic()<ctx.until)
+         try:
+             raw=encoded(report)
+@@ -1153,14 +1186,14 @@
+                 'errorCode':'public_report_or_candidate_publication_refused',
+                 'productionManagerQualification':False,'automaticBusinessRetry':False,
+                 'allOwnedRegistrationsLineagesHelpersClosed':bool(
++                    manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed and public_proof_closed and captures_closed and home_closed)}
+-                    manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed and public_proof_closed and captures_closed)}
+         ctx.close_all()
+         if guard is not None:guard.close();report['heldT5Final']=guard.public_state()
+         report['outerDescriptorClosure']=ctx.public()
+         final_closed=(guard is not None and report['heldT5Final']['allDescriptorsClosed']
+             and report['heldT5Final']['lastAnchorCheckPassed'] and report['heldT5Final']['closeErrors']==[]
+             and report['outerDescriptorClosure']['allOuterReadDescriptorsClosed']
++            and report['outerDescriptorClosure']['closeErrors']==[] and home_closed)
+-            and report['outerDescriptorClosure']['closeErrors']==[])
+         report['outcomeUnknown']=bool(report['outcomeUnknown'] or not final_closed or ctx.unknown)
+         completed_at=time.monotonic()
+         report['elapsedSeconds']=completed_at-START

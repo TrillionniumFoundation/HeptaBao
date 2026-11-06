@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.compiler-stderr-body.source.r1",
+  "status": "SOURCE_ONLY_NO_BODY_READ",
+  "scope": "build_compiler_stderr_binary_read_only",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "slot": "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1",
+  "action": "authorize_compiler_stderr_body",
+  "initialize": false,
+  "process_start": 0,
+  "file_info": 0,
+  "binary_reads": 1,
+  "stdout_body_authorized": false,
+  "source": {
+    "blob": "52fccacedef3382ee1db167d7fe47fead3a8da4a",
+    "bytes": 29496,
+    "sha256": "66c1ef69c178d88f392e84427a7025fa1d0b85eab7cceaf61f2c0d9f689851e3"
+  },
+  "reference": {
+    "blob": "850d83d091d21699713f26dba9489e0789c9bc12",
+    "bytes": 23663,
+    "sha256": "82456b23001187d1b86b3bd23e82c8a70b4baac74d5642a5f91982f527716667"
+  },
+  "diff": {
+    "blob": "2f17773fe08d3107b81f5ba008d4627b1488d204",
+    "bytes": 9856,
+    "sha256": "70314723546b30eeb73b99a92db26ec759cdd15170548c83100755812e2504dc"
+  },
+  "hunks": 8,
+  "exact_request": {
+    "blob": "597a81f1a88e5af1b4ef9632003de0e96a364f13",
+    "bytes": 437,
+    "sha256": "7883f2e97d6dfc4f4f98a713a891072a239c8cddece41c930624d55feb87617c"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+    "bytes": 14696,
+    "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+    "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+    "infoOperation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+    "infoNative": {
+      "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+      "bytes": 489,
+      "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+    },
+    "full9Strings": [
+      "66306",
+      "31364213",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "14696",
+      "1793957207629499769",
+      "1793957207629499769"
+    ]
+  },
+  "original_info_prerequisites": [
+    {
+      "id": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "tool": "file_info",
+      "nativeText": {
+        "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+        "bytes": 489,
+        "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+      }
+    },
+    {
+      "id": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "tool": "file_info",
+      "nativeText": {
+        "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+        "bytes": 491,
+        "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+      }
+    }
+  ],
+  "actual_info_packet": "9521d91aa291a7d25943e03f50d1f4a187c5142e",
+  "metadata_state": {
+    "blob": "8fcc6b31fe5aa45a7fc0e631b33730582edcedc4",
+    "bytes": 26024,
+    "sha256": "0a6f62f02e79f2a9653acccffce3565af6f55a70766a4660a2b258046bc76fa7"
+  },
+  "limits": {
+    "one_original_native_future": 1,
+    "binary_offset": 0,
+    "binary_limit": 14696,
+    "body_total": 14696,
+    "new_binary_immutable_page_bytes": 16384,
+    "old_metadata_immutable_page_bytes": 8192,
+    "retained_payload_cap": 1048576,
+    "auto_retry": false
+  },
+  "go_required_shape": {
+    "authorization": "GO",
+    "scope": "build_compiler_stderr_binary_read_only",
+    "original_job": "1a1b029a998-fc05-6eb2",
+    "info_operation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+    "maximum_binary_read_starts": 1,
+    "maximum_file_info_starts": 0,
+    "maximum_process_start_calls": 0,
+    "stdout_body_authorized": false,
+    "immutable_body_page_bytes": 16384,
+    "exact_request": {
+      "blob": "597a81f1a88e5af1b4ef9632003de0e96a364f13",
+      "bytes": 437,
+      "sha256": "7883f2e97d6dfc4f4f98a713a891072a239c8cddece41c930624d55feb87617c"
+    }
+  },
+  "sequence": [
+    "both independent INFOs already completed/inactive/whole",
+    "whole separate exact GO; authorize existing context only",
+    "one request/intent/armed whole then independent model boundary",
+    "one binary admission and original ID status/pages only",
+    "original SDK whole before isError/native interpretation",
+    "complete immutable payload whole before binary envelope parse",
+    "decode exactly14696 fixed-version bytes; wholeSHA check and external whole native+stderr before diagnostics"
+  ],
+  "history": "Original BUILD paused slot 04567... and complete independent tail retrieval89dc... retain their unchanged byte predicates; six original INFO call records retain original SDK and intent bytes.",
+  "qualification": "This observation cannot make failed BUILD succeed or claim149/166 ran. No new Cargo/lock/oracle/HTTP test/scan is admitted. Only after original stderr whole is available will diagnostic text be interpreted.",
+  "all_runtime_calls_for_this_SOURCE": 0,
+  "actual_stderr_body": null
+}

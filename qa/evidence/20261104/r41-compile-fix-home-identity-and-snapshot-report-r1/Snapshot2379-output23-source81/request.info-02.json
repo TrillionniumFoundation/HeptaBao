@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-snapshot2379-format23-observe-20261106-r1-info02",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/native_snapshot_body_tests.rs"
+    }
+  }
+}

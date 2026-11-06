@@ -1,0 +1,147 @@
+{
+  "passed": true,
+  "count": 35,
+  "checks": [
+    {
+      "name": "home-partial-ro-r1-start.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-start.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-start.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-admit.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-admit.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-admit.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-state.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-state.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-state.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-p00000.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-p00000.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-status-01-p00000.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-admit.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-admit.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-admit.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-state.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-state.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-state.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p00000.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p00000.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p00000.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p08192.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p08192.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p08192.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p16384.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p16384.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p16384.native_raw",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p24576.exact_request",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p24576.whole_SDK",
+      "passed": true
+    },
+    {
+      "name": "home-partial-ro-r1-streams-01-p24576.native_raw",
+      "passed": true
+    },
+    {
+      "name": "process_status.payload_exact",
+      "passed": true
+    },
+    {
+      "name": "process_status.native_exact",
+      "passed": true
+    },
+    {
+      "name": "process_read.payload_exact",
+      "passed": true
+    },
+    {
+      "name": "process_read.native_exact",
+      "passed": true
+    },
+    {
+      "name": "10_calls_2_observers_5_unique_pages",
+      "passed": true
+    }
+  ],
+  "scope": "Only preservation/hash checks on previously returned public originals; no new Native/test execution"
+}

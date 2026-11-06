@@ -1,0 +1,239 @@
+{
+  "schema": "heptabao.root.compiler-stderr-original-actual-qualification.r1",
+  "passed": true,
+  "checkCount": 44,
+  "checks": [
+    {
+      "name": "whole73_343583_Merkle",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_metadata_state",
+      "passed": true
+    },
+    {
+      "name": "exact_body_source_and_both_GOs",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stderr-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stderr-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stderr-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stderr-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stderr-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stderr-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stdout-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stdout-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stdout-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stdout-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stdout-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stdout-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stderr-body-start-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stderr-body-start-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stderr-body-status-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stderr-body-status-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stderr-body-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stderr-body-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_call_jwt-pki-build149-compiler-stderr-body-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_armed_tree_jwt-pki-build149-compiler-stderr-body-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_observer_2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_page_2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239_0",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_payload_2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_observer_7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_page_7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56_0",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_payload_7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_observer_2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_page_2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a_0",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_page_2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a_16384",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_payload_2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a",
+      "passed": true
+    },
+    {
+      "name": "compiler_original_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "first_six_original_calls_preserved",
+      "passed": true
+    },
+    {
+      "name": "one_original_stderr_body_request",
+      "passed": true
+    },
+    {
+      "name": "actual_fixed_stderr_whole_body",
+      "passed": true
+    },
+    {
+      "name": "fixed_path_and_observed_metadata_version",
+      "passed": true
+    },
+    {
+      "name": "only_two_E0061_diagnostics",
+      "passed": true
+    },
+    {
+      "name": "no_new_process_or_stdout_body",
+      "passed": true
+    },
+    {
+      "name": "original_failed_compilation_not_test_success",
+      "passed": true
+    },
+    {
+      "name": "all_three_observers_and_line_C_closed",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "4f0d687d092bf8f3bb767638ee94f81edca16a1e",
+    "files": 73,
+    "bytes": 343583,
+    "merkle": {
+      "root_sha": "4f0d687d092bf8f3bb767638ee94f81edca16a1e",
+      "trees_verified": 1,
+      "leaf_count": 73
+    },
+    "whole": true
+  },
+  "originalBuildJob": "1a1b029a998-fc05-6eb2",
+  "originalBuildFailed": true,
+  "originalCargoExit": 101,
+  "selectedTests": 149,
+  "selectedInstances": 166,
+  "runtimeTestsExecuted": 0,
+  "body": {
+    "blob": "b9b08ddd0a6ee0451cff1993e75ff80e7569e53a",
+    "bytes": 14696,
+    "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+    "archiveTree": "b4a72265c7f1cafb500009e3941f49c313caea7d",
+    "whole": true,
+    "originalOperation": "2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a",
+    "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr"
+  },
+  "observedDiagnostics": [
+    {
+      "code": "E0061",
+      "path": "crates/heptabao-server/src/service_native_pki.rs",
+      "line": 270,
+      "provided_arguments": 13,
+      "required_arguments": 14
+    },
+    {
+      "code": "E0061",
+      "path": "crates/heptabao-server/src/service_native_ssh.rs",
+      "line": 326,
+      "provided_arguments": 13,
+      "required_arguments": 14
+    }
+  ],
+  "missingArgument": "native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>",
+  "actualCalls": 10,
+  "bodyOnlyCalls": 4,
+  "completedObservers": 3,
+  "immutablePages": 4,
+  "currentNativeCalls": 0,
+  "stdoutBodyRead": false,
+  "newBuild": false,
+  "sourceFixRequired": true,
+  "oldPausedContextUnchanged": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

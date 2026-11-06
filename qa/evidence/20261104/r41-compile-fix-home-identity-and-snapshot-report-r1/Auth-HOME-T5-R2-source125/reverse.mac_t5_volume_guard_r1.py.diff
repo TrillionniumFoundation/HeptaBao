@@ -1,0 +1,11 @@
+--- a/after/mac_t5_volume_guard_r1.py
++++ b/before/mac_t5_volume_guard_r1.py
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1'
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 

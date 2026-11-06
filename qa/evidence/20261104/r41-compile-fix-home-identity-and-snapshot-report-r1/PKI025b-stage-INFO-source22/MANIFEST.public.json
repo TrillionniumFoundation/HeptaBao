@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.jwt-pki-025b-fixed-report-info-source-packet.r1",
+  "files": {
+    "journal.33b.info.before.js": {
+      "blob": "696e07c763ccefaa375e947ed84b2433a1d0f089",
+      "bytes": 23888,
+      "sha256": "c8a3f15c9073ddc34fa247ce4bd2cd1342023bf9136f9235731ee08e571b752d"
+    },
+    "journal.025b.info.after.js": {
+      "blob": "69a754dee5fc0fa48d6f2bbf8e356914b0332551",
+      "bytes": 23888,
+      "sha256": "fd4cfa5d0c5a0bfc6c31305413dad01ff931c2c3b48daeac53d8aa1e6cab7f4b"
+    },
+    "journal.strict.diff": {
+      "blob": "1924bc6059bb0907066292aa55e12bb3f149029a",
+      "bytes": 3724,
+      "sha256": "bb74c3ad7c2b622a81901a83b03d8cfa9dcffeb4755c42eece633f4bc25072af"
+    },
+    "request.33b.before.json": {
+      "blob": "538b045d46c03cd5787a4a80d41595345232ae47",
+      "bytes": 309,
+      "sha256": "ca7c34ce798a1155e6b49a989f5f792c9aaaf2a4db568f70b8ab999d48b341b2"
+    },
+    "request.025b.exact.json": {
+      "blob": "fc32f742294b7781e795273c16c6aed453f6072c",
+      "bytes": 309,
+      "sha256": "07634b88d93a6460e02fa15cdc6a1a85abf18501faa72efdf152a0f6cfea1e5d"
+    },
+    "PLAN.public.json": {
+      "blob": "e8223a5b8e5ea5f7b45aa57286739260baca4335",
+      "bytes": 6145,
+      "sha256": "76870cf01c05651acd5782a0f068167b809fb6f313cf00a94f443cd630b0775b"
+    },
+    "literal-bindings.public.json": {
+      "blob": "6e6ba5bc5d490a383a1c96db3a62338f289b3606",
+      "bytes": 3057,
+      "sha256": "9cf9700708cdaabe2a54faec0ee1dd5d18e71619b4e9ae7ea481ca8529eca5d1"
+    },
+    "reference.old-INFO-GO.json": {
+      "blob": "82334cfd8b6a1fd52a8b046ba04d8ff958e9fed6",
+      "bytes": 3203,
+      "sha256": "244effb45729a4018da659cb7c7eb499c930300c1632af60bafbe2f7a2f92472"
+    },
+    "reference.current-stage-GO.json": {
+      "blob": "1caeaced15a64a91f7fd85451f3e4759b9c41b20",
+      "bytes": 5046,
+      "sha256": "cc5fff8dec7aa98a011d844506865fd6003614b756ccd01583e7882e77e14339"
+    },
+    "reference.current-stage-release.json": {
+      "blob": "2d3db436e865d4177ff1c8414856217c841d4234",
+      "bytes": 2730,
+      "sha256": "de50d3d0bb0ce76107d117dde7dbbac70548aa1aed502a528e7dc7b09eee6146"
+    },
+    "reference.current-stage-state.json": {
+      "blob": "7dd64bdb72b1c6a19a9ff8eea51d2f27b50ccc8c",
+      "bytes": 1899,
+      "sha256": "6c7953fc08134b4d2303dc45faa83d4f976b4febd27ace729a1c8e9e33fc3ae2"
+    },
+    "reference.authority.native.json": {
+      "blob": "dd85be17d19c62e99d27242dbffe5dc2b0e0ed4c",
+      "bytes": 729,
+      "sha256": "06e2021df977c1c7b67d8417eed6cf8841c300f4d8fcc5ed2f132e9e9f5c24aa"
+    },
+    "reference.streams.native.json": {
+      "blob": "2276636c72edc3cd43159765dc66f7ffcbfd6fd1",
+      "bytes": 1468,
+      "sha256": "ac202944bd232d0ec94b97d90d4708121aca0ab63ca8a7fbf0f8411fdddec079"
+    },
+    "helper.pure.original.js": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "helper.archive.original.js": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "helper.strict-diff.original.js": {
+      "blob": "e2cb8f7627b1e0e92759c6cde7d7ea65c3879590",
+      "bytes": 2456,
+      "sha256": "f2939ee5ad4fda6b36e6571be0d70ca98fac55e3959e2afc1eed82694cfa25d3"
+    },
+    "verifier.source.js": {
+      "blob": "34937b0c554e03f96b64d70fff98dfd6111ce9ba",
+      "bytes": 4370,
+      "sha256": "38b1d8d218e711b6705c049f94d3cd3f198418d40d9833ea7ddbf73be6f9708c"
+    },
+    "verifier.actual.json": {
+      "blob": "fbefff20e2f6e0b4be735e9e00c062ac79f3c0f6",
+      "bytes": 2790,
+      "sha256": "43fd8359dc88c69a5e1ac737e4f5dced2d7f6f6e222e13256e537e51c20c3719"
+    },
+    "README.public.md": {
+      "blob": "4ce3f689262a007cd78485289e592440427ffa5c",
+      "bytes": 832,
+      "sha256": "97627c08c3bacb7bb7ee0f6323f15bd3fd1937924aa90267f3d16e91b635ff0d"
+    },
+    "verifier.state-input.public.json": {
+      "blob": "7c09299f5679281021e8d1e7f257cb8222030c7a",
+      "bytes": 1688,
+      "sha256": "f09364da4b33c6d6540077ce0eaecd97725c38277e2292270a60a64800979a4b"
+    },
+    "verifier.input-builder.js": {
+      "blob": "5e1499e5ff3012cfc5061ebeb378797a7f6a63b6",
+      "bytes": 673,
+      "sha256": "5f144db9c0209ce0d2d11a0e26fd1fb620b3d88dc7f10d5cde1b5892ac755315"
+    }
+  },
+  "Runtime": false
+}

@@ -1,0 +1,6 @@
+{
+  "cause": "There are20 original top-level function definitions but19 distinct names because owned is defined twice. R1 name-keyed extraction collapsed the earlier definition. R2 keys every occurrence by name+ordinal and proves all20 byte-exact.",
+  "sourceUnchanged": true,
+  "originalCheckerPreserved": true,
+  "Native": 0
+}

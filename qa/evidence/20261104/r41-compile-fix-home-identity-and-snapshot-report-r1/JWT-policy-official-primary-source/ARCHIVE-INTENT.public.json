@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_JWT_policy_delegation_primary_sources_packet",
+  "records": [
+    {
+      "name": "tokenutil.go",
+      "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+      "bytes": 14196,
+      "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969"
+    },
+    {
+      "name": "tokenutil.go.original-SDK.json",
+      "blob": "e7c614f0b033511dd5c6723fe910d747262abba3",
+      "bytes": 31894,
+      "sha256": "83779abbfd54cef0e6c0ca259ff548a353680ffc4ab77816fa543dbbc4569a62"
+    },
+    {
+      "name": "policyutil.go",
+      "blob": "9fe0c93d2c4c32e650dcb1919e3e4e3ce70468fa",
+      "bytes": 3409,
+      "sha256": "dc76454791f26542b9cd49f72f0e9fdaf36b0332e84676eff64bf15d68461118"
+    },
+    {
+      "name": "policyutil.go.original-SDK.json",
+      "blob": "328ee4baa902849e4bc6e6d80ff988488efcd602",
+      "bytes": 8187,
+      "sha256": "9ebbba13a7bc6c9a8767b513bacd12d4086574d838db386051d3e25d8d01aace"
+    },
+    {
+      "name": "SOURCE-FINDINGS.public.json",
+      "blob": "c563c89d3b1e8bfc16efb22de972cd31989f569c",
+      "bytes": 3544,
+      "sha256": "cb1594514ee4f5753150e4ecb70edc07b12493418cc29e1c70dda1b63282db59"
+    }
+  ],
+  "expected_data_tree": "33c633e21411d309a585fb61c633039cc913b497",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

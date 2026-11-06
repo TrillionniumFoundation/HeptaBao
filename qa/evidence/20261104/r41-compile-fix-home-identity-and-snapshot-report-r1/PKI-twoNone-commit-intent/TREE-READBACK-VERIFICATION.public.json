@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.root.twoNone-product-tree-readback.r1",
+  "passed": true,
+  "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "audit": {
+    "root_sha": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "trees_verified": 358,
+    "leaf_count": 3916
+  },
+  "trackedBytes": 62297399,
+  "exactLeaves": 3916,
+  "changed": 2,
+  "unchanged": 3914,
+  "originalReadback": {
+    "blob": "34375b62bf8f8d37486a3ede0287581d2336cf84",
+    "bytes": 1204148,
+    "sha256": "608698e55e8baaee1ada706f306fe6aabad6a2d3a99c238f67b3c47ca411c8a5"
+  }
+}

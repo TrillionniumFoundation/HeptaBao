@@ -1,0 +1,237 @@
+{
+  "schema": "heptabao.validation-checkpoint.r41",
+  "as_of_UTC": "2026-11-06 11:27:23 UTC",
+  "previous_validation_commit": "515bfe24879798f0117859c11492112bae9c3cee",
+  "prefix": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "qualified_product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "prior_real_LAN_scope": "Mac192.168.0.8/ROG.10/Pocket4.9 real-process SIGKILL, election, ReadIndex, quorum loss, durable cold restart98+12; not physical power removal; no transfer of qualification to new uncompiled source.",
+  "AuthBus": {
+    "originalInert": {
+      "job": "mac/1a1b0702e84-fc05-708a",
+      "exitCode": 1,
+      "predicate": "home_own_create_preserves_root_object",
+      "effectUnknown": true,
+      "originalFailurePointTuplesRecovered": false,
+      "root": {
+        "blob": "d30cfb9acc09966661e4739c19517dc518b7a43a"
+      }
+    },
+    "currentReadOnlyProbe": {
+      "job": "mac/1a1b0889605-fc05-7138",
+      "knownExit": 0,
+      "fullDurable": true,
+      "root": {
+        "blob": "29e35663b15d624c7dcc90d7d3dc01fdb6e3ece7",
+        "bytes": 7672,
+        "sha256": "d4ff8b3ca6189311150dbf643912bc300e4ffd3392882eff69365117a7b78da1"
+      },
+      "currentRootFull9": [
+        "16777233",
+        "593068531",
+        "501",
+        "20",
+        "16832",
+        "3",
+        "96",
+        "1793961504844444664",
+        "1793961504844444664"
+      ],
+      "copyWholeBytes": 14052,
+      "exactAbsenceChecks": 38,
+      "FDsClosedOnce": 5,
+      "originalUnknownPreserved": true
+    },
+    "first5Fix": {
+      "root": {
+        "blob": "eb9eb5165b73c0475e885ee77057953ae21fee2f",
+        "bytes": 2570,
+        "sha256": "3b6bce1b11956fad3eae10c025f666791085ac28fb4b1a7722320e041747a682"
+      },
+      "onlyFunctionalChange": "Directory identity after own exclusive leaf creation uses dev/ino/uid/gid/mode; current held/name still full9; original pre-operation full9 and file nlink1 retained."
+    },
+    "R2": {
+      "sourceTree": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+      "root": {
+        "blob": "389205b2d32c865b27db356b1b2c6f0982e80cf6",
+        "bytes": 11301,
+        "sha256": "4bbfab6454295d0b8bae1061e1fab30a07a524dab5d784c7d0741284e64d2a7b"
+      },
+      "sourceChecks": 80,
+      "pureAuthorChecks": 182,
+      "inertGO": {
+        "blob": "d572d75506b56c1e67f9f804462d621e915d67b1",
+        "bytes": 6762,
+        "sha256": "4a580a12dc4b26c74182cb529dd823584b38346be8b5b35d4d5b1229483c4bc8"
+      },
+      "actualInertResultAtCutoff": null,
+      "runtimeRequestAtCutoff": null,
+      "actualCredentialsQualified": false,
+      "selectedOwnerQualified": false,
+      "initialColdRollbackRenewRevokeQualified": false,
+      "activation": "Source qualified; await lane grant after C's current BODY observer closes."
+    }
+  },
+  "snapshot": {
+    "candidateCommit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "originalFormatterJob": "rog/1a1b02771c2-fc05-6e9f",
+    "wholeReport": {
+      "blob": "b99fe67dc434a0d856a8caff6fe75de597d6d5ed",
+      "bytes": 118925,
+      "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8"
+    },
+    "wholeReportRoot": {
+      "blob": "8ebf3731052711fcdb86d2f99997a47f975def89",
+      "bytes": 17845,
+      "sha256": "cb7f9ce030af80e7f539b526cc38cfe8fd6c4ae52783ca7f8528b45b229212b2"
+    },
+    "originalFormatterFiles": 49,
+    "sourceInputsUnchanged": true,
+    "formatterChildrenStopped": 49,
+    "changedOutputs": 23,
+    "changedBytes": 1346637,
+    "unchangedWholeSourceReuse": 26,
+    "unchangedBytes": 686814,
+    "outputReadGO": {
+      "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+      "bytes": 14304,
+      "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+    },
+    "outputReadCompleteAtCutoff": false,
+    "newFormattedOutputFull9NotInReport": true,
+    "compileQualified": false,
+    "newBehaviorTestsRun": false,
+    "historicalBODY0Admission": "Original timeout remains UNKNOWN; separate exact-key reconciliation observed reused=true and closed immutable range. BODY1 and whole report separately qualified.",
+    "remainingFunctionalFailure": "Original standby SAVE incomplete_snapshot and standby RESTORE no baseline match remain unresolved by new runtime evidence."
+  },
+  "JWT_PKI": {
+    "originalFailedCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "originalCargoExit": 101,
+    "originalCompilerErrors": [
+      "E0061: service_native_pki.rs missing 14th lifetime-output argument",
+      "E0061: service_native_ssh.rs missing 14th lifetime-output argument"
+    ],
+    "minimalFixCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "minimalFixTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "minimalFixBranch": "codex/heptabao-jwt-pki-compile-fix-20261106",
+    "changedFiles": 2,
+    "addedBytes": 52,
+    "unchangedLeaves": 3914,
+    "newStageJob": "rog/1a1b07b7e0b-fc05-70ca",
+    "newStageTerminalExit": 0,
+    "newStageTerminalRoot": {
+      "blob": "16091afbb8e0cdce0a8720e626317d28830c180e",
+      "bytes": 6436,
+      "sha256": "b00c586b1f583bf7f341ad36d1ddfccbe053401d3b567916ab7d02e33954edd5"
+    },
+    "newStageINFO": {
+      "blob": "e3e76d83810f7ffaa175f50d87ce979f9da55950",
+      "bytes": 4221,
+      "sha256": "ce5cd030626c2d9437e257ff95b15dc67aed5268006ed5fcae16f9445913a0d0"
+    },
+    "newStageBODY_GO": {
+      "blob": "226dd0823db8d6e496d521ffc4f892c32c4129c3",
+      "bytes": 2505,
+      "sha256": "c1ef8c791331e324e48348aa58f6ecd3c7eb0e71e9406f699ce90efcc053bb72"
+    },
+    "newStageWholeReportQualifiedAtCutoff": false,
+    "normalBuildQualified": false,
+    "selectedUniqueTests": 149,
+    "selectedProfileInstances": 166,
+    "actualRuntimeTestsNewCandidateAtCutoff": 0,
+    "ACLSuccessorMerged": false,
+    "officialJWTPolicyFinding": "Official 2.7.1 role storage permits supplied-empty token_policies without default injection and has no role-handler actor-policy-subset gate. Legacy nil ParsePolicies default exception remains. Endpoint ACL still applies; root-token issuance is not inferred.",
+    "newActualOfficialOracleRun": false
+  },
+  "history_preserved": {
+    "C_original_local_page_prepare_failure_and_once_root_authorized_local_resume": true,
+    "C_body_semantic_precheck_before_separate_decoded_leaf_order_exception": true,
+    "all_final_C_root51_semantics_after_whole_original_report": true,
+    "superseded_b694_GO_source_packet_object_corrected_to_SHA_before_dispatch": true,
+    "superseded_2379_GO_one_sequence_sentence_corrected_before_initialize": true,
+    "B2379_pure_Git_helper_argument_error_and_unpublished_release_draft_correction": true,
+    "old_UNKNOWN_records_not_replayed_or_rekeyed": true,
+    "source_verifier_corrections_not_changes_to_candidate_source": true,
+    "A_current_cleanup_local_checker_kind_and_shape_errors_preserved": true,
+    "B_original_BODY0_admission_timeout_preserved": true,
+    "C_original_BODY_page2_timeout_preserved": true,
+    "C_unexecuted_local_unpause_proposal_preserved_and_not_authorized": true,
+    "root_C_runner_envelope_vs_body_pin_verifier_correction_preserved": true,
+    "JWT_test_initial_missing_default_precondition_and_R2_exact_fix_preserved": true,
+    "root_local_executor_pre_exec_failure_not_retried": true,
+    "root_README_pure_local_missing_tot_binding_corrected_before_write": true
+  },
+  "additional_history_preserved": [
+    "Original HOME R1 partial-effectUnknown and omitted failure point tuples",
+    "Original BODY0 timeout admission and exact original SDK",
+    "Original PKI33b failed build and body-read pause history",
+    "All source-construction and root-only verifier mistakes kept in referenced packets"
+  ],
+  "remaining_gates": [
+    "CLI standby save and restore exact cause and repair",
+    "AuthBus actual trusted owner credential chain and five current consumers",
+    "Native JWT actual compilation/test plus precise official role ACL create/update/delete semantics",
+    "Other native auth/provider routes including OIDC/Kubernetes/MFA and SDK owners",
+    "Database/RabbitMQ/Kubernetes secret external effects",
+    "ACME/EAB/externalKMS/HSM PKI and Transit integration",
+    "Rekey/root generation/rotation and runtime plugin mutation",
+    "Protected namespace/nondefault Raft administration",
+    "Two exact PKI expired/revoked status oracles",
+    "Current per-client credential read/write, restart, rollback and traffic cutover",
+    "All current backup-path migration evidence before legacy cleanup"
+  ],
+  "baseline_evidence_limits_preserved": [
+    "Mac/X230 formal34MiB31/31 is scoped to4e808 baseline; no current candidate qualification inheritance.",
+    "X23069 remains67 exact plus2 normalized PKI until actual new HTTP oracle.",
+    "RealLAN prior98+12 does not cover new snapshot forwarding, rawOpenBao archive interoperability or current production cutover.",
+    "H2 prior H01-H03 small archive/ALPN scope does not establish34MiB H2 or multi-host new CLI restore.",
+    "Native database,Kubernetes,RabbitMQ,ACME/EAB,KMS/HSM,root/rekey/plugin/namespace/admin capability gaps remain.",
+    "Current inventory and every real client restart/rollback plus every backup migration must precede old-service and asset removal."
+  ],
+  "next_work": [
+    "Complete actual fresh R2 public staging, independent three-target acceptance and original full AuthBus runtime.",
+    "Qualify actual 025b whole stage report, publish ready controls and run normal release plus 149 unique /166 profile-instance tests.",
+    "Complete 23 actual formatted output bodies, freeze the resulting candidate and run snapshot-forward tests including old standby failures.",
+    "Run necessary Mac/X230/LAN regressions on the eventual integrated latest candidate.",
+    "Only after each real client read/write/restart/rollback and all backup-path migration is proven, cut over production and remove obsolete assets."
+  ],
+  "publication": {
+    "appendOnlyEvidenceCheckpoint": true,
+    "productDeployment": false,
+    "packets": {
+      "packets": 70,
+      "files": 1226,
+      "bytes": 24942324,
+      "allWhole": true
+    }
+  },
+  "root_Runtime_calls": 0,
+  "maximum_Runtime_lanes": 2,
+  "local_executor_available": false,
+  "current_lanes_at_cutoff": {
+    "A": "No call/future; exact R2 inert GO waits for lane grant",
+    "B": "One lane assigned to fixed23 metadata/36 ranges; whole output completion pending",
+    "C": "One lane assigned to original 025b stage report BODY observation; no build yet"
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-original-compiler-log-INFO.v1",
+  "authorization": "GO",
+  "scope": "build_compile_logs_file_info_only",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "maximum_file_info_operations": 2,
+  "maximum_process_start_calls": 0,
+  "maximum_binary_read_operations": 0,
+  "exact_requests": [
+    {
+      "blob": "e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8",
+      "bytes": 302,
+      "sha256": "fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"
+    },
+    {
+      "blob": "008beb6807a40811762b005eb20cd396755775eb",
+      "bytes": 302,
+      "sha256": "b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"
+    }
+  ],
+  "agent": "/root/ha_validation",
+  "source_packet": "14ba1481003106bfa56b378f3b0ddb0870127b71",
+  "source": {
+    "blob": "850d83d091d21699713f26dba9489e0789c9bc12",
+    "bytes": 23663,
+    "sha256": "82456b23001187d1b86b3bd23e82c8a70b4baac74d5642a5f91982f527716667"
+  },
+  "source_review": {
+    "blob": "af3e20247ff1f7a3fcf7fc54e0f0111283285757",
+    "bytes": 5213,
+    "sha256": "2a8950b074e7393cdc6ffe39c47013e7b922133050e84da0bdae7525b693e819"
+  },
+  "source_review_checks": 17,
+  "author_source_checks_reproduced": 38,
+  "original_body_qualification": {
+    "blob": "b5fbe46e1cb24605cd1180a48ed7a54e95fef3c7",
+    "bytes": 7563,
+    "sha256": "fade029ae7842d05055c763ed43cb01d0a7343b7e75cd2ceb2594b856731bb48"
+  },
+  "original_body_qualification_checks": 44,
+  "original_failed_body": {
+    "blob": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "packet": "db9226138ba61edc94c08ef141f15cc7c61b58a3"
+  },
+  "new_slot": "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1",
+  "previous_contexts": {
+    "complete_retrieval": {
+      "blob": "89dc4a1a78028d99ae0ac3d626564532d2f40098",
+      "bytes": 80686,
+      "sha256": "b227ac22523c59737f83f38da259e1139f6e8a62b483749be8a9cf6c0f3e4387"
+    },
+    "old_paused_BUILD": {
+      "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+      "bytes": 120307,
+      "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+    },
+    "both_read_only": true,
+    "old_timeout_preserved": true
+  },
+  "targets": [
+    {
+      "role": "compiler-stderr",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+      "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+      "expected_mode": 384,
+      "expected_full_mode": 33152,
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_link_count": 1,
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false
+    },
+    {
+      "role": "compiler-json-stdout",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stdout",
+      "sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+      "expected_mode": 384,
+      "expected_full_mode": 33152,
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_link_count": 1,
+      "size": null,
+      "version": null,
+      "full9": null,
+      "metadata_observed": false,
+      "body_observed": false
+    }
+  ],
+  "order": [
+    "compiler-stderr",
+    "compiler-json-stdout"
+  ],
+  "limits": {
+    "new_root_GO_required": true,
+    "maximum_file_info_operations": 2,
+    "sequential": true,
+    "maximum_active_future": 1,
+    "operation_status_same_returned_ID_only": true,
+    "immutable_result_page_bytes": 8192,
+    "immutable_payload_cap": 1048576,
+    "metadata_reported_file_size_admission_cap": 1048576,
+    "process_start": 0,
+    "binary_read": 0,
+    "read_multiple_files": 0,
+    "scan": 0,
+    "Cargo": 0,
+    "automatic_retry": false
+  },
+  "metadata_size_cap_boundary": "file_info is a full-file hash observation, not a body budget. The 1 MiB size predicate applies after the original immutable metadata payload is preserved. A mismatch/size refusal remains preserved and stops; it does not authorize changing path or retries.",
+  "helpers": {
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    }
+  },
+  "lane_activation": "C may occupy one lane alongside B original BODY0 admission outcome UNKNOWN. A/root0. Maximum1 native call or owned future per lane; first file_info must finish whole immutable payload/EOF/inactive before second admission.",
+  "sequence": [
+    "Initialize only the independent new metadata context after exact GO whole-read; keep original paused BUILD and completed retrieval state byte-identical.",
+    "For stderr then stdout: whole exact request/intent/armed, return across independent boundary, invoke once, whole archive original SDK before inspection.",
+    "Follow only original returned operation ID for status and contiguous immutable8KiB pages, total payload cap1MiB; require completed/stored/inactive.",
+    "Whole original metadata payload before validating fixed path, actual report SHA, mode0600, owner1000:1000, nlink1, decimal version and post-observation size<=1MiB.",
+    "Publish observed full9/size/version/whole SHA and close each lifecycle. Any error remains preserved and stops this context without automatic retry or path/cap changes."
+  ],
+  "process_start": 0,
+  "binary_read": 0,
+  "Cargo": 0,
+  "root_Runtime_calls": 0,
+  "compiler_diagnostics_observed": false,
+  "Cargo_target_reuse_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

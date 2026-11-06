@@ -1,0 +1,231 @@
+{
+  "sourceOnly": true,
+  "candidateFunctionsExecuted": 0,
+  "NativeCalls": 0,
+  "checks": [
+    {
+      "name": "whole original BODY journal",
+      "passed": true,
+      "detail": {
+        "blob": "12488e539c55f7be153e20857e162b3f80d49caf",
+        "bytes": 31928,
+        "sha256": "80a9b150c851e024e811edafe8dd9af6af4e17e4fa9606f1e7f91142e3076fba"
+      }
+    },
+    {
+      "name": "strict forward patch reconstructs whole",
+      "passed": true,
+      "detail": {
+        "blob": "1246d62bd5c0b0ed7ed632cc1ea2a9fb60e6a93c",
+        "bytes": 33535,
+        "sha256": "25878bbd704c22acdfa8bdef74acfcdcd8a594b27019ab70c3606c895e29b14b"
+      }
+    },
+    {
+      "name": "strict reverse restores original",
+      "passed": true,
+      "detail": {
+        "blob": "101662080e30d35c1530eb57d8c4bc56b23d93f8",
+        "bytes": 33535,
+        "sha256": "ddd435afcc00d232725a96a839cba3270ccbf8d28503a5e012f07c15b394dd63"
+      }
+    },
+    {
+      "name": "unique source edit: one-reconciliation-prelude",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: assert-old-context-unchanged",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: separate-context-initialize",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: closed-three-kind-native-set",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: intent-discloses-conditional-admission",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: armed-no-retry",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: one-admission-marker",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: no-business-dispatch",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: reused-true-and-false-do-not-rewrite-old",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: only-new-body16K-pages",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: close-only-range0",
+      "passed": true
+    },
+    {
+      "name": "unique source edit: remove-other-authorize-actions",
+      "passed": true
+    },
+    {
+      "name": "12 ordered literal replacements equal candidate",
+      "passed": true,
+      "detail": 12
+    },
+    {
+      "name": "JavaScript syntax only",
+      "passed": true,
+      "detail": "Compiled function wrapper only, never called"
+    },
+    {
+      "name": "unchanged helper gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged helper gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged helper gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged helper gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged helper gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "new context slot is separate",
+      "passed": true
+    },
+    {
+      "name": "no stores to original context key",
+      "passed": true
+    },
+    {
+      "name": "old context is checked on state access",
+      "passed": true
+    },
+    {
+      "name": "old unknown state exact pin",
+      "passed": true,
+      "detail": {
+        "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+        "bytes": 1629,
+        "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+      }
+    },
+    {
+      "name": "old SDK exact pin",
+      "passed": true,
+      "detail": {
+        "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+        "bytes": 247,
+        "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+      }
+    },
+    {
+      "name": "same exact public request",
+      "passed": true,
+      "detail": {
+        "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+        "bytes": 432,
+        "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+      }
+    },
+    {
+      "name": "current old state still paused/pending",
+      "passed": true
+    },
+    {
+      "name": "current old original admission called once and zero ranges",
+      "passed": true
+    },
+    {
+      "name": "current old BODY1 never submitted",
+      "passed": true
+    },
+    {
+      "name": "GO demands explicit possible admission not lookup",
+      "passed": true
+    },
+    {
+      "name": "one admission exact key guard",
+      "passed": true
+    },
+    {
+      "name": "only three Native call sites remain",
+      "passed": true
+    },
+    {
+      "name": "no process_start or file_info Native call site",
+      "passed": true
+    },
+    {
+      "name": "no generic formatter authorization actions",
+      "passed": true
+    },
+    {
+      "name": "admission once marker precedes sole invocation",
+      "passed": true
+    },
+    {
+      "name": "original SDK retained before archive then parse",
+      "passed": true
+    },
+    {
+      "name": "both reused booleans accepted explicitly",
+      "passed": true
+    },
+    {
+      "name": "ACK preserves unknown and does not assert completion",
+      "passed": true
+    },
+    {
+      "name": "same actual ID only after ACK",
+      "passed": true
+    },
+    {
+      "name": "status closed/inactive before pages",
+      "passed": true
+    },
+    {
+      "name": "body page16K and payload1MiB caps",
+      "passed": true
+    },
+    {
+      "name": "payload pages contiguous and authenticated whole",
+      "passed": true
+    },
+    {
+      "name": "range0 actual identity and SHA only",
+      "passed": true
+    },
+    {
+      "name": "range0 never considered complete report",
+      "passed": true
+    },
+    {
+      "name": "all exceptions stop new context and preserve original",
+      "passed": true
+    },
+    {
+      "name": "SOURCE created no live slot",
+      "passed": true
+    }
+  ]
+}

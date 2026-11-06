@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.compact-independent-input-provenance.v1",
+  "input": {
+    "blob": "994898c1791a605acec31ae36173511523a4a0d5",
+    "bytes": 61766,
+    "sha256": "4b60e5d2f902282915f6ced8ef7e067e0f5db0bfc58a1fb5323d1895cda242e6"
+  },
+  "source81": "e0c930c6d06881ceecf36339a860b660fc66e4b9",
+  "derivation": "Original formatter GO input_files49 + whole actual report files49; no host reading; no execution or candidate changes.",
+  "NativeCalls": 0
+}

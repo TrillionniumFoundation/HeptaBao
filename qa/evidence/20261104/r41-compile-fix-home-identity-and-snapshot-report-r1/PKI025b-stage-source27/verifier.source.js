@@ -1,0 +1,41 @@
+function verifyCompileFixStageSource(i,h) {
+ const checks=[];function need(n,v){checks.push({name:n,pass:!!v});if(!v)throw Error(n);}
+ const samePin=(s,p)=>{const a=h.gitBlobMeta(s);return a.blob===p.blob&&a.bytes===p.bytes&&a.sha256===p.sha256;};
+ function defs(s){const lines=s.split("\n"),out={};for(let n=0;n<lines.length;n++){const m=/^def ([a-zA-Z_]\w*)\(/.exec(lines[n]);if(!m)continue;let end=n+1;while(end<lines.length&&(!lines[end].trim()||/^\s/.test(lines[end])||lines[end].startsWith("#")))end++;out[m[1]+"#"+Object.keys(out).length]=lines.slice(n,end).join("\n");}return out;}
+ need("actual_commit",i.commit.sha==="025b05a340de841b8161c1120344e86eae30eb97");
+ need("actual_tree",i.commit.tree.sha==="1d8160c9385f8053b9a683cc1834da0f912e2d37");
+ need("actual_sole_parent",i.commit.parents.length===1&&i.commit.parents[0].sha==="33b814c7034ec853151b1ff13e7529c83f65ea70");
+ need("original_source_pin",h.gitBlobMeta(i.before).blob==="038e14fda7a776eb5909bfaa7152872c2f1d7add");
+ let inv=i.after;for(const[a,b]of [...i.replacements].reverse()){need("inverse_unique_"+checks.length,inv.split(b).length===2);inv=inv.replace(b,a);}
+ need("outside13literal_changes_unchanged",i.replacements.length===13&&inv===i.before);
+ const fw=h.applyStrictUnified(i.before,i.diff),rv=h.applyStrictUnified(i.after,i.diff,true);
+ need("strict_forward",fw.text===i.after);need("strict_reverse",rv.text===i.before);need("four_hunks",fw.hunks===4&&rv.hunks===4);
+ const a=defs(i.before),b=defs(i.after);need("20_original_definitions",Object.keys(a).length===20&&JSON.stringify(Object.keys(a))===JSON.stringify(Object.keys(b)));
+ for(const k of Object.keys(a))need("definition_unchanged_"+k,a[k]===b[k]);
+ need("complete_new_request_pin",samePin(i.requestRaw,i.requestPin));
+ const q=JSON.parse(i.requestRaw),prior=JSON.parse(i.beforeRequestRaw);
+ need("exact_envelope",q.host==="rog"&&q.executable==="/usr/bin/python3"&&q.cwd==="/home/qian-qi"&&q.timeout_seconds===360);
+ need("exact_inline_source_and_sha",q.args.length===9&&q.args[4]===i.after&&q.args[6]===h.gitBlobMeta(i.after).sha256);
+ need("unchanged_other_arguments",q.args.filter((x,n)=>![4,6].includes(n)).join("\0")===prior.args.filter((x,n)=>![4,6].includes(n)).join("\0"));
+ need("unchanged_carrier",q.stdin===prior.stdin&&samePin(q.stdin,i.carrierPin)&&i.carrierPin.bytes===79951);
+ need("exact_new_key",q.idempotency_key==="heptabao-native-jwt-pki-025b05a3-rog-source-20261106-r1-"+h.gitBlobMeta(i.after).sha256.slice(0,8));
+ need("new_root",i.after.includes("ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1')"));
+ need("old_root_preserved",!i.after.includes("ROOT = Path('/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1')"));
+ need("ancestry15",i.after.includes("assert len(added) == 15 and set(added)")&&i.after.includes("('025b05a340de841b8161c1120344e86eae30eb97', '33b814c7034ec853151b1ff13e7529c83f65ea70')"));
+ need("history3767",i.after.includes("'canonical_history_count': 3767")&&i.after.includes("strip() == '3767'"));
+ need("3916_fulltree",i.after.includes("assert len(entries) == 3916"));
+ need("tracked_bytes62297399",i.after.includes("assert result['full_worktree']['tracked_bytes'] == 62297399"));
+ need("canonical_index",i.after.includes("aa43f995605190e7f0f7b6215e17eb73ccd923ff53f54dfcf44ba0c89e70e02b"));
+ let j=i.journal;for(const[a,b]of [...i.journalReplacements].reverse()){need("journal_inverse_unique_"+checks.length,j.split(b).length===2);j=j.replace(b,a);}
+ need("journal_only_three_bindings",i.journalReplacements.length===3&&j===i.journalBefore);
+ need("journal_strict_forward",h.applyStrictUnified(i.journalBefore,i.journalDiff).text===i.journal);
+ need("journal_strict_reverse",h.applyStrictUnified(i.journal,i.journalDiff,true).text===i.journalBefore);
+ const oldBinding=h.processStartBinding(prior),newBinding=h.processStartBinding(q);
+ need("typed_helper_actual_prior_positive_control",oldBinding.sha256==="043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732"&&oldBinding.native_fingerprint==="305633534227472263");
+ need("new_typed_binding",newBinding.sha256===i.typedBinding.sha256&&newBinding.native_fingerprint===i.typedBinding.native_fingerprint);
+ need("stage300",i.after.includes("STAGE_SECONDS = 300.0"));
+ need("clone180",i.after.includes("str(OLD), str(SOURCE)], 180)"));
+ need("original_caps",i.after.includes("'original_git_leaf_cap_seconds': 90")&&i.after.includes("'new_supervisor_seconds': 360"));
+ need("no_Cargo_started_claim",i.after.includes("'compiler_started': False")&&i.after.includes("'rust_tests_executed': False"));
+ return {schema:"heptabao.native-jwt-pki.025b-stage.pure-verification.v1",pass:true,total:checks.length,checks,Runtime:0,candidateExecuted:false,definitions:20,sourceHunks:4,journalHunks:2};
+}

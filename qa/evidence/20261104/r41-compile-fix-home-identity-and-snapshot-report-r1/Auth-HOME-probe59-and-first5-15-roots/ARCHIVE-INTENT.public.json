@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_auth_home_probe_and_first5_qualification_packet",
+  "records": [
+    {
+      "name": "root-probe-actual.public.json",
+      "blob": "29e35663b15d624c7dcc90d7d3dc01fdb6e3ece7",
+      "bytes": 7672,
+      "sha256": "d4ff8b3ca6189311150dbf643912bc300e4ffd3392882eff69365117a7b78da1"
+    },
+    {
+      "name": "root-probe-verifier.js",
+      "blob": "a8fe3aa31738de0dc64b3137435de407ad9dc191",
+      "bytes": 7431,
+      "sha256": "0532e45e8943b62e6346e1cf00dbc0105789f0b7681359d29df6bc28e277f50c"
+    },
+    {
+      "name": "root-first5-components.public.json",
+      "blob": "eb9eb5165b73c0475e885ee77057953ae21fee2f",
+      "bytes": 2570,
+      "sha256": "3b6bce1b11956fad3eae10c025f666791085ac28fb4b1a7722320e041747a682"
+    },
+    {
+      "name": "root-first5-verifier.js",
+      "blob": "e1596d8e4c895812815994c4bd873b91c61c1902",
+      "bytes": 2946,
+      "sha256": "592186d20c69222c70b3770aedd4f1e56442c40588fd0cfdf989fbc932d016dd"
+    },
+    {
+      "name": "root-peer64-reproduced.public.json",
+      "blob": "ea8a8285d43e559f2c1818564c5dc65673eadd2d",
+      "bytes": 5425,
+      "sha256": "304a99d4561b1777f51d9e31dd0cc649ce4efb6dfdd30b66fe70cfcd6bfa104e"
+    }
+  ],
+  "expected_data_tree": "83bfb2fb6923ff0e535b67deeeb0594dc0fd818b",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

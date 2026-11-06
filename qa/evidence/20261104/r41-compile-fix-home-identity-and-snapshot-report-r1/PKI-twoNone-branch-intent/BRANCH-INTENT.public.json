@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.root.twoNone-new-product-branch-intent.r1",
+  "maximumCalls": 1,
+  "mutationNotYetCalled": true,
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-jwt-pki-compile-fix-20261106",
+    "sha": "025b05a340de841b8161c1120344e86eae30eb97"
+  },
+  "preflight": "Exact new ref returned GitHub404; existing candidate branch is preserved.",
+  "verifiedCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "verifiedTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "soleParent": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "noForce": true,
+  "noRuntimeQualification": true
+}

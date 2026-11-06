@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.public-runtime-admission-source-review.v1",
+  "repository": "TrillionniumFoundation/hepta-runtime",
+  "branch": "codex/native-runtime-integration-20261024",
+  "commit": {
+    "sha": "d4d48189d03b8ff8dfe8d82652b749fb44cd9d50",
+    "node_id": "C_kwDOU4ANVdoAKGQ0ZDQ4MTg5ZDAzYjhmZjhkZmU4ZDgyNjUyYjc0OWZiNDRjZDlkNTA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-runtime/git/commits/d4d48189d03b8ff8dfe8d82652b749fb44cd9d50",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-runtime/commit/d4d48189d03b8ff8dfe8d82652b749fb44cd9d50",
+    "author": {
+      "name": "Tomasrgbsf",
+      "email": "tomasbraynt@gmail.com",
+      "date": "2026-10-24T08:25:03Z"
+    },
+    "committer": {
+      "name": "Tomasrgbsf",
+      "email": "tomasbraynt@gmail.com",
+      "date": "2026-10-24T08:25:03Z"
+    },
+    "tree": {
+      "sha": "3dbc55020b06e37ebd66d55f2125bec03cb50c2a",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-runtime/git/trees/3dbc55020b06e37ebd66d55f2125bec03cb50c2a"
+    },
+    "message": "Qualify native runtime recovery and isolate correctness tests",
+    "parents": [
+      {
+        "sha": "dd7bf97f4cbe9b77d35c117ef1584e541129f041",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-runtime/git/commits/dd7bf97f4cbe9b77d35c117ef1584e541129f041",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-runtime/commit/dd7bf97f4cbe9b77d35c117ef1584e541129f041"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "audit": {
+    "audit": {
+      "root_sha": "3dbc55020b06e37ebd66d55f2125bec03cb50c2a",
+      "trees_verified": 611,
+      "leaf_count": 6270
+    },
+    "commit": "d4d48189d03b8ff8dfe8d82652b749fb44cd9d50",
+    "tree": "3dbc55020b06e37ebd66d55f2125bec03cb50c2a",
+    "sourceResponseRootWasCommitAlias": true
+  },
+  "sources": [
+    {
+      "path": "src/mcp/runtime/operation_async.rs",
+      "blob": "7636673d55ab4e3eb6c861be021d47a1c36fc227",
+      "bytes": 57879,
+      "sha256": "610879ccdcb477da688030f507baa64541d7439fdc157aa543af9d63d04c534c"
+    },
+    {
+      "path": "src/mcp/runtime/operation_crypto.rs",
+      "blob": "0c07318a6d85efb920069ce4f190c4f2ed56e84f",
+      "bytes": 15524,
+      "sha256": "a48463ef35ca41d0aa8ef64fcaeb9d3245773052221789a38d18d52ced891633"
+    },
+    {
+      "path": "src/mcp/runtime/operation_async_tests.rs",
+      "blob": "74192e39b71e8d4fba9f762f3465541e57471f1a",
+      "bytes": 30757,
+      "sha256": "671019d889592f7993679916f022058a19ca9b5e1859140552b80f107f51e65d"
+    }
+  ],
+  "actual_deployed_revision_proven": false
+}

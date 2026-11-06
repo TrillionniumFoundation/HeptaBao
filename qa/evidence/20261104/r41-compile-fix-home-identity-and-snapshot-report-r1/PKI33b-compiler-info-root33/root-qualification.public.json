@@ -1,0 +1,230 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-original-compiler-log-INFOS.v1",
+  "status": "PASS_ORIGINAL_LOG_METADATA_ONLY",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole41_100729",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_source_whole",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_call_jwt-pki-build149-compiler-stderr-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_armed_tree_jwt-pki-build149-compiler-stderr-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_call_jwt-pki-build149-compiler-stderr-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_armed_tree_jwt-pki-build149-compiler-stderr-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_call_jwt-pki-build149-compiler-stderr-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_armed_tree_jwt-pki-build149-compiler-stderr-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_call_jwt-pki-build149-compiler-stdout-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_armed_tree_jwt-pki-build149-compiler-stdout-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_call_jwt-pki-build149-compiler-stdout-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_armed_tree_jwt-pki-build149-compiler-stdout-info-status-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_call_jwt-pki-build149-compiler-stdout-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_armed_tree_jwt-pki-build149-compiler-stdout-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_observer_2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_page_2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239_0",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_payload_2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_observer_7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_page_7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56_0",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_payload_7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "passed": true
+    },
+    {
+      "name": "PKICompilerLogsINFO_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "six_calls_two_ops_two_pages_all_once",
+      "passed": true
+    },
+    {
+      "name": "exact_original_INFO_request_0",
+      "passed": true
+    },
+    {
+      "name": "observed_fixed_path_mode_owner_SHA_version_0",
+      "passed": true
+    },
+    {
+      "name": "table_exact_derived_full9_0",
+      "passed": true
+    },
+    {
+      "name": "exact_original_INFO_request_1",
+      "passed": true
+    },
+    {
+      "name": "observed_fixed_path_mode_owner_SHA_version_1",
+      "passed": true
+    },
+    {
+      "name": "table_exact_derived_full9_1",
+      "passed": true
+    },
+    {
+      "name": "original_closed_source_contexts_preserved_by_pin_guard",
+      "passed": true
+    },
+    {
+      "name": "metadata_only_no_body_Cargo_or_replay",
+      "passed": true
+    },
+    {
+      "name": "own_two_observers_closed_lane_released",
+      "passed": true
+    }
+  ],
+  "check_count": 33,
+  "packet": {
+    "tree": "9521d91aa291a7d25943e03f50d1f4a187c5142e",
+    "files": 41,
+    "bytes": 100729,
+    "merkle": {
+      "root_sha": "9521d91aa291a7d25943e03f50d1f4a187c5142e",
+      "trees_verified": 1,
+      "leaf_count": 41
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b029a998-fc05-6eb2",
+  "actual": {
+    "native_calls": 6,
+    "original_metadata_operations": 2,
+    "immutable_pages": 2,
+    "infos": [
+      {
+        "index": 0,
+        "role": "compiler-stderr",
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+        "size": 14696,
+        "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+        "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+        "full9Strings": [
+          "66306",
+          "31364213",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "14696",
+          "1793957207629499769",
+          "1793957207629499769"
+        ],
+        "originalOperation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+        "nativeText": {
+          "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+          "bytes": 489,
+          "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+        },
+        "regularFileFromNativeFileInfoContract": true,
+        "expectedVersionBeforeObservation": null,
+        "bodyReadAuthorized": false
+      },
+      {
+        "index": 1,
+        "role": "compiler-json-stdout",
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stdout",
+        "size": 388177,
+        "sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+        "version": "66306:31364212:388177:1793957207629499769:1793957207629499769",
+        "full9Strings": [
+          "66306",
+          "31364212",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "388177",
+          "1793957207629499769",
+          "1793957207629499769"
+        ],
+        "originalOperation": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+        "nativeText": {
+          "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+          "bytes": 491,
+          "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+        },
+        "regularFileFromNativeFileInfoContract": true,
+        "expectedVersionBeforeObservation": null,
+        "bodyReadAuthorized": false
+      }
+    ],
+    "completed_inactive": true,
+    "lane_released": true,
+    "body_reads": 0
+  },
+  "limits": [
+    "Full-file hash and native metadata only; neither compiler log body has yet been observed.",
+    "full9 permission/type values are derived from the observed version, owner/mode/link metadata and native file_info regular-file contract.",
+    "Both previous journal state pins are required by the exact executed source at every entry; the original timeout stays historical.",
+    "No target lock reuse, new build, product tests or production readiness is established."
+  ],
+  "compiler_diagnostics_observed": false,
+  "Cargo_target_reuse_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

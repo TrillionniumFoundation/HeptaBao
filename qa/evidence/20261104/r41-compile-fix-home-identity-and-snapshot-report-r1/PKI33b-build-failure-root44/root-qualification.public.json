@@ -1,0 +1,279 @@
+{
+  "schema": "heptabao.root-qualification.PKI33b-original-failed-build-body.v1",
+  "status": "KNOWN_NORMAL_RELEASE_COMPILATION_FAILURE_ORIGINAL_BODY_QUALIFIED",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "full58_whole613324",
+      "passed": true
+    },
+    {
+      "name": "all34_original_history_members_byte_unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact_old_and_new_GO_source",
+      "passed": true
+    },
+    {
+      "name": "author33_original_chain_reproduced",
+      "passed": true
+    },
+    {
+      "name": "original5calls_distinct_and_called_once",
+      "passed": true
+    },
+    {
+      "name": "original_request_SDK_arm_0",
+      "passed": true
+    },
+    {
+      "name": "original_arm_Merkle_0",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_exact_native_0",
+      "passed": true
+    },
+    {
+      "name": "original_request_SDK_arm_1",
+      "passed": true
+    },
+    {
+      "name": "original_arm_Merkle_1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_exact_native_1",
+      "passed": true
+    },
+    {
+      "name": "original_request_SDK_arm_2",
+      "passed": true
+    },
+    {
+      "name": "original_arm_Merkle_2",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_exact_native_2",
+      "passed": true
+    },
+    {
+      "name": "original_request_SDK_arm_3",
+      "passed": true
+    },
+    {
+      "name": "original_arm_Merkle_3",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_exact_native_3",
+      "passed": true
+    },
+    {
+      "name": "original_request_SDK_arm_4",
+      "passed": true
+    },
+    {
+      "name": "original_arm_Merkle_4",
+      "passed": true
+    },
+    {
+      "name": "original_timeout_preserved_no_native_4",
+      "passed": true
+    },
+    {
+      "name": "one_original_binary_admission_bound",
+      "passed": true
+    },
+    {
+      "name": "original_effect_closed_before_failed_delivery",
+      "passed": true
+    },
+    {
+      "name": "original_paused_history_stays_identical",
+      "passed": true
+    },
+    {
+      "name": "only_two_new_immutable_result_calls",
+      "passed": true
+    },
+    {
+      "name": "retrieval_exact_GO_request_and_same_ID_0",
+      "passed": true
+    },
+    {
+      "name": "retrieval_intent_arm_scope_0",
+      "passed": true
+    },
+    {
+      "name": "retrieval_arm_Merkle_0",
+      "passed": true
+    },
+    {
+      "name": "retrieval_exact_GO_request_and_same_ID_1",
+      "passed": true
+    },
+    {
+      "name": "retrieval_intent_arm_scope_1",
+      "passed": true
+    },
+    {
+      "name": "retrieval_arm_Merkle_1",
+      "passed": true
+    },
+    {
+      "name": "four_original_payload_pages_0",
+      "passed": true
+    },
+    {
+      "name": "four_original_payload_pages_1",
+      "passed": true
+    },
+    {
+      "name": "four_original_payload_pages_2",
+      "passed": true
+    },
+    {
+      "name": "four_original_payload_pages_3",
+      "passed": true
+    },
+    {
+      "name": "whole_original49765_payload",
+      "passed": true
+    },
+    {
+      "name": "whole_original36998_body_matches_INFO",
+      "passed": true
+    },
+    {
+      "name": "exact33b_source_and_original_runner_groups",
+      "passed": true
+    },
+    {
+      "name": "known_normal_production_compile_failed101",
+      "passed": true
+    },
+    {
+      "name": "exact_normal_release_cargo_command",
+      "passed": true
+    },
+    {
+      "name": "only_compilation_child_closed",
+      "passed": true
+    },
+    {
+      "name": "runtime_tests_not_started_selected_counts_only",
+      "passed": true
+    },
+    {
+      "name": "all12_retained_whole_identities_before_after_equal_closed",
+      "passed": true
+    },
+    {
+      "name": "original_caps_remain_and_no_test_success_claim",
+      "passed": true
+    },
+    {
+      "name": "new_context_and_retrieval_lane_closed_old_journal_preserved",
+      "passed": true
+    }
+  ],
+  "check_count": 44,
+  "author_pure_checks_reproduced": 33,
+  "packet": {
+    "tree": "db9226138ba61edc94c08ef141f15cc7c61b58a3",
+    "files": 58,
+    "bytes": 613324,
+    "merkle": {
+      "root_sha": "db9226138ba61edc94c08ef141f15cc7c61b58a3",
+      "trees_verified": 1,
+      "leaf_count": 58
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1b029a998-fc05-6eb2",
+  "original_body_operation": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+  "original_payload": {
+    "blob": "70dc4b6edcf37644333b85335a2b59dc2ba0772f",
+    "bytes": 49765,
+    "sha256": "ca4321b37d698c2078c193087b4e76e56c4cdb8f79955aff236e3033d7188b07",
+    "tree": "1a0b67d2ac460ce83750a823dc4fb4b964d5cb6f"
+  },
+  "original_body": {
+    "blob": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "tree": "80d572bec4a316e06f47956f4a04bb8e83ee79bd"
+  },
+  "original_timeout": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "actual": {
+    "original_body_calls": 5,
+    "new_authorized_immutable_retrieval_calls": 2,
+    "successful_payload_pages": 4,
+    "original_error_responses": 1,
+    "new_binary_or_build_admissions": 0,
+    "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "normal_release_build": {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ],
+      "direct_child_reaped": true,
+      "elapsed_seconds": 316.2226926150033,
+      "exit_code": 101,
+      "label": "normal-release-build",
+      "outer_cap_seconds": 1800,
+      "owned_pgid": 811413,
+      "remaining": [],
+      "stderr_sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+      "stdout_sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+      "timed_out": false
+    },
+    "cleanup": [
+      {
+        "direct_child_reaped": true,
+        "exit_code": 101,
+        "label": "normal-release-build",
+        "pid": 811413,
+        "remaining": []
+      }
+    ],
+    "runtime_tests_started": false,
+    "selected_unique": 149,
+    "selected_instances": 166,
+    "actual_runtime_tests": 0,
+    "retained_qualification_files_unchanged_and_closed": 12,
+    "original_outer_seconds": 12000,
+    "retrieval_lane_released": true
+  },
+  "old_journal_paused_unchanged": true,
+  "old_unpause_proposal_unexecuted": true,
+  "compiler_diagnostic_body_observed": false,
+  "Cargo_target_reuse_qualified": false,
+  "limits": [
+    "Failure stage is now known: the original normal release Cargo child returned101 without timeout. The concrete compiler error text is not in this report and still needs the original fixed logs.",
+    "149/166 are selected denominators. No runtime tests started and no product success follows.",
+    "The sole reported direct Cargo child was reaped with empty remaining scope. No independent flock receipt or current target reuse admission is asserted.",
+    "All34 original partial members, including timeout, paused state and unexecuted local proposal, remain byte-identical. New calls only retrieved the original completed operation payload."
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

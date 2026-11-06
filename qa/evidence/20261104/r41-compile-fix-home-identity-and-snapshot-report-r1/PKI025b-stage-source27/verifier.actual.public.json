@@ -1,0 +1,280 @@
+{
+  "schema": "heptabao.native-jwt-pki.025b-stage.pure-verification.v1",
+  "pass": true,
+  "total": 67,
+  "checks": [
+    {
+      "name": "actual_commit",
+      "pass": true
+    },
+    {
+      "name": "actual_tree",
+      "pass": true
+    },
+    {
+      "name": "actual_sole_parent",
+      "pass": true
+    },
+    {
+      "name": "original_source_pin",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_4",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_5",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_6",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_7",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_8",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_9",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_10",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_11",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_12",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_13",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_14",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_15",
+      "pass": true
+    },
+    {
+      "name": "inverse_unique_16",
+      "pass": true
+    },
+    {
+      "name": "outside13literal_changes_unchanged",
+      "pass": true
+    },
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "four_hunks",
+      "pass": true
+    },
+    {
+      "name": "20_original_definitions",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_on_signal#0",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_digest#1",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_blob#2",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_identity#3",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_stable_read#4",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_fsync_dir#5",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_create#6",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_public#7",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_group_members#8",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_stop_owned#9",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_owned#10",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_git#11",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_stage_remaining#12",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_owned#13",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_freeze#14",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_preserve_failed_observer#15",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_walk_error#16",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_independent_git#17",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_verify_full_worktree#18",
+      "pass": true
+    },
+    {
+      "name": "definition_unchanged_canonical_bundle_header#19",
+      "pass": true
+    },
+    {
+      "name": "complete_new_request_pin",
+      "pass": true
+    },
+    {
+      "name": "exact_envelope",
+      "pass": true
+    },
+    {
+      "name": "exact_inline_source_and_sha",
+      "pass": true
+    },
+    {
+      "name": "unchanged_other_arguments",
+      "pass": true
+    },
+    {
+      "name": "unchanged_carrier",
+      "pass": true
+    },
+    {
+      "name": "exact_new_key",
+      "pass": true
+    },
+    {
+      "name": "new_root",
+      "pass": true
+    },
+    {
+      "name": "old_root_preserved",
+      "pass": true
+    },
+    {
+      "name": "ancestry15",
+      "pass": true
+    },
+    {
+      "name": "history3767",
+      "pass": true
+    },
+    {
+      "name": "3916_fulltree",
+      "pass": true
+    },
+    {
+      "name": "tracked_bytes62297399",
+      "pass": true
+    },
+    {
+      "name": "canonical_index",
+      "pass": true
+    },
+    {
+      "name": "journal_inverse_unique_55",
+      "pass": true
+    },
+    {
+      "name": "journal_inverse_unique_56",
+      "pass": true
+    },
+    {
+      "name": "journal_inverse_unique_57",
+      "pass": true
+    },
+    {
+      "name": "journal_only_three_bindings",
+      "pass": true
+    },
+    {
+      "name": "journal_strict_forward",
+      "pass": true
+    },
+    {
+      "name": "journal_strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "typed_helper_actual_prior_positive_control",
+      "pass": true
+    },
+    {
+      "name": "new_typed_binding",
+      "pass": true
+    },
+    {
+      "name": "stage300",
+      "pass": true
+    },
+    {
+      "name": "clone180",
+      "pass": true
+    },
+    {
+      "name": "original_caps",
+      "pass": true
+    },
+    {
+      "name": "no_Cargo_started_claim",
+      "pass": true
+    }
+  ],
+  "Runtime": 0,
+  "candidateExecuted": false,
+  "definitions": 20,
+  "sourceHunks": 4,
+  "journalHunks": 2
+}

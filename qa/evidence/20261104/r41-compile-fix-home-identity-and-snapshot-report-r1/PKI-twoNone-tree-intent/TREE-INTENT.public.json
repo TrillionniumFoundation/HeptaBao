@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.root.twoNone-product-tree-intent.r1",
+  "maximumCalls": 1,
+  "mutationNotYetCalled": true,
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "base_tree_sha": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "tree_elements": [
+      {
+        "path": "crates/heptabao-server/src/service_native_pki.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b11309ef29cc1328657b4645045008fc57bcd628"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6d347777f8fa6a45eb570bd080aed96a5487e975"
+      }
+    ]
+  },
+  "expectedTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "baseCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "trackedFiles": 3916,
+  "trackedBytes": 62297399,
+  "changedFiles": 2,
+  "unchangedFiles": 3914,
+  "recovery": "If ACK unknown, GET expected immutable tree and compare exact leaves. Do not create again.",
+  "noRuntimeQualification": true
+}

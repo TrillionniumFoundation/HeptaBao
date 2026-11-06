@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.root-exact-GO.fresh-home-t5-inert.r2",
+  "decision": "GO",
+  "scope": "one_exact_public_inert_stage_only",
+  "userAuthorization": "Continue HeptaBao Mac external-drive work and complete the remaining migration/validation blockers; this is an isolated preparatory stage.",
+  "reviewedSourcePacket": {
+    "tree": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+    "files": 125,
+    "bytes": 4231744,
+    "merkle": {
+      "root_sha": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+      "trees_verified": 1,
+      "leaf_count": 125
+    },
+    "whole": true
+  },
+  "rootSourceReview": {
+    "blob": "389205b2d32c865b27db356b1b2c6f0982e80cf6",
+    "bytes": 11301,
+    "sha256": "4bbfab6454295d0b8bae1061e1fab30a07a524dab5d784c7d0741284e64d2a7b"
+  },
+  "rootSourceChecks": 80,
+  "authorChecksReproduced": 182,
+  "peer": {
+    "originalR1": {
+      "packet": {
+        "tree": "4081f3507f14b9d8224fca302ee84b5d7dc5d22c",
+        "files": 4,
+        "bytes": 24825,
+        "merkle": {
+          "root_sha": "4081f3507f14b9d8224fca302ee84b5d7dc5d22c",
+          "trees_verified": 1,
+          "leaf_count": 4
+        },
+        "whole": true
+      },
+      "review": {
+        "blob": "38e89c62db79112d93eaf4870603e88519c1adbc",
+        "bytes": 9263,
+        "sha256": "23d01706894f2874ed2b9a74a4d1dc6d50b9a543f16b54a4c63ff862aeb7253d"
+      },
+      "checksReproduced": 66,
+      "scope": "HomeControl, manager lifecycle, wrapper cwd; source only"
+    },
+    "first5ComponentRoot": {
+      "blob": "eb9eb5165b73c0475e885ee77057953ae21fee2f",
+      "bytes": 2570,
+      "sha256": "3b6bce1b11956fad3eae10c025f666791085ac28fb4b1a7722320e041747a682"
+    },
+    "first5Peer64IndependentlyReproduced": true,
+    "scope": "R1 established workflow and first5 component peer; R2 namespace/request binding independently verified by root80 and reproduced author182."
+  },
+  "exactRequest": {
+    "blob": "2cbe610fa2f2264d1eb137d46421069db38655a5",
+    "bytes": 875394,
+    "sha256": "cbb10074d91b254d2205f037e976f4dbbb377c0c4e37a36dd930432bd8a65314"
+  },
+  "source": {
+    "blob": "ea84d70d3c434a33d0f216de8b0b002633650a0a",
+    "bytes": 36514,
+    "sha256": "19b91f34d98b8056a4921e400dc3e87200581043ce7df7531db81be6a0982a69"
+  },
+  "payload": {
+    "blob": "0845ae0870655ac081312c28e5c0e000cfc58250",
+    "bytes": 837520,
+    "sha256": "f68c2a291856da7fe9d2145d420b16fbcd68f1b9b165af509f9881bd996ba423"
+  },
+  "journal": {
+    "blob": "52c2735d9eae38cf4745f89802fcf25c3b5738c1",
+    "bytes": 19050,
+    "sha256": "70254ca18f378f03ce6abe2788d1cfbf512989671a26ee83fbe33c60ca814b9f"
+  },
+  "slot": "owner_authbus_current_home_inert_gitfirst_r2",
+  "idempotencyKey": "heptabao-mac-current-home-launch-inert-19b91f34-20261106-r2",
+  "typedRequestDigest": "da65253229bd64edfe5b49fb95f980dc338792cf5c42c3d5c13fbc8302d3a8cd",
+  "typedRequestFingerprint": "15737025370294936813",
+  "canonicalBytes": 875326,
+  "fixedHost": "mac",
+  "fixedRoots": {
+    "HOME": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+    "T5": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2"
+  },
+  "maximumProcessStarts": 1,
+  "originalPublisherSeconds": 45,
+  "controllerSeconds": 60,
+  "originalDiskutilSeconds": 30,
+  "authorizedEffects": [
+    "Compile exactly eighteen public Python inputs in memory before creation; byte-verify four JavaScript inputs.",
+    "Run the original fixed diskutil volume query under the existing owned child/descriptor custody.",
+    "Create the two fresh fixed HOME/T5 roots, two public HOME copies and thirty fixed T5 public objects plus pre-finally candidate receipt; exclusive creation only.",
+    "Read back each staged public body through a separate held descriptor; record actual HOME parent/root/copy metadata."
+  ],
+  "excludedEffects": [
+    "No launchctl, server, consumer, SQL, SDK, credential capture, private capsule read, production switch, cleanup/deletion, permission change, replacement root or alternate idempotency key."
+  ],
+  "initialAbsenceRequired": true,
+  "existingPathOrUnclearEffectStopsWithoutAutomaticReplay": true,
+  "originalObservation": {
+    "onlyKnownOriginalJob": true,
+    "allowedTools": [
+      "process_status",
+      "process_read"
+    ],
+    "maximumStatusObservers": 8,
+    "maximumStreamObservers": 8,
+    "streamLimit": 16384,
+    "stdoutMaximum": 65536,
+    "stderrMaximum": 65536,
+    "operationResultLimit": 8192,
+    "maximumImmutablePayload": 1048576,
+    "oneNativeCallAtATime": true,
+    "oneOwnedObserverAtATime": true,
+    "wholeSDKBeforeInterpretation": true,
+    "wholePayloadBeforeNativeInterpretation": true
+  },
+  "successRequires": [
+    "Original typed process admission, final exit0/full/durable authority and exact complete streams.",
+    "Post-finally ok=true, original deadline met after closure, thirty T5 public objects and two HOME copies whole-verified.",
+    "All owned command/process and application-returned descriptor closure, actual T5 anchor and no unknown state.",
+    "Candidate receipt alone is pre-finally ok=false and does not establish success."
+  ],
+  "independentPostInertFileReadsAuthorized": false,
+  "runtimeExactRequestAuthorized": false,
+  "actualHomeBindingMustComeFromThisRun": true,
+  "next": "After the original stage is known closed, root qualifies the result; separately prepare the three exact independent read targets and derive actual runtime request only from qualified actual evidence.",
+  "historicalUnknownsUnchanged": [
+    "original AuthBus registration/EX_CONFIG78/PID11754",
+    "original R4 lifetime and helper87650",
+    "old Git archive uncertainties",
+    "original R1 inert partial HOME effectUnknown and omitted failure-point tuples"
+  ],
+  "allocation": {
+    "line": "A",
+    "maximumNativeCallsInFlight": 1,
+    "maximumOwnedFutures": 1,
+    "globalMaximumNativeLanes": 2,
+    "rootNativeCalls": 0,
+    "activation": "Wait for root's explicit lane grant after C's original 025b stage BODY observer closes; this GO does not permit a third lane. No Native dispatch before that grant."
+  },
+  "qualification": {
+    "sourceOnlyBeforeThisGO": true,
+    "credentialsProven": false,
+    "fullReplacement": false,
+    "productionCutover": false,
+    "allClientsAndBackupsMigrated": false,
+    "legacyCleanup": false
+  },
+  "recovery": "Whole external armed record before the one call; preserve any ambiguous ACK/transport state and original key. No automatic retry, re-key or reinitialize. Same original job/operation reads only when an actual ID is known.",
+  "priorPartialRootObservation": {
+    "blob": "29e35663b15d624c7dcc90d7d3dc01fdb6e3ece7",
+    "bytes": 7672,
+    "sha256": "d4ff8b3ca6189311150dbf643912bc300e4ffd3392882eff69365117a7b78da1"
+  },
+  "oldR1PartialHOMEUntouched": true
+}

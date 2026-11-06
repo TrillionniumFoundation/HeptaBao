@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-native-jwt-pki-33b814c7-build149-compiler-stderr-body-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+      "offset": 0,
+      "limit": 14696,
+      "expected_version": "66306:31364213:14696:1793957207629499769:1793957207629499769"
+    }
+  }
+}

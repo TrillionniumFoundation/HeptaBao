@@ -1,0 +1,667 @@
+{
+  "schema": "heptabao.root.snapshot2379-original-whole-report-qualification.r1",
+  "passed": true,
+  "checkCount": 149,
+  "checks": [
+    {
+      "name": "whole52_original_packet",
+      "passed": true
+    },
+    {
+      "name": "exact_closed_BODY1_GO_and_source",
+      "passed": true
+    },
+    {
+      "name": "BODY1_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "BODY1_call_snapshot2379-format-body1-complete-admit-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_armed_tree_snapshot2379-format-body1-complete-admit-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_call_snapshot2379-format-body1-complete-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_armed_tree_snapshot2379-format-body1-complete-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_call_snapshot2379-format-body1-complete-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_armed_tree_snapshot2379-format-body1-complete-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_call_snapshot2379-format-body1-complete-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_armed_tree_snapshot2379-format-body1-complete-page1-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_call_snapshot2379-format-body1-complete-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_armed_tree_snapshot2379-format-body1-complete-page2-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_call_snapshot2379-format-body1-complete-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_armed_tree_snapshot2379-format-body1-complete-page3-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_call_snapshot2379-format-body1-complete-page4-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_armed_tree_snapshot2379-format-body1-complete-page4-r1",
+      "passed": true
+    },
+    {
+      "name": "BODY1_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "BODY1_observer_75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf",
+      "passed": true
+    },
+    {
+      "name": "BODY1_page_75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf_0",
+      "passed": true
+    },
+    {
+      "name": "BODY1_page_75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf_16384",
+      "passed": true
+    },
+    {
+      "name": "BODY1_page_75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf_32768",
+      "passed": true
+    },
+    {
+      "name": "BODY1_page_75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf_49152",
+      "passed": true
+    },
+    {
+      "name": "BODY1_page_75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf_65536",
+      "passed": true
+    },
+    {
+      "name": "BODY1_payload_75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf",
+      "passed": true
+    },
+    {
+      "name": "BODY1_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_calls_one_observer_five_pages",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_0",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_1",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_2",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_3",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_4",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_5",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_6",
+      "passed": true
+    },
+    {
+      "name": "prior_BODY0_independent_root48",
+      "passed": true
+    },
+    {
+      "name": "exact_BODY1_new_id_and_request",
+      "passed": true
+    },
+    {
+      "name": "whole_fixed_path_version_and_size",
+      "passed": true
+    },
+    {
+      "name": "contiguous_65536_plus_53389",
+      "passed": true
+    },
+    {
+      "name": "whole_range_hashes",
+      "passed": true
+    },
+    {
+      "name": "118925_original_report_whole_before_semantics",
+      "passed": true
+    },
+    {
+      "name": "no_current_live_call_or_future",
+      "passed": true
+    },
+    {
+      "name": "old_unknown_preserved",
+      "passed": true
+    },
+    {
+      "name": "original_terminal117_qualified",
+      "passed": true
+    },
+    {
+      "name": "actual_summary_rows_exact",
+      "passed": true
+    },
+    {
+      "name": "frozen2379_identity",
+      "passed": true
+    },
+    {
+      "name": "actual_only_formatting_pass",
+      "passed": true
+    },
+    {
+      "name": "original_finite_deadlines",
+      "passed": true
+    },
+    {
+      "name": "tool_full_identity_unchanged",
+      "passed": true
+    },
+    {
+      "name": "config_full_identity_unchanged",
+      "passed": true
+    },
+    {
+      "name": "all49_inputs_full9_unchanged",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_lib.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_lib.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_native_snapshot_body.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_native_snapshot_body.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_native_snapshot_body_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_native_snapshot_body_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_native_snapshot_peer.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_native_snapshot_peer.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_native_snapshot_peer_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_native_snapshot_peer_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_auth_forward_actor.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_auth_forward_actor.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_auth_snapshot_forward_actor_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_auth_snapshot_forward_actor_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_ha.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_ha.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_ha_snapshot_forward.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_ha_snapshot_forward.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_http.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_http.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_http_snapshot.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_forward_delivery.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_forward_delivery.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_forward.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_forward.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_forward_client.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_forward_client.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_forward_file.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_forward_file.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_forward_source.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_forward_source.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_forward_wire.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_forward_wire.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_forward_wire_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_forward_wire_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_v6_ha.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_v6_ha.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_controlgroups_271_namespace_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_controlgroups_271_namespace_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_file_gc_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_flat_retirement_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_kv2_import_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_kv2_large_ha_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_kv2_mount_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_kv2_storage_witness_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_namespace_tree_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_pki_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_remount_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_ssh_archive_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_storage_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_transit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_v6_ha_cold_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_v6_ha_historical_restore_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_v6_ha_restore_borrowed_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_v6_ha_snapshot_repair_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_v6_ha_snapshot_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_v6_migration_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_rate_limit_quota_139_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_lossless_export_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_v6_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_v6_ha_pipeline_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_v6_ha_pipeline_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_snapshot_forward_test_faults.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_snapshot_forward_test_faults.rs",
+      "passed": true
+    },
+    {
+      "name": "input_and_format_output_service_native_snapshot_forward_audit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "previous_whole_frozen_source_service_native_snapshot_forward_audit_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "23_changed26_unchanged_exact_totals",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "835b41ac97f6aaaad699572bee58440585696d42",
+    "files": 52,
+    "bytes": 659214,
+    "merkle": {
+      "root_sha": "835b41ac97f6aaaad699572bee58440585696d42",
+      "trees_verified": 1,
+      "leaf_count": 52
+    },
+    "whole": true
+  },
+  "originalFormatterJob": "1a1b02771c2-fc05-6e9f",
+  "sourceCommit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+  "sourceTree": "fc933c18a0415730e3658c17ff021db9b2df2caa",
+  "report": {
+    "blob": "b99fe67dc434a0d856a8caff6fe75de597d6d5ed",
+    "bytes": 118925,
+    "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8"
+  },
+  "originalBODY1": {
+    "id": "75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "c261306503c099a8da7209c1b6d7214bd58ee81f",
+      "bytes": 71629,
+      "sha256": "75fc92b825acfc5275675de2d975c638314c775e4bebe15a6d3bf53f6ddc4c13"
+    },
+    "payloadTree": "3d4d727f55b580fe4d0f615503c5d552de0cfe36",
+    "nativeText": {
+      "blob": "62dc0c09755776ee89ce5847843cb304fe8b24c8",
+      "bytes": 71526,
+      "sha256": "b00e05e5ec4cd0712a2c091cb8502ba101a3d760e8e2b34f728adfde4fd4e050"
+    },
+    "pages": 5,
+    "completedInactive": true,
+    "originalBODY1Only": true,
+    "oldAttemptOutcome": "UNKNOWN",
+    "closureTree": "12b74598437ee50e5bec9cf0fc921ca60e2c8efc"
+  },
+  "actualCalls": 7,
+  "immutablePages": 5,
+  "priorBODY0Root": {
+    "blob": "a290ba81a6164a082d6f1f4c5b98d82b783e6cbe",
+    "bytes": 6373,
+    "sha256": "bbdee84c298f47b2d7b11bfd47ce09bec01fc8b096cc5d959de0e535aac25748"
+  },
+  "originalUnknownPreserved": true,
+  "reportStatus": "passed",
+  "sourceInputCount": 49,
+  "sourceInputBytes": 2023746,
+  "formatterChildren": 49,
+  "changedOutputs": 23,
+  "changedOutputBytes": 1346637,
+  "unchangedReuseCount": 26,
+  "unchangedReuseBytes": 686814,
+  "formattedOutputFull9Observed": false,
+  "formattedOutputBodiesRead": false,
+  "all49FrozenBeforeBodiesWhole": true,
+  "currentLineBReleased": true,
+  "compileExecuted": false,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

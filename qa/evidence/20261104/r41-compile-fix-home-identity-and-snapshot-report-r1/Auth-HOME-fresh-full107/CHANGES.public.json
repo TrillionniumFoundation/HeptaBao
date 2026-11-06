@@ -1,0 +1,398 @@
+{
+  "schema": "heptabao.fresh-home-auth-source-changes.v1",
+  "sources": [
+    {
+      "name": "mac_auth_rows_cas_r1.mjs",
+      "kind": "root_literal_only",
+      "before": {
+        "blob": "413e5c6ffe69dddfe1324ec604504fc8e4b93462",
+        "bytes": 3107,
+        "sha256": "dd3d02675212f6e513a4f93573566646c55a1d27cb21ac7bbb528058a96db8b7"
+      },
+      "after": {
+        "blob": "39e6eb63815cfeb3400b7ce0b6d93bb693c5d2de",
+        "bytes": 3108,
+        "sha256": "9a121d58a9d5d1a331f2cfd5acc15ab162a487da6dead43019b84a6686e9e30e"
+      },
+      "hunks": 1,
+      "forward": {
+        "blob": "0b7faff00c799738b4581db65ac7647e7d53a046",
+        "bytes": 776,
+        "sha256": "1cd96edce5fef2c9ce3fac606520e571d9df459cba08f1ccdfa23182851e50fc"
+      },
+      "reverse": {
+        "blob": "33e1785752a9914231194c9e8b34e4cdb2cedaa2",
+        "bytes": 776,
+        "sha256": "a4fb73219a818afa83cbe9fb28213d9b22c381f10b9cbcd82a90f3ac6929cd90"
+      }
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py",
+      "kind": "root_literal_only",
+      "before": {
+        "blob": "6d81fc1a726b43f4b523a416a077c49953d96ac6",
+        "bytes": 42082,
+        "sha256": "f0600e0b8fe1f01a3d68559e724e19d0f76272c2febd4d362b9012d84b1177e2"
+      },
+      "after": {
+        "blob": "e46616291bf408512674ee83720423d72cfb5ab7",
+        "bytes": 42083,
+        "sha256": "3d015ef9d916948a6d9f2c96d89c9ebb6352929243018abb6fba7ba2e2b4c4f1"
+      },
+      "hunks": 1,
+      "forward": {
+        "blob": "906e2094997f8599d1461533501b9cd6fa7668d9",
+        "bytes": 493,
+        "sha256": "9d1e6b2b49b4e7843b7dc2f302a05ed3d91d263fb74bad9e94a8019b650064b7"
+      },
+      "reverse": {
+        "blob": "7c5c217eedf639250c5d992037a941253a892c69",
+        "bytes": 493,
+        "sha256": "3a95f0a377b53bd431ab1f7bf4aaeb4504b919f3c78ed030f6ef6d1d3af0d895"
+      }
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs",
+      "kind": "root_literal_only",
+      "before": {
+        "blob": "e9b57fe153e4a8816dcfaae3fb6e028cb80e6496",
+        "bytes": 24011,
+        "sha256": "d8ce076b75794b2ca495ef37c310d9995f092c0563eae262fcaab1582c543878"
+      },
+      "after": {
+        "blob": "918a22b61dfe334c08b4695bed7a46d8dfc9fa01",
+        "bytes": 24012,
+        "sha256": "4dc34661acc16e7e565c9818c159f912bdb713d8efbe0f4f3958add7641fd23e"
+      },
+      "hunks": 1,
+      "forward": {
+        "blob": "0b87a21d2a74788832dd0ae91cae239383355271",
+        "bytes": 569,
+        "sha256": "bd728d5d1a5edc1a244c0f1eb60e62bf82d2a54652dd380a72af4031f978b129"
+      },
+      "reverse": {
+        "blob": "6ebdf916b44cbaebdecaf04624181a010db2f193",
+        "bytes": 569,
+        "sha256": "18b196069ff819fb12513b2f03d9f4575ad4ad867cbd2cc92564a002d5e80d8f"
+      }
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py",
+      "kind": "root_literal_only",
+      "before": {
+        "blob": "d96326268e8048a31b420fda20b32958b99b6753",
+        "bytes": 25972,
+        "sha256": "cf0b78ed54648525b873d91473d603f115e84013c38ba4abaa42771dfa5d1ccf"
+      },
+      "after": {
+        "blob": "6db21ca889f19b6b0f49fde5bbe916991d9a028a",
+        "bytes": 25973,
+        "sha256": "f32271748b60a0660170b7b739c209e715c72e5038fe19bcfbd6c7f4fe5c2813"
+      },
+      "hunks": 1,
+      "forward": {
+        "blob": "f7fa0bbc5bd3ca938fbcdff7fd2e9a8556297770",
+        "bytes": 632,
+        "sha256": "5816cdf3b39e467be882a8211d62d65dc0d252ffb79dd1409d58aaa3763149be"
+      },
+      "reverse": {
+        "blob": "c110ad5e406773f38b2f5151b888581d77f7f615",
+        "bytes": 632,
+        "sha256": "280cd581bf7e36eb92a9e09030f3b30c1600d9fd5b5602a902ccd00fe2adb091"
+      }
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py",
+      "kind": "root_literal_only",
+      "before": {
+        "blob": "2d56e56803e76c9bba6c3bba56552508fb50fb92",
+        "bytes": 33000,
+        "sha256": "97db953e7324e31a9bb162d1ee508ed5f2e2a58c98a181131988e9dd3c3cfdce"
+      },
+      "after": {
+        "blob": "08a7ee522fb719df71c9dca9356e160a2033c98e",
+        "bytes": 33001,
+        "sha256": "6fd9b5f5a54ed4f40770bb95d017e836d21f51efff10d90beaaeb133b34a82b5"
+      },
+      "hunks": 1,
+      "forward": {
+        "blob": "d39a035997cf12513c4eb5f3d1544efeae7ac730",
+        "bytes": 494,
+        "sha256": "aa3665196375e424fb4a87e4c9b0d809b9fd133a7272f34c228ba7b18814b066"
+      },
+      "reverse": {
+        "blob": "15dea567bfabd1de6e3a689a882891578602ed7c",
+        "bytes": 494,
+        "sha256": "ae9b61ffa01a524f9efae77003a70741792fa135458ed3e522ae0f2b8a100c12"
+      }
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py",
+      "kind": "functional",
+      "before": {
+        "blob": "12a6fa7a0432281246b36915f1b4b5cd5cd5b400",
+        "bytes": 71506,
+        "sha256": "6ad1b80ac06c90759c2ac5fd01df9c750b077ffa43253486c07658b6e1ddd4d5"
+      },
+      "after": {
+        "blob": "35c4b527bf3d111269649d88c4603715facae4dd",
+        "bytes": 73918,
+        "sha256": "a594ccebcbe251b066e574327ec7a64d30d84fd630292c436178d45524a60f53"
+      },
+      "hunks": 10,
+      "forward": {
+        "blob": "ed7887831507fe8a3c768222408cf3df448933d4",
+        "bytes": 10245,
+        "sha256": "c857bcea71d7a614ea0a7bbe7ee866f06ee3ce3ae03674189e6fe698884ac957"
+      },
+      "reverse": {
+        "blob": "bceb36e71fad4220da10ddc35cab32e106b01d1e",
+        "bytes": 10245,
+        "sha256": "64f618eee534d5b23424c0817116c24ad3fd0e1e828ff1d667495f9def7f8610"
+      }
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py",
+      "kind": "functional",
+      "before": {
+        "blob": "82f790ff6d26d9e998fe1c5c61f89f5975ec3920",
+        "bytes": 24975,
+        "sha256": "bb674ed1a60b204207af2dbab4d7b06a76e47fdebb19991e2f2c3dda7beac4a5"
+      },
+      "after": {
+        "blob": "5541a1b403b1f2febb907d931966e1de1f934efd",
+        "bytes": 25647,
+        "sha256": "afe225c67d455f5324a5923cac0efc0ffa2393e1619a5cf169d6cf33d4540154"
+      },
+      "hunks": 3,
+      "forward": {
+        "blob": "3bb965b38d7f0a5ac34f340c99f344fd61648ca9",
+        "bytes": 2232,
+        "sha256": "b185ad457aaa8d976f6c5bff6d1b422834eb52b5432c502c7b681f4410c3ea27"
+      },
+      "reverse": {
+        "blob": "34ace4b92551c6d2ea66b89c184f2952f0091c9a",
+        "bytes": 2232,
+        "sha256": "d7ef4a32fe2b8a1483f3245d60dc5e498652a28501b94e5aa5753d6744de545b"
+      }
+    },
+    {
+      "name": "mac_current_server_owner_r1.py",
+      "kind": "functional",
+      "before": {
+        "blob": "44bf4989f10bad1d6322b182b630769bf93a09c3",
+        "bytes": 13394,
+        "sha256": "fb38bd7ce30e9a0b62539d459939b2ec20d96f84fd08d57199aa095fd3fc5ef6"
+      },
+      "after": {
+        "blob": "f077c11fd5163e693f44c3faa6192d31b70d6f73",
+        "bytes": 14052,
+        "sha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+      },
+      "hunks": 3,
+      "forward": {
+        "blob": "fa9727922838fa84bf28a87a427ef4a8325de638",
+        "bytes": 2252,
+        "sha256": "22798602cababb16d44d6ad9cfcc17377ac356f5823f4a3ac8fb06511d7c1327"
+      },
+      "reverse": {
+        "blob": "e75282dec9e344673c8d137eccc97003ba520097",
+        "bytes": 2252,
+        "sha256": "2553783420543c77a00919fb855bd1f89794ff8ae8bdff55f306df50aac757ee"
+      }
+    },
+    {
+      "name": "mac_owned_launchd_r3.py",
+      "kind": "functional",
+      "before": {
+        "blob": "96fe347f2edbda1718b2fd683041b88be8f41e30",
+        "bytes": 35736,
+        "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+      },
+      "after": {
+        "blob": "72432815fd3f7cd77ba70e8d6461cd4f739fcbc8",
+        "bytes": 57914,
+        "sha256": "6353394dcaa80a5877196d6a122eccd2fa581ed5b2857ddb812746b07626504b"
+      },
+      "hunks": 15,
+      "forward": {
+        "blob": "0a5ef1607d2c9cbcc0b541d1c6cd0444a73d2651",
+        "bytes": 36624,
+        "sha256": "bc0374117dcd542a5d32b8fe30246429f8ad4ac9de8ad88c1a3fbf0be5c10750"
+      },
+      "reverse": {
+        "blob": "4ee1843035446bdde863d6b826eaf3ff43279e9d",
+        "bytes": 36572,
+        "sha256": "4d1dc428732d1a7f6a93c3586da2acc7080b85de9e7af5f6560e8b879d96eedf"
+      }
+    },
+    {
+      "name": "mac_single_native_r2.mjs",
+      "kind": "root_literal_only",
+      "before": {
+        "blob": "d7e88969213c7195e65d6f4919939789d054e214",
+        "bytes": 33147,
+        "sha256": "c2cf0eaa0c2b4b925bca02e82059152cfe4288786e15c71d49fc09fc54494c4b"
+      },
+      "after": {
+        "blob": "b05c375374407b71c9b807dd446e002478b42c7b",
+        "bytes": 33148,
+        "sha256": "713a177b5b6be6dcadadb2d3c69fb1abfff841999cd0204b433e01fac30ed141"
+      },
+      "hunks": 1,
+      "forward": {
+        "blob": "9b85939485efefb94a4c6fd0c9e596fdccdc38c7",
+        "bytes": 662,
+        "sha256": "4d84a02595aaf2cdb9e6f94aba4ec2d7604fccfd1652ab4928eab586af29c99e"
+      },
+      "reverse": {
+        "blob": "e57e7cbf934800862839c0cc0869807ecc3c8cae",
+        "bytes": 662,
+        "sha256": "3e29f12d12cabfb242fbe77899f9d6c139ad91b1624388b879fdd143dbfb82f2"
+      }
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "kind": "root_literal_only",
+      "before": {
+        "blob": "5a0177bed2e224de3ec14f68174ec9b6e0ea2525",
+        "bytes": 13391,
+        "sha256": "55a007ae925c6cab6ee228ec5154cff79baa6c2bc38fb65868fd192dfc29d288"
+      },
+      "after": {
+        "blob": "5cba8bb112f97de5a68133462667e1329fa747f1",
+        "bytes": 13392,
+        "sha256": "13cbc97c63625f6302914b9c4ff5f2582874d6989c1cdfe2bc49e874a600fdb4"
+      },
+      "hunks": 1,
+      "forward": {
+        "blob": "9ad5d9ae9e54d2e5d1cf384954f9728f03e44197",
+        "bytes": 434,
+        "sha256": "4c5ca336fd9df8b1e27473b33e3b9d3221b2e1d17c3294f09f9a8887a31254c2"
+      },
+      "reverse": {
+        "blob": "4cff2ceabf40eef6087be00570ef01671b65a19e",
+        "bytes": 434,
+        "sha256": "668cf9b25ade1c5e5093bcd3fd811dd778f5ce58b1f3f37a76944c42569fda9f"
+      }
+    }
+  ],
+  "wholeUnchanged": [
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs",
+      "pin": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      }
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py",
+      "pin": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      }
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py",
+      "pin": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      }
+    },
+    {
+      "name": "mac_darwin_owned_projection_r1.py",
+      "pin": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      }
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py",
+      "pin": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      }
+    },
+    {
+      "name": "mac_native_owned_commands_r1.py",
+      "pin": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      }
+    },
+    {
+      "name": "mac_native_owned_unreaped_r1.py",
+      "pin": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      }
+    },
+    {
+      "name": "mac_native_process_observer_r1.py",
+      "pin": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      }
+    },
+    {
+      "name": "mac_owned_commands_r1.py",
+      "pin": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      }
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py",
+      "pin": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      }
+    },
+    {
+      "name": "mac_registry_readonly_wal_r1.py",
+      "pin": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      }
+    }
+  ],
+  "publisher": {
+    "before": {
+      "blob": "f7a4a54c204fa2cc01590fb29f1317cc1a2ba531",
+      "bytes": 15541,
+      "sha256": "d89e5169c68a1867738824d87549e6f26635e2c55f31bdbf7d58375f8a5b3fc4"
+    },
+    "after": {
+      "blob": "fc40ff27b6657aee025162e0db547d501f327c8a",
+      "bytes": 35976,
+      "sha256": "c273bce27b99840c3d6fcd92ca7cf281ea803d043f7eff38da58428b9dea0768"
+    },
+    "hunks": 7
+  },
+  "journal": {
+    "before": {
+      "blob": "82b9e745abfe1876c2f34ded54d520b4aa11888f",
+      "bytes": 19060,
+      "sha256": "cbfaa9060ad7c5066638097e6c10b900527f0d98d4a1bf9c31cda3ddf906e69c"
+    },
+    "after": {
+      "blob": "4cd38a02494c5bb4f1e3129d778de92aa2eb43fb",
+      "bytes": 19050,
+      "sha256": "c2f19faaa84ade3e240900e0dede09fdf2c7a9fddc02b18838f7f1462e99b16f"
+    },
+    "hunks": 2,
+    "onlySlotRequestPrefixChanged": true
+  },
+  "NativeCalls": 0
+}

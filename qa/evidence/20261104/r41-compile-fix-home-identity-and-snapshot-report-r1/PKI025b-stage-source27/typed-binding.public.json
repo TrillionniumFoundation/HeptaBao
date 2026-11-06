@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.native-jwt-pki.025b-stage.typed-binding.v1",
+  "request": {
+    "blob": "853a68efffe7308239adf59c3cf29d1dabf355b2",
+    "bytes": 111910,
+    "sha256": "1ed8f541e793261ed5684093cebd76917fbad7c26b661d876547e1fd0b3cda0e"
+  },
+  "canonical": {
+    "blob": "67aad4362da90445f0550520a7b398f7640cf116",
+    "bytes": 111817,
+    "sha256": "9ab9273cc2d8be06a5aaeb2d94d330833f473482e39ad98adc96a0ad8149fa39"
+  },
+  "sha256": "9ab9273cc2d8be06a5aaeb2d94d330833f473482e39ad98adc96a0ad8149fa39",
+  "native_fingerprint": "11148985494452878854",
+  "actualPriorPositiveControl": {
+    "request": {
+      "blob": "1b3da82ecf429adc5d816a2ff2cb78810059ac90",
+      "bytes": 111811,
+      "sha256": "576e7eb3f5f6a20d49e7fdae8939f002153ec69ebb41a891a08c80a8eb75dde4"
+    },
+    "canonical": {
+      "blob": "354292170da4fe48cc3a0fa9aa0f166a6f76cbaf",
+      "bytes": 111718,
+      "sha256": "043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732"
+    },
+    "sha256": "043dd4147f135f879d2ad30d1d31bec7ee692a940eac9b8a31a892ce6da7e732",
+    "native_fingerprint": "305633534227472263"
+  },
+  "correctTypedStdin": true,
+  "legacyStdinTextHelperUnused": true
+}

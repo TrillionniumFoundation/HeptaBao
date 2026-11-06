@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.root.025b-stage-result-BODY-source-qualification.r1",
+  "passed": true,
+  "checkCount": 19,
+  "checks": [
+    {
+      "name": "whole25_source_packet",
+      "passed": true
+    },
+    {
+      "name": "actual_INFO_qualified_and_exact",
+      "passed": true
+    },
+    {
+      "name": "prior_and_current_source_pins",
+      "passed": true
+    },
+    {
+      "name": "old3_and_incremental6_strict",
+      "passed": true
+    },
+    {
+      "name": "literal_count_attach only new stage existing state",
+      "passed": true
+    },
+    {
+      "name": "literal_count_keep exact new stage START as historical identity",
+      "passed": true
+    },
+    {
+      "name": "literal_count_only new owned report path",
+      "passed": true
+    },
+    {
+      "name": "literal_count_one new exact file_info request identity",
+      "passed": true
+    },
+    {
+      "name": "literal_count_actual two newly closed observer identities",
+      "passed": true
+    },
+    {
+      "name": "literal_count_actual new original process identity",
+      "passed": true
+    },
+    {
+      "name": "literal_count_new fixed observer key prefix only",
+      "passed": true
+    },
+    {
+      "name": "literal_count_GF_STAGE_BODY_REQUEST",
+      "passed": true
+    },
+    {
+      "name": "literal_count_GF_STAGE_BODY_EXPECTED",
+      "passed": true
+    },
+    {
+      "name": "literal_count_actual range comment",
+      "passed": true
+    },
+    {
+      "name": "all_other_old_body_algorithm_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "name": "author23_reproduced",
+      "passed": true
+    },
+    {
+      "name": "exact_fixed_body_request",
+      "passed": true
+    },
+    {
+      "name": "actual_body_expected_pins",
+      "passed": true
+    },
+    {
+      "name": "original_caps_one_range",
+      "passed": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "f61d379652bd714009f6035ff807a15e70bdbe3d",
+    "files": 25,
+    "bytes": 150179,
+    "merkle": {
+      "root_sha": "f61d379652bd714009f6035ff807a15e70bdbe3d",
+      "trees_verified": 1,
+      "leaf_count": 25
+    },
+    "whole": true
+  },
+  "job": "1a1b07b7e0b-fc05-70ca",
+  "slot": "jwt_pki_025b05a3_rog_source_gitfirst_r1",
+  "source": {
+    "blob": "3d3d0d971b65d251ca2657ee9c3005d5a9e795ed",
+    "bytes": 28270,
+    "sha256": "0a529ed15fc5e743e0efe360ca7b99ef62d14b11d934a08e04f9dd23fa00ca0c"
+  },
+  "request": {
+    "blob": "b607255d87740a1546b80f61dd3976e2307916d3",
+    "bytes": 442,
+    "sha256": "ca77438f66c8dde836c377de8404252b41fa59230673c7b73ea8c14b4ad110fc"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+    "bytes": 28125,
+    "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf",
+    "version": "66306:31508577:28125:1793962266025244208:1793962266025244208",
+    "infoOperation": "a8f9b286304cc6fafd99310ef325ec14621741e939929bdd493f45eecd321aa5",
+    "infoNative": {
+      "blob": "980b13f824670a6426777d4d7b556bcdfcddd1e8",
+      "bytes": 486,
+      "sha256": "e72056f5517a54687e030d08e4e832f9ab24be6936a68254a5f6525c3587f648"
+    }
+  },
+  "scope": "stage_result_binary_read_only",
+  "NativeCalls": 0
+}

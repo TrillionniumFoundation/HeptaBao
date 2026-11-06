@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.home-partial-readonly-source-contract.v1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "originalActual": "1c360c303e249709a2dddd6941f110abad5c16c5",
+  "minimumRelease": "0f06d931497662bbf899dca14183ae1c3b77566c",
+  "source": {
+    "blob": "2b3130d39f5f09fd326e77e83d26130c9712ce70",
+    "bytes": 15788,
+    "sha256": "1a3d11d90b3d4cb7245d400f120da778487185521fe05510e0ecd62c5c57a821"
+  },
+  "request": {
+    "blob": "1b0d23c8b1dc1a9957108cd4918bfba4522bf2a6",
+    "bytes": 16748,
+    "sha256": "06979f3430d83bae7131f117d7ea757ba40ef2df30680cb6df717f9e94faa5bd"
+  },
+  "journal": {
+    "blob": "6a285178e317e1f4df8b2543bca9ad1dce6854b3",
+    "bytes": 19048,
+    "sha256": "e71f9471e56682c7bddeee1f6922d373198dd7c2eb101b1c2ff75cd9f3dc71b4"
+  },
+  "slot": "owner_authbus_home_partial_readonly_gitfirst_r1",
+  "slotInitialized": false,
+  "scope": {
+    "root": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+    "expectedRootObjectFirst5": [
+      "16777233",
+      "593068531",
+      "501",
+      "20",
+      "16832"
+    ],
+    "parents": [
+      {
+        "path": "/",
+        "first5": [
+          "16777233",
+          "2",
+          "0",
+          "0",
+          "16877"
+        ]
+      },
+      {
+        "path": "/Users",
+        "first5": [
+          "16777233",
+          "18326",
+          "0",
+          "80",
+          "16877"
+        ]
+      },
+      {
+        "path": "/Users/qianqi",
+        "first5": [
+          "16777233",
+          "6929812",
+          "501",
+          "20",
+          "16877"
+        ]
+      }
+    ],
+    "serverCopy": {
+      "name": "mac_current_server_owner_r1.py",
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1/mac_current_server_owner_r1.py",
+      "bytes": 14052,
+      "sha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27"
+    },
+    "absenceNames": [
+      "mac_current_phase_owner_r2.py",
+      "server-initial.plist",
+      "server-initial.stdout.private",
+      "server-initial.stderr.private",
+      "server-cold-new-process.plist",
+      "server-cold-new-process.stdout.private",
+      "server-cold-new-process.stderr.private",
+      "initial.plist",
+      "initial.stdout.private",
+      "initial.stderr.private",
+      "cold-new-process.plist",
+      "cold-new-process.stdout.private",
+      "cold-new-process.stderr.private",
+      "initial-inverse.plist",
+      "initial-inverse.stdout.private",
+      "initial-inverse.stderr.private",
+      "cold-new-process-inverse.plist",
+      "cold-new-process-inverse.stdout.private",
+      "cold-new-process-inverse.stderr.private"
+    ],
+    "bodyOutput": false,
+    "unknownContentHashOutput": false,
+    "directoryListing": false,
+    "writes": false,
+    "childOrService": false,
+    "T5": false,
+    "privateCapsule": false,
+    "SDK": false
+  },
+  "bounds": {
+    "sharedSourceSeconds": 5,
+    "outerSeconds": 60,
+    "openAttempts": 5,
+    "statCalls": 128,
+    "completePathStatCalls": 82,
+    "readCalls": 8,
+    "returnedBodyBytesIncludingEOF": 14053,
+    "publicOutput": 16384,
+    "observerImmutablePage": 8192
+  },
+  "observations": {
+    "root": "held/name full9 and exact first5; root full9 stable across the new observation; publish original prewrite/current/named field comparisons without inferring the old failed predicate",
+    "copy": "regular no-follow 0600 uid501 gid20 single link, exact14052 and known sourceSHA, complete EOF and held/name before/after full9; no raw body, unknown SHA not emitted",
+    "absence": "two finite passes over nineteen exact names; one ENOENT means only current observation. Any presence refuses; no alternate names or scan"
+  },
+  "ownership": "reserve pending before open; returned registration exceptions unknown; entire close loop protected; original close once; incomplete initialization, pending signal, handler-restore failure or close failure cannot claim observationComplete",
+  "limits": "Synchronous filesystem calls cannot be individually interrupted; one shared five-second success deadline is checked around I/O and after closure/flush; late success is refused, outer60 remains.",
+  "historical": "Original effectUnknown, original AuthBus/R4/87650 and Git8916 UNKNOWN are not overwritten. A fresh successful read is not old-state reconstruction or staging qualification.",
+  "next": "Root may authorize only this fixed read after source review and lane allocation. No continuation, cleanup or replacement root is authorized by this proposal.",
+  "NativeCalls": 0
+}

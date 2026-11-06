@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "snapshot2379-format-body1-complete-page1-r1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "5f713e4820219e29b0513a793071c98744de1777",
+    "bytes": 126,
+    "sha256": "76be513ae05922a7d7feb487f2a53d90f8c999420b926be6c8d80d160cc4775f"
+  },
+  "rootGo": {
+    "blob": "4b8d8c27046034fb0540b99511ff7735ba1385fe",
+    "bytes": 4835,
+    "sha256": "4faadd7b6cd782505817f232c017846da95fc7f0119382b669bd46de4443e775"
+  },
+  "oldUnknown": {
+    "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+    "bytes": 1629,
+    "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+  },
+  "originalErrorSDK": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "lookupOnly": false,
+  "newBODY1Observation": false,
+  "oldAttemptRemainsUNKNOWN": true,
+  "oldContextsWillNotBeChanged": true,
+  "qualifiedBODY0": {
+    "blob": "895256e05b1517b7a5563600bf179a556bebdccd",
+    "bytes": 87718,
+    "sha256": "2024d49a365dba55814300dab9b07049c2a27ffc88f7b196a5a71623dfae433b"
+  },
+  "body0RootQualification": {
+    "blob": "a290ba81a6164a082d6f1f4c5b98d82b783e6cbe",
+    "bytes": 6373,
+    "sha256": "bbdee84c298f47b2d7b11bfd47ce09bec01fc8b096cc5d959de0e535aac25748"
+  },
+  "BODY0WillNotBeReadAgain": true,
+  "originalJob": "1a1b02771c2-fc05-6e9f",
+  "originalOperation": "75943caff38a2c7b3143e95dcec113362cce5634a94b9dbc0c7dab26a9da9fdf",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

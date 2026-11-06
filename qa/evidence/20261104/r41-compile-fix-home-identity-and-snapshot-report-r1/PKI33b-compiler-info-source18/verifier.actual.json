@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.compiler-logs-info.source-checks.r1",
+  "status": "PASS",
+  "checks": 38,
+  "results": [
+    {
+      "name": "reference_whole",
+      "pass": true
+    },
+    {
+      "name": "candidate_whole",
+      "pass": true
+    },
+    {
+      "name": "diff_whole",
+      "pass": true
+    },
+    {
+      "name": "strict_forward_whole",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "same_13_definitions",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfNeed",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfSave",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "whole_unchanged_gfRun",
+      "pass": true
+    },
+    {
+      "name": "actual_failed_report_whole",
+      "pass": true
+    },
+    {
+      "name": "actual_failed_no_runtime",
+      "pass": true
+    },
+    {
+      "name": "exact_request_0",
+      "pass": true
+    },
+    {
+      "name": "closed_typed_request_0",
+      "pass": true
+    },
+    {
+      "name": "actual_log_hash_0",
+      "pass": true
+    },
+    {
+      "name": "unknown_metadata_not_invented_0",
+      "pass": true
+    },
+    {
+      "name": "exact_request_1",
+      "pass": true
+    },
+    {
+      "name": "closed_typed_request_1",
+      "pass": true
+    },
+    {
+      "name": "actual_log_hash_1",
+      "pass": true
+    },
+    {
+      "name": "unknown_metadata_not_invented_1",
+      "pass": true
+    },
+    {
+      "name": "previous_retrieval_state",
+      "pass": true
+    },
+    {
+      "name": "old_paused_state",
+      "pass": true
+    },
+    {
+      "name": "prior_retrieval_full_closed",
+      "pass": true
+    },
+    {
+      "name": "original_pause_error_preserved",
+      "pass": true
+    },
+    {
+      "name": "executed_runner_whole",
+      "pass": true
+    },
+    {
+      "name": "executed_launcher_whole",
+      "pass": true
+    },
+    {
+      "name": "original_runner_fixed_paths",
+      "pass": true
+    },
+    {
+      "name": "closed_process_start_guard",
+      "pass": true
+    },
+    {
+      "name": "only_file_info_new_admission",
+      "pass": true
+    },
+    {
+      "name": "two_once_markers",
+      "pass": true
+    },
+    {
+      "name": "exact_info_full9",
+      "pass": true
+    },
+    {
+      "name": "fixed_payload8k_1m",
+      "pass": true
+    },
+    {
+      "name": "no_prior_context_store",
+      "pass": true
+    },
+    {
+      "name": "construct_only_no_invocation",
+      "pass": true
+    }
+  ],
+  "Native": 0,
+  "candidate_invoked": false
+}

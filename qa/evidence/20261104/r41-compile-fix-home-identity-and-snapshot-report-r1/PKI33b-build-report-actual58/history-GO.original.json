@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-failed-build-fixed-report-body.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "build_result_binary_read_only",
+  "source_packet": "e8bae434690b4a64afba0f85fa490b94e5d3e6f5",
+  "source": {
+    "blob": "a7af3a3329529d0629785765b7a9ade1dd14f23e",
+    "bytes": 29476,
+    "sha256": "bceff8ef04a1c330716436f79421ab4cae20bd96a577d8cd6fc335aa0036a333"
+  },
+  "source_review": {
+    "blob": "d567ec982de32ec504727a835ab399e7ac3488ef",
+    "bytes": 3126,
+    "sha256": "125d93b557e702d78d41f0f09c4bc20c8e3437fba42024c4469896e9048cb1bf"
+  },
+  "source_review_checks": 12,
+  "author_pure_guard_checks_reproduced": 52,
+  "exact_request": {
+    "blob": "a3b254023a40af7a8adad1f17d3c9d248483f524",
+    "bytes": 427,
+    "sha256": "ce60adf4c949d0214548c38c7827aac750c738f08dbb597ffedcf73129c189fe"
+  },
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "original_slot": "jwt_pki_33b814c7_build149_gitfirst_r1",
+  "entry_action": "authorize_build_result_body",
+  "info_operation": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+  "info_qualification": {
+    "blob": "373a516582bb6a3e7268dacfc39330a7d389a089",
+    "bytes": 4631,
+    "sha256": "a7dbf7e59371f8b13649c678d17933ae4d5827f6ebf811fcc2683417a5573464"
+  },
+  "expected_report": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/result.public.json",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "version": "66306:31364220:36998:1793957208077081949:1793957208077081949",
+    "infoOperation": "8e81613aa575b93e807bfe358614abb238250fc93a4180109222d00bde1430da",
+    "infoNative": {
+      "blob": "d6e8562a91ba3ee27cfcf8a4c51e5644d9f904c1",
+      "bytes": 480,
+      "sha256": "66f341b2e43f26671e7eecdc96a4dabc0aefaa8c2634ada148001b75adc29ffb"
+    },
+    "full9Strings": [
+      "66306",
+      "31364220",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36998",
+      "1793957208077081949",
+      "1793957208077081949"
+    ]
+  },
+  "maximum_binary_read_starts": 1,
+  "immutable_body_page_bytes": 16384,
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "old_metadata_and_status_page_bytes": 8192,
+    "new_binary_page_bytes": 16384,
+    "original_payload_cap": 1048576,
+    "exact_body_bytes": 36998
+  },
+  "sequence": [
+    "Whole exact new GO; attach the existing closed originalBUILD slot through authorize_build_result_body. No initialize.",
+    "Require all original actual metadata path,size,SHA,rawversion/full9 and closed info operation before new admission.",
+    "Whole exact single binary_read request,intent,armed externally; independent dispatch boundary; once operation_start.",
+    "Whole each original SDK externally before parse/isError; follow only original returned ID,contiguous16KiB immutable binary pages/full SHA/EOF/inactive. Old observers retain8KiB.",
+    "Whole external decoded36998-byte original report before semantic analysis. Preserve all original failed BUILD evidence.",
+    "Release observer lane and inspect actual failure,command custody,source fences and target lock only from this original report; do not retry BUILD."
+  ],
+  "lane_activation": "C may activate one fixed-body lane alongside A originalMaccleanup stream lane. B remains0 Native awaiting its separate report-body admission. Root0; at most2 lanes. Target not reusable until detailed report closure is qualified.",
+  "excludes": [
+    "new BUILD",
+    "new Cargo",
+    "test replay",
+    "other report or command paths",
+    "directory search",
+    "target reuse inferred from summary",
+    "production switch",
+    "legacy cleanup"
+  ],
+  "rebuild_authorized": false,
+  "target_reuse_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

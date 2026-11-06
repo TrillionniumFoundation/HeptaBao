@@ -1,0 +1,8 @@
+{
+  "failure": {
+    "error": "TypeError: Cannot read properties of undefined (reading 'blob')",
+    "NativeCalls": 0
+  },
+  "correction": "Root wrapper used pins but the existing GO cache has top-level blob/bytes/sha256; derive the identical pin from whole GO text. No candidate change or external call.",
+  "NativeCalls": 0
+}

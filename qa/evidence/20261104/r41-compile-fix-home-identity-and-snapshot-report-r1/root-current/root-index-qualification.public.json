@@ -1,0 +1,583 @@
+{
+  "schema": "heptabao.r41-root-index-qualification.v1",
+  "passed": true,
+  "checkCount": 142,
+  "checks": [
+    {
+      "name": "all_unique_packet_labels",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-publication-proof",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-publication-proof",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-tree-intent",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-tree-intent",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-tree-SDK",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-tree-SDK",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-tree-verification",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-tree-verification",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-commit-intent",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-commit-intent",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-commit-SDK",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-commit-SDK",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-commit-verification",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-commit-verification",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-ref-intent",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-ref-intent",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-ref-SDK",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-ref-SDK",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R40-ref-verification",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R40-ref-verification",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-build-report-full2",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-build-report-full2",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-build-report-actual58",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-build-report-actual58",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-build-failure-root44",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-build-failure-root44",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Runtime-key-reconciliation-source8",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Runtime-key-reconciliation-source8",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-info-source18",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-info-source18",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-info-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-info-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-info-actual41",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-info-actual41",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-info-root33",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-info-root33",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-stderr-source17",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-stderr-source17",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-stderr-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-stderr-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-stderr-minimal2",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-stderr-minimal2",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-stderr-actual73",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-stderr-actual73",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI33b-compiler-stderr-root44",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI33b-compiler-stderr-root44",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY0-reconciliation-source18",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY0-reconciliation-source18",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY0-reconciliation-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY0-reconciliation-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY0-reconciliation-actual54",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY0-reconciliation-actual54",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY0-root48",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY0-root48",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY1-source21",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY1-source21",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY1-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY1-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY1-minimal6",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY1-minimal6",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-BODY1-actual52",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-BODY1-actual52",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-output23-source81",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-output23-source81",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-output23-GO-and-report149-source121",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-output23-GO-and-report149-source121",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot2379-output23-mapping2",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot2379-output23-mapping2",
+      "passed": true
+    },
+    {
+      "name": "whole_members_JWT-policy-official-primary-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_JWT-policy-official-primary-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_JWT-policy-delegation-peer4",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_JWT-policy-delegation-peer4",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-fresh-core13",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-fresh-core13",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-fresh-full107",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-fresh-full107",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-fresh-peer4",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-fresh-peer4",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-fresh-root56",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-fresh-root56",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-inert-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-inert-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-inert-failure-minimal9",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-inert-failure-minimal9",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-inert-failure-actual63",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-inert-failure-actual63",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-partial-probe-source14",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-partial-probe-source14",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-partial-probe-GO-and-failure52",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-partial-probe-GO-and-failure52",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-partial-probe-minimal9",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-partial-probe-minimal9",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-partial-probe-actual66",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-partial-probe-actual66",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-first5-components16",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-first5-components16",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-first5-peer4",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-first5-peer4",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-probe59-and-first5-15-roots",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-probe59-and-first5-15-roots",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-source10",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-source10",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-next-attempt9",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-next-attempt9",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-tree-intent",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-tree-intent",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-tree-SDK",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-tree-SDK",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-commit-intent",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-commit-intent",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-commit-SDK",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-commit-SDK",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-branch-intent",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-branch-intent",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-branch-SDK",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-branch-SDK",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI-twoNone-product-freeze-proof",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI-twoNone-product-freeze-proof",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-source27",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-source27",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-controls-prebound20",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-controls-prebound20",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-terminal54",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-terminal54",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-INFO-source22",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-INFO-source22",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-INFO-GO-and-terminal35-source46",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-INFO-GO-and-terminal35-source46",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-INFO-actual25",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-INFO-actual25",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-BODY-source25",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-BODY-source25",
+      "passed": true
+    },
+    {
+      "name": "whole_members_PKI025b-stage-BODY-GO-and-INFO23-source19",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_PKI025b-stage-BODY-GO-and-INFO23-source19",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-T5-R2-source125",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-T5-R2-source125",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Auth-HOME-T5-R2-GO-and-root80",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Auth-HOME-T5-R2-GO-and-root80",
+      "passed": true
+    },
+    {
+      "name": "exact_totals",
+      "passed": true
+    }
+  ],
+  "totals": {
+    "packets": 70,
+    "files": 1226,
+    "bytes": 24942324,
+    "allWhole": true
+  },
+  "scope": "Complete previously whole packet members and Merkle identities; no source/runtime qualification is inferred from archival.",
+  "NativeCalls": 0
+}

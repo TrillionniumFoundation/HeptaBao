@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-stage-report-file-info.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "stage_result_file_info_only",
+  "source_packet": "a700788e0a3e0de0c29d63d1bfabb7f423c9acf7",
+  "source": {
+    "blob": "696e07c763ccefaa375e947ed84b2433a1d0f089",
+    "bytes": 23888,
+    "sha256": "c8a3f15c9073ddc34fa247ce4bd2cd1342023bf9136f9235731ee08e571b752d"
+  },
+  "candidate": {
+    "blob": "696e07c763ccefaa375e947ed84b2433a1d0f089",
+    "bytes": 23888,
+    "sha256": "c8a3f15c9073ddc34fa247ce4bd2cd1342023bf9136f9235731ee08e571b752d"
+  },
+  "source_review": {
+    "blob": "a872d4d67ddac27618e602a24cdc5ca16099abb2",
+    "bytes": 3280,
+    "sha256": "5ae8319519a76dcc72bd49150d75c65d98dedd8d534d0050a4a05d3b2f33bdf4"
+  },
+  "exact_request": {
+    "blob": "538b045d46c03cd5787a4a80d41595345232ae47",
+    "bytes": 309,
+    "sha256": "ca7c34ce798a1155e6b49a989f5f792c9aaaf2a4db568f70b8ab999d48b341b2"
+  },
+  "original_job": "1a1afcbafab-fc05-6bb0",
+  "original_slot": "jwt_pki_33b814c7_rog_source_gitfirst_r1",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "metadata_acceptance": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-33b814c7-20261106-r1/control/stage-result.public.json",
+    "size": {
+      "min": 1,
+      "max": 150000
+    },
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "sha256": "actual native64 lower-case hex",
+    "version": "actual dev:inode:size:mtime_ns:ctime_ns preserve exact decimal strings",
+    "full9": "[dev,inode,1000,1000,32768|mode,1,size,mtime_ns,ctime_ns]"
+  },
+  "original_stage_terminal_qualification": {
+    "blob": "0a1dba5b1f12c51489f831eebc653767e2e1e866",
+    "bytes": 5513,
+    "sha256": "c412cdfb99f4508de63835cc7d389de2b49d63b5c4bd27c7f19d9d7129d0ef88"
+  },
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "limits": {
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576,
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1
+  },
+  "sequence": [
+    "Whole exact GO,attach original closed stage slot via authorize_stage_result_info only,never initialize.",
+    "Whole exact request,intent,armed; cross independent dispatch boundary then call one operation_start.",
+    "Whole original SDK before parse/isError. Follow only original operation status and contiguous8192 immutable pages with complete payload SHA/EOF and inactive closure.",
+    "Require original150000 cap and exact private Linux1000:1000/singlelink metadata. Preserve actual size,SHA,version and full9 strings.",
+    "Stop after metadata closure. Body must be separately bound to actual metadata; no Cargo,control publication,new process or other paths."
+  ],
+  "lane_activation": "C may use one empty metadata lane now; A/B/root are0 Native. Global max2 and one call/future per lane.",
+  "excludes": [
+    "binary_read,directory scan,other paths,new START",
+    "formatter,Cargo,controls,product",
+    "replay,rekey,context reset or UNKNOWN replacement"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

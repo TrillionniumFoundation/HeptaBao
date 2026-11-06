@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.JWT-role-policy-delegation.further-primary-source.v1",
+  "status": "SOURCE_GAP_CONFIRMED_RUNTIME_ORACLE_PENDING",
+  "sources": [
+    {
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "sdk/helper/tokenutil/tokenutil.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/sdk/helper/tokenutil/tokenutil.go",
+      "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+      "bytes": 14196,
+      "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969"
+    },
+    {
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "sdk/helper/policyutil/policyutil.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/sdk/helper/policyutil/policyutil.go",
+      "blob": "9fe0c93d2c4c32e650dcb1919e3e4e3ce70468fa",
+      "bytes": 3409,
+      "sha256": "dc76454791f26542b9cd49f72f0e9fdaf36b0332e84676eff64bf15d68461118"
+    }
+  ],
+  "prior_official_role_and_backend_packet": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+  "current_production_candidate": [
+    "7a318b86ebdd47872fde86fbcce732f885571868",
+    "c6a1517252cdef86ecd701a47cb1f443f4a09da3"
+  ],
+  "findings": [
+    {
+      "fact": "Official pathRoleCreateUpdate calls TokenParams.ParseTokenFields and storage Put without an actor-policy-subset check in that handler.",
+      "basis": "Previously whole-read official role.go558143… and backend.go36117… under exact a5db72 commit."
+    },
+    {
+      "fact": "Official ParseTokenFields assigns provided token_policies directly, does not add default there, and does not consult the logical.Request actor; the request parameter is unused in this method.",
+      "basis": "New whole tokenutil.go; role response uses PopulateTokenData, which presents an empty policy list as[]."
+    },
+    {
+      "fact": "Official legacy policies alias goes through UpgradeValue/upgradeStringSliceValue and ParsePolicies; this function calls SanitizePolicies(...,false).",
+      "basis": "New whole tokenutil.go and policyutil.go."
+    },
+    {
+      "fact": "Current HeptaBao JWT role handling still calls policies(...,true) then validate_assignment; that helper rejects requested root or a nonroot actor's non-subset policy set.",
+      "basis": "Root current auth.rs candidate c6a151…; this behavior was explicitly not changed in R40."
+    }
+  ],
+  "inference": "The explicit default membership correction in R40 makes its intended positive test fixture valid under current HeptaBao behavior, but does not close OpenBao role-policy storage/delegation parity. Empty token_policies and a no-default role-manager actor remain concrete source-predicted gaps requiring actual official-vs-HeptaBao requests.",
+  "limits": [
+    "No actual oracle request was issued for these facts.",
+    "No production source changed, no role capability was relaxed, and no root-token issuance behavior is inferred from role write code.",
+    "Do not silently revise original23 HTTP cases or treat the corrected fixture as all-policy parity.",
+    "If real probes confirm the gap, a separate narrowly scoped role policy-storage/delegation change must retain the existing principal, parameter, publication, audit and delivery proof paths and test credential issuance boundaries."
+  ],
+  "production_changed": false,
+  "Runtime_calls": 0,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

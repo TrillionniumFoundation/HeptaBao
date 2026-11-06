@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_auth_fresh_home_inert_GO_packet",
+  "records": [
+    {
+      "name": "EXACT-GO.public.json",
+      "blob": "8072d63658e5e36775b42be64216e663e4e9faab",
+      "bytes": 5792,
+      "sha256": "17ef9a48d6d1e0105f5672210bf8c5adc4ffda98c29dda7e2fd21b78f47f3533"
+    },
+    {
+      "name": "root-reproduced-peer66.public.json",
+      "blob": "832129b7ceb6555cb5539d1ff1403d2c2d71a74e",
+      "bytes": 6252,
+      "sha256": "23d3b81ab91b0818f0ee9faa10decf4bbaeec92a2e827cd09c365717c48b05a3"
+    }
+  ],
+  "expected_data_tree": "e069776355e77210807ee52fa08708ee74b7bdc3",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

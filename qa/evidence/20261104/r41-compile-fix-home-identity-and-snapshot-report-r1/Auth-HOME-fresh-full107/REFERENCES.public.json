@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.fresh-home-auth-source-references.v1",
+  "corePacket": "c572455d47e53327ecc7fdf74c7d38933b3b9d34",
+  "originalSource88": "71a1656fbe227fcea1e92558a5004e22eaab69c6",
+  "componentFixes": "5a3ed3e81167e38fa92379765d25c23535dfec8c",
+  "componentReview": "92b3aa3fc6f1c23d258699ac5cb8c7a0b5a36544",
+  "cleanupActual": "fdf37f49bd3285771197d55a5eea0aa6728e0f25",
+  "cleanupRootQualification": "e7a74a5f2e08c5a316ff2ea06b13ad7bd97423d6",
+  "combinedRootArchive": "7514aae336a44306c11a9e49fbca5568d645d5ff",
+  "publicSourceQualification": "65b6f2235fcf055ff15fc9177fd6f80727449462",
+  "R40": "515bfe24879798f0117859c11492112bae9c3cee",
+  "newSourceOnly": true,
+  "actualHomeBinding": null,
+  "runtimeExactRequest": null,
+  "stageRequest": {
+    "blob": "28c074223f3f6a720df8400314aeede7cfea67de",
+    "bytes": 874132,
+    "sha256": "c3f1302bd8b3bbc0d9d77a24a681f79f11b37af81bec57edf51cc214889fd3d7"
+  },
+  "journal": {
+    "blob": "4cd38a02494c5bb4f1e3129d778de92aa2eb43fb",
+    "bytes": 19050,
+    "sha256": "c2f19faaa84ade3e240900e0dede09fdf2c7a9fddc02b18838f7f1462e99b16f"
+  },
+  "slotNotInitialized": true
+}

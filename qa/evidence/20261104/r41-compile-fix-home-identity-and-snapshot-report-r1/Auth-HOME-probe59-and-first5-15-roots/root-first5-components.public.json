@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.root.AuthBus-HOME-own-create-first5-component-qualification.r1",
+  "passed": true,
+  "checkCount": 15,
+  "checks": [
+    {
+      "name": "whole16_component_packet",
+      "passed": true
+    },
+    {
+      "name": "peer64_independently_reproduced",
+      "passed": true
+    },
+    {
+      "name": "home-control_whole_exact_predecessor",
+      "passed": true
+    },
+    {
+      "name": "home-control_strict3_forward_and_reverse",
+      "passed": true
+    },
+    {
+      "name": "manager_whole_exact_predecessor",
+      "passed": true
+    },
+    {
+      "name": "manager_strict3_forward_and_reverse",
+      "passed": true
+    },
+    {
+      "name": "publisher_whole_exact_predecessor",
+      "passed": true
+    },
+    {
+      "name": "publisher_strict3_forward_and_reverse",
+      "passed": true
+    },
+    {
+      "name": "manager_same_HomeControl_only",
+      "passed": true
+    },
+    {
+      "name": "publisher_same_HomeControl_only",
+      "passed": true
+    },
+    {
+      "name": "object_first5_with_current_named_full9",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_three_full9_before_guard",
+      "passed": true
+    },
+    {
+      "name": "original_preop_and_leaf_guards_retained",
+      "passed": true
+    },
+    {
+      "name": "original_failed_bytes_retained",
+      "passed": true
+    },
+    {
+      "name": "not_a_dispatch_bound_candidate",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "7592e1176e1634cf4b8259f53860ec0bc35786e3",
+    "files": 16,
+    "bytes": 254786,
+    "merkle": {
+      "root_sha": "7592e1176e1634cf4b8259f53860ec0bc35786e3",
+      "trees_verified": 1,
+      "leaf_count": 16
+    },
+    "whole": true
+  },
+  "helper": {
+    "blob": "9b57e0324d70728df2d3e041ae695c90702ba8e3",
+    "bytes": 18808,
+    "sha256": "2703ffef7b2eb66e53f6eb9775ba9dc6c13ced8d42d7e64da6880267bc29855c"
+  },
+  "manager": {
+    "blob": "fb0f0d2ba6fbab618c6ce23801677d8e90f880ae",
+    "bytes": 58452,
+    "sha256": "f730e37ca6560a3a47aea3577a595f1059cf1821d8f6e232d57d66ed225ca707"
+  },
+  "publisher": {
+    "blob": "8e3470d115b4139787963e57c47bd28309bac107",
+    "bytes": 36514,
+    "sha256": "2dfb23a0f1e62b3f5b8feb2791b2d0b4a68f27c0631a86d5cec357aea016f858"
+  },
+  "onlyBehaviorChange": "Own-created directory continuity uses dev/ino/uid/gid/mode; current held-vs-named comparison remains full9. Record before/current/named full9 before the guard.",
+  "originalFailurePointValuesRecovered": false,
+  "originalEffectUnknownPreserved": true,
+  "componentOnly": true,
+  "requestBound": false,
+  "NativeCalls": 0
+}

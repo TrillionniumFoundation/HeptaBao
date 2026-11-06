@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.root.twoNone-product-commit-intent.r1",
+  "maximumCalls": 1,
+  "mutationNotYetCalled": true,
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "parent_sha": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "tree_sha": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "message": "fix(server): supply optional JWT lifetime argument in PKI and SSH dispatch\n\nThe native authorized dispatcher now accepts a request-local JWT lifetime output. Its PKI and SSH owner callers still passed thirteen arguments, causing two E0061 errors in the normal release build. Pass None from these two non-JWT calls while preserving their existing arguments and all JWT login lifetime handling.\n\nThe original failed build and compiler logs are retained. The corrected candidate still requires the unchanged release-build and 149-test / 166-invocation runtime gates."
+  },
+  "verifiedTree": {
+    "schema": "heptabao.root.twoNone-product-tree-readback.r1",
+    "passed": true,
+    "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "audit": {
+      "root_sha": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+      "trees_verified": 358,
+      "leaf_count": 3916
+    },
+    "trackedBytes": 62297399,
+    "exactLeaves": 3916,
+    "changed": 2,
+    "unchanged": 3914,
+    "originalReadback": {
+      "blob": "34375b62bf8f8d37486a3ede0287581d2336cf84",
+      "bytes": 1204148,
+      "sha256": "608698e55e8baaee1ada706f306fe6aabad6a2d3a99c238f67b3c47ca411c8a5"
+    }
+  },
+  "noRefUpdated": true,
+  "noRuntimeQualification": true
+}

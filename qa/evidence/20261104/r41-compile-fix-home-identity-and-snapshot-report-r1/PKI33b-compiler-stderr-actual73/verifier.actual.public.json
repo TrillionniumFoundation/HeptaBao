@@ -1,0 +1,463 @@
+{
+  "schema": "heptabao.native-jwt-pki.compiler-logs.original-chain-checks.v1",
+  "pass": true,
+  "checks": [
+    {
+      "name": "ten_original_calls",
+      "pass": true
+    },
+    {
+      "name": "three_returned_observers",
+      "pass": true
+    },
+    {
+      "name": "all_closed_context",
+      "pass": true
+    },
+    {
+      "name": "call-00_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-00_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-00_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-00_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_7",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_8",
+      "pass": true
+    },
+    {
+      "name": "call-00_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-01_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-01_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-01_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-01_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_14",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_15",
+      "pass": true
+    },
+    {
+      "name": "call-01_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-02_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-02_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-02_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-02_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_21",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_22",
+      "pass": true
+    },
+    {
+      "name": "call-02_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-03_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-03_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-03_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-03_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_28",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_29",
+      "pass": true
+    },
+    {
+      "name": "call-03_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-04_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-04_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-04_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-04_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_35",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_36",
+      "pass": true
+    },
+    {
+      "name": "call-04_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-05_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-05_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-05_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-05_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_42",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_43",
+      "pass": true
+    },
+    {
+      "name": "call-05_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-06_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-06_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-06_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-06_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_49",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_50",
+      "pass": true
+    },
+    {
+      "name": "call-06_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-07_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-07_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-07_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-07_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_56",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_57",
+      "pass": true
+    },
+    {
+      "name": "call-07_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-08_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-08_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-08_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-08_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_63",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_64",
+      "pass": true
+    },
+    {
+      "name": "call-08_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "call-09_request.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-09_sdk.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-09_native.original.json_whole",
+      "pass": true
+    },
+    {
+      "name": "call-09_accepted_once",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_70",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_71",
+      "pass": true
+    },
+    {
+      "name": "call-09_native_from_original_sdk",
+      "pass": true
+    },
+    {
+      "name": "observer_0_one_admission_status",
+      "pass": true
+    },
+    {
+      "name": "observer_0_stored_inactive",
+      "pass": true
+    },
+    {
+      "name": "observer_0_page_count",
+      "pass": true
+    },
+    {
+      "name": "call-02_same_id_range",
+      "pass": true
+    },
+    {
+      "name": "call-02_immutable_payload_identity",
+      "pass": true
+    },
+    {
+      "name": "call-02_exact_eof",
+      "pass": true
+    },
+    {
+      "name": "observer_0_reconstructed_whole",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_80",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_81",
+      "pass": true
+    },
+    {
+      "name": "observer_0_native_from_payload",
+      "pass": true
+    },
+    {
+      "name": "observer_1_one_admission_status",
+      "pass": true
+    },
+    {
+      "name": "observer_1_stored_inactive",
+      "pass": true
+    },
+    {
+      "name": "observer_1_page_count",
+      "pass": true
+    },
+    {
+      "name": "call-05_same_id_range",
+      "pass": true
+    },
+    {
+      "name": "call-05_immutable_payload_identity",
+      "pass": true
+    },
+    {
+      "name": "call-05_exact_eof",
+      "pass": true
+    },
+    {
+      "name": "observer_1_reconstructed_whole",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_90",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_91",
+      "pass": true
+    },
+    {
+      "name": "observer_1_native_from_payload",
+      "pass": true
+    },
+    {
+      "name": "observer_2_one_admission_status",
+      "pass": true
+    },
+    {
+      "name": "observer_2_stored_inactive",
+      "pass": true
+    },
+    {
+      "name": "observer_2_page_count",
+      "pass": true
+    },
+    {
+      "name": "call-08_same_id_range",
+      "pass": true
+    },
+    {
+      "name": "call-08_immutable_payload_identity",
+      "pass": true
+    },
+    {
+      "name": "call-08_exact_eof",
+      "pass": true
+    },
+    {
+      "name": "call-09_same_id_range",
+      "pass": true
+    },
+    {
+      "name": "call-09_immutable_payload_identity",
+      "pass": true
+    },
+    {
+      "name": "call-09_exact_eof",
+      "pass": true
+    },
+    {
+      "name": "observer_2_reconstructed_whole",
+      "pass": true
+    },
+    {
+      "name": "SDK_not_error_103",
+      "pass": true
+    },
+    {
+      "name": "one_native_text_104",
+      "pass": true
+    },
+    {
+      "name": "observer_2_native_from_payload",
+      "pass": true
+    },
+    {
+      "name": "body_exact_pinned_original",
+      "pass": true
+    },
+    {
+      "name": "body_matches_info",
+      "pass": true
+    },
+    {
+      "name": "body_complete_actual_bytes",
+      "pass": true
+    },
+    {
+      "name": "no_stdout_body_or_process",
+      "pass": true
+    },
+    {
+      "name": "two_compiler_E0061",
+      "pass": true
+    },
+    {
+      "name": "PKI_diagnostic",
+      "pass": true
+    },
+    {
+      "name": "SSH_diagnostic",
+      "pass": true
+    }
+  ],
+  "total": 113,
+  "scope": "pure original evidence; zero Native, no Rust compile or product tests",
+  "calls": 10,
+  "observers": 3,
+  "pages": 4
+}

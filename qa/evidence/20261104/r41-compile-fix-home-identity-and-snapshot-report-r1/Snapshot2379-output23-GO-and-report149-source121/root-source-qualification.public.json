@@ -1,0 +1,527 @@
+{
+  "schema": "heptabao.root.snapshot2379-formatted23-output-source-qualification.r1",
+  "passed": true,
+  "checkCount": 121,
+  "checks": [
+    {
+      "name": "whole81_fixed_source",
+      "passed": true
+    },
+    {
+      "name": "independent_actual_report149",
+      "passed": true
+    },
+    {
+      "name": "candidate_and_old_source_exact",
+      "passed": true
+    },
+    {
+      "name": "strict_eight_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "author_input_all_exact",
+      "passed": true
+    },
+    {
+      "name": "198_pure_guard_checks_reproduced",
+      "passed": true
+    },
+    {
+      "name": "formatter_provenance_exact",
+      "passed": true
+    },
+    {
+      "name": "closed_predecessor_original_body1",
+      "passed": true
+    },
+    {
+      "name": "original_UNKNOWN_preserved",
+      "passed": true
+    },
+    {
+      "name": "23_actual_changed_rows",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_0",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_0",
+      "passed": true
+    },
+    {
+      "name": "body_template_0_0",
+      "passed": true
+    },
+    {
+      "name": "body_template_0_1",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_0",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_1",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_1",
+      "passed": true
+    },
+    {
+      "name": "body_template_1_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_1",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_2",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_2",
+      "passed": true
+    },
+    {
+      "name": "body_template_2_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_2",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_3",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_3",
+      "passed": true
+    },
+    {
+      "name": "body_template_3_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_3",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_4",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_4",
+      "passed": true
+    },
+    {
+      "name": "body_template_4_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_4",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_5",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_5",
+      "passed": true
+    },
+    {
+      "name": "body_template_5_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_5",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_6",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_6",
+      "passed": true
+    },
+    {
+      "name": "body_template_6_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_6",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_7",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_7",
+      "passed": true
+    },
+    {
+      "name": "body_template_7_0",
+      "passed": true
+    },
+    {
+      "name": "body_template_7_1",
+      "passed": true
+    },
+    {
+      "name": "body_template_7_2",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_7",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_8",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_8",
+      "passed": true
+    },
+    {
+      "name": "body_template_8_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_8",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_9",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_9",
+      "passed": true
+    },
+    {
+      "name": "body_template_9_0",
+      "passed": true
+    },
+    {
+      "name": "body_template_9_1",
+      "passed": true
+    },
+    {
+      "name": "body_template_9_2",
+      "passed": true
+    },
+    {
+      "name": "body_template_9_3",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_9",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_10",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_10",
+      "passed": true
+    },
+    {
+      "name": "body_template_10_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_10",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_11",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_11",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_0",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_1",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_2",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_3",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_4",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_5",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_6",
+      "passed": true
+    },
+    {
+      "name": "body_template_11_7",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_11",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_12",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_12",
+      "passed": true
+    },
+    {
+      "name": "body_template_12_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_12",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_13",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_13",
+      "passed": true
+    },
+    {
+      "name": "body_template_13_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_13",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_14",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_14",
+      "passed": true
+    },
+    {
+      "name": "body_template_14_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_14",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_15",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_15",
+      "passed": true
+    },
+    {
+      "name": "body_template_15_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_15",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_16",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_16",
+      "passed": true
+    },
+    {
+      "name": "body_template_16_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_16",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_17",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_17",
+      "passed": true
+    },
+    {
+      "name": "body_template_17_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_17",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_18",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_18",
+      "passed": true
+    },
+    {
+      "name": "body_template_18_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_18",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_19",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_19",
+      "passed": true
+    },
+    {
+      "name": "body_template_19_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_19",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_20",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_20",
+      "passed": true
+    },
+    {
+      "name": "body_template_20_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_20",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_21",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_21",
+      "passed": true
+    },
+    {
+      "name": "body_template_21_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_21",
+      "passed": true
+    },
+    {
+      "name": "fixed_output_22",
+      "passed": true
+    },
+    {
+      "name": "info_once_shape_22",
+      "passed": true
+    },
+    {
+      "name": "body_template_22_0",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_ranges_22",
+      "passed": true
+    },
+    {
+      "name": "all59_unique_requests_36_ranges_1346637",
+      "passed": true
+    },
+    {
+      "name": "26_reused_source_only_no_output_identity",
+      "passed": true
+    },
+    {
+      "name": "only_readonly_native_methods",
+      "passed": true
+    },
+    {
+      "name": "fixed_caps_and_serial_closure",
+      "passed": true
+    },
+    {
+      "name": "pure_whole_GO_initialization_accepts_exact_scope",
+      "passed": true
+    },
+    {
+      "name": "cannot_reset_existing_slot",
+      "passed": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "e0c930c6d06881ceecf36339a860b660fc66e4b9",
+    "files": 81,
+    "bytes": 1080306,
+    "merkle": {
+      "root_sha": "e0c930c6d06881ceecf36339a860b660fc66e4b9",
+      "trees_verified": 1,
+      "leaf_count": 81
+    },
+    "whole": true
+  },
+  "journal": {
+    "blob": "df89be7651e6d437f7d777a057c9b070a917bbb5",
+    "bytes": 72908,
+    "sha256": "7986493990bbdff66dd935cbf8405c21db4ea5c3ea662385d46c0a9777788125"
+  },
+  "rootReport": {
+    "blob": "8ebf3731052711fcdb86d2f99997a47f975def89",
+    "bytes": 17845,
+    "sha256": "cb7f9ce030af80e7f539b526cc38cfe8fd6c4ae52783ca7f8528b45b229212b2"
+  },
+  "fixedOutputs": 23,
+  "metadataStarts": 23,
+  "conditionalBodyStarts": 36,
+  "bodyBytes": 1346637,
+  "reusedUnchanged": 26,
+  "reusedUnchangedBytes": 686814,
+  "actualOutputMetadataObserved": false,
+  "actualBodiesObserved": false,
+  "sourceInputFull9NeverSubstitutesOutputFull9": true,
+  "oneActiveObserver": true,
+  "NativeCalls": 0,
+  "compileQualified": false,
+  "productionCutover": false,
+  "fullReplacement": false,
+  "legacyCleanup": false
+}

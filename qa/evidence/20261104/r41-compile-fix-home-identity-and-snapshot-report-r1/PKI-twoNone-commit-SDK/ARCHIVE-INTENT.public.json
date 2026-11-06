@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_twoNone_product_commit_SDK_packet",
+  "records": [
+    {
+      "name": "original.sdk.json",
+      "blob": "3f04eb737e466515360eeffabf1c2a777fe580f1",
+      "bytes": 195,
+      "sha256": "f6facba10a44020735510b0decb2261ef59d3c64d304fb22879b96d24e67347c"
+    }
+  ],
+  "expected_data_tree": "2f202730951fb45d3e97a06f20084e1290136641",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

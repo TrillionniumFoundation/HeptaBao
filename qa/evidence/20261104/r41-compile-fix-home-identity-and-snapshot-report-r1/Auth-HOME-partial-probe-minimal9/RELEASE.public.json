@@ -1,0 +1,165 @@
+{
+  "schema": "heptabao.home-partial-readonly.actual-release.r1",
+  "originalJob": "1a1b0889605-fc05-7138",
+  "host": "mac",
+  "rootGo": {
+    "blob": "0bb1f2b41ebde8384612178dfd4d19f882abd78c",
+    "bytes": 6778,
+    "sha256": "c9b0a62268e131bc9e1fefb2cf58d4a542c3ad9d137c9cd05d63a4226a03af67"
+  },
+  "source": {
+    "blob": "2b3130d39f5f09fd326e77e83d26130c9712ce70",
+    "bytes": 15788,
+    "sha256": "1a3d11d90b3d4cb7245d400f120da778487185521fe05510e0ecd62c5c57a821"
+  },
+  "exactRequest": {
+    "blob": "1b0d23c8b1dc1a9957108cd4918bfba4522bf2a6",
+    "bytes": 16748,
+    "sha256": "06979f3430d83bae7131f117d7ea757ba40ef2df30680cb6df717f9e94faa5bd"
+  },
+  "callCount": 10,
+  "observerCount": 2,
+  "pageCount": 5,
+  "activeCalls": 0,
+  "activeFutures": 0,
+  "pendingCall": null,
+  "activeObserver": null,
+  "allOriginalObserversCompletedInactive": true,
+  "authority": {
+    "blob": "90c16a2df6129426a9a7ab92f203f814d6bad64c",
+    "bytes": 731,
+    "sha256": "afaf420410328ce84c79fb640c28eb04f43a876ce3ffead4ea2eefc10703371f"
+  },
+  "stdout": {
+    "blob": "33496fbb64a7222c136652b1d56fe1e43a677fca",
+    "bytes": 8624,
+    "sha256": "1248f283f7029cc1fff14432d1f70a6d00ab9c935415fab4bcadedcbfee1f537"
+  },
+  "stderrBytes": 0,
+  "observers": [
+    {
+      "id": "f38bf38170c94d99e259a29e7b16bd125a4c5350612bc43aecbfcf149d8305f4",
+      "tool": "process_status",
+      "payload": {
+        "blob": "42bad62aab15b5e8b7b276015d09392a9a1a452f",
+        "bytes": 910,
+        "sha256": "100a01ced241a93c36b3eab7edd12a156914fd3f3ca6eda8ce071060c7fb78a8"
+      },
+      "payloadTree": "5c4c56c3584909a373537a4119019e37d6fdd748",
+      "nativeText": {
+        "blob": "90c16a2df6129426a9a7ab92f203f814d6bad64c",
+        "bytes": 731,
+        "sha256": "afaf420410328ce84c79fb640c28eb04f43a876ce3ffead4ea2eefc10703371f"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "3bddb9e421531cf889f5b7c569d7dbef040c8b218f97d7877d412a822b21b8d4",
+      "tool": "process_read",
+      "payload": {
+        "blob": "fc4115f6690d3a15499ccac8c303171105c3925f",
+        "bytes": 29451,
+        "sha256": "3481099817e0b6ca4e2eaf496e118c24d04996a34a6b9d69702ad41ba7663847"
+      },
+      "payloadTree": "0b76880604282529059511cb73d2993e6df73af6",
+      "nativeText": {
+        "blob": "d9798a0b4c5e3da1698f468264e5bfc1a79e1227",
+        "bytes": 27234,
+        "sha256": "a0491aad1b38efb0c25bb78d0572caaa9f167a830e5d8ee5889ea0cb251bc091"
+      },
+      "pages": 4,
+      "completedInactive": true
+    }
+  ],
+  "actual": {
+    "observationComplete": true,
+    "outcomeUnknown": false,
+    "allReturnedDescriptorsClosed": true,
+    "rootFull9": [
+      "16777233",
+      "593068531",
+      "501",
+      "20",
+      "16832",
+      "3",
+      "96",
+      "1793961504844444664",
+      "1793961504844444664"
+    ],
+    "originalPrewriteComparison": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ],
+    "copy": {
+      "afterFull9": [
+        "16777233",
+        "593068532",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793961504844535081",
+        "1793961504844535081"
+      ],
+      "afterNamedFull9": [
+        "16777233",
+        "593068532",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793961504844535081",
+        "1793961504844535081"
+      ],
+      "beforeFull9": [
+        "16777233",
+        "593068532",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793961504844535081",
+        "1793961504844535081"
+      ],
+      "beforeNamedFull9": [
+        "16777233",
+        "593068532",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "14052",
+        "1793961504844535081",
+        "1793961504844535081"
+      ],
+      "boundedEOFObserved": true,
+      "expectedBytes": 14052,
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1/mac_current_server_owner_r1.py",
+      "rawContentPublished": false,
+      "verifiedBytes": 14052,
+      "verifiedSha256": "6e0fd6f2aee1bc72b931824846cc26e90053939c995620f9e14ed009d3207e27",
+      "wholeExpectedHashMatched": true
+    },
+    "absenceCount": 38,
+    "metadata": 82,
+    "readCalls": 2,
+    "readBytes": 14052,
+    "elapsedSeconds": 0.0006313328631222248
+  },
+  "scope": "Fresh read-only current partial HOME observation only. Original failure-point tuples are not recovered and original effectUnknown remains. No original or new publisher/runtime/cleanup authorized.",
+  "NativeRestartAllowed": false,
+  "first5ComponentExecuted": false,
+  "lane": "A",
+  "laneReleased": true
+}

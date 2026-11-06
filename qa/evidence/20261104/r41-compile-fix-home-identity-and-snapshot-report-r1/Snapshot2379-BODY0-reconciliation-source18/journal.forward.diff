@@ -1,0 +1,526 @@
+--- a/undefined
++++ b/undefined
+@@ -1,142 +1,54 @@
+-/* SOURCE ONLY: native-call archival substitute proposed for the local outage.
+- * Requires pure_helpers.js plus git_archive_once.js in the same V8 evaluation.
+- * No function below is invoked by loading this file. Root exact GO is separate.
+- * No loop starts/retries a native call; all status/page steps are explicit.
+- * Every original SDK is store'd, serialized, Git-created once and whole-read
+- * before isError or native text is inspected.
++/* SOURCE ONLY: explicit admission reconciliation of one timed-out public read.
++ * The original context, error SDK and UNKNOWN are immutable historical evidence.
++ * This is NOT lookup-only: exact same-key start may return Existing or admit New.
++ * A separate exact root GO is required; no function is invoked on source load.
++ * No business START, metadata refresh, second body range, key or path change.
++ * Original SDK is Git-whole before isError/parse; unknown stops this new context.
+  */
+-const GF_SLOT = "snapshot_2379_rog_formatter_gitfirst_r1";
+-const GF_REQUEST = {blob:"0fce0771c8a4e42b85abfc10ffbc14e59e588616",
+- bytes:34045,sha256:"72289e6809a067df0df78ae0bd96383725ccbbcaca6fb219349c9ede1d4ce70f"};
++const GF_SLOT = "snapshot_2379_formatter_body0_admission_reconcile_r1";
++const GF_ORIGINAL_SLOT = "snapshot_2379_rog_formatter_gitfirst_r1";
++const GF_ORIGINAL_CALL = "snapshot-2379-formatter-body0-admit";
++const GF_REQUEST = {blob:"06f7a3eccf5de1c877b552cab886d14086d0c51c",
++ bytes:432,sha256:"35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"};
++const GF_OLD_SDK = {blob:"f181c1e93e7b64c402b332fd29b23d0141762082",
++ bytes:247,sha256:"20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"};
++const GF_OLD_UNKNOWN = {blob:"b174296c1b46c119356df90d5c68b6ca5bc4c19c",
++ bytes:1629,sha256:"8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"};
++const GF_OLD_UNKNOWN_TREE = "29b6302cc3cb329566b6f66c0441c0899b0cc811";
++const GF_BODY_EXPECTED = {"path":"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json","bytes":118925,"sha256":"5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8","version":"66306:31236133:118925:1793956739343592677:1793956739343592677","infoOperation":"6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff","infoNative":{"blob":"45d1709e3bbbf74caee996369a1eefdfbf855a31","bytes":483,"sha256":"8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"}};
++const GF_PAGE_BYTES = 16384;
+ 
+-/* One separately approved observation of the newly owned public formatter report.
+- * This does not authorize binary_read or any new process. Existing state is kept.
+- */
+-const GF_FORMAT_RESULT_PATH = "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json";
+-const GF_FORMAT_RESULT_MAX_BYTES = 131072;
+-const GF_FORMAT_INFO_REQUEST = {"blob":"6a8d59c8f2b2e9fd163f6fb63dbb9572793bf80e","bytes":297,"sha256":"efa2d673c1065da7e588e8c619a4b8d3dcea072aab0ab88db2268c531856c658"};
+-const GF_FORMAT_INFO_PREREQUISITES = [{"id":"1d7efb002dd78f7385f6b3a3bdc0f17f7d3f02a3c438d3b707f69f43a3999f4e","tool":"process_status","nativeText":{"blob":"3b2195640ee1ccadf9b4dcd204b3c81e6cda4a43","bytes":733,"sha256":"95d65e97f1b72d02fe406396ba77555141603a577abcc086d710b5b6bbf048e1"}},{"id":"3bd7cf144acb1fa14d50fe7fa2d65bedff3c4a2e909d117bf3387bd69990bd53","tool":"process_read","nativeText":{"blob":"6661e772a5bae16c6dc0a0e6369032053d9a8ed3","bytes":50489,"sha256":"0396f6be096daad7a6e50a8042b28426f3f635710ca404b017dd1d3850198bbf"}},{"id":"62c649edc4033363bced4f6ae83df8795058d133623f36ed3b0ad6458ecd15b2","tool":"process_read","nativeText":{"blob":"d6d2c80ca74103e4245051684676b13d0ff58383","bytes":4605,"sha256":"de859718e06bbfb405cf19559876e65b63e52f3437f920a461acb7799c442ad0"}}];
+-
+-function gfAuthorizeFormatResultInfoOnly({goRaw,goPin,goWholeReadback}) {
+- const s=gfState();
+- gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
+-   && s.activeObserver===null && s.startCalled===true
+-   && s.job==="1a1b02771c2-fc05-6e9f" && s.formatResultInfoGO===undefined
+-   && s.formatResultInfoStarted!==true,"closed_existing_formatter_before_info_only_GO");
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
+-   && goPin.blob!==s.goPin.blob,"separate_whole_info_only_GO");
+- const g=JSON.parse(goRaw);
+- gfNeed(g.authorization==="GO" && g.scope==="format_result_file_info_only"
+-   && g.original_job===s.job && g.maximum_file_info_starts===1
+-   && g.binary_read_authorized===false
+-   && g.exact_request?.blob===GF_FORMAT_INFO_REQUEST.blob
+-   && g.exact_request?.bytes===GF_FORMAT_INFO_REQUEST.bytes
+-   && g.exact_request?.sha256===GF_FORMAT_INFO_REQUEST.sha256,
+-   "exact_new_root_file_info_scope");
+- for(const need of GF_FORMAT_INFO_PREREQUISITES) {
+-  const prior=s.completedObservers.find(o=>o.id===need.id);
+-  const priorRaw=load(GF_SLOT+":closed_native:"+need.id);
+-  gfNeed(prior?.completedInactive===true && prior.tool===need.tool
+-    && gfMetaEquals(priorRaw,need.nativeText)
+-    && prior.nativeText.blob===need.nativeText.blob,"original_formatter_closure_pin");
+- }
+- const authority=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_FORMAT_INFO_PREREQUISITES[0].id));
+- const first=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_FORMAT_INFO_PREREQUISITES[1].id));
+- const last=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_FORMAT_INFO_PREREQUISITES[2].id));
+- const stdoutRaw=first.stdout.text+last.stdout.text;
+- gfNeed(gfMetaEquals(stdoutRaw,{blob:"2b4b66ddb59b7232b1bfa391b262d823f013f4ac",bytes:17780,
+-   sha256:"1a937303bc837aed0d286045ae3696ee600126723aa7b3b4a34f8a1c9c0a8cd5"}),"actual_whole_formatter_stdout");
+- const terminal=JSON.parse(stdoutRaw);
+- gfNeed(authority.exit_code===0 && authority.output_complete===true
+-   && authority.output_durable===true && authority.terminal_publication_confirmed===true
+-   && !authority.timed_out && !authority.cancelled
+-   && first.stdout.offset===0 && first.stdout.next_offset===16384 && first.stdout.eof===false
+-   && last.stdout.offset===16384 && last.stdout.next_offset===17780 && last.stdout.eof===true
+-   && first.stderr.offset===0 && first.stderr.next_offset===0 && first.stderr.eof===true
+-   && last.stderr.offset===0 && last.stderr.next_offset===0 && last.stderr.eof===true
+-   && s.nextStdout===17780 && s.nextStderr===0
+-   && terminal.allOwnedStopped===true && terminal.status==="passed"
+-   && terminal.withinDeadline===true && terminal.elapsedSeconds<50
+-   && terminal.error===null && terminal.publicationError===null
+-   && terminal.files.length===49
+-   && terminal.root+"/result.public.json"===GF_FORMAT_RESULT_PATH,"formatter_zero_and_full_summary");
+- s.formatResultInfoGO={pin:goPin,raw:goRaw,whole:true};
+- gfSave(s);
+- return {originalJob:s.job,exactRequest:GF_FORMAT_INFO_REQUEST,
+-   maximumFileInfoStarts:1,binaryReadAuthorized:false};
+-}
+-
+-/* Two original version-bound public formatter-report ranges only.
+- * Metadata is already independently closed. No individual chunk is UTF8-decoded.
+- * Only these new body observers use16384-byte immutable pages; old observers stay8192.
+- */
+-const GF_FORMAT_BODY_EXPECTED = {"path":"/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json","bytes":118925,"sha256":"5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8","version":"66306:31236133:118925:1793956739343592677:1793956739343592677","infoOperation":"6040da16c66f2a7b6f2f4a3939721c0e78afddf8f9070d76c77a0ffe49e82cff","infoNative":{"blob":"45d1709e3bbbf74caee996369a1eefdfbf855a31","bytes":483,"sha256":"8430d3a4b0c79f274222678fd30f8f0cec8f7f546602c6a1a1a2a8c749c5a4c2"}};
+-const GF_FORMAT_BODY_RANGES = [
+-  {
+-    "offset": 0,
+-    "limit": 65536,
+-    "request": {
+-      "blob": "06f7a3eccf5de1c877b552cab886d14086d0c51c",
+-      "bytes": 432,
+-      "sha256": "35921fca79a714035d0033a003d481862326e4a8dc6409f5017bbc4fb37ea992"
+-    }
+-  },
+-  {
+-    "offset": 65536,
+-    "limit": 53389,
+-    "request": {
+-      "blob": "c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a",
+-      "bytes": 436,
+-      "sha256": "978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128"
+-    }
+-  }
+-];
+-const GF_FORMAT_BODY_PAGE_BYTES = 16384;
+-
+-function gfAuthorizeFormatResultBodyOnly({goRaw,goPin,goWholeReadback}) {
+- const s=gfState(),need=GF_FORMAT_BODY_EXPECTED,info=s.formatResultInfo;
+- gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
+-   && s.activeObserver===null && s.job==="1a1b02771c2-fc05-6e9f"
+-   && s.formatResultInfoGO?.whole===true && s.formatResultInfoStarted===true
+-   && s.formatResultBodyGO===undefined && s.formatResultBodyStarted===undefined
+-   && s.formatResultBodyRanges===undefined,"closed_current_info_before_exact_body_GO");
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
+-   && goPin.blob!==s.goPin.blob && goPin.blob!==s.formatResultInfoGO.pin.blob,
+-   "separate_whole_FORMAT_body_GO");
+- const g=JSON.parse(goRaw);
+- gfNeed(g.authorization==="GO" && g.scope==="format_result_binary_read_ranges_only"
+-   && g.original_job===s.job && g.info_operation===need.infoOperation
+-   && g.maximum_binary_read_starts===2 && g.immutable_body_page_bytes===GF_FORMAT_BODY_PAGE_BYTES
+-   && g.fixed_report?.path===need.path && g.fixed_report?.bytes===need.bytes
+-   && g.fixed_report?.sha256===need.sha256 && g.fixed_report?.version===need.version
+-   && Array.isArray(g.exact_requests) && g.exact_requests.length===GF_FORMAT_BODY_RANGES.length
+-   && GF_FORMAT_BODY_RANGES.every((x,i)=>g.exact_requests[i]?.blob===x.request.blob
+-     && g.exact_requests[i]?.bytes===x.request.bytes
+-     && g.exact_requests[i]?.sha256===x.request.sha256),"exact_new_root_two_range_scope");
+- const prior=s.completedObservers.find(o=>o.id===need.infoOperation);
+- gfNeed(prior?.completedInactive===true && prior.tool==="file_info"
+-   && prior.nativeText.blob===need.infoNative.blob
+-   && gfMetaEquals(load(GF_SLOT+":closed_native:"+need.infoOperation),need.infoNative)
+-   && info?.path===need.path && info.size===need.bytes && info.sha256===need.sha256
+-   && info.version===need.version && info.originalOperation===need.infoOperation
+-   && need.bytes>0 && need.bytes<=GF_FORMAT_RESULT_MAX_BYTES,
+-   "whole_current_info_exact_identity");
+- s.formatResultBodyGO={pin:goPin,raw:goRaw,whole:true};
+- s.formatResultBodyStarted=0;s.formatResultBodyRanges=[];
+- gfSave(s);
+- return {originalJob:s.job,infoOperation:need.infoOperation,
+-   exactRequests:GF_FORMAT_BODY_RANGES,maximumBinaryReadStarts:2,
+-   bodyPageBytes:GF_FORMAT_BODY_PAGE_BYTES,wholeBytes:need.bytes};
+-}
+-
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+  return actual.blob===pin.blob && actual.bytes===pin.bytes && actual.sha256===pin.sha256;
+ }
++function gfOriginalUnknownView() {
++ const old=load(GF_ORIGINAL_SLOT),call=old?.calls?.[GF_ORIGINAL_CALL];
++ gfNeed(old?.paused===true && old.nativeCallInFlight===false
++   && old.pending===GF_ORIGINAL_CALL && old.activeObserver===null
++   && old.job==="1a1b02771c2-fc05-6e9f"
++   && old.formatResultBodyStarted===1 && old.formatResultBodyRanges?.length===0
++   && call?.called===true && call.phase==="native_interpretation_refused"
++   && call.sdkArchive?.whole===true && gfMetaEquals(call.requestRaw,GF_REQUEST)
++   && call.sdkPin?.blob===GF_OLD_SDK.blob
++   && gfMetaEquals(load(GF_ORIGINAL_SLOT+":original_sdk_raw:"+GF_ORIGINAL_CALL),GF_OLD_SDK),
++   "unchanged_original_UNKNOWN_boundary");
++ const bodyCalls=Object.values(old.calls).filter(c=>c.kind==="operation_start"
++   && JSON.parse(c.requestRaw).operation?.tool==="binary_read");
++ gfNeed(bodyCalls.length===1 && bodyCalls[0]===call,
++   "original_BODY1_still_unsubmitted");
++ return {slot:GF_ORIGINAL_SLOT,job:old.job,paused:old.paused,pending:old.pending,
++   called:call.called,phase:call.phase,request:call.requestPin,sdk:call.sdkPin,
++   started:old.formatResultBodyStarted,ranges:old.formatResultBodyRanges.length,
++   activeObserver:old.activeObserver,nativeCallInFlight:old.nativeCallInFlight,
++   oldUnknown:GF_OLD_UNKNOWN,oldUnknownTree:GF_OLD_UNKNOWN_TREE};
++}
+ function gfState() {
+  const s=load(GF_SLOT);
+  gfNeed(s && s.rootGoWhole===true, "root_go_not_initialized");
++ gfNeed(JSON.stringify(gfOriginalUnknownView())===s.originalUnknownView,
++   "original_paused_context_must_remain_unchanged");
+  return s;
+ }
+ function gfSave(s) { store(GF_SLOT,s); }
+@@ -146,66 +58,65 @@
+    && /^-?[0-9]+$/.test(value.$exactInteger),"lossless_integer_token");
+  return value.$exactInteger;
+ }
+-function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback,digest,fingerprint}) {
+- gfNeed(load(GF_SLOT)===undefined,"existing_or_armed_context_must_be_recovered_not_reinitialized");
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"exact_whole_root_go");
+- gfNeed(/^[0-9a-f]{64}$/.test(digest) && /^[0-9]{1,20}$/.test(fingerprint),
+-        "root_independently_bound_native_identity");
+- // The caller must supply the separately reviewed actual GO, not the SOURCE contract.
+- store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest,fingerprint,job:null,
+-  startCalled:false,pending:null,activeObserver:null,nativeCallInFlight:false,
+-  paused:false,calls:{},completedObservers:[],nextStdout:0,nextStderr:0,
+-  localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
++function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback,oldUnknownRaw}) {
++ gfNeed(load(GF_SLOT)===undefined,
++   "existing_or_armed_reconciliation_context_must_not_be_reinitialized");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++   && gfMetaEquals(oldUnknownRaw,GF_OLD_UNKNOWN),"exact_whole_new_GO_and_old_UNKNOWN");
++ const g=JSON.parse(goRaw),old=JSON.parse(oldUnknownRaw),view=gfOriginalUnknownView();
++ gfNeed(g.authorization==="GO"
++   && g.scope==="format_body0_exact_admission_reconciliation"
++   && g.slot===GF_SLOT && g.original_slot===GF_ORIGINAL_SLOT
++   && g.lookup_only===false && g.may_create_first_admission===true
++   && g.maximum_operation_start_calls===1 && g.process_start_authorized===false
++   && g.second_body_range_authorized===false && g.immutable_page_bytes===GF_PAGE_BYTES
++   && g.maximum_retained_payload_bytes===1048576
++   && g.old_unknown?.blob===GF_OLD_UNKNOWN.blob
++   && g.original_error_sdk?.blob===GF_OLD_SDK.blob
++   && g.exact_request?.blob===GF_REQUEST.blob
++   && g.exact_request?.bytes===GF_REQUEST.bytes
++   && g.exact_request?.sha256===GF_REQUEST.sha256,
++   "separate_root_one_exact_admission_reconciliation_scope");
++ gfNeed(old.originalSlot===GF_ORIGINAL_SLOT && old.uniqueCallKey===GF_ORIGINAL_CALL
++   && old.readonlyAdmissionOutcome==="UNKNOWN" && old.paused===true
++   && old.observedOperationId===null && old.secondBodySubmitted===false
++   && old.uniqueRequest.blob===GF_REQUEST.blob && old.originalSDK.blob===GF_OLD_SDK.blob,
++   "whole_original_failure_evidence_exact");
++ store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,job:view.job,
++   originalUnknownView:JSON.stringify(view),originalUnknownRaw:oldUnknownRaw,
++   originalAttemptOutcome:"UNKNOWN",lookupOnly:false,admissionCalled:false,
++   pending:null,activeObserver:null,nativeCallInFlight:false,paused:false,
++   calls:{},completedObservers:[],reconciliationAdmission:null,reconciledRange:null,
++   localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
++ return {slot:GF_SLOT,originalSlotUnchanged:true,originalAttemptOutcome:"UNKNOWN",
++   exactRequest:GF_REQUEST,maximumOperationStarts:1,lookupOnly:false};
+ }
+ function gfValidateRequest(s,kind,q,raw) {
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null,"single_call_boundary");
+- if(kind==="process_start") {
+-  gfNeed(!s.startCalled && s.job===null && s.activeObserver===null
+-    && gfMetaEquals(raw,GF_REQUEST),"one_exact_diagnostic_start");
+- } else if(kind==="operation_start") {
+-  gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+-  gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+-    && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-native-snapshot-2379d02b-formatter-observe-r1-/.test(q.idempotency_key),
+-    "bounded_original_observer_key");
+-  const op=q.operation,a=op?.arguments;
+-  gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+-    && a && a.host==="rog","same_original_host_only");
+-  if(op.tool==="binary_read") {
+-   const index=s.formatResultBodyRanges?.length,range=GF_FORMAT_BODY_RANGES[index];
+-   gfNeed(s.formatResultBodyGO?.whole===true && range
+-     && s.formatResultBodyStarted===index && gfMetaEquals(raw,range.request)
+-     && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
+-     && a.path===GF_FORMAT_BODY_EXPECTED.path && a.offset===range.offset
+-     && a.limit===range.limit && a.limit>0 && a.limit<=65536
+-     && a.expected_version===GF_FORMAT_BODY_EXPECTED.version,
+-     "one_exact_next_version_bound_FORMAT_body_range");
+-  } else if(op.tool==="file_info") {
+-   gfNeed(s.formatResultInfoGO?.whole===true && s.formatResultInfoStarted!==true
+-     && gfMetaEquals(raw,GF_FORMAT_INFO_REQUEST)
+-     && Object.keys(a).sort().join(",")==="host,path"
+-     && a.path===GF_FORMAT_RESULT_PATH,"one_exact_newly_owned_format_result_info");
+-  } else if(op.tool==="process_status") {
+-   gfNeed(a.job_id===s.job,"same_original_job_only");
+-   gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+-  } else {
+-   gfNeed(op.tool==="process_read" && a.job_id===s.job
+-     && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+-     && a.limit===16384 && a.stdout_offset===s.nextStdout
+-     && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+-  }
++ if(kind==="operation_start") {
++  const a=q.operation?.arguments;
++  gfNeed(!s.admissionCalled && s.activeObserver===null
++    && s.completedObservers.length===0 && s.reconciledRange===null
++    && gfMetaEquals(raw,GF_REQUEST)
++    && Object.keys(q).sort().join(",")==="idempotency_key,operation"
++    && q.idempotency_key==="heptabao-native-snapshot-2379d02b-formatter-observe-r1-result-body0"
++    && Object.keys(q.operation).sort().join(",")==="arguments,tool"
++    && q.operation.tool==="binary_read"
++    && a && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
++    && a.host==="rog" && a.path===GF_BODY_EXPECTED.path && a.offset===0
++    && a.limit===65536 && a.expected_version===GF_BODY_EXPECTED.version,
++    "one_exact_original_key_typed_BODY0_admission_reconciliation");
+  } else if(kind==="operation_status") {
+   gfNeed(s.activeObserver && !s.activeObserver.futureClosed
+-   && Object.keys(q).join(",")==="operation_id"
+-   && q.operation_id===s.activeObserver.id,"same_live_original_operation_status");
++    && Object.keys(q).join(",")==="operation_id"
++    && q.operation_id===s.activeObserver.id,"same_returned_binding_status");
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+-   && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
+-   && q.operation_id===s.activeObserver.id
+-   && q.limit===(s.activeObserver.tool==="binary_read"?GF_FORMAT_BODY_PAGE_BYTES:8192)
+-   && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+-   "same_closed_original_operation_next_page");
+- } else throw new Error("closed_native_tool_set");
++    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
++    && q.operation_id===s.activeObserver.id && q.limit===GF_PAGE_BYTES
++    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
++    "same_closed_returned_binding_next_page");
++ } else throw new Error("closed_reconciliation_tool_set");
+ }
+ async function gfPrepareOne({callKey,kind,requestRaw}) {
+  const s=gfState();
+@@ -215,17 +126,16 @@
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+   callKey,kind,request:requestPin,
+-  rootGo:((kind==="operation_start" && q.operation.tool==="binary_read")
+-    || s.activeObserver?.tool==="binary_read") ? s.formatResultBodyGO.pin
+-    : ((kind==="operation_start" && q.operation.tool==="file_info")
+-      || s.activeObserver?.tool==="file_info") ? s.formatResultInfoGO.pin : s.goPin,
++  rootGo:s.goPin,oldUnknown:GF_OLD_UNKNOWN,originalErrorSDK:GF_OLD_SDK,
++  lookupOnly:false,mayCreateFirstAdmission:kind==="operation_start",
++  oldAttemptRemainsUNKNOWN:true,oldContextWillNotBeChanged:true,
+   originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+  const armed={...intent,schema:"heptabao.gitfirst.fixed-native-call-armed.r1",
+   mayHaveDispatchedAfterThisCheckpoint:true,
+-  recovery:"Read exact original job/operation only; absence of later ACK is UNKNOWN."};
++  recovery:"Never repeat this admission; preserve the original UNKNOWN and this attempt separately. Only an actually returned binding ID permits status/pages."};
+  s.pending=callKey;
+  s.calls[callKey]={kind,requestRaw,requestPin,phase:"arming",called:false};
+  gfSave(s);
+@@ -248,14 +158,11 @@
+  const q=JSON.parse(c.requestRaw);
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+- if(c.kind==="process_start")s.startCalled=true;
+- if(c.kind==="operation_start" && q.operation.tool==="file_info")s.formatResultInfoStarted=true;
+- if(c.kind==="operation_start" && q.operation.tool==="binary_read")s.formatResultBodyStarted++;
++ if(c.kind==="operation_start")s.admissionCalled=true;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+-  if(c.kind==="process_start")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_process_start(q);
+-  else if(c.kind==="operation_start")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_start(q);
++  if(c.kind==="operation_start")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_start(q);
+   else if(c.kind==="operation_status")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_status(q);
+   else if(c.kind==="operation_result")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_result(q);
+   else throw new Error("unreachable_closed_dispatch_kind");
+@@ -303,19 +210,18 @@
+   const nativeRaw=sdk.content[0].text;
+   store(GF_SLOT+":native_raw:"+callKey,nativeRaw);
+   const v=parseLosslessIntegers(nativeRaw),q=JSON.parse(c.requestRaw);
+-  if(c.kind==="process_start") {
+-   gfNeed(v.audit_recorded===true && v.local_record_pending===false && v.reused===false
+-    && v.launch?.ok===true && v.job?.host==="rog" && v.job.execution_mode==="operator"
+-    && v.job.idempotency_key===q.idempotency_key && v.job.executable===q.executable
+-    && v.job.cwd===q.cwd && JSON.stringify(v.job.args)===JSON.stringify(q.args)
+-    && v.job.request_digest===s.digest && gfIntegerText(v.job.request_fingerprint)===s.fingerprint
+-    && /^[a-z0-9-]{1,100}$/.test(v.job.id),"exact_unique_native_start_binding");
+-   s.job=v.job.id;
+-  } else if(c.kind==="operation_start") {
+-   gfNeed(/^[a-f0-9]{64}$/.test(v.operation_id) && v.tool_name===q.operation.tool
+-     && v.reused===false && v.automatic_retry===false,"original_observer_admission");
++  if(c.kind==="operation_start") {
++   gfNeed(/^[a-f0-9]{64}$/.test(v.operation_id) && v.tool_name==="binary_read"
++     && typeof v.reused==="boolean" && v.automatic_retry===false
++     && v.idempotency_binding_retained===true
++     && v.admission_is_not_dispatch_completion===true,
++     "actual_reconciliation_receipt_without_old_attempt_inference");
++   s.reconciliationAdmission={operationId:v.operation_id,reused:v.reused,
++     classification:v.reused?"existing_binding_returned":"new_admission_receipt_observed",
++     originalAttemptOutcome:"UNKNOWN",lookupOnly:false,
++     nativeCompletionProven:false,bodyDeliveryProven:false};
+    s.activeObserver={id:v.operation_id,request:q,tool:v.tool_name,futureClosed:false,
+-    nextPageOffset:0,eof:false,pages:[],total:null,digest:null};
++     nextPageOffset:0,eof:false,pages:[],total:null,digest:null};
+   } else if(c.kind==="operation_status") {
+    const a=s.activeObserver;
+    gfNeed(v.operation_id===a.id && v.tool_name===a.tool && v.automatic_retry===false,
+@@ -334,7 +240,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
+-   gfNeed(b.length<=(a.tool==="binary_read"?GF_FORMAT_BODY_PAGE_BYTES:8192)
++   gfNeed(b.length<=GF_PAGE_BYTES
+      && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+@@ -357,18 +263,18 @@
+ async function gfCloseOriginalObserver() {
+  const s=gfState(),a=s.activeObserver;
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
+-   && a?.futureClosed===true && a.eof,"closed_whole_original_observer_boundary");
++   && a?.futureClosed===true && a.eof && s.completedObservers.length===0
++   && s.reconciledRange===null && s.reconciliationAdmission?.operationId===a.id,
++   "closed_whole_returned_binding_boundary");
+  let bytes=[],next=0;
+  for(const p of a.pages){gfNeed(p.offset===next,"page_continuity");bytes=bytes.concat(unb64(p.base64));next=p.next;}
+  gfNeed(next===a.total,"complete_original_payload_length");
+  const raw=utf8Text(bytes),pin=gitBlobMeta(raw);
+  gfNeed(pin.bytes===a.total && pin.sha256===a.digest,"complete_original_payload_hash");
+- // Persist the full immutable envelope before interpreting original SDK success.
+- const archiveKey="gfc-"+a.id;
+  let archive;
+  try {
+-  archive=await archiveFlatPublicTextsOnce({key:archiveKey,repository:"TrillionniumFoundation/HeptaBao",
+-   texts:{"payload.original.json":raw}});
++  archive=await archiveFlatPublicTextsOnce({key:"gfc-"+a.id,
++   repository:"TrillionniumFoundation/HeptaBao",texts:{"payload.original.json":raw}});
+  } catch(error) {
+   s.paused=true;s.originalPayloadArchiveFailure=String(error);gfSave(s);throw error;
+  }
+@@ -376,81 +282,35 @@
+  try {
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+-  const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  if(a.tool==="binary_read") {
+-   const need=GF_FORMAT_BODY_EXPECTED,index=s.formatResultBodyRanges.length,
+-     range=GF_FORMAT_BODY_RANGES[index],asked=a.request.operation.arguments;
+-   gfNeed(range && s.formatResultBodyStarted===index+1
+-     && asked.offset===range.offset && asked.limit===range.limit
+-     && v.path===need.path && v.version===need.version && v.size===need.bytes
+-     && v.offset===range.offset && v.next_offset===range.offset+range.limit
+-     && v.eof===(v.next_offset===need.bytes)
+-     && typeof v.data_base64==="string" && /^[a-f0-9]{64}$/.test(v.chunk_sha256),
+-     "exact_FORMAT_body_original_range_extent");
+-   const bodyBytes=unb64(v.data_base64);
+-   gfNeed(bodyBytes.length===range.limit
+-     && sha256Latin1(byteString(bodyBytes))===v.chunk_sha256,
+-     "FORMAT_body_actual_chunk_bytes_SHA");
+-   const row={offset:range.offset,limit:range.limit,next:v.next_offset,
+-     chunkSHA256:v.chunk_sha256,base64:v.data_base64,originalOperation:a.id,
+-     originalPayload:pin,originalPayloadTree:archive.tree};
+-   if(index+1===GF_FORMAT_BODY_RANGES.length) {
+-    const ranges=s.formatResultBodyRanges.concat([row]);
+-    let complete=[],at=0;
+-    for(const part of ranges) {
+-     gfNeed(part.offset===at,"FORMAT_body_whole_continuity");
+-     complete=complete.concat(unb64(part.base64));at=part.next;
+-    }
+-    gfNeed(at===need.bytes && complete.length===need.bytes
+-      && sha256Latin1(byteString(complete))===need.sha256,"FORMAT_body_whole_exact_SHA");
+-    const wholeRaw=utf8Text(complete),wholePin=gitBlobMeta(wholeRaw);
+-    gfNeed(wholePin.bytes===need.bytes && wholePin.sha256===need.sha256,
+-      "FORMAT_report_whole_UTF8_roundtrip");
+-    store(GF_SLOT+":format_result_body_original",wholeRaw);
+-    const wholeArchive=await archiveFlatPublicTextsOnce({
+-     key:"snapshot2379-format49-public-report-whole-r1",repository:"TrillionniumFoundation/HeptaBao",
+-     texts:{"result.public.json":wholeRaw}});
+-    s.formatResultBody={path:need.path,version:need.version,body:wholePin,
+-      wholeTree:wholeArchive.tree,originalOperations:ranges.map(x=>x.originalOperation),
+-      metadataOperation:need.infoOperation,semanticQualification:false};
+-   }
+-   s.formatResultBodyRanges.push(row);
+-  } else if(a.tool==="file_info") {
+-   const md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
+-   gfNeed(v.path===GF_FORMAT_RESULT_PATH && Number.isSafeInteger(v.size)
+-     && v.size>0 && v.size<=GF_FORMAT_RESULT_MAX_BYTES
+-     && /^[a-f0-9]{64}$/.test(v.sha256) && v.mode===384
+-     && md?.metadata_platform==="linux" && md.mode===384
+-     && md.uid===1000 && md.gid===1000 && md.link_count===1
+-     && parts.length===5 && parts.every(x=>/^[0-9]+$/.test(x))
+-     && parts[2]===String(v.size),"fixed_report_content_metadata_and_version");
+-   s.formatResultInfo={path:v.path,size:v.size,sha256:v.sha256,version:v.version,
+-     nativeText:gitBlobMeta(nativeRaw),originalOperation:a.id,
+-     full9Strings:[parts[0],parts[1],"1000","1000",String(32768|v.mode),
+-       "1",String(v.size),parts[3],parts[4]],
+-     regularFileFromNativeFileInfoContract:true,
+-     binaryReadAuthorized:false};
+-  } else gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+-  if(a.tool==="process_read") {
+-   for(const stream of ["stdout","stderr"]) {
+-    const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];
+-    gfNeed(row && row.offset===asked && Number.isSafeInteger(row.next_offset)
+-      && typeof row.text==="string" && typeof row.bytes_hex==="string"
+-      && /^[a-f0-9]*$/.test(row.bytes_hex),"lossless_original_stream_shape");
+-    const b=[];for(let i=0;i<row.bytes_hex.length;i+=2)b.push(parseInt(row.bytes_hex.slice(i,i+2),16));
+-    gfNeed(row.bytes_hex.length%2===0 && b.length<=16384 && row.next_offset===asked+b.length
+-      && utf8Text(b)===row.text && Number.isSafeInteger(row.size)
+-      && row.size>=row.next_offset && typeof row.eof==="boolean"
+-      && (!row.eof||row.next_offset===row.size),
+-      "lossless_original_stream_text_hex_extent");
+-    s[stream==="stdout"?"nextStdout":"nextStderr"]=row.next_offset;
+-   }
+-  }
++  const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw),need=GF_BODY_EXPECTED;
++  gfNeed(a.tool==="binary_read" && a.request.operation.arguments.offset===0
++    && a.request.operation.arguments.limit===65536
++    && v.path===need.path && v.version===need.version && v.size===need.bytes
++    && v.offset===0 && v.next_offset===65536 && v.eof===false
++    && typeof v.data_base64==="string" && /^[a-f0-9]{64}$/.test(v.chunk_sha256),
++    "exact_reconciled_BODY0_extent_no_BODY1");
++  const bodyBytes=unb64(v.data_base64);
++  gfNeed(bodyBytes.length===65536
++    && sha256Latin1(byteString(bodyBytes))===v.chunk_sha256,
++    "reconciled_BODY0_actual_bytes_SHA");
++  const nativePin=gitBlobMeta(nativeRaw);
++  const row={offset:0,limit:65536,next:65536,chunkSHA256:v.chunk_sha256,
++    base64:v.data_base64,operationId:a.id,originalPayload:pin,payloadTree:archive.tree,
++    nativeText:nativePin,metadataOperation:need.infoOperation,
++    sourceFileVersion:need.version,sourceFileHashFromPriorMetadata:need.sha256,
++    completeFileBody:false,oldAttemptOutcome:"UNKNOWN",
++    reconciliationAdmission:s.reconciliationAdmission};
++  const closedArchive=await archiveFlatPublicTextsOnce({
++   key:"gfrc-"+a.id,repository:"TrillionniumFoundation/HeptaBao",
++   texts:{"range0.native.original.json":nativeRaw,
++     "closure.public.json":JSON.stringify({...row,base64:undefined},null,2)+"\n"}});
+   const original={id:a.id,tool:a.tool,payload:pin,payloadTree:archive.tree,
+-    nativeText:gitBlobMeta(nativeRaw),pages:a.pages.length,completedInactive:true};
+-  s.completedObservers.push(original);s.activeObserver=null;gfSave(s);
++    nativeText:nativePin,pages:a.pages.length,completedInactive:true,
++    reconciliationOnly:true,oldAttemptOutcome:"UNKNOWN",closureTree:closedArchive.tree};
++  s.reconciledRange=row;s.completedObservers.push(original);s.activeObserver=null;gfSave(s);
+   store(GF_SLOT+":closed_native:"+a.id,nativeRaw);
+-  return {original,nativeRaw,value:v};
++  return {original,nativeRaw,value:v,oldAttemptOutcome:"UNKNOWN",
++    nextRangeAuthorized:false,oldContextChanged:false};
+  } catch(error) {
+   s.paused=true;gfSave(s);throw error;
+  }
+@@ -515,8 +375,6 @@
+  try {
+   let value;
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+-  else if(action==="authorize_format_result_info")value=gfAuthorizeFormatResultInfoOnly(args);
+-  else if(action==="authorize_format_result_body")value=gfAuthorizeFormatResultBodyOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

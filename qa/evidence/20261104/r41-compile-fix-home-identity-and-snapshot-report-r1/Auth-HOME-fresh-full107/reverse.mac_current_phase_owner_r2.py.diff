@@ -1,0 +1,35 @@
+--- a/fresh-home/mac_current_phase_owner_r2.py
++++ b/source88/mac_current_phase_owner_r2.py
+@@ -13,9 +13,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 120
++ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1')
+-PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+-PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1')
+ AGENTS = ('main','trnm','hepta-ui','hepta','hepta-backend')
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ NODE = '/opt/homebrew/bin/node'
+@@ -280,11 +278,6 @@
+         volume_guard=HeldT5(base64.b64decode(args.public_volume_anchor_base64,validate=True),
+             args.public_volume_anchor_sha256,remaining,critical)
+         report['volumeGuard']=volume_before_private_state()
+-        with volume_guard.parent(ROOT/'launchd') as (work_fd,_name):
+-            with critical():os.fchdir(work_fd)
+-            need(identity(os.stat('.'))==identity(os.fstat(work_fd))
+-                 and os.getcwd()==str(ROOT),'held_t5_business_working_directory')
+-        volume_guard.check();report['ownedBusinessWorkingDirectoryHeldT5']=True
+         raw=private_read(args.plan);need(sha(raw)==args.plan_sha256,'exact_phase_plan_pin')
+         plan=json.loads(raw)
+         need(plan['schema']=='heptabao.mac-five-agent-phase-plan.private.r1'
+@@ -309,8 +302,7 @@
+         sys.path.insert(0,str(q))
+         from mac_native_process_observer_r1 import ProcessReader
+         self_identity=ProcessReader().read(os.getpid())
++        need(self_identity['uid']==501 and self_identity['executable']==str(Path(sys.executable).resolve()),
+-        need(self_identity['uid']==501 and self_identity['executable']==PYTHON_KERNEL_IMAGE
+-             and str(Path(sys.executable).resolve())==PYTHON_LAUNCHER,
+              'real_wrapper_process_identity')
+         ready={'schema':'heptabao.mac-phase-wrapper-ready.r1','generation':generation,
+                'planSha256':args.plan_sha256,'wrapperIdentity':self_identity,

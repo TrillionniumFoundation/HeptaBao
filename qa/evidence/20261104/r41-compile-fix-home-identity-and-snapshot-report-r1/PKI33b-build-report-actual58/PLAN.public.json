@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.native-jwt-pki-build149.report-body.complete.r1",
+  "source_commit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "original_operation": "7ef06d88b0a289f89193813a2f1e20c865818515a4842c816bd1a47eff2fe0a0",
+  "full_original_payload": {
+    "blob": "70dc4b6edcf37644333b85335a2b59dc2ba0772f",
+    "bytes": 49765,
+    "sha256": "ca4321b37d698c2078c193087b4e76e56c4cdb8f79955aff236e3033d7188b07",
+    "tree": "1a0b67d2ac460ce83750a823dc4fb4b964d5cb6f"
+  },
+  "decoded_original_body": {
+    "blob": "a2d510b9305c2f2f18caffa1a65454d5c8c0aceb",
+    "bytes": 36998,
+    "sha256": "aa8a8623cc955adb64ab386387d15ad2204febc0fd526392d20cd0ab6c9638a6",
+    "tree": "80d572bec4a316e06f47956f4a04bb8e83ee79bd"
+  },
+  "history_packet": "2cfc8aaea3cc6a958cf9057fc751b6668e31c149",
+  "new_source_packet": "e41fe5667d78dbefc64836329b24bde704937493",
+  "new_GO": {
+    "blob": "8a2bed4d6c163fb78540f21f97910a43656d2b94",
+    "bytes": 5163,
+    "sha256": "5a451a46f50ba6862062b040fa4e2b97e01977528270e3631b3c43578ceea099"
+  },
+  "counts": {
+    "original_body_calls": 5,
+    "new_immutable_result_calls": 2,
+    "total_archived_body_chain_calls": 7,
+    "original_native_admissions": 1,
+    "original_status_queries": 1,
+    "original_successful_pages": 2,
+    "original_page_errors": 1,
+    "new_successful_pages": 2,
+    "total_successful_payload_pages": 4,
+    "whole_payload_bytes": 49765,
+    "whole_decoded_body_bytes": 36998
+  },
+  "old_original_slot_state_unchanged": {
+    "blob": "04567ecf3260b0cb341332f34ba0ba969cf6e3cc",
+    "bytes": 120307,
+    "sha256": "323ab85f815ecb7670f364f8f804b5f5117fd4b182ebe4727a885ab06f248ece"
+  },
+  "provenance": "Original first 32768 payload bytes plus the two separately authorized immutable result responses form the whole original SDK payload. Original timeout, pause/pending, and unexecuted unpause proposal remain verbatim history. No binary/process is reissued and no new status is queried.",
+  "closure": "Original binary effect was completed/stored/inactive before timeout; independent retrieval has no pending call/future. Failed original page remains a historical transport error, not a current active effect.",
+  "semantics": {
+    "failure": "normal production binary compilation failed",
+    "cargo_exit": 101,
+    "compiler_diagnostic_not_yet_read": true,
+    "runtime_tests_started": false,
+    "group_results_count": 0,
+    "selected_unique149_is_not_actualpass": true,
+    "selected_profile166_is_not_actualpass": true,
+    "target_flock_actual_observation_pending": true
+  },
+  "Native_after_release": 0
+}

@@ -1,0 +1,37 @@
+function verifyOutput23SourceRoot(p,whole,union,author){
+ const checks=[];const ck=(name,v)=>{checks.push({name,passed:v===true});if(v!==true)throw Error(name)};
+ const r=p.raw,plan=JSON.parse(r["PLAN.public.json"]),before=r["journal.before.js"],after=r["journal.after.js"],q=JSON.parse(r["root-GO.contract.NOT-AUTHORIZATION.json"]),report=parseLosslessIntegers(r["formatter.report.original.json"]),rows=new Function(after+"\nreturn GF_OUTPUTS;")(),eq=(s,p)=>{const m=gitBlobMeta(s);return ["blob","bytes","sha256"].every(k=>m[k]===p[k])};
+ ck("whole81_fixed_source",p.audit.whole&&p.audit.files===81&&p.audit.bytes===1080306&&p.audit.tree==="e0c930c6d06881ceecf36339a860b660fc66e4b9");
+ ck("independent_actual_report149",whole.passed&&whole.checkCount===149&&eq(r["formatter.report.original.json"],whole.report)&&whole.changedOutputs===23&&whole.unchangedReuseCount===26);
+ ck("candidate_and_old_source_exact",eq(before,plan.base_journal)&&plan.base_journal.blob==="4b0790aa5c365b6e386c6e05a735e733c383b57d"&&eq(after,plan.new_journal)&&plan.new_journal.blob==="df89be7651e6d437f7d777a057c9b070a917bbb5");
+ ck("strict_eight_hunks_both_directions",strictApply(before,r["journal.forward.diff"]).text===after&&strictApply(after,r["journal.forward.diff"],true).text===before&&strictApply(after,r["journal.reverse.diff"]).text===before&&strictApply(before,r["journal.forward.diff"]).hunks===8);
+ const ai=JSON.parse(r["source-checks.input.json"]);
+ ck("author_input_all_exact",ai.before===before&&ai.candidate===after&&ai.forward===r["journal.forward.diff"]&&ai.reverse===r["journal.reverse.diff"]&&ai.report===r["formatter.report.original.json"]&&ai.formatterGo===r["formatter.GO.original.json"]&&ai.formatterSource===r["formatter.source.original.py"]);
+ ck("198_pure_guard_checks_reproduced",author.passed&&author.checks===198&&author.NativeCalls===0&&author.candidateInitializeOrDispatchCalls===0&&JSON.stringify(author)===JSON.stringify(JSON.parse(r["source-checks.actual.json"])));
+ ck("formatter_provenance_exact",eq(r["formatter.source.original.py"],plan.original_formatter_source)&&eq(r["formatter.GO.original.json"],plan.original_formatter_GO)&&r["formatter.source.original.py"].includes("write_new(ROOT/'formatted'/name,out)"));
+ ck("closed_predecessor_original_body1",eq(r["BODY1.release.original.json"],plan.body1_release)&&JSON.parse(r["BODY1.release.original.json"]).currentCalls===7&&JSON.parse(r["BODY1.release.original.json"]).lineBReleased);
+ ck("original_UNKNOWN_preserved",gitBlobMeta(r["original-BODY0-UNKNOWN.public.json"]).blob==="b174296c1b46c119356df90d5c68b6ca5bc4c19c"&&plan.preserved.old_formatter_slot_paused&&plan.preserved.no_reinitialization_of_old_contexts);
+ const changed=report.files.filter(f=>f.beforeBytes!==f.afterBytes||f.beforeSha256!==f.afterSha256),unchanged=report.files.filter(f=>f.beforeBytes===f.afterBytes&&f.beforeSha256===f.afterSha256);
+ ck("23_actual_changed_rows",rows.length===23&&rows.length===plan.selected_outputs.length&&changed.length===23&&rows.reduce((n,x)=>n+x.bytes,0)===1346637);
+ let ranges=0,total=0;const keys=[];
+ for(let i=0;i<rows.length;i++){const row=rows[i],f=changed[i],src=union.find(x=>x.name===f.name),pr=plan.selected_outputs[i],iq=r["request.info-"+String(i).padStart(2,"0")+".json"];
+ ck("fixed_output_"+i,row.name===f.name&&row.bytes===f.afterBytes&&row.sha256===f.afterSha256&&row.path==="/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/"+f.name&&row.canonicalPath===src.path&&JSON.stringify(row.source)===JSON.stringify({blob:src.blob,bytes:src.bytes,sha256:src.sha256})&&row.infoRaw===iq&&eq(iq,row.info)&&pr.expected_actual_output_version===null&&pr.expected_actual_output_full9===null);
+ const qi=JSON.parse(iq);ck("info_once_shape_"+i,Object.keys(qi).sort().join(",")==="idempotency_key,operation"&&qi.operation.tool==="file_info"&&Object.keys(qi.operation.arguments).sort().join(",")==="host,path"&&qi.operation.arguments.host==="rog"&&qi.operation.arguments.path===row.path&&q.info_requests[i].blob===row.info.blob);
+ keys.push(qi.idempotency_key);let offset=0;
+ for(let j=0;j<row.ranges.length;j++){const rr=row.ranges[j],tr=r["template.body-"+String(i).padStart(2,"0")+"-"+String(j).padStart(2,"0")+".json"],t=JSON.parse(tr),a=t.operation.arguments;
+ ck("body_template_"+i+"_"+j,rr.templateRaw===tr&&eq(tr,rr.template)&&t.operation.tool==="binary_read"&&Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"&&a.host==="rog"&&a.path===row.path&&a.expected_version===null&&a.offset===offset&&a.offset===rr.offset&&a.limit===rr.limit&&a.limit===Math.min(65536,row.bytes-offset)&&q.body_templates[ranges].blob===rr.template.blob);
+ keys.push(t.idempotency_key);offset+=rr.limit;total+=rr.limit;ranges++;}
+ ck("complete_fixed_ranges_"+i,offset===row.bytes);
+ }
+ ck("all59_unique_requests_36_ranges_1346637",ranges===36&&total===1346637&&keys.length===59&&new Set(keys).size===59&&keys.every(k=>typeof k==="string"&&k.length<=128));
+ ck("26_reused_source_only_no_output_identity",plan.unchanged_reuse.length===26&&unchanged.length===26&&plan.report_has_output_full9===false&&plan.sourceInputFull9NotReused===true&&plan.counts.unchanged_output_metadata_requests===0&&plan.unchanged_reuse.every(x=>{const src=union.find(u=>u.name===x.name),f=unchanged.find(z=>z.name===x.name);return !!src&&!!f&&x.source_pin.blob===src.blob&&src.bytes===f.afterBytes&&src.sha256===f.afterSha256&&x.evidence_kind.includes("no independent output full9")}));
+ const methods=[...new Set(after.match(/tools\.mcp__codex_apps__heptaruntime_mac_controller_\w+/g)||[])].sort();
+ ck("only_readonly_native_methods",JSON.stringify(methods)===JSON.stringify(["operation_result","operation_start","operation_status"].map(x=>"tools.mcp__codex_apps__heptaruntime_mac_controller_"+x).sort()));
+ ck("fixed_caps_and_serial_closure",q.maximum_file_info_starts===23&&q.maximum_binary_read_starts===36&&q.maximum_total_body_bytes===1346637&&q.native_payload_cap===1048576&&q.metadata_page_bytes===8192&&q.body_page_bytes===16384&&q.maximum_status_calls_per_observer===8&&q.maximum_native_futures===1&&!q.process_start_authorized&&q.old_unknown_preserved);
+ const memory={},api=new Function("load","store",load("r32_recovery_pure_helpers_source")+"\n"+after+"\nreturn {initialize:gfInitializeOnlyAfterRootGO,next:gfNextFixedRequest};")(k=>memory[k],(k,v)=>memory[k]=v),g={...q,authorization:"GO"},gt=JSON.stringify(g,null,2)+"\n";
+ const args={goRaw:gt,goPin:gitBlobMeta(gt),goWholeReadback:true,reportRaw:r["formatter.report.original.json"],releaseRaw:r["BODY1.release.original.json"],oldUnknownRaw:r["original-BODY0-UNKNOWN.public.json"]};
+ const init=api.initialize(args);
+ ck("pure_whole_GO_initialization_accepts_exact_scope",init.noNativeCalled===true&&api.next(memory[q.slot]).raw===r["request.info-00.json"]);
+ let denied=false;try{api.initialize(args)}catch(e){denied=true}ck("cannot_reset_existing_slot",denied);
+ return {schema:"heptabao.root.snapshot2379-formatted23-output-source-qualification.r1",passed:true,checkCount:checks.length,checks,sourcePacket:p.audit,journal:plan.new_journal,rootReport:gitBlobMeta(JSON.stringify(whole,null,2)+"\n"),fixedOutputs:23,metadataStarts:23,conditionalBodyStarts:36,bodyBytes:1346637,reusedUnchanged:26,reusedUnchangedBytes:686814,actualOutputMetadataObserved:false,actualBodiesObserved:false,sourceInputFull9NeverSubstitutesOutputFull9:true,oneActiveObserver:true,NativeCalls:0,compileQualified:false,productionCutover:false,fullReplacement:false,legacyCleanup:false};
+}

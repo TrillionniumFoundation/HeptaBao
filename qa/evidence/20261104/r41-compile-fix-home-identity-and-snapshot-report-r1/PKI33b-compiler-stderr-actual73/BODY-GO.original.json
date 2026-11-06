@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.root-GO.PKI33b-one-original-compiler-stderr-body.v1",
+  "authorization": "GO",
+  "scope": "build_compiler_stderr_binary_read_only",
+  "original_job": "1a1b029a998-fc05-6eb2",
+  "info_operation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+  "maximum_binary_read_starts": 1,
+  "maximum_file_info_starts": 0,
+  "maximum_process_start_calls": 0,
+  "stdout_body_authorized": false,
+  "immutable_body_page_bytes": 16384,
+  "exact_request": {
+    "blob": "597a81f1a88e5af1b4ef9632003de0e96a364f13",
+    "bytes": 437,
+    "sha256": "7883f2e97d6dfc4f4f98a713a891072a239c8cddece41c930624d55feb87617c"
+  },
+  "agent": "/root/ha_validation",
+  "source_packet": "c73436932f06b812e6fd9b281afaf548089b90f6",
+  "source": {
+    "blob": "52fccacedef3382ee1db167d7fe47fead3a8da4a",
+    "bytes": 29496,
+    "sha256": "66c1ef69c178d88f392e84427a7025fa1d0b85eab7cceaf61f2c0d9f689851e3"
+  },
+  "source_review": {
+    "blob": "1a4c5403114d4e11d162afcb9b2275161ffbd3f9",
+    "bytes": 3462,
+    "sha256": "a35a83c9c5e75ee134616ca6ec097a94d2b1a4fc68ddafa1eeb733a3a496cd1a"
+  },
+  "source_review_checks": 12,
+  "author_pure_checks_reproduced": 30,
+  "slot": "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1",
+  "action": "authorize_compiler_stderr_body",
+  "initialize": false,
+  "metadata_qualification": {
+    "blob": "60ec5bcf12b1bdaa0e4bae7ff2e958446e363b82",
+    "bytes": 7216,
+    "sha256": "cb24ccdb3028fc4211a0edd6ef2ca6b32aea8b613f187ba638db41689a9cfb2e"
+  },
+  "metadata_state": {
+    "blob": "8fcc6b31fe5aa45a7fc0e631b33730582edcedc4",
+    "bytes": 26024,
+    "sha256": "0a6f62f02e79f2a9653acccffce3565af6f55a70766a4660a2b258046bc76fa7"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+    "bytes": 14696,
+    "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+    "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+    "infoOperation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+    "infoNative": {
+      "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+      "bytes": 489,
+      "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+    },
+    "full9Strings": [
+      "66306",
+      "31364213",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "14696",
+      "1793957207629499769",
+      "1793957207629499769"
+    ]
+  },
+  "original_info_prerequisites": [
+    {
+      "id": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "tool": "file_info",
+      "nativeText": {
+        "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+        "bytes": 489,
+        "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+      }
+    },
+    {
+      "id": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "tool": "file_info",
+      "nativeText": {
+        "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+        "bytes": 491,
+        "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+      }
+    }
+  ],
+  "limits": {
+    "one_original_native_future": 1,
+    "binary_offset": 0,
+    "binary_limit": 14696,
+    "body_total": 14696,
+    "new_binary_immutable_page_bytes": 16384,
+    "old_metadata_immutable_page_bytes": 8192,
+    "retained_payload_cap": 1048576,
+    "auto_retry": false
+  },
+  "sequence": [
+    "both independent INFOs already completed/inactive/whole",
+    "whole separate exact GO; authorize existing context only",
+    "one request/intent/armed whole then independent model boundary",
+    "one binary admission and original ID status/pages only",
+    "original SDK whole before isError/native interpretation",
+    "complete immutable payload whole before binary envelope parse",
+    "decode exactly14696 fixed-version bytes; wholeSHA check and external whole native+stderr before diagnostics"
+  ],
+  "previous_timeout_and_contexts_unchanged": true,
+  "six_original_INFO_calls_unchanged": true,
+  "lane_activation": "C one original stderr observation lane may run alongside B same-binding reconciliation immutable retrieval. A/root0; at most2 lanes and1 native call/future per lane. No file_info, stdout body or BUILD follows from this GO.",
+  "no_new_Cargo_or_target_lock_operation": true,
+  "no_original_BUILD_replay": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

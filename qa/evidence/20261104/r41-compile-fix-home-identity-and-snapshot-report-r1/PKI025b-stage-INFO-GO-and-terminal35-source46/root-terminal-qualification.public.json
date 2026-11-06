@@ -1,0 +1,221 @@
+{
+  "schema": "heptabao.root.025b-independent-stage-original-terminal-qualification.r1",
+  "passed": true,
+  "checkCount": 35,
+  "checks": [
+    {
+      "name": "whole54_290149",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_and_journal",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_call_jwt-pki-025b05a3-rog-source-start",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_armed_tree_jwt-pki-025b05a3-rog-source-start",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_call_jwt-pki-025b05a3-rog-source-authority0-start",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_armed_tree_jwt-pki-025b05a3-rog-source-authority0-start",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_call_jwt-pki-025b05a3-rog-source-authority0-status",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_armed_tree_jwt-pki-025b05a3-rog-source-authority0-status",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_call_jwt-pki-025b05a3-rog-source-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_armed_tree_jwt-pki-025b05a3-rog-source-authority0-page0",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_call_jwt-pki-025b05a3-rog-source-streams0-start",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_armed_tree_jwt-pki-025b05a3-rog-source-streams0-start",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_call_jwt-pki-025b05a3-rog-source-streams0-status",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_armed_tree_jwt-pki-025b05a3-rog-source-streams0-status",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_call_jwt-pki-025b05a3-rog-source-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_armed_tree_jwt-pki-025b05a3-rog-source-streams0-page0",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_observer_aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_page_aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4_0",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_payload_aeabdc3bc0969a55a047c98999fe06a76a3c53e674203a6ffc7e91d17cb4b6e4",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_observer_35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_page_35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5_0",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_payload_35a060e8c11ddad7c54b5068afd0407a868b4d69f59701487315846d6d91e0a5",
+      "passed": true
+    },
+    {
+      "name": "Pki025bStage_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_calls_two_observers_two_pages",
+      "passed": true
+    },
+    {
+      "name": "exact_unique_stage_process_admission",
+      "passed": true
+    },
+    {
+      "name": "exact_request_source_carrier_typed_binding",
+      "passed": true
+    },
+    {
+      "name": "original_success_exit0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "complete_stdout_stream",
+      "passed": true
+    },
+    {
+      "name": "complete_stderr_stream",
+      "passed": true
+    },
+    {
+      "name": "374_stdout_zero_stderr",
+      "passed": true
+    },
+    {
+      "name": "prepared_summary_exact_new_source_and_report",
+      "passed": true
+    },
+    {
+      "name": "all_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "detailed_source_and_build_not_yet_qualified",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "d607324241907153d146d1ddf16818e71c061b18",
+    "files": 54,
+    "bytes": 290149,
+    "merkle": {
+      "root_sha": "d607324241907153d146d1ddf16818e71c061b18",
+      "trees_verified": 1,
+      "leaf_count": 54
+    },
+    "whole": true
+  },
+  "job": "1a1b07b7e0b-fc05-70ca",
+  "sourceCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "sourceTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "sourceGO": {
+    "blob": "1caeaced15a64a91f7fd85451f3e4759b9c41b20",
+    "bytes": 5046,
+    "sha256": "cc5fff8dec7aa98a011d844506865fd6003614b756ccd01583e7882e77e14339"
+  },
+  "exactRequest": {
+    "blob": "853a68efffe7308239adf59c3cf29d1dabf355b2",
+    "bytes": 111910,
+    "sha256": "1ed8f541e793261ed5684093cebd76917fbad7c26b661d876547e1fd0b3cda0e"
+  },
+  "authority": {
+    "blob": "dd85be17d19c62e99d27242dbffe5dc2b0e0ed4c",
+    "bytes": 729,
+    "sha256": "06e2021df977c1c7b67d8417eed6cf8841c300f4d8fcc5ed2f132e9e9f5c24aa"
+  },
+  "streams": {
+    "blob": "2276636c72edc3cd43159765dc66f7ffcbfd6fd1",
+    "bytes": 1468,
+    "sha256": "ac202944bd232d0ec94b97d90d4708121aca0ab63ca8a7fbf0f8411fdddec079"
+  },
+  "stdout": {
+    "blob": "4b9aac906e745f7c1274fed3f9e9aa1a487745d2",
+    "bytes": 374,
+    "sha256": "33f406b35a2a60acdd756ae3c46e4b9c95524522927f85fe98bf30eaff5ded80"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualCalls": 7,
+  "returnedObservers": 2,
+  "immutablePages": 2,
+  "knownExitCode": 0,
+  "fullDurable": true,
+  "summary": {
+    "all_owned_stopped": true,
+    "compiler_started": false,
+    "result_path": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+    "server_started": false,
+    "source_commit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "source_tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "status": "prepared",
+    "within_new_stage_deadline": true
+  },
+  "resultPath": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+  "detailedStageReportQualified": false,
+  "all3916ActualWorktreeBodiesQualified": false,
+  "sourcePublicationAuthorized": false,
+  "CargoBuildQualified": false,
+  "currentLineCReleased": true,
+  "NativeCalls": 0,
+  "packagingDiagnostic": {
+    "blob": "01a67d1a4ae1a1869945647f40762d55c6db397d",
+    "bytes": 230,
+    "sha256": "1277f5b6c271835d6d6a5f57c38f2f461442f489519b6b495822d32ae85003d1"
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

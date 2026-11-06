@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_snapshot_body1_GO_packet",
+  "records": [
+    {
+      "name": "EXACT-GO.public.json",
+      "blob": "4b8d8c27046034fb0540b99511ff7735ba1385fe",
+      "bytes": 4835,
+      "sha256": "4faadd7b6cd782505817f232c017846da95fc7f0119382b669bd46de4443e775"
+    },
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "ff040cc3c480c7b072d6cc4f03599c5f1bd703bc",
+      "bytes": 3847,
+      "sha256": "d6f91fefbe60507f43dd77c9fafa76ac9d989c0429085894629104040129f769"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "d96a90f5a8d49ca9b8dbc00806b01d857504b235",
+      "bytes": 4644,
+      "sha256": "1e79f1ba0078e385bf8bfc69c299e5b53c76f5ca0b5f53fa50c5fa6ddab1479d"
+    },
+    {
+      "name": "root-reproduced-author51.public.json",
+      "blob": "1866fa06456fe3bad78edeb5507331aa9477ceed",
+      "bytes": 4751,
+      "sha256": "831e767cf6e3e9ea0124388dbcca860bb72bc5d6b8596e7f4f3670e7140160ae"
+    }
+  ],
+  "expected_data_tree": "17ba2becdd330b3e3493399f5641d4123e9f8c4c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

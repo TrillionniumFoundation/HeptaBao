@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_pki33b_logs_info_actual_qualification_packet",
+  "records": [
+    {
+      "name": "root-qualification.public.json",
+      "blob": "60ec5bcf12b1bdaa0e4bae7ff2e958446e363b82",
+      "bytes": 7216,
+      "sha256": "cb24ccdb3028fc4211a0edd6ef2ca6b32aea8b613f187ba638db41689a9cfb2e"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "0e1a5bf3467c0d9d41e5181dfe98077943e3e86c",
+      "bytes": 5240,
+      "sha256": "1733ea22571e84fca818e1faa080c83910b0b29e37742cf546238be67dc677a4"
+    }
+  ],
+  "expected_data_tree": "cc06a0a1a1a13a3f5565d777ed46fbc4b0ce1378",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

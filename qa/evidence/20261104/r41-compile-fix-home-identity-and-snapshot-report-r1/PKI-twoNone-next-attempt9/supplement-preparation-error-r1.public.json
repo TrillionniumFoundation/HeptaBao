@@ -1,0 +1,6 @@
+{
+  "name": "ReferenceError",
+  "message": "t is not defined",
+  "scope": "pure supplement reference object construction after cached stage read; no Git mutation or Native",
+  "sourceChanged": false
+}

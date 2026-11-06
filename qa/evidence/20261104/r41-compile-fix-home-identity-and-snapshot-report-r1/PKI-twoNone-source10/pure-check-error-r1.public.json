@@ -1,0 +1,7 @@
+{
+  "name": "Error",
+  "message": "strict diff",
+  "cause": "Initial adapter used applyStrictUnified(after,diff,true) before inspecting return shape; no source/Git/Native mutation was submitted.",
+  "Native": 0,
+  "gitMutation": 0
+}

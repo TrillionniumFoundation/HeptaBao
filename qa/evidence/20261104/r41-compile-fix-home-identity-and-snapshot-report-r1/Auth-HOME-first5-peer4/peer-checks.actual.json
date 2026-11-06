@@ -1,0 +1,267 @@
+{
+  "schema": "heptabao.peer-home-first5-source-checks.v1",
+  "passed": true,
+  "checks": 64,
+  "rows": [
+    {
+      "name": "tree_exact",
+      "passed": true
+    },
+    {
+      "name": "sixteen_leaf_one_Merkle",
+      "passed": true
+    },
+    {
+      "name": "whole_MANIFEST.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_PLAN.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_home-control.after.py",
+      "passed": true
+    },
+    {
+      "name": "whole_home-control.before.py",
+      "passed": true
+    },
+    {
+      "name": "whole_home-control.forward.diff",
+      "passed": true
+    },
+    {
+      "name": "whole_home-control.reverse.diff",
+      "passed": true
+    },
+    {
+      "name": "whole_manager.after.py",
+      "passed": true
+    },
+    {
+      "name": "whole_manager.before.py",
+      "passed": true
+    },
+    {
+      "name": "whole_manager.forward.diff",
+      "passed": true
+    },
+    {
+      "name": "whole_manager.reverse.diff",
+      "passed": true
+    },
+    {
+      "name": "whole_original-failure.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_publisher.after.py",
+      "passed": true
+    },
+    {
+      "name": "whole_publisher.before.py",
+      "passed": true
+    },
+    {
+      "name": "whole_publisher.forward.diff",
+      "passed": true
+    },
+    {
+      "name": "whole_publisher.reverse.diff",
+      "passed": true
+    },
+    {
+      "name": "whole_synthetic-relation-examples.public.json",
+      "passed": true
+    },
+    {
+      "name": "home-control_three_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "home-control_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "home-control_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "manager_three_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "manager_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "manager_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "publisher_three_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "publisher_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "publisher_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "manager_contains_exact_helper_before",
+      "passed": true
+    },
+    {
+      "name": "manager_contains_exact_helper_after",
+      "passed": true
+    },
+    {
+      "name": "manager_only_same_helper_replacement",
+      "passed": true
+    },
+    {
+      "name": "publisher_contains_exact_helper_before",
+      "passed": true
+    },
+    {
+      "name": "publisher_contains_exact_helper_after",
+      "passed": true
+    },
+    {
+      "name": "publisher_only_same_helper_replacement",
+      "passed": true
+    },
+    {
+      "name": "same_eighteen_methods",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__metadata",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__fstat",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__stat",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__open",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__close_one",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__check_parents",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method_check",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__name",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method__read",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method_read",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method_prefix",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method_actual_binding",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method_leaf_closure_known",
+      "passed": true
+    },
+    {
+      "name": "unchanged_method_close",
+      "passed": true
+    },
+    {
+      "name": "identity_order_first5_object",
+      "passed": true
+    },
+    {
+      "name": "preoperation_full9_unchanged",
+      "passed": true
+    },
+    {
+      "name": "owned_new_regular_single_link_preserved",
+      "passed": true
+    },
+    {
+      "name": "created_leaf_first6_plus_named_full9_preserved",
+      "passed": true
+    },
+    {
+      "name": "new_root_guard_first5_and_held_named_full9",
+      "passed": true
+    },
+    {
+      "name": "last_observation_initial_none",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_record_before_guard",
+      "passed": true
+    },
+    {
+      "name": "root_update_and_effect_known_only_after_guard",
+      "passed": true
+    },
+    {
+      "name": "all_three_full9_recorded",
+      "passed": true
+    },
+    {
+      "name": "field_differences_and_two_predicates_recorded",
+      "passed": true
+    },
+    {
+      "name": "original_fixed_root_and_caps",
+      "passed": true
+    },
+    {
+      "name": "finally_once_close_remains",
+      "passed": true
+    },
+    {
+      "name": "public_observation_visible_without_erasing_unknown",
+      "passed": true
+    },
+    {
+      "name": "original_failure_UNKNOWN_retained",
+      "passed": true
+    },
+    {
+      "name": "component_only_no_dispatch_binding",
+      "passed": true
+    }
+  ],
+  "source_only": true,
+  "PythonCalls": 0,
+  "NativeCalls": 0,
+  "syntheticComponentRerun": false
+}

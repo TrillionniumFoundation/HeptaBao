@@ -1,0 +1,189 @@
+{
+  "schema": "heptabao.jwt-role-policy-delegation.independent-source-peer.v1",
+  "conclusion": "The narrow source-level policy-storage/delegation difference is supported. Runtime oracle behavior remains unobserved.",
+  "root_finding": {
+    "tree": "14188d30affb94a730f9dee445a4683d10337b1f",
+    "report": {
+      "blob": "c563c89d3b1e8bfc16efb22de972cd31989f569c",
+      "bytes": 3544,
+      "sha256": "cb1594514ee4f5753150e4ecb70edc07b12493418cc29e1c70dda1b63282db59"
+    }
+  },
+  "prior_official_packet": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+  "official_source_identity": {
+    "repository": "openbao/openbao",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "provenance": "Exact official source bytes archived in the two root packets; read whole and matched the packets' source tables."
+  },
+  "sources": {
+    "tokenutil.go": {
+      "blob": "814b809a84a5085c2493693bdcea6a41d1f3ee94",
+      "bytes": 14196,
+      "sha256": "f096e81b5cce6e8fd4750ea01d15e5f160ae656c8a876d4b2ac2482217565969"
+    },
+    "policyutil.go": {
+      "blob": "9fe0c93d2c4c32e650dcb1919e3e4e3ce70468fa",
+      "bytes": 3409,
+      "sha256": "dc76454791f26542b9cd49f72f0e9fdaf36b0332e84676eff64bf15d68461118"
+    },
+    "references/official/role.go": {
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+      "bytes": 25759,
+      "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d"
+    },
+    "references/official/backend.go": {
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a"
+    },
+    "current-auth.rs": {
+      "path": "source1.after.rs",
+      "blob": "c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+      "bytes": 398708,
+      "sha256": "d1ba2a8a25a66682e4b01c1613898c172638bef2cfd0f70998ddd2bc05a7b86b"
+    }
+  },
+  "findings": [
+    {
+      "source": "tokenutil.go",
+      "lines": "176-262",
+      "fact": "ParseTokenFields accepts token_policies as a typed slice and assigns it directly. The logical.Request parameter is unused in this method; no actor-policy subset check or default insertion occurs in this parsing branch."
+    },
+    {
+      "source": "tokenutil.go",
+      "lines": "264-283",
+      "fact": "PopulateTokenData explicitly presents an empty TokenPolicies collection as an empty array. This is role readback behavior; it does not decide the policies of a future issued token."
+    },
+    {
+      "source": "role.go",
+      "lines": "494-759",
+      "fact": "The complete role-create/update handler parses token fields, upgrades the legacy policies alias, performs its other validity checks, and persists the role. Its request accesses are Operation and Storage; the handler does not inspect the caller's policy set. Core endpoint ACL permission still applies and is not removed by this observation."
+    },
+    {
+      "source": "tokenutil.go + policyutil.go",
+      "lines": "upgradeStringSliceValue 362-385; ParsePolicies/SanitizePolicies",
+      "fact": "A supplied legacy policies value is parsed via ParsePolicies, then propagated to TokenPolicies. Empty string returns empty; a supplied empty slice flows through SanitizePolicies with addDefault=false. The separate nil branch returns default. Therefore the no-default statement must not be generalized to every nil or missing input."
+    },
+    {
+      "source": "backend.go",
+      "lines": "backend PathsSpecial and Paths",
+      "fact": "The registered JWT backend's PathsSpecial has unauthenticated login-family paths and seal-wrapped config storage; there is no Root-only role declaration in this source."
+    },
+    {
+      "source": "current auth.rs c6a1517252cdef86ecd701a47cb1f443f4a09da3",
+      "lines": "policies 2095-2125; jwt_role_route 6799-6812; validate_assignment 8388-8397",
+      "fact": "JWT role parsing calls policies with add_default=true. The helper adds default unless root is present, then validate_assignment rejects requested root or a non-root actor's non-subset assignment. Empty explicitly supplied policies become a default-containing set in this candidate."
+    }
+  ],
+  "inference": {
+    "conditional_preconditions": "An authenticated non-root caller otherwise passes the endpoint's create/update permission and other role-field validity checks, and its credential policies omit default.",
+    "current_candidate_prediction": "An empty role-policy request reaches the default injection and then returns the assignment denial before role publication.",
+    "official_handler_difference": "The inspected official handler/token-field path does not impose that caller-policy subset gate and retains the empty role policy collection.",
+    "scope": "This is a concrete source-predicted gap and a reason to preserve separate actual oracle cases. No HTTP status, successful publication or future token issuance is asserted without runtime evidence."
+  },
+  "relation_to_fixture_fix": "The R40 ACL test-only default delegation correction makes that fixture valid under current candidate rules. It does not close the official empty-policy/assignment difference and does not justify rewriting the original no-default HTTP23 matrix.",
+  "limits": [
+    "No Native, Go, Rust, Python, oracle, credential or product call was made.",
+    "No production source, root policy, ACL guard, original request or test expectation was changed.",
+    "No root-token issuance or arbitrary privilege delegation claim is inferred from absence of an actor subset check in role-write code.",
+    "This did not independently re-audit all OpenBao core authorization, SDK FieldData normalization or login/issuance paths.",
+    "The first pure text checker erroneously matched an unrelated token_type default literal and then had a local scope error. Both facts are retained; only the checker was corrected, not source or evidence."
+  ],
+  "verification": {
+    "schema": "heptabao.jwt-role-policy-source-peer-checks.v1",
+    "checks": [
+      {
+        "name": "whole token",
+        "passed": true
+      },
+      {
+        "name": "whole policy",
+        "passed": true
+      },
+      {
+        "name": "whole role",
+        "passed": true
+      },
+      {
+        "name": "whole backend",
+        "passed": true
+      },
+      {
+        "name": "whole current auth.rs",
+        "passed": true
+      },
+      {
+        "name": "ParseTokenFields req only signature",
+        "passed": true
+      },
+      {
+        "name": "direct typed policies slice assignment",
+        "passed": true
+      },
+      {
+        "name": "no TokenPolicies default-appending or sanitization here",
+        "passed": true
+      },
+      {
+        "name": "read serialization emits empty policy slice",
+        "passed": true
+      },
+      {
+        "name": "legacy alias parses supplied policies with ParsePolicies",
+        "passed": true
+      },
+      {
+        "name": "ParsePolicies has nil default exception",
+        "passed": true
+      },
+      {
+        "name": "ParsePolicies empty string stays empty",
+        "passed": true
+      },
+      {
+        "name": "ParsePolicies slice flows addDefault false",
+        "passed": true
+      },
+      {
+        "name": "sanitizer conditional default gate",
+        "passed": true
+      },
+      {
+        "name": "role handler parse before storage",
+        "passed": true
+      },
+      {
+        "name": "role handler alias upgrade before storage",
+        "passed": true
+      },
+      {
+        "name": "handler req accesses only operation and storage",
+        "passed": true
+      },
+      {
+        "name": "backend has no privileged role Root list",
+        "passed": true
+      },
+      {
+        "name": "current JWT sets add_default true",
+        "passed": true
+      },
+      {
+        "name": "current JWT validates caller assignment",
+        "passed": true
+      },
+      {
+        "name": "current helper injects default",
+        "passed": true
+      },
+      {
+        "name": "current helper rejects non-subset",
+        "passed": true
+      }
+    ],
+    "passed": 22,
+    "NativeCalls": 0,
+    "GoOrRustExecuted": false,
+    "priorCheckerErrorRetained": true
+  }
+}

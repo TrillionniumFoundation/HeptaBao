@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.root-exact-GO.025b-independent-ROG-source-stage.r1",
+  "authorization": "GO",
+  "scope": "one_exact_fresh_source_stage_only",
+  "userAuthorization": "Continue HeptaBao blockers and multi-host validation; prepare the exact minimal compile-fix candidate for the preserved normal build gates.",
+  "sourcePacket": {
+    "tree": "ca9a176fda2dedc1f73d1cab5d8078f52d60cd0e",
+    "files": 27,
+    "bytes": 918716,
+    "merkle": {
+      "root_sha": "ca9a176fda2dedc1f73d1cab5d8078f52d60cd0e",
+      "trees_verified": 1,
+      "leaf_count": 27
+    },
+    "whole": true
+  },
+  "sourceReview": {
+    "blob": "548c102427f3f7f19ee98e331ca7bd0380d39764",
+    "bytes": 3834,
+    "sha256": "758ad5859b573d8dfcb33864fc578d1c679adfe33d0baec8f90574b24ed0d496"
+  },
+  "rootChecks": 16,
+  "authorChecksReproduced": 67,
+  "source": {
+    "blob": "c44f495708983936c400ac23a9f05d3b493ab8c1",
+    "bytes": 28897,
+    "sha256": "8964f55e2de874e4559a2113be653e31527c0b21bf4eeac390912aa823cee361"
+  },
+  "exactRequest": {
+    "blob": "853a68efffe7308239adf59c3cf29d1dabf355b2",
+    "bytes": 111910,
+    "sha256": "1ed8f541e793261ed5684093cebd76917fbad7c26b661d876547e1fd0b3cda0e"
+  },
+  "journal": {
+    "blob": "61f9a8da6f718b0f1b3e44d55d2cc809ee5603e4",
+    "bytes": 19052,
+    "sha256": "f263624815de3c96ae6e56f261ddaa0b67767d4d9bc896ed374ac276be558eca"
+  },
+  "slot": "jwt_pki_025b05a3_rog_source_gitfirst_r1",
+  "idempotencyKey": "heptabao-native-jwt-pki-025b05a3-rog-source-20261106-r1-8964f55e",
+  "typedRequestDigest": "9ab9273cc2d8be06a5aaeb2d94d330833f473482e39ad98adc96a0ad8149fa39",
+  "typedRequestFingerprint": "11148985494452878854",
+  "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "soleParent": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "sourceBranch": "codex/heptabao-jwt-pki-compile-fix-20261106",
+  "verifiedRef": "refs/heads/codex/heptabao-jwt-pki-compile-fix-20261106",
+  "canonical": {
+    "leaves": 3916,
+    "merkle": 358,
+    "trackedBytes": 62297399,
+    "index": {
+      "blob": "76bad4e16dc98e6ec8738dffe9eb83c07613f8ad",
+      "bytes": 452026,
+      "sha256": "aa43f995605190e7f0f7b6215e17eb73ccd923ff53f54dfcf44ba0c89e70e02b"
+    },
+    "newAncestryCount": 15,
+    "historyCount": 3767
+  },
+  "sourceRoot": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1",
+  "resultPath": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+  "budgets": {
+    "stage": 300,
+    "git": 90,
+    "clone": 180,
+    "outer": 360,
+    "stdin": 262144,
+    "cleanupTerm": 5,
+    "cleanupKill": 5
+  },
+  "maximumProcessStarts": 1,
+  "freshCreateOnly": true,
+  "preserveOriginal33bStageAndBuildFailure": true,
+  "allowedEffects": [
+    "Create the one fresh fixed source/control root, clone from the unchanged original495 source, fetch exactly commit025b, verify all15 descendants and all3916 blob/mode/body identities.",
+    "Build and verify the bounded incremental public Git bundle with original495 prerequisite; compile the four historical carrier definitions without invoking them.",
+    "Preserve original old495/source/failed-attempt fences and original bounded child/process-group cleanup."
+  ],
+  "disallowed": [
+    "No rustfmt, Cargo, compiler/product/HTTP test, service or credential operation.",
+    "No replacement root, changed key, old attempt mutation, production switch, deletion or permission change."
+  ],
+  "observations": {
+    "onlyActuallyReturnedOriginalJob": true,
+    "tools": [
+      "process_status",
+      "process_read"
+    ],
+    "oneCallAtATime": true,
+    "oneObserverAtATime": true,
+    "maximumStatusObservers": 16,
+    "maximumStreamObservers": 8,
+    "streamLimit": 16384,
+    "streamBytesMaximumEach": 65536,
+    "immutablePageBytes": 8192,
+    "retainedPayloadMaximum": 1048576,
+    "wholeSDKBeforeInterpretation": true,
+    "completePayloadBeforeNativeInterpretation": true
+  },
+  "sourceReportFileInfoOrBodyAuthorized": false,
+  "controlsPublicationAuthorized": false,
+  "CargoBuildAuthorized": false,
+  "allocation": {
+    "line": "C",
+    "maximumActiveNativeCalls": 1,
+    "maximumOwnedObservers": 1,
+    "globalMaximumLanes": 2,
+    "otherAllocatedLine": "B",
+    "lineAReleasedAfterKnownTerminalAndTwoClosedObservers": true,
+    "rootNativeCalls": 0
+  },
+  "completion": "Original final exit0/full/durable authority plus complete streams first; independent complete stage-result qualification remains required before any controls publication or build.",
+  "recovery": "A whole armed record precedes the unique Native call. An ambiguous ACK is preserved and does not authorize replay, re-key, reinitialize or another root. Read only original actually known IDs; uncertain Git archives reconcile by expected immutable GET.",
+  "currentQualification": {
+    "sourceReviewed": true,
+    "stageRun": false,
+    "normalBuildPassed": false,
+    "runtimeTestsPassed": false,
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  }
+}

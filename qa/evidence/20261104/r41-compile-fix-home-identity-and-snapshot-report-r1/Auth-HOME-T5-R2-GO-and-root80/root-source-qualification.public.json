@@ -1,0 +1,405 @@
+{
+  "schema": "heptabao.root.AuthBus-fresh-HOME-T5-R2-source-qualification.r1",
+  "passed": true,
+  "checkCount": 80,
+  "checks": [
+    {
+      "name": "whole125_R2_source_packet",
+      "passed": true
+    },
+    {
+      "name": "root_predecessors_currently_qualified",
+      "passed": true
+    },
+    {
+      "name": "author182_exact_independently_reproduced",
+      "passed": true
+    },
+    {
+      "name": "old_request_contract_and_publisher_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_five_namespace_literals",
+      "passed": true
+    },
+    {
+      "name": "root_qualified_first5_components_exact",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_auth_rows_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_auth_rows_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_auth_rows_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_authbus_cache_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_authbus_cache_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_capture_sqlite_synthetic_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_capture_sqlite_synthetic_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_capture_sqlite_synthetic_r2.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_capture_sqlite_synthetic_r2.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_current_capture_entry_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_current_capture_entry_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_current_capture_entry_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_current_cycle_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_current_cycle_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_current_cycle_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_current_fixture_materializer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_current_fixture_materializer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_current_fixture_materializer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_current_outer_inputs_r2.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_current_outer_inputs_r2.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_current_outer_inputs_r2.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_current_outer_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_current_outer_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_current_outer_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_current_phase_owner_r2.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_current_phase_owner_r2.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_current_phase_owner_r2.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_current_server_owner_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_current_server_owner_r1.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_current_server_owner_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_darwin_owned_projection_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_darwin_owned_projection_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_guarded_current_capture_r3.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_guarded_current_capture_r3.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_native_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_native_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_native_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_native_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_native_process_observer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_native_process_observer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_owned_launchd_r3.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_owned_launchd_r3.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_owned_launchd_r3.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_registry_readonly_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_registry_readonly_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_single_native_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_single_native_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_single_native_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "original_R1_whole_mac_t5_volume_guard_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only_reviewed_change_mac_t5_volume_guard_r1.py",
+      "passed": true
+    },
+    {
+      "name": "strict_whole_mac_t5_volume_guard_r1.py",
+      "passed": true
+    },
+    {
+      "name": "22_source_counts_15_hunks",
+      "passed": true
+    },
+    {
+      "name": "extra_publisher_strict",
+      "passed": true
+    },
+    {
+      "name": "extra_home_strict",
+      "passed": true
+    },
+    {
+      "name": "extra_journal_strict",
+      "passed": true
+    },
+    {
+      "name": "extra_runtime-deriver_strict",
+      "passed": true
+    },
+    {
+      "name": "extra_candidate_strict",
+      "passed": true
+    },
+    {
+      "name": "exact_payload_request_source",
+      "passed": true
+    },
+    {
+      "name": "exact_original_interpreter_and_deadline",
+      "passed": true
+    },
+    {
+      "name": "30_fixed_public_payload_objects",
+      "passed": true
+    },
+    {
+      "name": "shared_actual_runtime_binding_still_null",
+      "passed": true
+    },
+    {
+      "name": "new_inert_only_slot_and_key",
+      "passed": true
+    },
+    {
+      "name": "all_original_runtime_budgets_preserved",
+      "passed": true
+    },
+    {
+      "name": "compile18_and_diskutil_before_creation",
+      "passed": true
+    },
+    {
+      "name": "new_home_two_copies_readback",
+      "passed": true
+    },
+    {
+      "name": "first5_diagnostic_current_named_full9_in_publisher",
+      "passed": true
+    },
+    {
+      "name": "all_old_active_paths_removed_from_executable_sources",
+      "passed": true
+    },
+    {
+      "name": "prior_typed_stdin_positive_control",
+      "passed": true
+    },
+    {
+      "name": "exact_inert_journal_admits",
+      "passed": true
+    },
+    {
+      "name": "modified_request_refused",
+      "passed": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+    "files": 125,
+    "bytes": 4231744,
+    "merkle": {
+      "root_sha": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+      "trees_verified": 1,
+      "leaf_count": 125
+    },
+    "whole": true
+  },
+  "inert": {
+    "publisher": {
+      "blob": "ea84d70d3c434a33d0f216de8b0b002633650a0a",
+      "bytes": 36514,
+      "sha256": "19b91f34d98b8056a4921e400dc3e87200581043ce7df7531db81be6a0982a69"
+    },
+    "payload": {
+      "blob": "0845ae0870655ac081312c28e5c0e000cfc58250",
+      "bytes": 837520,
+      "sha256": "f68c2a291856da7fe9d2145d420b16fbcd68f1b9b165af509f9881bd996ba423"
+    },
+    "exactRequest": {
+      "blob": "2cbe610fa2f2264d1eb137d46421069db38655a5",
+      "bytes": 875394,
+      "sha256": "cbb10074d91b254d2205f037e976f4dbbb377c0c4e37a36dd930432bd8a65314"
+    },
+    "idempotencyKey": "heptabao-mac-current-home-launch-inert-19b91f34-20261106-r2",
+    "journal": {
+      "blob": "52c2735d9eae38cf4745f89802fcf25c3b5738c1",
+      "bytes": 19050,
+      "sha256": "70254ca18f378f03ce6abe2788d1cfbf512989671a26ee83fbe33c60ca814b9f"
+    },
+    "slot": "owner_authbus_current_home_inert_gitfirst_r2",
+    "slotInitialized": false,
+    "seconds": 45,
+    "originalDiskutilClippedSeconds": 30,
+    "controllerSeconds": 60,
+    "stdinField": "stdin",
+    "compileBeforeEffects": "18 Python sources compile-only before any HOME or T5 creation; four JavaScript sources byte-verified only. No input entrypoint, service, consumer, SQL, SDK or credential execution.",
+    "publicEffects": "Fresh HOME root and two public launcher copies, fresh T5 root/qa/proofs, 30 fixed public objects and one pre-finally candidate receipt. No rollback/delete on unknown or existing entries."
+  },
+  "locations": {
+    "t5BusinessRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2",
+    "homeControlRoot": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+    "oldR1T5RootUntouched": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r1",
+    "oldPartialHOMEUntouched": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r1",
+    "oldOwnerRootUntouched": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+    "newServerLabel": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "newConsumerLabel": "org.heptabao.qa.mac-authbus-4e808-home-r2.consumer",
+    "precondition": "Both R2 roots and labels are unobserved. Keep the exact original finite absence/create-only gates; any existing entry or race refuses, with no alternate path/key/root or automatic retry. No R1 object is reused, changed or removed."
+  },
+  "sourceComponentRoot": {
+    "blob": "eb9eb5165b73c0475e885ee77057953ae21fee2f",
+    "bytes": 2570,
+    "sha256": "3b6bce1b11956fad3eae10c025f666791085ac28fb4b1a7722320e041747a682"
+  },
+  "actualProbeRoot": {
+    "blob": "29e35663b15d624c7dcc90d7d3dc01fdb6e3ece7",
+    "bytes": 7672,
+    "sha256": "d4ff8b3ca6189311150dbf643912bc300e4ffd3392882eff69365117a7b78da1"
+  },
+  "typedBinding": {
+    "sha256": "da65253229bd64edfe5b49fb95f980dc338792cf5c42c3d5c13fbc8302d3a8cd",
+    "native_fingerprint": "15737025370294936813",
+    "canonical_bytes": 875326
+  },
+  "sourceDiffHunks": 15,
+  "publisherHunks": 9,
+  "authorChecksReproduced": 182,
+  "oldPartialHOMEUntouched": true,
+  "oldFailureUnknownPreserved": true,
+  "NativeCalls": 0,
+  "actualHOMEQualified": false,
+  "runtimeCredentialsQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

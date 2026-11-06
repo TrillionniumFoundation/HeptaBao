@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_auth_home_partial_probe_GO_packet",
+  "records": [
+    {
+      "name": "EXACT-GO.public.json",
+      "blob": "0bb1f2b41ebde8384612178dfd4d19f882abd78c",
+      "bytes": 6778,
+      "sha256": "c9b0a62268e131bc9e1fefb2cf58d4a542c3ad9d137c9cd05d63a4226a03af67"
+    },
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "798ea01a19cabe9c4e2b0a97fd9a238cf789fe84",
+      "bytes": 5822,
+      "sha256": "20611d0f8dc445205118dc7897ecc83b72309a1d418ce94791947dc3e5eccda7"
+    },
+    {
+      "name": "ROOT-ORIGINAL-FAILURE-QUALIFICATION.public.json",
+      "blob": "d30cfb9acc09966661e4739c19517dc518b7a43a",
+      "bytes": 7773,
+      "sha256": "80b3925cb01ddda2e1b35c45b48a3bd7da6ce50a3a21ad663e31d8a94e2f3849"
+    },
+    {
+      "name": "root-probe-source-verifier.js",
+      "blob": "8971c9cdac2df1d2b175baf30e78ba54274fba1d",
+      "bytes": 7483,
+      "sha256": "f6277546de423f76ddd1f7b1825ad9967a2006d4007c6f67a1144206c4603273"
+    },
+    {
+      "name": "root-original-failure-verifier.js",
+      "blob": "d1f20da07624a333fa5684a891f837ac7d2f98d0",
+      "bytes": 8942,
+      "sha256": "9a49bfade6cd32abaf19d025e9439e36c75f0690da6bcc10db49ebc64f88e902"
+    }
+  ],
+  "expected_data_tree": "1ce1ec53da14b285e8c0cf4e7eb4b90537b2e870",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

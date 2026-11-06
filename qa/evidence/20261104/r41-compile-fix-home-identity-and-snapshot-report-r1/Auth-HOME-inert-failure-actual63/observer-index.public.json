@@ -1,0 +1,233 @@
+{
+  "schema": "heptabao.inert-original-call-index.v1",
+  "job": "1a1b0702e84-fc05-708a",
+  "calls": [
+    {
+      "key": "home-auth-inert-r1-start",
+      "kind": "process_start",
+      "request": {
+        "blob": "28c074223f3f6a720df8400314aeede7cfea67de",
+        "bytes": 874132,
+        "sha256": "c3f1302bd8b3bbc0d9d77a24a681f79f11b37af81bec57edf51cc214889fd3d7"
+      },
+      "armedTree": "d4bb0a719a4c977d10de43a799868a5097051b04",
+      "SDK": {
+        "blob": "19e854a2e3b9dc0ed01a25bf2c0501e4cd052594",
+        "bytes": 39210,
+        "sha256": "a5fd59fbf80e558c6ab8b8cca5e7e7711276b717be1edd9efdd5ecbd70e1bac6"
+      },
+      "sdkTree": "73b7c79238ef2385de4e4193d40cc3b493c3d02f",
+      "native": {
+        "blob": "5a270d3b973c48bded45c83f04f52212067b06cb",
+        "bytes": 37993,
+        "sha256": "ef89100096afb8bcf74e757e6a171f12fed313c9125e6b5972f9aabca1f66e4e"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-status-01-admit",
+      "kind": "operation_start",
+      "request": {
+        "blob": "89f5f310f76a17fbeb42623bc800881a358b95ee",
+        "bytes": 223,
+        "sha256": "7b09b4e0ae9b0aadf8323ad45e1a72302a8a923a1abbe13b8d3f96664280ecce"
+      },
+      "armedTree": "36429b6160ccaddc49875a0cced0d68f0ec13256",
+      "SDK": {
+        "blob": "0cda73569e8dda8279c75ded60fd5e18fb82180e",
+        "bytes": 709,
+        "sha256": "1ed286a3ee4fe8c4cad7862a543dc814e2241b855cb5c502161ab20c341fcf7e"
+      },
+      "sdkTree": "5e68ad245c81f8d6f1ae31c7d1df61b2f93af0b0",
+      "native": {
+        "blob": "52acea02fd225a7fa7a262f2a3bfac567c42b85c",
+        "bytes": 548,
+        "sha256": "922334ed64a94efdf49cbe18fa34e654403bc093a3242537290c6510b4f9f5a0"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-status-01-state",
+      "kind": "operation_status",
+      "request": {
+        "blob": "4735677a16e99f51716dc8e9c38aefcc621b2eea",
+        "bytes": 89,
+        "sha256": "45031e9838c52eb18a1d8718e0733de6e793f57e03d85334f459272a37d31f42"
+      },
+      "armedTree": "94a9991e943b8d1169797e3ba0ad2e1a5e206567",
+      "SDK": {
+        "blob": "b9efd73049af580f0ee353b6b51d1cebf1c7d9d4",
+        "bytes": 980,
+        "sha256": "2ca1ad21b2698bdf89ef9368c185e390c105aa7e0ab63c5ca56beea33dfe583e"
+      },
+      "sdkTree": "8bfa4909b5e472d8f5382ecc1ab7f568ec925ed0",
+      "native": {
+        "blob": "e0090eaa2603d8facbdfe37d98d4b60d2c11fdf2",
+        "bytes": 805,
+        "sha256": "591c221b4c9bd7beee5cc15427edd5c8f1492c8ec21a9d8955e24d4f4107a7b2"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-status-01-p00000",
+      "kind": "operation_result",
+      "request": {
+        "blob": "43c25b6a989feb91324c89d08f19e73b5edbc646",
+        "bytes": 121,
+        "sha256": "5a03179b99353fdb18adfbb937df31ffe76f1f8e6ccda478300fb50cc5f01571"
+      },
+      "armedTree": "f01bb61eaf64ed78cd2aaf63243354b78a33843c",
+      "SDK": {
+        "blob": "bb2fe12eaf79c814ab871af7c2edd7f886288819",
+        "bytes": 2064,
+        "sha256": "751aefc9c2390318361b275ac45c7d127bcc2c34f16a4aff86e68c2f21bb4ac2"
+      },
+      "sdkTree": "6d2f0d7277c2b4cc6a70cb690b8489ab8475d31a",
+      "native": {
+        "blob": "cacf739b0b425aceed04a7c2e825c115f636f0dc",
+        "bytes": 1893,
+        "sha256": "22e92c08778a2c21d15ad0426c67dabbbf7c72b3ce0eb2560dd953cf1c998973"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-streams-01-admit",
+      "kind": "operation_start",
+      "request": {
+        "blob": "94c0bc3cc862319ef639b6a0870ad656cdb8b0ad",
+        "bytes": 296,
+        "sha256": "499ee3be1544a2a1dbb482370d1d8a5fa0149b1da824e360efbdae0c4e694f6d"
+      },
+      "armedTree": "c3f2bb3c98ae71be3a79f0df2176191f78b536a4",
+      "SDK": {
+        "blob": "389b78ed8beaaf9eec0051689b83e5707e6c16dd",
+        "bytes": 707,
+        "sha256": "f277e08f529fbb6ec5b55f5be28e222aa10a4aebc003bea19120b4b3afe6ff25"
+      },
+      "sdkTree": "fa670b92e7bb2fe35338b6250ce68d8f8eeb07a6",
+      "native": {
+        "blob": "3f21357eeaff6bb16db3a24a56d07457c72c7cf2",
+        "bytes": 546,
+        "sha256": "ecb819040946484bd899e9c4222314219b6125ced0dd9a72903b3d21a37e5090"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-streams-01-state",
+      "kind": "operation_status",
+      "request": {
+        "blob": "011700283b807babde32bee6f18cf8319d608c2e",
+        "bytes": 89,
+        "sha256": "bb9062f74913bf62a8ad7d1db62fea734e95f4a820b5a1cefd11d55b1bf5d5fe"
+      },
+      "armedTree": "80a5a4654b2fa88f99e3e681d1ff7cff40fa777c",
+      "SDK": {
+        "blob": "7ccabefc2545412490ced7e920103b7a015022da",
+        "bytes": 978,
+        "sha256": "2a48c26d113fb7fb45898e043bf5def55ba74fc8c137c2a725f7bd2e09aed0a7"
+      },
+      "sdkTree": "c334522b620cd80f44b05cf1b3422b910889d142",
+      "native": {
+        "blob": "4938b7e551bfa7b66abadc715922a54c818c578f",
+        "bytes": 803,
+        "sha256": "d24815c0134466453f6f1dbf5f0f4e6cffbb9b405e54cc37a9b537dfd48f317f"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-streams-01-p00000",
+      "kind": "operation_result",
+      "request": {
+        "blob": "fb4f67ce4da7a0ae4a47bd0c6d1751cc60d3b630",
+        "bytes": 121,
+        "sha256": "9fcdb600f7189e94321c17cf9d767bdbd3f1f319c732f8a8c8d43d6975bef9ca"
+      },
+      "armedTree": "be3704cb2a77e2c87d9082bda1b93ad6bd452aff",
+      "SDK": {
+        "blob": "ba5c059ab3ecc93e1bc09efb7cbf95d8960c68ee",
+        "bytes": 11780,
+        "sha256": "d88b6f74e08dd8ea825c382eea2658eeb41f34683129ec26be83e6ff72b551fe"
+      },
+      "sdkTree": "dbad737b5cb4be7b250bc630c691ba9785036530",
+      "native": {
+        "blob": "befbba1931e6f5c4c727c710e5af7d09ee2ef1bf",
+        "bytes": 11609,
+        "sha256": "4f0f872806f918ef709a5156b7db67b74ec0fecbca34ec4631f33ff9b4b8278f"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-streams-01-p08192",
+      "kind": "operation_result",
+      "request": {
+        "blob": "f737174aa69c6d318a7911b44f1d86abe40dfddc",
+        "bytes": 124,
+        "sha256": "5ef99bfeaa05277ca39fcecaefb9e222c7db237a45b5f2e2880d7b3923b65848"
+      },
+      "armedTree": "c31a113bde354dc27adf41dd1124824f1ecf7168",
+      "SDK": {
+        "blob": "f1b582ec286455fb284f61db61f509bb427c2435",
+        "bytes": 11784,
+        "sha256": "e8752fcce6e688d7fd4d663d29e0fa55ed61a6c51280f1f66189f5b73750d059"
+      },
+      "sdkTree": "58602187ba73f8d669ca5fffed9752acf04ce6c9",
+      "native": {
+        "blob": "f60b7e13e0a8051449a9ce8aa530d21333858580",
+        "bytes": 11613,
+        "sha256": "aaf648afde699dd3e4008a3203379f56c780651b676c6f0fa7060c3d40428435"
+      }
+    },
+    {
+      "key": "home-auth-inert-r1-streams-01-p16384",
+      "kind": "operation_result",
+      "request": {
+        "blob": "33708fc56094bbeb9ad24f95be90ac2f7d626ab1",
+        "bytes": 125,
+        "sha256": "297e352af173bd4a03129a617b8146cead348c5e70a959874b735a1001600102"
+      },
+      "armedTree": "4abc02db2482e76d0b2a53dcddb80d9f4395b8fd",
+      "SDK": {
+        "blob": "30c73d398184988da6347506bc34ea630050d631",
+        "bytes": 10372,
+        "sha256": "8a846272c2c1601c62bfdaf6f018baa9943d101bf2191bae800b234bbe4b64e1"
+      },
+      "sdkTree": "a05e2cbbb0c1fb822a24159c5cbd2b35cae7b9d5",
+      "native": {
+        "blob": "ec569abcd00191f60201bc32e1cbf5d1c7af124e",
+        "bytes": 10201,
+        "sha256": "9ca3851b43f22c77b00e9b4b69c25cb0bdbbd6dad5e46955c72ef3801abfb175"
+      }
+    }
+  ],
+  "observers": [
+    {
+      "id": "7b63605a67ab552c070ee13f25fc63074362e9957e812e768838ccf8bedc7e54",
+      "tool": "process_status",
+      "payload": {
+        "blob": "2ab9368d02a1191c52b7b1f2a6ddee74b66c9a99",
+        "bytes": 907,
+        "sha256": "e008b05a091e71110a9f7c06ba3ac8310ce788fc15b0224d5837fded6dfada6a"
+      },
+      "payloadTree": "8675017913365cd38abb0a108850f055c448475d",
+      "nativeText": {
+        "blob": "91ce9ce1cdeefabff9a46217c0d892d59b57c373",
+        "bytes": 728,
+        "sha256": "96c0e04b702e0312314c603ff862a1189d64a1b2044a4e9b3c9cbb5913cac809"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "32571525f5725ec69d69f913544867292d690271445fa0f5d32c95e9966b9e63",
+      "tool": "process_read",
+      "payload": {
+        "blob": "848a939a960defae0938b834a29240ea2cd2fbc7",
+        "bytes": 23517,
+        "sha256": "c181e71690222fd61dbd01edfe33f06ac63bc48f17e5531d3c6fb6dc66d14695"
+      },
+      "payloadTree": "8a4f4ea460135aa2e5c87a3254c7f60fee5b40a0",
+      "nativeText": {
+        "blob": "c929b01531431f98e50bdb97a6a8a5f086220ecf",
+        "bytes": 21940,
+        "sha256": "01cd39b60037f3d97078de636372655b9fa6969459bf3f54e3f8e9b871a5be44"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "scope": "original9calls2observers4pages",
+  "NativeReadsAfterClosure": 0
+}

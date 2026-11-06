@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r40_checkpoint_tree_verification_packet",
+  "records": [
+    {
+      "name": "layers.verified.json",
+      "blob": "f8a5d4b02c4d2f98aabb0f5d1157320e26fe96d7",
+      "bytes": 630,
+      "sha256": "44bfd6cf29d83dbfd22dc589476001913875b3ec3f969b080b3256a78093e803"
+    },
+    {
+      "name": "prefix.SDK.original.json",
+      "blob": "765fcf5ea74b8bcb755bcb1b63f604c7aa902951",
+      "bytes": 30977,
+      "sha256": "07530465087b607e6055919c431b36e320154117d757edd80cf53e46456e599d"
+    },
+    {
+      "name": "day.SDK.original.json",
+      "blob": "ce57b25fe6e73bb96995b2a1cfee5ee53084d1d4",
+      "bytes": 63769,
+      "sha256": "43e1e31c903c1eaa657fe6177f033605a0494552afe5152bdc412045fb7adfd3"
+    },
+    {
+      "name": "evidence.SDK.original.json",
+      "blob": "91cd6e184d0d24e96f2ec50b3a828380d4a5a9e9",
+      "bytes": 1713,
+      "sha256": "bf304266907d1b725835ede9f615b99bf5daa01544627ef673f9d4aedb5322d0"
+    },
+    {
+      "name": "qa.SDK.original.json",
+      "blob": "8f10f0c7fd7fa8cb77fd2cec1eef3da3fb8e9ded",
+      "bytes": 2695,
+      "sha256": "4d2390aba5312ca0b7132a543278f7a7a76092f04e64a5b4ca7baf950d6a9bc3"
+    },
+    {
+      "name": "root.SDK.original.json",
+      "blob": "baf91d8d6e623e58f07c072b2f73afa43518b280",
+      "bytes": 13939,
+      "sha256": "31c5928171214bfd7aad07187e92b04651a271b6b2ea363813b7ff80ceab0805"
+    }
+  ],
+  "expected_data_tree": "62489a29381dfe39943ed12aca0ef4df23db80fd",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

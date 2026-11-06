@@ -1,0 +1,117 @@
+{
+  "authorization": "GO",
+  "scope": "format_body1_exact_completion",
+  "slot": "snapshot_2379_formatter_body1_completion_r1",
+  "original_slot": "snapshot_2379_rog_formatter_gitfirst_r1",
+  "predecessor_slot": "snapshot_2379_formatter_body0_admission_reconcile_r1",
+  "maximum_operation_start_calls": 1,
+  "maximum_status_calls": 8,
+  "maximum_result_pages": 64,
+  "process_start_authorized": false,
+  "file_info_authorized": false,
+  "body0_repeat_authorized": false,
+  "immutable_page_bytes": 16384,
+  "maximum_retained_payload_bytes": 1048576,
+  "maximum_decoded_range_bytes": 53389,
+  "whole_file_bytes": 118925,
+  "old_unknown": {
+    "blob": "b174296c1b46c119356df90d5c68b6ca5bc4c19c",
+    "bytes": 1629,
+    "sha256": "8e94eed174a2e88206fb6e27685df93d404eba8512cdb052e6528690656e6f3c"
+  },
+  "original_error_sdk": {
+    "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+    "bytes": 247,
+    "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+  },
+  "body0_root_qualification": {
+    "blob": "a290ba81a6164a082d6f1f4c5b98d82b783e6cbe",
+    "bytes": 6373,
+    "sha256": "bbdee84c298f47b2d7b11bfd47ce09bec01fc8b096cc5d959de0e535aac25748"
+  },
+  "body0_native": {
+    "blob": "895256e05b1517b7a5563600bf179a556bebdccd",
+    "bytes": 87718,
+    "sha256": "2024d49a365dba55814300dab9b07049c2a27ffc88f7b196a5a71623dfae433b"
+  },
+  "body0_release": {
+    "blob": "8d0b9e5b142d744be9b54413d0889c558e9e50e8",
+    "bytes": 3237,
+    "sha256": "3518d4011d35fbfef306f1b0f14c591a07be086b45629b967ac941fdac11f9fa"
+  },
+  "exact_request": {
+    "blob": "c3d0ff5c4cd33e7969a6f34bdc144549d3da3d0a",
+    "bytes": 436,
+    "sha256": "978eac87aa0aab0d16149d7609ae82167472cbc893f0a9fced351017f20d4128"
+  },
+  "candidate_source": {
+    "blob": "0d24dad24762e7a96432bb5c590a0ba8d2a232dd",
+    "bytes": 28520,
+    "sha256": "db8c7ab8fbc79d78bd25c8f465e31c41e08ee560efcb803824468bdd7595d84b"
+  },
+  "helpers": {
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    }
+  },
+  "schema": "heptabao.root-exact-GO.snapshot2379-BODY1.r1",
+  "source_packet": {
+    "tree": "458c494e2a9270ac6787af4d7ece85b99ca3a2a1",
+    "files": 21,
+    "bytes": 303556,
+    "merkle": {
+      "root_sha": "458c494e2a9270ac6787af4d7ece85b99ca3a2a1",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "root_source_review": {
+    "blob": "ff040cc3c480c7b072d6cc4f03599c5f1bd703bc",
+    "bytes": 3847,
+    "sha256": "d6f91fefbe60507f43dd77c9fafa76ac9d989c0429085894629104040129f769"
+  },
+  "root_checks": 24,
+  "author_checks_reproduced": 51,
+  "user_authorization": "Continue remaining migration and validation blockers; this reads the original public formatter report only.",
+  "original_formatter_job": "1a1b02771c2-fc05-6e9f",
+  "exact_host": "rog",
+  "exact_path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/result.public.json",
+  "exact_version": "66306:31236133:118925:1793956739343592677:1793956739343592677",
+  "original_expected_sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8",
+  "offset": 65536,
+  "limit": 53389,
+  "expected_next_offset": 118925,
+  "expected_eof": true,
+  "exact_key": "heptabao-native-snapshot-2379d02b-formatter-observe-r1-result-body1",
+  "predecessor_current_binding_known_closed": true,
+  "original_historical_attempt_unknown_preserved": true,
+  "allocation": {
+    "line": "B",
+    "maximum_calls_in_flight": 1,
+    "maximum_owned_observers": 1,
+    "global_maximum_lanes": 2,
+    "A_is_only_other_allocated_lane": true,
+    "C_Native_held_until_lane_available": true
+  },
+  "admitted_scope": "One original BODY1 request in the new slot, then status/pages on the actually returned ID. Rehash cached actual BODY0, join both actual ranges and archive complete original report before interpretation.",
+  "forbidden": [
+    "No BODY0 re-read, metadata refresh, process/build/formatter rerun, source/output mutation, old slot reset/unpause, changed key/path/version, wider body range or host."
+  ],
+  "recovery": "Any ambiguous Native ACK or incomplete original SDK stops new admissions and retains the armed record. Immutable same-ID evidence only when the ID is actually known. Git uncertainties reconcile by exact immutable GET without repeating mutation.",
+  "qualification": {
+    "source_only_before_this_GO": true,
+    "whole_report_currently_qualified": false,
+    "formatted_output_bodies_qualified": false,
+    "full_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
+  }
+}

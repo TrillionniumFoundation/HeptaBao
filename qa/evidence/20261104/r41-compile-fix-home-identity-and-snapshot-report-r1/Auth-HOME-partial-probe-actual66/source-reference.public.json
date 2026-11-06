@@ -1,0 +1,26 @@
+{
+  "sourcePacket": "abf63e2f6bd459947b036ad531be09beea628ff0",
+  "source": {
+    "blob": "2b3130d39f5f09fd326e77e83d26130c9712ce70",
+    "bytes": 15788,
+    "sha256": "1a3d11d90b3d4cb7245d400f120da778487185521fe05510e0ecd62c5c57a821"
+  },
+  "journal": {
+    "blob": "6a285178e317e1f4df8b2543bca9ad1dce6854b3",
+    "bytes": 19048,
+    "sha256": "e71f9471e56682c7bddeee1f6922d373198dd7c2eb101b1c2ff75cd9f3dc71b4"
+  },
+  "request": {
+    "blob": "1b0d23c8b1dc1a9957108cd4918bfba4522bf2a6",
+    "bytes": 16748,
+    "sha256": "06979f3430d83bae7131f117d7ea757ba40ef2df30680cb6df717f9e94faa5bd"
+  },
+  "rootGo": {
+    "blob": "0bb1f2b41ebde8384612178dfd4d19f882abd78c",
+    "bytes": 6778,
+    "sha256": "c9b0a62268e131bc9e1fefb2cf58d4a542c3ad9d137c9cd05d63a4226a03af67"
+  },
+  "originalFailedPacket": "1c360c303e249709a2dddd6941f110abad5c16c5",
+  "originalEffectUnknownPreserved": true,
+  "componentSuccessorNotExecuted": "7592e1176e1634cf4b8259f53860ec0bc35786e3"
+}

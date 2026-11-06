@@ -1,0 +1,7 @@
+{
+  "phase": "pre_Git_validation",
+  "error": "flat_public_text_entry",
+  "GitMutationSubmitted": false,
+  "RuntimeCalls": 0,
+  "correction": "Use flat archive file names and retain explicit original call and observer mapping."
+}

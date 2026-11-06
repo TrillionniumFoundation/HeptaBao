@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.native-jwt-pki.E0061-two-leaf-expected-tree.v1",
+  "baseCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "baseTree": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+  "expectedTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "baseMerkle": {
+    "root_sha": "b7f276f70e0da1a33306564f385ab7bc12fd44f6",
+    "trees_verified": 358,
+    "leaf_count": 3916
+  },
+  "nextMerkle": {
+    "root_sha": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "trees_verified": 358,
+    "leaf_count": 3916
+  },
+  "modifiedLeaves": 2,
+  "unchangedLeaves": 3914,
+  "added": 0,
+  "deleted": 0,
+  "oldTrackedBytes": 62297347,
+  "newTrackedBytes": 62297399,
+  "byteDelta": 52,
+  "edits": [
+    {
+      "path": "crates/heptabao-server/src/service_native_pki.rs",
+      "mode": "100644",
+      "before": {
+        "blob": "281f74233d0d7ab36aec9e03ec2830f099a9988d",
+        "bytes": 29605,
+        "sha256": "7a19cdaf368062272550d35df9af9a47ed9cc0df111c106ec40166aa36ed8c93"
+      },
+      "after": {
+        "blob": "b11309ef29cc1328657b4645045008fc57bcd628",
+        "bytes": 29631,
+        "sha256": "a73eac54021903a103a207d727c122641de068e38937995084419b10ee1e0581"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh.rs",
+      "mode": "100644",
+      "before": {
+        "blob": "3b03ce4da8d5b5f7779096397ee9f7e6915ce075",
+        "bytes": 19996,
+        "sha256": "485fa77ae90f484a4ac039aeb249447c4b15f5fae48d18f22103aaef41132d16"
+      },
+      "after": {
+        "blob": "6d347777f8fa6a45eb570bd080aed96a5487e975",
+        "bytes": 20022,
+        "sha256": "211bcc92758f9fb92699640aabb721a86e180f7d5bbd6c9ab3ff2267e280b318"
+      }
+    }
+  ],
+  "gitTreeCreated": false,
+  "commitCreated": false,
+  "refChanged": false,
+  "compile": false
+}

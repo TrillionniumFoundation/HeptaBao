@@ -1,0 +1,58 @@
+[
+  {
+    "index": 0,
+    "role": "compiler-stderr",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stderr",
+    "size": 14696,
+    "sha256": "448047e67b8d3c033a8fa211de8dfd7d2fe6265a4f01f0cc23f044da90964964",
+    "version": "66306:31364213:14696:1793957207629499769:1793957207629499769",
+    "full9Strings": [
+      "66306",
+      "31364213",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "14696",
+      "1793957207629499769",
+      "1793957207629499769"
+    ],
+    "originalOperation": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+    "nativeText": {
+      "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+      "bytes": 489,
+      "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+    },
+    "regularFileFromNativeFileInfoContract": true,
+    "expectedVersionBeforeObservation": null,
+    "bodyReadAuthorized": false
+  },
+  {
+    "index": 1,
+    "role": "compiler-json-stdout",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/build-tests-r1/normal-release-build.stdout",
+    "size": 388177,
+    "sha256": "153e265453949927ff1268931cf26050e6ceff8b5ca53668ce83ce1e90c5332b",
+    "version": "66306:31364212:388177:1793957207629499769:1793957207629499769",
+    "full9Strings": [
+      "66306",
+      "31364212",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "388177",
+      "1793957207629499769",
+      "1793957207629499769"
+    ],
+    "originalOperation": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+    "nativeText": {
+      "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+      "bytes": 491,
+      "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+    },
+    "regularFileFromNativeFileInfoContract": true,
+    "expectedVersionBeforeObservation": null,
+    "bodyReadAuthorized": false
+  }
+]

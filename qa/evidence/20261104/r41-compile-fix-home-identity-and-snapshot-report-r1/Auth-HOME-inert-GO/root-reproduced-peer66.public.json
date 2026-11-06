@@ -1,0 +1,271 @@
+{
+  "schema": "heptabao.home-t5-core-source-peer.actual.v1",
+  "scope": "pure source/hash/strict diff, no Python or Native",
+  "checks": [
+    {
+      "name": "whole SOURCE-ONLY.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole candidate.public.json",
+      "pass": true
+    },
+    {
+      "name": "whole home-control.py",
+      "pass": true
+    },
+    {
+      "name": "whole mac_current_outer_wal_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole mac_current_phase_owner_r2.py",
+      "pass": true
+    },
+    {
+      "name": "whole mac_current_phase_owner_r2.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole mac_current_server_owner_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole mac_current_server_owner_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole mac_owned_launchd_r3.py",
+      "pass": true
+    },
+    {
+      "name": "whole mac_owned_launchd_r3.py.diff",
+      "pass": true
+    },
+    {
+      "name": "HomeControl exact one inline instance",
+      "pass": true
+    },
+    {
+      "name": "manager strict forward",
+      "pass": true
+    },
+    {
+      "name": "manager strict reverse",
+      "pass": true
+    },
+    {
+      "name": "unique selected section     def _open(",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: with self.critical():",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: self.open_attempts+=1;self.open_pending+=1",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: try:fd=os.open",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: except OSError:",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: self.open_pending-=1",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: row={'fd':fd",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: self.rows.append(row);self.open_pending-=1",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: except BaseException:",
+      "pass": true
+    },
+    {
+      "name": "open protected registration :: self.registration_unknown=True",
+      "pass": true
+    },
+    {
+      "name": "close whole loop critical",
+      "pass": true
+    },
+    {
+      "name": "once close marker precedes syscall",
+      "pass": true
+    },
+    {
+      "name": "finite exact flat paths",
+      "pass": true
+    },
+    {
+      "name": "no symlink acquire",
+      "pass": true
+    },
+    {
+      "name": "held named parent plus first5",
+      "pass": true
+    },
+    {
+      "name": "owned root full9",
+      "pass": true
+    },
+    {
+      "name": "exclusive role split",
+      "pass": true
+    },
+    {
+      "name": "stdio created empty",
+      "pass": true
+    },
+    {
+      "name": "new regular singleton 0600",
+      "pass": true
+    },
+    {
+      "name": "finite counts unchanged",
+      "pass": true
+    },
+    {
+      "name": "write ceiling and progress",
+      "pass": true
+    },
+    {
+      "name": "read byte count before bounds gate",
+      "pass": true
+    },
+    {
+      "name": "whole read plus real EOF",
+      "pass": true
+    },
+    {
+      "name": "read full9 interval",
+      "pass": true
+    },
+    {
+      "name": "stderr body rejected",
+      "pass": true
+    },
+    {
+      "name": "prefix two reads same FD",
+      "pass": true
+    },
+    {
+      "name": "unknown forbids closure",
+      "pass": true
+    },
+    {
+      "name": "outer incomplete construction conservative",
+      "pass": true
+    },
+    {
+      "name": "outer finally closes home and aggregates",
+      "pass": true
+    },
+    {
+      "name": "manager compares original and HOME public wrapper",
+      "pass": true
+    },
+    {
+      "name": "HOME plist WorkingDirectory",
+      "pass": true
+    },
+    {
+      "name": "private plan stays T5",
+      "pass": true
+    },
+    {
+      "name": "private result stays T5",
+      "pass": true
+    },
+    {
+      "name": "outer HomeControl deadline inherited",
+      "pass": true
+    },
+    {
+      "name": "manager original deadline and cleanup separate",
+      "pass": true
+    },
+    {
+      "name": "phase held cwd before private plan :: report['volumeGuard']=volume_before_private_state()",
+      "pass": true
+    },
+    {
+      "name": "phase held cwd before private plan :: with volume_guard.parent(ROOT/'launchd')",
+      "pass": true
+    },
+    {
+      "name": "phase held cwd before private plan :: os.fchdir(work_fd)",
+      "pass": true
+    },
+    {
+      "name": "phase held cwd before private plan :: identity(os.stat('.'))==identity(os.fstat(work_fd))",
+      "pass": true
+    },
+    {
+      "name": "phase held cwd before private plan :: volume_guard.check();report['ownedBusinessWorkingDirectoryHeldT5']=True",
+      "pass": true
+    },
+    {
+      "name": "phase held cwd before private plan :: raw=private_read(args.plan)",
+      "pass": true
+    },
+    {
+      "name": "server held cwd before private plan :: guard.accept_diskutil(out)",
+      "pass": true
+    },
+    {
+      "name": "server held cwd before private plan :: with guard.parent(ROOT/'launchd')",
+      "pass": true
+    },
+    {
+      "name": "server held cwd before private plan :: os.fchdir(work_fd)",
+      "pass": true
+    },
+    {
+      "name": "server held cwd before private plan :: identity(os.stat('.'))==identity(os.fstat(work_fd))",
+      "pass": true
+    },
+    {
+      "name": "server held cwd before private plan :: guard.check();report['ownedBusinessWorkingDirectoryHeldT5']=True",
+      "pass": true
+    },
+    {
+      "name": "server held cwd before private plan :: raw=guard.read(args.plan)",
+      "pass": true
+    },
+    {
+      "name": "manager requires held business cwd",
+      "pass": true
+    },
+    {
+      "name": "kernel launcher split both wrappers",
+      "pass": true
+    },
+    {
+      "name": "candidate pin mac_owned_launchd_r3.py",
+      "pass": true
+    },
+    {
+      "name": "candidate pin mac_current_phase_owner_r2.py",
+      "pass": true
+    },
+    {
+      "name": "candidate pin mac_current_server_owner_r1.py",
+      "pass": true
+    },
+    {
+      "name": "runtime binding not fabricated",
+      "pass": true
+    }
+  ],
+  "passed": 66
+}

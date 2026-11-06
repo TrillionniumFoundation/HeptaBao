@@ -1,0 +1,7 @@
+{
+  "correctedAdapter": "applyStrictUnified(...).text and .hunks",
+  "forwardReverseBoth": true,
+  "totalHunks": 2,
+  "changedSource": false,
+  "Native": 0
+}

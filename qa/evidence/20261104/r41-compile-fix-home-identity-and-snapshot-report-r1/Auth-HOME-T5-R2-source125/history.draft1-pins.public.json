@@ -1,0 +1,142 @@
+{
+  "builder": {
+    "blob": "66617ef1cff40d66781209050a01f8011f59e3dd",
+    "bytes": 5846,
+    "sha256": "bad812c8098872c5d2f298789fc0e2de4e8a8d8c41064bf532296cf334ee3e52"
+  },
+  "publisher": {
+    "blob": "7c049b83dbe802668bf341ad46657c204ecd5ff3",
+    "bytes": 36514,
+    "sha256": "506c3c2c511fc00bdb7f2c519baa4d12f32dd4523eef2e0c21013e7fd8edf1e8"
+  },
+  "request": {
+    "blob": "a6637705c31c4300d331aa7e4b3c58b01935f4d1",
+    "bytes": 875394,
+    "sha256": "41779d156e7f7687c6ef9b3da69519583a11c089a75c3e48da0df0f8d459ae21"
+  },
+  "payload": {
+    "blob": "1180d4e58ecc31c2c3dcbb09902d5f066075dc07",
+    "bytes": 837520,
+    "sha256": "5f707b48637f43c3791f83e21e0d1241d1cffc375fcc6b7862a951444bade89c"
+  },
+  "journal": {
+    "blob": "89dcdeb234fa0ba08a8f41a47679f77a3e171bd4",
+    "bytes": 19050,
+    "sha256": "166b1e367747f753f1905b66bc7cbd37dc1447dd469559a857449f79783df097"
+  },
+  "sourcePins": {
+    "mac_auth_rows_cas_r1.mjs": {
+      "blob": "e1054c6a5786280e901f7f94661d06187021e774",
+      "bytes": 3108,
+      "sha256": "f77ecb7fd607b2cc377619e050f89c7460420df96d42110de142bdadbf33ce73"
+    },
+    "mac_authbus_cache_cas_r1.mjs": {
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    "mac_capture_sqlite_synthetic_r1.py": {
+      "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+    },
+    "mac_capture_sqlite_synthetic_r2.py": {
+      "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+    },
+    "mac_current_capture_entry_wal_r1.py": {
+      "blob": "80b204f30eaba8f77970da8d829bab6c707c924b",
+      "bytes": 42083,
+      "sha256": "f13e9a727d51d91184e97ee0b2042824706664db5ac7366ee7adf26bffa43203"
+    },
+    "mac_current_cycle_r2.mjs": {
+      "blob": "6b0765788c4718e5cc57f069bcfa4b0c8d2c5a5c",
+      "bytes": 24012,
+      "sha256": "04ab9aab3b6ee292835c97f2b208c054e3089814ecc40a493ce21a157e41f092"
+    },
+    "mac_current_fixture_materializer_r1.py": {
+      "blob": "b4a71d3cd6f619af4041bfc06b8142da9b97c7c2",
+      "bytes": 25973,
+      "sha256": "070642a2fecc974794ace1b1cba8eac4672b789aecd4d00a3b4944fb773e853e"
+    },
+    "mac_current_outer_inputs_r2.py": {
+      "blob": "08a7ee522fb719df71c9dca9356e160a2033c98e",
+      "bytes": 33001,
+      "sha256": "6fd9b5f5a54ed4f40770bb95d017e836d21f51efff10d90beaaeb133b34a82b5"
+    },
+    "mac_current_outer_wal_r1.py": {
+      "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+      "bytes": 73918,
+      "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+    },
+    "mac_current_phase_owner_r2.py": {
+      "blob": "60cdb68fa9f0a436b3b3ab7a1114493ca9739594",
+      "bytes": 25647,
+      "sha256": "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855"
+    },
+    "mac_current_server_owner_r1.py": {
+      "blob": "031d410286a2aa4ed26c6512af3ee57be17ce687",
+      "bytes": 14052,
+      "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+    },
+    "mac_darwin_owned_projection_r1.py": {
+      "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+    },
+    "mac_guarded_current_capture_r3.py": {
+      "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+    },
+    "mac_native_owned_commands_r1.py": {
+      "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+    },
+    "mac_native_owned_unreaped_r1.py": {
+      "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+    },
+    "mac_native_process_observer_r1.py": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_owned_commands_r1.py": {
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    "mac_owned_launchd_r3.py": {
+      "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+      "bytes": 58452,
+      "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    "mac_registry_readonly_wal_r1.py": {
+      "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+      "bytes": 31776,
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+    },
+    "mac_single_native_r2.mjs": {
+      "blob": "f5395025f281c2b35015ede1d9ff3beb3826a671",
+      "bytes": 33148,
+      "sha256": "d89f77d412c4394b40f0eba09e17354234cf7362b79bf1450521ff0a390b33ef"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "blob": "5cba8bb112f97de5a68133462667e1329fa747f1",
+      "bytes": 13392,
+      "sha256": "13cbc97c63625f6302914b9c4ff5f2582874d6989c1cdfe2bc49e874a600fdb4"
+    }
+  },
+  "unsubmitted": true,
+  "NativeCalls": 0,
+  "reconstructFrom": "history.builder-draft1.js and the exact same before.* plus reviewed component files; not a dispatchable successor"
+}

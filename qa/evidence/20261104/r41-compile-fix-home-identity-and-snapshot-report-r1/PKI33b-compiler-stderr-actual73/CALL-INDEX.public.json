@@ -1,0 +1,289 @@
+{
+  "schema": "heptabao.native-jwt-pki.compiler-logs.all-original-calls.v1",
+  "slot": "jwt_pki_33b814c7_build149_compiler_logs_info_gitfirst_r1",
+  "calls": [
+    {
+      "ordinal": 0,
+      "key": "jwt-pki-build149-compiler-stderr-info-start-r1",
+      "kind": "operation_start",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "e5b3ea23a8f43797a4e456f0751b9ab0431f3cd8",
+        "bytes": 302,
+        "sha256": "fd34b35b1bddbcfd1dc278fcd3639463ab55593433167cef7bed24e14d7dd1ba"
+      },
+      "sdk": {
+        "blob": "369e01329925c5c572e1bed30646e802b8d5f1bf",
+        "bytes": 704,
+        "sha256": "09f9c775044ae5f82e3f723a875e9db520b36378da2d23d9c79324fd96d1ef25"
+      },
+      "native": {
+        "blob": "387a4217c1d111f482f7bd3f2a370f072c203b07",
+        "bytes": 543,
+        "sha256": "7c5e097733284eecb3c55aa76a4645708e779b11845621a56228a5c6680420c8"
+      },
+      "arm_tree": "5ac0adc7391e2fd7134569dd4bf8f1bc5de2e48a"
+    },
+    {
+      "ordinal": 1,
+      "key": "jwt-pki-build149-compiler-stderr-info-status-r1",
+      "kind": "operation_status",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "866cd6d40d9d6db90d82fcc0a2b05570ef861bc8",
+        "bytes": 89,
+        "sha256": "93eec17c147ed7ca95a24ca81922bc6260c12aa4af3ccb30e51a6bf7f33c17af"
+      },
+      "sdk": {
+        "blob": "7d12af30f5184edd5daad0df4018e1001b9bfa9c",
+        "bytes": 975,
+        "sha256": "89d317c276bcc436e994e8306e9945bae3f61f97c0acd4503b819383799e75c2"
+      },
+      "native": {
+        "blob": "c6158d635c48dc4948c9bfc274bb39f3231a7bac",
+        "bytes": 800,
+        "sha256": "486ca275e1924edf8d6924a30e463d13931323b92f69714265e212bd5f80e206"
+      },
+      "arm_tree": "0f98e8b21227376b0ac3f549b53136ffd9f9972c"
+    },
+    {
+      "ordinal": 2,
+      "key": "jwt-pki-build149-compiler-stderr-info-page0-r1",
+      "kind": "operation_result",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "1ecc49cdcfc5b07797354dce35ec985fd56ece93",
+        "bytes": 121,
+        "sha256": "a4afe6dd16ea6d4c3a469815cc736852372d18ce61763ea8e6502b0ba4c5856f"
+      },
+      "sdk": {
+        "blob": "eab072190679fba578ef64e2c1766a13242f48db",
+        "bytes": 1660,
+        "sha256": "b1a6276a894a496eb80e8a2044c4662d3d4e4aef3f51d9d821b40321fa7e024c"
+      },
+      "native": {
+        "blob": "2ac63aa2b7fe2c0974f887b11e17f016e05f5b00",
+        "bytes": 1489,
+        "sha256": "ce42a6e6a31d5bc7b881c4a84b47575a725bd5e905a93fd4e407a88eac4e834f"
+      },
+      "arm_tree": "34bd21dcdedaa1ab097233cde6c35ebfa5b6b466"
+    },
+    {
+      "ordinal": 3,
+      "key": "jwt-pki-build149-compiler-stdout-info-start-r1",
+      "kind": "operation_start",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "008beb6807a40811762b005eb20cd396755775eb",
+        "bytes": 302,
+        "sha256": "b5ca40d49a832a6b5b022a03ea2b75b53bdaaf2b75a6e799684a4cc3d56ccf86"
+      },
+      "sdk": {
+        "blob": "ab04bdbc7d9ba734acb2063c7d69e1e2226e0ae5",
+        "bytes": 704,
+        "sha256": "86ac2593678b26532f32e4b38aae4cf0a708f87dc58f294ce98c7aab1e883d60"
+      },
+      "native": {
+        "blob": "96cac81fba3cebd8e03cd122db39ad45e0548c23",
+        "bytes": 543,
+        "sha256": "93c0ad19c2ffea888309fc1ad991fc4fd51c7a244481d42663510653cfc72260"
+      },
+      "arm_tree": "3132e6e0c18ab67559065d0e99e7c3b6a0e0640d"
+    },
+    {
+      "ordinal": 4,
+      "key": "jwt-pki-build149-compiler-stdout-info-status-r1",
+      "kind": "operation_status",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "dfb596023a37705be8cf18e23b3b66ee49c5ae5b",
+        "bytes": 89,
+        "sha256": "cb180fbef1264e59a031206725d2a4aaf540f35d2e9b8ed3e57a8e0171ef1252"
+      },
+      "sdk": {
+        "blob": "ab37d00ffb16e409ccc1770b7e4c271b04612432",
+        "bytes": 975,
+        "sha256": "78d4fc2fad302c23cb9ea52f7d516f868576744dce431727860d913febd7c0cb"
+      },
+      "native": {
+        "blob": "0a3eb1375b51baeb72c9cda2cb8519c7924af8b3",
+        "bytes": 800,
+        "sha256": "15c05c6bd7da077c9fba2635f1ed8cc0bc803b0ccb74dd5ed3c61846742b8665"
+      },
+      "arm_tree": "184b9362d7c0c75dbd1faa5956ab8433a2cbc98c"
+    },
+    {
+      "ordinal": 5,
+      "key": "jwt-pki-build149-compiler-stdout-info-page0-r1",
+      "kind": "operation_result",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "b30b767d49051e5b7f56f495ecf1ad46e40520cf",
+        "bytes": 121,
+        "sha256": "972b4f37334346e68709bde7c180bae517888c892ed385d391899f877283716d"
+      },
+      "sdk": {
+        "blob": "c4744e28986e921e89a07a3fc4401ea8369d5a1e",
+        "bytes": 1664,
+        "sha256": "ac0b480243b15842e8962d1e18cc010f071ee0b8322c51f1f53b874cb02bf631"
+      },
+      "native": {
+        "blob": "b7e1fd27807d5ea9faa5e7f8568cde6732130630",
+        "bytes": 1493,
+        "sha256": "47d36c0fa31b85bfacde4145793bd00490de9c8e89751b537127e49c3984a602"
+      },
+      "arm_tree": "f61479d9b11a931776259cb08923e8489d22ee5e"
+    },
+    {
+      "ordinal": 6,
+      "key": "jwt-pki-build149-compiler-stderr-body-start-r1",
+      "kind": "operation_start",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "597a81f1a88e5af1b4ef9632003de0e96a364f13",
+        "bytes": 437,
+        "sha256": "7883f2e97d6dfc4f4f98a713a891072a239c8cddece41c930624d55feb87617c"
+      },
+      "sdk": {
+        "blob": "123fabd8224ed4bd7c66bde08fdd83a12bec1323",
+        "bytes": 706,
+        "sha256": "643dd45d09c8a5787317a2e609506eba97027e147eea7611328a19ae93635ba1"
+      },
+      "native": {
+        "blob": "928af6b1018c164dbdc0f73a415f85f18aa404f8",
+        "bytes": 545,
+        "sha256": "00f095439bdd503f3b0fca780658e0ad02e08de4f563dc2fd574e74456507b80"
+      },
+      "arm_tree": "b3c7e09f23c079255348f95a6fcf36f38729b991"
+    },
+    {
+      "ordinal": 7,
+      "key": "jwt-pki-build149-compiler-stderr-body-status-r1",
+      "kind": "operation_status",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "0116c17bcfe17ed6074d23c31f96d16ac3f52b6d",
+        "bytes": 89,
+        "sha256": "d99e927e8a32aa27b6e9af00dd9d28f780cc1a7fa39dfdcb1c592cc8e127b335"
+      },
+      "sdk": {
+        "blob": "1cd0b1ff08f1e9e399a2ceaccf138e063a935216",
+        "bytes": 977,
+        "sha256": "d7ac21e190b7e6cd73c321230ffb314b90db1857557540a7291be9993997a15f"
+      },
+      "native": {
+        "blob": "d2c3bf6a7829ad9995828f68b7d4d85c011f7b17",
+        "bytes": 802,
+        "sha256": "8146dacb01b442f752831d630e0bb80d6ca0ffb717ed9b817e30312d3d5ead85"
+      },
+      "arm_tree": "76aa8569bfb2d699e63e772b3ea2ad98aa6a8203"
+    },
+    {
+      "ordinal": 8,
+      "key": "jwt-pki-build149-compiler-stderr-body-page0-r1",
+      "kind": "operation_result",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "8f541907686d1740777b6ba1b8240b4d77940548",
+        "bytes": 122,
+        "sha256": "a202cf1f9d9235a3bb145e29340f721ae79735d2c543f4c3ec1a81082d99ba15"
+      },
+      "sdk": {
+        "blob": "dfa81652eb53622f2aacce2ae292951e2254484c",
+        "bytes": 22705,
+        "sha256": "851e13921a2bea8870d989bec80f7c2b0b5d354a6a7e399e4be2bd21090a01a7"
+      },
+      "native": {
+        "blob": "73005a5c1ee0efe85ab9783cf13fb6fd61c37677",
+        "bytes": 22534,
+        "sha256": "362d5e95385cb6f9217fdd70a1cd2a6eff70260985bc8078e95ad530916a245f"
+      },
+      "arm_tree": "f51bb1084bee228f5ee1ccb381a03e2a9f3348f2"
+    },
+    {
+      "ordinal": 9,
+      "key": "jwt-pki-build149-compiler-stderr-body-page1-r1",
+      "kind": "operation_result",
+      "phase": "accepted",
+      "called": true,
+      "request": {
+        "blob": "3ec8ba9de748c0dc1268498ccb4d2246eccf151e",
+        "bytes": 126,
+        "sha256": "fe7e3ca8e174a97166cadba152cb07516281cb23cc26077d09939177b991996e"
+      },
+      "sdk": {
+        "blob": "6a9872741bb64e23151b602b3b85138b198a31c7",
+        "bytes": 5732,
+        "sha256": "1cc70da444a8f05520c9e1c4bced45d697a5c141daf6ebef4d291cc7c28cbb09"
+      },
+      "native": {
+        "blob": "f0c32659cfad808bb1cc06f3c1b67bb58cb872da",
+        "bytes": 5561,
+        "sha256": "342692bd58afca1fc78d04c702e3c4eca23c23e5bdf507ba0456b45f68e27c68"
+      },
+      "arm_tree": "4d5648f0044c4d204bda56ee6ddbe2fe58a7e1fb"
+    }
+  ],
+  "observers": [
+    {
+      "id": "2289f2344e4ad164c22b0d15910d59a9761d2ee73f30e8e6c75c56dcc6977239",
+      "tool": "file_info",
+      "payload": {
+        "blob": "39e4636f04091c50bd868ffff8b3acba330a6a6d",
+        "bytes": 606,
+        "sha256": "66630702346d364eb274d11dc5df98af5d2aef4447397147c22cbf933e771b2a"
+      },
+      "payloadTree": "ef7bc69d41f5035541df2b59565bf7c81f6ba11f",
+      "nativeText": {
+        "blob": "3b3be972c3155c9e31eeab4199bfc4ce77f691d5",
+        "bytes": 489,
+        "sha256": "0351e25e983c7de79f4bfb18c567e23b10d898af873b4f691ddc43222e308c3b"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "7b63859b4fe507f165f8b3ca8a7024f7089604ce13aa4c0a6685e0089c16ef56",
+      "tool": "file_info",
+      "payload": {
+        "blob": "25782a8cf4193bfd59737aa0ab2abf05f5dd4a5b",
+        "bytes": 608,
+        "sha256": "0d00a3d69b037eb2a9efb82237b854cf186a0ce2139d1b1a0a8451bada60a011"
+      },
+      "payloadTree": "7d3414cfc7fe5642391d0f45ef4194fce17f71f8",
+      "nativeText": {
+        "blob": "2c7e69490c7634ca461d909bc749ac1edc7a6c76",
+        "bytes": 491,
+        "sha256": "9dba981e0cfc331ed5b06e726a4967ff556d1ed4c4ca1a002fe77738bde7e8dc"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "38aefd32b3958e30cfa2cde772bfd4d5345e26b0",
+        "bytes": 20038,
+        "sha256": "5fd50b43b2c01f5df900ce90fbae683746ee611456696048b6f90a8178687d20"
+      },
+      "payloadTree": "1234c8e89ab20b2faa34c12299364040ceb65ca8",
+      "nativeText": {
+        "blob": "8bc5cc525146254af328865923b106dc11a04655",
+        "bytes": 19935,
+        "sha256": "a1749845775bc302afd14d5b1f4c18e82dba6cf6eb3782cb13c652c7718cf304"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ]
+}

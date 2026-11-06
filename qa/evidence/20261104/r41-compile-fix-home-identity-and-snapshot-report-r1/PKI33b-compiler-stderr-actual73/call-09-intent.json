@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "jwt-pki-build149-compiler-stderr-body-page1-r1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "3ec8ba9de748c0dc1268498ccb4d2246eccf151e",
+    "bytes": 126,
+    "sha256": "fe7e3ca8e174a97166cadba152cb07516281cb23cc26077d09939177b991996e"
+  },
+  "rootGo": {
+    "blob": "e8aabd26cfd0b5d6a41b63e3958e8d3847be2f6e",
+    "bytes": 4494,
+    "sha256": "6255e0aeab9d72b4ae9e29fa65faae1bd1a0311119344f858cb2dcbe8e9ad9da"
+  },
+  "originalJob": null,
+  "originalOperation": "2aa57d49d6a4fa8623a846e229a027be13a58cbdc0b3d9067ffd076534a4e14a",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}
