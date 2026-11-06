@@ -154,7 +154,7 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
     let counts = register_snapshot_handlers(&pipeline, None)?;
     let before = selection(&pipeline, leader, migration_source)?;
     assert_eq!(before.0, 0);
-    assert!(before.1.epoch_transitions().is_empty());
+    assert_eq!(before.1.epoch_transitions().len(), 0);
     let fault_node = if point == test_faults::Point::SourceAfterFinalizer {
         leader
     } else {
@@ -408,7 +408,7 @@ fn run_unverified_attempt(attempt: bool) -> TestResult {
     let after = selection(&pipeline, leader, migration_source)?;
     assert_eq!(after, before);
     assert_eq!(after.0, 0);
-    assert!(after.1.epoch_transitions().is_empty());
+    assert_eq!(after.1.epoch_transitions().len(), 0);
     Ok(())
 }
 
