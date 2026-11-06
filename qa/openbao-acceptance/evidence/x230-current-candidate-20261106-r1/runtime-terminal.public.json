@@ -1,0 +1,16 @@
+{
+  "host": "x230",
+  "job_id": "1a1b1132a4e-fc05-758c",
+  "state": "succeeded",
+  "exit_code": 0,
+  "timed_out": false,
+  "cancelled": false,
+  "automatic_retry": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "log_truncated": {
+    "stderr": false,
+    "stdout": false
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.native-jwt-default-policy-source-and-live-proof.r1",
+  "baseCommit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "baseTree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab",
+  "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+  "priorSourceGitBlob": "17a0a1b0a91c88497620e17d69329f8afaefce92",
+  "priorSourceSha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156",
+  "candidateGitBlob": "807917a7839998a2cc69b6ea437c0c5fa2a1d4a5",
+  "candidateSha256": "02272a5a0ec5fec7799cd7650e1626c4a3bc5de34c264cffbd8c587936785e88",
+  "candidateBytes": 43613,
+  "patchGitBlob": "98adbd2dac81b29ca9838d5153c8c49a28cc4aa6",
+  "runnerGitBlob": "4f6489dbb3e9b52a9e55df162d8a2f0cc0ed1b8a",
+  "resultGitBlob": "dc97f1da9f4855c974b82c95843043b51a2223c9",
+  "resultSha256": "5a8e786606c809099a99467df8d779a9a29d6391ca32d4c0e99969dd518b350a",
+  "actualMacJobId": "1a1b10c428b-fc05-755b",
+  "actualResultFileStatus": "passed",
+  "authoritativeSupervisorTerminal": {
+    "state": "succeeded",
+    "exitCode": 0,
+    "timedOut": false,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "stdoutBytes": 15502,
+    "stderrBytes": 0,
+    "blob": "5e4cf2a7d6aeab03fb15759c6998fa67cc7679df"
+  },
+  "staticScope": {
+    "all_other_test_file_bytes_unchanged": true,
+    "changed_function": "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+    "jwt_test_count": 15,
+    "positive_update_and_delete_still_require_204": true,
+    "production_files_changed": false,
+    "test_names_unchanged": true
+  },
+  "sourceProof": [
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "lines": "2095-2128",
+      "fact": "policies(...,true) inserts default for non-root role policies"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "lines": "6706-6708,6785-6799",
+      "fact": "JWT update requires update+sudo and assigns retained role policies through validate_assignment"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "lines": "8376-8386",
+      "fact": "sudo is not root; requested policies must be subset of actor policies"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_token_policies.rs",
+      "lines": "23,70-75",
+      "fact": "no_default_policy=true removes default even when explicitly requested"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "lines": "277-284",
+      "fact": "original token_with_policies hard-codes no_default_policy=true"
+    }
+  ],
+  "actualChecksPassed": 49,
+  "actualChecksFailed": 0,
+  "actualMatrix": [
+    {
+      "case": "original_missing_default.update_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "explicit_default_still_removed.update_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "missing_native.update_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "missing_sudo.update_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "corrected_manager.update_allowed",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "corrected_manager.delete_without_delete_capability",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    }
+  ],
+  "actorPolicies": {
+    "corrected_manager": [
+      "default",
+      "jwt-role-manager",
+      "native-jwt"
+    ],
+    "explicit_default_still_removed": [
+      "jwt-role-manager",
+      "native-jwt"
+    ],
+    "missing_native": [
+      "default",
+      "jwt-role-manager"
+    ],
+    "missing_sudo": [
+      "default",
+      "jwt-role-no-sudo",
+      "native-jwt"
+    ],
+    "original_missing_default": [
+      "jwt-role-manager",
+      "native-jwt"
+    ]
+  },
+  "formatter": {
+    "check_exit_code": 0,
+    "edition": "2024",
+    "format_exit_code": 0,
+    "only_new_copy_formatted": true,
+    "original_source_unchanged": true,
+    "path": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+    "sha256": "ca9cbe15a4add6baf62d8ce177015c9c48f209ebcf4364416b1953142e8701f8",
+    "version": "rustfmt 1.9.0-stable (88d9e12ae1 2026-08-18)"
+  },
+  "processCustodyPassed": true,
+  "ownedOriginals": 7,
+  "allGapsEmpty": true,
+  "originalServerExit": -9,
+  "noDirectChildren": true,
+  "originalHooksRestored": true,
+  "binaryUnchanged": true,
+  "newBuildExecuted": false,
+  "changedRustTestExecuted": false,
+  "product107Rerun": false,
+  "fullReplacementQualified": false,
+  "launcherGitBlob": "d9c01d94171eecd5c8ce98fe16058ed85f250072",
+  "launchOriginalGitBlob": "7a0bbf3a3ff4403089582eb21e25b93d66b6a119",
+  "privateRunRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-jwt-default-diagnosis-r1",
+  "unrelatedControlDirectoriesNotCreatedByThisAgent": [
+    "jwt09-default-policy-rustfmt-r1",
+    "source-stage-1d63-r1"
+  ]
+}
