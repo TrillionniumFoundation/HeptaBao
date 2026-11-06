@@ -1,0 +1,20 @@
+{
+  "actual_job": "1a1b16bbf10-fc05-788f",
+  "authbus_qualified": false,
+  "baseline_cases": 31,
+  "complete_original_archives_verified": true,
+  "dr_cases": 25,
+  "elapsed_seconds": 127.33642774960026,
+  "full_replacement_qualified": false,
+  "historical_versions_checked": 19,
+  "new_version_surviving_cold_reopen": 20,
+  "original_children_retired": 700,
+  "physical_ha_qualified": false,
+  "product_source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "production_authority": false,
+  "qa_source_commit": "5ded017e1c858b8602a73678acc29df75386a84d",
+  "retained_live_versions": 17,
+  "schema": "heptabao.mac-dr25-archived-evidence-verification.v1",
+  "status": "passed",
+  "verification_reruns_product": false
+}

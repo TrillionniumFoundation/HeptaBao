@@ -1,0 +1,1319 @@
+{
+  "actual_107_pass_claimed": false,
+  "base_after": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "status": "",
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e"
+  },
+  "base_before": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "status": "",
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e"
+  },
+  "base_code_after": {
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": {
+      "bytes": 49393,
+      "device": 16777244,
+      "inode": 72712316,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "qa/openbao-acceptance/kv2_dr_process_custody.py": {
+      "bytes": 26131,
+      "device": 16777244,
+      "inode": 72712320,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 70045,
+      "device": 16777244,
+      "inode": 72712321,
+      "sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0"
+    },
+    "qa/openbao-acceptance/owned_process.py": {
+      "bytes": 28442,
+      "device": 16777244,
+      "inode": 72712444,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  },
+  "base_code_before": {
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": {
+      "bytes": 49393,
+      "device": 16777244,
+      "inode": 72712316,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "qa/openbao-acceptance/kv2_dr_process_custody.py": {
+      "bytes": 26131,
+      "device": 16777244,
+      "inode": 72712320,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 70045,
+      "device": 16777244,
+      "inode": 72712321,
+      "sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0"
+    },
+    "qa/openbao-acceptance/owned_process.py": {
+      "bytes": 28442,
+      "device": 16777244,
+      "inode": 72712444,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  },
+  "base_directory": {
+    "device": 16777244,
+    "inode": 72708605,
+    "mode": 448,
+    "uid": 501
+  },
+  "bundle": {
+    "bytes": 401428,
+    "device": 16777244,
+    "inode": 72730005,
+    "sha256": "eef7fc4f17d9818ad53fda4cf57b1de2ca7a31661833fae61695d89ff5dfbab3"
+  },
+  "bundle_after": {
+    "bytes": 401428,
+    "device": 16777244,
+    "inode": 72730005,
+    "sha256": "eef7fc4f17d9818ad53fda4cf57b1de2ca7a31661833fae61695d89ff5dfbab3"
+  },
+  "bundle_sha256": "eef7fc4f17d9818ad53fda4cf57b1de2ca7a31661833fae61695d89ff5dfbab3",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+      "elapsed_seconds": 0.065202,
+      "label": "base-before-head",
+      "returncode": 0,
+      "stderr": "01-base-before-head.stderr",
+      "stdout": "01-base-before-head.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+      "elapsed_seconds": 0.064937,
+      "label": "base-before-tree",
+      "returncode": 0,
+      "stderr": "02-base-before-tree.stderr",
+      "stdout": "02-base-before-tree.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+      "elapsed_seconds": 0.199867,
+      "label": "base-before-status",
+      "returncode": 0,
+      "stderr": "03-base-before-status.stderr",
+      "stdout": "03-base-before-status.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "--",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-authbus-r2"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+      "elapsed_seconds": 0.151102,
+      "label": "clone",
+      "returncode": 0,
+      "stderr": "04-clone.stderr",
+      "stdout": "04-clone.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "bundle",
+        "verify",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/candidate-5ded-from-4bde9.bundle"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-authbus-r2",
+      "elapsed_seconds": 0.064129,
+      "label": "bundle-verify",
+      "returncode": 0,
+      "stderr": "05-bundle-verify.stderr",
+      "stdout": "05-bundle-verify.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "fetch",
+        "--no-tags",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/candidate-5ded-from-4bde9.bundle",
+        "5ded017e1c858b8602a73678acc29df75386a84d"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-authbus-r2",
+      "elapsed_seconds": 0.090399,
+      "label": "fetch-bundle",
+      "returncode": 0,
+      "stderr": "06-fetch-bundle.stderr",
+      "stdout": "06-fetch-bundle.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "checkout",
+        "--detach",
+        "5ded017e1c858b8602a73678acc29df75386a84d"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-authbus-r2",
+      "elapsed_seconds": 0.398769,
+      "label": "checkout",
+      "returncode": 0,
+      "stderr": "07-checkout.stderr",
+      "stdout": "07-checkout.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-authbus-r2",
+      "elapsed_seconds": 0.067079,
+      "label": "source-head",
+      "returncode": 0,
+      "stderr": "08-source-head.stderr",
+      "stdout": "08-source-head.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-authbus-r2",
+      "elapsed_seconds": 0.066915,
+      "label": "source-tree",
+      "returncode": 0,
+      "stderr": "09-source-tree.stderr",
+      "stdout": "09-source-tree.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-authbus-r2",
+      "elapsed_seconds": 0.215106,
+      "label": "source-status",
+      "returncode": 0,
+      "stderr": "10-source-status.stderr",
+      "stdout": "10-source-status.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+      "elapsed_seconds": 0.06569,
+      "label": "base-after-head",
+      "returncode": 0,
+      "stderr": "11-base-after-head.stderr",
+      "stdout": "11-base-after-head.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+      "elapsed_seconds": 0.067785,
+      "label": "base-after-tree",
+      "returncode": 0,
+      "stderr": "12-base-after-tree.stderr",
+      "stdout": "12-base-after-tree.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+      "elapsed_seconds": 0.200754,
+      "label": "base-after-status",
+      "returncode": 0,
+      "stderr": "13-base-after-status.stderr",
+      "stdout": "13-base-after-status.stdout"
+    }
+  ],
+  "control_directory": {
+    "device": 16777244,
+    "inode": 72730018,
+    "mode": 448,
+    "uid": 501
+  },
+  "control_work_elapsed_seconds": 1.772548,
+  "controller_sha256": "3a6f937e4183ff41c5adbbc372f1b80cfc9f665764d1d06d4906581b91670768",
+  "deadline_fired": false,
+  "dr_outputs_after": [
+    {
+      "exists": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/full34-dr25-authbus-r2"
+    },
+    {
+      "exists": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/dr25-execution-authbus-r2"
+    },
+    {
+      "exists": false,
+      "path": "/Users/qianqi/heptabao-dr25-backups-20261106-authbus-r2"
+    },
+    {
+      "exists": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/dr25-key-custody-authbus-r2"
+    }
+  ],
+  "dr_outputs_before": [
+    {
+      "exists": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/full34-dr25-authbus-r2"
+    },
+    {
+      "exists": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/dr25-execution-authbus-r2"
+    },
+    {
+      "exists": false,
+      "path": "/Users/qianqi/heptabao-dr25-backups-20261106-authbus-r2"
+    },
+    {
+      "exists": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/dr25-key-custody-authbus-r2"
+    }
+  ],
+  "dr_started": false,
+  "failure": null,
+  "git_object_independence": {
+    "alternates_absent": true,
+    "new_count": 15,
+    "new_object_link_counts_one": true,
+    "old_count": 21,
+    "shared_inode_count": 0
+  },
+  "prepare_only_executed": false,
+  "process_custody": {
+    "children": [
+      {
+        "argv_sha256": "ee9bbb443030fa3a5b805711b3fb22694458261c1c6bf172091b4444fcc10c94",
+        "birth": {
+          "pgid": 19936,
+          "pid": 19936,
+          "ppid": 19934,
+          "sid": 19936,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19936,
+            "pid": 19936,
+            "ppid": 19934,
+            "sid": 19936,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19936,
+            "pid": 19936,
+            "ppid": 19934,
+            "sid": 19936,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19936,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19936,
+            "pid": 19936,
+            "ppid": 19934,
+            "sid": 19936,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19936,
+            "pid": 19936,
+            "ppid": 19934,
+            "sid": 19936,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19936,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "0536bb975bd4def4094fe54f8f377c331fde11ae0311295e9076c8a6ea5b033e",
+        "birth": {
+          "pgid": 19942,
+          "pid": 19942,
+          "ppid": 19934,
+          "sid": 19942,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19942,
+            "pid": 19942,
+            "ppid": 19934,
+            "sid": 19942,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19942,
+            "pid": 19942,
+            "ppid": 19934,
+            "sid": 19942,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19942,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19942,
+            "pid": 19942,
+            "ppid": 19934,
+            "sid": 19942,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19942,
+            "pid": 19942,
+            "ppid": 19934,
+            "sid": 19942,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19942,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "11ccb455a83e64238921e81ecaaa4fff978ce75e74fa300af33a214b1f57bde6",
+        "birth": {
+          "pgid": 19948,
+          "pid": 19948,
+          "ppid": 19934,
+          "sid": 19948,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19948,
+            "pid": 19948,
+            "ppid": 19934,
+            "sid": 19948,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19948,
+            "pid": 19948,
+            "ppid": 19934,
+            "sid": 19948,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19948,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19948,
+            "pid": 19948,
+            "ppid": 19934,
+            "sid": 19948,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19948,
+            "pid": 19948,
+            "ppid": 19934,
+            "sid": 19948,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19948,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "f26bd4fabaf42ef98aafc985d2d0f0434707c678af066f01fadbc29d909ce493",
+        "birth": {
+          "pgid": 19954,
+          "pid": 19954,
+          "ppid": 19934,
+          "sid": 19954,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19954,
+            "pid": 19954,
+            "ppid": 19934,
+            "sid": 19954,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19954,
+            "pid": 19954,
+            "ppid": 19934,
+            "sid": 19954,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19954,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19954,
+            "pid": 19954,
+            "ppid": 19934,
+            "sid": 19954,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19954,
+            "pid": 19954,
+            "ppid": 19934,
+            "sid": 19954,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19954,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "74e8eaf83efb982379fc94f8ffc7ff6d3b0ac71a71905ab77eaad97084047eae",
+        "birth": {
+          "pgid": 19963,
+          "pid": 19963,
+          "ppid": 19934,
+          "sid": 19963,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19963,
+            "pid": 19963,
+            "ppid": 19934,
+            "sid": 19963,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19963,
+            "pid": 19963,
+            "ppid": 19934,
+            "sid": 19963,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19963,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19963,
+            "pid": 19963,
+            "ppid": 19934,
+            "sid": 19963,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19963,
+            "pid": 19963,
+            "ppid": 19934,
+            "sid": 19963,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19963,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "320d12ff953132d19b67b7096b85dc2e0e691fe29f3e3e0b6ea27fb77e0218a4",
+        "birth": {
+          "pgid": 19970,
+          "pid": 19970,
+          "ppid": 19934,
+          "sid": 19970,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19970,
+            "pid": 19970,
+            "ppid": 19934,
+            "sid": 19970,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19970,
+            "pid": 19970,
+            "ppid": 19934,
+            "sid": 19970,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19970,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19970,
+            "pid": 19970,
+            "ppid": 19934,
+            "sid": 19970,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19970,
+            "pid": 19970,
+            "ppid": 19934,
+            "sid": 19970,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19970,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "c1aff7d6ad41e8d0590d0b7c1be9a9e7340f2635893cc8b11b833619b94c849d",
+        "birth": {
+          "pgid": 19984,
+          "pid": 19984,
+          "ppid": 19934,
+          "sid": 19984,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19984,
+            "pid": 19984,
+            "ppid": 19934,
+            "sid": 19984,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19984,
+            "pid": 19984,
+            "ppid": 19934,
+            "sid": 19984,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19984,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19984,
+            "pid": 19984,
+            "ppid": 19934,
+            "sid": 19984,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19984,
+            "pid": 19984,
+            "ppid": 19934,
+            "sid": 19984,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19984,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "ee9bbb443030fa3a5b805711b3fb22694458261c1c6bf172091b4444fcc10c94",
+        "birth": {
+          "pgid": 19994,
+          "pid": 19994,
+          "ppid": 19934,
+          "sid": 19994,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 19994,
+            "pid": 19994,
+            "ppid": 19934,
+            "sid": 19994,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 19994,
+            "pid": 19994,
+            "ppid": 19934,
+            "sid": 19994,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 19994,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 19994,
+            "pid": 19994,
+            "ppid": 19934,
+            "sid": 19994,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 19994,
+            "pid": 19994,
+            "ppid": 19934,
+            "sid": 19994,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 19994,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "0536bb975bd4def4094fe54f8f377c331fde11ae0311295e9076c8a6ea5b033e",
+        "birth": {
+          "pgid": 20000,
+          "pid": 20000,
+          "ppid": 19934,
+          "sid": 20000,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 20000,
+            "pid": 20000,
+            "ppid": 19934,
+            "sid": 20000,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 20000,
+            "pid": 20000,
+            "ppid": 19934,
+            "sid": 20000,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 20000,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 20000,
+            "pid": 20000,
+            "ppid": 19934,
+            "sid": 20000,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 20000,
+            "pid": 20000,
+            "ppid": 19934,
+            "sid": 20000,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 20000,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "11ccb455a83e64238921e81ecaaa4fff978ce75e74fa300af33a214b1f57bde6",
+        "birth": {
+          "pgid": 20006,
+          "pid": 20006,
+          "ppid": 19934,
+          "sid": 20006,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 20006,
+            "pid": 20006,
+            "ppid": 19934,
+            "sid": 20006,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 20006,
+            "pid": 20006,
+            "ppid": 19934,
+            "sid": 20006,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 20006,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 20006,
+            "pid": 20006,
+            "ppid": 19934,
+            "sid": 20006,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 20006,
+            "pid": 20006,
+            "ppid": 19934,
+            "sid": 20006,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 20006,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "ee9bbb443030fa3a5b805711b3fb22694458261c1c6bf172091b4444fcc10c94",
+        "birth": {
+          "pgid": 20012,
+          "pid": 20012,
+          "ppid": 19934,
+          "sid": 20012,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 20012,
+            "pid": 20012,
+            "ppid": 19934,
+            "sid": 20012,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 20012,
+            "pid": 20012,
+            "ppid": 19934,
+            "sid": 20012,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 20012,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 20012,
+            "pid": 20012,
+            "ppid": 19934,
+            "sid": 20012,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 20012,
+            "pid": 20012,
+            "ppid": 19934,
+            "sid": 20012,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 20012,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "0536bb975bd4def4094fe54f8f377c331fde11ae0311295e9076c8a6ea5b033e",
+        "birth": {
+          "pgid": 20021,
+          "pid": 20021,
+          "ppid": 19934,
+          "sid": 20021,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 20021,
+            "pid": 20021,
+            "ppid": 19934,
+            "sid": 20021,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 20021,
+            "pid": 20021,
+            "ppid": 19934,
+            "sid": 20021,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 20021,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 20021,
+            "pid": 20021,
+            "ppid": 19934,
+            "sid": 20021,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 20021,
+            "pid": 20021,
+            "ppid": 19934,
+            "sid": 20021,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 20021,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "11ccb455a83e64238921e81ecaaa4fff978ce75e74fa300af33a214b1f57bde6",
+        "birth": {
+          "pgid": 20031,
+          "pid": 20031,
+          "ppid": 19934,
+          "sid": 20031,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 20031,
+            "pid": 20031,
+            "ppid": 19934,
+            "sid": 20031,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 20031,
+            "pid": 20031,
+            "ppid": 19934,
+            "sid": 20031,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 20031,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 20031,
+            "pid": 20031,
+            "ppid": 19934,
+            "sid": 20031,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 20031,
+            "pid": 20031,
+            "ppid": 19934,
+            "sid": 20031,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 20031,
+        "returncode": 0,
+        "signals": []
+      }
+    ],
+    "controls": [],
+    "escaped_session_containment_claim": false,
+    "failed": false,
+    "finished": true,
+    "interrupted": false,
+    "original_count": 13,
+    "passed_process_custody": true,
+    "platform": "darwin",
+    "schema": "heptabao.dr-original-process-custody.v1",
+    "storage_or_production_authority": false,
+    "unreaped_original_is_signal_anchor": true
+  },
+  "product_started": false,
+  "production_authority": false,
+  "python": {
+    "bytes": 34640,
+    "device": 16777233,
+    "inode": 587518380,
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  },
+  "root": {
+    "device": 16777244,
+    "inode": 72671466,
+    "mode": 448,
+    "uid": 501
+  },
+  "running_build_source_or_artifacts_opened": false,
+  "runtime_outer_seconds": 60,
+  "runtime_terminal_required": true,
+  "schema": "heptabao.mac-dr25-source-stage.v1",
+  "signal_and_timer_restored": true,
+  "source": {
+    "commit": "5ded017e1c858b8602a73678acc29df75386a84d",
+    "status": "",
+    "tree": "9d1d040a063504ede67559fadb556897591642f2"
+  },
+  "source_commit": "5ded017e1c858b8602a73678acc29df75386a84d",
+  "source_directory": {
+    "device": 16777244,
+    "inode": 72730030,
+    "mode": 448,
+    "uid": 501
+  },
+  "source_pins": {
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": {
+      "bytes": 49393,
+      "device": 16777244,
+      "inode": 72733886,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "qa/openbao-acceptance/kv2_dr_process_custody.py": {
+      "bytes": 26131,
+      "device": 16777244,
+      "inode": 72733890,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 72065,
+      "device": 16777244,
+      "inode": 72733891,
+      "sha256": "01993e6c367bf8b896b4832c7723b1f36900fefbc20fcc05394ce401ec6b4f67"
+    },
+    "qa/openbao-acceptance/owned_process.py": {
+      "bytes": 28442,
+      "device": 16777244,
+      "inode": 72734015,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  },
+  "source_tree": "9d1d040a063504ede67559fadb556897591642f2",
+  "status": "staged_not_executed",
+  "test_source": {
+    "bytes": 44096,
+    "device": 16777244,
+    "inode": 72731326,
+    "sha256": "1571d88838fb127509cdbe24a7e7b5402453ec4cb1dbb784d56753aa2f49e584"
+  },
+  "work_seconds": 52,
+  "wrapper": {
+    "bytes": 22654,
+    "device": 16777244,
+    "inode": 72730019,
+    "sha256": "d435a05dec3dc28b976164540c1173b67a5a3f8360a6e5fd31a3926fe0c03a25"
+  },
+  "wrapper_sha256": "d435a05dec3dc28b976164540c1173b67a5a3f8360a6e5fd31a3926fe0c03a25"
+}
