@@ -1602,6 +1602,8 @@ pub struct Service {
     state_capacity: usize,
     #[cfg(test)]
     audit_capacity: u64,
+    #[cfg(all(test, feature = "native-v6-ha"))]
+    snapshot_forward_test: snapshot_transfer::forward::test_faults::State,
 }
 
 impl Service {
@@ -2069,6 +2071,8 @@ impl Service {
             state_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
             audit_capacity: MAX_AUDIT_BYTES,
+            #[cfg(all(test, feature = "native-v6-ha"))]
+            snapshot_forward_test: Default::default(),
         })
     }
 
@@ -2373,10 +2377,14 @@ impl Service {
     }
 
     pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let started = std::time::Instant::now();
-        let observed = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or(Duration::MAX);
+        let (started, observed) = self.native_snapshot_clock.unwrap_or_else(|| {
+            (
+                std::time::Instant::now(),
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or(Duration::MAX),
+            )
+        });
         let clock = match RequestClock::anchored(observed, started) {
             Ok(clock) => clock,
             Err(_) => {
@@ -2401,7 +2409,7 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
-        self.begin_at_mode_precise(
+        let execution = self.begin_at_mode_precise(
             RequestDispatch {
                 method,
                 path,
@@ -2416,8 +2424,12 @@ impl Service {
                 client_certificates,
             },
             clock,
-        )
-        .with_realtime_remote_jwt()
+        );
+        if self.native_snapshot_clock.is_some() {
+            execution
+        } else {
+            execution.with_realtime_remote_jwt()
+        }
     }
 
     // Test HTTP ingress keeps its original fixture clock and admission flags.
@@ -6756,6 +6768,7 @@ impl Service {
             origin_peer,
             approle_secret_consumption,
             false,
+            None,
         )
     }
 
@@ -6775,6 +6788,7 @@ impl Service {
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+        native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
     ) -> Response {
         Self::dispatch_authorized_subrequest_inner(
             state,
@@ -6791,6 +6805,7 @@ impl Service {
             origin_peer,
             approle_secret_consumption,
             true,
+            native_jwt_lifetime,
         )
     }
 
@@ -6810,7 +6825,11 @@ impl Service {
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
         defer_mount_quota_retirement: bool,
+        native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
     ) -> Response {
+        if native_jwt_lifetime.as_deref().is_some_and(Option::is_some) {
+            return Response::error(503, "native JWT output slot is not fresh");
+        }
         if path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/") {
             return Self::ui_mounts_route(state, principal, namespace, method, path, now);
         }
@@ -6979,6 +6998,8 @@ impl Service {
         // earlier second after the original HA proof. Completion below still
         // checks the continuing original clock without extending the grant.
         let auth_dispatch_seconds = auth.token_api_observed_time(time).seconds();
+        // Export this request-local witness only after real Identity finalization.
+        let mut authenticated_jwt_lifetime = None;
         let auth_result = if path == "sys/quotas/config"
             || path == "sys/quotas/rate-limit"
             || path.starts_with("sys/quotas/rate-limit/")
@@ -6995,7 +7016,7 @@ impl Service {
             )
             .map(Some)
         } else {
-            auth.handle_with_connection_clock_for_cluster(
+            auth.handle_with_connection_clock_and_native_jwt_lifetime_for_cluster(
                 principal,
                 namespace,
                 method,
@@ -7006,6 +7027,9 @@ impl Service {
                 client_certificates,
                 origin_peer,
                 Some(&state.cluster_id),
+                native_jwt_lifetime
+                    .is_some()
+                    .then_some(&mut authenticated_jwt_lifetime),
             )
         };
         match auth_result {
@@ -7111,6 +7135,11 @@ impl Service {
                     state.auth = auth;
                     state.engines = engines;
                     state.namespaces = namespaces;
+                }
+                if response.status == 200
+                    && let Some(output) = native_jwt_lifetime
+                {
+                    *output = authenticated_jwt_lifetime;
                 }
                 return Response {
                     unwrapped_json: response.unwrapped_json,

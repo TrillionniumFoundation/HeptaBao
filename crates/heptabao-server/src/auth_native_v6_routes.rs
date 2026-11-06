@@ -135,7 +135,7 @@ impl AuthState {
             && self.recovery_intent.is_none()
             && self.recovery_delivery.is_none()
             && self.password_policies.values().all(BTreeMap::is_empty)
-            && self.jwt_mounts.values().all(BTreeMap::is_empty)
+            && self.native_v6_jwt_state_supported()
             && self.kubernetes_mounts.values().all(BTreeMap::is_empty)
             && self.oidc_mounts.values().all(BTreeMap::is_empty)
             && self.ldap_mounts.values().all(BTreeMap::is_empty)
@@ -150,7 +150,7 @@ impl AuthState {
                     mounts.values().all(|mount| {
                         matches!(
                             mount.kind.as_str(),
-                            "token" | "approle" | "cert" | "userpass"
+                            "token" | "approle" | "cert" | "userpass" | "jwt"
                         )
                     })
                 } else if paths.is_some_and(|paths| paths.contains(namespace)) {
@@ -185,6 +185,7 @@ impl AuthState {
                         || !matches!(
                             token.auth_provenance,
                             Some(TokenAuthProvenance::Userpass { .. })
+                                | Some(TokenAuthProvenance::Jwt { .. })
                         ))
                     && matches!(
                         token.auth_provenance,
@@ -192,6 +193,7 @@ impl AuthState {
                             | Some(TokenAuthProvenance::AppRole { .. })
                             | Some(TokenAuthProvenance::Cert { .. })
                             | Some(TokenAuthProvenance::Userpass { .. })
+                            | Some(TokenAuthProvenance::Jwt { .. })
                     )
             })
     }
@@ -381,6 +383,9 @@ impl AuthState {
             return self.native_v6_plain_auth_route(namespace, method, path, body);
         }
         if self.native_v6_userpass_route(namespace, method, path, body) {
+            return true;
+        }
+        if self.native_v6_jwt_route(namespace, method, path, body) {
             return true;
         }
         if path == "sys/policy"

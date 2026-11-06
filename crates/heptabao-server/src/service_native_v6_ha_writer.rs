@@ -9,17 +9,25 @@ use std::cell::RefCell;
 // Opt-in phase observations only: no payload, credential, source admission or
 // new deadline is created. Drop also records the phase that returned an error.
 // Diagnostic I/O failure never changes the original result or its custody.
-#[cfg(feature = "private-ha-forward-diagnostic")]
+#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
 struct NativeHaPhaseTimer {
+    #[cfg(feature = "private-ha-forward-diagnostic")]
     phase: &'static str,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
     started: std::time::Instant,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
     original_until: std::time::Instant,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
     generation: u64,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
     objects: u64,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
     bytes: u64,
     completed: bool,
+    #[cfg(test)]
+    timing: Option<crate::ha::NativeV6TimingSpan>,
 }
-#[cfg(feature = "private-ha-forward-diagnostic")]
+#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
 impl NativeHaPhaseTimer {
     fn start(
         phase: &'static str,
@@ -28,36 +36,83 @@ impl NativeHaPhaseTimer {
         objects: u64,
         bytes: u64,
     ) -> Self {
+        #[cfg(all(test, not(feature = "private-ha-forward-diagnostic")))]
+        let _ = (generation, objects, bytes);
         Self {
+            #[cfg(feature = "private-ha-forward-diagnostic")]
             phase,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
             started: std::time::Instant::now(),
+            #[cfg(feature = "private-ha-forward-diagnostic")]
             original_until,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
             generation,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
             objects,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
             bytes,
             completed: false,
+            #[cfg(test)]
+            timing: crate::ha::NativeV6TimingSpan::start(
+                "test_native_service_publication",
+                phase,
+                Some(original_until),
+            ),
         }
     }
     fn finish(mut self, completed: bool) {
         self.completed = completed;
     }
 }
-#[cfg(feature = "private-ha-forward-diagnostic")]
+#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
 impl Drop for NativeHaPhaseTimer {
     fn drop(&mut self) {
-        use std::io::Write as _;
-        let observed = std::time::Instant::now();
-        let _ = writeln!(
-            std::io::stderr().lock(),
-            "HBHA-PRIVATE-PERF phase={} elapsed_us={} completed={} original_deadline_expired={} generation={} objects={} bytes={}",
-            self.phase,
-            observed.duration_since(self.started).as_micros(),
-            self.completed,
-            observed >= self.original_until,
-            self.generation,
-            self.objects,
-            self.bytes,
-        );
+        #[cfg(test)]
+        if let Some(timing) = self.timing.take() {
+            timing.finish(self.completed);
+        }
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        {
+            use std::io::Write as _;
+            let observed = std::time::Instant::now();
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-PERF phase={} elapsed_us={} completed={} original_deadline_expired={} generation={} objects={} bytes={}",
+                self.phase,
+                observed.duration_since(self.started).as_micros(),
+                self.completed,
+                observed >= self.original_until,
+                self.generation,
+                self.objects,
+                self.bytes,
+            );
+        }
+    }
+}
+
+// Observations only. Unknown reasons, their bytes and their fingerprints never
+// enter a report; this classification cannot change the original refusal.
+#[cfg(test)]
+fn before_root_observation_class(reason: &str) -> &'static str {
+    match reason {
+        "remote Raft consensus failed: ReadIndex application witness is not current" => {
+            "read_witness_not_current"
+        }
+        "remote Raft consensus failed: linearizable read deadline exceeded" => {
+            "read_index_deadline"
+        }
+        "remote Raft consensus failed: native checkpoint reselection is unavailable" => {
+            "checkpoint_reselection_unavailable"
+        }
+        "original native V6 request gate is unavailable or expired" => "original_gate",
+        "native V6 ciphertext directory is inconsistent" => "ciphertext_directory",
+        "native V6 ciphertext storage is unavailable or changed" => "ciphertext_storage",
+        "native V6 ciphertext closure exceeds its bound" => "ciphertext_bound",
+        "HA quorum is unavailable" => "closure_quorum_unavailable",
+        "native HA source, full provenance, enrollment or term changed" => {
+            "source_provenance_or_term"
+        }
+        _ => "unclassified_before_root",
     }
 }
 
@@ -103,7 +158,7 @@ impl Service {
         original_actor(&source_auth)?;
         // Authenticate staged owners and the actual incremental native views
         // before they are offered to the real consensus writer.
-        #[cfg(feature = "private-ha-forward-diagnostic")]
+        #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
             "service_staged_candidate",
             deadline.instant(),
@@ -114,7 +169,7 @@ impl Service {
             }),
         );
         let installed_candidate = self.install_prepared_native_candidate(&plan, original_actor)?;
-        #[cfg(feature = "private-ha-forward-diagnostic")]
+        #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         phase.finish(true);
         self.require_native_root_candidate(&installed_candidate)?;
         let candidate_identity = plan.root.identity().map_err(|_| rejected())?;
@@ -154,7 +209,7 @@ impl Service {
         // typed publication and local installation all retain fresh source,
         // AEAD/address, current format permission, Actor and custody checks.
         let payload_validation = &plan.payload_validation;
-        #[cfg(feature = "private-ha-forward-diagnostic")]
+        #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
             "service_ha_publication",
             deadline.instant(),
@@ -268,8 +323,18 @@ impl Service {
                 &mut local_gate,
             )
         };
-        #[cfg(feature = "private-ha-forward-diagnostic")]
+        #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         phase.finish(publication.is_ok());
+        #[cfg(test)]
+        if let Err(NativeHaPublicationError::BeforeRoot { reason }) = &publication
+            && let Some(timing) = crate::ha::NativeV6TimingSpan::start(
+                "test_native_publication_refusal",
+                before_root_observation_class(reason),
+                Some(deadline.instant()),
+            )
+        {
+            timing.finish(false);
+        }
         let committed = match publication {
             Ok(committed) => committed,
             Err(NativeHaPublicationError::BeforeRoot { .. }) => {
@@ -301,7 +366,7 @@ impl Service {
             }
             // Drop the coordinator's HaProcess lock before the real installer
             // takes that same process and the actual local barrier owner.
-            #[cfg(feature = "private-ha-forward-diagnostic")]
+            #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
             let phase = NativeHaPhaseTimer::start(
                 "service_local_install",
                 deadline.instant(),
@@ -343,7 +408,7 @@ impl Service {
                     &mut install_actor,
                 )?;
             }
-            #[cfg(feature = "private-ha-forward-diagnostic")]
+            #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
             phase.finish(true);
             let installed = self.state.as_mut().ok_or_else(rejected)?;
             if owner_store::serialize_owner(&installed.auth)

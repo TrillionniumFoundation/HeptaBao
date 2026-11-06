@@ -142,6 +142,10 @@ impl Cluster {
                 forward_timeout: Duration::from_secs(1),
                 emit_legacy_peer_v1: false,
                 forward_handler: Arc::new(Mutex::new(None)),
+                #[cfg(feature = "native-v6-ha")]
+                snapshot_forward_handler: Arc::new(Mutex::new(None)),
+                #[cfg(feature = "native-v6-ha")]
+                snapshot_server_pins: BTreeMap::new(),
                 listener: None,
             })));
         }

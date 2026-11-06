@@ -305,6 +305,10 @@ fn snapshot(
         NativeSnapshotAdmission::Redirect(_) => {
             return Err("HA import snapshot unexpected redirect".into());
         }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            return Err("HA import snapshot unexpected forward".into());
+        }
     };
     drop(writer);
     let (result, file) = pending.execute_snapshot_transfer(&mut bytes.unwrap_or(&[]));

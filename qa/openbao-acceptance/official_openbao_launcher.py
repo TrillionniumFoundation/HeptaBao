@@ -196,6 +196,56 @@ def stop_oracle(oracle):
     ])
 
 
+def crash_oracle(oracle):
+    """Intentionally KILL and wait one live original; never apply TERM/0 later.
+
+    This is a separate fault-injection contract. An already dead original,
+    changed handle, failed wait or any code other than -9 remains a failure.
+    The receipt contains no argv, environment, provider response or credential.
+    """
+    process, log = oracle.get("process"), oracle.get("log")
+    row = {"operation": "intentional_crash", "original_pid": getattr(process, "pid", None),
+           "declared_action": "KILL", "expected_exit_code": -9,
+           "original_wait_completed": False, "status": "failed"}
+    oracle.setdefault("process_lifecycle", []).append(row)
+    first = None
+    try:
+        if process is None:
+            raise BaoError("official_oracle_crash_requires_live_original")
+        row["live_before_crash"] = process.poll() is None
+        if not row["live_before_crash"]:
+            code = owned_process.wait(process, timeout=5)
+            row.update(exit_code=code, original_wait_completed=(type(code) is int and process.returncode == code))
+            raise BaoError("official_oracle_crash_requires_live_original")
+        code = owned_process.stop(process, action="KILL", timeout=5)
+        row.update(exit_code=code, original_wait_completed=(type(code) is int and process.returncode == code))
+        if code != -9 or not row["original_wait_completed"]:
+            raise BaoError("official_oracle_crash_exit_code")
+        if oracle.get("process") is not process or oracle.get("log") is not log:
+            raise BaoError("official_oracle_crash_original_changed")
+        row["status"] = "passed"
+    except BaseException as error:
+        first = error
+    finally:
+        try:
+            if log is not None and not log.closed:
+                log.close()
+        except BaseException as error:
+            if first is None:
+                first = error
+        row["log_closed"] = log is None or log.closed
+        if row["original_wait_completed"] and oracle.get("process") is process:
+            oracle["process"] = None
+        if row["log_closed"] and oracle.get("log") is log:
+            oracle["log"] = None
+        if first is not None:
+            row["status"] = "failed"
+            row["failure_class"] = type(first).__name__
+    if first is not None:
+        raise first
+    return dict(row)
+
+
 def restart_oracle(oracle):
     """Restart the same private synthetic Oracle root without reinitializing it."""
     version = oracle.get("version", VERSION)

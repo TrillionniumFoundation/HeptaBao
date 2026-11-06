@@ -248,7 +248,7 @@ impl HttpsFixture {
                 consistency::Settings::default(),
                 deadline,
             );
-            write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+            write_http1_reply(&mut stream, reply, head, &namespace, deadline)?;
             if Instant::now() >= deadline {
                 return Err(io::Error::new(
                     io::ErrorKind::TimedOut,

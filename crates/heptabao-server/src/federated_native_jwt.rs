@@ -25,6 +25,31 @@ pub(crate) struct NativeJwtTimePolicy {
     pub maximum_token_lifetime_seconds: Option<u64>,
 }
 
+/// Signed time bounds produced by the same successful verifier invocation.
+/// It carries no identity, policy, token or publication authority.
+pub(crate) struct NativeJwtLifetime {
+    issued: i128,
+    expiry: i128,
+    not_before: i128,
+    skew: i128,
+    legacy_strict_expiry: bool,
+}
+
+impl NativeJwtLifetime {
+    pub(crate) fn check_at(&self, now: u64) -> Result<(), AuthError> {
+        let now = i128::from(now);
+        let expired = if self.legacy_strict_expiry {
+            now >= self.expiry
+        } else {
+            now - self.skew > self.expiry
+        };
+        if now + self.skew < self.not_before || expired || now + self.skew < self.issued {
+            return Err(AuthError::TokenTimeInvalid);
+        }
+        Ok(())
+    }
+}
+
 fn missing_claim_leeway(value: i64) -> i128 {
     if value < 0 {
         0
@@ -80,6 +105,18 @@ impl JwtVerifier {
         bounds: Option<&NativeJwtBoundClaims>,
         user_claim: &str,
     ) -> Result<NativeJwtIdentity, AuthError> {
+        self.verify_native_with_user_claim_and_lifetime(token, now, time, bounds, user_claim)
+            .map(|(identity, _)| identity)
+    }
+
+    pub(crate) fn verify_native_with_user_claim_and_lifetime(
+        &self,
+        token: &str,
+        now: u64,
+        time: NativeJwtTimePolicy,
+        bounds: Option<&NativeJwtBoundClaims>,
+        user_claim: &str,
+    ) -> Result<(NativeJwtIdentity, NativeJwtLifetime), AuthError> {
         let (mut claims, _) = self.verified_claims(token)?;
         // Match only the verified, original claims. Registered fields have not
         // been consumed or replaced with inferred time values yet.
@@ -135,16 +172,14 @@ impl JwtVerifier {
                 expiry - missing_claim_leeway(time.not_before_leeway)
             };
         }
-        let now = i128::from(now);
-        let skew = i128::from(time.clock_skew_seconds);
-        let expired = if time.legacy_strict_expiry {
-            now >= expiry
-        } else {
-            now - skew > expiry
+        let lifetime = NativeJwtLifetime {
+            issued,
+            expiry,
+            not_before,
+            skew: i128::from(time.clock_skew_seconds),
+            legacy_strict_expiry: time.legacy_strict_expiry,
         };
-        if now + skew < not_before || expired || now + skew < issued {
-            return Err(AuthError::TokenTimeInvalid);
-        }
+        lifetime.check_at(now)?;
         let namespace = take_optional_string(&mut claims, "heptabao_namespace")?;
         let groups = take_string_set(&mut claims, "groups")?;
         if issuer != self.policy.issuer
@@ -158,14 +193,17 @@ impl JwtVerifier {
             return Err(AuthError::ClaimDenied);
         }
         let alias = selected_alias.unwrap_or_else(|| subject.clone());
-        Ok(NativeJwtIdentity {
-            issuer,
-            subject,
-            alias,
-            audiences,
-            namespace,
-            groups,
-        })
+        Ok((
+            NativeJwtIdentity {
+                issuer,
+                subject,
+                alias,
+                audiences,
+                namespace,
+                groups,
+            },
+            lifetime,
+        ))
     }
 }
 

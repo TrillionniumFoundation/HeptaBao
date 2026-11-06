@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.mac-authbus-owner-bind.original-failure-reconciliation.r1",
+  "observation_kind": "recovery_of_existing_original_result_not_new_execution",
+  "source": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/outer-native-r1/result.public.json",
+    "bytes": 131016,
+    "sha256": "6e1a03291ae41c344826efe182af87aa74b5b360ae5a4ae52ea1928c720691c8"
+  },
+  "original_authoritative_terminal": {
+    "job_id": "1a1ae51309d-fc05-5ef8",
+    "state": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "publication": "confirmed",
+    "durable_complete": true,
+    "exact_saved_tool_text": "mac/authbus-owner-bind-failed.authoritative-terminal.exact-tool-text.json"
+  },
+  "source_binding": {
+    "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "sourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "failure": {
+    "errorType": "ManagerRefused",
+    "errorCode": null,
+    "errorFrames": [
+      {
+        "file": "mac_current_outer_wal_r1.py",
+        "line": 1030
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 374
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 263
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 143
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 76
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 39
+      }
+    ],
+    "cleanupErrorType": "ManagerRefused",
+    "cleanupErrorCode": "typed_launchctl_integer",
+    "confirmed_failure_boundary": "owned launchd manager rejected launchctl print integer parsing after initial server bootstrap returned exit zero",
+    "source_interpretation": "Pinned parse_print requires each present pid, runs and last exit code value to match the signed decimal pattern -?[0-9]{1,10}. The public stack reaches that check from start_server -> _ready -> _query; cleanup independently records typed_launchctl_integer.",
+    "exact_rejected_field_and_value_retained_in_safe_result": false,
+    "no_assumption_about_exact_invalid_value": true,
+    "pinned_manager_source": {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_owned_launchd_r3.py",
+      "bytes": 35736,
+      "sha256": "4989b58248f7951f825c021402bef611708b8613291d3282761c8c97d0b4adf6"
+    }
+  },
+  "manager": {
+    "ok": false,
+    "completedOperationCount": 0,
+    "elapsedSeconds": 0.30232183262705803,
+    "allOwnedCommandsStopped": true,
+    "allManagerReadDescriptorsClosed": true,
+    "allRegistrationsClosed": false,
+    "allKnownLineagesClosed": false,
+    "failureCleanupAttempted": true,
+    "outcomeUnknown": true,
+    "productionManagerQualification": false
+  },
+  "initial_registration": {
+    "generation": "server-initial",
+    "kind": "server",
+    "completeKnownSuccess": false,
+    "registrationClosed": false,
+    "lineagesClosed": false,
+    "bootstrap": {
+      "attempted": true,
+      "complete": true,
+      "exitCode": 0
+    }
+  },
+  "business_scope": {
+    "ok": false,
+    "outcomeUnknown": true,
+    "allAccountsQualified": false,
+    "allOwnedRegistrationsLineagesHelpersClosed": false,
+    "currentProviderAvailabilityQualified": false,
+    "fullReplacementQualified": false,
+    "productionManagerQualification": false,
+    "productionCaptureAttempted": true,
+    "productionChangedByController": false,
+    "productionServiceOperationDispatched": false,
+    "providerRequested": false,
+    "j3160Contacted": false,
+    "automaticBusinessRetry": false,
+    "check_count": 0,
+    "owned_phase_count": 0
+  },
+  "prior_capture_scope": {
+    "ok": true,
+    "actualNativeRuntimeCompatible": true,
+    "allCaptureLibraryResourcesClosed": true,
+    "allOwnedDescriptorsClosed": true,
+    "originalDeadlineMetAfterPrivatePublicationAndClosure": true,
+    "outcomeUnknown": false,
+    "productionReadAttempted": true,
+    "productionWriteAttempted": false,
+    "providerRequestSent": false,
+    "j3160Contacted": false,
+    "wholeDatabaseBackupQualified": false,
+    "crossAgentAtomicSnapshotClaimed": false
+  },
+  "conclusions": [
+    "Original task failed; initial launchctl bootstrap success is not AuthBus qualification.",
+    "Owned command processes were reported stopped, while service registration and lineage closure were not established.",
+    "This receipt does not authorize or prove successful cleanup, service cutover, provider access, or a retry.",
+    "No current launchd registration state was queried during this recovery; the unresolved original closure remains a separate reconciliation obligation.",
+    "No physical HA 98+12 controller result is proved by this receipt."
+  ],
+  "this_recovery_actions": {
+    "remote_file_reads_only": true,
+    "private_capsule_or_credentials_read": false,
+    "original_task_retried": false,
+    "consumer_started": false,
+    "provider_contacted": false,
+    "service_changed": false
+  },
+  "publication_projection": "Credential/profile fingerprints, capture digests, TLS pins, argv and private path contents are omitted."
+}

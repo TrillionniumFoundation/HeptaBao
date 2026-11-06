@@ -58,6 +58,8 @@ fn admitted(
             Err(format!("repair admission HTTP {}", response.status).into())
         }
         NativeSnapshotAdmission::Redirect(_) => Err("repair leader unexpectedly redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("repair leader unexpectedly forwarded".into()),
     }
 }
 

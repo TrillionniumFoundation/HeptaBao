@@ -44,6 +44,9 @@ mod snapshot_accept_tests;
 #[cfg(test)]
 #[path = "http_test_client.rs"]
 mod test_client;
+#[cfg(test)]
+#[path = "http_tls_close_tests.rs"]
+mod tls_close_tests;
 #[cfg(unix)]
 #[path = "http_tls_reload.rs"]
 mod tls_reload;
@@ -674,6 +677,23 @@ fn serve_inner(
         ha.lock()
             .map_err(|_| "HA process lock is unavailable".to_owned())?
             .register_forward_handler(handler)?;
+        #[cfg(feature = "native-v6-ha")]
+        if ha
+            .lock()
+            .map_err(|_| "HA process lock is unavailable".to_owned())?
+            .native_v6_enabled()
+        {
+            let weak_service = Arc::downgrade(&service);
+            let snapshot_handler: crate::ha::SnapshotForwardHandler = Arc::new(move |ingress| {
+                let service = weak_service
+                    .upgrade()
+                    .ok_or(heptabao_ha_service::HaError::Transport)?;
+                Service::serve_native_snapshot_peer(&service, ingress, forward_timeout)
+            });
+            ha.lock()
+                .map_err(|_| "HA process lock is unavailable".to_owned())?
+                .register_snapshot_forward_handler(snapshot_handler)?;
+        }
     }
     let listener = match TcpListener::bind(config.listen) {
         Ok(value) => value,
@@ -880,16 +900,13 @@ fn serve_inner(
         let request_ui_assets = ui_assets.clone();
         let spawn = std::thread::Builder::new()
             .name("heptabao-request".into())
-            .spawn(move || {
+            .spawn(move || -> io::Result<()> {
                 let service = request_service;
                 let _guard = guard;
                 let mutation_profile =
                     mutation_profile::Scope::begin(mutation_profile_enabled, accepted_at);
-                if stream.set_read_timeout(Some(timeout)).is_err()
-                    || stream.set_write_timeout(Some(timeout)).is_err()
-                {
-                    return;
-                }
+                stream.set_read_timeout(Some(timeout))?;
+                stream.set_write_timeout(Some(timeout))?;
                 mutation_profile.point(mutation_profile::Point::TlsStart);
                 let Some(mut stream) = h2_transport::negotiate(
                     stream,
@@ -903,12 +920,12 @@ fn serve_inner(
                     request_ui_assets.clone(),
                     rate_limited,
                 ) else {
-                    return;
+                    return Ok(());
                 };
                 mutation_profile.point(mutation_profile::Point::TlsEnd);
                 let attempt_id = match crypto::random::<16>() {
                     Ok(value) => value,
-                    Err(_) => return,
+                    Err(_) => return Ok(()),
                 };
                 if rate_limited {
                     let response = audited_wire_rejection(
@@ -925,8 +942,10 @@ fn serve_inner(
                         false,
                         "",
                         deadline,
-                    );
-                    return;
+                    )?;
+                    // Terminal failure is logged by the close helper and ends
+                    // this worker. The admitted response is never retried.
+                    return finish_http1_connection(&mut stream);
                 }
                 // Parsing and a bounded rejected-body discard must leave time for
                 // the negative response inside the original accepted connection.
@@ -969,7 +988,14 @@ fn serve_inner(
                     deadline,
                 );
                 mutation_profile.point(mutation_profile::Point::DispatchEnd);
-                write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                let native_redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
+                write_http1_reply(&mut stream, reply, head, &namespace, deadline)?;
+                if native_redirect {
+                    return Ok(());
+                }
+                // Return the terminal result without replaying the Service
+                // operation or attempting a second HTTP response.
+                finish_http1_connection(&mut stream)
             });
         if spawn.is_err() {
             #[cfg(target_os = "linux")]
@@ -1387,13 +1413,14 @@ fn write_http1_reply(
     head: bool,
     namespace: &str,
     deadline: Instant,
-) {
+) -> io::Result<()> {
     let mut observation = ResponseWriteObservation {
         writer,
         accepted_plaintext_bytes: 0,
         flush_attempted: false,
     };
-    if let Err(error) = reply.write_with_namespace(&mut observation, head, namespace) {
+    let result = reply.write_with_namespace(&mut observation, head, namespace);
+    if let Err(error) = &result {
         // Error text can carry peer/provider bytes. Only closed error kinds and
         // counters are emitted; no path, token, headers, body or parser line.
         eprintln!(
@@ -1416,6 +1443,43 @@ fn write_http1_reply(
             Instant::now() >= deadline
         );
     }
+    result
+}
+
+fn finish_http1_connection(
+    stream: &mut StreamOwned<rustls::ServerConnection, DeadlineStream>,
+) -> io::Result<()> {
+    // Only a fully written ordinary HTTP/1 response reaches this helper.
+    // Flush the TLS close alert through the same DeadlineStream, without
+    // reading peer bytes, waiting for an acknowledgement, or renewing time.
+    // Native redirects retain their existing unread-upload teardown.
+    let result = (|| -> io::Result<()> {
+        stream.sock.remaining()?;
+        stream.conn.send_close_notify();
+        while stream.conn.wants_write() {
+            match stream.conn.write_tls(&mut stream.sock) {
+                Ok(0) => {
+                    return Err(io::Error::new(
+                        io::ErrorKind::WriteZero,
+                        "TLS close alert write made no progress",
+                    ));
+                }
+                Ok(_) => {}
+                Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+                Err(error) => return Err(error),
+            }
+        }
+        stream.sock.remaining().map(|_| ())
+    })();
+    if let Err(error) = &result {
+        // Closed error kind only; no peer-supplied text or response contents.
+        eprintln!(
+            "HBHTTP-TLS-CLOSE-FAILURE io_kind={:?} original_deadline_expired={}",
+            error.kind(),
+            Instant::now() >= stream.sock.deadline
+        );
+    }
+    result
 }
 
 struct DeadlineStream {

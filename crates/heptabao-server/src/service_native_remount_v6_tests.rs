@@ -397,6 +397,8 @@ fn transfer(
             Ok((response, None))
         }
         NativeSnapshotAdmission::Redirect(_) => Err("standalone snapshot redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("standalone snapshot forwarded".into()),
     }
 }
 fn cipher_observation(service: &Service) -> TestResult<BTreeMap<PathBuf, (u64, [u8; 32])>> {

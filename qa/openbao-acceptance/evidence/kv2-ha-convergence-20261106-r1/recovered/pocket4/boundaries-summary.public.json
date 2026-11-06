@@ -1,0 +1,106 @@
+{
+  "applied_cache_entries_at_original_observation": 3,
+  "applied_cache_generation_mismatches_at_original_observation": 1,
+  "held_consumers": [
+    "openclaw-gateway.service",
+    "openclaw-authbus-restart-when-idle.service"
+  ],
+  "known_source_profiles_at_original_observation": 5,
+  "legacy_cleanup_qualified": false,
+  "observation_kind": "recovery_of_2026-11-04_records_not_new_service_execution",
+  "original_hold_reconciliation": {
+    "action": "reconcile",
+    "allCredentialReadersClassified": false,
+    "allFilesInstalledAndOriginalsExact": true,
+    "automaticReleasePermitted": false,
+    "automaticRetryPermitted": false,
+    "cgroupAbsenceVerified": false,
+    "cohortAdmissionQualified": false,
+    "credentialFilesRead": false,
+    "filesystemWritesPerformed": false,
+    "host": "pocket4",
+    "installationDurableCompletionRecorded": true,
+    "managerConditionVerified": false,
+    "managerReloaded": false,
+    "observedUtc": "2026-11-04T08:49:07.455946+00:00",
+    "ok": true,
+    "ownedProcessesStopped": false,
+    "persistentHoldQualified": false,
+    "productionGrantAdmitted": false,
+    "providerContacted": false,
+    "rawSourceValuesEmitted": false,
+    "schema": "heptabao.authbus.linux-inhibition-files.hb3.r1",
+    "serviceActionsTaken": false,
+    "uniqueRefreshOwnerQualified": false
+  },
+  "original_inventory_qualification": {
+    "all_backups_enumerated": false,
+    "all_clients_enumerated": false,
+    "bounded_inventory_only": true,
+    "credentials_verified": false,
+    "cutover_qualified": false,
+    "legacy_cleanup_qualified": false
+  },
+  "original_receipts": [
+    {
+      "bytes": 1417,
+      "name": "exact-hold-directives-r1.public.json",
+      "remote_path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/exact-hold-directives-r1.public.json",
+      "sha256": "f4eeb5dfa1cf014bf6699c9c433d29493bdfb61f478292ce627d97f5ca194872"
+    },
+    {
+      "bytes": 6109,
+      "name": "inventory-summary-r1.public.json",
+      "remote_path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/inventory-summary-r1.public.json",
+      "sha256": "f1709f1da261c0fcf500d281e48ca6c9844e74df960290d71f3d9e70bccd8a33"
+    },
+    {
+      "bytes": 2622,
+      "name": "pocket-authbus-cache-semantics-r1.public.json",
+      "remote_path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/pocket-authbus-cache-semantics-r1.public.json",
+      "sha256": "75c1d1dc04c8eece0a54fcf87f65db680a9d830883ff8bfe53538e57f3ee0a12"
+    },
+    {
+      "bytes": 16534,
+      "name": "pocket-cutover-current-bindings-r1.public.json",
+      "remote_path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/pocket-cutover-current-bindings-r1.public.json",
+      "sha256": "ffec59de80441da9704c8ec42f2fd77f9b421cf55caf26d73af5b6866d9545b2"
+    },
+    {
+      "bytes": 1680,
+      "name": "pocket-original-hold-reconcile-r1.public.json",
+      "remote_path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/pocket-original-hold-reconcile-r1.public.json",
+      "sha256": "2544dd36aeeb9e3627f460dc8a9ee884cc79f6b8ce2a33ca14c8d3138cb9cadf"
+    },
+    {
+      "bytes": 1848,
+      "name": "registered-startup-backup-coverage-r2.public.json",
+      "remote_path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "sha256": "fb745eead3657d514db27ac2f83a3e10a5744550d980201ccf1363fff86053be"
+    },
+    {
+      "bytes": 8869,
+      "name": "registered-startup-backup-r1.public.json",
+      "remote_path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "401b596105ed9e1610e2119246438a53346293c83e3635739511d3f6041be2bf"
+    }
+  ],
+  "persistent_condition": "ConditionPathExists=!<corresponding-original-hold-file>",
+  "production_cutover_qualified": false,
+  "profile_identity_config_source_and_cache_fingerprints_omitted": true,
+  "publish_baseline_entries_outside_original_source": 1,
+  "registered_backup_scope": {
+    "all_backups_enumerated": false,
+    "all_clients_enumerated": false,
+    "audit_locator_limit_reached": 512,
+    "backup_payloads_opened": false,
+    "owner_crontab_observed_empty": true,
+    "owner_user_systemd_records": 382,
+    "paperraid_covered": false,
+    "system_cron_scanned": "bounded direct files in crontab and cron directories",
+    "system_systemd_records": 726,
+    "unresolved_owner_runtimes_without_argv": 30
+  },
+  "schema": "heptabao.pocket4-migration-boundaries.public-projection.v1",
+  "service_or_hold_changed_this_turn": false
+}

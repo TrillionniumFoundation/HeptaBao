@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.pinned-legacy-snapshot-transport.v1",
+  "source_commit": "d26ed9d5c3bfd1cac6c669f7b767c753adc2f823",
+  "purpose": "Preserve the separately pinned legacy JSON protocol while current candidate downloads use bounded gzip bytes.",
+  "runtime_executed": false,
+  "product_modified": false,
+  "sources": [
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "git_blob": "01f074c2911e4b108dfc0c574396e9b4d480cc16",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/d26ed9d5c3bfd1cac6c669f7b767c753adc2f823/crates/heptabao-server/src/http.rs",
+      "excerpt_first_line": 1018,
+      "excerpt": "fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {\n    let mut bytes = Zeroizing::new(if response.status == 204 {\n        Vec::new()\n    } else {\n        serde_json::to_vec(&response.body)?\n    });\n    let status = if bytes.len() > MAX_RESPONSE {\n        bytes = Zeroizing::new(br#\"{\"errors\":[\"response exceeds limit\"]}\"#.to_vec());\n        500\n    } else {\n        response.status\n    };\n    let reason = match status {\n        200 => \"OK\",\n        204 => \"No Content\",\n        400 => \"Bad Request\",\n        403 => \"Forbidden\",\n        404 => \"Not Found\",\n        409 => \"Conflict\",\n        413 => \"Payload Too Large\",\n        429 => \"Too Many Requests\",\n        501 => \"Not Implemented\",\n        503 => \"Service Unavailable\",\n        507 => \"Insufficient Storage\",\n        _ => \"Error\",\n    };\n    let retry_after = if status == 429 {\n        \"Retry-After: 1\\r\\n\"\n    } else {\n        \"\"\n    };\n    write!(\n        writer,\n        \"HTTP/1.1 {status} {reason}\\r\\nContent-Type: application/json\\r\\nContent-Length: {}\\r\\n{retry_after}Connection: close\\r\\nCache-Control: no-store\\r\\nX-Content-Type-Options: nosniff\\r\\n\\r\\n\",\n        bytes.len()\n    )?;\n    if !head {\n        writer.write_all(&bytes)?;\n    }\n    writer.flush()\n}\n\n#[cfg(test)]"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "git_blob": "a5a32587ba279b141e8ca443db3c35e51e1fb1ef",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/d26ed9d5c3bfd1cac6c669f7b767c753adc2f823/crates/heptabao-server/src/service.rs",
+      "excerpt_first_line": 4400,
+      "excerpt": "        if path == \"sys/storage/raft/snapshot\" && method == \"GET\" {\n            if let Some(ha) = self.ha.as_ref() {\n                let result = ha\n                    .lock()\n                    .map_err(|_| ())\n                    .and_then(|ha| ha.trigger_snapshot().map_err(|_| ()));\n                if result.is_err() {\n                    return Response::error(503, \"HA snapshot trigger failed\");\n                }\n            }\n            let Some(durable) = self.durable.as_ref() else {\n                return Response::error(503, \"server is sealed\");\n            };\n            let backup = match durable.export_backup() {\n                Ok(value) => Zeroizing::new(value),\n                Err(_) => return Response::error(503, \"cannot export durable snapshot\"),\n            };\n            if backup.len() > MAX_BACKUP_TRANSFER_BYTES {\n                return Response::error(507, \"durable snapshot exceeds transfer limit\");\n            }\n            let digest = hex(&crypto::digest(&backup));\n            return Response::ok(json!({\n                \"data\": {\n                    \"snapshot\": STANDARD.encode(backup.as_slice()),\n                    \"sha256\": digest,\n                    \"generation\": durable.generation(),\n                    \"retained_requests\": durable.retained_request_count(),\n                    \"format\": \"heptabao-encrypted-backup-v1\",\n                }\n            }));\n        }\n\n        if matches!(\n            path,\n            \"sys/storage/raft/snapshot\" | \"sys/storage/raft/snapshot-force\""
+    }
+  ],
+  "conclusion": "The pinned legacy HTTP writer serializes the Response body as JSON with Content-Type application/json. Its GET snapshot maintenance route returns a data object. A gzip-only replacement for that old-version call would be a regression. No current-candidate JSON fallback is permitted."
+}

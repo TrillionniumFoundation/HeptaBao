@@ -23,6 +23,8 @@ fn pending(
             Err(format!("snapshot admission HTTP {}", response.status).into())
         }
         NativeSnapshotAdmission::Redirect(_) => Err("selected leader redirected snapshot".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("selected leader forwarded snapshot".into()),
     }
 }
 

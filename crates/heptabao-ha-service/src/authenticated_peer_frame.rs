@@ -148,3 +148,12 @@ where
         .write(&mut tls, &response)
         .map_err(|error| forward_transport_frame_error("receiver_frame_write", error))
 }
+
+#[cfg(feature = "native-v6-peer-ingress")]
+#[path = "native_snapshot_peer.rs"]
+mod snapshot;
+#[cfg(feature = "native-v6-peer-ingress")]
+pub use snapshot::{
+    AuthenticatedSnapshotPeer, SnapshotPeerRequest, SnapshotPeerResponse,
+    serve_one_mtls_peer_frame_or_snapshot,
+};

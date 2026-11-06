@@ -1,0 +1,437 @@
+{
+  "all_owned_processes_gone": true,
+  "ambient_build_overrides_inherited": false,
+  "artifacts": {},
+  "authbus_migration_qualified": false,
+  "automatic_retry": false,
+  "build_environment_overrides": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/r13-full-native-cargo-home-r1",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "compiler_wrappers_disabled": true,
+  "controller_sha256": "39ddbb77648443a58f2fc2b238014c59f70116873016cb241f369f0bc888ecb6",
+  "controller_uses_failed_custody_helper": false,
+  "created_at_unix": 1793962184.96093,
+  "deadline_renewed": false,
+  "elapsed_seconds": 0.57324,
+  "enumeration": {},
+  "executed_passed_cases": 0,
+  "expected_denominators": {
+    "ha_service_total": 17,
+    "http1_tls_new": 4,
+    "legacy_base": 44,
+    "legacy_cold_h2": 9,
+    "legacy_ingress": 7,
+    "legacy_same_root": 1,
+    "legacy_total": 61,
+    "native_jwt_new": 15,
+    "new_cases_total": 46,
+    "server_total": 90,
+    "snapshot_forward_new": 27,
+    "total_unique_cases": 107
+  },
+  "explicit_compiler": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+  "failure": "00-t5-volume_failed",
+  "final_cleanup": [
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "98-postflight-cargo-lock",
+      "pgid": 65164,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    },
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "98-postflight-vm-stat",
+      "pgid": 65161,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    },
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "98-postflight-ram-total",
+      "pgid": 65158,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    },
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "98-postflight-process-metadata",
+      "pgid": 65155,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    },
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "98-old-final-clean",
+      "pgid": 65150,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    },
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "98-old-final-tree",
+      "pgid": 65147,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    },
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "98-old-final-head",
+      "pgid": 65145,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    },
+    {
+      "all_owned_processes_gone": true,
+      "direct_child_reaped": true,
+      "label": "00-t5-volume",
+      "pgid": 65142,
+      "remaining_after_cleanup": [],
+      "signals": [],
+      "signals_after_reap": false
+    }
+  ],
+  "finished_at_unix": 1793962185.5340421,
+  "formal_kv2_qualified": false,
+  "full_replacement_qualified": false,
+  "groups": [],
+  "host": "mac",
+  "linux_proc_used": false,
+  "native_platform": "aarch64-apple-darwin",
+  "not_qualified_cases": 107,
+  "old_retained_artifacts_after": {
+    "heptabao-seed": {
+      "bytes": 86761216,
+      "matches_original": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429"
+    },
+    "heptabao-server": {
+      "bytes": 92398928,
+      "matches_original": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63"
+    },
+    "server_libtest": {
+      "bytes": 154458864,
+      "matches_original": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "sha256": "1a8b739f6b26515b141d8412bf4503460b4cbc69898eb94f275f51aee8e16477"
+    }
+  },
+  "old_source_after": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "status": "",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "original_mac61_process_method": true,
+  "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+  "outer_budget_seconds": 8280,
+  "physical_ha_qualified": false,
+  "postflight": {
+    "cargo_lock_pids": [],
+    "compiler_processes": [
+      {
+        "comm": "cargo",
+        "pgid": 60889,
+        "pid": 60950,
+        "ppid": 60947
+      },
+      {
+        "comm": "rustc",
+        "pgid": 60889,
+        "pid": 65151,
+        "ppid": 60950
+      }
+    ],
+    "disk_free_bytes": 123156086784,
+    "free_pages_bytes": 7380271104,
+    "inactive_pages_bytes": 8238104576,
+    "internal_disk_free_bytes": 200843378688,
+    "load_average": [
+      3.23046875,
+      2.64453125,
+      2.349609375
+    ],
+    "memory_values_are_not_memavailable": true,
+    "ram_total_bytes": 34359738368,
+    "sample_is_atomic": false,
+    "target_st_dev": 16777244
+  },
+  "production_changed": false,
+  "production_server_started": false,
+  "schema": "heptabao.convergence-normal-build-tests.v1",
+  "selection_sha256": "21c8eb41909568ebf1d33cf65c7a1fc1f920a5c5f7a2b9a66affe19fd66ffe76",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-2b38-r1",
+  "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+  "source_parent": "1d63ec98ce0fc5cbc7d74a37f6307be148dd5aeb",
+  "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a",
+  "status": "failed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 10,
+      "exit_code": 1,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65142,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65142,
+      "requested_cap_seconds": 10,
+      "seconds": 0.037781,
+      "started_at_unix": 1793962184.961129,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 408,
+      "stdout_sha256": "1b6d40511c1528cdae4645876d6d10ae22de1b43bca6dca01dbf0949c0a665a9",
+      "step": "00-t5-volume",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65145,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65145,
+      "requested_cap_seconds": 30,
+      "seconds": 0.060196,
+      "started_at_unix": 1793962185.113437,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c",
+      "step": "98-old-final-head",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65147,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65147,
+      "requested_cap_seconds": 30,
+      "seconds": 0.033376,
+      "started_at_unix": 1793962185.1746,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+      "step": "98-old-final-tree",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65150,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65150,
+      "requested_cap_seconds": 30,
+      "seconds": 0.055785,
+      "started_at_unix": 1793962185.208915,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "98-old-final-clean",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/bin/ps",
+        "-axo",
+        "pid=,ppid=,pgid=,uid=,comm="
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 10,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65155,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65155,
+      "requested_cap_seconds": 10,
+      "seconds": 0.055796,
+      "started_at_unix": 1793962185.265599,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 74148,
+      "stdout_sha256": "4bdc2a1fcbc0256d5edd52f5b35f0246d7ebfbf7651ec8c11f7da305443f9a5c",
+      "step": "98-postflight-process-metadata",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/sbin/sysctl",
+        "-n",
+        "hw.memsize"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 10,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65158,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65158,
+      "requested_cap_seconds": 10,
+      "seconds": 0.013901,
+      "started_at_unix": 1793962185.323426,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 12,
+      "stdout_sha256": "901c81a29f7611d5eeaf6432d3f21c8408a04c14f88f531c68c201db9699d1fa",
+      "step": "98-postflight-ram-total",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/vm_stat"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 10,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65161,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65161,
+      "requested_cap_seconds": 10,
+      "seconds": 0.013417,
+      "started_at_unix": 1793962185.3384,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1841,
+      "stdout_sha256": "6567c2f89f2d35087915fe246873acc0cad58b32f7f561a91e00e6f423413fba",
+      "step": "98-postflight-vm-stat",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/sbin/lsof",
+        "-t",
+        "--",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/.cargo-lock"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 10,
+      "exit_code": 1,
+      "owned_group_cleanup": {
+        "all_owned_processes_gone": true,
+        "direct_child_reaped": true,
+        "pgid": 65164,
+        "remaining_after_cleanup": [],
+        "signals": [],
+        "signals_after_reap": false
+      },
+      "pid": 65164,
+      "requested_cap_seconds": 10,
+      "seconds": 0.093395,
+      "started_at_unix": 1793962185.352917,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "98-postflight-cargo-lock",
+      "timed_out": false
+    }
+  ],
+  "toolchain_pins": {
+    "cargo": "1de2e84c15443b70444eecfa959ff9099dd8c1a5606b6d9ef5bc0ea9c25bc7f9",
+    "rustc": "a11618eca0956a8aa4372c2bc898690b513cbdfa2cb9125b2a5301e360ed5b49",
+    "rustfmt": "ca9cbe15a4add6baf62d8ce177015c9c48f209ebcf4364416b1953142e8701f8"
+  }
+}

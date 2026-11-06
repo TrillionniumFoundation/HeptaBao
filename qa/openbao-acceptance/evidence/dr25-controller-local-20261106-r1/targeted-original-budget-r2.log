@@ -1,0 +1,6 @@
+test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed (test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.146s
+
+OK

@@ -73,6 +73,9 @@ def run_upgrade(cluster, candidate, legacy, checks, artifacts):
     cluster.bootstrap()
     leader = cluster.leader()
     cluster.write(leader, 'bundle-upgrade-before', 'synthetic-before-snapshot')
+    # This exact d26ed9d artifact predates the binary HTTP route and returns
+    # application/json. Its independently pinned contract must not be silently
+    # replaced by the current candidate's gzip download contract.
     status, _ = leader.call('GET', 'sys/storage/raft/snapshot', token=cluster.root_token, timeout=15)
     if status != 200:raise FixtureError('legacy_snapshot_failed')
     status, response = leader.call('GET', 'sys/storage/raft/snapshot-status', token=cluster.root_token)
@@ -91,7 +94,7 @@ def run_upgrade(cluster, candidate, legacy, checks, artifacts):
     check('current_reads_legacy_value', True)
     artifacts['pure_read'] = inspect_bundle(bundle_path(leader), 1)
     check('current_read_preserves_format1_bundle', artifacts['pure_read']['artifact_sha256'] == old_bundle)
-    status, _ = current_leader.call('GET', 'sys/storage/raft/snapshot', token=cluster.root_token, timeout=15)
+    status, _ = current_leader.download_snapshot(token=cluster.root_token, timeout=15)
     check('explicit_snapshot_publishes_format2', status == 200)
     artifacts['compact'] = inspect_bundle(bundle_path(current_leader), 2)
     cluster.close()

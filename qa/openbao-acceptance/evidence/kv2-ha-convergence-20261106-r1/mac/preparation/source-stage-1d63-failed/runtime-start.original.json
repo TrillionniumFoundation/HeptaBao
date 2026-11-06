@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,pathlib,os\np=pathlib.Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/stage_source_1d63.py\")\nassert hashlib.sha256(p.read_bytes()).hexdigest()==\"abca6cfcda6bad6cfab2a0c9b1930d3e19863605487eb98d006f3a9c048c1108\"\nassert p.stat().st_uid==501 and p.stat().st_nlink==1 and not p.is_symlink()\np.chmod(0o600)\npython='/opt/homebrew/bin/python3'\nassert hashlib.sha256(pathlib.Path(python).read_bytes()).hexdigest()=='cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'\nos.execv(python,[python,'-I','-S','-B',str(p)])\n"
+    ],
+    "created_unix_ms": 1793961366085,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b06e1245-fc05-707d",
+    "idempotency_key": "heptabao-mac-convergence-1d63-independent-source-stage-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b06e1245-fc05-707d",
+    "request_digest": "4fc28f66a23dfc127139513b1ba404b61024e8294da54b1b1c72fe2063497236",
+    "request_fingerprint": 5747313745449581586,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b06e1245-fc05-707d"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 55851,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b06e1245-fc05-707d"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

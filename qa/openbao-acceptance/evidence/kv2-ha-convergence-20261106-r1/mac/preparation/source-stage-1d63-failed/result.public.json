@@ -1,0 +1,303 @@
+{
+  "all_owned_stopped": true,
+  "automatic_retry": false,
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "98-old-final-clean",
+      "pid": 57441,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "98-old-final-tree",
+      "pid": 57439,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "98-old-final-head",
+      "pid": 57437,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": -15,
+      "label": "11-fetch-published-exact",
+      "pid": 55898,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "10-independent-clone",
+      "pid": 55884,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "00-old-clean",
+      "pid": 55882,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "00-old-tree",
+      "pid": 55877,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "00-old-head",
+      "pid": 55873,
+      "remaining": []
+    }
+  ],
+  "compiler_started": false,
+  "controller_sha256": "abca6cfcda6bad6cfab2a0c9b1930d3e19863605487eb98d006f3a9c048c1108",
+  "elapsed_seconds": 241.6767469998449,
+  "failure": "11-fetch-published-exact_failed",
+  "inherited_success_claim": false,
+  "old_retained_after": {
+    "heptabao-seed": {
+      "bytes": 86761216,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429"
+    },
+    "heptabao-server": {
+      "bytes": 92398928,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63"
+    },
+    "server_libtest": {
+      "bytes": 154458864,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "sha256": "1a8b739f6b26515b141d8412bf4503460b4cbc69898eb94f275f51aee8e16477"
+    }
+  },
+  "old_retained_before": {
+    "heptabao-seed": {
+      "bytes": 86761216,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429"
+    },
+    "heptabao-server": {
+      "bytes": 92398928,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63"
+    },
+    "server_libtest": {
+      "bytes": 154458864,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "sha256": "1a8b739f6b26515b141d8412bf4503460b4cbc69898eb94f275f51aee8e16477"
+    }
+  },
+  "old_source_after": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "status": "",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "old_source_before": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "status": "",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "original_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+  "production_changed": false,
+  "schema": "heptabao.mac-independent-source-stage.r1",
+  "service_started": false,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source",
+  "source_commit": "1d63ec98ce0fc5cbc7d74a37f6307be148dd5aeb",
+  "source_tree": "cae7f371ee07d90f7ac9d50d1c205ca77bfd3902",
+  "stage_budget_seconds": 600,
+  "status": "failed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cap_seconds": 30,
+      "completed_before_step_deadline": true,
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "00-old-head",
+      "pid": 55873,
+      "remaining": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cap_seconds": 30,
+      "completed_before_step_deadline": true,
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "00-old-tree",
+      "pid": 55877,
+      "remaining": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cap_seconds": 30,
+      "completed_before_step_deadline": true,
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "00-old-clean",
+      "pid": 55882,
+      "remaining": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "--",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source"
+      ],
+      "cap_seconds": 120,
+      "completed_before_step_deadline": true,
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "10-independent-clone",
+      "pid": 55884,
+      "remaining": [],
+      "stderr_sha256": "fe60a1562f9f83cf62e0bc4d91be3eff03004118fc515e75bc09252d13db0b5e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/HeptaBao.git",
+        "1d63ec98ce0fc5cbc7d74a37f6307be148dd5aeb"
+      ],
+      "cap_seconds": 240,
+      "completed_before_step_deadline": false,
+      "direct_child_reaped": true,
+      "exit_code": -15,
+      "label": "11-fetch-published-exact",
+      "pid": 55898,
+      "remaining": [],
+      "stderr_sha256": "0b7398c202210091b0cb90501d2a075af79c90908cf6fc819288b576502a096b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": true
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cap_seconds": 30,
+      "completed_before_step_deadline": true,
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "98-old-final-head",
+      "pid": 57437,
+      "remaining": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cap_seconds": 30,
+      "completed_before_step_deadline": true,
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "98-old-final-tree",
+      "pid": 57439,
+      "remaining": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cap_seconds": 30,
+      "completed_before_step_deadline": true,
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "98-old-final-clean",
+      "pid": 57441,
+      "remaining": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    }
+  ],
+  "within_original_stage_budget": true
+}

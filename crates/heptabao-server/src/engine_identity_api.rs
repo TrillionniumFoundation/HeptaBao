@@ -86,6 +86,17 @@ impl EngineState {
 
 #[cfg(feature = "native-v6-storage")]
 impl EngineState {
+    /// Observe the complete actual root Identity in tests without asking a live
+    /// native KV2 view to serialize as legacy inline engine state. This does not
+    /// replace the independent authenticated KV root observation.
+    #[cfg(test)]
+    pub(crate) fn native_root_identity_snapshot_for_test(
+        &self,
+    ) -> Option<zeroize::Zeroizing<Vec<u8>>> {
+        let owner = self.namespaces.get("")?;
+        crate::secret_serde::to_vec(&owner.identity, crate::MAX_APPLICATION_STATE_BYTES).ok()
+    }
+
     /// Bind metadata without serializing the native KV payload a second time.
     /// The caller must independently retain the authenticated KV1/KV2 roots.
     pub(crate) fn native_identity_metadata_digest(

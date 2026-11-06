@@ -281,6 +281,7 @@ impl NativePkiOwner {
                     request.client_certificates,
                     request.origin_peer,
                     &mut consumption,
+                    None,
                 )
             };
             let checked = (|| -> Result<(), Response> {

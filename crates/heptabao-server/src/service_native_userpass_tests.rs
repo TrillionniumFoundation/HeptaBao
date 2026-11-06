@@ -726,7 +726,7 @@ fn native_userpass_selector_keeps_other_providers_and_wrapped_login_closed() -> 
     f.user("alice", 0)?;
     let before = f.root()?;
     for (path, body) in [
-        ("sys/auth/other", json!({"type":"jwt"})),
+        ("sys/auth/other", json!({"type":"oidc"})),
         ("auth/up/config", json!({})),
     ] {
         let response = f.admin("POST", path, body)?;

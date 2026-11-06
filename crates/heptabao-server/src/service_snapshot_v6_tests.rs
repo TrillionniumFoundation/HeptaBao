@@ -55,6 +55,10 @@ fn begin(service: &mut Service, method: &str, token: &str) -> TestResult<Request
         NativeSnapshotAdmission::Redirect(_) => {
             Err("single-node fixture unexpectedly redirected".into())
         }
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => {
+            Err("single-node fixture unexpectedly forwarded".into())
+        }
     }
 }
 fn pending(

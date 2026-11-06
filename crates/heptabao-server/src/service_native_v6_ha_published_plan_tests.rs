@@ -233,7 +233,15 @@ fn native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown(
                 "exactly one original import observation"
             );
         });
+    // Attach the existing bounded, failure-only phase recorder to this SAME
+    // finalization. It grants no deadline or authority and retries no work.
+    let timing = crate::ha::NativeV6RequestObservation::start(
+        until,
+        "published_plan_corrupt_cipher_test",
+        false,
+    );
     let response = finish(&pipeline, leader, *pending, transfer, until)?;
+    timing.finish(Some(response.status));
     drop(observer);
     let damage = observed
         .borrow_mut()

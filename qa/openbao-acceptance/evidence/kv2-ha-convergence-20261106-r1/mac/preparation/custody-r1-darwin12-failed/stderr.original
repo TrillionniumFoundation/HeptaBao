@@ -1,0 +1,260 @@
+test_cancel_enters_final_cleanup_and_restores_original_signal_handlers (test_kv2_dr_process_custody.ProcessCustodyTests.test_cancel_enters_final_cleanup_and_restores_original_signal_handlers) ... ERROR
+test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid (test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid) ... ok
+test_foreign_reap_loses_authority_and_never_signals_recycled_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_foreign_reap_loses_authority_and_never_signals_recycled_group) ... ERROR
+test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group) ... FAIL
+test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed (test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed) ... ERROR
+test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn (test_kv2_dr_process_custody.ProcessCustodyTests.test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn) ... ok
+test_nested_owner_and_finished_owner_do_not_create_new_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_nested_owner_and_finished_owner_do_not_create_new_originals) ... ok
+test_prior_retirement_receipt_cannot_change_when_later_originals_run (test_kv2_dr_process_custody.ProcessCustodyTests.test_prior_retirement_receipt_cannot_change_when_later_originals_run) ... ERROR
+test_real_target_executes_only_in_observed_original_session_and_waits_once (test_kv2_dr_process_custody.ProcessCustodyTests.test_real_target_executes_only_in_observed_original_session_and_waits_once) ... ERROR
+test_retirement_gate_does_not_stop_a_live_target (test_kv2_dr_process_custody.ProcessCustodyTests.test_retirement_gate_does_not_stop_a_live_target) ... ERROR
+test_run_check_output_and_owned_process_compatibility_share_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_run_check_output_and_owned_process_compatibility_share_originals) ... ERROR
+test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it (test_kv2_dr_process_custody.ProcessCustodyTests.test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it) ... ERROR
+
+======================================================================
+ERROR: test_cancel_enters_final_cleanup_and_restores_original_signal_handlers (test_kv2_dr_process_custody.ProcessCustodyTests.test_cancel_enters_final_cleanup_and_restores_original_signal_handlers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 129, in test_cancel_enters_final_cleanup_and_restores_original_signal_handlers
+    child = self.target("import time;time.sleep(30)")
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 31, in target
+    return subprocess.Popen([sys.executable, "-I", "-S", "-c", source], **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+ERROR: test_foreign_reap_loses_authority_and_never_signals_recycled_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_foreign_reap_loses_authority_and_never_signals_recycled_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 150, in test_foreign_reap_loses_authority_and_never_signals_recycled_group
+    child = self.target("pass")
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 31, in target
+    return subprocess.Popen([sys.executable, "-I", "-S", "-c", source], **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+ERROR: test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed (test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 104, in test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed
+    child = self.target(source, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 31, in target
+    return subprocess.Popen([sys.executable, "-I", "-S", "-c", source], **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+ERROR: test_prior_retirement_receipt_cannot_change_when_later_originals_run (test_kv2_dr_process_custody.ProcessCustodyTests.test_prior_retirement_receipt_cannot_change_when_later_originals_run)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 196, in test_prior_retirement_receipt_cannot_change_when_later_originals_run
+    first = self.target("pass")
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 31, in target
+    return subprocess.Popen([sys.executable, "-I", "-S", "-c", source], **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+ERROR: test_real_target_executes_only_in_observed_original_session_and_waits_once (test_kv2_dr_process_custody.ProcessCustodyTests.test_real_target_executes_only_in_observed_original_session_and_waits_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 36, in test_real_target_executes_only_in_observed_original_session_and_waits_once
+    child = self.target(code, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 31, in target
+    return subprocess.Popen([sys.executable, "-I", "-S", "-c", source], **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+ERROR: test_retirement_gate_does_not_stop_a_live_target (test_kv2_dr_process_custody.ProcessCustodyTests.test_retirement_gate_does_not_stop_a_live_target)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 140, in test_retirement_gate_does_not_stop_a_live_target
+    child = self.target("import time;time.sleep(30)")
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 31, in target
+    return subprocess.Popen([sys.executable, "-I", "-S", "-c", source], **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+ERROR: test_run_check_output_and_owned_process_compatibility_share_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_run_check_output_and_owned_process_compatibility_share_originals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 53, in test_run_check_output_and_owned_process_compatibility_share_originals
+    self.assertEqual(subprocess.check_output([sys.executable, "-c", "print(7)"], timeout=5), b"7\n")
+                     ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+ERROR: test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it (test_kv2_dr_process_custody.ProcessCustodyTests.test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 86, in test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it
+    child = self.target("import time;time.sleep(30)")
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 31, in target
+    return subprocess.Popen([sys.executable, "-I", "-S", "-c", source], **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 258, in __init__
+    first, second = _snapshot(self.pid), _snapshot(self.pid)
+                    ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 116, in _snapshot
+    matches = [row for row in _table() if row["pid"] == pid]
+                              ~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 111, in _table
+    return _darwin_table()
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 98, in _darwin_table
+    return _parse_darwin_ps(stdout)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 77, in _parse_darwin_ps
+    _need(len(columns) == 5 and all(v.isdecimal() for v in columns[:4])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          and columns[4][0] in "RSDTIUZX?", "custody_ps_numeric_shape")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py", line 43, in _need
+    raise CustodyFailure(label)
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+======================================================================
+FAIL: test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group)
+----------------------------------------------------------------------
+kv2_dr_process_custody.CustodyFailure: custody_ps_numeric_shape
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py", line 76, in test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group
+    with self.assertRaisesRegex(custody.CustodyFailure, "custody_gate_birth_mismatch"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "custody_gate_birth_mismatch" does not match "custody_ps_numeric_shape"
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.207s
+
+FAILED (failures=1, errors=8)

@@ -1,0 +1,48 @@
+{
+  "base_commit": "fe10ae499ef3a7302e2480c833652bd7239910a3",
+  "business_denominators_changed": false,
+  "case_checks": [
+    {
+      "all_literal_case_names_and_multiplicity_unchanged": true,
+      "literal_business_check_count": 16,
+      "path": "qa/openbao-acceptance/ha_destructive.py"
+    },
+    {
+      "all_literal_case_names_and_multiplicity_unchanged": true,
+      "literal_business_check_count": 43,
+      "path": "qa/openbao-acceptance/raft_membership_live.py"
+    },
+    {
+      "all_literal_case_names_and_multiplicity_unchanged": true,
+      "literal_business_check_count": 13,
+      "path": "qa/openbao-acceptance/raft_snapshot_upgrade.py"
+    },
+    {
+      "business_scenario_function_asts_unchanged": [
+        "complete_scenarios",
+        "run_finite_lifetime_scenarios",
+        "run_finite_scenarios",
+        "run_native_parameter_scenarios",
+        "run_scenarios"
+      ],
+      "path": "qa/openbao-acceptance/radius_renewal_live.py"
+    },
+    {
+      "business_scenario_function_asts_unchanged": [
+        "run_scenarios"
+      ],
+      "path": "qa/openbao-acceptance/kubernetes_renewal_live.py"
+    }
+  ],
+  "ci_rerun": false,
+  "old_ci_reclassified_as_passed": false,
+  "product_directories_unchanged": [
+    "crates",
+    "tools",
+    "Cargo.toml",
+    "Cargo.lock"
+  ],
+  "remote_started": false,
+  "schema": "heptabao.ci-harness-source-scope.v1",
+  "scope": "QA only; source inspection and local controller tests, never runtime protocol qualification"
+}

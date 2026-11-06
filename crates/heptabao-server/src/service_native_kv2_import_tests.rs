@@ -832,6 +832,8 @@ fn snapshot_request(
             Err(format!("snapshot admission status={}", response.status).into())
         }
         NativeSnapshotAdmission::Redirect(_) => Err("unexpected isolated redirect".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("unexpected isolated forward".into()),
     }
 }
 

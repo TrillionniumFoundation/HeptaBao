@@ -23,6 +23,14 @@ from raft_snapshot_observation import inspect_bundle, complete_compact_scenarios
 ROOT=Path(__file__).resolve().parents[2]
 
 
+def committed_snapshot_frontier(value):
+    """A wire download alone cannot prove committed or purged Raft state."""
+    if not isinstance(value,dict):return False
+    snapshot,applied,purged=(value.get(name) for name in ('snapshot_index','applied_index','purged_index'))
+    return (type(snapshot) is int and type(applied) is int and 0<snapshot<=applied
+            and (purged is None or type(purged) is int and 0<=purged<=snapshot))
+
+
 class AdminCluster(Cluster):
     NODE_IDS=(1,2,3,4,5)
     require_compact_snapshots=False
@@ -56,6 +64,29 @@ class AdminCluster(Cluster):
             if (number in self.voters(c)) is present:return c
             time.sleep(.2)
         raise FixtureError('autopilot_voter_transition_unobserved')
+    def create_snapshot(self,leader):
+        status,wire=leader.download_snapshot(token=self.root_token,timeout=12)
+        self.snapshot_download={'wire':wire,'frontiers':[]}
+        self.check('snapshot_waits_durable_readback',status==200 and wire.get('archive_received') is True
+                   and wire.get('content_length_verified') is True)
+        self.observe_snapshot(leader,'leader')
+        def frontier():
+            code,response=leader.call('GET','sys/storage/raft/snapshot-status',token=self.root_token)
+            value=response.get('data',{})
+            # Only fixed integer fields are public, never an arbitrary error body.
+            observed={name:value.get(name) if isinstance(value,dict) and
+                      (value.get(name) is None or type(value.get(name)) is int) else 'invalid'
+                      for name in ('applied_index','snapshot_index','purged_index','membership_index')}
+            self.snapshot_download['frontiers'].append({'status':code,'data':observed})
+            if code!=200:raise FixtureError('snapshot_status_http_failure')
+            return value
+        s=frontier()
+        self.check('snapshot_committed_frontier_exists',committed_snapshot_frontier(s))
+        deadline=time.monotonic()+5
+        while not s.get('purged_index') and time.monotonic()<deadline:
+            time.sleep(.1);s=frontier()
+        self.check('prejoin_logs_really_purged',committed_snapshot_frontier(s)
+                   and type(s.get('purged_index')) is int and s['purged_index']>0)
     def run(self):
         seed=self.nodes[0];seed.start(ha=False)
         status,body=seed.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
@@ -76,15 +107,7 @@ class AdminCluster(Cluster):
         status,_=leader.call('POST','sys/storage/raft/autopilot/configuration',{'server_stabilization_time':'3s','last_contact_threshold':'2s','min_quorum':3},token=self.root_token)
         self.check('persist_stabilization_policy',status==204)
         for i in range(5):self.write(leader,f'snapshot-before-join-{i}',f'synthetic-value-{i}')
-        status,snapshot=leader.call('GET','sys/storage/raft/snapshot',token=self.root_token,timeout=12)
-        self.check('snapshot_waits_durable_readback',status==200 and isinstance(snapshot.get('data'),dict))
-        self.observe_snapshot(leader,'leader')
-        s=leader.call('GET','sys/storage/raft/snapshot-status',token=self.root_token)[1]['data']
-        self.check('snapshot_committed_frontier_exists',isinstance(s.get('snapshot_index'),int) and s['snapshot_index']>0)
-        deadline=time.monotonic()+5
-        while not s.get('purged_index') and time.monotonic()<deadline:
-            time.sleep(.1);s=leader.call('GET','sys/storage/raft/snapshot-status',token=self.root_token)[1]['data']
-        self.check('prejoin_logs_really_purged',isinstance(s.get('purged_index'),int) and s['purged_index']>0)
+        self.create_snapshot(leader)
         status,_=self.change('join',4,non_voter=True);self.check('native_learner_join_acknowledged',status==200)
         c=self.configuration();self.check('learner_is_not_a_voter',4 in self.members(c) and 4 not in self.voters(c))
         n4,n5=self.nodes[3:]
@@ -168,7 +191,8 @@ def main():
     except Exception as error:report.update(status='failed',failure=str(error) if isinstance(error,FixtureError) else type(error).__name__)
     finally:
         if c is not None:
-            report['scenarios']=c.scenarios;report['fixture_mount_setup']=c.fixture_mount_setup;report['scenario_count']=len(c.scenarios);report['snapshot_artifacts']=c.snapshot_artifacts;c.close()
+            report['scenarios']=c.scenarios;report['fixture_mount_setup']=c.fixture_mount_setup;report['scenario_count']=len(c.scenarios);report['snapshot_artifacts']=c.snapshot_artifacts
+            report['snapshot_download']=getattr(c,'snapshot_download',None);c.close()
         shutil.rmtree(temp);out.write_text(json.dumps(report,indent=2)+'\n');out.chmod(0o600)
     print(json.dumps({'status':report['status'],'scenarios':report['scenario_count'],'failure':report.get('failure')}))
     return 0 if report['status']=='passed' else 1
