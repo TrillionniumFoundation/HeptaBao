@@ -304,25 +304,33 @@ impl Fixture {
     }
     fn snapshot(&self) -> TestResult<Zeroizing<Vec<u8>>> {
         let state = self.service.state.as_ref().ok_or("native state")?;
+        let root = self.service.native_root.as_ref().ok_or("native root")?;
+        assert!(self.service.record_root.is_none());
         let auth_bytes =
             owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
-        let engine_bytes =
-            owner_store::serialize_owner(&state.engines).map_err(|_| "Identity projection")?;
+        let identity_bytes = state
+            .engines
+            .native_root_identity_snapshot_for_test()
+            .ok_or("Identity projection")?;
         let mut auth: Value = serde_json::from_slice(&auth_bytes)?;
-        let mut engines: Value = serde_json::from_slice(&engine_bytes)?;
+        let mut identity: Value = serde_json::from_slice(&identity_bytes)?;
         assert!(auth["auth_mounts"].is_object());
         assert!(auth["jwt_mounts"].is_object());
         assert!(auth["tokens"].is_object());
-        assert!(engines["namespaces"][""]["identity"].is_object());
+        assert!(identity.is_object());
         // Exclude only unrelated terminal-clock metadata. Compare complete
         // auth mount/JWT/token and Identity objects, not a handpicked count.
+        // NativeReadView deliberately refuses legacy whole-engine JSON. Keep
+        // its actual KV graph roots/reader format separately in this snapshot.
         let mut projection = json!({"mounts":auth["auth_mounts"].take(),
             "jwt":auth["jwt_mounts"].take(),"tokens":auth["tokens"].take(),
-            "identity":engines["namespaces"][""]["identity"].take()});
+            "identity":identity.take(),"native_graph":{
+                "kv1":&root.kv1,"kv2":&root.kv2,
+                "native_kv2_format":root.reader_floor.native_kv2_format}});
         let bytes = Zeroizing::new(serde_json::to_vec(&projection)?);
         erase_json(&mut projection);
         erase_json(&mut auth);
-        erase_json(&mut engines);
+        erase_json(&mut identity);
         Ok(bytes)
     }
     fn begin_login(
@@ -503,8 +511,10 @@ fn native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_i
     let assertion = f.assertion(f.now + 60);
     let (_, entity) = f.login(&assertion)?;
     let route = format!("identity/entity/id/{entity}");
+    let enabled = f.snapshot()?;
     status(&f.admin("PATCH", &route, json!({"disabled":true}))?, 204);
     let before = f.snapshot()?;
+    assert!(enabled.as_slice() != before.as_slice());
     let denied = f.actor(
         "",
         "POST",
@@ -735,8 +745,9 @@ fn native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proo
     Ok(())
 }
 
-// R2 additions below. The ten R1 regressions and all their assertions remain
-// byte-identical; these are independent Token API composition regressions.
+// The R2 additions originally extended the ten R1 regressions with independent
+// Token API composition cases. Later observer repairs retain all case names
+// and the complete Auth/Identity atomicity assertions above.
 const DELEGATION_POLICY: &str = r#"
 path "jwt-kv/data/value" { capabilities = ["read"] }
 path "auth/token/lookup-self" { capabilities = ["read"] }
@@ -886,6 +897,11 @@ fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_stil
     let assertion = f.assertion(f.now + 60);
     let (parent, _) = f.login(&assertion)?;
     let child = create_service_child(&mut f, &parent, 250)?;
+    // Keep a real dependent tree as the mount-retirement negative control.
+    // The other child becomes an independent Token API issuer when its
+    // original parent is revoked through revoke-orphan.
+    let (dependent_parent, _) = f.login(&assertion)?;
+    let dependent_child = create_service_child(&mut f, &dependent_parent, 250)?;
     status(
         &f.admin(
             "POST",
@@ -912,12 +928,49 @@ fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_stil
     status(&renewed, 200);
     let echo = secret(&mut renewed, "/auth/client_token")?;
     assert!(echo.as_str() == child.as_str());
+    for token in [&dependent_parent, &dependent_child] {
+        let lookup = f.actor(token, "GET", "auth/token/lookup-self", json!({}))?;
+        status(&lookup, 200);
+        if token.as_str() == dependent_child.as_str() {
+            assert_eq!(lookup.body["data"]["orphan"], false);
+            assert_eq!(lookup.body["data"]["path"], "auth/token/create");
+        }
+    }
     status(&f.admin("DELETE", "sys/auth/native-jwt", json!({}))?, 204);
     let mut f = f.restart()?;
+    for token in [&parent, &dependent_parent, &dependent_child] {
+        let denied = f.actor(token, "GET", "auth/token/lookup-self", json!({}))?;
+        status(&denied, 403);
+        no_credential(&denied);
+    }
+    // OpenBao's Token API preserves the child's own issuance path when it
+    // detaches the parent. Unmounting the old JWT issuer revokes its remaining
+    // tree, but cannot turn this already orphaned Token API token into a JWT
+    // login token. Keep this positive contract across actual cold reopen.
+    let lookup = f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?;
+    status(&lookup, 200);
+    assert_eq!(lookup.body["data"]["orphan"], true);
+    assert_eq!(lookup.body["data"]["path"], "auth/token/create");
+    let read = f.actor(&child, "GET", "jwt-kv/data/value", json!({}))?;
+    status(&read, 200);
+    assert_eq!(read.body["data"]["data"]["value"], "jwt-preserved");
+    let mut renewed = f.actor(
+        &child,
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment":120}),
+    )?;
+    status(&renewed, 200);
+    let echo = secret(&mut renewed, "/auth/client_token")?;
+    assert!(echo.as_str() == child.as_str());
     status(
-        &f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?,
-        403,
+        &f.actor(&child, "POST", "auth/token/revoke-self", json!({}))?,
+        204,
     );
+    let mut f = f.restart()?;
+    let denied = f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?;
+    status(&denied, 403);
+    no_credential(&denied);
     Ok(())
 }
 
