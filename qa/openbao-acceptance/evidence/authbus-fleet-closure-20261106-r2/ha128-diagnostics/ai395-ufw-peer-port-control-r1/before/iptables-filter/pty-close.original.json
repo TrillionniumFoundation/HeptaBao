@@ -1,0 +1,1 @@
+{"audit_recorded":true,"automatic_retry":false,"host":"ai395","outcome":"unknown","persistent_across_runtime_restart":true,"reconcile_warning":"Terminal owner is not accepting close. Inspect this session's exit status; this acknowledgement does not confirm termination.","result":"already_exited","session_id":"dpty-18e59616ff0905d8-fc05-8","termination_confirmed":false}

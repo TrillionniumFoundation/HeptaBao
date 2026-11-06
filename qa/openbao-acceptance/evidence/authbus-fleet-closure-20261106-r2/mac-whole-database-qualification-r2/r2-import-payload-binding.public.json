@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "r2Imports": [
+    {
+      "source": "qualify_whole_sqlite_bundle_r2.py",
+      "module": "whole_sqlite_bundle_r2"
+    },
+    {
+      "source": "mac_whole_sqlite_worker_r2.py",
+      "module": "qualify_whole_sqlite_bundle_r2"
+    },
+    {
+      "source": "mac_whole_sqlite_worker_r2.py",
+      "module": "whole_sqlite_bundle_r2"
+    }
+  ],
+  "sourceFileCount": 3,
+  "payloadExact": true,
+  "launcherBytes": 101655,
+  "launcherSha256": "8674a4cc5435400c40326905ff6b6150c25ae02246aa39cd84200e7480d99b29",
+  "budgetsUnchanged": true
+}

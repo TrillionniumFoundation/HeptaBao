@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "--user",
+      "show",
+      "--no-pager",
+      "--property=FragmentPath,DropInPaths,LoadState,ActiveState,SubState,MainPID,UnitFileState,InvocationID",
+      "openclaw-gateway.service",
+      "openclaw-authbus-restart-when-idle.service"
+    ],
+    "created_unix_ms": 1794001851890,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/systemctl",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1b2d7d5f2-fc05-7ffd",
+    "idempotency_key": "heptabao-pocket4-current-unit-path-observation-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b2d7d5f2-fc05-7ffd",
+    "request_digest": "752e413fab3986a5a41385607c8adf5b314612c1d8fe49f014376ca48ec946c7",
+    "request_fingerprint": 8443758093077677733,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b2d7d5f2-fc05-7ffd"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b2d7d5f2-fc05-7ffd"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

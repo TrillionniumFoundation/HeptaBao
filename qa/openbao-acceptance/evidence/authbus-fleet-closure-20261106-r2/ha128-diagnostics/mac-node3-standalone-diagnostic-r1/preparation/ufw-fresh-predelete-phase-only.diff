@@ -1,0 +1,23 @@
+--- capture_ai395_ufw_phase_r1.py
++++ capture_ai395_ufw_phase_r2.py
+@@ -17,7 +17,7 @@
+ import time
+ 
+ ROOT = Path('/home/qq/heptabao-ha-ufw-peer-ports-20261106-r2')
+-PHASES = {'before', 'after-add-mac', 'after-add-x230', 'after-delete-x230', 'after-delete-mac'}
++PHASES = {'before', 'after-add-mac', 'after-add-x230', 'after-delete-x230', 'after-delete-mac', 'before-delete-x230'}
+ CONFIGS = {
+  'etc-ufw-user.rules': '/etc/ufw/user.rules',
+  'etc-ufw-user6.rules': '/etc/ufw/user6.rules',
+--- verify_ai395_ufw_phase_r1.py
++++ verify_ai395_ufw_phase_r2.py
+@@ -22,7 +22,8 @@
+       '192.168.0.13':'heptabao-ha4bde9-20261106-r2-x230'}
+ STATES={'before':(), 'after-add-mac':('192.168.0.8',),
+         'after-add-x230':('192.168.0.8','192.168.0.13'),
+-        'after-delete-x230':('192.168.0.8',), 'after-delete-mac':()}
++        'after-delete-x230':('192.168.0.8',), 'after-delete-mac':(),
++        'before-delete-x230':('192.168.0.8','192.168.0.13')}
+ FILES={'etc-ufw-user.rules','etc-ufw-user6.rules','etc-ufw-before.rules','etc-ufw-after.rules',
+        'etc-ufw-before6.rules','etc-ufw-after6.rules','etc-ufw-ufw.conf','etc-default-ufw',
+        'nft.original.private.log','iptables-filter.original.private.log'}

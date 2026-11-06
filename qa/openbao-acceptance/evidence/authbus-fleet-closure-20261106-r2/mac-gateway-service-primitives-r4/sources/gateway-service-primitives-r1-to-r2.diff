@@ -1,0 +1,76 @@
+--- launcher-r1
++++ launcher-r2
+@@ -9,7 +9,7 @@
+ from pathlib import Path
+ 
+ START=time.monotonic();UNTIL=START+45.0
+-ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r1')
++ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r2')
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+ # PAYLOAD_PLACEHOLDER
+ RUNTIME_PINS={
+@@ -19,8 +19,8 @@
+  '/bin/ps':(170432,'3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c',0o4755)}
+ SOURCE_NAMES=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',
+  'mac_native_process_observer_r1.py','mac_owned_launchd_r3.py',
+- 'mac_gateway_service_primitives_r1.py')
+-report={'schema':'heptabao.actual-mac-gateway-service-primitives-launcher.r1','ok':False,
++ 'mac_gateway_service_primitives_r2.py')
++report={'schema':'heptabao.actual-mac-gateway-service-primitives-launcher.r2','ok':False,
+  'sharedSeconds':45,'supervisorSeconds':70,'automaticRetry':False,
+  'actualProductionGatewayChanged':False,'credentialOrConfigurationReads':0,
+  'providerCalls':0,'originalMutationsExpected':6,'sleepServiceGenerationsExpected':2,
+@@ -78,6 +78,15 @@
+   need(ident(os.fstat(item[0]))[:6]==original[:6]==ident(path.lstat())[:6],'same_service_parent_components')
+  if root_fd is not None:
+   need(ident(os.fstat(root_fd[0]))[:6]==root_identity[:6]==ident(ROOT.lstat())[:6],'same_service_created_root')
++def parent_after_owned_mkdir(before,after):
++ # Only the immediately containing, retained directory is rebased once after
++ # this launcher's own known mkdir. Other anchors remain exact. Neither inode,
++ # owner, group nor mode may change. APFS may report unchanged nlink; filesystems
++ # that count child directories report exactly one additional link.
++ need(len(before)==len(after)==9 and before[:5]==after[:5]
++  and stat.S_ISDIR(after[4]) and after[5] in (before[5],before[5]+1),
++  'only_owned_mkdir_parent_link_generation')
++ return after
+ def runtime_fence():
+  remaining();verify_anchors()
+  for path,(size,pin,mode) in RUNTIME_PINS.items():
+@@ -100,7 +109,7 @@
+  need(sys.platform=='darwin' and os.getuid()==501 and os.geteuid()==501
+   and str(Path(sys.executable).resolve())==PYTHON,'exact_service_qualification_host_and_interpreter')
+  os.umask(0o077);sys.dont_write_bytecode=True
+- need(set(PAYLOAD)=={'schema','sources','parserNames'} and PAYLOAD['schema']=='heptabao.gateway-service-primitives.payload.r1'
++ need(set(PAYLOAD)=={'schema','sources','parserNames'} and PAYLOAD['schema']=='heptabao.gateway-service-primitives.payload.r2'
+   and set(PAYLOAD['sources'])==set(SOURCE_NAMES)
+   and PAYLOAD['parserNames']==['ManagerRefused','need','parse_print','missing_service'],'fixed_embedded_service_source_scope')
+  for name,value in PAYLOAD['sources'].items():
+@@ -112,7 +121,18 @@
+    and not stat.S_IMODE(s.st_mode)&0o022,'safe_service_root_parent')
+   item=open_fd(path,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,role='parent-directory')
+   need(ident(os.fstat(item[0]))==ident(s),'opened_service_parent_identity');anchors.append((path,item,ident(s)))
+- os.mkdir(ROOT,0o700);created=True
++ verify_anchors()
++ parent_path,parent_item,parent_before=anchors[-1]
++ need(parent_path==ROOT.parent and ident(os.fstat(parent_item[0]))[:6]==parent_before[:6],
++  'exact_immediate_parent_before_owned_mkdir')
++ os.mkdir(ROOT.name,0o700,dir_fd=parent_item[0]);created=True
++ parent_after=ident(os.fstat(parent_item[0]))
++ need(parent_after==ident(parent_path.lstat()),'same_named_parent_after_owned_mkdir')
++ anchors[-1]=(parent_path,parent_item,parent_after_owned_mkdir(parent_before,parent_after))
++ report['ownedMkdirParentGeneration']={'onlyImmediateParentRebased':True,
++  'originalDeviceInodeOwnerGroupModeExact':True,
++  'linkCountUnchangedOrExactlyOneHigher':True,
++  'linkCountChanged':parent_after[5]!=parent_before[5]}
+  root_fd=open_fd(ROOT,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,role='owned-root')
+  root_identity=ident(os.fstat(root_fd[0]));need(stat.S_IMODE(root_identity[4])==0o700 and root_identity[2]==501,'new_private_service_root')
+  for name,value in PAYLOAD['sources'].items():private(name,value['text'].encode())
+@@ -121,7 +141,7 @@
+  unreaped=import_exact('mac_owned_unreaped_r1');unreaped.require_waitid()
+  command_module=import_exact('mac_owned_commands_r1')
+  observer=import_exact('mac_native_process_observer_r1')
+- core=import_exact('mac_gateway_service_primitives_r1')
++ core=import_exact('mac_gateway_service_primitives_r2')
+  manager_raw,_=read(ROOT/'mac_owned_launchd_r3.py',expected=source_bindings['mac_owned_launchd_r3.py'])
+  parsed=ast.parse(manager_raw);selected=[n for n in parsed.body if isinstance(n,(ast.ClassDef,ast.FunctionDef)) and n.name in PAYLOAD['parserNames']]
+  need([n.name for n in selected]==PAYLOAD['parserNames'],'exact_qualified_parser_excerpt_nodes')

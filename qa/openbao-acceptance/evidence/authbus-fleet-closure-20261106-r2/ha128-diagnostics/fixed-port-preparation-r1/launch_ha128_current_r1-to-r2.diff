@@ -1,0 +1,28 @@
+--- launch_ha128_current_r1.body.py
++++ launch_ha128_current_r2.body.py
+@@ -18,8 +18,8 @@
+ 
+ BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
+ SOURCE = BASE / 'ha-qa-af91-preparation-20261106-r1/source'
+-CONTROL = BASE / 'ha128-current-launch-20261106-r1'
+-WORK = BASE / 'native-ha-official-history-4bde9-authbus-r1'
++CONTROL = BASE / 'ha128-current-launch-20261106-r2'
++WORK = BASE / 'native-ha-official-history-4bde9-authbus-r2'
+ QA = SOURCE / 'qa/openbao-acceptance'
+ QA_COMMIT = 'af91ec0cecbb1c0bd717095d6d8696a3f73a1cee'
+ QA_TREE = 'c3c5755344f407149b84bfaec285f1dba9be90f6'
+@@ -45,10 +45,10 @@
+     '--native-build-receipt', 'ai395,x230:' + LINUX_ROOT + '/provenance/native-build.public.json,' + LINUX_RECEIPT_SHA,
+     '--native-build-receipt', 'hepta-mac-local,hepta-mac-local:' + str(BASE / 'ha-native-build-projection-20261106-r1/native-build.public.json') + ',' + MAC_RECEIPT_SHA,
+     '--source-commit', PRODUCT_COMMIT, '--source-tree', PRODUCT_TREE,
+-    '--node', 'x230,192.168.0.13,/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r1',
+-    '--node', 'ai395,192.168.0.11,/home/qq/heptabao-native-ha-4bde9-authbus-20261106-r1',
+-    '--node', 'hepta-mac-local,192.168.0.8,' + str(BASE / 'native-ha-4bde9-authbus-node-r1'),
+-    '--api-port', '46230', '--raft-port', '46231',
++    '--node', 'x230,192.168.0.13,/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r2',
++    '--node', 'ai395,192.168.0.11,/home/qq/heptabao-native-ha-4bde9-authbus-20261106-r2',
++    '--node', 'hepta-mac-local,192.168.0.8,' + str(BASE / 'native-ha-4bde9-authbus-node-r2'),
++    '--api-port', '31040', '--raft-port', '31041',
+     '--mesh-local-port-base', '55200', '--mesh-reverse-port-base', '55300', '--mesh-api-port-base', '55400',
+     '--work-root', str(WORK), '--allow-private-lan',
+     '--darwin-watchdog-python', PYTHON, '--darwin-watchdog-python-sha256', PYTHON_SHA,

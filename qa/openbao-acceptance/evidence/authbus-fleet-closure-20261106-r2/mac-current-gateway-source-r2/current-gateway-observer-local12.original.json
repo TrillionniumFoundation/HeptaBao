@@ -1,0 +1,7 @@
+{
+  "chunk_id": "1a7130",
+  "wall_time_seconds": 0.010108524,
+  "exit_code": 0,
+  "original_token_count": 251,
+  "output": "{\"cases\": [{\"name\": \"environment-values-with-braces-are-private-values\", \"passed\": true}, {\"name\": \"duplicate-selected-environment-key-refused\", \"passed\": true}, {\"name\": \"duplicate-environment-layer-refused\", \"passed\": true}, {\"name\": \"malformed-environment-entry-refused\", \"passed\": true}, {\"name\": \"conflicting-selector-layers-are-counted-without-value-export\", \"passed\": true}, {\"name\": \"boolean-full9-refused\", \"passed\": true}, {\"name\": \"negative-full9-refused\", \"passed\": true}, {\"name\": \"original-command-digests-stay-private\", \"passed\": true}, {\"name\": \"unknown-original-query-is-not-replayed\", \"passed\": true}, {\"name\": \"same-pid-new-birth-refused\", \"passed\": true}, {\"name\": \"descendant-set-drift-refused\", \"passed\": true}, {\"name\": \"one-close-failure-does-not-leak-or-retry-other-handles\", \"passed\": true}], \"gatewayObserved\": false, \"macExecuted\": false, \"ok\": true, \"passed\": 12, \"providerCalls\": 0, \"schema\": \"heptabao.current-gateway-observer-local-boundaries.r2\", \"serviceActions\": 0}\n"
+}

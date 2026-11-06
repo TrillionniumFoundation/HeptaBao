@@ -1,0 +1,181 @@
+--- approved-rust_tls_lan_worker_r2.py
++++ mac_rust_tls_worker_r1.py
+@@ -5,6 +5,7 @@
+ the unchanged, source-pinned process-custody module. No old fixture is started,
+ initialized, repaired, removed or otherwise changed.
+ """
++import ctypes
+ import hashlib
+ import importlib.util
+ import json
+@@ -23,21 +24,24 @@
+ import types
+ import urllib.error
+ 
+-ROOT = Path('/home/qian/heptabao-native-ha-4bde9-authbus-tls-diagnostic-20261106-r2')
+-OLD = Path('/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r1')
+-QUALIFIED = Path('/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1')
+-QA = QUALIFIED / 'source-4bde9/qa/openbao-acceptance'
+-BIN = QUALIFIED / 'artifacts/heptabao-server'
+-IP, PORT = '192.168.0.13', 31040
+-CA_PIN = (1192, '90031a0f48ad7c8d5d603ce9c517ca61fd8ca57d12ddd67608f0d7c1fddbb34b')
+-LEAF_PIN = (1277, '2e3938207ae080055ded642675a1d2053a3b9c4be80d08ed60690c45d57d1215')
+-BIN_PIN = (110799168, '85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c')
++BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
++ROOT = BASE / 'ha128-mac-rust-tls-worker-20261106-r1'
++OLD = BASE / 'native-ha-4bde9-authbus-node-r2'
++QUALIFIED = OLD  # Previously installed, whole-pinned normal Mac artifact only.
++QA = BASE / 'ha-qa-af91-preparation-20261106-r1/source/qa/openbao-acceptance'
++BIN = OLD / 'heptabao-server'
++PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
++PYTHON_PIN = (34640, 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13')
++IP, PORT = '192.168.0.8', 31040
++CA_PIN = (1192, '25be2e78e9cdb325f74a8cef2e4a8795b18f66ff722293c947099332a237c932')
++LEAF_PIN = (1277, '037e7a71b68c9ce98963ff6187473a1f235ba50e4950cb4215fccdc93031dfb7')
++BIN_PIN = (92359328, '5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c')
+ COMMON_PINS = {
+     'fixture_mounts': (1560, '55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5'),
+     'owned_process': (28442, '0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0'),
+     'kv2_dr_process_custody': (26131, '669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008'),
+ }
+-LINUX_BASE_PIN = (77805, '0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de')
++WORKER_BASE_PIN = (77824, '2c87ffbcee09fc7706e7ac59c73ac851ac8313ce18a962255a26ad54e90d089e')
+ 
+ 
+ class Refused(RuntimeError):
+@@ -180,6 +184,8 @@
+     until = start + 85
+     report = {'schema': 'heptabao.ha-rust-tls-diagnostic-worker.r1', 'ok': False,
+               'oldFixtureRestarted': False, 'initializationSubmitted': False,
++              'diagnosticStorageMode': 'standalone_new_empty_directory',
++              'launchLane': 'existing_hepta_mac_local_ssh',
+               'mutationRequests': 0, 'credentialsUsed': False, 'keyDigestPublished': False,
+               'productionChanged': False, 'haQualified': False, 'remoteClosureUnknown': True}
+     created = False
+@@ -187,17 +193,18 @@
+     records = {}
+     key_before = None
+     try:
+-        need(sys.platform == 'linux' and os.getuid() == 1000
+-             and platform.node() == 'qian-ThinkPad-X230', 'actual_x230_account')
++        need(sys.platform == 'darwin' and os.getuid() == 501 and platform.machine() == 'arm64'
++             and platform.node() == 'MacBook-Pro.local' and Path(sys.executable).resolve(strict=True) == PYTHON,
++             'actual_mac_worker_account_and_interpreter')
+         owned_directory(ROOT.parent)
+         owned_directory(OLD, private=True)
+         owned_directory(QUALIFIED, private=True)
+         need(not ROOT.exists() and not ROOT.is_symlink(), 'new_diagnostic_root_absent')
+-        base, custody, records = load_originals(QA, LINUX_BASE_PIN, until)
+-        for path, pin in ((BIN, BIN_PIN), (OLD / 'ca.crt', CA_PIN), (OLD / 'tls.crt', LEAF_PIN)):
++        base, custody, records = load_originals(QA, WORKER_BASE_PIN, until)
++        for path, pin in ((BIN, BIN_PIN), (PYTHON, PYTHON_PIN), (OLD / 'ca.crt', CA_PIN), (OLD / 'tls.crt', LEAF_PIN)):
+             identity, _ = file_pin(path, pin, until)
+             records[path] = (pin, identity)
+-        need(stat.S_IMODE(BIN.stat().st_mode) == 0o700, 'qualified_normal_binary_mode')
++        need(stat.S_IMODE(BIN.stat().st_mode) == 0o500, 'qualified_normal_binary_mode')
+         key_before = key_metadata(OLD / 'tls.key')
+         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as preflight:
+             preflight.bind((IP, PORT))
+@@ -211,7 +218,7 @@
+         write_new(ROOT / 'server.json', (json.dumps(config, sort_keys=True) + '\n').encode())
+         log_fd = os.open(ROOT / 'process.log', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+         log = os.fdopen(log_fd, 'wb')
+-        node = base.Node(1, 'x230', IP, str(ROOT), PORT, 31041)
++        node = base.Node(3, 'hepta-mac-local', IP, str(ROOT), PORT, 31041)
+         context = ssl.create_default_context(cafile=str(OLD / 'ca.crt'))
+         try:
+             with custody.activated() as current_owner:
+@@ -221,7 +228,7 @@
+                                              stdin=subprocess.DEVNULL, stdout=log, stderr=log,
+                                              close_fds=True, start_new_session=True)
+                     ready_until = time.monotonic() + 45
+-                    ready = b'HeptaBao single-node TLS listener ready at 192.168.0.13:31040\n'
++                    ready = b'HeptaBao single-node TLS listener ready at 192.168.0.8:31040\n'
+                     while True:
+                         deadline(min(until, ready_until))
+                         need(child.poll() is None, 'owned_rust_listener_exited_before_ready')
+@@ -231,7 +238,14 @@
+                         if ready in raw:
+                             break
+                         time.sleep(0.025)
+-                    need(os.readlink('/proc/' + str(child.pid) + '/exe') == str(BIN), 'actual_owned_rust_executable')
++                    libproc = ctypes.CDLL('/usr/lib/libproc.dylib', use_errno=True)
++                    proc_pidpath = libproc.proc_pidpath
++                    proc_pidpath.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_uint32]
++                    proc_pidpath.restype = ctypes.c_int
++                    image_path = ctypes.create_string_buffer(4096)
++                    path_length = proc_pidpath(child.pid, image_path, len(image_path))
++                    need(0 < path_length < len(image_path) and image_path.value.decode('utf-8') == str(BIN),
++                         'actual_owned_rust_executable')
+                     report['listenerPid'] = child.pid
+                     report['selfHealth'] = health_case(base, context, node)
+                     need(child.poll() is None, 'owned_rust_alive_after_self_probe')
+--- approved-rust_tls_lan_coordinator_r2.body.py
++++ mac_rust_tls_coordinator_r1.body.py
+@@ -2,7 +2,7 @@
+ """One credential-free new Rust listener diagnostic, never a HA retry.
+ 
+ The same fixed IP, port, public certificate and client code are observed from
+-X230 and Mac. TCP, strict TLS and the original unauthenticated health GET have
++the Mac SSH worker and main coordinator. TCP, strict TLS and the original health GET have
+ separate 1.5 second budgets. All error details are closed public classifications.
+ """
+ import base64
+@@ -27,8 +27,8 @@
+ load_originals, write_new, verify_records = (namespace[n] for n in ('load_originals', 'write_new', 'verify_records'))
+ health_case = namespace['health_case']
+ BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
+-OLD = BASE / 'native-ha-official-history-4bde9-authbus-r1'
+-ROOT = BASE / 'ha128-rust-tls-lan-diagnostic-20261106-r2'
++OLD = BASE / 'native-ha-4bde9-authbus-node-r2'
++ROOT = BASE / 'ha128-mac-rust-tls-control-20261106-r1'
+ QA = BASE / 'ha-qa-af91-preparation-20261106-r1/source/qa/openbao-acceptance'
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+ SSH = Path('/usr/bin/ssh')
+@@ -37,7 +37,7 @@
+     PYTHON: (34640, 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'),
+     SSH: (1584576, '17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3'),
+ }
+-IP, PORT = '192.168.0.13', 31040
++IP, PORT = '192.168.0.8', 31040
+ 
+ 
+ def transport_case(kind, context, expected_der):
+@@ -107,7 +107,7 @@
+     start = time.monotonic()
+     until = start + 100
+     report = {'schema': 'heptabao.ha-rust-tls-lan-diagnostic-coordinator.r1', 'ok': False,
+-              'originalHaJob': '1a1b29efcd8-fc05-7ef9', 'originalFailureReclassified': False,
++              'originalHaJob': '1a1b322abe3-fc05-80b8', 'originalFailureReclassified': False,
+               'credentialsUsed': False, 'initializationSubmitted': False, 'mutationRequests': 0,
+               'productionChanged': False, 'haQualified': False, 'candidateFullyQualified': False,
+               'remoteClosureUnknown': True, 'macCases': []}
+@@ -123,7 +123,7 @@
+         owned_directory(OLD, private=True)
+         need(not ROOT.exists() and not ROOT.is_symlink(), 'new_coordinator_root_absent')
+         base, custody, records = load_originals(QA, BASE_PIN, until)
+-        pins = {**TOOL_PINS, OLD / 'ca.crt': namespace['CA_PIN'], OLD / 'node-1/tls.crt': namespace['LEAF_PIN']}
++        pins = {**TOOL_PINS, OLD / 'ca.crt': namespace['CA_PIN'], OLD / 'tls.crt': namespace['LEAF_PIN']}
+         leaf = None
+         for path, pin in pins.items():
+             identity, raw = file_pin(path, pin, until, contents=path.name == 'tls.crt')
+@@ -138,8 +138,8 @@
+         encoded = base64.b64encode(WORKER_SOURCE.encode()).decode('ascii')
+         remote_code = "import base64;exec(compile(base64.b64decode(" + repr(encoded) + "),'<fixed-diagnostic-worker>','exec'))"
+         argv = [str(SSH), '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=yes',
+-                '-o', 'ConnectTimeout=10', '-o', 'ConnectionAttempts=1', 'x230',
+-                '/usr/bin/python3', '-I', '-S', '-B', '-c', shlex.quote(remote_code)]
++                '-o', 'ConnectTimeout=10', '-o', 'ConnectionAttempts=1', 'hepta-mac-local',
++                str(PYTHON), '-I', '-S', '-B', '-c', shlex.quote(remote_code)]
+         try:
+             with custody.activated() as current_owner:
+                 owner = current_owner
+@@ -150,7 +150,7 @@
+                     report['workerReady'] = wait_ready(child, min(until, time.monotonic() + 60), buffers)
+                     for kind in ('tcp_only', 'strict_tls'):
+                         report['macCases'].append(transport_case(kind, context, expected_der))
+-                    node = base.Node(1, 'x230', IP, str(namespace['ROOT']), PORT, 31041)
++                    node = base.Node(3, 'hepta-mac-local', IP, str(namespace['ROOT']), PORT, 31041)
+                     report['macCases'].append(health_case(base, context, node))
+                     need(os.write(child.stdin.fileno(), b'finish\n') == 7, 'complete_parent_finish_command')
+                     finished_sent = True

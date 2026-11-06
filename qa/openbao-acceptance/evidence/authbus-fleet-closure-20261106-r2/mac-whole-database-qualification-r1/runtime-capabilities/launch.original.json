@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import ctypes,hashlib,json,os,sqlite3,stat,sys,time\nP=\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\"\nstart=time.monotonic();fd=None;closed=False\nassert sys.platform==\"darwin\" and os.getuid()==501 and os.path.realpath(sys.executable)==P\ntry:\n fd=os.open(P,os.O_RDONLY|os.O_NOFOLLOW)\n a=os.fstat(fd);h=hashlib.sha256();count=0\n while True:\n  assert time.monotonic()-start<5\n  p=os.read(fd,65536)\n  if not p:break\n  h.update(p);count+=len(p)\n def ident(s):return [getattr(s,k) for k in (\"st_dev\",\"st_ino\",\"st_uid\",\"st_gid\",\"st_mode\",\"st_nlink\",\"st_size\",\"st_mtime_ns\",\"st_ctime_ns\")]\n assert ident(a)==ident(os.fstat(fd))==ident(os.lstat(P)) and stat.S_ISREG(a.st_mode) and count==34640\n assert h.hexdigest()==\"cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13\"\nfinally:\n if fd is not None:os.close(fd);closed=True\nlibc=ctypes.CDLL(None,use_errno=True)\nprint(json.dumps({\"schema\":\"heptabao.mac-whole-sqlite-runtime-capabilities.r1\",\"ok\":True,\"osListxattrPresent\":hasattr(os,\"listxattr\"),\"osGetxattrPresent\":hasattr(os,\"getxattr\"),\"libcFlistxattrSymbolPresent\":hasattr(libc,\"flistxattr\"),\"sqliteSerializePresent\":hasattr(sqlite3.Connection,\"serialize\"),\"sqliteSetconfigPresent\":hasattr(sqlite3.Connection,\"setconfig\"),\"sqliteNoCheckpointOnCloseConstantPresent\":hasattr(sqlite3,\"SQLITE_DBCONFIG_NO_CKPT_ON_CLOSE\"),\"sqliteVersion\":sqlite3.sqlite_version,\"runtimeSourceFdClosedOnce\":closed,\"actualXattrCallDispatched\":False,\"childCount\":0,\"sqliteConnectionCount\":0,\"productionReads\":0,\"productionWrites\":0},sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1794004923610,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b306b4da-fc05-8079",
+    "idempotency_key": "heptabao-mac-whole-sqlite-runtime-capabilities-readonly-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b306b4da-fc05-8079",
+    "request_digest": "285b0c7907fcd11f1af26d02f58c2cff5d37b21ae828715a1ca3b2f0f99d5e55",
+    "request_fingerprint": 2907931698362372383,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b306b4da-fc05-8079"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 13330,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b306b4da-fc05-8079"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

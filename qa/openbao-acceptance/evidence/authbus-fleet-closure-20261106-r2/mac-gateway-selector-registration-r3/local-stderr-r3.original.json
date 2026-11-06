@@ -1,0 +1,10 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "chunk_id": "721f5f",
+    "wall_time_seconds": 0.000026219,
+    "exit_code": 0,
+    "original_token_count": 202,
+    "output": "{\"actualMacRun\": false, \"executed\": 16, \"passed\": 16, \"rows\": [{\"id\": \"empty-syntax\", \"matched\": true}, {\"id\": \"empty-unit\", \"matched\": true}, {\"id\": \"exact-unit-warning\", \"matched\": true}, {\"id\": \"syntax-warning\", \"matched\": true}, {\"id\": \"nonzero-unit\", \"matched\": true}, {\"id\": \"boolean-exit\", \"matched\": true}, {\"id\": \"unit-failed\", \"matched\": true}, {\"id\": \"snapshot-not-exact\", \"matched\": true}, {\"id\": \"case-missing\", \"matched\": true}, {\"id\": \"extra-case\", \"matched\": true}, {\"id\": \"warning-prefix\", \"matched\": true}, {\"id\": \"warning-trailer\", \"matched\": true}, {\"id\": \"duplicate-warning\", \"matched\": true}, {\"id\": \"different-reason\", \"matched\": true}, {\"id\": \"different-plugin\", \"matched\": true}, {\"id\": \"text-not-bytes\", \"matched\": true}], \"schema\": \"heptabao.registration-exact-stderr.local.r3\"}\n"
+  }
+}

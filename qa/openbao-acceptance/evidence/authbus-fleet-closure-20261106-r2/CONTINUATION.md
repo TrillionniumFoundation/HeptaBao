@@ -4,7 +4,71 @@ The current full-replacement gate remains **not qualified**. Product source is u
 
 No production traffic was switched. No legacy production Bao service, binary, data or backup was deleted. The retired Mac R2 registration below was an explicitly owned failed QA wrapper.
 
-## Latest completed SDK and LAN diagnosis checkpoint — r12
+## r13 — real Linux SDK permission custody, Mac source inventory, and LAN blocker checkpoint
+
+This is a QA/evidence checkpoint on product `4bde9aee03fcd27c59e13607e529b1cee594b249`. It does not qualify complete OpenBao 2.7.1 replacement. No real provider request, production credential write, production gateway restart/cutover, helper hold release, or legacy deletion has occurred in this checkpoint.
+
+### Linux SDK write permissions: actually repaired
+
+The two complete read-only inventories each cover 33,869 SDK entries (1,914 directories, 31,938 regular files, 17 internal symbolic links). Private complete baselines and all regular-file byte hashes were retained on their owning hosts. Root retained and independently reconstructed all 48 output pages per host; original nanosecond/inode metadata was never round-tripped through JavaScript numbers.
+
+The finite permission-only apply used one fsynced intent, one fchmod, and one fsynced completion per changed object. It cleared only group/other write permission on owned SDK files/directories and the fixed plugin-package/ancestor scope. It did not execute SDK code or touch gateway/provider/credential state.
+
+- Pocket4 original job `1a1b3160bfe-fc05-8098`: succeeded, exit 0, complete/durable 962-byte stdout, 50.39806 s. 33,856 attempted = 33,856 known complete changes; 101,590 descriptors closed once.
+- ROG original job `1a1b3164ac0-fc05-809b`: succeeded, exit 0, complete/durable 957-byte stdout, 91.90176 s. 33,850 attempted = 33,850 known complete changes; 101,584 descriptors closed once.
+- ROG's one pre-existing extension-ancestor ACL required its effective mask to lose write permission. HOME and state-root ACLs were retained. The earlier ACL-refusing plan remains a recorded failure.
+- Native postchecks show package.json mode 0644 and SDK entry mode 0755 with the exact original bytes. ROG gateway remains active with original PID 599954; Pocket4 gateway remains inactive. Held helper units were not started or released.
+
+This closes the observed SDK write-permission blocker. It does not claim full dependency execution qualification, real credential migration, or actual permission/client rollback.
+
+### Mac current sources and full database capacity
+
+The original inventory r1 failed on Python 3.14 AST representation before any child/SQL operation. Its fixed read-only diagnostic proved `show_empty=True` matches both originally reviewed AST pins. Inventory r2 then failed while projecting resource-close facts; its retained private result may be projected diagnostically, but r2 remains failed and is not reconstructed into a passed final fence.
+
+Inventory r3 original job `1a1b3333a55-fc05-8103` succeeded with exit 0 and complete/durable 22,682-byte stdout. It confirms five configured agent databases and one shared registry database, five exact registry mappings, no additional configured paths, and closed SQL/FD/child custody. The same gateway PID 18437 and birth remained present; both default dotenv paths were absent. The six main database sizes were:
+
+| Slot | Main file bytes |
+| --- | ---: |
+| 1 | 2,469,126,144 |
+| 2 | 157,589,504 |
+| 3 | 209,686,528 |
+| 4 | 223,727,616 |
+| 5 | 15,298,560 |
+| 6 | 202,899,456 |
+
+Slot 1 had no WAL/SHM. Slots 2–5 had empty WAL plus 32,768-byte SHM. Slot 6 had a 5,969,912-byte WAL plus SHM. The immutable-reader reported journal mode for slots 1–5 is not proof of the persistent file's journal mode. Observed free physical memory was 6,796,361,728 bytes; total physical RAM was 34,359,738,368 bytes.
+
+The earlier whole-six-database r2 fixture actually passed all 13 stages on Mac, including complete schema/page restoration, 18 original namespace files retained, 48 restore actions, and six cold fresh writers. Its 64 MiB fixture limit does not cover the current 2.47 GB main database. The in-memory serialization design is therefore not qualified for production. A separate bounded-memory, disk-backed backup/restore revision and actual large-fixture capacity verification are required.
+
+The current gateway fallback parser still refused the actual wrapper. Full fallback reconstruction, complete active-consumer coverage and memory-loaded plugin flags remain unproved. Zero current descendants does not establish that no independent process can read/write the credential stores.
+
+### Actual launchd and selector primitives
+
+The six ordered QA launchd primitives passed in original Mac job `1a1b2e87896-fc05-802a` using only a finite sleep job, with all owned children and pipes closed. Effective disabled=false was restored, but an explicit false override remains; absence of the original override was not restored. Production KeepAlive/gateway rollback is not thereby qualified.
+
+Actual SDK gateway selector/registration r3 original job `1a1b3032450-fc05-8073` passed 15/15. The exact existing 112-byte disabled-plugin warning was accepted only for the matching actual source snapshot. Real AuthBus import remained zero. This is actual entry/selector/registration coverage, not proof of the full production gateway's memory state or fallback behavior.
+
+### LAN and firewall: narrow changes, remaining Mac TLS blocker
+
+The new X230 normal Rust diagnostic on ports 31040/31041 succeeded: X230 local health 501, Mac TCP, strict TLS 1.3, and strict-CA HTTPS health 501 all passed. This closes the earlier X230 out-of-permitted-range port problem.
+
+Two exact temporary ai395 UFW rules were actually added on br0: TCP from Mac 192.168.0.8/32 and X230 192.168.0.13/32 to ai395 192.168.0.11/32 ports 31040:31041. Original configurations and complete native rules are retained privately. The public comparator verifies exact appended positions and all unrelated semantics. The earlier comparator refusal of the actual kernel protocol-selector representation is retained, followed by the minimal reviewed parser fix. No duplicate add was sent.
+
+HA128 r2 original job `1a1b322abe3-fc05-80b8` then failed at 24/128 with node_3_listener_timeout. Seven mutation intents have seven complete responses, unknown=0, replay=false. All original server/seed/SSH processes were stopped/reaped with closure facts. This is a failed HA gate, not an HA pass.
+
+The subsequent normal Rust Mac-only diagnostic completed successfully as a diagnostic: TCP to 192.168.0.8:31040 succeeded, while strict TLS and HTTPS timed out at the original 1.5-second budgets. The normal Rust process was still alive and all owned processes were closed. TLS success and all-four-stages success are false. Exact-binary ALF/log read-only diagnosis is next; no ALF/PF/WARP write is authorized by this evidence.
+
+At this checkpoint the two ai395 rules remain active for that one concrete Mac TLS diagnosis. Eventual removal must use a fresh complete pre-delete capture/comparison, then exact reverse-order delete and post-comparison. UFW's reload resets counters; semantic restoration must not be described as restoration of counters/handles.
+
+### Remaining deployment and final cleanup gates
+
+No permanent HeptaBao AuthBus service endpoint/credential destination/backup destination is yet deployed. Previous QA TLS roots and labels are create-only test instances and cannot be promoted by description. Historical registered backup producers remain zero under the finite scope; this does not turn the QA DR25 backup into the future production backup path.
+
+Required next work remains: Mac TLS/HA completion; capacity-qualified whole-database rollback; exact real gateway/fallback/active-consumer closure; three provider-valid current owner credentials with once-only refresh/CAS if required; permanent independent HeptaBao trust and service; each of the three registered clients' actual credential I/O, restart and rollback; actual production backup and recovery; finally gated old-runtime/service/binary cleanup. J3160 is not a credential source. All earlier unknown keys/jobs remain unknown until reconciled under their original identities; they are never replayed with new keys.
+
+## Previous checkpoint history
+
+## Completed SDK and LAN diagnosis checkpoint — r12 (historical)
 
 The full-replacement decision remains **not qualified**. The actual Mac SDK campaign now passes both generations, including its isolated inverse, and the original physical HA failure has been narrowed to a direct TCP connection failure at the selected port. Product files, original workload limits and the finite registered-client/backup scope are unchanged. Provider calls, production credential writes, registered-gateway restarts, production cutovers, helper-hold releases and legacy-production deletions remain zero.
 

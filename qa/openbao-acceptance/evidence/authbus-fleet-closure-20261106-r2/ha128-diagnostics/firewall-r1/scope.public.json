@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.fixed-firewall-readonly-observation.r1",
+  "host": "x230",
+  "privilegedCommands": [
+    [
+      "/usr/sbin/nft",
+      "-j",
+      "list",
+      "ruleset"
+    ],
+    [
+      "/usr/sbin/iptables-save",
+      "-c",
+      "-t",
+      "filter"
+    ]
+  ],
+  "existingSudoersOnly": true,
+  "nonInteractive": true,
+  "freshAuth": false,
+  "requestedOrChangedPermissions": false,
+  "rulesMutated": false,
+  "servicesChanged": false,
+  "newProductRuns": 0,
+  "originalCommandsNaturallyExitedZero": true,
+  "ptyCloseAcknowledgements": {
+    "result": "already_exited",
+    "outcome": "unknown",
+    "terminationConfirmed": false
+  },
+  "independentOriginalOwnerAndCommandPidsAbsent": true,
+  "independentAbsenceJob": "1a1b2d5ef40-fc05-7ff7",
+  "toolsBeforeAfterSameWholeBytes": true,
+  "completePrivateRuleBytes": {
+    "nft": {
+      "bytes": 210977,
+      "sha256": "3ae405444a87f0b4ff0bc21d8e000558529c037b179318e0ba5591a8a321cfef"
+    },
+    "iptablesFilter": {
+      "bytes": 8632,
+      "sha256": "6d1824203ec159628cad0cf6c808f3b278263b9c5c88f7aa42fd15ad47501a68"
+    }
+  },
+  "privateUnrelatedRulesPublished": false,
+  "staticInferenceIsNotLiveConnectivity": true,
+  "originalHa46230FailureUnchanged": true
+}
