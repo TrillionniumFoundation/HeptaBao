@@ -1,0 +1,15 @@
+test_context_verification_flags_are_never_mutated (__main__.SyntheticCases.test_context_verification_flags_are_never_mutated) ... ok
+test_dns_strict_identity_and_application_records (__main__.SyntheticCases.test_dns_strict_identity_and_application_records) ... ok
+test_expired_shared_deadline_is_refused (__main__.SyntheticCases.test_expired_shared_deadline_is_refused) ... ok
+test_hostname_verification_disabled_is_refused (__main__.SyntheticCases.test_hostname_verification_disabled_is_refused) ... ok
+test_ip_strict_identity_and_application_records (__main__.SyntheticCases.test_ip_strict_identity_and_application_records) ... ok
+test_private_key_is_not_a_public_pin (__main__.SyntheticCases.test_private_key_is_not_a_public_pin) ... ok
+test_same_chain_wrong_leaf_pin_rejected (__main__.SyntheticCases.test_same_chain_wrong_leaf_pin_rejected) ... ok
+test_verification_disabled_is_refused (__main__.SyntheticCases.test_verification_disabled_is_refused) ... ok
+test_wrong_ca_fails_closed (__main__.SyntheticCases.test_wrong_ca_fails_closed) ... ok
+test_wrong_hostname_fails_with_verify_code (__main__.SyntheticCases.test_wrong_hostname_fails_with_verify_code) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.332s
+
+OK

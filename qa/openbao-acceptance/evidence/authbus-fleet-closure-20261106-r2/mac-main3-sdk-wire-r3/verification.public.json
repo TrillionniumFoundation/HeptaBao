@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-main3-sdk-wire-r3-qualification-verification.r1",
+  "candidateWireSha256": "e80c7eb22e2cd2fbc547eb085b8eb0b482e8e656baa8a59520e0cb93a4c0396c",
+  "localRealTlsCases": 29,
+  "actualMacJobId": "1a1b2afdd12-fc05-7f4e",
+  "actualMacKnownExitCode": 0,
+  "actualMacOriginalStdoutBytes": 40735,
+  "actualMacOriginalStderrBytes": 0,
+  "positiveSequences": 2,
+  "completePositiveResponses": 4,
+  "syntheticResponseFaultCases": 7,
+  "allSyntheticFaultsRefusedAndClosed": true,
+  "originalChildCount": 3,
+  "allOriginalChildrenKnownRetired": true,
+  "parentDescriptorsOpened": 38,
+  "parentDescriptorsClosed": 38,
+  "allPeerThreadsAndListenersClosed": true,
+  "providerCalled": false,
+  "productionCredentialsRead": false,
+  "actualSdkOrPluginExecuted": false,
+  "realCredentialSdkCampaignQualified": false,
+  "priorFailedSdkAttemptReclassified": false
+}

@@ -1,0 +1,11 @@
+--- before/template
++++ after/template
+@@ -91,7 +91,7 @@
+  private(ROOT/'output/config.json',b'{"synthetic":"explicit"}\n')
+  private(ROOT/'output/state/initial/openclaw.json',b'{"synthetic":"old-default"}\n')
+  for name,raw in PAYLOAD['sources'].items():
+-  need(name in ('mac_refresh_fallback_sdks_r2.mjs','mac_gateway_fallback_sdk_qualification_r1.mjs'),'fixed_fallback_sdk_source_name')
++  need(name in ('mac_gateway_fallback_sdk_cases_r1.mjs','mac_gateway_fallback_sdk_qualification_r1.mjs'),'fixed_fallback_sdk_source_name')
+   need(sha(raw.encode())==PAYLOAD['sourcePins'][name],'prepared_fallback_sdk_source_pin');private(ROOT/'code'/name,raw)
+  private(ROOT/'plan.public.json',json.dumps({'schema':'heptabao.actual-sdk-gateway-fallback-synthetic-plan.r1',
+   'sharedSeconds':45,'supervisorSeconds':70,'originalChildren':3,'caseCount':20,

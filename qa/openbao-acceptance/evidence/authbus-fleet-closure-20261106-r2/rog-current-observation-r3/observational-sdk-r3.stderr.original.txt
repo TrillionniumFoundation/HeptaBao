@@ -1,0 +1,17 @@
+test_alias_rejected_before_open (__main__.ObservationalCases.test_alias_rejected_before_open) ... ok
+test_changed_leaf_rejected_and_handles_close (__main__.ObservationalCases.test_changed_leaf_rejected_and_handles_close) ... ok
+test_changed_open_file_rejected_and_handles_close (__main__.ObservationalCases.test_changed_open_file_rejected_and_handles_close) ... ok
+test_every_observed_identity_field_is_bound (__main__.ObservationalCases.test_every_observed_identity_field_is_bound) ... ok
+test_exact_observed_file_can_only_be_observed (__main__.ObservationalCases.test_exact_observed_file_can_only_be_observed) ... ok
+test_file_grow_is_bounded_and_all_handles_close (__main__.ObservationalCases.test_file_grow_is_bounded_and_all_handles_close) ... ok
+test_open_failure_closes_held_parents (__main__.ObservationalCases.test_open_failure_closes_held_parents) ... ok
+test_ordinary_private_reader_and_original_fences_unchanged (__main__.ObservationalCases.test_ordinary_private_reader_and_original_fences_unchanged) ... ok
+test_other_caller_uid_rejected (__main__.ObservationalCases.test_other_caller_uid_rejected) ... ok
+test_other_leaf_private_input_and_relative_alias_rejected (__main__.ObservationalCases.test_other_leaf_private_input_and_relative_alias_rejected) ... ok
+test_short_file_rejected_and_handles_close (__main__.ObservationalCases.test_short_file_rejected_and_handles_close) ... ok
+test_wrong_initial_metadata_rejected_before_content_read (__main__.ObservationalCases.test_wrong_initial_metadata_rejected_before_content_read) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.016s
+
+OK

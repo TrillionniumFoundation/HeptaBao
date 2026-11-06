@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.synthetic-wal-lifecycle-prepared-pins.r1",
+  "embeddedSourceBytesExact": true,
+  "sourceNamesExact": true,
+  "sourcePinsExact": true,
+  "assembledTemplateExact": true,
+  "actualMacExecuted": false,
+  "entries": [
+    {
+      "name": "mac_sdk_raw_owner_cas_r1.mjs",
+      "bytes": 19390,
+      "sha256": "73af96757ba8e012c94543eb03f188b75bb3de572061abcd9388f06a1fd21833"
+    },
+    {
+      "name": "mac_wal_keeper_sdk_worker_r1.mjs",
+      "bytes": 13190,
+      "sha256": "a7034e187f341a28667515979451576b30a4e480849a57705384ac57bffb6320"
+    },
+    {
+      "name": "launch_wal_keeper_lifecycle_r1.template.py",
+      "bytes": 20719,
+      "sha256": "cf4a9c4d81385fcbdf0a1fbb575899a4824083cb070f6fe3e98ff34083ebf65f"
+    },
+    {
+      "name": "launch_wal_keeper_lifecycle_r1.py",
+      "bytes": 55154,
+      "sha256": "020bbc1f28a2c9df0f98ffb1f1634dd6f0b54420477eed2314aa30531d362889"
+    },
+    {
+      "name": "wal-keeper-lifecycle-r1.payload.public.json",
+      "bytes": 35328,
+      "sha256": "79dfab109bd34aa7d9f467259e0505e29c681fce5d534148aeb6b76a22f1322f"
+    },
+    {
+      "name": "qualify_wal_keeper_parent_local_r1.py",
+      "bytes": 5861,
+      "sha256": "d3eb7f3006a86a0e292a307c89914b1592d1a3b77dc2e8f71134494a73cfc8d1"
+    },
+    {
+      "name": "wal-keeper-parent-local-r1.original.json",
+      "bytes": 3786,
+      "sha256": "2ac93ee1644dab8aaff5c5ad5c94b0ad8610521fddcbd836d46c2390a5189499"
+    },
+    {
+      "name": "wal-keeper-parent-local-r1.result.public.json",
+      "bytes": 3355,
+      "sha256": "4be06d788925083461519dc740daf8682133e00ca9a135a83aba2a7130bd4f33"
+    }
+  ]
+}

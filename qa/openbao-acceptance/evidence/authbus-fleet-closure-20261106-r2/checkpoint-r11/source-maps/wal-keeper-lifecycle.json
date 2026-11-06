@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.public-evidence-path-blob-map.r1",
+  "scope": "Actual Mac synthetic WAL keeper lifecycle; known cold readonly refusal; held keeper, actual SDK CAS, independent latest reads and closure; no production or provider.",
+  "basePath": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1",
+  "entries": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/mac_sdk_raw_owner_cas_r1.mjs",
+      "bytes": 19390,
+      "sha256": "73af96757ba8e012c94543eb03f188b75bb3de572061abcd9388f06a1fd21833",
+      "blob": "a58d31d13337db0a6c520b50216bb16d67fb85f6"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/mac_wal_keeper_sdk_worker_r1.mjs",
+      "bytes": 13190,
+      "sha256": "a7034e187f341a28667515979451576b30a4e480849a57705384ac57bffb6320",
+      "blob": "feb9a6c433055f76958dde39e0d6f9abf41a54b7"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/launch_wal_keeper_lifecycle_r1.template.py",
+      "bytes": 20719,
+      "sha256": "cf4a9c4d81385fcbdf0a1fbb575899a4824083cb070f6fe3e98ff34083ebf65f",
+      "blob": "d907b3af33b5057e64773bd4fd30be4e9ae62ba0"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/launch_wal_keeper_lifecycle_r1.py",
+      "bytes": 55154,
+      "sha256": "020bbc1f28a2c9df0f98ffb1f1634dd6f0b54420477eed2314aa30531d362889",
+      "blob": "ed69647fc723864f34bae5cb557474672376f7a1"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-lifecycle-r1.payload.public.json",
+      "bytes": 35328,
+      "sha256": "79dfab109bd34aa7d9f467259e0505e29c681fce5d534148aeb6b76a22f1322f",
+      "blob": "8780af65bf823cfb17ddb41fd5ebec362adf3825"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/qualify_wal_keeper_parent_local_r1.py",
+      "bytes": 5861,
+      "sha256": "d3eb7f3006a86a0e292a307c89914b1592d1a3b77dc2e8f71134494a73cfc8d1",
+      "blob": "9535ea2c7597f209f5d07629c0ff90f18bd8530f"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-parent-local-r1.original.json",
+      "bytes": 3786,
+      "sha256": "2ac93ee1644dab8aaff5c5ad5c94b0ad8610521fddcbd836d46c2390a5189499",
+      "blob": "ce399b2ef27a819bf7a3114ec5c235f4d0f8aceb"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-parent-local-r1.result.public.json",
+      "bytes": 3355,
+      "sha256": "4be06d788925083461519dc740daf8682133e00ca9a135a83aba2a7130bd4f33",
+      "blob": "cda868431394b4411d024364cd013fa02373215b"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-lifecycle-prepared-pins.public.json",
+      "bytes": 1627,
+      "sha256": "6c996c2df84fe220ec198734c842b1edbc77a5d8970c0e5b62d0c73cf88330e2",
+      "blob": "584ee6faf06ef404f782f1c65a790399103397c5"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper.actual.launch.json",
+      "bytes": 1469,
+      "sha256": "a4f5b2e934dc905ddf2c55eec0576c54ec5258aad99cbc5c6357fe40acf9d98a",
+      "blob": "fffb62055c25643ae9fb3d6d9f413ca16327ab76"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper.actual.terminal.json",
+      "bytes": 956,
+      "sha256": "59e6ad60fc7f11e6965c2e71d2e184bc2ea3ea04c226ec132b307e59217d0f43",
+      "blob": "1d8ca11daf4f470f2b11131a18e90d1c12240f72"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper.actual.original-read-0.json",
+      "bytes": 54780,
+      "sha256": "04a069e0a0de804dca0a6047a0cb3873756f33cb52c6b029cf3fc878c6a8c278",
+      "blob": "a7c1808c73f8331df3b950253486d1f9b7759a54"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper.actual.original-read-1.json",
+      "bytes": 33350,
+      "sha256": "9b9c600ee50cbddcfa8b87ac425671e713975cce62eab6263a7d7f3b820f242c",
+      "blob": "bb7720781af67a43ffa4f2f828635f8a849f9cae"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper.actual.phase-originals.json",
+      "bytes": 20687,
+      "sha256": "5d589e035a7e18672116edc52f7d5b8af11c01c0fc3af4bdfe025ca6587f7176",
+      "blob": "4083a7d5e54d9a0e5a06e57749a3e7e400b94758"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper.actual.result.public.json",
+      "bytes": 26613,
+      "sha256": "ac9d311c758f40e4191d9a97c7b8a6c00c56e0429c3d8a5c973859506e9f852c",
+      "blob": "e0f4b64e2f9dedb7bfa085003184de8447659863"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper.lossless-capture.public.json",
+      "bytes": 458,
+      "sha256": "9fbfbd0641a1cc58b92280d83c35e10b95aeac4b2bde6cf9df9566aef21e9295",
+      "blob": "c00d4df2dd21f6f7bc0d89d4aa83ab9be35a402b"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-lifecycle-actual-r1.md",
+      "bytes": 5699,
+      "sha256": "2923eea677f82c05723196e4bcd0341cc78b005f6d6bbeb4ad1e751bb19fe397",
+      "blob": "cad62a4d014b9c1f2d81ab6a051c4ede758e9af6"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/plan.public.json",
+      "bytes": 1030,
+      "sha256": "41dab541e17cf6f52bce6d78e0d1c725878f16f2910a9eab90241790854f415b",
+      "blob": "865212e8975b594e0d476635d87c849d4497c3d6"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/read-after-close.stdout.public.json",
+      "bytes": 2049,
+      "sha256": "b17719043ada59226a40ed8c7748988c002f9f69e410979ab1a57695026e191b",
+      "blob": "8a9e7c2b9b87b262490b2b959f211af27ef2c21b"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/read-cold.stdout.public.json",
+      "bytes": 2117,
+      "sha256": "20a2152091d3cfd3134f1f6d26a216a779d86f8fa130bbe127e25d52ab36e8e2",
+      "blob": "a28bb44798dfa79192c500275b6eb90f9e4f9921"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/read-committed.stdout.public.json",
+      "bytes": 2047,
+      "sha256": "267288deb29a951a96ce9c15f3bb53db595c81901352761685ec65ad65f2a317",
+      "blob": "e08efefa76003c5bafa5171aff5d94cd4ddb47a4"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/read-held.stdout.public.json",
+      "bytes": 2042,
+      "sha256": "9f442d52366e2802f866ef2680fcfafd0c38b38e41b403301b14cc76902a4b4f",
+      "blob": "0a92a56994d0462c91e3fd97d556e3a7b46bdb93"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/read.sb",
+      "bytes": 1150,
+      "sha256": "d0dbe607bcf7cc37b07b24f073019e48394ae66689bea4124d62fbdcebdfb21a",
+      "blob": "8227136484fb001378b5876ba63725d30b80c39d"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/write-held.stdout.public.json",
+      "bytes": 2932,
+      "sha256": "0730b57ceefdf49a2cc89ae06c5329703834bbc1fc114d53691ed440ab06167c",
+      "blob": "e5d3dce014cd34f8ddc0b33b76ed636c754dde1d"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-wal-keeper-lifecycle-r1/wal-keeper-actual-originals/write.sb",
+      "bytes": 1398,
+      "sha256": "5db95a4f6c5b2f1e28446fad8fafb08abb7b5f9fdecf3ecc585072ac28beb1e8",
+      "blob": "a5498e7f6142ca2eaaa1bfdafd9aeca6fd07abcd"
+    }
+  ]
+}

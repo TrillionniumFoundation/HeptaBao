@@ -1,0 +1,163 @@
+{
+  "schema": "heptabao.public-evidence-path-blob-map.r1",
+  "scope": "Actual Mac SDK fallback policy/path 20; local pure transform 26; no gateway registration, service, provider, or production changes.",
+  "basePath": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20",
+  "entries": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-public-five-r1.original.json",
+      "bytes": 117393,
+      "sha256": "3aad096df310273b4ec8a108046879091ac63e1c62b3a2f7d462164d89f48aed",
+      "blob": "ec505198f8d92a0e376997ef8b0334db7c9a0f6d"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/reference/gateway-fallback/index.js",
+      "bytes": 3293,
+      "sha256": "9832720dcaf85519d315dda624497e352588f0d65c5607390df0501cc2358985",
+      "blob": "e2361d0b367b0dc934831371c85ad490e218fedd"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/reference/gateway-fallback/paths-BMBAvkNf.js",
+      "bytes": 10131,
+      "sha256": "099ff305aa7662710b2b0f1f925c99b203f30d283ab6b2ada34233a8188fab77",
+      "blob": "4f085fa29e96d072e54c38f6675944db071f4994"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/reference/gateway-fallback/config-state-CtMlHVRM.js",
+      "bytes": 4565,
+      "sha256": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5",
+      "blob": "b9445cdd28276fb8359e418af0065731159ff696"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/reference/gateway-fallback/config-normalization-shared-w2iz0aeC.js",
+      "bytes": 14585,
+      "sha256": "c3b7bccc26f72ac0ab79ef0635daaa5931d23f86d9bc7e21f4ae8b60ce80f7c2",
+      "blob": "963a931e689dca4d956c386763a81b85799ed7f3"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/reference/gateway-fallback/installed-plugin-index-N4jxqS0-.js",
+      "bytes": 64443,
+      "sha256": "695dc3196348aa176780979d8c3a75428e9029890470670bcb77cf1a7fa03719",
+      "blob": "5b76d804e4ad9ad4f7739807c1019d03d46e357e"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/mac_gateway_local_fallback_r1.py",
+      "bytes": 11054,
+      "sha256": "d113b6009dfb5d0c6b4701ae382f62b11817cf9038f032547375d95c0e10d905",
+      "blob": "df3da4964cf4ffefcfbd371eceaecc636483d366"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/qualify_gateway_local_fallback_r1.py",
+      "bytes": 8708,
+      "sha256": "6165f8140d234510956396bd7c847cea691b68432cc32b8c4c38e55df02b615a",
+      "blob": "81c833728ed855666853f61c475e8012d6901e91"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-local-fallback-pure-r1.original.json",
+      "bytes": 3494,
+      "sha256": "14245676bc6eb5c1f2a7bf00d3a54fd9f94192537fe366d1ce88d89016e62b1e",
+      "blob": "945c576d79b3e6e9baa66e81a32aa7dcbb9118cd"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-local-fallback-pure-r1.result.public.json",
+      "bytes": 3094,
+      "sha256": "986595c8f5925b2672d162ea4697d806cb8b6493e83ab9dc82d80e01b602bb55",
+      "blob": "e812cb0e0242765154eae8246822d230efc44e33"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/mac_gateway_fallback_sdk_cases_r1.mjs",
+      "bytes": 7199,
+      "sha256": "75410c2b796801e1386b8775b93391205c960bb02d7abd75bde3b64126e4fd66",
+      "blob": "c95969580b9a7d465ecfc652e171fd8daf82a904"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/mac_gateway_fallback_sdk_qualification_r1.mjs",
+      "bytes": 8513,
+      "sha256": "c4ec7bffd1a97fbb5fdcba9ae030f7d6f0fe4df5aaa0e40055a3a816853f4b4e",
+      "blob": "18a5cff9a24f53ff8280469d9dd8c0de4358ceda"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/launch_gateway_fallback_sdk_qualification_r1.template.py",
+      "bytes": 11019,
+      "sha256": "52d6163579e057f9cfae23ad06605eefae30a3a216e555b1c8e250402c9aeaea",
+      "blob": "48ff2c9dd73d09434ebe2bd56363af134b7f7aef"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/launch_gateway_fallback_sdk_qualification_r1.py",
+      "bytes": 28504,
+      "sha256": "69584712476a289004b2afcffb999a780560f03fd11d9d8763d365cd930f6d18",
+      "blob": "1230df670f2de135b6133bd7165fca5cd5845939"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk-qualification-r1.payload.public.json",
+      "bytes": 17909,
+      "sha256": "34243dd28239e4f5fb5f2610662ce74de02f4c19558587b31e58f8b7525442c2",
+      "blob": "77e9079be490e8ef17d2de6b46a6f202d58b9e61"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk-before-source-name-fix-r1/launch_gateway_fallback_sdk_qualification_r1.template.py",
+      "bytes": 11014,
+      "sha256": "dd3dec6354cd48c825611d3975be528d00db5ef8ded3fa5c81d48e1c7576dc0c",
+      "blob": "e55af750c869fb347a39577dedbc60b2ed565e2b"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk-before-source-name-fix-r1/launch_gateway_fallback_sdk_qualification_r1.py",
+      "bytes": 28499,
+      "sha256": "1d5603b534f69ab62589502ce71087ce840b7dc0d5aab3bf6a97cd2af6da7bff",
+      "blob": "54b2d3e12109c2c5cf9e82f544b23fd96658168c"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk-source-name-fix-r1.diff",
+      "bytes": 847,
+      "sha256": "716e8803a227cc6f410c8ff83514609c46c7462f2908c330fa02e5d112e8ee52",
+      "blob": "45e13a157bdbd669d7a1788b2036b769a4549494"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk20.actual.launch.json",
+      "bytes": 1470,
+      "sha256": "badfe7ff98031dfc065fa9c4584f372c6094df01357d367d47a7750262bee7c4",
+      "blob": "c860b3038b15c5f486dd79952ae7f2d243a6c68f"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk20.actual.terminal.json",
+      "bytes": 956,
+      "sha256": "2fbe7a654e30c6f2fbc2458074ba9a86c20d7c9333ae9fba20ad02b79d205e74",
+      "blob": "05b36f5edd7fe48f49952c48afb7cb4ae57b8a3a"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk20.actual.original-read.json",
+      "bytes": 35221,
+      "sha256": "ea0b2d346dddb04b92f82621ca88ff7617576b8a4d0d86c908b148c04577e5ba",
+      "blob": "e45515195b63a3a69d2d5b3fc88d87f7f0545d36"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk20.actual.unit-original-read.json",
+      "bytes": 5788,
+      "sha256": "41d2917f005369eff5e29f925b75bd6795d47afa0fad2e951b09374a48357722",
+      "blob": "f90c4c9790611b2ca8bed15c3c9ca306b3353898"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk20.actual.result.public.json",
+      "bytes": 10630,
+      "sha256": "b0e0628b6cd1bec3e154e41a4a4db3e4826bcbed35d5b875426e9bc8efd86a44",
+      "blob": "9f45c60d9d9f9098b19b9b8c2ec00cc32faa987a"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk20.actual.unit.public.json",
+      "bytes": 4088,
+      "sha256": "b60960f6dbd9eee3bdeb0047d4fae545fe21b2eaa2722a15aac0caad53b42c83",
+      "blob": "60a9357f9c302e3e99a15097e2c4bf92bbbce875"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk20.lossless-capture.public.json",
+      "bytes": 610,
+      "sha256": "b1dbffd9a4be0d44bac10772c240157a38dcdb6372c69f71905ed504640cf477",
+      "blob": "24b83e9dd939be386f1b293d624de417ec04b437"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-local-fallback-sdk20.md",
+      "bytes": 4175,
+      "sha256": "3bfd3877aef007b7faeade8617e3039d99a3dd2b60efe77a906e4ddc3e6f941e",
+      "blob": "479ecc1c2970f15133f5bbaf8405838e5cf337db"
+    }
+  ]
+}

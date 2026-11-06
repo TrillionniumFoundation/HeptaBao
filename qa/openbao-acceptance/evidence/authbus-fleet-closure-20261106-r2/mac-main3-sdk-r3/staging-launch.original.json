@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,io,json,os,sys\nassert sys.platform=='darwin' and os.getuid()==501 and os.geteuid()==501\nraw=sys.stdin.buffer.read(1048577)\nassert len(raw)<=1048576\nbundle=json.loads(raw)\nassert set(bundle)=={'sources','assets','preparerSource'}\nsource=bundle['preparerSource'].encode('utf-8')\nassert len(source)==19405 and hashlib.sha256(source).hexdigest()==\"52c985a1b3911a8555f4281b904503f4f3ffbead666d6bf18b2724063af507f2\"\nsys.stdin=io.TextIOWrapper(io.BytesIO(raw),encoding='utf-8')\nexec(compile(source,'<heptabao-main3-sdk-r3-pinned-preparation>','exec'),{'__name__':'__main__'})\n"
+    ],
+    "created_unix_ms": 1793996505025,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b2863fc1-fc05-7e69",
+    "idempotency_key": "heptabao-mac-authbus-main3-sdk-preparation-20261106-r3",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b2863fc1-fc05-7e69",
+    "request_digest": "1c81b52c717e206fe5f9c0d2136c8b5ab62f38494fac2f9ceff268955934591c",
+    "request_fingerprint": 2054122107544936559,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b2863fc1-fc05-7e69"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 68337,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b2863fc1-fc05-7e69"
+  },
+  "local_record_pending": false,
+  "reused": false
+}
