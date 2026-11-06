@@ -42,7 +42,8 @@ public final class AuthActivity extends Activity {
         setResult(RESULT_CANCELED, new Intent().putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, (android.os.Parcelable)null));
         if (getIntent().getData() != null && "heptabao-auth".equals(getIntent().getData().getScheme())
             && "local".equals(getIntent().getData().getHost())) token = getIntent().getData().getLastPathSegment();
-        try { boundRequest(); }
+        final VaultApplication.Pending observedRequest;
+        try { observedRequest = boundRequest(); }
         catch (TargetPolicy.Rejected rejection) {
             // Rejected.code is a closed set of static policy strings, never input or an exception message.
             android.util.Log.i("HeptaBaoPreview", "auth_rejected_" + rejection.code);
@@ -61,9 +62,13 @@ public final class AuthActivity extends Activity {
         unlock = new Button(this); unlock.setText("Unlock locally"); unlock.setOnClickListener(view -> unlock()); layout.addView(unlock);
         Button fill = new Button(this); fill.setText("Fill once"); fill.setOnClickListener(view -> fill()); layout.addView(fill);
         Button lock = new Button(this); lock.setText("Lock"); lock.setOnClickListener(view -> { app.lockLogin(token); master.setText(""); status.setText("Locked or expired"); }); layout.addView(lock);
-        Button cancel = new Button(this); cancel.setText("Cancel"); cancel.setOnClickListener(view -> finish()); layout.addView(cancel);
+        Button cancel = new Button(this); cancel.setText("Cancel"); cancel.setOnClickListener(view -> { app.observeCancelAction(observedRequest); finish(); }); layout.addView(cancel);
         status = new TextView(this); status.setText("Locked"); status.setContentDescription("Authorization status"); layout.addView(status);
         diagnostic = new TextView(this); diagnostic.setText("not_observed"); diagnostic.setContentDescription("Authorization diagnostic"); layout.addView(diagnostic);
+        // Non-authorizing correlation metadata for this local preview's qualification.
+        // It is independent of the opaque launch token and is never persisted.
+        TextView observation = new TextView(this); observation.setText(observedRequest.observationId);
+        observation.setContentDescription("Authorization observation"); layout.addView(observation);
         setContentView(layout);
     }
     private VaultApplication.Pending boundRequest() throws TargetPolicy.Rejected {

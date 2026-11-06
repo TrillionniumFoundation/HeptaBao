@@ -38,6 +38,9 @@ public final class MainActivity extends Activity {
         Button enable = new Button(this); enable.setText("Choose Autofill service"); enable.setOnClickListener(view -> startActivity(new Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE).setData(Uri.parse("package:" + getPackageName())))); layout.addView(enable);
         Button lock = new Button(this); lock.setText("Lock now"); lock.setOnClickListener(view -> { app.lockAll("locked"); status.setText("Locked\nDecision: locked"); }); layout.addView(lock);
         status = new TextView(this); status.setText((VaultFiles.exists(this) ? "Encrypted vault imported; locked" : "No encrypted vault imported") + "\nDecision: " + last); status.setContentDescription("Provider status"); layout.addView(status);
+        // Read-only, bounded observation; later trim/global decisions do not relabel it.
+        TextView cancellation = new TextView(this); cancellation.setText(app.cancellationObservationText());
+        cancellation.setContentDescription("Cancellation observation"); layout.addView(cancellation);
         setContentView(layout);
         if (IMPORT_ACTION.equals(getIntent().getAction())) confirmImport(getIntent().getData());
     }

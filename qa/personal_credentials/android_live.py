@@ -967,6 +967,36 @@ class Device:
             raise Failed("authorization_status_not_observed")
         return {"activity": list(component), "status": expected}
 
+    def authorization_observation(self):
+        # Private, non-authorizing correlation only; never return this identifier
+        # in a public case result, failure context, log, or saved UI dump.
+        expected = (PROVIDER, "org.heptabao.preview.AuthActivity")
+        if self.foreground() != expected: raise Failed("authorization_observation_unbound")
+        nodes = [node for node in self.ui() if node.get("content-desc") == "Authorization observation"]
+        if self.foreground() != expected or len(nodes) != 1 or nodes[0].get("package") != PROVIDER:
+            raise Failed("authorization_observation_unbound")
+        value = nodes[0].get("text", "")
+        if not re.fullmatch(r"observation-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", value):
+            raise Failed("authorization_observation_unavailable")
+        return value
+
+    def cancellation_observation(self, expected_observation):
+        # Read the fresh Main instance already opened by decision(). The bounded
+        # record is distinct from its raceable global lastDecision snapshot.
+        if not re.fullmatch(r"observation-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", expected_observation):
+            raise Failed("cancel_observation_mismatch")
+        expected = (PROVIDER, "org.heptabao.preview.MainActivity")
+        if self.foreground() != expected: raise Failed("cancel_observation_unbound")
+        nodes = [node for node in self.ui() if node.get("content-desc") == "Cancellation observation"]
+        if self.foreground() != expected or len(nodes) != 1 or nodes[0].get("package") != PROVIDER:
+            raise Failed("cancel_observation_unbound")
+        fields = nodes[0].get("text", "").split("|")
+        if fields != ["cancel_observation", expected_observation, "explicit_cancel", "auth_pause", "p1l1h0", "p0l0h0"]:
+            raise Failed("cancel_observation_mismatch")
+        return {"observation_matches_current_authorization": True, "explicit_cancel_action_observed": True,
+                "source": "auth_pause", "before": "p1l1h0", "after": "p0l0h0",
+                "observation_identifier_is_authority": False}
+
     def provider_pid(self):
         try:
             pid = self.shell("pidof", PROVIDER, timeout=5, allow_failure=True)
@@ -1307,13 +1337,15 @@ def main():
         case("expired_authorization_refused", expired)
         def cancelled():
             authentication_started = time.monotonic(); device.authentication()
+            observation_id = device.authorization_observation()
             unlock_started = time.monotonic(); device.unlock(master)
             timing = device.cancel_authentication(authentication_started, unlock_started)
             cancellation_decision = device.decision()
-            if cancellation_decision != "background_locked": raise Failed("cancel_cause_not_observed")
+            cancellation_observation = device.cancellation_observation(observation_id)
             device.authentication(); device.tap(text="Fill once")
             observed = device.authorization_status("Locked or expired", device.wait(text="Locked or expired")); device.cancel_authentication()
-            return {"provider_decision_before_next_request": cancellation_decision, "new_authorization": observed, "target": GOOD, "successful_unlock_before_cancel": True, "timing": timing, "fixture_values": "Empty fields"}
+            return {"provider_decision_before_next_request": cancellation_decision, "cancellation_observation": cancellation_observation,
+                    "new_authorization": observed, "target": GOOD, "successful_unlock_before_cancel": True, "timing": timing, "fixture_values": "Empty fields"}
         case("cancelled_authorization_refused", cancelled)
         def background():
             authentication_started = time.monotonic()

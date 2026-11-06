@@ -82,3 +82,25 @@ The private device driver reads a random **synthetic** master password locally a
 - [Actual Activity result recipient](https://developer.android.com/reference/android/app/Activity#getCallingActivity())
 - [Android backup and device-transfer behavior](https://developer.android.com/about/versions/12/behavior-changes-12#backup-restore)
 - [Memory callbacks and UI-hidden notification](https://developer.android.com/reference/android/content/ComponentCallbacks2)
+
+### Request-bound cancellation observation (candidate c10)
+
+The local preview gives each pending challenge a separate `observation-` identifier
+that cannot be used as an authorization token. The ordinary Cancel button marks
+only its still-owned challenge for diagnosis, then follows the existing
+`finish` / `onPause` cancellation path. A matched cancellation keeps one immutable
+observation containing only this identifier, the diagnostic action marker, a
+closed cancellation-source code, and before/after presence bits. It does not
+retain a pending request, target, Activity, login, password, or authorization token.
+The record is in memory only; an unmatched cancellation or trim callback cannot
+overwrite it. It is replaced by the next matched cancellation or lost with the
+process. It never participates in an authorization decision.
+
+The qualification driver privately compares the identifier captured from the
+current authorization UI with the later Main UI observation, and reports only
+match booleans and closed codes. Passing the cancellation case also requires the
+explicit Cancel marker, `auth_pause`, an unlocked pending challenge becoming
+empty, the existing 18-second and 100-second bounds, a fresh rejected fill attempt,
+and actual empty fixture fields. The global `lastDecision` remains diagnostic and
+may still become `memory_locked`; it is not changed to make a test pass. Candidate
+c10 still requires its own build, interoperability, artifact, and device evidence.

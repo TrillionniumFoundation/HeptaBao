@@ -189,6 +189,58 @@ for this scope, not a claim that every port carries its own document ID.
 The worker has 64 deterministic scheduling tests. These use mocked Chrome APIs
 and remain separate from the 26-case actual-browser observation.
 
+### Separate Firefox native-host candidate
+
+The new native entry parses Firefox's real manifest-path and add-on-ID pair,
+with a separate private configuration and host name. It validates the exact
+manifest path and SHA-256, single permitted add-on ID, standard-I/O transport
+and private launcher. The create-only installer stages those files inside one
+explicit private root. It does not change a Firefox profile, global host
+registration or Snap/portal permission. Browser arguments and same-owner files
+are routing inputs, not caller or HeptaRuntime attestation.
+
+The formatted four-file candidate was frozen before the actual Linux build.
+It added no cryptographic dependency and kept the lockfile unchanged. Runtime
+job `1a1b261ff76-fc05-7dd1` completed formatting checks, strict Clippy, the locked
+offline build, **13/13 real CLI/pipe cases** and, separately, the original
+**8/8 Chromium pipe cases** against the new binary. All 43 child processes
+started by the thirteen-case profile were reaped. The new native binary is
+SHA-256 `f1913261cb2a1cb559c15d32a67433afb17bba883ec057d567fc1f904dc30bb2`;
+the receipt is
+`7915bc6d31daef411391571d426c7498b97d99c61481746c30754d621970b6d7`.
+The 68-member original packet is
+`8d83057d95e139b861cf9fff15870d16c5cabd9cb50c44cabc50c33429692415`.
+Root review verified all 67 indexed members, the four integrated source files
+and the 25 unchanged dependency source files. This review did not rerun the
+process tests and is not an external security review.
+
+The candidate preserves the existing Chromium argument contract and the shared
+frame, session, lock, expiry and fill implementation. Its tests cover actual
+encrypted-vault unlock/use, exact-origin and cross-frame refusal, real expiry,
+lock, caller mismatches, manifest tampering and preserving an existing staged
+installation. No Firefox browser was started. Firefox login and native-host
+discovery remain unqualified. The older 26/26 Chrome browser result belongs to
+its older binary.
+
+The new `f1913261` native host then passed a separate **26/26 actual headed
+Chrome regression**, Runtime job `1a1b27c83ac-fc05-7e3d`, using the unchanged
+`802c57c` extension, `62a462b4` profile and Chrome `157.0.8103.38`. The original
+160-second harness budget was preserved. A new private profile and native-host
+registry were created; the existing browser profiles and original run were not
+modified. The three owned top-level processes and five adopted descendants all
+exited zero and were reaped; both descendant observations found no remaining
+processes and no forced cleanup. Source, tool and executable hashes matched
+before and after. The original browser report is
+`b8c4fdd8ed24825b05a583d4c58247add83bf1c94347053cc965b213e9bceba9`,
+and the controller receipt is
+`ad74f497edeb9be402c96ccd1511cffa0b1b03f4261660d4f3c58ce888a30759`.
+Root separately read the terminal Runtime record, complete output and original
+browser report and verified their lengths and hashes. The profile retains its
+fixture-only certificate exception and `--no-sandbox` launch; it does not
+qualify production browser isolation. Its nine renderer component controls
+remain distinct from the complete extension/native path. This is a new Chrome
+observation, not a Firefox browser result or an inherited earlier pass.
+
 ## Android candidates and independent observations
 
 The Autofill target is one owned Motorola XT2551-3 running Android 16/API 36.
@@ -891,8 +943,18 @@ at 19:42 UTC showed thirty-five successful steps in both source combinations,
 including complete locked Rust workspace tests, strict Clippy, documentation,
 the real TLS service, the declared provider profiles, audit transports,
 capacity recovery and the preceding declared HA profiles. The exact-base to
-candidate HA rolling-upgrade step was in progress. It has no
-passing full result. The [later validation observations](../../qa/personal_credentials/evidence/20261106/validation-followup-public-evidence.tar.gz)
+candidate HA rolling-upgrade step was in progress. At the 20:01 UTC observation,
+that step was explicitly **failed in both combinations**. Both jobs continued
+through the subsequent PostgreSQL checks and remained in progress; neither has
+a passing full result. The newly returned job-log text was byte-identical to
+the earlier query and ended at 17:15:41/17:14:53 UTC, before the failing step.
+It therefore does not establish that step's cause or a complete current log.
+At 20:11 UTC, both combinations had fifty successful steps. The head job also
+reported failure in the strict OpenBao 2.7.0 runtime/ACL error-contract step;
+that step was still running in the merge job. The complete workflow remained
+in progress, with the earlier rolling-upgrade failure retained in both jobs.
+No timeout change, test removal or passing reclassification follows from this
+observation. The [later validation observations](../../qa/personal_credentials/evidence/20261106/validation-followup-public-evidence.tar.gz)
 retain the original API responses and returned log text; those returned logs
 are not asserted to be complete or current live logs. The
 later bounded-read source overlay does not inherit that older source's CI

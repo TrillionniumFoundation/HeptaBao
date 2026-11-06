@@ -1,12 +1,11 @@
-//! Chromium Native Messaging adapter. A local OS account and its installed
+//! Chromium and Firefox Native Messaging adapter. A local OS account and its installed
 //! extension are trusted; the extension ID is routing, not caller attestation.
 //! Only the encrypted personal vault is used; no service-root credential API.
 use heptabao_personal_edge::validate_origin;
-use heptabao_personal_vault::{ItemKind, VaultSession, read_private_file};
+use heptabao_personal_vault::{ItemKind, VaultSession};
 use serde::{Deserialize, Serialize};
 use std::{
     io::{Read, Write},
-    path::{Path, PathBuf},
     sync::mpsc,
     time::{Duration, Instant},
 };
@@ -14,13 +13,9 @@ use zeroize::{Zeroize, Zeroizing};
 
 const MESSAGE_LIMIT: usize = 128 * 1024;
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Config {
-    vault_root: PathBuf,
-    extension_id: String,
-    unlock_seconds: u64,
-}
+#[path = "../browser_caller.rs"]
+mod browser_caller;
+use browser_caller::{SessionConfig as Config, config_for_args};
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -229,25 +224,7 @@ fn read_loop(sender: mpsc::SyncSender<Result<Zeroizing<Vec<u8>>, &'static str>>)
 
 fn run() -> Result<(), &'static str> {
     let args: Vec<_> = std::env::args().collect();
-    if args.len() != 4 || args[1] != "--config" {
-        return Err("configuration_required");
-    }
-    let raw = read_private_file(Path::new(&args[2])).map_err(|_| "configuration_rejected")?;
-    if raw.len() > 8192 {
-        return Err("configuration_rejected");
-    }
-    let config: Config = serde_json::from_slice(&raw).map_err(|_| "configuration_rejected")?;
-    if config.extension_id.len() != 32
-        || !config
-            .extension_id
-            .bytes()
-            .all(|b| (b'a'..=b'p').contains(&b))
-        || args[3] != format!("chrome-extension://{}/", config.extension_id)
-        || !config.vault_root.is_absolute()
-        || !(1..=300).contains(&config.unlock_seconds)
-    {
-        return Err("caller_or_configuration_rejected");
-    }
+    let config = config_for_args(&args)?;
     let (sender, receiver) = mpsc::sync_channel(1);
     let _reader = std::thread::spawn(move || read_loop(sender));
     let mut session: Option<VaultSession> = None;

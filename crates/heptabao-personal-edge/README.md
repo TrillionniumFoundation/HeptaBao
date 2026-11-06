@@ -67,6 +67,41 @@ Native output is nonblocking and has a 30 ms frame deadline, so an unread browse
 pipe cannot keep the unlocked process alive indefinitely. Output failure exits
 the host and releases the vault session.
 
+## Firefox native-host candidate
+
+The native executable also accepts Firefox's actual manifest-path and add-on-ID
+launch arguments. This is a private staging and CLI-tested candidate; a Firefox
+browser login has not been qualified. It uses a separate host name and fixed
+candidate add-on ID. It does not manufacture a Chromium extension origin.
+
+Prepare a new installation under an existing owner-only directory:
+
+```sh
+python3 tools/install_personal_firefox.py \
+  --binary /absolute/bin/heptabao-browser \
+  --vault /absolute/private-vault \
+  --install-root /absolute/private-parent/new-firefox-install
+```
+
+The installer creates private configuration, launcher and native-host manifest
+files, then verifies their bytes and the executable identity. It refuses an
+existing installation. It does not register the manifest with Firefox, install
+an extension, change a browser profile or modify Snap/portal permissions.
+The native process requires the exact configured manifest path, manifest digest,
+add-on ID, standard-I/O transport and private launcher. A different caller,
+modified manifest or unknown configuration field is refused. These checks are
+local routing and installation checks under the trusted OS owner, not process
+attestation or isolation from another process with the same UID.
+
+The shared framing, origin checks, bounded unlock lease, explicit lock and
+output deadline are unchanged. The separate thirteen-case real-process profile
+exercises that launch contract, encrypted-vault use, wrong-origin and cross-frame
+refusal, actual expiry, lock, malformed callers and installation preservation.
+It starts no browser and cannot establish Firefox UI or native-host discovery
+compatibility. The original eight-case Chromium pipe profile is also executed
+against the new executable; browser regression observations are recorded
+separately in the support matrix.
+
 ## Opaque snapshot store
 
 `heptabao-sync ABSOLUTE_PRIVATE_STORE VAULT_ID` is a single-owner CLI/SDK adapter,
@@ -110,6 +145,8 @@ separate trusted client frontier. This implementation does not claim otherwise.
 
 - `personal_edge_live.py`: actual CLI/native-pipe processes, wrong origin, expiry,
   explicit lock, replay/reopen, offline conflict, A/B/A and historical recovery.
+- `firefox_native_cli.py`: thirteen real-process Firefox launch and shared IPC
+  cases in a new private root; no Firefox browser or native-host registration.
 - `browser_worker_test.mjs`: deterministic tests of the **actual worker module**
   with mocked Chrome scheduling; this is not browser execution evidence.
 - `browser_live.py`: actual unchanged extension, Chromium native messaging,

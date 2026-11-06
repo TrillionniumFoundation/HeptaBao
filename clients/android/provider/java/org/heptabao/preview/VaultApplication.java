@@ -29,6 +29,7 @@ public final class VaultApplication extends Application {
     private ScheduledFuture<?> loginTimeout;
     private boolean importing;
     private String lastDecision = "locked";
+    private CancelObservation lastCancelObservation;
 
     enum CancelSource {
         OTHER("other"), AUTH_PAUSE("auth_pause"), SERVICE_LISTENER("service_listener"), SERVICE_CALLBACK("service_callback");
@@ -50,9 +51,25 @@ public final class VaultApplication extends Application {
         final String token = UUID.randomUUID().toString();
         final TargetPolicy.Target target;
         final long deadline = SystemClock.elapsedRealtime() + REQUEST_TTL_MS;
+        // A separate domain, never accepted by request(), ticket(), or any authorization guard.
+        final String observationId = "observation-" + UUID.randomUUID().toString();
+        private boolean cancelActionObserved;
         PendingIntent launch;
         ScheduledFuture<?> timeout;
         Pending(TargetPolicy.Target target) { this.target = target; }
+    }
+    static final class CancelObservation {
+        final String observationId;
+        final boolean explicitAction;
+        final String source, before, after;
+        CancelObservation(String observationId, boolean explicitAction, String source, String before, String after) {
+            this.observationId = observationId; this.explicitAction = explicitAction;
+            this.source = source; this.before = before; this.after = after;
+        }
+        String text() {
+            return "cancel_observation|" + observationId + "|" + (explicitAction ? "explicit_cancel" : "unmarked")
+                + "|" + source + "|" + before + "|" + after;
+        }
     }
     static final class Handoff {
         final Pending request;
@@ -150,8 +167,25 @@ public final class VaultApplication extends Application {
     synchronized void cancel(String token, CancelSource source) {
         String before = stateBits();
         boolean matched = (pending != null && pending.token.equals(token)) || (handoff != null && handoff.request.token.equals(token));
-        if (matched) lockAll("background_locked");
+        if (matched) {
+            Pending observed = pending != null && pending.token.equals(token) ? pending : handoff.request;
+            String observationId = observed.observationId;
+            boolean explicitAction = observed.cancelActionObserved;
+            lockAll("background_locked");
+            // One immutable diagnostic only: no Pending, login, token, target,
+            // password, or Activity reference survives in this observation.
+            lastCancelObservation = new CancelObservation(observationId, explicitAction, source.code, before, stateBits());
+        }
         diagnostic("cancel_" + source.code + "_matched_" + (matched ? "1" : "0") + "_before_" + before + "_after_" + stateBits());
+    }
+    synchronized void observeCancelAction(Pending observed) {
+        // Mark only this still-owned object's UI action. This bit is never used
+        // by any authorization, expiry, cancellation, or delivery predicate.
+        if (observed != null && (pending == observed || (handoff != null && handoff.request == observed)))
+            observed.cancelActionObserved = true;
+    }
+    synchronized String cancellationObservationText() {
+        return lastCancelObservation == null ? "not_observed" : lastCancelObservation.text();
     }
     synchronized void lockAll(String reason) {
         String before = stateBits();
