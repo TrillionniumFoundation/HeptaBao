@@ -1,0 +1,26 @@
+{
+  "actual_dr25_executed": false,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_final_gate_requires_complete_custody_receipt_even_without_failed_flag",
+    "-v"
+  ],
+  "darwin_execution_claim": false,
+  "elapsed_seconds": 0.46719826600019587,
+  "exit_code": 0,
+  "expected_tests": 1,
+  "log": "qa/openbao-acceptance/evidence/dr25-controller-local-20261106-r1/final-gate-real-executable-fixture-r5.log",
+  "production_authority": false,
+  "production_servers_started": false,
+  "pythonpath": "/workspace/scratch/c94294de02e0/HeptaBao-dr/qa/openbao-acceptance/tests",
+  "reason_for_reexecution": "Retained r4 fixture failure: sys.executable was a symlink; resolve the fixture executable without relaxing production file_pin. Verify the one newly added complete-custody-receipt gate at original budget.",
+  "schema": "heptabao.dr25-controller-regression-observation.v1",
+  "source_file_pins": {
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": "723bce2b62133e1853214db1c93e29c0aea20ca6d298233f1ac2e1d3dc88c499",
+    "qa/openbao-acceptance/tests/test_kv2_native_fresh_directory_dr_live.py": "acd490eec2832b8fc3d19b9b7bf53e15dce0a46e1ec0ffda0fd803490192c4cb"
+  },
+  "status": "passed"
+}

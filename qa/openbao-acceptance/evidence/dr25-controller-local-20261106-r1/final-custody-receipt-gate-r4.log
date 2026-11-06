@@ -1,0 +1,50 @@
+test_cancel_enters_final_cleanup_and_restores_original_signal_handlers (test_kv2_dr_process_custody.ProcessCustodyTests.test_cancel_enters_final_cleanup_and_restores_original_signal_handlers) ... ok
+test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid (test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid) ... ok
+test_darwin_observed_signed_nobody_uid_is_numeric_not_a_parse_gap (test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_observed_signed_nobody_uid_is_numeric_not_a_parse_gap) ... ok
+test_foreign_reap_loses_authority_and_never_signals_recycled_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_foreign_reap_loses_authority_and_never_signals_recycled_group) ... ok
+test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group) ... ok
+test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed (test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed) ... ok
+test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn (test_kv2_dr_process_custody.ProcessCustodyTests.test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn) ... ok
+test_nested_owner_and_finished_owner_do_not_create_new_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_nested_owner_and_finished_owner_do_not_create_new_originals) ... ok
+test_prior_retirement_receipt_cannot_change_when_later_originals_run (test_kv2_dr_process_custody.ProcessCustodyTests.test_prior_retirement_receipt_cannot_change_when_later_originals_run) ... ok
+test_real_target_executes_only_in_observed_original_session_and_waits_once (test_kv2_dr_process_custody.ProcessCustodyTests.test_real_target_executes_only_in_observed_original_session_and_waits_once) ... ok
+test_retirement_gate_does_not_stop_a_live_target (test_kv2_dr_process_custody.ProcessCustodyTests.test_retirement_gate_does_not_stop_a_live_target) ... ok
+test_run_check_output_and_owned_process_compatibility_share_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_run_check_output_and_owned_process_compatibility_share_originals) ... ok
+test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it (test_kv2_dr_process_custody.ProcessCustodyTests.test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it) ... ok
+test_archive_inspection_requires_v6_and_does_not_claim_aead (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_archive_inspection_requires_v6_and_does_not_claim_aead) ... ok
+test_archive_refuses_noncanonical_tar_header_before_extraction (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_archive_refuses_noncanonical_tar_header_before_extraction) ... ok
+test_archive_rejects_truncation_trailing_members_and_changed_state (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_archive_rejects_truncation_trailing_members_and_changed_state) ... ok
+test_build_receipt_binds_both_actual_executables_and_completed_source (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_build_receipt_binds_both_actual_executables_and_completed_source) ... ok
+test_child_rejection_requires_real_status_and_never_retries_label (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_child_rejection_requires_real_status_and_never_retries_label) ... ok
+test_child_timeout_retains_failure_and_joins_owned_original (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_child_timeout_retains_failure_and_joins_owned_original) ... ok
+test_data_cas_denial_with_effect_fails_and_keeps_subobservations (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_data_cas_denial_with_effect_fails_and_keeps_subobservations) ... ok
+test_dr25_requires_exact_unique_denominator_and_real_evidence (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_dr25_requires_exact_unique_denominator_and_real_evidence) ... ok
+test_final_gate_requires_complete_custody_receipt_even_without_failed_flag (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_final_gate_requires_complete_custody_receipt_even_without_failed_flag) ... ERROR
+test_full34_subclass_observes_original_check_before_callback (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_full34_subclass_observes_original_check_before_callback) ... ok
+test_incomplete_finish_cannot_grant_authority_and_redacts_runtime_token (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_incomplete_finish_cannot_grant_authority_and_redacts_runtime_token) ... ok
+test_main_publishes_same_filesystem_refusal_with_real_custody_and_no_children (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_main_publishes_same_filesystem_refusal_with_real_custody_and_no_children) ... ok
+test_metadata_cas_denial_with_effect_fails_and_keeps_subobservations (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_metadata_cas_denial_with_effect_fails_and_keeps_subobservations) ... ok
+test_nonregular_input_is_rejected_without_waiting_for_a_pipe_writer (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_nonregular_input_is_rejected_without_waiting_for_a_pipe_writer) ... ok
+test_original_full34_gate_cannot_be_replaced_by_dr_checks (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_original_full34_gate_cannot_be_replaced_by_dr_checks) ... ok
+test_recovery_api_requires_exact_official_response_tokens (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_recovery_api_requires_exact_official_response_tokens) ... ok
+test_same_filesystem_fails_before_any_server_or_official_cli (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_same_filesystem_fails_before_any_server_or_official_cli) ... ok
+test_seed_stage_requires_exact_receipt_destination_and_four_private_files (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_seed_stage_requires_exact_receipt_destination_and_four_private_files) ... ok
+test_tree_manifest_preserves_rename_boundary_and_detects_byte_change (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_tree_manifest_preserves_rename_boundary_and_detects_byte_change) ... ok
+test_tree_manifest_refuses_hardlinks_and_symlinked_closures (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_tree_manifest_refuses_hardlinks_and_symlinked_closures) ... ok
+
+======================================================================
+ERROR: test_final_gate_requires_complete_custody_receipt_even_without_failed_flag (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_final_gate_requires_complete_custody_receipt_even_without_failed_flag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c94294de02e0/HeptaBao-dr/qa/openbao-acceptance/tests/test_kv2_native_fresh_directory_dr_live.py", line 315, in test_final_gate_requires_complete_custody_receipt_even_without_failed_flag
+    run.seed_pin = dr.file_pin(self.args.seed_binary)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c94294de02e0/HeptaBao-dr/qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py", line 83, in file_pin
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 40] Too many levels of symbolic links: '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3'
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.776s
+
+FAILED (errors=1)
