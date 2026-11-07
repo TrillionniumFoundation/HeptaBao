@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.mac-normal5f9d4-execution-intent.r1",
+  "createdUtc": "2026-11-07T04:15:25.568Z",
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "idempotencyKey": "heptabao-mac-normal-5f9d4-107-and-directed15-20261107-r1",
+  "stdinBytes": 8688,
+  "stdinSha256": "9abadf02425a7810e848fe6331a07462d8d1577ce54efcba83c71b8c0da77c30",
+  "controllerBytes": 34437,
+  "controllerSha256": "c37951667705d4aee25f40a84fe8bb87ffb9398d2f1a040517b7b09a28f5f264",
+  "selectionBytes": 58766,
+  "selectionSha256": "8ccaedc58a44bfcc6f7af7b6062bc8c0c35c099771bdbab45d865b13ea921bc1",
+  "sourceCommit": "5f9d4263b136685244aba93e45a69139cb8aba41",
+  "sourceTree": "2c69f04159c112a883abe57f0d367a2627197c7a",
+  "sourceBundle": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/candidate-5f9d4-from-4bde9.bundle",
+    "bytes": 9985724,
+    "sha256": "e57a93e8f3c13f83259cc6f1a5ca1ddb2ebe8451a0da5ff677c38c83ee8d3d72",
+    "commitVersion": "16777244:72789255:9985724:1794024882300247176:1794024894954888733",
+    "independentWholeRead": true
+  },
+  "stagingJob": "1a1b42defac-fc05-869c",
+  "stagingKnown0": true,
+  "controllerOriginalBudgetSeconds": 8280,
+  "newNativeSupervisorSeconds": 8400,
+  "normalOriginalTests": 107,
+  "directedSeparateTests": 15,
+  "newClone": true,
+  "productionChanged": false,
+  "providerCalls": 0,
+  "unknownStartAutomaticRetry": false
+}

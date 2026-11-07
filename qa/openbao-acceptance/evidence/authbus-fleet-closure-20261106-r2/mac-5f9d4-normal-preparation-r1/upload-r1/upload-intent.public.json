@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.mac5f9d4-fixed-binary-upload-intent.r1",
+  "host": "mac",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/candidate-5f9d4-from-4bde9.bundle",
+  "upload_id": "mac-normal-5f9d4-bundle-20261107-r1",
+  "expected_version": "absent",
+  "size": 9985724,
+  "sha256": "e57a93e8f3c13f83259cc6f1a5ca1ddb2ebe8451a0da5ff677c38c83ee8d3d72",
+  "chunks": [
+    {
+      "index": 0,
+      "offset": 0,
+      "bytes": 524288,
+      "sha256": "4588e8eb948b3246c971070b5a51008bd68b9b22de53a371bb73a1d5c134c2fd"
+    },
+    {
+      "index": 1,
+      "offset": 524288,
+      "bytes": 524288,
+      "sha256": "869347c1327931df14a9d785b17be1dfc276c41b67ca75d3c62bc1727451b610"
+    },
+    {
+      "index": 2,
+      "offset": 1048576,
+      "bytes": 524288,
+      "sha256": "6d6e00f82700c30b08caa0096f32af4975408088e1eff352fc4d5ebf4f8faf1b"
+    },
+    {
+      "index": 3,
+      "offset": 1572864,
+      "bytes": 524288,
+      "sha256": "467b6f9f9da7b303302b3f06f13522a4e9aeac387cdda21e19a96cd02a444f1a"
+    },
+    {
+      "index": 4,
+      "offset": 2097152,
+      "bytes": 524288,
+      "sha256": "a8d9b3fceeff9d52fd56c00ac111d9e495b625f2d8ac59c69708f81488a33e43"
+    },
+    {
+      "index": 5,
+      "offset": 2621440,
+      "bytes": 524288,
+      "sha256": "06f0af9b3e97628ca287542a266e31685ecbe54d8c9971179f7cfafedf61fe07"
+    },
+    {
+      "index": 6,
+      "offset": 3145728,
+      "bytes": 524288,
+      "sha256": "a5c841acb2220684af637755b88d29bb0b7847ebe39ecde7ba220dc05804e73b"
+    },
+    {
+      "index": 7,
+      "offset": 3670016,
+      "bytes": 524288,
+      "sha256": "eb9d57af843c82f8929e58c85e6a298fdb11ec757b3bab2e16ed9593f5a51e1c"
+    },
+    {
+      "index": 8,
+      "offset": 4194304,
+      "bytes": 524288,
+      "sha256": "c4def6cd9fa789a2ed89d35d0812352648c5f383a0341cae1dae68fc3cf1a1f0"
+    },
+    {
+      "index": 9,
+      "offset": 4718592,
+      "bytes": 524288,
+      "sha256": "3d2df1f910789626327d91e50b085780635237c7b1d5c611e3d6b6491a643610"
+    },
+    {
+      "index": 10,
+      "offset": 5242880,
+      "bytes": 524288,
+      "sha256": "f5883270b92e27cac239ec1ceb94b37ba9663b5b359b9e94ab9afe8706a237fb"
+    },
+    {
+      "index": 11,
+      "offset": 5767168,
+      "bytes": 524288,
+      "sha256": "c56b223ca65017923c4607aa8b8fb249ce1be6f461aa99acd00a1c7978973924"
+    },
+    {
+      "index": 12,
+      "offset": 6291456,
+      "bytes": 524288,
+      "sha256": "d0db538bf8629a21c826d3ee0e18da28560a73d051a8d1ed1c86e38a6bd0e75b"
+    },
+    {
+      "index": 13,
+      "offset": 6815744,
+      "bytes": 524288,
+      "sha256": "13a6b9101104f1f6c0fc1cf529380acc15331a0fb22e65d1ba2d5f4774119dd9"
+    },
+    {
+      "index": 14,
+      "offset": 7340032,
+      "bytes": 524288,
+      "sha256": "121a0e59ba0d56e70593b7605aaebb07f62867f4065437ac6c8e48c091fa4c36"
+    },
+    {
+      "index": 15,
+      "offset": 7864320,
+      "bytes": 524288,
+      "sha256": "5fc44aa38dbe637bb956158b20d8deac6f09f4e056ab661bef00bcd9326e4d1b"
+    },
+    {
+      "index": 16,
+      "offset": 8388608,
+      "bytes": 524288,
+      "sha256": "f8b8d0dd91ebfb8a7337232de5438ef3ba4b2064ef97535437937539a2c8df70"
+    },
+    {
+      "index": 17,
+      "offset": 8912896,
+      "bytes": 524288,
+      "sha256": "1fbe8bd6a968bc4a2408b12125042fb2febedacad3b4603b7020115869e162c4"
+    },
+    {
+      "index": 18,
+      "offset": 9437184,
+      "bytes": 524288,
+      "sha256": "2d89ae5101d05ef7cb263735479a1bc3c88708d1fd2308366ce3dc52bd9c3612"
+    },
+    {
+      "index": 19,
+      "offset": 9961472,
+      "bytes": 24252,
+      "sha256": "95426128824752842c2570113ec1853dded8e9ef8ddd019cee2041611065a08f"
+    }
+  ],
+  "stagingKnown0Required": true,
+  "commitKnownAndIndependentWholeReadRequired": true,
+  "stagingAuthority": {
+    "host": "mac",
+    "jobId": "1a1b42defac-fc05-869c",
+    "knownTerminal": "succeeded",
+    "exitCode": 0,
+    "sourceSha256": "09e109853b429d22d01936754b83dcabe70e2cfa03a50077d4f184a7b8b2d80a",
+    "twoWholeFilesReadBack": true
+  },
+  "createdUtc": "2026-11-07T04:07:14.037Z"
+}

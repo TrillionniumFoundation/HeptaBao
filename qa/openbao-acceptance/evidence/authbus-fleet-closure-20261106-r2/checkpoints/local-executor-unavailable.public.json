@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.checkpoint-local-executor-interruption.r1",
+  "checkpointCommittedAndVerifiedBeforeInterruption": "576e9fda5866b47a1c280920cf48ba81e21a4a32",
+  "totalCheckpointFilesExact": 170,
+  "readOnlyLocalCallFailedBeforeProcessCreation": true,
+  "failedRead": "Pocket4 custody qualification launcher prelude and exact payload pins",
+  "functionsCell": "758",
+  "reportedError": "exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 45s",
+  "localExecutionAvailable": false,
+  "nativeRemoteJobsMustBeReconciledByOriginalIds": true,
+  "noAutomaticReplayOrNewKey": true,
+  "fullReplacementClaim": false
+}

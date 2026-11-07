@@ -636,3 +636,41 @@ Apple distinguishes removable-volume access from AllFiles access in its publishe
 The new candidate still needs actual Mac/Linux normal compilation, the unchanged normal107 cohort plus separately enumerated directed15 tests, current KV2/DR/API comparison where applicable, and the full original physical HA128 workload under its original deadlines. Original HA R4 remains 63/128 with a known 503 after a mutation intent; readback of a preserved cold clone is still needed to settle its effect.
 
 The new production plugin needs real installed-SDK integration qualification, not only substituted local tests or the older plugin's SDK result. Current credential/provider admission, direct permanent-service startup/cold lifecycle, each registered client's complete real I/O/restart/rollback/cutover, and the final migrated-runtime backup/recovery remain unclosed. Old services/binaries and historical qualified inputs must remain intact until those gates actually close.
+
+## Checkpoint r20 — 5f9d4 preparation, actual Linux custody and Mac build admission
+
+Full replacement remains **false**. Product source remains commit `5f9d4263b136685244aba93e45a69139cb8aba41`, tree `2c69f04159c112a883abe57f0d367a2627197c7a`. This checkpoint changes QA evidence only. No current provider request, production credential CAS, production client stop/restart/cutover, held Linux helper release or legacy deletion occurred.
+
+### Executor interruption and exact evidence preservation
+
+Checkpoint r19 `576e9fda5866b47a1c280920cf48ba81e21a4a32` was pushed and all 170 files were byte-verified before the local executor became unavailable. Its original verification is retained here. The bounded retry failed before local process creation with an exec-server transport/recovery error. GitHub and the native remote host controller remained usable; remote jobs were reconciled by their original identities.
+
+New Git evidence was assembled from original cached strings and immutable Git blobs. No unavailable local filesystem write, local test or fresh local checkout verification is claimed. Earlier local Linux custody qualification full traces existed on the unavailable executor and are not reconstructed from summaries; the actual target qualification below has new complete native originals. A root-retained exact 1,133-byte two-case Mac import qualification was recovered from the prior original tool stdout, preserving both the failing original order and corrected four-module order.
+
+### Mac source staging, complete bundle and original normal-build job
+
+Source staging R1 `mac/1a1b42ac19f-fc05-868f` failed before file creation or any compiler/product action because a helper imported a module not yet registered. Its original 1,181-byte failure remains in the evidence. R2 changes only the explicit dependency order and R2 identity; all four helper strings and both prepared files remain exact.
+
+R2 `mac/1a1b42defac-fc05-869c` succeeded 0. Root independently checked the exact 3,539-byte stdout, complete hex/EOF and empty stderr. The controller (34,437 bytes, `c37951667705d4aee25f40a84fe8bb87ffb9398d2f1a040517b7b09a28f5f264`) and selection (58,766 bytes, `8ccaedc58a44bfcc6f7af7b6062bc8c0c35c099771bdbab45d865b13ea921bc1`) were read back whole; the original command and T5 descriptors closed.
+
+Upload `mac-normal-5f9d4-bundle-20261107-r1` has all 20 chunks known. The original chunk-3 RPC timeout is retained; only the same upload ID, offset and exact bytes were reconciled. Commit was known true, reused false. Independent file-info confirmed 9,985,724 bytes, SHA-256 `e57a93e8f3c13f83259cc6f1a5ca1ddb2ebe8451a0da5ff677c38c83ee8d3d72`, the same version, UID 501/GID 20, mode 0600, one link and no extended attributes. The earlier partial README is a historical intermediate observation, superseded for upload completion by the complete observation.
+
+The sole normal job `mac/1a1b43838a0-fc05-86bf`, key `heptabao-mac-normal-5f9d4-107-and-directed15-20261107-r1`, was known launched (not reused). Its original request digest is `24f53a374b0e0e92f38c406c18ee00d3506905dc02571b2ddbccdd1ef5399ebf`. The original 107-name workload and budgets are retained; 15 separate directed cases comprise five new and ten existing regression cases. The native supervisor bound is 8,400 seconds and controller bound remains 8,280 seconds. This checkpoint retains dispatch admission, not a terminal build/test PASS; later running observations must not be treated as terminal EOF. The raw launch fingerprint remains exact original text, never a JSON-number round trip.
+
+### Pocket4 source preparation and actual original-child qualification
+
+Source preparation `pocket4/1a1b426459f-fc05-867c` succeeded 0. Its full 27,502-byte stdout (SHA-256 `2144a772dc937d12599b93a55c5f36acf07a7dd9772fb664b7d036f0de6497ec`) was independently reconstructed from both hex pages. All 21 original Git children and 753 tracked descriptors closed. The exact clean current source, parent and tree, both bundle prerequisites, all four changed product files and 322 retained inputs were checked. No Rust compilation or product process occurred.
+
+The new custody bridge is necessary: the earlier actual normal107 loader used bare `os.execv`; later DR custody cannot retroactively qualify that earlier launch. The new bridge retains the complete controller functions and test workload, catches its exit inside original-child custody and independently validates the exact 107 result. The two deliberate illegal-signal probes have an additional before-kernel audit refusal, and any attempted native signal in those probes still fails qualification.
+
+Root completed independent whole-source and embedded-payload verification of the exact 47,009-byte launcher (`29ff9e609e251ed64c6566f99e1f17dccf78c89c8e1c6100e84a07f18dbbd24c`). After the agent's platform model error prevented continuation, root used the original stable key; native launch returned reused false. A partial registry observation was not treated as proof of absence.
+
+Actual target qualification `pocket4/1a1b43df15c-fc05-86cb` succeeded 0 with 21,076 bytes of stdout (SHA-256 `c46810d09db717494046c2831e32bd8f56e5c4eac79fca1d7ca35b0e2a4dca5b`), two exact hex/EOF pages, empty stderr, complete durable native terminal, and 2.853 seconds total. All five cases passed: normal closure; owned timeout rejection and cleanup; post-wait signal rejection; unknown-group rejection; and rejection of an inner zero exit with a still-live original child. Every original child was waited exactly once and closed, and all six tracked input descriptors closed.
+
+The post-wait and unknown-group cases made zero native signal calls. The deliberate post-wait and live-child negative cases retain their expected custody violation diagnostics; those are not hidden or described as gap-free successful workloads. Only original owned timeout/live-child cleanup sent signals. This qualifies the new Linux custody bridge on the real target; it is not Rust normal107 qualification. Formal Linux loader preparation and actual normal107 execution remain pending.
+
+### New production plugin and remaining gates
+
+The retained real-SDK plan explicitly distinguishes the older plugin's actual SDK PASS, the new plugin's substituted local wiring tests, and the actual fixed-slot coordinator. New StrictBaoClient socket handoff, fixed-slot routes and two durable transport databases require actual complete-plugin integration. The SDK inverse must retain transport ledgers. Mac source preparation is ongoing; no new SDK integration test or production installation is claimed. Linux package equality is not an inherited Linux write-sandbox qualification.
+
+The permanent direct-launchd startup cause remains unproved. The existing TCC observations and request-only follow-up are retained without claiming a user denial or a necessary AllFiles grant. The original HA128 failure, known 503 mutation effect readback, current credential/cache relation, finite per-client real I/O/restart/rollback/cutover, and final migrated backup/recovery remain open. No old OpenBao or HeptaBao release is deleted.
