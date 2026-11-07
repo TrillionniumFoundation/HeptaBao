@@ -1,0 +1,13 @@
+# Prepared three-owner AuthBus SDK cycle
+
+These sources prepare a two-process Mac-only fixture using the complete installed AuthBus plugin and pinned SDK modules. They have not yet been executed with the real SDK on the Mac. The current canonical product source is `4bde9aee03fcd27c59e13607e529b1cee594b249`; no product code is modified.
+
+The planned initial phase starts with five private empty SDK stores, imports the three actual selected main-owner OAuth objects through pinned TLS/AppRole/KV, and records exact local/effective values and original auth-table rows. A new Node process then checks cold persistence, runs one real plugin cycle, and consumes a create-only inverse intent. The inverse restores those five local/effective stores, the two auth tables and timestamps, and the original six AuthBus cache contents, modes and absences. It does not restore an entire database, registry, production client configuration or gateway process. All credential values, profile identifiers, credential digests and AppRole tokens remain in private files on the Mac.
+
+The wire adapter accepts only the one owned unprivileged loopback TLS listener and fixed AuthBus routes. It pins the CA and leaf before sending HTTP, bounds complete responses, refuses a later dispatch after an unknown/failure, and accounts for every original request and socket close. The real plugin only listens for request errors; an observed truncated response is therefore forwarded once to the original request if Node has already closed it without emitting an error. This is explicit test-adapter behavior, not a fabricated HTTP response or a change to the installed plugin.
+
+The local qualification used real synthetic TLS peers and passed all 16 cases. It covers exact route admission, wrong leaf pin with zero HTTP received, truncated/oversized/chunked responses, absolute deadlines, malformed complete login, request-size refusal and all connection/hook closure. These Linux Node 24.22.1 results are not Mac SDK or Mac sandbox evidence.
+
+The worker requires actual Mac kernel denial of two owned synthetic read/write probes and a different loopback port. It admits only five fixture agent SQLite paths, the fixture registry and memory databases. SDK cached handles close through the exact source-bound original agent-cache exit callback and the original exported shared-state close function, with each original handle checked for exactly one close. It does not emit a fabricated process exit event or directly close an arbitrary raw database cache.
+
+Production provider validity, OAuth refresh, gateway restart, production rollback, traffic cutover and legacy removal remain unqualified. The three current inputs are expired; transporting their real bytes does not prove provider liveness.

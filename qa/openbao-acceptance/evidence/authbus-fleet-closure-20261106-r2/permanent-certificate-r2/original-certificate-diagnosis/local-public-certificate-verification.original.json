@@ -1,0 +1,43 @@
+[
+  {
+    "argv": [
+      "openssl",
+      "version"
+    ],
+    "exitCode": 0,
+    "stdout": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "openssl",
+      "x509",
+      "-in",
+      "certificate-diagnosis-r1/server.original.crt",
+      "-noout",
+      "-text"
+    ],
+    "exitCode": 0,
+    "stdout": "Certificate:\n    Data:\n        Version: 3 (0x2)\n        Serial Number:\n            cb:36:11:0b:4a:a5:25:f1:4d:4e:77:42:77:6b:a3:5a\n        Signature Algorithm: sha256WithRSAEncryption\n        Issuer: CN=HeptaBao AuthBus Independent CA\n        Validity\n            Not Before: Nov  7 00:20:37 2026 GMT\n            Not After : Nov  7 00:20:37 2027 GMT\n        Subject: CN=MacBook-Pro.local\n        Subject Public Key Info:\n            Public Key Algorithm: rsaEncryption\n                Public-Key: (2048 bit)\n                Modulus:\n                    00:c2:1c:c9:ef:ef:83:d2:ea:bb:a2:3a:3c:43:58:\n                    3a:eb:ae:dc:08:c1:8b:e6:48:fb:55:02:83:2c:49:\n                    87:7c:9e:f2:b6:7b:d1:07:b5:e1:55:a0:e8:b1:73:\n                    e7:26:15:3d:b0:ab:01:a1:68:24:0f:42:70:74:f3:\n                    cc:6c:a6:d7:14:78:86:4e:66:b4:be:a0:38:b6:2d:\n                    fa:bd:e1:c0:d6:54:21:82:d1:a8:4d:e3:3f:6a:90:\n                    68:be:fe:f2:f3:e0:67:4e:eb:17:52:cc:94:25:56:\n                    81:d6:70:40:ce:a2:4e:a1:e2:11:e4:59:9a:8d:bd:\n                    a6:dd:63:1d:f5:21:f9:e3:7a:ff:85:68:e3:10:bc:\n                    39:5c:cb:b5:d7:16:41:5c:d5:1d:d5:e7:39:7c:a8:\n                    7e:13:73:71:4f:aa:59:69:e6:ab:83:6a:27:bb:81:\n                    ed:30:91:a5:48:aa:f4:4e:88:40:6f:d6:73:22:ab:\n                    2e:74:51:a5:94:87:9d:e7:88:fa:b7:3b:e1:7f:70:\n                    bc:0d:c0:f3:85:be:41:ea:ab:9a:8a:24:c1:34:1e:\n                    b1:b3:14:54:ac:45:b6:31:c5:0c:9b:67:09:24:e6:\n                    ee:34:07:cc:96:f6:8b:fd:d2:e7:2a:04:db:01:b0:\n                    90:64:8c:cc:e7:71:16:a1:4b:17:b8:7f:94:87:d9:\n                    d3:ab\n                Exponent: 65537 (0x10001)\n        X509v3 extensions:\n            X509v3 Basic Constraints: critical\n                CA:FALSE\n            X509v3 Key Usage: critical\n                Digital Signature, Key Encipherment\n            X509v3 Extended Key Usage: \n                TLS Web Server Authentication\n            X509v3 Subject Alternative Name: \n                DNS:MacBook-Pro.local, DNS:localhost, IP Address:192.168.0.8, IP Address:127.0.0.1, IP Address:10.77.0.3, IP Address:100.77.61.24\n    Signature Algorithm: sha256WithRSAEncryption\n    Signature Value:\n        6a:91:8c:f3:e4:3d:fb:bb:a0:31:84:6f:a3:3f:21:2b:a1:85:\n        7a:e0:52:de:f8:36:c5:8e:a4:29:d0:2f:71:b0:e4:d9:95:79:\n        f6:bb:f1:24:eb:c6:b5:d2:12:38:5a:af:e5:79:db:36:c5:67:\n        72:d9:41:91:ed:29:72:c6:dc:d5:44:17:6d:f1:d5:c7:8c:f8:\n        71:4f:21:e0:b9:90:13:9a:3b:31:15:ee:3d:67:96:a0:d0:9e:\n        85:ea:d0:3e:65:ba:5d:b0:94:dd:f4:25:11:09:cc:76:c9:2a:\n        49:00:66:de:c3:f1:f7:48:ac:d5:2d:a4:8a:21:e1:ac:a7:24:\n        a3:f1:c4:c9:db:a6:03:47:cd:5f:19:f9:fa:2d:5e:6d:bf:c6:\n        fe:95:d2:35:2c:0a:3a:55:41:1d:95:f3:70:07:ca:52:8d:05:\n        b4:87:69:c7:05:1a:76:34:5d:fd:bd:7a:6b:2c:02:b4:22:1f:\n        52:95:ae:16:07:9f:33:40:89:42:d0:62:9f:f0:81:87:e4:6f:\n        9d:b5:0f:69:4d:fa:cb:d7:63:35:28:1c:c1:d8:5c:6d:01:72:\n        51:09:75:d8:28:af:b6:d3:cb:f9:df:50:be:61:d7:c5:d8:ba:\n        dd:fd:85:5e:af:62:ec:1c:57:2d:17:56:f7:5b:e8:6d:98:41:\n        2c:af:35:15:8a:66:a3:19:5f:1f:0c:1f:76:f4:e6:96:9d:83:\n        96:4c:6e:2e:a7:61:b8:12:11:4d:60:fd:a1:0d:e1:8a:24:49:\n        82:00:05:3c:34:f8:45:26:39:38:06:5f:ac:c7:99:83:b9:a7:\n        ff:9f:ba:94:c0:04:46:3e:23:7d:e1:cb:86:2f:08:b4:d0:fe:\n        ee:bd:24:38:26:8b:7b:3a:08:db:5a:e9:08:35:2d:67:41:cb:\n        81:eb:0c:b6:38:1d:ef:4b:24:c9:39:e9:db:cd:89:e8:19:72:\n        8d:e2:8e:02:7b:2a:e3:63:43:c9:aa:a8:6e:fe:db:5d:42:7a:\n        04:da:6c:8d:c0:9f\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "openssl",
+      "verify",
+      "-x509_strict",
+      "-purpose",
+      "sslserver",
+      "-verify_hostname",
+      "localhost",
+      "-attime",
+      "1794013310",
+      "-CAfile",
+      "certificate-diagnosis-r1/ca.original.crt",
+      "certificate-diagnosis-r1/server.original.crt"
+    ],
+    "exitCode": 2,
+    "stdout": "",
+    "stderr": "CN=MacBook-Pro.local\nerror 85 at 0 depth lookup: Missing Authority Key Identifier\nerror certificate-diagnosis-r1/server.original.crt: verification failed\n"
+  }
+]

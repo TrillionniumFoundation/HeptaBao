@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.pocket4-custody-qualification-dispatch.r1",
+  "host": "pocket4",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/home/alex",
+  "idempotency_key": "pocket4-normal107-custody-qualification-20261107-r1",
+  "timeout_seconds": 60,
+  "stdinPin": {
+    "bytes": 47009,
+    "sha256": "29ff9e609e251ed64c6566f99e1f17dccf78c89c8e1c6100e84a07f18dbbd24c"
+  },
+  "stdinGitBlob": "44e95051e4a86c8587758d46efafe9442b990bf9",
+  "agentContinuationFailure": "model_not_supported",
+  "onlyOriginalStableKey": true,
+  "existingJobIfAnyMustBeReconciled": true,
+  "partialRegistryObservationNotAbsenceProof": true,
+  "scope": "five original Python child custody cases only",
+  "rustOrProductExecution": false,
+  "productionChange": false
+}

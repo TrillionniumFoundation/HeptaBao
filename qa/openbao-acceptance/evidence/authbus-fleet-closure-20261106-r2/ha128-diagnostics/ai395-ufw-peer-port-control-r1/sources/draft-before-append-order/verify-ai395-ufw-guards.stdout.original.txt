@@ -1,0 +1,29 @@
+test_accept_before_port_match_rejected (guards.Guards.test_accept_before_port_match_rejected) ... ok
+test_accept_first_rejected (guards.Guards.test_accept_first_rejected) ... ok
+test_before_identity (guards.Guards.test_before_identity) ... ok
+test_both_exact_additions (guards.Guards.test_both_exact_additions) ... ok
+test_duplicate_live_rule_rejected (guards.Guards.test_duplicate_live_rule_rejected) ... ok
+test_duplicate_owned_tuple_rejected (guards.Guards.test_duplicate_owned_tuple_rejected) ... ok
+test_empty_comment_same_core_rejected (guards.Guards.test_empty_comment_same_core_rejected) ... ok
+test_exact_capture_authority_and_closed_stdout (guards.Guards.test_exact_capture_authority_and_closed_stdout) ... ok
+test_existing_same_core_in_before_rejected (guards.Guards.test_existing_same_core_in_before_rejected) ... ok
+test_failed_terminal_rejected (guards.Guards.test_failed_terminal_rejected) ... ok
+test_final_restore_excludes_only_counters_and_handles (guards.Guards.test_final_restore_excludes_only_counters_and_handles) ... ok
+test_missing_ipv6_user_chain_rejected (guards.Guards.test_missing_ipv6_user_chain_rejected) ... ok
+test_missing_live_rule_rejected (guards.Guards.test_missing_live_rule_rejected) ... ok
+test_nft_ordinal_swap_rejected (guards.Guards.test_nft_ordinal_swap_rejected) ... ok
+test_one_exact_remaining_rule (guards.Guards.test_one_exact_remaining_rule) ... ok
+test_other_iptables_change_rejected (guards.Guards.test_other_iptables_change_rejected) ... ok
+test_other_nft_manager_change_rejected (guards.Guards.test_other_nft_manager_change_rejected) ... ok
+test_other_persistent_change_rejected (guards.Guards.test_other_persistent_change_rejected) ... ok
+test_stale_disk_ok_without_closure_rejected (guards.Guards.test_stale_disk_ok_without_closure_rejected) ... ok
+test_stale_ok_with_failed_close_rejected (guards.Guards.test_stale_ok_with_failed_close_rejected) ... ok
+test_unknown_terminal_rejected (guards.Guards.test_unknown_terminal_rejected) ... ok
+test_wrong_capture_archive_rejected (guards.Guards.test_wrong_capture_archive_rejected) ... ok
+test_wrong_peer_nft_rejected (guards.Guards.test_wrong_peer_nft_rejected) ... ok
+test_wrong_port_opaque_pair_rejected (guards.Guards.test_wrong_port_opaque_pair_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.008s
+
+OK

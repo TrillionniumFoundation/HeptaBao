@@ -1,0 +1,305 @@
+{
+  "admissionEvidence": {
+    "currentCandidatePortsUnoccupied": true,
+    "currentReadonlyFirewallPath": "ai395-firewall-path.public.json",
+    "inference": "NEW local TCP from either named peer reaches UFW INPUT DROP for both ports; WARP source192.168.0.0/16 accepts.",
+    "interface": {
+      "interface": "br0",
+      "ipv4": "192.168.0.11",
+      "isBridge": true,
+      "scope": "kernel interface-address metadata; no packet capture"
+    },
+    "interfaceObservationJob": "1a1b2e9bedb-fc05-802e",
+    "pathSha256": "dba7f249f207ea9d5770f486d23def4a1d58197b9dddc36b47ef9d734de139b5",
+    "portObservationJob": "1a1b2dd3850-fc05-800d"
+  },
+  "authority": "Existing login sudoers/PAM via sudo_start only; no permission or sudoers changes.",
+  "backupPolicy": {
+    "createOnly": true,
+    "existingPermissionsUnchanged": true,
+    "freshKernelOriginals": [
+      [
+        "/usr/sbin/nft",
+        "-j",
+        "list",
+        "ruleset"
+      ],
+      [
+        "/usr/sbin/iptables-save",
+        "-c",
+        "-t",
+        "filter"
+      ]
+    ],
+    "newDirectoryMode": "0700",
+    "newFilesMode": "0600",
+    "notAnAtomicCrossSourceSnapshot": true,
+    "owner": "root",
+    "persistentFiles": [
+      "/etc/ufw/user.rules",
+      "/etc/ufw/user6.rules",
+      "/etc/ufw/before.rules",
+      "/etc/ufw/after.rules",
+      "/etc/ufw/before6.rules",
+      "/etc/ufw/after6.rules",
+      "/etc/ufw/ufw.conf",
+      "/etc/default/ufw"
+    ],
+    "privateRawRulesNeverPublished": true,
+    "retainOriginalBytesAndWholePins": true
+  },
+  "beforeGates": [
+    "Pin root-owned UFW entry, the six reviewed implementation files, nft and xtables; require current br0 owns .11 and both QA ports remain unoccupied.",
+    "Create new private backup root and copy all listed persistent files plus the complete fresh native command stdout/stderr and authority records; reject missing/incomplete/truncated/changing sources.",
+    "Require UFW enabled and its IPv4/IPv6 user-chain families complete as the installed _need_reload implementation expects.",
+    "Reject either nonempty comment already present; reject any existing persisted or live rule matching the same core flow regardless of its action/logtype/comment. No replace/update/insert branch is authorized.",
+    "Capture the full normalized before-state; only counters, generated timestamps and nft handle identities may be removed from semantic comparison. Preserve every other field, rule order within each chain, and duplicate multiplicity."
+  ],
+  "comparison": {
+    "iptables": "Normalize bracket counters and generated timestamp comment lines only, shlex-tokenize each ordered chain rule; compare entire tables after removing exactly the expected new flow rules.",
+    "nft": "Group tables/chains/rules by their full identity while preserving rule order and duplicate counts per chain. Remove dynamic counters and handles only. Exclude exactly the two source/destination/iif/tcp-range/accept rules from ip/filter/ufw-user-input and require all remaining manager semantics equal. Unknown expressions/schema differences refuse rather than being dropped.",
+    "otherPersistentFiles": "All bytes and owner/group/mode/nlink unchanged, including user6.rules.",
+    "persistentUserRules": "Retain ordered tuple/block structure, comments and all existing directives; decode only the two expected nonempty hexadecimal comments, verify their complete IPv4/in_br0/allow/tcp/source/destination/port tuple plus generated ACCEPT body, remove those blocks and require the prior persistent semantics unchanged."
+  },
+  "execution": [
+    "Issue add for Mac peer once; collect original PTY bytes and natural exit state; capture current full rules and persistent files before proceeding.",
+    "Require exactly the first owned IPv4 tuple and kernel rule appended, with all prior rules/config ownership and unrelated manager semantics unchanged. Any failure or missing authority stops the second add.",
+    "Issue add for X230 peer once under the same checks; require exactly two owned tuples/rules and no other semantic changes.",
+    "Only after both known successful postconditions may the new normal Rust port diagnostic and the separately reviewed HA128 r2 run start. The original HA r1 remains failed."
+  ],
+  "explicitlyNotAuthorized": [
+    "ufw enable/disable/reset/reload",
+    "global nft/iptables flush",
+    "port forwarding or route changes",
+    "0.0.0.0/0 peer permissions",
+    "blank-comment deletion",
+    "numeric rule deletion",
+    "replacement of pre-existing matching rules",
+    "sudoers changes",
+    "overwriting existing backup roots",
+    "automatic replay after unknown",
+    "global snapshot restore"
+  ],
+  "host": "ai395",
+  "hostPrivateBackupRoot": "/home/qq/heptabao-ha-ufw-peer-ports-20261106-r2",
+  "persistenceCaveat": "Installed UFW writes the existing user.rules via shutil.copy from its tempfile, not an atomic rename. Exit code alone is insufficient: persisted and live exact postconditions are both mandatory.",
+  "productCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "reviewedImplementationPins": [
+    {
+      "bytes": 36093,
+      "path": "/usr/lib/python3/dist-packages/ufw/frontend.py",
+      "sha256": "c61d78d719778acf01314b222078db152fbfb45b2f9de66f3df51be45868d7eb"
+    },
+    {
+      "bytes": 27407,
+      "path": "/usr/lib/python3/dist-packages/ufw/backend.py",
+      "sha256": "24a372164947a8a3808b8797db49430d285f6ec1113f2c2895e403a058689232"
+    },
+    {
+      "bytes": 58842,
+      "path": "/usr/lib/python3/dist-packages/ufw/backend_iptables.py",
+      "sha256": "69cabdd144d3feef41910ac44fd79dde9fd518aa2c9eb8d9e6a7800c4661fc55"
+    },
+    {
+      "bytes": 31980,
+      "path": "/usr/lib/python3/dist-packages/ufw/parser.py",
+      "sha256": "db8d0769467fb4af3fd843980bf19dd82d55161e1986e8ae4723a5ae81f62d0b"
+    },
+    {
+      "bytes": 22531,
+      "path": "/usr/lib/python3/dist-packages/ufw/common.py",
+      "sha256": "3eacf4b886260b0a9b1f9b74986fd6fcba3e0e90afed38c01db30736cce41728"
+    },
+    {
+      "bytes": 32791,
+      "path": "/usr/lib/python3/dist-packages/ufw/util.py",
+      "sha256": "7bb332974f8caf4322b6246c51fc72af6b6ff67ad18ce62b4735dc762e9dd6cc"
+    }
+  ],
+  "rollback": {
+    "afterEach": "Record original result and fresh full snapshots; only the corresponding owned rule may disappear. All other manager semantics and existing persistent configuration remain equivalent.",
+    "final": "Both unique comments and both new live flow rules absent; normalized firewall semantics equal before; original backup preserved.",
+    "materialSideEffect": "Installed UFW 0.36.2 exact deletion unconditionally reloads UFW user chains through iptables-restore -n (and IPv6 when enabled), rebuilding its logging/user rules and resetting relevant counters. Counter values and nft handles are not promised to be restored. No global flush/disable/reset or raw backup restore is authorized.",
+    "method": "Execute only each full remove argv above, with its same nonempty unique comment. Never delete by numeric index.",
+    "order": [
+      "192.168.0.13",
+      "192.168.0.8"
+    ],
+    "precondition": "Re-read exact persistent comment+full tuple and corresponding unique live rule; require recorded ownership and known original attempt state. Absent/changed/ambiguous rules are reconciled, not blindly removed.",
+    "when": "After owned diagnostics/HA processes are fully closed, or after a known failure with exact owned-rule poststate; never while network effects remain unknown."
+  },
+  "rules": [
+    {
+      "add": {
+        "args": [
+          "allow",
+          "in",
+          "on",
+          "br0",
+          "proto",
+          "tcp",
+          "from",
+          "192.168.0.8/32",
+          "to",
+          "192.168.0.11/32",
+          "port",
+          "31040:31041",
+          "comment",
+          "heptabao-ha4bde9-20261106-r2-mac"
+        ],
+        "env": {
+          "LANG": "C",
+          "LC_ALL": "C"
+        },
+        "executable": "/usr/sbin/ufw",
+        "fresh_auth": false,
+        "host": "ai395",
+        "non_interactive": true
+      },
+      "comment": "heptabao-ha4bde9-20261106-r2-mac",
+      "expected": {
+        "action": "allow",
+        "comment": "heptabao-ha4bde9-20261106-r2-mac",
+        "destination": "192.168.0.11/32",
+        "destinationPortRange": [
+          31040,
+          31041
+        ],
+        "direction": "in",
+        "family": "ipv4",
+        "forward": false,
+        "interface": "br0",
+        "logtype": "",
+        "protocol": "tcp",
+        "source": "192.168.0.8/32",
+        "sourcePort": "any"
+      },
+      "peer": "192.168.0.8",
+      "remove": {
+        "args": [
+          "--force",
+          "delete",
+          "allow",
+          "in",
+          "on",
+          "br0",
+          "proto",
+          "tcp",
+          "from",
+          "192.168.0.8/32",
+          "to",
+          "192.168.0.11/32",
+          "port",
+          "31040:31041",
+          "comment",
+          "heptabao-ha4bde9-20261106-r2-mac"
+        ],
+        "env": {
+          "LANG": "C",
+          "LC_ALL": "C"
+        },
+        "executable": "/usr/sbin/ufw",
+        "fresh_auth": false,
+        "host": "ai395",
+        "non_interactive": true
+      }
+    },
+    {
+      "add": {
+        "args": [
+          "allow",
+          "in",
+          "on",
+          "br0",
+          "proto",
+          "tcp",
+          "from",
+          "192.168.0.13/32",
+          "to",
+          "192.168.0.11/32",
+          "port",
+          "31040:31041",
+          "comment",
+          "heptabao-ha4bde9-20261106-r2-x230"
+        ],
+        "env": {
+          "LANG": "C",
+          "LC_ALL": "C"
+        },
+        "executable": "/usr/sbin/ufw",
+        "fresh_auth": false,
+        "host": "ai395",
+        "non_interactive": true
+      },
+      "comment": "heptabao-ha4bde9-20261106-r2-x230",
+      "expected": {
+        "action": "allow",
+        "comment": "heptabao-ha4bde9-20261106-r2-x230",
+        "destination": "192.168.0.11/32",
+        "destinationPortRange": [
+          31040,
+          31041
+        ],
+        "direction": "in",
+        "family": "ipv4",
+        "forward": false,
+        "interface": "br0",
+        "logtype": "",
+        "protocol": "tcp",
+        "source": "192.168.0.13/32",
+        "sourcePort": "any"
+      },
+      "peer": "192.168.0.13",
+      "remove": {
+        "args": [
+          "--force",
+          "delete",
+          "allow",
+          "in",
+          "on",
+          "br0",
+          "proto",
+          "tcp",
+          "from",
+          "192.168.0.13/32",
+          "to",
+          "192.168.0.11/32",
+          "port",
+          "31040:31041",
+          "comment",
+          "heptabao-ha4bde9-20261106-r2-x230"
+        ],
+        "env": {
+          "LANG": "C",
+          "LC_ALL": "C"
+        },
+        "executable": "/usr/sbin/ufw",
+        "fresh_auth": false,
+        "host": "ai395",
+        "non_interactive": true
+      }
+    }
+  ],
+  "schema": "heptabao.ai395-ufw-exact-peer-port-plan.r1",
+  "scope": "Only the two named peers may reach the two QA TCP ports on the existing br0 LAN address.",
+  "status": "prepared-for-review-not-executed",
+  "toolPins": {
+    "iptablesSave": {
+      "bytes": 224632,
+      "path": "/usr/sbin/iptables-save",
+      "resolvedPath": "/usr/sbin/xtables-nft-multi",
+      "sha256": "603f55a8877a2db138615f961901ef23ba77451ac0a53233bd01f1c9b216636a"
+    },
+    "nft": {
+      "bytes": 26928,
+      "path": "/usr/sbin/nft",
+      "sha256": "7b3efd79bd3a70d72275b7bbfe19f2234a837968a3c0ad5528126a396a00d42f"
+    },
+    "ufw": {
+      "bytes": 4959,
+      "path": "/usr/sbin/ufw",
+      "sha256": "e2ff4f8178807f04b411aad08315d875cb915ce8d9aa5895703bb7f0055e5d28"
+    }
+  },
+  "unknownPolicy": "Any lost sudo_start/PTY acknowledgement is indeterminate. Keep original session/request identity; reconcile that original terminal, exact comments and live/config rules. Do not re-add with a new identity, repeat an unknown mutator, or restore a whole older firewall over concurrent changes."
+}

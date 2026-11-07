@@ -1,0 +1,11 @@
+✔ concrete strict TLS/AppRole adapter and unchanged production client perform complete fixed-slot transaction (462.656725ms)
+✔ strict TLS wrong leaf pin prevents HTTP authentication or KV dispatch (32.690549ms)
+✔ real TLS dropped ack response remains unknown and cold coordinator only reads to reconcile (399.740829ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 985.192165

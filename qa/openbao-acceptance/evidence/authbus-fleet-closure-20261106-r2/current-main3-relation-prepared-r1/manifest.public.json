@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.current-main3-relation-source-snapshot.r1",
+  "sourceOnlyPrepared": true,
+  "actualMacExecutionPerformed": false,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "productionWrites": 0,
+  "sourceFiles": [
+    {
+      "path": "code/mac_current_selected_main3_r1.py",
+      "bytes": 15923,
+      "sha256": "4399399cda5fc6131583b461870f5c35906abe07625ca2df57a38d6c6c2a90cd",
+      "gitBlobSha": "6250efa40c4931b3d56ce85ca8970598847120c1"
+    },
+    {
+      "path": "code/read_current_main3_candidate_relation_r1.py",
+      "bytes": 13465,
+      "sha256": "08ecb096bcb40995bc78db1a868cdd2f490ae708f10e89bbc3623c783db2b009",
+      "gitBlobSha": "479484a25114d9fca642ac7053ee4e444c83bd6f"
+    },
+    {
+      "path": "code/mac_codex_candidate_backend_r1.py",
+      "bytes": 9955,
+      "sha256": "90def9a5976b94efa6e1794a0fd2d26ea2615f00922f18291e2cd331af802b87",
+      "gitBlobSha": "ec82bfe362bb3d35263607ef149e0bfaadcccc8f"
+    },
+    {
+      "path": "code/main3_source_authority.py",
+      "bytes": 2406,
+      "sha256": "1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290",
+      "gitBlobSha": "f0b776f98fe8309a90bfa62578b68dc784120f91"
+    },
+    {
+      "path": "launcher/observe_current_main3_candidate_relation_r1.py",
+      "bytes": 141631,
+      "sha256": "c01bbba9b27101f3a72789e069fe4997a7767ac51428a274b552bcc29e9ca7f1",
+      "gitBlobSha": "4071a4611f06bbe3441b961b82552ef04512a523"
+    },
+    {
+      "path": "launcher/observe_current_main3_candidate_relation_r1.template.py",
+      "bytes": 30285,
+      "sha256": "acfb97969ec418c2ad966b555a60a71c468bdefa4f4c49516bc1da05fc4c22da",
+      "gitBlobSha": "828b6461190a4ec2f3356d2c6e7051d040b52b86"
+    },
+    {
+      "path": "launcher/prepared.public.json",
+      "bytes": 2582,
+      "sha256": "5334a0287f8e2e14420df87768894a3df1cb2b9bd5ef752ae61933e02c90bbf7",
+      "gitBlobSha": "5a8b80f0cc7b21e4d761e62d8ff5b79ea81ffdb0"
+    },
+    {
+      "path": "derivation/derive_current_main3_relation_observer_r1.py",
+      "bytes": 19721,
+      "sha256": "f29b57b977abb47616760b468a962aaf423503432baaac57c63e989349634517",
+      "gitBlobSha": "ba586ec522f4d89090081e53c52b9d9e5295575d"
+    },
+    {
+      "path": "derivation/candidate-to-current-main3-relation-r1.diff",
+      "bytes": 19320,
+      "sha256": "404a6236ccbb4d84e1970c8c82bf7d32778faec7ca8c9cbced52fc5f86f51791",
+      "gitBlobSha": "7361540b33415267982479dc6fc61017d708a17b"
+    },
+    {
+      "path": "qualification/qualify_current_selected_main3_local_r1.py",
+      "bytes": 6494,
+      "sha256": "3fbcca715b0a6bf0bc7208a255960c21411b7a45010cd1ade70ec80281df4ef4",
+      "gitBlobSha": "1c118a2b3ff5d55da755db8cdbe649a86593cbfc"
+    },
+    {
+      "path": "qualification/local-eight.stdout.json",
+      "bytes": 845,
+      "sha256": "7ab014580bbbb565a8a2d6f329301148307ad07df53c926ef43fc115079cac78",
+      "gitBlobSha": "4cd481a706e47513691b009cbbe6184ac879a7fe"
+    },
+    {
+      "path": "qualification/local-eight.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/initial-local-ancestor-refusal.stdout.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/initial-local-ancestor-refusal.stderr",
+      "bytes": 2058,
+      "sha256": "35f55aa7c2e92b9afa0c47415121327e002c6c2d8290702d70ec736d48d94554",
+      "gitBlobSha": "6b9bfe5fddf38d67a974b03d42b47c14e37556ac"
+    }
+  ],
+  "qualifiedOriginalAuth18Reused": true,
+  "originalCandidateActualMap": "0d02daa98cea1a18815f3d3ab0141312910d300d",
+  "localChecks": {
+    "passed": 8,
+    "expected": 8,
+    "scope": "pure-authorized-scope-projection-and-real-local-filesystem-only",
+    "firstAncestorRefusalRetained": true,
+    "productionAncestorRulesUnchanged": true
+  },
+  "historicalCapsuleOnlyAuthorizationNotCurrentCredentials": true,
+  "currentThreeValuesWillComeFromNewQualifiedSqlProjection": true,
+  "effectiveRuntimeBackendQualified": false,
+  "runningCachedCredentialRelation": "unknown",
+  "productionRefreshAdmission": false,
+  "privateSourceModules606bEmbedded": false,
+  "privateConfigurationOrCredentialDigestsIncluded": false
+}

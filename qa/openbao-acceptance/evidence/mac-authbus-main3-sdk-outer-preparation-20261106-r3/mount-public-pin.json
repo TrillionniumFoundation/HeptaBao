@@ -1,0 +1,11 @@
+{
+  "path": "/sbin/mount",
+  "canonicalPath": "/sbin/mount",
+  "bytes": 174016,
+  "sha256": "e0368cc89f48770e30dcbc639ae4d99d3ee478516b0186baf3e030ce9828e5dd",
+  "uid": 0,
+  "gid": 0,
+  "mode": 33133,
+  "nlink": 1,
+  "source": "actual Mac public file observation reported by candidate_ha; rehashed by the SDK outer before use"
+}

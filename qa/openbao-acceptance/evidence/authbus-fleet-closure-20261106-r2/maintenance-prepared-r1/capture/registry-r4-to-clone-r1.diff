@@ -1,0 +1,58 @@
+--- qualified-sdk-r4/registry_read.py
++++ prepared-clone-r1/registry_read.py
+@@ -4,11 +4,13 @@
+ import contextlib, errno, hashlib, json, os, socket, stat, sys, time
+ from pathlib import Path
+ START=time.monotonic()
+-ROOT=Path("/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4")
++ROOT=Path("/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/captures/owner-01")
+ QUAL=Path("/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2")
+ BINDING=Path("/Users/qianqi/heptabao-authbus-current-source-20261106-r1/output/current-source-binding.private.json")
+ sys.path.insert(0,str(QUAL/"qa"))
+ import authbus_current_auth_wal as auth
++sys.path.insert(0,str(ROOT/"code"))
++import mac_poststop_registry_read_r1 as poststop_registry
+ wal=auth.wal
+ until=float(sys.argv[1])
+ report={"schema":"heptabao.authbus-current-sdk-registry-observation.r2","ok":False,
+@@ -109,8 +111,8 @@
+         proof_raw=proof_stream.read(65537)
+     need(len(proof_raw)==62662,"bounded_same_original_registry_proof")
+     wal.validate_wal_proof(inputs,proof_raw,"7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",runtime)
+-    bundle=wal.registry_wal_database(inputs)
+-    registry=wal.readonly_wal_query(inputs,bundle)
++    bundle=poststop_registry.registry_database(auth,inputs)
++    registry,registry_route=poststop_registry.read_registry(auth,inputs,bundle)
+     values=dict(zip(registry["columns"],registry["row"]))
+     need(values.get("index_key")=="installed-plugin-index","one_fixed_registry_key")
+     plugins=auth.strict_json(values["plugins_json"])
+@@ -134,7 +136,7 @@
+         package=item.get("packageJson")
+         count("packageJson","object" if isinstance(package,dict) else "missing" if package is None else "other")
+         count("packagePath",path_shape(package.get("path") if isinstance(package,dict) else None))
+-    inputs.verify();wal.verify_bundle(inputs,bundle,until=until);guard.verify()
++    inputs.verify();poststop_registry.verify(auth,inputs,bundle,until=until);guard.verify()
+     packet={"schema":"heptabao.current-sdk-registry.private.r2","host":"mac",
+             "createdWallNs":time.time_ns(),"configurationSha256":binding["configurationSha256"],
+             "configurationIdentity":binding["configurationIdentity"],"registry":registry,
+@@ -144,7 +146,7 @@
+             "constraints":{"actualSdkBehaviorQualified":False,"providerValidationPerformed":False,
+                            "credentialValuesCaptured":False,"productionCutover":False}}
+     private(ROOT/"output/registry.private.json",packet)
+-    inputs.verify();wal.verify_bundle(inputs,bundle,until=until);guard.verify()
++    inputs.verify();poststop_registry.verify(auth,inputs,bundle,until=until);guard.verify()
+     inputs.close();guard.close()
+     need(inputs.public()["allOwnedDescriptorsClosed"] and guard.public()["allOwnedDescriptorsClosed"],
+          "all_original_registry_descriptors_closed")
+@@ -153,8 +155,9 @@
+         currentConfigurationStillOriginal=True,installedPluginCount=len(plugins),
+         installedPluginOriginCounts=origin_counts,registryPathFieldShapes=shape_counts,
+         manifestPathAdmissionQualified=False,
+-        registryTransactionCount=1,registryDataRowCount=1,registryWalWasNonempty=True,
+-        registryRoute="qualified_named_readonly_wal_transaction",
++        registryTransactionCount=1,registryDataRowCount=1,registryWalWasNonempty=bundle["nonemptyWal"],
++        registryRoute=registry_route,originalRegistrySidecarsCreated=False,
++        registryBridgeSourceSha256='bf4bb346839ba7065d13d08f179711946ded050982a004a75e815ec26bba3477',
+         registryProofSha256="7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+         queryBudgetSeconds=3,privateProjectionBytes=private_bytes,
+         authProfileRowsRead=0,sharedSeconds=45,registryRuntime=runtime)

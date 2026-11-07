@@ -1,0 +1,23 @@
+{
+  "actualExecuted": false,
+  "actualStructureJob": "1a1b3a8d652-fc05-842a",
+  "appleReference": {
+    "blob": "47420f9f8f620233f112e87a51ed8f576caa3546",
+    "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+    "path": "bsd/kern/kern_exec.c",
+    "repository": "apple-oss-distributions/xnu"
+  },
+  "bytes": 56720,
+  "environmentCountIsUpperBoundOnly": true,
+  "noAppleKeyEarlyCutoff": true,
+  "noCredentialFileReads": true,
+  "onlyFirstEmptySeparatorDefinesTail": true,
+  "originalR3FailureJob": "1a1b3b39303-fc05-845f",
+  "originalR3Sha256": "b4957acf9c647de833aac9303987a61f4c7392dc7835d2334cc01c2c0a6d30ef",
+  "parentSeconds": 20,
+  "parserSha256": "95ef98e789b17c4d66e4603f2c93d7f96844f6fbcbbba0ae2b997c0752aff8a9",
+  "readMaximumUnchanged": 262148,
+  "schema": "heptabao.finite-codex-selector-source.r4",
+  "sha256": "6c150f3a324b3200e658247e9841e1b9bccbe6e07c16c4b01edc0f072089acda",
+  "supervisorSeconds": 30
+}

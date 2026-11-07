@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.mac-fresh-r1-evidence-verification.r1",
+  "artifactCount": 87,
+  "knownRemoteSha256Compared": 52,
+  "allComparedHashesEqual": true,
+  "fullFailedStdoutBytes": 24533,
+  "fullCleanupStdoutBytes": 32719,
+  "fullAbsenceStdoutBytes": 1127,
+  "failedCampaignRemainsFailed": true,
+  "cleanupOnlySucceeded": true,
+  "independentAbsenceRounds": 2,
+  "realAuthBusAdmitted": false,
+  "productionCutover": false,
+  "oldComponentsDeleted": false
+}

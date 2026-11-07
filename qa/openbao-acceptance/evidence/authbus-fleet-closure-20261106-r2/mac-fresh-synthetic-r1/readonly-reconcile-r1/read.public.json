@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1b167bf27-fc05-7867",
+  "stderr": {
+    "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e652036392c20696e203c6d6f64756c653e0a20202020726f772c6f75742c6572723d636f6d6d616e64282766697865642d72656c617465642d7073272c5b272f62696e2f7073272c272d61786f272c277069643d2c707069643d2c706769643d2c7569643d2c737461743d275d293b7265636f7264732e617070656e6428726f77290a202020202020202020202020202020207e7e7e7e7e7e7e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0a202046696c6520223c737472696e673e222c206c696e652034382c20696e20636f6d6d616e640a202020206e65656428696e697469616c5b276279746573275d3d3d6374797065732e73697a656f6628427364496e666f2920616e6420696e697469616c5b2761637475616c506964275d3d3d702e70696420616e6420696e697469616c5b2770706964275d3d3d6f732e676574706964282920616e6420696e697469616c5b2770676964275d3d3d702e7069642c276f776e5f726561646f6e6c795f6469726563745f6368696c6427290a202020207e7e7e7e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0a202046696c6520223c737472696e673e222c206c696e652031312c20696e206e6565640a202020206966206e6f7420763a72616973652052756e74696d654572726f722863290a202020202020202020202020205e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0a52756e74696d654572726f723a206f776e5f726561646f6e6c795f6469726563745f6368696c640a",
+    "eof": true,
+    "next_offset": 808,
+    "offset": 0,
+    "size": 808,
+    "text": "Traceback (most recent call last):\n  File \"<string>\", line 69, in <module>\n    row,out,err=command('fixed-related-ps',['/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat=']);records.append(row)\n                ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 48, in command\n    need(initial['bytes']==ctypes.sizeof(BsdInfo) and initial['actualPid']==p.pid and initial['ppid']==os.getpid() and initial['pgid']==p.pid,'own_readonly_direct_child')\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 11, in need\n    if not v:raise RuntimeError(c)\n             ^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: own_readonly_direct_child\n"
+  },
+  "stdout": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  }
+}

@@ -1,8 +1,13 @@
 # Native V6 physical HA gate
 
 `qa/openbao-acceptance/native_v6_ha_multihost_live.py` is a separately named
-physical-host profile for Mac, ROG and Pocket4. It starts three new synthetic
-fixture roots with the explicit `--experimental-native-v6-ha` server flag.
+physical-host profile for three distinct configured SSH hosts, including Darwin
+and Linux. Mac, ROG and Pocket4 were the original topology; the host, address,
+native artifact and source bindings in each execution determine its actual
+topology. It starts three new synthetic fixture roots with the normal server
+`storage.native_v6_raft` configuration. The root-authorized
+`POST /v1/sys/storage/native-v6/activate` route activates native storage after
+the cluster has elected a leader and unsealed; no fixture server flag is used.
 It has **89 required checks**. It does not change or borrow the separate
 mixed-native loopback baseline's 62-check denominator.
 

@@ -1,0 +1,99 @@
+{
+  "files": [
+    {
+      "bytes": 3505,
+      "path": "README.md",
+      "sha256": "83bc565cc41c0b7d1e49834b89e2f6242921523fad5ba28c81746ac4d71cdf86"
+    },
+    {
+      "bytes": 653,
+      "path": "RECONCILIATION.public.json",
+      "sha256": "a233f56d57602ae68d65b2e5181051cbf24f29edcbd0b03ce13693baeea44ef7"
+    },
+    {
+      "bytes": 1182,
+      "path": "input-binding.public.json",
+      "sha256": "ee89c2ae25114861d6108af7505e174b9ebd2d3a439529da0b8dac05425fda83"
+    },
+    {
+      "bytes": 26131,
+      "path": "inputs/kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "bytes": 28442,
+      "path": "inputs/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "bytes": 17148,
+      "path": "inputs/tests/test_kv2_dr_process_custody.py",
+      "sha256": "41d3b0e079b2b17a0ece458f907adf380542cbdf96530213869636e81a447807"
+    },
+    {
+      "bytes": 13553,
+      "path": "launcher.py",
+      "sha256": "afa68e0a0624962e1d3e139715c01419c7696bd8baf8d04f57848fb5f000247b"
+    },
+    {
+      "bytes": 4790,
+      "path": "result.public.json",
+      "sha256": "424516c3a5f3ae32018cbf754d6bbfa7fe57f887c02f09f2624bf5d235a6d922"
+    },
+    {
+      "bytes": 9741,
+      "path": "runner.py",
+      "sha256": "63d7d1c8e7bb6192f8c365866974a7e96df7c05ba3ca95ff1c17e4b0be62655a"
+    },
+    {
+      "bytes": 9573,
+      "path": "runtime-file-read.original.json",
+      "sha256": "6ceb44eb29381173d7643ac910d51f1be9f56cd01ecfa6c45bcd147d458bcca9"
+    },
+    {
+      "bytes": 13831,
+      "path": "runtime-launch-request.json",
+      "sha256": "7b237aa6ddee17f75f841c7b1d37073b303384761cac1cdeddded14c209802d7"
+    },
+    {
+      "bytes": 24894,
+      "path": "runtime-read.original.json",
+      "sha256": "1f5d719c02b006408873d4526b68edcceaacab4bc3c3ed3dfc236ecbe6f1e850"
+    },
+    {
+      "bytes": 14682,
+      "path": "runtime-start.original.json",
+      "sha256": "1f5c85148011a974d4a862a3252fbb056653ad3f7b9013c9a02b130bda824ecc"
+    },
+    {
+      "bytes": 737,
+      "path": "runtime-terminal.original.json",
+      "sha256": "47a07c7e3e5dc0faf5025baafa5fe941b3f6f45e3e9779bcb3ba371bfefd99ba"
+    },
+    {
+      "bytes": 3541,
+      "path": "selection.public.json",
+      "sha256": "c017834ce3d3aa477f7fccf923449d001e008694553d9c5369349e051acd5c91"
+    },
+    {
+      "bytes": 3695,
+      "path": "stderr.original",
+      "sha256": "82c0c123b8857ac2747c58dec74ac977cee14983bd742ca5c2baa656f2b650a6"
+    },
+    {
+      "bytes": 4397,
+      "path": "stdout.original",
+      "sha256": "7bf9cee39f4d09bf037cf308c64b3c31e25ab17bff621de054374593afc8b8c9"
+    },
+    {
+      "bytes": 3830,
+      "path": "verify_evidence.py",
+      "sha256": "219703c18250402c9cb369071229f9b91abf00378be7c8a85f4195a9878c13b2"
+    }
+  ],
+  "host": "mac",
+  "job_id": "1a1b0f0b31e-fc05-7438",
+  "production_or_ha_qualified": false,
+  "schema": "heptabao.mac-final-custody18-artifact-manifest.v1",
+  "total_bytes": 184325
+}

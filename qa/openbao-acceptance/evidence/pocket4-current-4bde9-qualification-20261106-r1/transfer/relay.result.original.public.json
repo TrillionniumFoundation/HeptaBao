@@ -1,0 +1,353 @@
+{
+  "all_transferred_whole_hashes_equal": true,
+  "automatic_retry": false,
+  "credential_files_copied": false,
+  "elapsed_seconds": 5.2810089169070125,
+  "network_crate_downloads": false,
+  "new_private_receiver_cargo_home": true,
+  "normal107_qualified": false,
+  "old_cache_modified": false,
+  "pocket4_offline_dependency_tree_still_required": true,
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "receiver": {
+    "all_installed_files_sha256_readback_equal": true,
+    "cargo_home": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/cargo-home-public-linux-r1",
+    "cargo_lock_sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+    "counts": {
+      "linux_selected_crate": 321,
+      "offline_resolver_required_crate": 2,
+      "offline_resolver_required_sparse_index": 56,
+      "public_registry_config": 1,
+      "selected_package_sparse_index": 297
+    },
+    "existing_registry_namespace_reused": true,
+    "existing_user_cache_modified": false,
+    "finished_at_unix": 1793989722.5752492,
+    "installed_file_count": 677,
+    "manifest_sha256": "0d74878d414151a41fa85927ff0732ea2ab123dcdf0955aa8cd75c5be2216897",
+    "normal107_qualified": false,
+    "payload_bytes": 67880960,
+    "payload_sha256": "8e771190e6df05560f8a41bbf7992586137ee4ab730123301c6dba0d595759c9",
+    "product_binary_executions": 0,
+    "production_changed": false,
+    "receiver_cargo_offline_tree_not_yet_executed": true,
+    "rust_compilation_executed": false,
+    "schema": "heptabao.pocket4-public-dependency-receipt.v1",
+    "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "status": "installed",
+    "user_configuration_or_credentials_opened": false
+  },
+  "rust_build_executed": false,
+  "schema": "heptabao.mac-public-linux-dependency-relay.v1",
+  "ssh_aliases": [
+    "ai395",
+    "pocket4"
+  ],
+  "status": "transferred_and_installed",
+  "steps": [
+    {
+      "alias": "ai395",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-manifest.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 20112,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 207549,
+        "mode": 384,
+        "sha256": "0d74878d414151a41fa85927ff0732ea2ab123dcdf0955aa8cd75c5be2216897",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "ai395",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-linux-locked-dependencies.tar",
+      "owned_ssh_session_signals": [],
+      "pid": 20116,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 67880960,
+        "mode": 384,
+        "sha256": "8e771190e6df05560f8a41bbf7992586137ee4ab730123301c6dba0d595759c9",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "ai395",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-offline-resolver-proof.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 20120,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 5361,
+        "mode": 384,
+        "sha256": "da7f698027b1d97488aefda02556c807ae4b0a9d4baa435552b96efa626b8e28",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "ai395",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-prior-missing-index-proof.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 20124,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 45743,
+        "mode": 384,
+        "sha256": "8df38dbaa49ce8ae54fbbcdb662eea188327179d23be17223dccb93b38140e90",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 30,
+      "exit_code": 0,
+      "label": "prepare-pocket4-inbox",
+      "owned_ssh_session_signals": [],
+      "pid": 20128,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 43,
+        "mode": 384,
+        "sha256": "53177dc0f983b55cdcb45290f4a036e4534fb032c7f5c6e8d42c4123a2e90795",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-manifest.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 20135,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 118,
+        "mode": 384,
+        "sha256": "6b197d4a541f64595f1e176f3ea76d412365aca8d84cfd3b46473b3820771b59",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-linux-locked-dependencies.tar",
+      "owned_ssh_session_signals": [],
+      "pid": 20148,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 120,
+        "mode": 384,
+        "sha256": "fa0678794ea397eeedcf6b62b741e79ff34d29e0936d4e7fb3fec6ab7fe866b8",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-offline-resolver-proof.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 20160,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 116,
+        "mode": 384,
+        "sha256": "c41abcb3ca05f8d1418e6b200da48bbfaa5112eaf958d44a707bca45ae9c4601",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-prior-missing-index-proof.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 20172,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 117,
+        "mode": 384,
+        "sha256": "de17cb6fc13b97210460b409cb8f9c623097759a9d6ef4f93631355ed7756d54",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-receive_linux_dependencies.py",
+      "owned_ssh_session_signals": [],
+      "pid": 20184,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 117,
+        "mode": 384,
+        "sha256": "6618f3675029d227df9846115283f7cea5a5f8ba8c4ad3cada2323ee8df27667",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "install-pocket4-cache",
+      "owned_ssh_session_signals": [],
+      "pid": 20188,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 1228,
+        "mode": 384,
+        "sha256": "207e7ece1a818c3301d419b097710f49ede9b2d34292420df759148240d493ce",
+        "uid": 501
+      },
+      "timed_out": false
+    }
+  ],
+  "tools_after": {
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "bytes": 34640,
+      "mode": 493,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "uid": 501
+    },
+    "/usr/bin/ssh": {
+      "bytes": 1584576,
+      "mode": 493,
+      "sha256": "17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3",
+      "uid": 0
+    }
+  },
+  "tools_before": {
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "bytes": 34640,
+      "mode": 493,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "uid": 501
+    },
+    "/usr/bin/ssh": {
+      "bytes": 1584576,
+      "mode": 493,
+      "sha256": "17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3",
+      "uid": 0
+    }
+  },
+  "transferred_files": [
+    {
+      "bytes": 207549,
+      "name": "manifest.public.json",
+      "sha256": "0d74878d414151a41fa85927ff0732ea2ab123dcdf0955aa8cd75c5be2216897",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 67880960,
+      "name": "linux-locked-dependencies.tar",
+      "sha256": "8e771190e6df05560f8a41bbf7992586137ee4ab730123301c6dba0d595759c9",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 5361,
+      "name": "offline-resolver-proof.public.json",
+      "sha256": "da7f698027b1d97488aefda02556c807ae4b0a9d4baa435552b96efa626b8e28",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 45743,
+      "name": "prior-missing-index-proof.public.json",
+      "sha256": "8df38dbaa49ce8ae54fbbcdb662eea188327179d23be17223dccb93b38140e90",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 13963,
+      "name": "receive_linux_dependencies.py",
+      "sha256": "0a78136b730a7c643362db64295ff3eb9ec6ab9f0b5234d6ea8139ab7bf015c6",
+      "source_mac_receiver_hashes_equal": true
+    }
+  ]
+}

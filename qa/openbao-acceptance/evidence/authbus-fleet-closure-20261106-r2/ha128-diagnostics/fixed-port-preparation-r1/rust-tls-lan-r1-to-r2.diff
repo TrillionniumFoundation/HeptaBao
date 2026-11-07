@@ -1,0 +1,64 @@
+--- worker_r1
++++ worker_r2
+@@ -23,12 +23,12 @@
+ import types
+ import urllib.error
+ 
+-ROOT = Path('/home/qian/heptabao-native-ha-4bde9-authbus-tls-diagnostic-20261106-r1')
++ROOT = Path('/home/qian/heptabao-native-ha-4bde9-authbus-tls-diagnostic-20261106-r2')
+ OLD = Path('/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r1')
+ QUALIFIED = Path('/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1')
+ QA = QUALIFIED / 'source-4bde9/qa/openbao-acceptance'
+ BIN = QUALIFIED / 'artifacts/heptabao-server'
+-IP, PORT = '192.168.0.13', 46230
++IP, PORT = '192.168.0.13', 31040
+ CA_PIN = (1192, '90031a0f48ad7c8d5d603ce9c517ca61fd8ca57d12ddd67608f0d7c1fddbb34b')
+ LEAF_PIN = (1277, '2e3938207ae080055ded642675a1d2053a3b9c4be80d08ed60690c45d57d1215')
+ BIN_PIN = (110799168, '85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c')
+@@ -211,7 +211,7 @@
+         write_new(ROOT / 'server.json', (json.dumps(config, sort_keys=True) + '\n').encode())
+         log_fd = os.open(ROOT / 'process.log', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+         log = os.fdopen(log_fd, 'wb')
+-        node = base.Node(1, 'x230', IP, str(ROOT), PORT, 46231)
++        node = base.Node(1, 'x230', IP, str(ROOT), PORT, 31041)
+         context = ssl.create_default_context(cafile=str(OLD / 'ca.crt'))
+         try:
+             with custody.activated() as current_owner:
+@@ -221,7 +221,7 @@
+                                              stdin=subprocess.DEVNULL, stdout=log, stderr=log,
+                                              close_fds=True, start_new_session=True)
+                     ready_until = time.monotonic() + 45
+-                    ready = b'HeptaBao single-node TLS listener ready at 192.168.0.13:46230\n'
++                    ready = b'HeptaBao single-node TLS listener ready at 192.168.0.13:31040\n'
+                     while True:
+                         deadline(min(until, ready_until))
+                         need(child.poll() is None, 'owned_rust_listener_exited_before_ready')
+--- coordinator_r1.body
++++ coordinator_r2.body
+@@ -28,7 +28,7 @@
+ health_case = namespace['health_case']
+ BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
+ OLD = BASE / 'native-ha-official-history-4bde9-authbus-r1'
+-ROOT = BASE / 'ha128-rust-tls-lan-diagnostic-20261106-r1'
++ROOT = BASE / 'ha128-rust-tls-lan-diagnostic-20261106-r2'
+ QA = BASE / 'ha-qa-af91-preparation-20261106-r1/source/qa/openbao-acceptance'
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+ SSH = Path('/usr/bin/ssh')
+@@ -37,7 +37,7 @@
+     PYTHON: (34640, 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'),
+     SSH: (1584576, '17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3'),
+ }
+-IP, PORT = '192.168.0.13', 46230
++IP, PORT = '192.168.0.13', 31040
+ 
+ 
+ def transport_case(kind, context, expected_der):
+@@ -150,7 +150,7 @@
+                     report['workerReady'] = wait_ready(child, min(until, time.monotonic() + 60), buffers)
+                     for kind in ('tcp_only', 'strict_tls'):
+                         report['macCases'].append(transport_case(kind, context, expected_der))
+-                    node = base.Node(1, 'x230', IP, str(namespace['ROOT']), PORT, 46231)
++                    node = base.Node(1, 'x230', IP, str(namespace['ROOT']), PORT, 31041)
+                     report['macCases'].append(health_case(base, context, node))
+                     need(os.write(child.stdin.fileno(), b'finish\n') == 7, 'complete_parent_finish_command')
+                     finished_sent = True

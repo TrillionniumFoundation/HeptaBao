@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.immutable-evidence-blob-map.v1",
+  "entries": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/execution-launch.original.json",
+      "sha": "5060d4e9929786535f0fbbbca22d53aac581fe89",
+      "bytes": 273599,
+      "sha256": "eee16102b4dddaa5b673ec8c9df69ccc93648b23c0ba093974eeb78a720a3e88"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/execution-terminal.original.json",
+      "sha": "98b28a8f7b7f3ba7bbd9a839ef37f7614eb0377c",
+      "bytes": 733,
+      "sha256": "c892f23af530358712748b2201599a28a9ecdd74a5dcabab80b8ac316f62b405"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/execution.stdout.original.json",
+      "sha": "93ba850a10c1651d9294db80fdfe9eed0e1c7dea",
+      "bytes": 22682,
+      "sha256": "348ef71e4a87f202f7cf1db7160282bc438f32f77715eb99a5459fe740946e37"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/runtime-read-00000.original.json",
+      "sha": "e37df11760001c9a3e1ecb256b25170d539620ac",
+      "bytes": 50969,
+      "sha256": "d79a1046679ca3deba54cd70c9edef5ac4479e048a7ea3a30730dd6155ffd280"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/runtime-read-16384.original.json",
+      "sha": "c983eb6d627282102c5816e603bdd116eda30df9",
+      "bytes": 19947,
+      "sha256": "2f1261ac6ca744c284b4b1b0d1549a5c0dc6913fd35ebee6f8b2b69bfc250ff9"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/launch_current_database_inventory_r3.py",
+      "sha": "9bfe508f4afa1f13453a764eff11f02bc83add38",
+      "bytes": 257032,
+      "sha256": "e329e2b3b1a6ad081a4a885484a2d0dd863982303783c62f09bcc5a96c157bc7"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/capture_current_database_inventory_r3.py",
+      "sha": "9e7b1a4bb1b2ece56874f6f6ae356ff36bb1fd07",
+      "bytes": 26018,
+      "sha256": "6a13dc5e86846b3cac09ca35f37430108ccb73f2f18d2ff06c6fcc3146d7ed97"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/mac_current_database_inventory_r1.py",
+      "sha": "4e978ffd505e8024af7f36238850c32f905c7a1f",
+      "bytes": 11488,
+      "sha256": "7cce171427acb9528fb4425ea254280fffb600b8522cde10dc30a4f0eb7707ef"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/mac_current_gateway_observation_r2.py",
+      "sha": "64d3f973c508cbf0f6387932ad7ca0be06c2a713",
+      "bytes": 21099,
+      "sha256": "bc558d3c58d81db4c16cad25e728512564931c2b32b9fb7c10ebc915a7036ecb"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/mac_gateway_local_fallback_r1.py",
+      "sha": "df3da4964cf4ffefcfbd371eceaecc636483d366",
+      "bytes": 11054,
+      "sha256": "d113b6009dfb5d0c6b4701ae382f62b11817cf9038f032547375d95c0e10d905"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/mac_owned_commands_r1.py",
+      "sha": "07012bd9ee202d26d30e66e9d3be51a46f29a57c",
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/mac_owned_unreaped_r1.py",
+      "sha": "ee1292a24ef49e023082fb5e711b0d081cf4c0c9",
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/mac_native_process_observer_r1.py",
+      "sha": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/source/mac_owned_launchd_r3.py",
+      "sha": "cbe7770015ace67453ba6028802b021ff5c7ffdc",
+      "bytes": 58613,
+      "sha256": "19c131fa1952a48e99f521fee024bb9ef34ccc94901cc604b0c75c7424689031"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/launch_current_database_inventory_r3.template.py",
+      "sha": "dfc61c33893854490d0f2a3b5904483ebbfae378",
+      "bytes": 22598,
+      "sha256": "c8552189f25e981179b803b1d16a04b9b00eab3486670826d004151a30fc6286"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/assemble_current_database_inventory_r3.py",
+      "sha": "bc00081d443a587e3b291577b341f612d487a705",
+      "bytes": 4241,
+      "sha256": "a1538a8c31d843bdbf663c923ffbd1d4c006ca119b9396d5be6b62657d268271"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/derive_inventory_r3.py",
+      "sha": "3a59d4044a9e8ede2e666f84ae2c28797158fc29",
+      "bytes": 7919,
+      "sha256": "ee0d39698eacf8d4e2966dc35dd29421ae078f8ae399b0665e1aec7e5d49490c"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/inventory-r2-to-r3-minimal.diff",
+      "sha": "151137f3b0f4f2b38cac9b272560603238e55c5c",
+      "bytes": 11867,
+      "sha256": "80eec54db1297d91b2df8efb2bc4c00451ee90a6e9deaa9b6a182f9e9f86cefe"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/current-inventory-manifest.public.json",
+      "sha": "1b8cbf1fc2e34742d238c980639f5ab2cbfdd787",
+      "bytes": 1700,
+      "sha256": "08ed60d36631111d82635155ea5c4c0e514c9e1e165d43441490472e53715637"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/test_resource_closure_r3.py",
+      "sha": "bceb2504ce901edf6b5d7b6a5d40dae4c769d87e",
+      "bytes": 6048,
+      "sha256": "2dfbf419d64b2069e4caf309f429c6a212e1acab94bc3e0f47811948307b8df8"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/resource-closure-local.original.json",
+      "sha": "43780a198f445d650e8b7712e0116c6a78de3fb3",
+      "bytes": 147,
+      "sha256": "bda41c8ad13eb58a60ce849ad8a72db9662c853a1d70a7caa49bdb77fbb4166d"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/README.md",
+      "sha": "9b2a4ed1d644e78bf31a30f178219755d99dd74b",
+      "bytes": 3932,
+      "sha256": "3365ac6ae5618af3a2e07f658f16b17700132cadbf4dc90d83995bf6dc240c4e"
+    }
+  ]
+}

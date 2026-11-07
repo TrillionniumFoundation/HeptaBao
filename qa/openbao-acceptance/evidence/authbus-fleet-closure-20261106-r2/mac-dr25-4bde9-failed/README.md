@@ -1,0 +1,7 @@
+# Actual canonical Mac DR25 attempt remained failed
+
+Actual job `1a1b137be71-fc05-76fa` ended failed/exit 1 with complete durable output, zero stderr and no timeout. Its original 1800-second outer cap was not extended. The controller's full redacted summary remains on the Mac at `/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/full34-dr25-r1/dr25-summary.json`; this checkpoint retains the exact wrapper result/terminal/stdout and an independently completed read-only projection. A remote binary-read attempt for the full summary timed out; no reconstructed summary is substituted here.
+
+The projection was actually executed in job `1a1b1465ce4-fc05-7775` (succeeded/exit 0, complete/durable). It reads only selected public observation fields and performs no product action. The original baseline had 21 passed entries of 31 required; DR25 had four passed, one failed, and 20 unexecuted obligations. The final source owner reports all 277 original processes retired.
+
+The failed predicate compared encoded `HBV6PK01` state length (9009418 bytes in both actual CLI and HTTP archives) with logical payload size (35651584 bytes). Both archives had matching generation 4 and seal identity and passed outer checks. The source emits each registered immutable object once; repeated native blocks can share the same object. The corrected QA binds logical capacity/history independently and requires equal archive source metadata. Actual restore still needs a fresh complete execution; this old attempt is not replayed or relabeled.

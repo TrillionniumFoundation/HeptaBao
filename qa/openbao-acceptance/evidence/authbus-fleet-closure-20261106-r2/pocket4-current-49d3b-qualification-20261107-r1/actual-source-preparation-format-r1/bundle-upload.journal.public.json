@@ -1,0 +1,229 @@
+{
+  "schema": "heptabao.public-source-bundle-upload-protocol-observations.v1",
+  "host": "pocket4",
+  "upload_id": "pocket4-49d3b-source-20261107-r1",
+  "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+  "expected_version": "absent",
+  "bundle_bytes": 9156680,
+  "bundle_sha256": "84bacab31b38ab80772ee29804859d6a29d8af0d65c63862dffdeeb2172230f0",
+  "chunk_size_max": 524288,
+  "chunk_count": 18,
+  "new_identity_after_unknown": false,
+  "entries": [
+    {
+      "index": 0,
+      "offset": 0,
+      "bytes": 524288,
+      "sha256": "1edcbdca434a8961442bf25dd7021907c0da56cb978aae349e40025350a4c761",
+      "original_native_response": "{\"next_offset\":524288,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 1,
+      "offset": 524288,
+      "bytes": 524288,
+      "sha256": "0981021d4e442d622a7366b1b1f1b362fb0712cbf0839c52f8a0eddba680ca3d",
+      "initial_attempt": {
+        "response_was_not_json": true,
+        "raw_native_error_retained": false,
+        "remote_effect_at_time": "unknown",
+        "evidence_gap": "The first non-JSON tool reply body was not retained before JSON.parse failed. Only a SyntaxError prefix was observed; it is not reconstructed here."
+      },
+      "same_identity_reconciliation": {
+        "same_upload_id": true,
+        "same_offset": true,
+        "same_bytes": true,
+        "original_native_response": "{\"next_offset\":1048576,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+      }
+    },
+    {
+      "index": 2,
+      "offset": 1048576,
+      "bytes": 524288,
+      "sha256": "be15b4d1aa2c09003949ff4696088765c8890420a14e5dd2d7dc5cbffaa46b1c",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":1572864,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 3,
+      "offset": 1572864,
+      "bytes": 524288,
+      "sha256": "b446697dffe06ed7752472b5385f08cfcee40bbf0c88e125a98c2ec936048491",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":2097152,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 4,
+      "offset": 2097152,
+      "bytes": 524288,
+      "sha256": "9bbb45a4563f01c1838bbb255932002275e57c3a69ce6613c67fde1ca6bf0bfe",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":2621440,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 5,
+      "offset": 2621440,
+      "bytes": 524288,
+      "sha256": "899fbccd1ded14d8aebf9e18838095db52470bfa696b91f8041d6da19d82e8b8",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":3145728,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 6,
+      "offset": 3145728,
+      "bytes": 524288,
+      "sha256": "1515b6c832f59ba87c65f04c15f90d7901940abafbf73dc3b16ca64e9b8269c0",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":3670016,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 7,
+      "offset": 3670016,
+      "bytes": 524288,
+      "sha256": "fe96b060abc15e81f8c482eaa8555a3ed2cfe57efb95b7aa77c34f170ea88333",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":4194304,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 8,
+      "offset": 4194304,
+      "bytes": 524288,
+      "sha256": "1d8a78168296f630e55730503ee59687b8d8d2318f05f5077e3d5456a52fb55f",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":4718592,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 9,
+      "offset": 4718592,
+      "bytes": 524288,
+      "sha256": "ce5da00fbf4929c317fbc7e799271803ab00b039d745ca1d20e42a29e043a5bc",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":5242880,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 10,
+      "offset": 5242880,
+      "bytes": 524288,
+      "sha256": "9f478a8d426c62554c0db6f5909c3b01b9092de49f47d2f68cbe3c7588294f09",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":5767168,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 11,
+      "offset": 5767168,
+      "bytes": 524288,
+      "sha256": "57cbfb96938adf1b9014efebc2c86175f12a7dc5fb55fc3c948135dcf8eb899f",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":6291456,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 12,
+      "offset": 6291456,
+      "bytes": 524288,
+      "sha256": "08d63d00435f47d8e14a9421a73bb394c29cc9ead07e2fb50840d5713f7094f8",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":6815744,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 13,
+      "offset": 6815744,
+      "bytes": 524288,
+      "sha256": "834748b5a898d1a4f7ee01e6fb30c00849298e01b7f54292859c150daedc13f3",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":7340032,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 14,
+      "offset": 7340032,
+      "bytes": 524288,
+      "sha256": "88de815358796f029a86674a76a84760eecc1b609f4f050ea2165909d76c12ba",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":7864320,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 15,
+      "offset": 7864320,
+      "bytes": 524288,
+      "sha256": "0454944f6da6a85195c63032cd6c9d5eda5b4756bd1fb5ef4631d91a180b4087",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":8388608,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 16,
+      "offset": 8388608,
+      "bytes": 524288,
+      "sha256": "257685b82e63d9c0769e1a2b8855d605dc6c7a3ef71b9df38ca5339ff3b22f32",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":8912896,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    },
+    {
+      "index": 17,
+      "offset": 8912896,
+      "bytes": 243784,
+      "sha256": "48644f773d25b5f9d2c66dd1bd8199f7d8d74a5fe7d9412b30f7e55d1dff7074",
+      "host": "pocket4",
+      "upload_id": "pocket4-49d3b-source-20261107-r1",
+      "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+      "expected_version": "absent",
+      "original_native_response": "{\"next_offset\":9156680,\"upload_id\":\"pocket4-49d3b-source-20261107-r1\",\"visible\":false}"
+    }
+  ],
+  "commit_request": {
+    "action": "commit",
+    "host": "pocket4",
+    "path": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle",
+    "upload_id": "pocket4-49d3b-source-20261107-r1",
+    "expected_version": "absent",
+    "size": 9156680,
+    "sha256": "84bacab31b38ab80772ee29804859d6a29d8af0d65c63862dffdeeb2172230f0"
+  },
+  "commit_original_native_response": "{\"committed\":true,\"mode\":384,\"reused\":false,\"sha256\":\"84bacab31b38ab80772ee29804859d6a29d8af0d65c63862dffdeeb2172230f0\",\"size\":9156680,\"version\":\"66306:40117609:9156680:1794022241250527138:1794022262280126377\"}",
+  "independent_file_info_original_native_response": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle\",\"sha256\":\"84bacab31b38ab80772ee29804859d6a29d8af0d65c63862dffdeeb2172230f0\",\"size\":9156680,\"version\":\"66306:40117609:9156680:1794022241250527138:1794022262280126377\"}",
+  "original_error_capture_complete": false,
+  "whole_committed_bundle_verified_independently": true,
+  "tool_execution_reclassified": false
+}

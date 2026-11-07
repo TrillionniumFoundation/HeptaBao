@@ -1,0 +1,24 @@
+✔ unchanged producer validates enrollment, two exact authorized rotations and slot reuse (81.328327ms)
+✔ no grant and revoked grant stay pending; full single slot preserves backpressure (46.352023ms)
+✔ health ack and fixed report make zero scheduler/provider actions (31.536189ms)
+✔ profile unknown before remote commit retains original intent across cold process state (34.452457ms)
+✔ profile unknown after remote commit retains original intent across cold process state (38.031641ms)
+✔ manifest unknown before remote commit retains original intent across cold process state (33.326847ms)
+✔ manifest unknown after remote commit retains original intent across cold process state (41.994421ms)
+✔ ack unknown before remote commit retains original intent across cold process state (34.729543ms)
+✔ ack unknown after remote commit retains original intent across cold process state (35.430926ms)
+✔ exact retained manifest history resolves an original committed postimage without rewrite (35.149894ms)
+✔ changed slot and immutable profile collision refuse before canonical mutation (25.391373ms)
+✔ missing private enrollment history cannot adopt a used remote control (19.29534ms)
+✔ close stops admission and awaits the original operation before releasing SQLite/journal (20.393129ms)
+✔ real owned SIGKILL durable-dispatched preserves ack custody and releases SQLite process lock (166.420285ms)
+✔ real owned SIGKILL remote-confirmed-before-receipt preserves ack custody and releases SQLite process lock (129.563859ms)
+✔ exact original Python grant/profile/manifest/receipt contract matches new transaction planning (85.859851ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 571.561649

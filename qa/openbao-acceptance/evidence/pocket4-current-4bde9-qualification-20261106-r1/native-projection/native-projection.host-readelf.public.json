@@ -1,0 +1,25 @@
+{
+  "compiler_invocations": 0,
+  "host": "pocket4",
+  "hostname": "alex-G1628-04",
+  "logical_path": "/usr/bin/readelf",
+  "product_executions": 0,
+  "schema": "heptabao.current-producer-readelf-observation.v1",
+  "tool": {
+    "bytes": 818312,
+    "header_hex": "7f454c4602010100000000000000000003003e000100000060ab0500000000004000000000000000c8740c000000000000000000400038000e0040001f001e00",
+    "identity": [
+      66306,
+      108034609,
+      0,
+      0,
+      33261,
+      1,
+      818312,
+      1773538381000000000,
+      1791083704198584053
+    ],
+    "path": "/usr/bin/x86_64-linux-gnu-readelf",
+    "sha256": "c857339616bbbfa5eba32733e22365048903fbaf6ed2126b897dd138bcb741fc"
+  }
+}

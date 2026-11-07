@@ -1,0 +1,53 @@
+{
+  "actual_candidate_runtime_qualified": false,
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-abi-guard/test_x230_native_abi_capture.py"
+  ],
+  "at_utc": "2026-11-06T19:11:57.960806+00:00",
+  "executed_tests": 19,
+  "exit_code": 0,
+  "outputs": {
+    "stderr": {
+      "bytes": 2623,
+      "sha256": "4a9e2a94ff5560db72d6464d2051b10359ff9d82dc9028626ea94b492f339b6b"
+    },
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "schema": "heptabao.x230-static-abi-capture-local-guards.v1",
+  "scope": "local mock/file/parser guards only; no compiler, candidate, provider or remote execution",
+  "sources_after": {
+    "test_x230_native_abi_capture.py": {
+      "bytes": 11748,
+      "sha256": "6cbd6910641ec06330828eb58580eca5e9b452ff1d015c2a9fedcf43fb07b40d"
+    },
+    "x230_native_abi_admission.py": {
+      "bytes": 14323,
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    "x230_native_abi_capture.py": {
+      "bytes": 20448,
+      "sha256": "a87d24b36708280b73b3e5f6c3aabe0416fda1151eb11b83fd98a7d2f1120acd"
+    }
+  },
+  "sources_before": {
+    "test_x230_native_abi_capture.py": {
+      "bytes": 11748,
+      "sha256": "6cbd6910641ec06330828eb58580eca5e9b452ff1d015c2a9fedcf43fb07b40d"
+    },
+    "x230_native_abi_admission.py": {
+      "bytes": 14323,
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    "x230_native_abi_capture.py": {
+      "bytes": 20448,
+      "sha256": "a87d24b36708280b73b3e5f6c3aabe0416fda1151eb11b83fd98a7d2f1120acd"
+    }
+  },
+  "sources_unchanged": true,
+  "status": "passed"
+}

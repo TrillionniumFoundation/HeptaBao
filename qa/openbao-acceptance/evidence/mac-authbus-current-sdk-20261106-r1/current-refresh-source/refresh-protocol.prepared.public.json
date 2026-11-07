@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.mac-selected-owner-refresh-review.r1",
+  "status": "source-audited-plan-not-dispatched",
+  "candidateCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "sourceAuthority": {
+    "selectionJob": "1a1b197fa0e-fc05-79c0",
+    "capsuleJob": "1a1b1a4c29c-fc05-7a0c",
+    "capsuleSchema": "heptabao.actual-sdk-selected-owner-credentials.private.r1",
+    "ownerCount": 3,
+    "ownerAgent": "main",
+    "provider": "openai",
+    "observedAccessState": "all_three_expired",
+    "refreshFieldPresentCount": 3,
+    "providerValidityQualified": false
+  },
+  "executionOrder": "Wait for candidate_ha to close the original source-generation canary fence before any OAuth dispatch or main-owner CAS. Re-observe the current source under the original capture budget; no frozen capsule is silently promoted to latest.",
+  "sourceFacts": [
+    {
+      "file": "dist/oauth-B4aOCsid.js",
+      "sha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+      "fact": "refreshOAuthCredentialForRuntime is a direct refresh helper without the shared per-profile lock. The normal manager acquires that lock but can retry after refresh-token-reused and uses a 120-second call timer; it is not an at-most-once entry by itself."
+    },
+    {
+      "file": "dist/runtime-snapshots-D6VA-VN8.js",
+      "sha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f",
+      "fact": "resolveOAuthRefreshLockPath(provider,profileId) is the existing cross-agent mutex namespace under the live state root. Resolve the real three IDs only in private memory; do not emit lock filenames."
+    },
+    {
+      "file": "dist/file-lock-B0CJDvN6.js",
+      "sha256": "d0b3f14b8830100e9f433980383f7483761a3ba117db99621d6ff52f6aa84a26",
+      "fact": "acquireFileLock/withFileLock delegate to the actual SDK lock manager and configure remove-if-unchanged stale recovery. Current core manager source must be reviewed before selecting a no-reclaim/no-retry call."
+    },
+    {
+      "file": "dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js",
+      "sha256": "e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d",
+      "fact": "The observed actual refresh route is POST https://auth.openai.com/oauth/token with form grant_type=refresh_token, refresh_token, and public client_id app_EMoamEEZ73f0CkXaXp7hrann. The module uses the actual fetch guard, a default 30-second request timeout, a 1 MiB response bound, and extracts accountId after parsing. The live successor must retain a tighter original per-request/deadline bound and persist the raw bounded response before SDK parsing/commit."
+    },
+    {
+      "file": "dist/store-DH33UrUj.js",
+      "sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "fact": "updateAuthProfileStoreWithLock runs the actual auth-profile write transaction. It can return a truthy store after a no-op and null on failure; verify updater-applied plus exact post-CAS persisted credential. Explicit saveOptions disable external CLI synchronization and filtering."
+    }
+  ],
+  "proposedProtocol": [
+    "Use one fixed private create-only ledger root for this exact three-owner recovery, plus a new private execution root and stable runtime idempotency key. Never choose a new ledger to evade an old pending/UNKNOWN outcome.",
+    "Bind the successful current selection/capsule authorities and exact public SDK/helper bytes. Preserve all IDs, credentials, config/source identities and their digests privately. Re-run the same actual owner/selection before admission; no arbitrary cache or extra profile selection.",
+    "Acquire the existing SDK cross-agent provider/profile mutex for one selected owner. Any existing, stale, unreadable or contended lock must yield no provider request; never reclaim an unknown prior refresh lock. Keep the actual lock until durable response handling and owner-store CAS are closed.",
+    "Read only the actual main-owned credential under that lock. Refuse a changed credential, provider, owner, config, selection, or unfinished prior attempt before provider dispatch. An observed different source requires a separate new source qualification, not a fallback refresh.",
+    "Create and fsync the local once intent and its parent directory. When using the native trusted control lease, acknowledge its CAS to UNKNOWN/REFRESH_PENDING before network. A lost intent/CAS acknowledgement cannot authorize a send.",
+    "Enter only the source-bound managed SDK refresh context for this exact owner. Enforce the existing original phase deadline, the original per-request cap, one final-send ticket, exact method/form/provider route, verified TLS, and redirect refusal. Recheck current owner and local/remote fences after every awaited preparation and immediately before send; no SDK manager retry path.",
+    "Capture the actual bounded provider response into an exclusive 0600 private response record and fsync file plus parent before returning it to SDK token parsing. No response text or digest reaches public logs. If the response or durable write is incomplete, retain UNKNOWN and do not replay.",
+    "Validate the normal SDK parsed OAuth result, provider, future expiry and source identity compatibility. Publish a separate exclusive private normalized successor record before any owner CAS. Never overwrite the old source capsule.",
+    "Inside the actual SDK write transaction, compare the complete expected owner credential, replace only that selected profile, disable external CLI sync/filtering, and preserve unrelated profiles/order/usage. Verify applied=true and exact persisted readback. CAS failure leaves the fresh response retained privately and the attempt fenced; it does not trigger another provider request.",
+    "Capture a new current source generation through the qualified WAL/SDK path. CAS-update the selected credential in the owned target HeptaBao KV and read it back exactly. Only afterward publish completion/admission; do not describe the older expired capsule as provider-valid.",
+    "Public evidence includes operation ordinal, state, HTTP status, exact public code pins, request/child counts, closed resources and booleans. It omits credential/profile/identity/config values, credential-dependent KV paths, private capsule hashes, raw provider errors and all corresponding digests.",
+    "A fresh OAuth response proves that refresh exchange only. A separate explicitly scoped non-model provider read would be required for a broader provider availability claim; AppRole token renewal/revocation remains a different evidence stream."
+  ],
+  "requiredIsolatedCases": [
+    "exact three-owner scope accepted; extra/fourth, duplicate, foreign owner/provider and changed selection refused",
+    "actual SDK mutex acquired/released with a synthetic profile; another original process holding it prevents dispatch; stale/unknown lock is not removed",
+    "durable local intent or native intent-CAS acknowledgement failure leaves provider count zero",
+    "final-send duplication, callback-after-close, source mutation after await and deadline expiry all refuse",
+    "complete provider response fsynced before SDK CAS; response-write failure prevents CAS and retains consumed once intent",
+    "actual SDK CAS rejects stale expected credential and preserves other profiles/order/usage; transaction abort cannot be reported as saved",
+    "fresh process observing UNKNOWN cannot refresh the old generation; success can only proceed by verifying the already retained successor and exact persisted/native history",
+    "all original children/SQLite handles/lock descriptors close under the unchanged outer deadline; no installed SDK or production configuration edits"
+  ],
+  "pendingSourceReview": [
+    "actual file-lock-CnWt2hZ7.js options and release ownership semantics",
+    "actual pid-alive-C4bVUgUC.js Darwin behavior",
+    "existing source-selected refresh/quarantine state and active refresh integration semantics before real dispatch"
+  ],
+  "noProviderCalls": true,
+  "noMainOwnerWrites": true,
+  "privateSourceCanaryFenceStillOpen": true,
+  "qualificationClaims": {
+    "protocolExecuted": false,
+    "oauthRefreshed": false,
+    "providerAvailable": false,
+    "productionTrafficCutover": false,
+    "crossHostRefreshOwnerQualified": false
+  }
+}

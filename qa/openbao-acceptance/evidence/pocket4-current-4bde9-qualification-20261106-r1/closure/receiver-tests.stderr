@@ -1,0 +1,27 @@
+test_absolute_member_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_absolute_member_is_rejected) ... ok
+test_complete_packet_is_public_closed_and_lock_bound (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_complete_packet_is_public_closed_and_lock_bound) ... ok
+test_declared_count_mismatch_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_declared_count_mismatch_is_rejected) ... ok
+test_duplicate_tar_member_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_duplicate_tar_member_is_rejected) ... ok
+test_existing_input_symlink_and_hardlink_are_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_existing_input_symlink_and_hardlink_are_rejected) ... ok
+test_extra_member_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_extra_member_is_rejected) ... ok
+test_hardlink_member_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_hardlink_member_is_rejected) ... ok
+test_install_reads_back_only_new_cache_and_rejects_existing_destination (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_install_reads_back_only_new_cache_and_rejects_existing_destination) ... ok
+test_missing_member_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_missing_member_is_rejected) ... ok
+test_nonprivate_tar_mode_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_nonprivate_tar_mode_is_rejected) ... ok
+test_parent_traversal_member_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_parent_traversal_member_is_rejected) ... ok
+test_payload_pin_mismatch_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_payload_pin_mismatch_is_rejected) ... ok
+test_registry_auth_configuration_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_registry_auth_configuration_is_rejected) ... ok
+test_registry_url_credentials_are_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_registry_url_credentials_are_rejected) ... ok
+test_sparse_index_duplicate_version_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_sparse_index_duplicate_version_is_rejected) ... ok
+test_sparse_index_other_package_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_sparse_index_other_package_is_rejected) ... ok
+test_symlink_member_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_symlink_member_is_rejected) ... ok
+test_symlink_parent_is_rejected_without_writing (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_symlink_parent_is_rejected_without_writing) ... ok
+test_unknown_entry_kind_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_unknown_entry_kind_is_rejected) ... ok
+test_wrong_archive_content_cannot_bypass_lock_checksum (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_wrong_archive_content_cannot_bypass_lock_checksum) ... ok
+test_wrong_source_identity_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_wrong_source_identity_is_rejected) ... ok
+test_wrong_sparse_index_checksum_is_rejected (test_receive_linux_dependencies.PublicDependencyReceiverTests.test_wrong_sparse_index_checksum_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.011s
+
+OK

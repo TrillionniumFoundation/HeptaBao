@@ -1,0 +1,59 @@
+--- r2/parser-r1
++++ r3/parser-r2
+@@ -60,7 +60,7 @@
+         need(re.fullmatch(rb"[A-Za-z0-9_? -]{1,24}", file_type) is not None,
+              "finite_lsof_file_type_scalar")
+         access = values.get(b"a", b"")
+-        need(access in (b"", b"r", b"w", b"u"), "finite_lsof_known_access_mode")
++        need(access in (b"", b" ", b"r", b"w", b"u"), "finite_lsof_known_access_mode")
+         regular = file_type in (b"REG", b"VREG")
+         device = inode = None
+         if regular:
+@@ -72,7 +72,7 @@
+         need(not regular or device is not None and inode is not None,
+              "finite_lsof_regular_inode_complete")
+         current["files"].append({"descriptor": descriptor.decode("ascii"),
+-            "type": file_type.decode("ascii"), "access": access.decode("ascii"),
++            "type": file_type.decode("ascii"), "access": "unspecified" if access in (b"", b" ") else access.decode("ascii"),
+             "device": device, "inode": inode, "regularFileIdentityComplete": regular,
+             "nonRegularMetadataNotUsedAsFileIdentity": not regular})
+         total_files += 1
+
+--- r2/template
++++ r3/template
+@@ -14,7 +14,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 45
+-ROOT = Path('/Users/qianqi/heptabao-authbus-finite-consumer-inodes-20261107-r2')
++ROOT = Path('/Users/qianqi/heptabao-authbus-finite-consumer-inodes-20261107-r3')
+ CALLER_HOME = Path('/Users/qianqi')
+ LIVE = CALLER_HOME / '.openclaw'
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+@@ -33,7 +33,7 @@
+ codes, fds = set(), []
+ commands = None
+ write_directories = {}
+-report = {'schema': 'heptabao.actual-finite-consumer-inode-observation.r2', 'ok': False,
++report = {'schema': 'heptabao.actual-finite-consumer-inode-observation.r3', 'ok': False,
+           'databaseContentsRead': False, 'credentialValuesRead': False, 'sqliteCalls': 0,
+           'keychainReads': 0, 'otherProcessArgumentsRead': False, 'otherProcessEnvironmentRead': False,
+           'networkRequests': 0, 'productionWrites': 0, 'serviceActions': 0,
+@@ -257,7 +257,7 @@
+          and Path(sys.executable).resolve(strict=True) == PYTHON, 'finite_exact_mac_runtime')
+     before_runtime = {path: public_file(path, expected) for path, expected in RUNTIME_PINS.items()}
+     need(set(PAYLOAD['sources']) == {'mac_owned_unreaped_r1.py', 'mac_owned_commands_r1.py',
+-         'mac_native_process_observer_r1.py', 'mac_finite_lsof_fields_r1.py'}, 'finite_four_source_modules')
++         'mac_native_process_observer_r1.py', 'mac_finite_lsof_fields_r2.py'}, 'finite_four_source_modules')
+     for name, source in PAYLOAD['sources'].items():
+         need(hashlib.sha256(source.encode()).hexdigest() == PAYLOAD['sourcePins'][name],
+              'finite_qualified_source_whole_pin')
+@@ -284,7 +284,7 @@
+         exec(compile(source, module.__file__, 'exec'), module.__dict__)
+     from mac_owned_commands_r1 import Commands, Signals
+     from mac_native_process_observer_r1 import ProcessReader
+-    from mac_finite_lsof_fields_r1 import parse_fields, match_files
++    from mac_finite_lsof_fields_r2 import parse_fields, match_files
+     signals = Signals()
+     signals.install()
+     commands = Commands(signals)

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "4d4e75",
+  "wall_time_seconds": 0.000021482,
+  "exit_code": 0,
+  "original_token_count": 97,
+  "output": "{\"actualHostReads\": 0, \"cases\": [\"complete_metadata_indices\", \"truncated_input_0\", \"truncated_input_1\", \"truncated_input_3\", \"generation_gap_refused\", \"duplicate_json_key_refused\", \"entry_payload_not_output\", \"audit_digest_not_output_no_auth_claim\"], \"networkCalls\": 0, \"passed\": 8, \"productExecutions\": 0, \"required\": 8, \"schema\": \"heptabao.cold-ha-r3-projection.synthetic-tests.v1\"}\n"
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.original-lsof-access-safe-projection.r1",
+  "originalJobId": "1a1b37b35bf-fc05-8321",
+  "completeOriginalBytes": 6702,
+  "pidRecords": 9,
+  "fileRecords": 252,
+  "requestedFieldCounts": {
+    "p": 9,
+    "u": 9,
+    "f": 252,
+    "a": 252,
+    "t": 252,
+    "D": 146,
+    "i": 146
+  },
+  "unrequestedFieldObserved": false,
+  "access": {
+    "empty": 0,
+    "space": 115,
+    "read": 27,
+    "write": 1,
+    "update": 109,
+    "otherSingleByte": 0,
+    "invalidLength": 0
+  },
+  "parseAtOriginalKnownExit0": true,
+  "credentialsOrPathsPrinted": false,
+  "originalSourceAfterFenceNotReached": true
+}

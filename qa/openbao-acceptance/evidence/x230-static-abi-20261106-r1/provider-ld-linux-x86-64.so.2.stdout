@@ -1,0 +1,98 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - GNU
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x1f540
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          235080 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         11
+  Size of section headers:           64 (bytes)
+  Number of section headers:         24
+  Section header string table index: 23
+
+Program Headers:
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x000dc0 0x000dc0 R   0x1000
+  LOAD           0x001000 0x0000000000001000 0x0000000000001000 0x02a195 0x02a195 R E 0x1000
+  LOAD           0x02c000 0x000000000002c000 0x000000000002c000 0x0098dc 0x0098dc R   0x1000
+  LOAD           0x036360 0x0000000000036360 0x0000000000036360 0x002da4 0x002f78 RW  0x1000
+  DYNAMIC        0x037e58 0x0000000000037e58 0x0000000000037e58 0x000180 0x000180 RW  0x8
+  NOTE           0x0002a8 0x00000000000002a8 0x00000000000002a8 0x000020 0x000020 R   0x8
+  NOTE           0x0002c8 0x00000000000002c8 0x00000000000002c8 0x000024 0x000024 R   0x4
+  GNU_PROPERTY   0x0002a8 0x00000000000002a8 0x00000000000002a8 0x000020 0x000020 R   0x8
+  GNU_EH_FRAME   0x0324b4 0x00000000000324b4 0x00000000000324b4 0x00093c 0x00093c R   0x4
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x10
+  GNU_RELRO      0x036360 0x0000000000036360 0x0000000000036360 0x001ca0 0x001ca0 R   0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .note.gnu.property .note.gnu.build-id .hash .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_d .rela.dyn .relr.dyn 
+   01     .text 
+   02     .rodata .stapsdt.base .eh_frame_hdr .eh_frame 
+   03     .data.rel.ro .dynamic .got .data .bss 
+   04     .dynamic 
+   05     .note.gnu.property 
+   06     .note.gnu.build-id 
+   07     .note.gnu.property 
+   08     .eh_frame_hdr 
+   09     
+   10     .data.rel.ro .dynamic .got 
+
+Dynamic section at offset 0x37e58 contains 19 entries:
+  Tag        Type                         Name/Value
+ 0x000000000000000e (SONAME)             Library soname: [ld-linux-x86-64.so.2]
+ 0x0000000000000004 (HASH)               0x2f0
+ 0x000000006ffffef5 (GNU_HASH)           0x430
+ 0x0000000000000005 (STRTAB)             0x950
+ 0x0000000000000006 (SYMTAB)             0x590
+ 0x000000000000000a (STRSZ)              714 (bytes)
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000007 (RELA)               0xd60
+ 0x0000000000000008 (RELASZ)             72 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x000000006ffffffc (VERDEF)             0xc70
+ 0x000000006ffffffd (VERDEFNUM)          7
+ 0x000000000000001e (FLAGS)              BIND_NOW
+ 0x000000006ffffffb (FLAGS_1)            Flags: NOW
+ 0x000000006ffffff0 (VERSYM)             0xc1a
+ 0x0000000000000024 (RELR)               0xda8
+ 0x0000000000000023 (RELRSZ)             24 (bytes)
+ 0x0000000000000025 (RELRENT)            8 (bytes)
+ 0x0000000000000000 (NULL)               0x0
+
+Version symbols section '.gnu.version' contains 40 entries:
+ Addr: 0x0000000000000c1a  Offset: 0x00000c1a  Link: 5 (.dynsym)
+  000:   0 (*local*)       7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)
+  004:   2 (GLIBC_2.2.5)   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   6 (GLIBC_2.35) 
+  008:   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   2 (GLIBC_2.2.5)   7 (GLIBC_PRIVATE)
+  00c:   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)
+  010:   7 (GLIBC_PRIVATE)   2 (GLIBC_2.2.5)   7 (GLIBC_PRIVATE)   3 (GLIBC_2.3)  
+  014:   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)
+  018:   7 (GLIBC_PRIVATE)   6 (GLIBC_2.35)    5h(GLIBC_2.34)    7 (GLIBC_PRIVATE)
+  01c:   3 (GLIBC_2.3)     4 (GLIBC_2.4)     6 (GLIBC_2.35)    7 (GLIBC_PRIVATE)
+  020:   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   2 (GLIBC_2.2.5)
+  024:   7 (GLIBC_PRIVATE)   7 (GLIBC_PRIVATE)   5 (GLIBC_2.34)    6 (GLIBC_2.35) 
+
+Version definition section '.gnu.version_d' contains 7 entries:
+ Addr: 0x0000000000000c70  Offset: 0x00000c70  Link: 6 (.dynstr)
+  000000: Rev: 1  Flags: BASE  Index: 1  Cnt: 1  Name: ld-linux-x86-64.so.2
+  0x001c: Rev: 1  Flags: none  Index: 2  Cnt: 1  Name: GLIBC_2.2.5
+  0x0038: Rev: 1  Flags: none  Index: 3  Cnt: 2  Name: GLIBC_2.3
+  0x0054: Parent 1: GLIBC_2.2.5
+  0x005c: Rev: 1  Flags: none  Index: 4  Cnt: 2  Name: GLIBC_2.4
+  0x0078: Parent 1: GLIBC_2.3
+  0x0080: Rev: 1  Flags: none  Index: 5  Cnt: 2  Name: GLIBC_2.34
+  0x009c: Parent 1: GLIBC_2.4
+  0x00a4: Rev: 1  Flags: none  Index: 6  Cnt: 2  Name: GLIBC_2.35
+  0x00c0: Parent 1: GLIBC_2.34
+  0x00c8: Rev: 1  Flags: none  Index: 7  Cnt: 2  Name: GLIBC_PRIVATE
+  0x00e4: Parent 1: GLIBC_2.35

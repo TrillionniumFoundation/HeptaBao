@@ -1,0 +1,1004 @@
+{
+  "cargo_dependency_metadata_commands_executed": true,
+  "failure": "selected_linux_offline_dependency_closure_unavailable",
+  "finished_at_unix": 1793986022.1781487,
+  "formal_107_qualified": false,
+  "missing_archive_source_checks": [
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "android_system_properties",
+      "source_present": false,
+      "version": "0.1.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "antlr4rust",
+      "source_present": false,
+      "version": "0.5.2"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "anyerror",
+      "source_present": false,
+      "version": "0.1.13"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "anyhow",
+      "source_present": false,
+      "version": "1.0.100"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "async-trait",
+      "source_present": false,
+      "version": "0.1.89"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "aws-lc-sys",
+      "source_present": false,
+      "version": "0.41.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "backoff-series",
+      "source_present": false,
+      "version": "0.1.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "base16ct",
+      "source_present": false,
+      "version": "0.2.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "base2histogram",
+      "source_present": false,
+      "version": "0.2.3"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "base64ct",
+      "source_present": false,
+      "version": "1.6.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "better_any",
+      "source_present": false,
+      "version": "0.2.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "bindgen",
+      "source_present": false,
+      "version": "0.71.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "blowfish",
+      "source_present": false,
+      "version": "0.10.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "cc",
+      "source_present": false,
+      "version": "1.4.5"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "cel",
+      "source_present": false,
+      "version": "0.13.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "chrono-tz",
+      "source_present": false,
+      "version": "0.8.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "chrono-tz-build",
+      "source_present": false,
+      "version": "0.2.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "clap",
+      "source_present": false,
+      "version": "4.6.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "clap_builder",
+      "source_present": false,
+      "version": "4.6.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "clap_derive",
+      "source_present": false,
+      "version": "4.6.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "cross-krb5",
+      "source_present": false,
+      "version": "0.5.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "crypto-bigint",
+      "source_present": false,
+      "version": "0.5.5"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "ctutils",
+      "source_present": false,
+      "version": "0.4.2"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "display-more",
+      "source_present": false,
+      "version": "0.2.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "ecdsa",
+      "source_present": false,
+      "version": "0.16.9"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "ed25519-dalek",
+      "source_present": false,
+      "version": "2.1.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "either",
+      "source_present": false,
+      "version": "1.18.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "elliptic-curve",
+      "source_present": false,
+      "version": "0.13.8"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "ff",
+      "source_present": false,
+      "version": "0.13.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "find-msvc-tools",
+      "source_present": false,
+      "version": "0.1.12"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "group",
+      "source_present": false,
+      "version": "0.13.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "h2",
+      "source_present": false,
+      "version": "0.4.19"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "hyper",
+      "source_present": false,
+      "version": "1.11.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_collections",
+      "source_present": false,
+      "version": "1.5.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_locid",
+      "source_present": false,
+      "version": "1.5.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_locid_transform",
+      "source_present": false,
+      "version": "1.5.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_locid_transform_data",
+      "source_present": false,
+      "version": "1.5.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_normalizer",
+      "source_present": false,
+      "version": "1.5.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_normalizer_data",
+      "source_present": false,
+      "version": "1.5.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_properties",
+      "source_present": false,
+      "version": "1.5.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_properties_data",
+      "source_present": false,
+      "version": "1.5.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_provider",
+      "source_present": false,
+      "version": "1.5.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "icu_provider_macros",
+      "source_present": false,
+      "version": "1.5.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "idna_adapter",
+      "source_present": false,
+      "version": "1.2.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "indexmap",
+      "source_present": false,
+      "version": "2.11.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "js-sys",
+      "source_present": false,
+      "version": "0.3.105"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "libc",
+      "source_present": false,
+      "version": "0.2.189"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "libgssapi",
+      "source_present": false,
+      "version": "0.11.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "libgssapi-sys",
+      "source_present": false,
+      "version": "0.3.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "libloading",
+      "source_present": false,
+      "version": "0.8.8"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "libredox",
+      "source_present": false,
+      "version": "0.1.24"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "litemap",
+      "source_present": false,
+      "version": "0.7.3"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "lock_api",
+      "source_present": false,
+      "version": "0.4.13"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "mio",
+      "source_present": false,
+      "version": "1.2.3"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "murmur3",
+      "source_present": false,
+      "version": "0.4.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "num-bigint-dig",
+      "source_present": false,
+      "version": "0.8.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "openraft",
+      "source_present": false,
+      "version": "0.10.0-alpha.34"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "openraft-legacy",
+      "source_present": false,
+      "version": "0.10.0-alpha.34"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "openraft-macros",
+      "source_present": false,
+      "version": "0.10.0-alpha.34"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "openraft-memstore",
+      "source_present": false,
+      "version": "0.10.0-alpha.34"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "openraft-rt",
+      "source_present": false,
+      "version": "0.10.0-alpha.34"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "openraft-rt-tokio",
+      "source_present": false,
+      "version": "0.10.0-alpha.34"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "p256",
+      "source_present": false,
+      "version": "0.13.2"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "p384",
+      "source_present": false,
+      "version": "0.13.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "p521",
+      "source_present": false,
+      "version": "0.13.3"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "parking_lot",
+      "source_present": false,
+      "version": "0.12.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "parking_lot_core",
+      "source_present": false,
+      "version": "0.9.11"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "parse-size",
+      "source_present": false,
+      "version": "1.1.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "parse-zoneinfo",
+      "source_present": false,
+      "version": "0.3.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "peel-off",
+      "source_present": false,
+      "version": "0.1.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "pkcs1",
+      "source_present": false,
+      "version": "0.7.5"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "plain",
+      "source_present": false,
+      "version": "0.2.3"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "primeorder",
+      "source_present": false,
+      "version": "0.13.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "rand",
+      "source_present": false,
+      "version": "0.10.2"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "redox_syscall",
+      "source_present": false,
+      "version": "0.9.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "rfc6979",
+      "source_present": false,
+      "version": "0.4.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "rsa",
+      "source_present": false,
+      "version": "0.9.10"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "rustls",
+      "source_present": false,
+      "version": "0.23.44"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "rustls-native-certs",
+      "source_present": false,
+      "version": "0.8.2"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "rustls-pemfile",
+      "source_present": false,
+      "version": "2.2.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "rustls-webpki",
+      "source_present": false,
+      "version": "0.103.15"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "schannel",
+      "source_present": false,
+      "version": "0.1.27"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "sec1",
+      "source_present": false,
+      "version": "0.7.3"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "security-framework",
+      "source_present": false,
+      "version": "3.7.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "security-framework-sys",
+      "source_present": false,
+      "version": "2.17.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "smallvec",
+      "source_present": false,
+      "version": "1.16.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "spki",
+      "source_present": false,
+      "version": "0.8.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "ssh-cipher",
+      "source_present": false,
+      "version": "0.2.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "ssh-encoding",
+      "source_present": false,
+      "version": "0.2.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "ssh-key",
+      "source_present": false,
+      "version": "0.6.7"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "syn",
+      "source_present": false,
+      "version": "3.0.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "thiserror",
+      "source_present": false,
+      "version": "2.0.20"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "thiserror-impl",
+      "source_present": false,
+      "version": "2.0.20"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "tinystr",
+      "source_present": false,
+      "version": "0.7.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "tokio-openssl",
+      "source_present": false,
+      "version": "0.6.5"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "tokio-util",
+      "source_present": false,
+      "version": "0.7.11"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "typed-arena",
+      "source_present": false,
+      "version": "2.0.2"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "utf16_iter",
+      "source_present": false,
+      "version": "1.0.5"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "uuid",
+      "source_present": false,
+      "version": "1.20.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "validit",
+      "source_present": false,
+      "version": "0.2.6"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasip2",
+      "source_present": false,
+      "version": "1.0.4+wasi-0.2.12"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen-macro",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen-macro-support",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen-shared",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wit-bindgen",
+      "source_present": false,
+      "version": "0.57.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "write16",
+      "source_present": false,
+      "version": "1.0.0"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "writeable",
+      "source_present": false,
+      "version": "0.5.5"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "xattr",
+      "source_present": false,
+      "version": "1.6.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "yoke",
+      "source_present": false,
+      "version": "0.7.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "yoke-derive",
+      "source_present": false,
+      "version": "0.7.5"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "zerocopy",
+      "source_present": false,
+      "version": "0.8.62"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "zerocopy-derive",
+      "source_present": false,
+      "version": "0.8.62"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "zerofrom",
+      "source_present": false,
+      "version": "0.1.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "zeroize",
+      "source_present": false,
+      "version": "1.8.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "zerovec",
+      "source_present": false,
+      "version": "0.10.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "zerovec-derive",
+      "source_present": false,
+      "version": "0.10.4"
+    }
+  ],
+  "production_changed": false,
+  "rust_build_or_product_tests_executed": false,
+  "schema": "heptabao.pocket4-linux-offline-dependencies.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "failed",
+  "steps": [
+    {
+      "argv": [
+        "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal,build,dev",
+        "--prefix",
+        "none",
+        "-p",
+        "heptabao-server"
+      ],
+      "cap_seconds": 60,
+      "error_summary": "no matching package named `rustls-pemfile` found",
+      "exit_code": 101,
+      "label": "server",
+      "seconds": 0.116515,
+      "stderr_bytes": 414,
+      "stderr_sha256": "dd650affd3af7678613670c2d5b6535ac9759e059cc825da34ff6a233958534f",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal,build,dev",
+        "--prefix",
+        "none",
+        "-p",
+        "heptabao-ha-service",
+        "--features",
+        "native-v6-peer-ingress"
+      ],
+      "cap_seconds": 60,
+      "error_summary": "no matching package named `rustls-pemfile` found",
+      "exit_code": 101,
+      "label": "peer",
+      "seconds": 0.066962,
+      "stderr_bytes": 414,
+      "stderr_sha256": "dd650affd3af7678613670c2d5b6535ac9759e059cc825da34ff6a233958534f",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

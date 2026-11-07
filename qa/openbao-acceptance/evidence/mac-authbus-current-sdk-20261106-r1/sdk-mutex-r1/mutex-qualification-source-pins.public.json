@@ -1,0 +1,18 @@
+{
+  "sourcePins": {
+    "mac_sdk_refresh_mutex_r2.mjs": "9ea1af8f27104c54200ca0ab8b13dd0e30e2de1379a3f3f4fde230e00eb34d5a",
+    "mac_sdk_refresh_mutex_qualification_r1.mjs": "2f120d3c0d0a154e28d7de52c456b3ae9091e8a41b969acb0baef522e1914299"
+  },
+  "sdkPins": {
+    "dist/file-lock-CnWt2hZ7.js": "c559f538d982d580938b116e5d9dd67bf25587b849fbcd5d81b284f05083f91e",
+    "dist/file-lock-B0CJDvN6.js": "d0b3f14b8830100e9f433980383f7483761a3ba117db99621d6ff52f6aa84a26",
+    "dist/sidecar-lock-CyPvXk-D.js": "8f5c18b21519da86f6a7c3354edb365506600e61a1b114c049439c3db9dfe1b7",
+    "dist/lock-config-jq3S1M_e.js": "1870826caf82d01365d577348f8414d55e796a0cc573418220599e1080a006d2",
+    "dist/fs-safe-defaults-B7hUN42l.js": "012e89c2a94a1e640df88097c8f01e3024cdfaff619d0cea61aa1b1c93b40d7a",
+    "dist/file-identity-C0fBiekR.js": "0b6268916543e024b15ed8b93887b1e0b431c1d0ee1bd4c3330082aa188dc6c2",
+    "dist/pid-alive-C4bVUgUC.js": "60307078f6200503ed9c048b15e45592f589fb59e514e99e18efa31323e6ff21",
+    "dist/runtime-snapshots-D6VA-VN8.js": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f"
+  },
+  "launcherSha256": "674a67ad3573bb5c9faa5f01a868c098f8653a47a825dfd3044f70fe54b86740",
+  "launcherBytes": 54421
+}

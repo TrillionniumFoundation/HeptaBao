@@ -1,0 +1,20 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert.ok(f.trace.indexOf('reconcile:end') < f.trace.indexOf('read:manifest'))
+
+    at file:///workspace/scratch/c9fe536787d9/production-deployment-work/qualify_production_plugin_wiring_r2.mjs:141:14
+    at async check (file:///workspace/scratch/c9fe536787d9/production-deployment-work/qualify_production_plugin_wiring_r2.mjs:121:3)
+    at async file:///workspace/scratch/c9fe536787d9/production-deployment-work/qualify_production_plugin_wiring_r2.mjs:134:3 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

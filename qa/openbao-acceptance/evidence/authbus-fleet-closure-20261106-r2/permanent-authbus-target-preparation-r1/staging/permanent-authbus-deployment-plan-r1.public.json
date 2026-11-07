@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.permanent-authbus-deployment-plan.r1",
+  "status": "prepared_not_deployed",
+  "authorization": "Continue the user's existing Mac external-disk HeptaBao replacement and finite three-client migration.",
+  "product": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "macServerBytes": 92359328,
+    "macServerSha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/artifacts/heptabao-server"
+  },
+  "placement": {
+    "host": "mac",
+    "uid": 501,
+    "gid": 20,
+    "runtimeRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production",
+    "runtimeRootAbsenceMustBeCheckedAtCreate": true,
+    "selectedParentReason": "Use the already observed owned recovery-work parent beneath the fixed T5 mount; do not change mount-root permissions or its directory entries.",
+    "volumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "backupRoot": "/Users/qianqi/heptabao-authbus-production-backups",
+    "custodyRoot": "/Users/qianqi/heptabao-authbus-production-custody",
+    "launchAgentPath": "/Users/qianqi/Library/LaunchAgents/org.heptabao.authbus.plist",
+    "launchAgentLabel": "org.heptabao.authbus",
+    "launchAgentDomain": "gui/501",
+    "storageMode": "native_v6_file",
+    "topology": "One permanent Mac AuthBus service with separately qualified physical HA capability and independent recovery; this does not claim a deployed three-voter production cluster.",
+    "bootstrapAddress": "https://127.0.0.1:31080",
+    "clientAddress": "https://192.168.0.8:31080",
+    "endpointFreshBindAndActualTlsFromEveryRegisteredClientRequired": true,
+    "sourceKeyServiceDependencyOnJ3160": false
+  },
+  "trust": {
+    "independentNewCa": true,
+    "caKey": "custodyRoot/pki/ca.key",
+    "caCertificate": "custodyRoot/pki/ca.crt",
+    "caValidityDays": 3650,
+    "leafValidityDays": 365,
+    "caKeyRsaBits": 3072,
+    "leafKeyRsaBits": 2048,
+    "certificateDnsSans": [
+      "MacBook-Pro.local",
+      "localhost"
+    ],
+    "certificateIpSans": [
+      "192.168.0.8",
+      "127.0.0.1",
+      "10.77.0.3",
+      "100.77.61.24"
+    ],
+    "privateDirectoryMode": "0700",
+    "privateKeyAndStateMode": "0600",
+    "normalRuntimeBinaryMode": "0500",
+    "credentialValuesOrPrivateDigestsPublished": false,
+    "roles": "One independent AppRole per registered host, with exact current source-bound policy.",
+    "rolesAndPoliciesMustBindActualProductionTransportContract": true
+  },
+  "clients": [
+    {
+      "host": "mac",
+      "client": "ai.openclaw.gateway",
+      "credentialDirectory": "/Users/qianqi/.openclaw/credentials/heptabao-authbus"
+    },
+    {
+      "host": "rog",
+      "client": "openclaw-gateway.service",
+      "credentialDirectory": "/home/qian-qi/.openclaw/credentials/heptabao-authbus"
+    },
+    {
+      "host": "pocket4",
+      "client": "openclaw-gateway.service",
+      "credentialDirectory": "/home/alex/.openclaw/credentials/heptabao-authbus"
+    }
+  ],
+  "productionTransport": {
+    "sourceRoot": "tools/authbus/production-transport",
+    "currentlyInstalledInRegisteredClients": false,
+    "interface": "ProductionTransportClient(config, ctx.stateDir)",
+    "integrationNeeds": [
+      "Propagate normalized productionTransport configuration",
+      "Replace both actual BaoClient construction sites",
+      "Reconcile persisted original requests before new work",
+      "Stop admission, await the original operation tail, and close/revoke exactly once"
+    ],
+    "readScopes": [
+      "openclaw-auth/data/manifest",
+      "openclaw-auth/data/profiles/<manifest-key>",
+      "openclaw-auth/data/order-policy",
+      "openclaw-auth/data/scheduler-assignments",
+      "openclaw-auth/data/transport-v1/control",
+      "exact own transport-v1 outbox/ack/report records"
+    ],
+    "writeScopes": [
+      "exact own preallocated transport-v1 outbox slot",
+      "exact own transport-v1 report record"
+    ],
+    "oldInboxPathIsNotSubstitutedForTransportContract": true,
+    "newLocalDatabases": [
+      "authbus/production-transport/state.sqlite",
+      "authbus/production-transport/operation.sqlite"
+    ],
+    "rollbackRule": "An initially absent local database can be recorded as absent, but after dispatch the original outbox/operation history must remain in private custody. Never erase unknown requests, reset epoch, or issue a new-key replay while restoring credential databases."
+  },
+  "backup": {
+    "initialRegisteredHistoricalProducers": 0,
+    "chosenPermanentDestinationIsNotTheOldQaDr25Fixture": true,
+    "method": "Native complete encrypted v6 snapshot plus the exact bound four-file seal seed; recovery keys retained separately in private custody.",
+    "dataAndBackupDifferentFilesystemObserved": true,
+    "productionBackupExecuted": false,
+    "productionRestoreExecuted": false,
+    "requiredRecovery": "Create a fresh recovery directory from the actual permanent snapshot and bound seal material; verify complete latest credential state, ACL/AppRole/token semantics, cold start, and new writes without rewinding refreshed owner credentials.",
+    "retentionAndScheduledProducer": "No new recurring schedule has been installed; a bounded explicit backup/restore entrypoint must be validated before cleanup."
+  },
+  "observation": {
+    "metadataJob": "1a1b345482c-fc05-819f",
+    "observedT5AvailableBytes": 107314339840,
+    "observedHomeAvailableBytes": 251798482944,
+    "observationsAreNotReservations": true,
+    "directMountChildWasOnlyAProbedAlternative": true,
+    "verifiedAbsentAtObservation": [
+      "/Volumes/T5/heptabao-authbus-production",
+      "/Users/qianqi/heptabao-authbus-production-backups",
+      "/Users/qianqi/heptabao-authbus-production-custody",
+      "/Users/qianqi/Library/LaunchAgents/org.heptabao.authbus.plist"
+    ]
+  },
+  "stagedPreparationScope": {
+    "createOnly": true,
+    "newCaAndLeaf": true,
+    "copyQualifiedNormalBinary": true,
+    "writeReviewableConfigsAndPlistInsidePrivateRuntimeRoot": true,
+    "installLaunchAgent": false,
+    "startServer": false,
+    "initializeService": false,
+    "readCurrentOwnerCredentials": false,
+    "providerCalls": 0,
+    "productionClientWrites": 0
+  },
+  "releaseRequirements": [
+    "Complete the original fresh three-host HA128 profile at the unchanged budgets",
+    "Mac whole-database rollback at current real capacity, with complete active-consumer and actual fallback source closure",
+    "Fresh provider-valid owner credentials obtained independently of J3160 with once-only refresh/CAS if needed",
+    "Independent permanent CA/AppRole/TLS/KV/policy/renew/revoke and durable source-bound client transport",
+    "Per registered client actual credential I/O, restart, full rollback, then its cutover",
+    "Actual permanent backup/restore and finite legacy consumer retirement before cleanup"
+  ],
+  "currentlyQualifiedForFullReplacement": false,
+  "currentlyQualifiedForLegacyDeletion": false
+}

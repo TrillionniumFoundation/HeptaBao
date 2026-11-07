@@ -1,0 +1,38 @@
+--- mac-rog/r1/index.js
++++ mac-rog/r2/index.js
+@@ -922,7 +922,7 @@
+       },
+     });
+ 
+-    async function cycle(ctx) {
++    async function cycle(ctx, { propagateFailure = false } = {}) {
+       if (running || stopped) return;
+       running = true;
+       const releaseOperation = await acquireOperationLock();
+@@ -1212,6 +1212,7 @@
+           elapsedMs: Date.now() - startedAt,
+           error: error instanceof Error ? error.message : String(error),
+         });
++        if (propagateFailure) throw error;
+       } finally {
+         running = false;
+         releaseOperation();
+@@ -1235,7 +1236,7 @@
+             releaseOperation();
+           }
+           if (stopped || serviceContext !== ctx) return;
+-          await cycle(ctx);
++          await cycle(ctx, { propagateFailure: true });
+           if (stopped || serviceContext !== ctx) return;
+           timer = setInterval(() => void cycle(ctx), config.pollIntervalMs);
+           timer.unref?.();
+--- mac-rog/r1/package.json
++++ mac-rog/r2/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@local/openclaw-authbus",
+-  "version": "0.3.1-heptabao.1",
++  "version": "0.3.1-heptabao.2",
+   "type": "module",
+   "files": [
+     "index.js",

@@ -1,0 +1,56 @@
+[
+  {
+    "identity": "ps:Sun Oct  4 19:43:03 2026",
+    "name": "/Users/qianqi/.openclaw/authbus-relay/bin/cli-proxy-api",
+    "pid": 964,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Sun Oct  4 19:43:03 2026",
+    "name": "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge",
+    "pid": 983,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Sun Oct  4 19:43:03 2026",
+    "name": "/Users/qianqi/.openclaw/authbus-relay/bin/egressguard",
+    "pid": 987,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Sun Oct  4 19:43:03 2026",
+    "name": "/Users/qianqi/.openclaw/authbus-relay/bin/relayfront",
+    "pid": 989,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Mon Oct  5 11:49:28 2026",
+    "name": "/opt/homebrew/opt/node/bin/node",
+    "pid": 18437,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Wed Nov  4 09:04:14 2026",
+    "name": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+    "pid": 66414,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Wed Nov  4 09:04:46 2026",
+    "name": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+    "pid": 66687,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Tue Nov  3 15:14:58 2026",
+    "name": "node",
+    "pid": 89324,
+    "uid": 501
+  },
+  {
+    "identity": "ps:Tue Nov  3 15:14:58 2026",
+    "name": "/opt/homebrew/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+    "pid": 89325,
+    "uid": 501
+  }
+]

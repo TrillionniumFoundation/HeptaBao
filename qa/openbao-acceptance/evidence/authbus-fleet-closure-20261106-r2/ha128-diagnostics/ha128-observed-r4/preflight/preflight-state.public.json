@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.ha128-observed-r4-preflight.public.r1",
+  "allThreeKnownSuccess": true,
+  "allThreePortsFree": true,
+  "allFiveNewRootsAbsent": true,
+  "macOriginalChildrenClosed": 2,
+  "exactOwnedRulesPerView": 2,
+  "otherFirewallSemanticsUnchanged": true,
+  "formalProductExecutionsBeforeLaunch": 0,
+  "key": "mac-ha128-observed-current-4bde9-authbus-20261107-r4",
+  "jobId": "1a1b3c982b3-fc05-84bc",
+  "productState": "known_launched_running_no_terminal_claim",
+  "originalRequiredChecks": 128,
+  "timeoutSeconds": 1800,
+  "originalFailureReceiptsPreserved": true,
+  "hostSnapshotsDoNotReservePorts": true
+}

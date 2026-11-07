@@ -1,0 +1,11 @@
+--- ai395-original/controller.py
++++ ai395-headerlocator-r3/controller.py
+@@ -15,7 +15,7 @@
+ os.umask(0o077)
+ ROOT = Path('/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1')
+ SOURCE = ROOT / 'source-4bde9'
+-OUT = ROOT / 'build-test-r1'
++OUT = ROOT / 'build-test-headerlocator-r3'
+ COMMIT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+ TREE = 'f08493a23f8ea0637073651231865ea9607b790e'
+ PARENT = '09c14eae7a3b52dee8ce3af3175dad5900ac59ec'

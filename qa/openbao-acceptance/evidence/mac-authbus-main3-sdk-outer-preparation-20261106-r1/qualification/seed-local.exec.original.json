@@ -1,0 +1,7 @@
+{
+  "chunk_id": "7a402a",
+  "wall_time_seconds": 0.000034512,
+  "exit_code": 0,
+  "original_token_count": 207,
+  "output": "{\"schema\":\"heptabao.main3-sdk-seed-local-qualification.r1\",\"ok\":true,\"platform\":\"linux\",\"node\":\"v24.22.1\",\"passed\":7,\"failed\":0,\"checks\":[{\"case\":\"actual_pinned_plugin_pure_functions_generate_three_private_packets\",\"passed\":true},{\"case\":\"wire_digest_uses_javascript_number_unicode_and_sorted_key_semantics\",\"passed\":true},{\"case\":\"explicit_empty_scheduler_document_normalizes_in_original_plugin\",\"passed\":true},{\"case\":\"original_source_change_is_refused_before_private_packet\",\"passed\":true},{\"case\":\"duplicate_owner_and_wrong_owner_are_refused\",\"passed\":true},{\"case\":\"wrong_count_and_unselected_credentials_are_refused\",\"passed\":true},{\"case\":\"actual_plugin_credential_shape_limits_are_enforced\",\"passed\":true}],\"actualMacExecuted\":false,\"actualSdkExecuted\":false,\"productionCredentialsRead\":false,\"providerCalled\":false}\n"
+}

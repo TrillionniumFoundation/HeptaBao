@@ -1,0 +1,11 @@
+{
+  "idempotency_key": "mac-ha128-current-4bde9-authbus-20261106-r3",
+  "sourceBytes": 106163,
+  "sourceSha256": "9d703c0b213e5fe9f4e5cd67f6127ca16dd303f870df85526b86e63893b27fd1",
+  "host": "main",
+  "supervisorSeconds": 1800,
+  "preflightsPassed": true,
+  "normalBinaryAndHarnessChanged": false,
+  "firewallWritesThisAttempt": 0,
+  "priorFailedCampaignReplayed": false
+}

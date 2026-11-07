@@ -1,0 +1,152 @@
+{
+  "schema": "heptabao.mac-main3-api-source-derivation.r3",
+  "qualifiedR2OriginalPins": {
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_owned_commands_r1.py": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530",
+    "mac_t5_volume_guard_r1.py": "9d5a6ea743e5abe87f6f84bcbcf6ddb7ba9f080fd3f51e54040d56122159394a",
+    "mac_owned_launchd_r3.py": "9209144dd581ed547478e5210fffc8e1c75e7bc5511637ba02aed18a63129354",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_current_server_owner_r1.py": "c7eaf0a36bcfac4355c778d93e27bdff58fbcc0cba625987cee6e98e72909be5",
+    "mac_public_code_pin_excerpt_r1.py": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f",
+    "tls_complete_http_probe.py": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc",
+    "fresh_synthetic_controller_r1.py": "4697eb12c7af0b88fc8faec697518e0397cc8f620cf2581f301b18206f54f42c",
+    "test_fresh_synthetic_controller_r1.py": "5b4d3f2cc67196ef2eab036467493edcb90db5e5902e92619b5d78236f754e7a",
+    "test_suid_ps_tls_r2.py": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+  },
+  "sourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "bytes": 13385,
+      "sha256": "547cd697b3aa222f21a38bbe015b574c6082da0861d3f1aac1b32f69cce0d8cb"
+    },
+    "mac_owned_launchd_r3.py": {
+      "bytes": 58613,
+      "sha256": "23113d19c3a26ec824922233d4c5c20bee8bdb36664efc872ebcc2045a612515"
+    },
+    "mac_native_process_observer_r1.py": {
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_current_server_owner_r1.py": {
+      "bytes": 16143,
+      "sha256": "7877a8d1b0e7ae23d9d11e5432b3af24a5b6bf3a65684d61939be37f48ca658e"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "tls_complete_http_probe.py": {
+      "bytes": 4750,
+      "sha256": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc"
+    },
+    "main3_api_controller.py": {
+      "bytes": 32340,
+      "sha256": "74daa03bfc8edcb4d577c47dc4d664cbd5fc065adc4c79a46d2d9f822eae483f"
+    },
+    "test_main3_api_controller.py": {
+      "bytes": 11340,
+      "sha256": "47dfa875d51c2247f03759adcf5e2591891b8a4c09856c65a64a06f79bfc1b7f"
+    },
+    "test_suid_ps_tls_r2.py": {
+      "bytes": 16309,
+      "sha256": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+    },
+    "main3_source_fence.py": {
+      "bytes": 15964,
+      "sha256": "04ed0ecb2e924d1b481024ec97b683df075bcca852bb737e3d00aa693de98b36"
+    },
+    "main3_api_cycle.py": {
+      "bytes": 17881,
+      "sha256": "1551a9a86cf73b1cf789bf7ec7c00fea78551a70b2c523696699a5e0904c4bb6"
+    },
+    "test_main3_api_guards.py": {
+      "bytes": 14915,
+      "sha256": "bdacecb327ee84b51630a1c3e3b1a3a79b41714c4949066c7c8e2367d14fd7fa"
+    },
+    "main3_source_authority.py": {
+      "bytes": 2406,
+      "sha256": "1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290"
+    }
+  },
+  "preparer": {
+    "bytes": 14948,
+    "sha256": "f3cfe17271c1b44a528840e22e23d4c8a86374ff67e84efc84085bfbc34329d7"
+  },
+  "canonicalCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "canonicalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "budgets": {
+    "outer": 600,
+    "phase": 120,
+    "sourceObservationMaximum": 45,
+    "wrapperReady": 30,
+    "execObservation": 10,
+    "health": 15,
+    "singleOtherHttp": 10,
+    "failureCleanup": 60
+  },
+  "signalOwnershipUnchanged": true,
+  "psSuidExceptionUnchanged": true,
+  "actualCredentialScope": 3,
+  "providerValid": false,
+  "productionCutover": false,
+  "actualPluginSdkQualified": false,
+  "publicCredentialValuesOrDigests": false,
+  "productionClientRollbackQualified": false,
+  "retainedR1Status": {
+    "stagingJob": "1a1b1cc2471-fc05-7adb",
+    "stagingSucceeded": true,
+    "qualificationAttempted": false,
+    "serviceActions": 0,
+    "apiRequests": 0
+  },
+  "normalNativeStorageProfile": "native_v6_file",
+  "normalActivationPath": "sys/storage/native-v6/activate",
+  "fixtureOptionsEnabled": false,
+  "sourceAuthorityIntegratedIntoPinnedFence": true,
+  "privateCapsuleQualificationIdentityBoundWithoutHash": true,
+  "currentCapture": {
+    "jobId": "1a1b1e80c81-fc05-7b6c",
+    "workerSha256": "4231b7a3976fd579eaf1deac319287a877365afa44e1240e838518a5dff8daba",
+    "capsuleRoot": "/Users/qianqi/heptabao-authbus-current-sdk-capsule-20261106-r2",
+    "publicSdkPins": {
+      "dist/agent-scope-config-BxAUeF6t.js": "83ef65476ae41bfcf040b1503f468074f36d602e9fa46551822cb7768bef3a1f",
+      "dist/credential-state-BY-oz-QV.js": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4",
+      "dist/current-plugin-metadata-snapshot-CmOpmveB.js": "0c2efc7943a5f6407d938ddea68275e58cbaf916f1378cab8791ec9f5338808b",
+      "dist/installed-plugin-index-store-CWgFGnm0.js": "0d7bfad658ef322012b9b68b9709620bca8c0b202046f6f3d623ed7d31fc7a18",
+      "dist/logger-DPps3u8A.js": "90366fb73663dd713d58f4389e41331566a1ed82b1649844cf05d0c769175d44",
+      "dist/manifest-registry-installed-DMplEARQ.js": "6732b5661610d5b57c10478b77714c2767310b4b5544f158987de1c3ef9af832",
+      "dist/order-CeBlX0NH.js": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+      "dist/plugin-metadata-snapshot-rpSrEgGf.js": "2264d7441cd9690df32caf42d3c71c7c7e674b6c10f0f6a19a667605b479db4b",
+      "dist/plugin-registry-8E8D2Hou.js": "570f856a8f4e517d8bf0e0d768bcf691eaf9bf44b9f8e560c8f86ff8a7cef983",
+      "dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+      "dist/profile-list-XT2LKXsd.js": "b64042c7f5fc9e8902c68dd2f63ad66b200f6a92a176c7d7ccfed312dfec4f6c",
+      "dist/provider-auth-aliases-Cp2PXhsh.js": "7a22ef68a9275fc0700e657dc4b71257c956dd38feb370cdc1387e83f5963efa",
+      "dist/provider-id-Dq06Bcx6.js": "99187ac3607cf72bd2f2f8bd253b61b490d56f657cf07dfdb5c3fe7198336cc0",
+      "dist/source-check-ZSz5NzGW.js": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+      "dist/sqlite-B1ze-fre.js": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50",
+      "dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "dist/tmp-openclaw-dir-uPgNO8da.js": "c12ed50f959d17d9e4ca3e3cce60aa471ee160bdd705035a6d1ed63c47207b23",
+      "dist/usage-state-BFMjBJsu.js": "aa0a93c88c1b10046e614d476c27568f985a60580433c4763c5b3c3e78c1c097"
+    },
+    "publicResultBlob": "4cde22b253deb2a59859d195b41653b6af7ea85a",
+    "authorityBlob": "ed3c8adfe1443924dcc792ebcd4e60fe988cf103"
+  },
+  "retainedR2Status": {
+    "preflightJob": "1a1b1dc7351-fc05-7b2e",
+    "terminal": "failed",
+    "exitCode": 1,
+    "guardsPassed": 108,
+    "serviceActions": 0,
+    "httpRequests": 0,
+    "errorCode": "current_source_full_generation_exact"
+  },
+  "previousPrivateQualificationBindingModified": false,
+  "fullNineFieldGenerationRuleUnchanged": true
+}

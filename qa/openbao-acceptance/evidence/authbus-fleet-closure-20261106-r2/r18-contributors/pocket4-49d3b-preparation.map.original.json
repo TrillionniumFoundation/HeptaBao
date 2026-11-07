@@ -1,0 +1,13 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/delivery-and-build.plan.public.json": "d7cc97abef879b555c9ea196b26f67c22d731e39",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/create_private_control.py": "8fb1068c6aecaa72ad2a7503afb9d0037ca390f1",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/prepare_source.py": "f4cab04230c003b541eadb8b4e7982362d19a4fd",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/receipt-durable-publication.diff": "dab545934451b3a926774f2acd36a747bf4c7bd3",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/test_receipt_publication.py": "9ac88aad448f4aa89d659e75ee57a1679f2ea0f2",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/receipt-publication-tests.observed.public.json": "c2c97d3ae586c00edc059017538f5bad2dc3d2ff",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/controller.py": "1a0402c48c6c8e2ca0daaf9943075c5022dd2f54",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/controller.diff": "53bb0cd647cad39256bac33bec7f18311b7737d7",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/local-preparation-checks.public.json": "35c0baa1ea9377eeb1f2baf4a60de34e317a17f0",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/directed15-selection.prepared.public.json": "9498872e3042be8e5ea8cfb24fe201eec764845f",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/original-107-groups.public.json": "4db5babf1d17a747ab94a363751cd9d4a84a1a23"
+}

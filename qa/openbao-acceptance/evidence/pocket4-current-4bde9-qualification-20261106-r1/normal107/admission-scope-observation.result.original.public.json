@@ -1,0 +1,59 @@
+{
+  "at_utc": "2026-11-06T18:45:36.086235+00:00",
+  "blocked_directory_contents_opened": false,
+  "blocked_metadata": {
+    "gid": 0,
+    "is_directory": true,
+    "is_symlink": false,
+    "mode": 448,
+    "uid": 0
+  },
+  "blocked_path": "/home/alex/heptabao-migration-pocket-diagnostic-20261027-r4",
+  "compiler_processes": [],
+  "current_commit_controllers": [],
+  "current_directories": [
+    {
+      "mode": 448,
+      "name": "build-test-r1",
+      "uid": 1000
+    },
+    {
+      "mode": 448,
+      "name": "source-4bde9",
+      "uid": 1000
+    },
+    {
+      "mode": 448,
+      "name": "linux-public-closure-inbox-r1",
+      "uid": 1000
+    },
+    {
+      "mode": 448,
+      "name": "cargo-home-public-linux-r1",
+      "uid": 1000
+    },
+    {
+      "mode": 448,
+      "name": "clang-header-probe-r1",
+      "uid": 1000
+    },
+    {
+      "mode": 448,
+      "name": "target-normal",
+      "uid": 1000
+    }
+  ],
+  "current_root": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1",
+  "formal_paths_present": {
+    "artifacts": false,
+    "launch-admission-r1.public.json": false,
+    "progress.public.json": false,
+    "result.public.json": false
+  },
+  "normal107_qualified": false,
+  "permissions_changed": false,
+  "process_observation_errors": [],
+  "production_changed": false,
+  "rust_build_executed": false,
+  "schema": "heptabao.pocket4-admission-scope-observation.v1"
+}

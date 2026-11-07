@@ -1,0 +1,156 @@
+{
+  "allExplicitDescriptorsClosedOnce": true,
+  "allInspectorDescriptorsClosedOnce": true,
+  "allSourceMetadataUnchanged": true,
+  "automaticRetry": false,
+  "backupDestinationCreated": false,
+  "backupExecuted": false,
+  "cancellationObserved": false,
+  "commands": {
+    "allOwnedCommandsStopped": true,
+    "commands": [
+      {
+        "argv": [
+          "/usr/sbin/diskutil",
+          "info",
+          "-plist",
+          "/Volumes/T5"
+        ],
+        "cleanup": {
+          "allGroupRowsEmptyAfterReap": true,
+          "cleanupCaps": {
+            "group": 3,
+            "psMax": 4,
+            "term": 1,
+            "wait": 5
+          },
+          "custody": {
+            "captured_exit": null,
+            "fixedPsContract": null,
+            "ps": {
+              "pgid": 82537,
+              "pid": 82537,
+              "ppid": 82535,
+              "start": "Sat Nov  7 09:43:02 2026    ",
+              "uid": 501
+            },
+            "sid_observed_while_live": 82537
+          },
+          "directChildReaped": true,
+          "elapsedSeconds": 0.04613433312624693,
+          "exitCode": 0,
+          "initialLiveGroup": [],
+          "ok": true,
+          "outcomeUnknown": false,
+          "ownedLiveGroupEmptyBeforeReap": true,
+          "pgid": 82537,
+          "pid": 82537,
+          "postReapSignalSent": false,
+          "remainingGroupRows": [],
+          "retainedExit": {
+            "code": 1,
+            "pid": 82537,
+            "signo": 20,
+            "status": 0
+          },
+          "signals": [],
+          "stopAttempted": true
+        },
+        "commandDeadlineMonotonic": 2901639.112269416,
+        "completeBeforeDeadline": true,
+        "elapsedSeconds": 0.14894041698426008,
+        "errorCode": null,
+        "errorType": null,
+        "exitCode": 0,
+        "label": "backup-metadata-t5-volume",
+        "outcomeUnknown": false,
+        "pid": 82537,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 3069,
+        "stdoutSha256": "9dd6adfee83fa2f90f84e8b4ab3467b935e2591f151a3349b6eae73b9d603087",
+        "streamsClosed": true
+      }
+    ],
+    "unknownCommandCount": 0
+  },
+  "deadlineAfterClosure": true,
+  "descriptorCloseErrors": [],
+  "directories": 1,
+  "directoryNonblockingLockAcquired": true,
+  "elapsedSeconds": 0.15945599973201752,
+  "explicitDescriptors": 6,
+  "files": 23,
+  "inspectorDescriptors": 6,
+  "largestCipherFileBytes": 77259,
+  "networkRequests": 0,
+  "observedFileModes": [
+    "0600"
+  ],
+  "ok": true,
+  "originalDirectoryLockReleased": true,
+  "parentSeconds": 30,
+  "privateCredentialReads": 0,
+  "productionBackupQualified": false,
+  "providerCalls": 0,
+  "rustWriterLockInteroperabilityQualified": false,
+  "schema": "heptabao.permanent-backup-metadata.r1",
+  "serviceActions": 0,
+  "sourceDataFileContentsRead": 0,
+  "sourcePathsOrStateDigestsPublished": false,
+  "sourceWrites": 0,
+  "supervisorSeconds": 45,
+  "totalCipherFileBytes": 146416,
+  "volumeClosure": {
+    "allDescriptorsClosed": true,
+    "anchors": [
+      {
+        "identity": [
+          "16777233",
+          "2",
+          "0",
+          "0",
+          "16877",
+          "22",
+          "704",
+          "1786589515000000000",
+          "1786589515000000000"
+        ],
+        "path": "/"
+      },
+      {
+        "identity": [
+          "16777233",
+          "18336",
+          "0",
+          "0",
+          "16877",
+          "5",
+          "160",
+          "1793100597756515591",
+          "1793100597756515591"
+        ],
+        "path": "/Volumes"
+      },
+      {
+        "identity": [
+          "16777244",
+          "2",
+          "0",
+          "0",
+          "16893",
+          "12",
+          "384",
+          "1793152973144260495",
+          "1793152973144260495"
+        ],
+        "path": "/Volumes/T5"
+      }
+    ],
+    "closeErrors": [],
+    "expectedVolumeDevice": "16777244",
+    "lastAnchorCheckPassed": true,
+    "schema": "heptabao.held-t5-volume-state.r1",
+    "volumeUUIDVerified": true
+  }
+}

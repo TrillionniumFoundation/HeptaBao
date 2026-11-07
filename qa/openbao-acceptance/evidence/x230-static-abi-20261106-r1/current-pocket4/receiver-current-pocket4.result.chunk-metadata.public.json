@@ -1,0 +1,47 @@
+[
+  {
+    "chunk_sha256": "1d8e124061144ea6f8d4c86f26b95b462efab059a7553b368d9ea099c0f4eb6e",
+    "eof": false,
+    "next_offset": 65536,
+    "offset": 0,
+    "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/capture/result.public.json",
+    "size": 313210,
+    "version": "2053:2128952:313210:1793995566222546666:1793995566222546666"
+  },
+  {
+    "chunk_sha256": "f0000aca0558d738e769ac6695c7dd9ca78e3eac4639953c9717e042785f4405",
+    "eof": false,
+    "next_offset": 131072,
+    "offset": 65536,
+    "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/capture/result.public.json",
+    "size": 313210,
+    "version": "2053:2128952:313210:1793995566222546666:1793995566222546666"
+  },
+  {
+    "chunk_sha256": "d5ce9ddacb5b9f0c47003568a9daa6cf5179f49531bf02f27e0c677c21f3d884",
+    "eof": false,
+    "next_offset": 196608,
+    "offset": 131072,
+    "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/capture/result.public.json",
+    "size": 313210,
+    "version": "2053:2128952:313210:1793995566222546666:1793995566222546666"
+  },
+  {
+    "chunk_sha256": "7cce8d9913114abfe1fc8cbdee63a3d20caa9624b991c3ae5fbbd101b0896da0",
+    "eof": false,
+    "next_offset": 262144,
+    "offset": 196608,
+    "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/capture/result.public.json",
+    "size": 313210,
+    "version": "2053:2128952:313210:1793995566222546666:1793995566222546666"
+  },
+  {
+    "chunk_sha256": "745c7b573821b099227eeb3f859b4a7a5437025c04bc083062538eeb508f4abb",
+    "eof": true,
+    "next_offset": 313210,
+    "offset": 262144,
+    "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/capture/result.public.json",
+    "size": 313210,
+    "version": "2053:2128952:313210:1793995566222546666:1793995566222546666"
+  }
+]

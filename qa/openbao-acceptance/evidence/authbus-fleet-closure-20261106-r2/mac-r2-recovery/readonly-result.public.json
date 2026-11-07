@@ -1,0 +1,182 @@
+{
+  "cleanupAuthorized": false,
+  "credentialValuesOrDigestsIncluded": false,
+  "currentBirthIsNewObservationOnly": true,
+  "currentIdentityStableAcrossQueries": true,
+  "elapsedSeconds": 0.024495750200003386,
+  "exactOriginalFileBindings": {
+    "bootstrapEventExact": true,
+    "cleanupIntentExact": true,
+    "fixedPlistNoRestart": true,
+    "plistMatchesOriginalAndIntent": true,
+    "privatePlanMatchesOriginalAndIntent": true
+  },
+  "inputFileIdentitiesUnchangedThroughObservation": true,
+  "j3160Contacted": false,
+  "observations": [
+    {
+      "directChildIdentities": [],
+      "expectedUnadmittedWrapperImage": true,
+      "index": 0,
+      "processIdentity": {
+        "birthSec": 1793969379,
+        "birthUsec": 298893,
+        "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "pgid": 32527,
+        "pid": 32527,
+        "ppid": 1,
+        "uid": 501
+      },
+      "queryExitCode": 0,
+      "registeredAllArgumentsExact": true,
+      "registeredPathExact": true,
+      "registeredProgramExact": true,
+      "safeLaunchctlFields": {
+        "last exit code": null,
+        "last terminating signal": null,
+        "pid": 32527,
+        "runs": 1,
+        "state": "running"
+      }
+    },
+    {
+      "directChildIdentities": [],
+      "expectedUnadmittedWrapperImage": true,
+      "index": 1,
+      "processIdentity": {
+        "birthSec": 1793969379,
+        "birthUsec": 298893,
+        "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "pgid": 32527,
+        "pid": 32527,
+        "ppid": 1,
+        "uid": 501
+      },
+      "queryExitCode": 0,
+      "registeredAllArgumentsExact": true,
+      "registeredPathExact": true,
+      "registeredProgramExact": true,
+      "safeLaunchctlFields": {
+        "last exit code": null,
+        "last terminating signal": null,
+        "pid": 32527,
+        "runs": 1,
+        "state": "running"
+      }
+    }
+  ],
+  "ok": true,
+  "oldBusinessDeadlineRenewed": false,
+  "oldManagerImported": false,
+  "originalAdmissionArtifactPresence": {
+    "admitted.private.json": false,
+    "exec-ready.public.json": false,
+    "ready.public.json": false
+  },
+  "originalAttempts": {
+    "bootstrap": {
+      "attempted": true,
+      "complete": true,
+      "exitCode": 0
+    }
+  },
+  "originalBirthIdentityAvailable": false,
+  "originalBootstrapKnownSucceeded": true,
+  "originalLaunchctlCommandSummaries": [
+    {
+      "completeBeforeDeadline": true,
+      "exitCode": 0,
+      "label": "launchd-print",
+      "outcomeUnknown": false
+    },
+    {
+      "completeBeforeDeadline": true,
+      "exitCode": 0,
+      "label": "launchd-print",
+      "outcomeUnknown": false
+    },
+    {
+      "completeBeforeDeadline": true,
+      "exitCode": 0,
+      "label": "launchd-bootstrap",
+      "outcomeUnknown": false
+    },
+    {
+      "completeBeforeDeadline": true,
+      "exitCode": 113,
+      "label": "launchd-print",
+      "outcomeUnknown": false
+    },
+    {
+      "completeBeforeDeadline": true,
+      "exitCode": 113,
+      "label": "launchd-print",
+      "outcomeUnknown": false
+    },
+    {
+      "completeBeforeDeadline": true,
+      "exitCode": 113,
+      "label": "launchd-print",
+      "outcomeUnknown": false
+    }
+  ],
+  "originalManagerPaths": [
+    "$.manager"
+  ],
+  "originalManagerTerminal": {
+    "allKnownLineagesClosed": false,
+    "allOwnedCommandsStopped": true,
+    "allRegistrationsClosed": false,
+    "completedOperationCount": 0,
+    "failureCleanupAttempted": true,
+    "ok": false,
+    "outcomeUnknown": true
+  },
+  "originalNoSignalOrBootoutAttemptRecorded": true,
+  "originalOwnedCommandLedger": {
+    "allOwnedCommandsStopped": true,
+    "unknownCommandCount": 0
+  },
+  "originalOwnedCommandLedgerKeys": [
+    "allOwnedCommandsStopped",
+    "commands",
+    "unknownCommandCount"
+  ],
+  "originalRegistration": {
+    "cleanupErrorCode": "typed_launchctl_integer",
+    "cleanupErrorType": "ManagerRefused",
+    "completeKnownSuccess": false,
+    "execIdentity": null,
+    "generation": "server-initial",
+    "kind": "server",
+    "knownOwnedGroups": [],
+    "label": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "lineagesClosed": false,
+    "registrationClosed": false,
+    "wrapperIdentity": null
+  },
+  "originalResultBytes": 135078,
+  "originalRunSuccessClaimed": false,
+  "privateStdioMetadataOnly": {
+    "server-initial.stderr.private": {
+      "bytes": 0,
+      "owner501": true,
+      "regularSingleLink": true
+    },
+    "server-initial.stdout.private": {
+      "bytes": 0,
+      "owner501": true,
+      "regularSingleLink": true
+    }
+  },
+  "providerRequested": false,
+  "publicSourceSha256": {
+    "manager": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4",
+    "observer": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "parserCandidate": "59aa264489cc8ebea2943a0a7bab68c419da52d645532391ec369b973d555941"
+  },
+  "qaProcessSignalDispatched": false,
+  "schema": "heptabao.mac-authbus-r2-recovery-readonly.r1",
+  "serviceMutationDispatched": false,
+  "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-home-r2.server"
+}

@@ -1,0 +1,22 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128_transport_observed_r4.py": "fcc99eee3ecdbca6dc146b916357e40965f49c98",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha_http_transport_observer_formal_r1.py": "a2cfba6c9c039fe1a2c40c83ab98a493640de91f",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/observe_ha128_r4_owned_x230_pid.py": "caf649efa2470242bd66da52548249c0adb115b9",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/assemble_ha128_observed_r4.py": "393e4ae2aadafd0eb5e2dc6783e8ac0c7b6464fa",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/launch_ha128_observed_r4.body.py": "95b99bcd32b77015601afa842630c5945fa62e40",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-observed-r4-vs-original-r3.diff": "d6ee2931e8da32f4785322edd53bab9fe63840ca",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-observer-and-snapshot-review-delta.diff": "4ffc341bf4f0786fa3545d8aca0f7a8a5b06e913",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-observed-r4-source-integrity.public.json": "22a60e779e3c8b72ca14be20722be51f496b1af4",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/test_ha128_transport_observed_r4.py": "6d62f5b2df5314e5cbbfa3c2e9ff36cb774cce22",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/test_ha_http_transport_observer_formal_r1.py": "5bb53b8bd2c64f4f681dc87053dbc9846ac24514",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-r4-adapter.local-tests.original.json": "8ee7ed6b101861e72b5d1beefd5045e4f606973d",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-r4-observer.local-tests.original.json": "45d75588030dd759cb431a4e57ca2899c582cedd",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-r4-assembly.local-guard.original.json": "fa006ffed1eeca4d849b762b80f05b0bcd8107f2",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/capture_ai395_ufw_phase_r4.py": "0d256a540e6ff135152bad3406dc526ff2d78e6b",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/verify_ai395_ufw_phase_r4.py": "5c4e9da6bbdce8e5714523c2f59bae4f7e84be19",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/observe_linux_fixed_ports_roots_r4.py": "acf17d33e277c224f1087b0759ce5c471932a6d9",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/observe_mac_fixed_ports_roots_r4.py": "8207d2b6a3f551bcbbf781efda19bf86c13149bb",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-r4-preflight-phase-root-only.diff": "e092f061aa50b3d0b8e2487af530b8b65e17ebca",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-r4-preflight-preparation.public.json": "2b7e97b62da28771af2adeca93c584f7b308f9a3",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/launch_ha128_observed_r4.py": "906d786b0b975f81632d6aa3a06e8d60d985437f"
+}

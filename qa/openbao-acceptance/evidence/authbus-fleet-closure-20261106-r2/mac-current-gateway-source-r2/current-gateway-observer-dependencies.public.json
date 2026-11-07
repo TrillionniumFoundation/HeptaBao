@@ -1,0 +1,67 @@
+{
+  "callerMustOwnEveryOriginalHelperClosure": true,
+  "callerMustPreservePrivateCommandDigests": true,
+  "definitionsGlobals": {
+    "launchdParser": [
+      "re"
+    ],
+    "observer": [
+      "ctypes",
+      "sys",
+      "Path"
+    ]
+  },
+  "differentScopedManagerWholeFilesNotConflated": true,
+  "localBoundaryResult": "current-gateway-observer-local12.stdout.public.json",
+  "samePureParserDefinitionsAsSdkR4": true,
+  "schema": "heptabao.current-gateway-observation-dependencies.r2",
+  "scope": "original qualified helpers; source binding is not a new execution proof",
+  "sources": [
+    {
+      "bytes": 6154,
+      "definitions": null,
+      "file": "mac_owned_commands_r1.py",
+      "localSource": "/workspace/scratch/c9fe536787d9/main3-sdk-outer-r4-work/source-sdk-r4/mac_owned_commands_r1.py",
+      "mode": "whole-module",
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    {
+      "bytes": 14877,
+      "definitions": null,
+      "file": "mac_owned_unreaped_r1.py",
+      "localSource": "/workspace/scratch/c9fe536787d9/main3-sdk-outer-r4-work/source-sdk-r4/mac_owned_unreaped_r1.py",
+      "mode": "whole-module",
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    {
+      "bytes": 13423,
+      "definitions": [
+        "ObservationRefused",
+        "require",
+        "BsdInfo",
+        "ProcessReader"
+      ],
+      "excerptAstSha256": "5dc4cf9b32a7fa45f4ae1fb0619a9d203d5adb20c0e84ed473915e429e45a642",
+      "file": "mac_native_process_observer_r1.py",
+      "localSource": "/workspace/scratch/c9fe536787d9/main3-sdk-outer-r4-work/source-sdk-r4/mac_native_process_observer_r1.py",
+      "mode": "exact-top-level-AST-definitions",
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "bytes": 58613,
+      "definitions": [
+        "ManagerRefused",
+        "need",
+        "parse_print",
+        "missing_service"
+      ],
+      "excerptAstSha256": "8fbb583beab2a49321543b86cb9b76136f6913f0e5382cda2b27a185067cab41",
+      "file": "mac_owned_launchd_r3.py",
+      "localSource": "/workspace/scratch/c9fe536787d9/authbus-refresh-work/reference/gateway-observer/mac_owned_launchd_r3.py",
+      "mode": "exact-top-level-AST-definitions",
+      "originalAuthority": "actual primitive r4 job1a1b2e87896-fc05-802a",
+      "sha256": "19c131fa1952a48e99f521fee024bb9ef34ccc94901cc604b0c75c7424689031",
+      "sourceRecoveredFrom": "literal payload of frozen launch_gateway_service_primitives_r4.py"
+    }
+  ]
+}

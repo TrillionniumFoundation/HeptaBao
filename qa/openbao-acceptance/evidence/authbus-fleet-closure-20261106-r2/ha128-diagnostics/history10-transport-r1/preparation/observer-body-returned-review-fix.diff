@@ -1,0 +1,37 @@
+--- observer-before-review
++++ observer-after-review
+@@ -16,6 +16,7 @@
+ import http.client
+ import inspect
+ import re
++import ssl
+ import time
+ import urllib.error
+ import urllib.request
+@@ -51,7 +52,7 @@
+     if type(verify) is int and 0 <= verify < 2**31:
+         result["verifyCode"] = verify
+     ssl_reason = getattr(reason, "reason", None)
+-    if isinstance(ssl_reason, str) and re.fullmatch(r"[A-Z][A-Z0-9_]{0,79}", ssl_reason):
++    if isinstance(reason, ssl.SSLError) and isinstance(ssl_reason, str) and re.fullmatch(r"[A-Z][A-Z0-9_]{0,79}", ssl_reason):
+         result["sslReason"] = ssl_reason
+     return result
+ 
+@@ -66,7 +67,7 @@
+                     "httpsConnectCalls": 0, "sendCalls": 0,
+                     "getresponseCalls": 0, "responseReadCalls": 0,
+                     "responseCloseCalls": 0, "connectionCloseCalls": 0,
+-                    "bodyReadComplete": False, "apiReturned": False,
++                    "bodyReadReturned": False, "apiReturned": False,
+                     "automaticRetry": False, "events": []}
+ 
+     def phase(self, label):
+@@ -128,7 +129,7 @@
+             row["responseReadCalls"] += 1
+             self.observation.phase("response_body")
+             value = original_read(*args, **kwargs)
+-            row["bodyReadComplete"] = True
++            row["bodyReadReturned"] = True
+             self.observation.phase("response_body_returned")
+             return value
+ 

@@ -420,6 +420,40 @@ def inspect_v6_archive(path):
         "standalone_aead_verified": False}
 
 
+def validate_archive_history_binding(archive, reference, baseline):
+    """Bind encoded archives to observed logical history, not a byte-size guess.
+
+    HBV6PK01 transports each registered immutable object once. Repeated payload
+    chunks can share objects, so encoded state bytes are not a lower bound on
+    the logical history. The original full34 and later DR restore gates still
+    independently require every API/raw version and all 31/25 obligations.
+    """
+    capacity = baseline.get("capacity_after_import", {})
+    logical_bytes = capacity.get("native_kv2_logical_payload_bytes")
+    required = (
+        "source_raw_history_exact", "target_active_native_v6", "target_full_history_exact",
+        "target_storage_full_history_exact", "target_cold_restart_exact",
+        "target_storage_cold_history_exact", "snapshot_download",
+    )
+    need(baseline.get("profile") == "full34" and baseline.get("retained_live_versions") == 17
+         and baseline.get("live_payload_bytes") == 34 * MIB
+         and type(logical_bytes) is int and logical_bytes >= 34 * MIB
+         and capacity.get("state_storage_format") == "heptabao-state-records-v6"
+         and capacity.get("native_kv2_reader_format") == 2,
+         "archive_requires_observed_full34_logical_history")
+    for name in required:
+        rows = [row for row in baseline.get("checks", []) if row.get("case") == name]
+        need(len(rows) == 1 and rows[0].get("passed") is True,
+             "archive_requires_original_history_observations")
+    need(archive["metadata"] == reference["metadata"], "archive_source_metadata_changed")
+    return {"expected_live_payload_bytes": 34 * MIB,
+            "observed_logical_payload_bytes": logical_bytes, "retained_live_versions": 17,
+            "original_history_cases": list(required),
+            "encoded_archive_state_bytes": archive["metadata"]["state_bytes"],
+            "encoded_size_used_as_logical_volume": False, "source_metadata_equal": True,
+            "full31_and_dr25_still_required": True}
+
+
 def validate_seed_receipt(receipt, operation, seed_dir, exported=None):
     need(receipt.get("schema") == 1 and receipt.get("operation") == operation
          and receipt.get("original_writer_fence_held") is True
@@ -692,10 +726,10 @@ class DisasterRecovery:
                    "official_version": "2.7.1", "archive": file_pin(self.archive, private=True)})
         archive = inspect_v6_archive(self.archive)
         reference = inspect_v6_archive(base.root / "native-snapshot.tar.gz")
-        self.check("complete_v6_archive_seal_binding",
-                   archive["metadata"]["state_bytes"] >= 34 * MIB
-                   and archive["metadata"]["seal_identity"] == reference["metadata"]["seal_identity"], {
+        history_binding = validate_archive_history_binding(archive, reference, base.report)
+        self.check("complete_v6_archive_seal_binding", True, {
                        "cli_archive": archive, "normal_http_archive": reference,
+                       "logical_history_binding": history_binding,
                        "aead_authentication_required_at_restore": True})
         self.oracle = history_witness(base.original)
         self.oracle["source_api_live_payload_sha256"] = {

@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.native-private-firewall-archive-pin.r1",
+  "path": "/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e59a680388dca0-fc05-18/output.log",
+  "bytes": 8769,
+  "sha256": "dcf09b68274ad48ebbd2cb41a37a6b08793a67cf367a467c345e2e8d910b7f0b",
+  "completeNativeArchive": true,
+  "naturalExitCode": 0,
+  "privateRawRulesPublished": false,
+  "wholeArchiveReadAndCheckedBy": "source-bound capture helper; complete hash also by native file_info for nft",
+  "firstExternalPageBytes": 8769,
+  "firstExternalPageIsWholeArchive": true,
+  "authority": "separate unchanged EOF original and complete source-bound private capture"
+}

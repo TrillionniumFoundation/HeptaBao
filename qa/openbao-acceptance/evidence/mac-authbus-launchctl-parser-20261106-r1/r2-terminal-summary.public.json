@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.mac-authbus-parser-audit.public.r1",
+  "scope": "Read-only artifact recovery and local source tests; no new business execution",
+  "resultPath": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/outer-native-r1/result.public.json",
+  "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "sourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "reportedError": {
+    "type": "ManagerRefused",
+    "code": "typed_launchctl_integer",
+    "frames": [
+      {
+        "file": "mac_current_outer_wal_r1.py",
+        "line": 1050
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 701
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 616
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 494
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 81
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "line": 41
+      }
+    ]
+  },
+  "business": {
+    "checkCount": 0,
+    "phaseCount": 0,
+    "allAccountsQualified": false,
+    "currentProviderAvailabilityQualified": false,
+    "fullReplacementQualified": false,
+    "providerRequested": false,
+    "j3160Contacted": false,
+    "productionServiceOperationDispatched": false,
+    "productionChangedByController": false
+  },
+  "manager": {
+    "ok": false,
+    "completedOperationCount": 0,
+    "allOwnedCommandsStopped": true,
+    "allRegistrationsClosed": false,
+    "allKnownLineagesClosed": false,
+    "outcomeUnknown": true,
+    "elapsedSeconds": 0.3748435424640775,
+    "cleanupErrors": [
+      {
+        "label": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+        "generation": "server-initial",
+        "cleanupErrorCode": "typed_launchctl_integer",
+        "cleanupErrorType": "ManagerRefused",
+        "registrationClosed": false,
+        "lineagesClosed": false
+      }
+    ]
+  },
+  "sourceGeneration": {
+    "frozenProjection": "frozen_previously_verified_generation",
+    "latestActiveGenerationClaimed": false,
+    "providerAvailabilityQualified": false,
+    "currentProductionDatabasesOpened": false
+  },
+  "currentR2Logs": {
+    "stdoutBytes": 0,
+    "stderrBytes": 0
+  },
+  "actualRejectedFieldKnown": false,
+  "actualRejectedLiteralKnown": false,
+  "noNewRemoteExecution": true,
+  "credentialValuesOrDigestsIncluded": false
+}

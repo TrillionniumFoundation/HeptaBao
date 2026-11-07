@@ -1,0 +1,49 @@
+{
+  "actualMacRun": false,
+  "assembled": {
+    "bytes": 126346,
+    "sha256": "75ee27ae3c3ea5d3e248ce3da8e47b9d0e56a4598402949f11400761622868fe"
+  },
+  "core": {
+    "bytes": 15375,
+    "sha256": "32a471e45de11c653aa3eac3a2a76c7f8dea3da2666bea326f25e87f2f9fda48"
+  },
+  "disableEnableActions": 0,
+  "keepAliveTrue": true,
+  "originalQualifiedHelperBytesUnchanged": true,
+  "originalServiceActions": 4,
+  "originalServiceGenerations": 2,
+  "productionServiceActions": 0,
+  "sameOriginalPlistForBothGenerations": true,
+  "schema": "heptabao.preserve-absent-service-primitives.prepared.public.r1",
+  "sharedSeconds": 45,
+  "sourcePins": {
+    "mac_gateway_preserve_absent_primitives_r1.py": {
+      "bytes": 15375,
+      "sha256": "32a471e45de11c653aa3eac3a2a76c7f8dea3da2666bea326f25e87f2f9fda48"
+    },
+    "mac_native_process_observer_r1.py": {
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_owned_launchd_r3.py": {
+      "bytes": 58613,
+      "sha256": "19c131fa1952a48e99f521fee024bb9ef34ccc94901cc604b0c75c7424689031"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    }
+  },
+  "supervisorSeconds": 70,
+  "template": {
+    "bytes": 12116,
+    "sha256": "61d9f65eb88563589683587abe2ad30481e30ef667c089f9d4ef73dcdaae337a"
+  },
+  "unknownCanLeaveOriginalQaKeepAliveRegistration": true,
+  "unknownDoesNotDispatchCompensation": true
+}

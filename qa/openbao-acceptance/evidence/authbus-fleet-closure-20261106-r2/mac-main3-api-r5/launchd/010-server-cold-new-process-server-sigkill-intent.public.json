@@ -1,0 +1,1 @@
+{"detail":{"argv":["/bin/launchctl","kill","SIGKILL","gui/501/org.heptabao.qa.mac-authbus-main3-api-20261106-r5.server"]},"generation":"server-cold-new-process","index":10,"kind":"server-sigkill-intent","schema":"heptabao.mac-owned-launchd-event.r3"}

@@ -1,0 +1,38 @@
+HeptaBao single-node TLS listener ready at 192.168.0.13:31040
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=619 budget_ms=150 elapsed_ms=2 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=157 budget_ms=150 elapsed_ms=3 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=157 budget_ms=150 elapsed_ms=2 stage=transport
+HeptaBao HA TLS listener ready at 192.168.0.13:31040
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=157 budget_ms=150 elapsed_ms=3 stage=transport
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":1003030,"entry_remaining_ns":999998423,"exit_remaining_ns":0,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=157 budget_ms=150 elapsed_ms=2 stage=transport
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":120563,"entry_remaining_ns":999998460,"exit_remaining_ns":879434803,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":3237,"entry_remaining_ns":999997971,"exit_remaining_ns":996760125,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":2791,"entry_remaining_ns":999998219,"exit_remaining_ns":997206943,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":2540,"entry_remaining_ns":999998414,"exit_remaining_ns":997458403,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=5817 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+HBHA-NATIVE-SYNC-FAIL step=sync_current_local_repair code=scope_not_completed reason_sha=- elapsed_us=26738 step_elapsed_us=29 original_deadline_expired=true original_remaining_ns=0 panicking=false
+HBHA-NATIVE-SYNC-FAIL step=sync_after_migration code=scope_not_completed reason_sha=- elapsed_us=27015 step_elapsed_us=27014 original_deadline_expired=true original_remaining_ns=0 panicking=false
+heptabao-r72-sync: stage=sync_inner_error status=503 loaded=true recovery=false record_root=false
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=5817 budget_ms=150 elapsed_ms=151 stage=transport
+HBHA-NATIVE-SYNC-FAIL step=committed_same_root_reopen code=same_root_reopen_refused reason_sha=0d8ae792b77b8b0e70481a13c0b797fd19a495e62ad381c494ce05f866c72254 elapsed_us=85325 step_elapsed_us=82850 original_deadline_expired=true original_remaining_ns=0 panicking=false
+heptabao-r72-sync: stage=sync_inner_error status=503 loaded=true recovery=false record_root=false
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=150 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=1 stage=transport

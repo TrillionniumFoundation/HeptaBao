@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.x230-current-candidate-reconstruction-scope.v1",
+  "status": "admission_guards_passed_candidate_not_qualified",
+  "reason": "The cloud execution workspace became unavailable. Code was reconstructed from retained tool-visible source and apply_patch text; the new bytes were tested again on X230.",
+  "historical_cloud_test_observation": {
+    "source_kind": "retained_conversation_exec_command_result",
+    "chunk_id": "75f873",
+    "exit_code": 0,
+    "tests_run": 22,
+    "tests_passed": 22,
+    "unittest_elapsed_seconds": 0.196,
+    "original_command": "HEPTABAO_X230_FAILED_RECEIPT=/workspace/scratch/c9fe536787d9/mac09-progress-snapshot.public.json python3 -B -m unittest discover -s qa/openbao-acceptance/tests -p test_x230_current_candidate_qualification.py -v",
+    "old_controller_and_test_file_sha256_available": false,
+    "original_log_file_recovered": false,
+    "last_observed_terminal_text": "Ran 22 tests in 0.196s\n\nOK",
+    "is_byte_identical_original_tool_export": false,
+    "result_transferred_to_reconstructed_code": false
+  },
+  "reconstruction": {
+    "controller_sha256": "7543741ffdac9fcfc93c523aa504777074a0bc6ce3d2f36f242e690c335477b2",
+    "test_sha256": "6196ec1af48e03692e787355e4853a650652a0f31adbbce2b285fa68528ca3ec",
+    "previously_failed_apply_patch_changes_included_only_in_this_new_version": [
+      "input path and controller file hash binding",
+      "source dependency, ignored bytecode and ignored Python source refusal test",
+      "full34 failure prevents comparison69 and finishes owned custody test"
+    ],
+    "new_authoritative_test_result": "admission-tests.result.public.json",
+    "new_tests_run": 24,
+    "new_tests_passed": 24,
+    "durable_job_id": "1a1b1132a4e-fc05-758c",
+    "terminal_state": "succeeded",
+    "terminal_exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "private_host_root": "/home/qian/heptabao-x230-successor-admission-20261106-r1"
+  },
+  "candidate": {
+    "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+    "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab",
+    "qualified": false,
+    "known_failure_receipt": "../authbus-fleet-closure-20261106-r2/mac-09c14-failed/progress.original.public.json",
+    "known_failure_receipt_sha256": "17d184d27c043a59e952ad3235497c066d8a2374d9a4d9fe816cee79eff80d0d",
+    "observed_executed": 103,
+    "observed_passed": 102,
+    "observed_failed": 1,
+    "unexecuted_required": 4,
+    "failure": "native-jwt15_exact_test_result_failed",
+    "later_source_or_artifact_requires_a_new_exact_contract_and_original_receipts": true
+  },
+  "workload_contract": {
+    "full34_driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+    "full34_check_count": 31,
+    "http_seconds": 15,
+    "migration_seconds": 360,
+    "comparison_driver_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+    "comparison_acceptance_sha256": "8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d",
+    "comparison_declared_cases": 68,
+    "comparison_additional_observed_case": "totp.mount",
+    "comparison_required_actual_cases_per_side": 69,
+    "original_default_modules": 13,
+    "previous_normal61_receipts_accepted": false
+  },
+  "scope": {
+    "only_controller_admission_guards_tested": true,
+    "positive_parser_fixtures_are_fictional": true,
+    "new_owned_private_directory": true,
+    "no_candidate_or_oracle_executable_in_staged_inputs": true,
+    "candidate_binary_executed": false,
+    "oracle_binary_executed": false,
+    "full34_executed": false,
+    "comparison69_executed": false,
+    "real_credentials_read_or_written": false,
+    "production_changed": false,
+    "production_cutover": false,
+    "old_docker_modified": false,
+    "legacy_deleted": false,
+    "full_replacement_qualified": false
+  }
+}

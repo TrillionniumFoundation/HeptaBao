@@ -1,0 +1,150 @@
+--- actual-qualified-preserve-absent-r1
++++ prepared-permanent-service-r1
+@@ -1,22 +1,36 @@
+ #!/usr/bin/env python3
+-"""Four once-only actions preserve an absent disabled override.
+-
+-One new credential-free label uses KeepAlive=true and the same original plist
+-for both cold generations. No disable/enable command is available. Unknown
+-state dispatches no compensation; a remaining KeepAlive registration is
+-reported and requires reconciliation of its original identity. This is not a
+-production gateway, cold-credential-consumption, or full-state rollback proof.
++"""Two cold generations of the exact new permanent HeptaBao label.
++
++Prepared adapter only. The same parent must bind the complete normal binary,
++corrected server config, TLS files, existing initialized data and separate key
++custody before supplying runtime_fence and phase_action. It must require the
++label and disabled override to be originally absent. The same create-only plist
++is used for both generations. It is outside the autoload directory.
++
++phase_action may only perform the bounded permanent-service TLS lifecycle on
++the original existing initialized store, with its original key; never init,
++provider refresh, OpenClaw client changes or unknown-request replay. It receives
++the same original absolute deadline and actual bound service birth. Sealed
++startup followed by explicit same-parent unseal is deliberate. No automatic
++unseal daemon or new production client is introduced.
++
++No disable/enable action exists. On failure, public() records whether the exact
++registration may remain. The outer must reconcile that original action/birth;
++this prepared adapter does not authorize compensating mutations after UNKNOWN.
+ """
+ from __future__ import annotations
+ import ctypes,errno,hashlib,json,os,plistlib,re,stat,time
+ from pathlib import Path
+ 
+-ROOT=Path('/Users/qianqi/heptabao-authbus-preserve-absent-20261106-r1')
++ROOT=Path('/Users/qianqi/heptabao-authbus-production-custody/service-lifecycle-r1')
++RUNTIME=Path('/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production')
++PRODUCT='4bde9aee03fcd27c59e13607e529b1cee594b249'
++SERVER_BINARY=str(RUNTIME/'releases'/PRODUCT/'heptabao-server')
++CONFIG=RUNTIME/'etc/server-r2.json'
+ DOMAIN='gui/501'
+-LABEL='org.heptabao.qa.preserve-absent-20261106-r1'
++LABEL='org.heptabao.authbus'
+ TARGET=DOMAIN+'/'+LABEL
+-SLEEP='/bin/sleep'
+-ARGS=[SLEEP,'30']
++ARGS=[SERVER_BINARY,'--config',str(CONFIG)]
+ GRAPH=('bootstrap-first','bootout-first','bootstrap-recovery','bootout-recovery')
+ FIELDS=('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ 
+@@ -55,16 +69,18 @@
+  return value
+ 
+ class Qualification:
+- def __init__(self,*,commands,reader,bsd_info,parse_print,missing_service,until,runtime_fence):
++ def __init__(self,*,commands,reader,bsd_info,parse_print,missing_service,until,runtime_fence,phase_action):
+   need(os.getuid()==501 and time.monotonic()<until<=time.monotonic()+45,'one_original_service_qualification_budget')
+   self.commands=commands;self.reader=reader;self.bsd_info=bsd_info;self.parse_print=parse_print
+   self.missing_service=missing_service;self.until=until;self.runtime_fence=runtime_fence
++  need(callable(runtime_fence) and callable(phase_action),'permanent_service_actual_parent_callbacks')
++  self.phase_action=phase_action
+   self.root_identity=identity(ROOT.lstat());self.events=[];self.mutations={};self.identities=[]
+   self.active_generation=None;self.unknown=False;self.finished=False;self.generation_closed=set();self.disabled_observations=[]
+   self.plists={};self.public_commands=[]
+-  self.report={'schema':'heptabao.mac-preserve-absent-service-primitives.r1','ok':False,
+-   'productionServiceChanged':False,'providerCalls':0,'credentialReads':0,'configurationReads':0,
+-   'keepAliveTrueSyntheticServiceOnly':True,'actualGatewayRegistrationQualified':False,
++  self.report={'schema':'heptabao.mac-permanent-service-primitives.r1','ok':False,
++   'registeredOpenClawServiceChanged':False,'providerCalls':0,'existingPermanentStoreScope':True,
++   'keepAliveTruePermanentServerOnly':True,'autoloadPlistInstalled':False,'actualGatewayRegistrationQualified':False,
+    'productionKeepAliveRollbackQualified':False,'fullDisabledDomainOutputPublished':False,
+    'disableOrEnableActionPermitted':False,'disabledOverrideObservations':self.disabled_observations,'automaticRetry':False,'events':self.events,
+    'mutations':self.mutations,'serviceIdentities':self.identities,'commands':self.public_commands}
+@@ -115,8 +131,8 @@
+   value=self.parse_print(out,TARGET)
+   if generation is not None:
+    entry=self.plists[generation];self.check_plist(generation)
+-   need(value.get('path')==entry['path'] and value.get('program')==SLEEP and value.get('arguments')==ARGS
+-    and value.get('runs') in (0,1),'exact_synthetic_service_registration')
++   need(value.get('path')==entry['path'] and value.get('program')==SERVER_BINARY and value.get('arguments')==ARGS
++    and value.get('runs') in (0,1),'exact_permanent_service_registration')
+   return value
+  def check_plist(self,generation):
+   self.check_root();entry=self.plists[generation];p=Path(entry['path']);fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)
+@@ -145,13 +161,13 @@
+    need(value is not None,'bootstrap_registration_not_missing')
+    if value.get('state')=='running' and type(value.get('pid')) is int:break
+    time.sleep(min(0.1,self.remaining()))
+-  need(value is not None and value.get('state')=='running' and value.get('runs')==1 and type(value.get('pid')) is int,'owned_sleep_running_once')
++  need(value is not None and value.get('state')=='running' and value.get('runs')==1 and type(value.get('pid')) is int,'owned_permanent_server_running_once')
+   process=self.reader.read(value['pid'])
+-  need(process['uid']==501 and process['ppid']==1 and process['pgid']==process['pid'] and process['executable']==SLEEP
+-   and self.reader.children(process['pid'])==[],'actual_owned_sleep_birth_and_no_children')
++  need(process['uid']==501 and process['ppid']==1 and process['pgid']==process['pid'] and process['executable']==SERVER_BINARY
++   and self.reader.children(process['pid'])==[],'actual_owned_permanent_server_birth_and_no_children')
+   rows=self.rows(process['pid'])
+-  need(len(rows)==1 and all(rows[0][key]==process[key] for key in ('pid','ppid','pgid','uid')),'exact_single_sleep_process_group')
+-  need(self.reader.read(process['pid'])==process,'same_sleep_birth_after_group_read')
++  need(len(rows)==1 and all(rows[0][key]==process[key] for key in ('pid','ppid','pgid','uid')),'exact_single_permanent_server_process_group')
++  need(self.reader.read(process['pid'])==process,'same_permanent_server_birth_after_group_read')
+   entry=self.plists[generation];entry['process']=process;self.identities.append({'generation':generation,**process})
+   self.active_generation=generation;self.event('running',{'generation':generation,'identity':process})
+   return process
+@@ -192,7 +208,7 @@
+    if state is None and gone and not related:break
+    need(time.monotonic()<deadline,'bounded_original_service_retirement_wait')
+    if state is not None:
+-    need(state.get('path')==self.plists[generation]['path'] and state.get('program')==SLEEP and state.get('arguments')==ARGS,
++    need(state.get('path')==self.plists[generation]['path'] and state.get('program')==SERVER_BINARY and state.get('arguments')==ARGS,
+      'no_replaced_label_during_retirement')
+    time.sleep(min(0.1,self.remaining()))
+   for number in range(2):
+@@ -206,13 +222,18 @@
+   self.runtime_fence();need(self.query() is None and self.disabled() is None,'new_unregistered_unoverridden_qa_label')
+   p=ROOT/'original-service.plist'
+   raw=plistlib.dumps({'Label':LABEL,'ProgramArguments':ARGS,'RunAtLoad':True,'KeepAlive':True,
+-   'WorkingDirectory':str(ROOT),'StandardOutPath':str(ROOT/'service.stdout.private'),
++   'WorkingDirectory':str(RUNTIME),'EnvironmentVariables':{'HOME':'/Users/qianqi',
++    'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','LC_ALL':'C'},
++   'ThrottleInterval':10,'ExitTimeOut':30,'Umask':0o077,
++   'StandardOutPath':str(ROOT/'service.stdout.private'),
+    'StandardErrorPath':str(ROOT/'service.stderr.private')},fmt=plistlib.FMT_XML,sort_keys=True)
+   self.write(p.name,raw);original_identity=identity(p.lstat())
+   for generation in ('first','recovery'):
+    self.plists[generation]={'path':str(p),'raw':raw,'identity':original_identity}
+   self.dispatch('bootstrap-first','first');first=self.bind_running('first')
+   need(self.disabled() is None,'first_running_override_absent')
++  self.phase_action('first',dict(first),self.until)
++  self.same_running('first')
+   self.dispatch('bootout-first','first');self.absence('first')
+   need(self.disabled() is None,'first_retired_override_absent')
+   self.check_plist('first');self.check_plist('recovery')
+@@ -220,6 +241,8 @@
+   need(first['pid']!=second['pid'] and (first['birthSec'],first['birthUsec'])!=(second['birthSec'],second['birthUsec']),
+    'new_recovery_process_birth')
+   need(self.disabled() is None,'cold_restored_override_absent')
++  self.phase_action('recovery',dict(second),self.until)
++  self.same_running('recovery')
+   self.check_plist('first');self.check_plist('recovery')
+   self.dispatch('bootout-recovery','recovery');self.absence('recovery')
+   need(self.disabled() is None,'final_original_override_absent');self.runtime_fence();self.remaining()
+@@ -230,7 +253,7 @@
+   self.finished=True;self.report.update(ok=True,allFourOriginalMutationsKnown=True,allOwnedServiceGenerationsAbsent=True,
+    sameOriginalPlistWholeBytesAndFull9ColdRestored=True,originalKeepAliveTrue=True,
+    originalOverrideAbsencePreserved=True,disabledNamespaceEntryCreated=False,
+-   productionGatewayOrRollbackQualified=False)
++   productionGatewayOrRollbackQualified=False,permanentServiceApiQualificationBelongsToOriginalParent=True)
+   return self.report
+  def public(self):
+   self.report.update(unknown=self.unknown,finished=self.finished,

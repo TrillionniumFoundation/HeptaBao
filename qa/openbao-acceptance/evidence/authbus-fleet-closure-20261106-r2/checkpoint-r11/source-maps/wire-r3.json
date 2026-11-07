@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.mac-main3-sdk-wire-r3-qualification-archive.r1",
+  "repositoryFullName": "TrillionniumFoundation/HeptaBao",
+  "repositoryPrefix": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-sdk-wire-r3",
+  "files": [
+    {
+      "path": "main3_sdk_wire_r3.mjs",
+      "blobSha": "0ab4ea56700ccac7750483245883b4bda1583a95",
+      "bytes": 13346,
+      "sha256": "e80c7eb22e2cd2fbc547eb085b8eb0b482e8e656baa8a59520e0cb93a4c0396c"
+    },
+    {
+      "path": "wire-r2-to-r3.diff",
+      "blobSha": "088e5d856f29bf8635b07499d00ceb38b093a7c7",
+      "bytes": 3052,
+      "sha256": "3ab411221acfa54957a468ccb5ac0b0816b2f7b533458fa7030537efe9fd3ed7"
+    },
+    {
+      "path": "test_main3_sdk_wire_r3.mjs",
+      "blobSha": "03189c743b7cf9b81f4354f2e00919f2c930fb5d",
+      "bytes": 17134,
+      "sha256": "c5148a8a2f465b326bcadd4bc6924555f2e72991da9b33e564618a8e66efb7d7"
+    },
+    {
+      "path": "qualification/local-wire-r3.stdout.json",
+      "blobSha": "d8d0af2987fab5ae91ffe085e7507a40ce1bafbf",
+      "bytes": 2565,
+      "sha256": "e23d3179631168bf105bfb3e1a56bbb5db60548c47903bf08e78513eb04f0545"
+    },
+    {
+      "path": "qualification/local-wire-r3.stderr.txt",
+      "blobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qualify_wire_r3_mac.reviewed-draft.py",
+      "blobSha": "51f41dd9ad83f3b8fd21d97bf4fc44db76c7b46e",
+      "bytes": 39350,
+      "sha256": "f2fb4fd0463018282b775bcd5fd3ecda09b1b50c60f6bde1951b334eb64e14e3"
+    },
+    {
+      "path": "qualify_wire_r3_mac_node.mjs",
+      "blobSha": "089adf6ef08b25ebc9fb4fe4928701b84b4d3424",
+      "bytes": 10876,
+      "sha256": "ca9119c925bd1a0579463bcdc2ffa5beb25d7b469ae762ac01f1a8fa596380a0"
+    },
+    {
+      "path": "qualify_wire_r3_mac.py",
+      "blobSha": "b48bc79c50fdd3699d04065bbc8470c1bb934a0e",
+      "bytes": 39338,
+      "sha256": "6a5561c68475286e46083cfbb1731777ba44e5bddd5d58f05ef711705541ae5d"
+    },
+    {
+      "path": "execution/launch.original.json",
+      "blobSha": "05c47e6f552ecb6f43b0c492effcd5aaee07c3da",
+      "bytes": 41211,
+      "sha256": "5992c998f4fa84b930fb1a07acb545d3d8535f8618fbe267a5c9ad5e657ab08e"
+    },
+    {
+      "path": "execution/terminal.original.json",
+      "blobSha": "c5527d5ec7721c66649d9904a9bad9158855f053",
+      "bytes": 733,
+      "sha256": "e365439d26e38e5fb0013cdb2a9c65e35032d00d5f6d5f167b1ae7a8c86ed424"
+    },
+    {
+      "path": "execution/read-0.original.json",
+      "blobSha": "c5935c54e950ea8d2f4af3a93b4f94d10dd9e9a0",
+      "bytes": 50870,
+      "sha256": "ba52514c93735bfef8898a357de87cd98f069fefcf1a5b29e0662aa1239e7f74"
+    },
+    {
+      "path": "execution/read-1.original.json",
+      "blobSha": "ce8a3d70c8ec44a391ef301b310fc88e92aef875",
+      "bytes": 50815,
+      "sha256": "63b568e9b6d7196f02bfdb0ea7f32696f3afa6ebb4fdb0ca17f067a18fa05e99"
+    },
+    {
+      "path": "execution/read-2.original.json",
+      "blobSha": "6330241e3c750f6c9f3042fb8e9ff6156d36666a",
+      "bytes": 24910,
+      "sha256": "8e2736907170b0fe902f0af974996498a8bcb63391c233ea3970cbf9717482c7"
+    },
+    {
+      "path": "execution/stdout.original.json",
+      "blobSha": "a14de8441e123c3ed7f802637678bcccce1f02e1",
+      "bytes": 40735,
+      "sha256": "452b85a688ebb21e53e4e2246f8931715e868274acb3421e4d3ce9f42e540816"
+    },
+    {
+      "path": "README.md",
+      "blobSha": "bf4ba5278cc296142630228907b23d52bbf494ba",
+      "bytes": 3168,
+      "sha256": "c5d143391bff0bf8686a61641ff421ccbba15a75fbb291d4b8cb2885f9ba7b57"
+    },
+    {
+      "path": "verification.public.json",
+      "blobSha": "39f4e83157e8325f62c8c10a745b7ebf34869eaf",
+      "bytes": 871,
+      "sha256": "5ff638f75c6fc914d97a1874b5cb7cb586f68d973be12f8813ad6f410aacf32d"
+    }
+  ]
+}

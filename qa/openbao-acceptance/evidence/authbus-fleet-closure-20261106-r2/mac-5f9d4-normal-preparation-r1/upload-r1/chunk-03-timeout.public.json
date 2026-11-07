@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.fixed-upload-original-timeout.r1",
+  "host": "mac",
+  "uploadId": "mac-normal-5f9d4-bundle-20261107-r1",
+  "offset": 1572864,
+  "bytes": 524288,
+  "chunkSha256": "467b6f9f9da7b303302b3f06f13522a4e9aeac387cdda21e19a96cd02a444f1a",
+  "attemptedUtc": "2026-11-07T04:08:04.004Z",
+  "originalText": [
+    "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.binary_upload`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+  ],
+  "knownAcceptedPreviousBytes": 1572864,
+  "commitDispatched": false,
+  "successorChunkDispatched": false,
+  "reconcileContract": "same_upload_id_exact_offset_exact_bytes_only"
+}

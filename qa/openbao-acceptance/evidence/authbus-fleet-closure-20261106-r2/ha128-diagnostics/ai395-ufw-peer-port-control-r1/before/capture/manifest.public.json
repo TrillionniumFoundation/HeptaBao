@@ -1,0 +1,20 @@
+{
+  "phase": "before",
+  "expectedRootIdentity": null,
+  "kernelInputs": [
+    {
+      "kind": "nft",
+      "path": "/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e5960fe81f2228-fc05-7/output.log",
+      "bytes": 100231,
+      "sha256": "d291c9486cd83e45037c026864d98613ecf4fa62dd413c503b3d126ef7aa6283",
+      "eofAuthorityOriginal": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e5960fe81f2228-fc05-7/output.log\",\"available_end\":100231,\"bytes_hex\":\"\",\"chunk_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"host\":\"ai395\",\"next_offset\":100231,\"offset\":100231,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-18e5960fe81f2228-fc05-7\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":100231,\"bytes_stored\":100231,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794005022485,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":1780445,\"pid\":1780446,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+    },
+    {
+      "kind": "iptables-filter",
+      "path": "/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e59616ff0905d8-fc05-8/output.log",
+      "bytes": 8521,
+      "sha256": "fdff3498bd2cd304c21e2a7bb073bebd97a30c3c2b580ffdbb659b36fe380793",
+      "eofAuthorityOriginal": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e59616ff0905d8-fc05-8/output.log\",\"available_end\":8521,\"bytes_hex\":\"\",\"chunk_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"host\":\"ai395\",\"next_offset\":8521,\"offset\":8521,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-18e59616ff0905d8-fc05-8\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":8521,\"bytes_stored\":8521,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794005052955,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":1781521,\"pid\":1781522,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+    }
+  ]
+}

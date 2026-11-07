@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.authbus-preserve-absent-mac-r1.immutable-map",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "pathPrefix": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/",
+  "entries": [
+    {
+      "path": "preserve-absent-mac-r1/code/mac_gateway_preserve_absent_primitives_r1.py",
+      "bytes": 15375,
+      "sha256": "32a471e45de11c653aa3eac3a2a76c7f8dea3da2666bea326f25e87f2f9fda48",
+      "blob": "73e9c411e2415115af328ae4ddf8f8a419a18aa5"
+    },
+    {
+      "path": "preserve-absent-mac-r1/code/launch_preserve_absent_primitives_r1.template.py",
+      "bytes": 12116,
+      "sha256": "61d9f65eb88563589683587abe2ad30481e30ef667c089f9d4ef73dcdaae337a",
+      "blob": "3980418b19c8cff67e167ed88509d2159c1850cd"
+    },
+    {
+      "path": "preserve-absent-mac-r1/code/launch_preserve_absent_primitives_r1.py",
+      "bytes": 126346,
+      "sha256": "75ee27ae3c3ea5d3e248ce3da8e47b9d0e56a4598402949f11400761622868fe",
+      "blob": "06cc028552aaa45ed5fc2df19db2b43a53b4960d"
+    },
+    {
+      "path": "preserve-absent-mac-r1/code/derive_preserve_absent_primitives_r1.py",
+      "bytes": 11075,
+      "sha256": "138bd66da793cc26b4eca1e1408dd9ca18a55c8d3b1de58e1c7e584b83c5d0ec",
+      "blob": "0296c14ec60eaee072d489b5940b6dc01951b7cc"
+    },
+    {
+      "path": "preserve-absent-mac-r1/code/preserve-absent-primitives-r1.diff",
+      "bytes": 15026,
+      "sha256": "656ef6f6c7b23802ad773f52a3ecce41e27202c3524108989a7a7a8371fe2409",
+      "blob": "72b2ed4b9afab20772f169dc7f4403b9134cc065"
+    },
+    {
+      "path": "preserve-absent-mac-r1/code/preserve-absent-primitives-r1.prepared.public.json",
+      "bytes": 1652,
+      "sha256": "13ff138560a80b2aa56e3e51e3ef0f61d2bec79f064a7a76b0a29e8e03cc579f",
+      "blob": "7c07102830db898115ef81f28f461e86ac747f01"
+    },
+    {
+      "path": "preserve-absent-mac-r1/code/qualify_preserve_absent_primitives_local_r1.py",
+      "bytes": 5539,
+      "sha256": "57c21e4f20a175cbe3b7386a5b57809bdcf9cb8315b392fa6ad6371ae1804edf",
+      "blob": "d4c5c0359f621ffa5e3d68f99df40b3d6133068b"
+    },
+    {
+      "path": "preserve-absent-mac-r1/code/preserve-absent-primitives-local-r1.result.public.json",
+      "bytes": 1349,
+      "sha256": "bf47ed0981d34aba99334f4049e24c16851ce6c41ff58e9a1dada34cfc519dd4",
+      "blob": "6335442f15922a8235a1c5c418b92ee1f4f179d0"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-read-0.original.json",
+      "bytes": 54572,
+      "sha256": "b200083bdb97450ba3ca12926ff317762283a9bc76354fd05d6850af9e4b8313",
+      "blob": "036d2744f6cb728b0af8f8243cde646ccec088d2"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-read-1.original.json",
+      "bytes": 54615,
+      "sha256": "547c5f7b46d8362a752e093e8c0260ef51f64b5632dc8fead7eae5d4df3c65b4",
+      "blob": "5252ed07964771587e6e98981687889be9eacb83"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-read-2.original.json",
+      "bytes": 54504,
+      "sha256": "d2f8088d08f72fc2366a7f1477367b91161e46aca86b9a86984bb2fe6e71f0bf",
+      "blob": "8fd98e622595427565d24908f23e011128e6a5b5"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-read-3.original.json",
+      "bytes": 54618,
+      "sha256": "c0ac94f9c98477391380b640b9a4ba4c662e9a4902dcbc0c753fd1145fe98952",
+      "blob": "ab9b310ce7b6d99fd3e03660256033b47c904b6d"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-read-4.original.json",
+      "bytes": 54642,
+      "sha256": "05a1c295d28e302c7568bb3df464a4692d8ffddf9b7c1d2686672eee4b892470",
+      "blob": "4492cc03897887f8ad81c3508ed534655a9a7026"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-read-5.original.json",
+      "bytes": 54684,
+      "sha256": "e9bc3720f0e46d5cdef7ee4f706924c07d96126599663c6cdbfefa7779dd2086",
+      "blob": "072093bd80594b6ce7a5f05f8f32d40fdc4b4090"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-read-6.original.json",
+      "bytes": 27068,
+      "sha256": "93fca0e8bed4d3823c16f195e154804c89fab985461218cf753f30c70a0bf2e3",
+      "blob": "4a39aa386d6d5dd87fe71b389b75dadad4574070"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-start.original.json",
+      "bytes": 144563,
+      "sha256": "09f1146992316bcbdb238c1b517f650b75f8d894378378a5cb8647f521b27f3f",
+      "blob": "b493a540ee87a7fb8ed11e157374ae68ae60aa2e"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime-terminal.original.json",
+      "bytes": 959,
+      "sha256": "6321d3b6110e2db55811241f9867c1ac82f0c591bd5f72efbcb241c1c8ac4cff",
+      "blob": "097d519ae9cfbc6af922434de739d9d963bdf2f3"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime.stdout.original.hex",
+      "bytes": 212272,
+      "sha256": "73d1a8aa16d6706449074c7a7d3b4b256b46c6e89b3e7648e33d98f9a9703016",
+      "blob": "7b5f99cf206f8d8042afa26550f458873e670607"
+    },
+    {
+      "path": "preserve-absent-mac-r1/original/runtime.stdout.original.json",
+      "bytes": 106135,
+      "sha256": "def137cd582f399dce58c69e89a8aacc8301645f99f40c25e6652059954961d5",
+      "blob": "dff183bdc46322e58b7efbdf0b547adeb2eef1b4"
+    }
+  ],
+  "scope": {
+    "actualMacSyntheticKeepAliveTrue": true,
+    "preserveDisabledOverrideAbsence": true,
+    "serviceActions": 4,
+    "commandHelpers": 40,
+    "recordedFileDescriptors": 87,
+    "providerCalls": 0,
+    "productionServiceActions": 0,
+    "productionRollbackQualified": false
+  },
+  "originalJob": "1a1b3d6ebd5-fc05-8503",
+  "originalKey": "heptabao-mac-authbus-preserve-absent-primitives-20261106-r1",
+  "runtimeStdoutBytes": 106135,
+  "runtimeStdoutSha256": "def137cd582f399dce58c69e89a8aacc8301645f99f40c25e6652059954961d5"
+}

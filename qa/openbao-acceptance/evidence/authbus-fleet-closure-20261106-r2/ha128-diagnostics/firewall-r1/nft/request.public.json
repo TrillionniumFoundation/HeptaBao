@@ -1,0 +1,13 @@
+{
+  "host": "x230",
+  "executable": "/usr/sbin/nft",
+  "args": [
+    "-j",
+    "list",
+    "ruleset"
+  ],
+  "non_interactive": true,
+  "fresh_auth": false,
+  "rows": 40,
+  "cols": 160
+}

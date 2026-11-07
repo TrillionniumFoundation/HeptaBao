@@ -1,0 +1,7 @@
+{
+  "chunk_id": "2dd94a",
+  "wall_time_seconds": 0.710811868,
+  "exit_code": 0,
+  "original_token_count": 179,
+  "output": "{\"cases\": [\"original_17_iteration_method_stops_after_tenth_exact_read_before_eleventh_intent\", \"tenth_get_timeout_preserved_without_completion_or_retry\", \"tenth_write_rejection_stops_before_tenth_read\", \"ninth_exact_read_failure_never_dispatches_tenth_write\", \"different_elected_target_refused_without_forced_election\", \"seed_exact_reads_do_not_trigger_prefix_stop\", \"version12_without_all_twelve_original_history_entries_refused\", \"all_613_original_pins_and_three_embedded_sources_exact\"], \"networkCalls\": 0, \"originalMethodSha256\": \"cecfb866bab88426f82acb79676c60695ee7bae338062fb636b6e9f4940ff317\", \"passed\": 8, \"productExecutions\": 0, \"required\": 8, \"schema\": \"heptabao.history10-local-prefix-fault-checks.v1\"}\n"
+}

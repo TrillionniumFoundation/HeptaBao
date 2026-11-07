@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/qualify_current_selected_main3_local_r1.py", line 151, in <module>
+    check('real-fs-private-two-inputs-and-full-closure', filesystem_case)
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/qualify_current_selected_main3_local_r1.py", line 24, in check
+    function()
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/qualify_current_selected_main3_local_r1.py", line 129, in filesystem_case
+    assert observer.read(capsule) == capsule.read_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_current_selected_main3_r1.py", line 187, in read
+    parent = self.directory(path.parent)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_current_selected_main3_r1.py", line 171, in directory
+    parent = None if path == Path('/') else self.directory(path.parent)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_current_selected_main3_r1.py", line 171, in directory
+    parent = None if path == Path('/') else self.directory(path.parent)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_current_selected_main3_r1.py", line 171, in directory
+    parent = None if path == Path('/') else self.directory(path.parent)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 2 more times]
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_current_selected_main3_r1.py", line 174, in directory
+    need(stat.S_ISDIR(named.st_mode) and named.st_uid == wanted
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_current_selected_main3_r1.py", line 54, in need
+    raise CurrentOwnersRefused(code)
+mac_current_selected_main3_r1.CurrentOwnersRefused: current_three_owned_nonalias_scope_directory

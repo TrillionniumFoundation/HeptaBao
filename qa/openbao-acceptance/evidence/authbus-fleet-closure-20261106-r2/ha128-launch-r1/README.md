@@ -1,0 +1,13 @@
+# Current physical HA128: original r1 failure retained
+
+The original current-candidate campaign `1a1b29efcd8-fc05-7ef9` failed with exit 1. Its runtime reports complete, durable, untruncated output, no timeout, no cancellation and no automatic retry. The original 30,063-byte stdout is retained losslessly alongside both original paginated read responses and the terminal response.
+
+Only **16 of the original 128 checks passed**. The failure is `node_1_listener_timeout` during `fresh_standalone_v5_seed`. The original node-1 server log reports a TLS listener at `192.168.0.13:46230`; that message does not prove the Mac controller completed TCP, TLS or HTTP. The original health loop suppresses several transport exceptions, so this result alone cannot identify a firewall, privacy permission, certificate or protocol root cause.
+
+The unchanged original workload was invoked from the exact `af91ec0cecbb1c0bd717095d6d8696a3f73a1cee` QA tree, with all 613 Python source pins checked before and after. Product code remains canonical `4bde9aee03fcd27c59e13607e529b1cee594b249`. Both Linux voters use the normal Pocket4 build (`85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c`), and the Mac voter is bound to the normal Mac build (`5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c`). An independent source review is included.
+
+The 16 completed checks establish input provenance, the three physical-host and new-root bindings, binary identities, ABI/direct-LAN configuration admission and cleanup. They do not qualify failover, quorum loss, replication, history, snapshot restore or cold restart. No initialization custody was saved; there were zero mutation intents, responses or unknown HTTP mutation outcomes. The original harness stopped node-1 PID 324496 and reported both owned-process and owned-mesh cleanup passed. No product instance was started on the other two voters.
+
+The original listener deadline (45 seconds), per-health-attempt budget (1.5 seconds), HTTP budget (15 seconds), native admission budget (8 seconds), product binaries and original workload were not extended or changed. The outer supervisor was fixed at 1,800 seconds for this first invocation. No blind replay, production service action or production credential change followed the failure.
+
+The public seed configuration, process log, PID history, fixture marker and CA/leaf certificates were subsequently read through the native file API and are archived as original responses. Private key bytes and digests are excluded. Separate credential-free diagnostics may identify the transport failure, but cannot change this original failed result into a pass.

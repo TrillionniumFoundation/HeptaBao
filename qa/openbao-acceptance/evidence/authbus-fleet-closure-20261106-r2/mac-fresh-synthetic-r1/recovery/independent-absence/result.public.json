@@ -1,0 +1,33 @@
+{
+  "credentialValuesOrDigestsIncluded": false,
+  "elapsedSeconds": 0.027833417057991028,
+  "genericSystemScopeServiceStatusUsedAsGuiProof": false,
+  "hostileEscapedDescendantContainmentClaimed": false,
+  "ok": true,
+  "processArgumentsRead": false,
+  "rounds": [
+    {
+      "guiLabelAbsent": true,
+      "guiQueryExactStderr": "Bad request.\nCould not find service \"org.heptabao.qa.mac-fresh-synthetic-20261106-r1.server\" in domain for user gui: 501\n",
+      "guiQueryExitCode": 113,
+      "index": 0,
+      "nativePidInfoErrno": 3,
+      "nativePidInfoReturnedBytes": 0,
+      "processMetadataRowsExamined": 716,
+      "relatedPidGroupOrDirectChildRows": []
+    },
+    {
+      "guiLabelAbsent": true,
+      "guiQueryExactStderr": "Bad request.\nCould not find service \"org.heptabao.qa.mac-fresh-synthetic-20261106-r1.server\" in domain for user gui: 501\n",
+      "guiQueryExitCode": 113,
+      "index": 1,
+      "nativePidInfoErrno": 3,
+      "nativePidInfoReturnedBytes": 0,
+      "processMetadataRowsExamined": 716,
+      "relatedPidGroupOrDirectChildRows": []
+    }
+  ],
+  "schema": "heptabao.mac-fresh-synthetic-r1-independent-absence.r1",
+  "serviceMutationDispatched": false,
+  "target": "gui/501/org.heptabao.qa.mac-fresh-synthetic-20261106-r1.server"
+}

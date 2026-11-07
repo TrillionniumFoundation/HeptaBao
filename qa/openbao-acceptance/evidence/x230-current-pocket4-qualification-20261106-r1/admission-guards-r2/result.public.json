@@ -1,0 +1,89 @@
+{
+  "actual_failed_mac09_receipt_exercised_unchanged": true,
+  "actual_failed_mac09_receipt_sha256": "17d184d27c043a59e952ad3235497c066d8a2374d9a4d9fe816cee79eff80d0d",
+  "actual_x230_runtime_qualified": false,
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/tests/test_x230_current_candidate_qualification.py",
+    "-v"
+  ],
+  "at_utc": "2026-11-06T19:30:46.720748+00:00",
+  "current_linux107_qualified_by_this_test": false,
+  "executed_tests": 31,
+  "exit_code": 0,
+  "outputs": {
+    "stderr": {
+      "bytes": 5031,
+      "sha256": "283451b503aa769e033731d4984b569c4bf799658c47f46664bf1f39207134a9"
+    },
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "schema": "heptabao.current-pocket4-x230-admission-local-guards.v1",
+  "scope": "local guard fixtures and exact real failed Mac09 receipt rejection; zero candidate/oracle execution",
+  "sources_after": {
+    "/workspace/scratch/c9fe536787d9/HeptaBao-current-924b/qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 72065,
+      "sha256": "01993e6c367bf8b896b4832c7723b1f36900fefbc20fcc05394ce401ec6b4f67"
+    },
+    "/workspace/scratch/c9fe536787d9/HeptaBao-current-924b/qa/openbao-acceptance/tests/test_x230_native_abi_admission.py": {
+      "bytes": 13216,
+      "sha256": "02df09e9c91fe4d376157143ca457f4e6761ec3ad4923da4e930fec93eb8a288"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/test-selection.public.json": {
+      "bytes": 142663,
+      "sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/tests/test_x230_current_candidate_qualification.py": {
+      "bytes": 36701,
+      "sha256": "d22a0a34b3603f0c925ae3a945585ab8716bfc3da7e40970b0a8dc71045d5acd"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_current_candidate_qualification.py": {
+      "bytes": 33147,
+      "sha256": "448696002a72dbca1c9d2b070d826a34aac4ef0bc4ad7c3e77feab7a66fa7655"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_native_abi_admission.py": {
+      "bytes": 14323,
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_native_abi_capture.py": {
+      "bytes": 22881,
+      "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63"
+    }
+  },
+  "sources_before": {
+    "/workspace/scratch/c9fe536787d9/HeptaBao-current-924b/qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 72065,
+      "sha256": "01993e6c367bf8b896b4832c7723b1f36900fefbc20fcc05394ce401ec6b4f67"
+    },
+    "/workspace/scratch/c9fe536787d9/HeptaBao-current-924b/qa/openbao-acceptance/tests/test_x230_native_abi_admission.py": {
+      "bytes": 13216,
+      "sha256": "02df09e9c91fe4d376157143ca457f4e6761ec3ad4923da4e930fec93eb8a288"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/test-selection.public.json": {
+      "bytes": 142663,
+      "sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/tests/test_x230_current_candidate_qualification.py": {
+      "bytes": 36701,
+      "sha256": "d22a0a34b3603f0c925ae3a945585ab8716bfc3da7e40970b0a8dc71045d5acd"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_current_candidate_qualification.py": {
+      "bytes": 33147,
+      "sha256": "448696002a72dbca1c9d2b070d826a34aac4ef0bc4ad7c3e77feab7a66fa7655"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_native_abi_admission.py": {
+      "bytes": 14323,
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_native_abi_capture.py": {
+      "bytes": 22881,
+      "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63"
+    }
+  },
+  "sources_unchanged": true,
+  "status": "passed"
+}

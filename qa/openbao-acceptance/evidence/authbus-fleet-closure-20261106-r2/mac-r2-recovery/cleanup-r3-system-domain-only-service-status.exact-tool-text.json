@@ -1,0 +1,16 @@
+{
+  "services": [
+    {
+      "exit_code": 113,
+      "name": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+      "observation_complete": false,
+      "resolution": "system_domain_only",
+      "scope": "system",
+      "scopes_checked": [
+        "system"
+      ],
+      "stderr": "Bad request.\nCould not find service \"org.heptabao.qa.mac-authbus-4e808-home-r2.server\" in domain for system",
+      "stdout": ""
+    }
+  ]
+}

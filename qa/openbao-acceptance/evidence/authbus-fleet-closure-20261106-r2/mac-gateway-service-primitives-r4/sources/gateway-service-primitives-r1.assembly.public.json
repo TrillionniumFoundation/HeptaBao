@@ -1,0 +1,44 @@
+{
+  "actualMacRun": false,
+  "assembled": {
+    "bytes": 124207,
+    "sha256": "aa46a3f6df213d986f46eb564e635304b08f98ef5b4f9472d2d3dd4e3e085de1"
+  },
+  "coreOriginalUnchanged": true,
+  "embeddedSourceReadbackExact": true,
+  "parserDefinitionNames": [
+    "ManagerRefused",
+    "need",
+    "parse_print",
+    "missing_service"
+  ],
+  "parserWholeSourceBoundFourDefinitionsOnly": true,
+  "qualifiedHelperBytesUnchanged": true,
+  "schema": "heptabao.gateway-service-primitives.assembled-source.r1",
+  "sources": {
+    "mac_gateway_service_primitives_r1.py": {
+      "bytes": 14573,
+      "sha256": "eab8ad884a50c2adb4f2e6b49c7defbdd3e06a66f4e9cd9a446f900e4a86a285"
+    },
+    "mac_native_process_observer_r1.py": {
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_owned_launchd_r3.py": {
+      "bytes": 58613,
+      "sha256": "19c131fa1952a48e99f521fee024bb9ef34ccc94901cc604b0c75c7424689031"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    }
+  },
+  "template": {
+    "bytes": 10813,
+    "sha256": "0c9b161590a70a39a1c4888df624a797b05db0d7d106f4cb80e48dbf76b6e4e0"
+  }
+}

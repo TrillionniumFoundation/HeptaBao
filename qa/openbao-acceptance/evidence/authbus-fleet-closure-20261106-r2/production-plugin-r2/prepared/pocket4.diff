@@ -1,0 +1,38 @@
+--- pocket4/r1/index.js
++++ pocket4/r2/index.js
+@@ -921,7 +921,7 @@
+       },
+     });
+ 
+-    async function cycle(ctx) {
++    async function cycle(ctx, { propagateFailure = false } = {}) {
+       if (running || stopped) return;
+       running = true;
+       const releaseOperation = await acquireOperationLock();
+@@ -1214,6 +1214,7 @@
+           elapsedMs: Date.now() - startedAt,
+           error: error instanceof Error ? error.message : String(error),
+         });
++        if (propagateFailure) throw error;
+       } finally {
+         running = false;
+         releaseOperation();
+@@ -1237,7 +1238,7 @@
+             releaseOperation();
+           }
+           if (stopped || serviceContext !== ctx) return;
+-          await cycle(ctx);
++          await cycle(ctx, { propagateFailure: true });
+           if (stopped || serviceContext !== ctx) return;
+           timer = setInterval(() => void cycle(ctx), config.pollIntervalMs);
+           timer.unref?.();
+--- pocket4/r1/package.json
++++ pocket4/r2/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@local/openclaw-authbus",
+-  "version": "0.3.3-heptabao.1",
++  "version": "0.3.3-heptabao.2",
+   "type": "module",
+   "files": [
+     "index.js",

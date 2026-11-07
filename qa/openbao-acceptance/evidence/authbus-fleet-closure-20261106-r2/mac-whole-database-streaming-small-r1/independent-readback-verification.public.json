@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.small-streaming-original-readback-verification.r1",
+  "jobId": "1a1b347c2f5-fc05-81b8",
+  "originalParentStdoutBytes": 15326,
+  "originalParentStdoutSha256": "a641e39322395761b65815a32d308d2fb594235dc8000a00bcb98f7ead679ba9",
+  "originalWorkerStdoutBytes": 11566,
+  "originalWorkerStdoutSha256": "7339e480cc87830e7f7edf55d79420f272ca9ecb547d3221c174b6000b06728e",
+  "independentWorkerMatchesParent": true,
+  "originalBytesRetained": true,
+  "noProductionSourceRead": true
+}

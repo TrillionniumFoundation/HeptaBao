@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.mac-main3-sdk-prepared-public.r2",
+  "status": "prepared_not_executed_on_mac",
+  "canonicalProductCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "sourceFiles": {
+    "main3_sdk_cycle_r2.mjs": {
+      "bytes": 31439,
+      "sha256": "37421c74a35f6939050909b4d770b3bc1e01bc3e6a3455dba4abe1b90fc1e7c6",
+      "gitBlob": "c11241963266f646d55d118b8584b8b7247b222a"
+    },
+    "main3_sdk_wire_r2.mjs": {
+      "bytes": 12400,
+      "sha256": "2b06342e30703611729788a522ba764ae30adfe1e47c4f4673b7aa8f647170e2",
+      "gitBlob": "ce9f1d3064c1b8cb459e76f3b9d354e8af106d76"
+    },
+    "main3_auth_rows_cas_r1.mjs": {
+      "bytes": 3040,
+      "sha256": "b3dc14d160ae8c76a2b50ec21e245e68954e1a956b401a1daa306582bffaa584",
+      "gitBlob": "16021af1af72d3f98d037daa58df5e11cd19d7a0"
+    },
+    "main3_authbus_cache_cas_r1.mjs": {
+      "bytes": 6983,
+      "sha256": "d0d2b19199d299dd8f163f0f18caade0153da9ccabaf9de20f42c89c8a255243",
+      "gitBlob": "b5d69d97738ab2b9f95ef67308693d28089d1c8c"
+    },
+    "test_main3_sdk_wire_r2.mjs": {
+      "bytes": 14837,
+      "sha256": "4ebe7ec27834e98b3d6512134630fd83fe1904b28da7ccf2b13b89303eb9e310",
+      "gitBlob": "2a79c833fb51fd02ddebe39737b1f7c341ff1c2b"
+    }
+  },
+  "localQualification": {
+    "platform": "linux",
+    "node": "v24.22.1",
+    "passed": 22,
+    "failed": 0,
+    "tlsConnections": 15,
+    "httpRequests": 15,
+    "allOwnedTlsPeersClosed": true,
+    "actualMacSandboxExecuted": false,
+    "actualInstalledSdkExecuted": false,
+    "productionCredentialsRead": false
+  },
+  "plannedRuntime": {
+    "stateRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r1/state",
+    "sourceOwnerCredentialCount": 3,
+    "effectiveConsumerReferenceCount": 15,
+    "nodeProcesses": 2,
+    "requestAbsoluteMaximumMs": 15000,
+    "phaseMaximumMs": 120000
+  },
+  "plannedChecks": [
+    "all eight actual plugin files pinned without content modification",
+    "actual SDK effective store and source-owner checks",
+    "one initial plugin cycle with three imports",
+    "new-process persistence and cached plugin cycle",
+    "private exact inverse of five auth stores, two auth tables and six cache files",
+    "bounded strict HTTP content-length, valid chunked or no-body framing",
+    "actual source-bound SQLite exit callback observed and invoked once before state cache closure",
+    "kernel read, write and network refusal probes before business work"
+  ],
+  "scopeLimits": {
+    "wholeProductionDatabaseRollback": false,
+    "registryBootstrapRollback": false,
+    "actualGatewayRestart": false,
+    "providerValidity": false,
+    "providerRefresh": false,
+    "productionTrafficCutover": false,
+    "fullReplacementQualified": false,
+    "transitiveSdkDependencyClosure": false
+  },
+  "sourceCodeOnlyChanges": {
+    "normalProductModified": false,
+    "validChunkedSupportAddedToQa": true,
+    "unsettledOriginalPluginResponseFailureForwardedOnce": true,
+    "requestDeadlineIncreased": false,
+    "automaticRetryAdded": false
+  },
+  "originalResultPreserved": true
+}

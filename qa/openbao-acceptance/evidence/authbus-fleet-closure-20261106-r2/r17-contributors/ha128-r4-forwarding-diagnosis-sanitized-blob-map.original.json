@@ -1,0 +1,6 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/forwarding-diagnosis/node1.ordinary-timing.original.public.json": "79368cd9efae7d4d3074da61dfc81a57cef4a0de",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/forwarding-diagnosis/node2.ordinary-timing.original.public.json": "5adacf1fc6991bfed96061457bb38e328fe42d3d",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/forwarding-diagnosis/mutation33.public.json": "c4969743e0be95890f355842cce10944c5327f98",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/forwarding-diagnosis/three-node-log-and-routes.public.r2.json": "1216e5a6176bbc380295766a3571a6439f9af8c0"
+}

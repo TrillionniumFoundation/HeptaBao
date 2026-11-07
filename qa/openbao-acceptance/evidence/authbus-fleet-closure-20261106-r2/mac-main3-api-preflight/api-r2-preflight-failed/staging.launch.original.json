@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-c\",\n      \"import io,json,sys\\nbundle=json.loads(sys.stdin.buffer.read(1048577))\\nsource=bundle['preparerSource']\\nsys.stdin=io.TextIOWrapper(io.BytesIO(json.dumps(bundle,separators=(',',':')).encode()),encoding='utf-8')\\nexec(compile(source,'<main3-api-create-only-preparer-r2>','exec'),{'__name__':'__main__'})\\n\"\n    ],\n    \"created_unix_ms\": 1793985068241,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b1d7bcd1-fc05-7b1c\",\n    \"idempotency_key\": \"heptabao-mac-authbus-main3-api-create-only-20261106-r2\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b1d7bcd1-fc05-7b1c\",\n    \"request_digest\": \"650d4323a061494cf1892c9997c2f807fb5f85c8fc2f7356e1684c35f98d29bd\",\n    \"request_fingerprint\": 7281549992821606732,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b1d7bcd1-fc05-7b1c\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 87941,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b1d7bcd1-fc05-7b1c\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

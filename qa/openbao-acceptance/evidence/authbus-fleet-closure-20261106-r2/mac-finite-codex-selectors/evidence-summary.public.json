@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.finite-codex-selector-evidence.r1",
+  "actualScope": {
+    "fixedProcesses": 4,
+    "samplesEach": 2,
+    "maximumReturnedBytes": 262148,
+    "credentialFileReads": 0,
+    "keychainReads": 0,
+    "processSignals": 0
+  },
+  "attempts": [
+    {
+      "revision": 1,
+      "job": "1a1b396941d-fc05-83b8",
+      "state": "failed",
+      "reason": "selector_exact_bounded_kernel_argument_budget"
+    },
+    {
+      "revision": 2,
+      "job": "1a1b39a74ef-fc05-83cd",
+      "state": "failed",
+      "reason": "selector_procargs_zero_tail"
+    },
+    {
+      "revision": 3,
+      "job": "1a1b3b39303-fc05-845f",
+      "state": "failed",
+      "reason": "selector_apple_vector_segment_count"
+    }
+  ],
+  "diagnostics": [
+    {
+      "job": "1a1b398a4c8-fc05-83c2",
+      "state": "succeeded",
+      "kind": "fixed_ARGMAX_only",
+      "actualArgmaxBytes": 1048576,
+      "originalAllocationKept": 262148
+    },
+    {
+      "job": "1a1b3a8d652-fc05-842a",
+      "state": "succeeded",
+      "kind": "one_original_process_safe_Apple_tail_structure",
+      "rawValuesOrDigestsPublished": false
+    }
+  ],
+  "preparedRevision4": {
+    "actualExecuted": false,
+    "sourceSha256": "6c150f3a324b3200e658247e9841e1b9bccbe6e07c16c4b01edc0f072089acda",
+    "localCases": 27,
+    "firstEmptySeparatorOnly": true,
+    "environmentCountUpperBoundOnly": true
+  },
+  "currentCodexCredentialBackendQualified": false,
+  "sharedRefreshCredentialEqualityEstablished": false,
+  "allActiveConsumersClosed": false,
+  "productionActions": 0
+}

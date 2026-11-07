@@ -1,0 +1,65 @@
+{
+  "services": [
+    {
+      "exit_code": 0,
+      "name": "openclaw-gateway.service",
+      "observations": [
+        {
+          "exit_code": 0,
+          "observation_complete": true,
+          "properties": {
+            "ActiveState": "inactive",
+            "Description": "openclaw-gateway.service",
+            "ExecMainStatus": "0",
+            "InvocationID": "",
+            "LoadState": "not-found",
+            "MainPID": "0",
+            "Result": "success",
+            "SubState": "dead",
+            "UnitFileState": ""
+          },
+          "properties_truncated": [],
+          "scope": "system",
+          "stderr": "",
+          "stderr_truncated": false
+        },
+        {
+          "exit_code": 0,
+          "observation_complete": true,
+          "properties": {
+            "ActiveState": "active",
+            "Description": "OpenClaw Gateway (v2026.7.1-2)",
+            "ExecMainStatus": "0",
+            "InvocationID": "7564ce91c7d4453ab7e0fdadc42e0166",
+            "LoadState": "loaded",
+            "MainPID": "599954",
+            "Result": "success",
+            "SubState": "running",
+            "UnitFileState": "enabled"
+          },
+          "properties_truncated": [],
+          "scope": "user",
+          "stderr": "",
+          "stderr_truncated": false
+        }
+      ],
+      "properties": {
+        "ActiveState": "active",
+        "Description": "OpenClaw Gateway (v2026.7.1-2)",
+        "ExecMainStatus": "0",
+        "InvocationID": "7564ce91c7d4453ab7e0fdadc42e0166",
+        "LoadState": "loaded",
+        "MainPID": "599954",
+        "Result": "success",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "properties_truncated": [],
+      "resolution": "unique",
+      "resolution_complete": true,
+      "scope": "user",
+      "stderr": "",
+      "stderr_truncated": false
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "heptabao.fixed-four-relay-registration-evidence-map.public.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "entries": [
+    {
+      "path": "fixed4-relays-r1/mac_registered_relays_r1.py",
+      "bytes": 16691,
+      "sha256": "0bee87f3a58e2e6b23f8951bed9240e9a4a17f550322699828c4600c1bd4710d",
+      "blob": "0d53ce3fc5dde83b1e833ddef2d68efddf814c84"
+    },
+    {
+      "path": "fixed4-relays-r1/launch_registered_relays_r1.template.py",
+      "bytes": 14495,
+      "sha256": "4aba4722b84a1d74042499f015407561d7d181830abaef2c8c1e47a81c8d62a6",
+      "blob": "ae3af4b1021fdbfda93139821b0b87bdf9b3300c"
+    },
+    {
+      "path": "fixed4-relays-r1/launch_registered_relays_r1.py",
+      "bytes": 168537,
+      "sha256": "d563c146436dbd51b81a02ea50cffbefca40705434f8a841733481f391008be3",
+      "blob": "45c9c3f6b87ce574eef65296638bc70d37474d44"
+    },
+    {
+      "path": "fixed4-relays-r1/assemble_registered_relays_r1.py",
+      "bytes": 2996,
+      "sha256": "fbb5c623ff092e614a6fa1c5c101b08117a9af8b7c1747fb77a1db467762f3af",
+      "blob": "a904080f8bce34361539dbd63ff8579d858d5283"
+    },
+    {
+      "path": "fixed4-relays-r1/registered-relays-prepared-r1.public.json",
+      "bytes": 1812,
+      "sha256": "6f09c9e76bd8f09b040390df30679220843e3b530e34b94fe2ec141cc756cc1e",
+      "blob": "7151bcc7e53fad834fde566ffc6fa02fd31a413e"
+    },
+    {
+      "path": "fixed4-relays-r1/registered-relays-local-assembly-r1.public.json",
+      "bytes": 296,
+      "sha256": "95e21723a911e28c6d7cf2bc00d28a0c357463e3e4c6b853190f7c4064435e33",
+      "blob": "03a11bc410a8cb4e9faffbf8b78e8f9d54a2bd4b"
+    },
+    {
+      "path": "fixed4-relays-r1/actual.stdout.public.json",
+      "bytes": 40102,
+      "sha256": "e5db348a1f900e4f4c16f99f352400d20263df385c6c337b619575394a5b2ed7",
+      "blob": "2fbbfac45a8011add2188c18efe26419095c16c4"
+    },
+    {
+      "path": "fixed4-relays-r1/process-read-000.original.json",
+      "bytes": 55449,
+      "sha256": "cdbe08ad8dae753efc86a2351e0fa2a052fe5ad46f5af3bade4fc28e83268297",
+      "blob": "476350f0928682d1897ac142b64fad291f51e2bb"
+    },
+    {
+      "path": "fixed4-relays-r1/process-read-001.original.json",
+      "bytes": 55867,
+      "sha256": "ef792491fd0e939c2d9db129f4fc0214593b1132cbfa0a3759f5aebaff01a84d",
+      "blob": "ba2a61616df4bf7cf42f8599822c4dac684b5b10"
+    },
+    {
+      "path": "fixed4-relays-r1/process-read-002.original.json",
+      "bytes": 24395,
+      "sha256": "cd95c7fe57e21f581e8fc5873c56b30f44e420f27c647c837dc0d973d4364f59",
+      "blob": "5e1ae213a7177d0c6f08483c484702fedbcb867c"
+    },
+    {
+      "path": "fixed4-relays-r1/process-start.original.json",
+      "bytes": 192024,
+      "sha256": "4562052b6bb4fc52bda722562fdbd908d2983d53659c76bd6d84ac29863a7a4e",
+      "blob": "a15fc081c370c44cb6cf194ee6dcde38d6f465ce"
+    },
+    {
+      "path": "fixed4-relays-r1/process-terminal.original.json",
+      "bytes": 956,
+      "sha256": "d13c59767be7637eb3de0e95a4d8f6c9bede5c6b7f5487c0402d9b7aac81dc4d",
+      "blob": "b5e52b6600c53d8494728e5ed7fae79ebb79c670"
+    }
+  ],
+  "actual": {
+    "host": "mac",
+    "jobId": "1a1b3b9ad24-fc05-8478",
+    "operationKey": "heptabao-mac-authbus-four-relay-registration-20261106-r1",
+    "authoritativeState": "succeeded",
+    "exitCode": 0,
+    "stdoutBytes": 40102,
+    "stdoutSha256": "e5db348a1f900e4f4c16f99f352400d20263df385c6c337b619575394a5b2ed7",
+    "threePagesHexAndTextEqual": true,
+    "stderrBytes": 0,
+    "elapsedSeconds": 0.7062537907622755,
+    "originalLaunchctlCommands": 10,
+    "unknownOriginalCommands": 0,
+    "allOriginalCommandsClosed": true,
+    "parentDescriptors": 217,
+    "plistDescriptors": 24,
+    "binaryDescriptors": 28,
+    "allRecordedDescriptorsClosedOnce": true
+  },
+  "observedScope": {
+    "registeredLabels": [
+      "ai.openclaw.authbus-relay.proxy",
+      "ai.openclaw.authbus-relay.bridge",
+      "ai.openclaw.authbus-relay.egressguard",
+      "ai.openclaw.authbus-relay.front"
+    ],
+    "currentRunningRegistrations": 4,
+    "keepAliveTrue": 4,
+    "disabledOverrideAbsent": 4,
+    "plistDisabledFalse": 4,
+    "abandonProcessGroupFalse": 4,
+    "registeredProgramResolvesToKernelImage": 4,
+    "unchangedWholePlistAndFullBirthTwice": 4,
+    "observedDescendants": 0,
+    "argumentsOrigin": "launchctl_registration_not_kernel_argv_or_process_memory"
+  },
+  "boundary": {
+    "readonlyObservationOnly": true,
+    "privateCompleteRestorePacketStoredOnOriginalHost": true,
+    "privatePacketIncludedInRepository": false,
+    "privateArgumentsEnvironmentPlistsOrHashesPublished": false,
+    "sourceHandlesClosedAfterOriginalReadonlyPhase": true,
+    "notAuthorityForLaterParentWithoutFreshCapture": true,
+    "credentialDatabaseReads": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "applicationSignals": 0,
+    "productionQuiescenceProven": false,
+    "productionRestartOrRollbackQualified": false,
+    "allCurrentConsumersCovered": false,
+    "originalRetainedCustodyIncludesItsOwnPsMetadataChildren": true,
+    "totalOperatingSystemChildCountClaimed": false
+  },
+  "next": "Fresh same-parent held registration inputs must precede any reviewed four-relay retirement; absent disabled override cannot be claimed restored by launchctl enable, which persists false."
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-main3-sdk-r3-complete-archive-verification.r1",
+  "originalJobId": "1a1b28a4d4c-fc05-7e81",
+  "originalCampaignRemainsFailed": true,
+  "originalPluginUnknownResponseCount": 1,
+  "journalFilesRecorded": 58,
+  "journalFilesIndependentlyReadAndArchived": 58,
+  "launchdEventsRecorded": 3,
+  "launchdEventsIndependentlyReadAndArchived": 3,
+  "inlineCapturePublicFilesRecorded": 2,
+  "inlineCapturePublicFilesIndependentlyReadAndArchived": 2,
+  "allOriginalDigestsAndByteCountsMatched": true,
+  "fullOriginalStdoutBytes": 60948,
+  "fullOriginalStderrBytes": 0,
+  "independentAbsenceSucceeded": true,
+  "wireProjectionJob": "1a1b294512b-fc05-7ebe",
+  "syntheticWireObservationJob": "1a1b29bacf3-fc05-7ee7",
+  "syntheticProbeIsBusinessQualification": false,
+  "originalPrivateStdoutPublished": false,
+  "credentialValuesOrDigestsPublished": false,
+  "providerValid": false,
+  "productionChanged": false
+}

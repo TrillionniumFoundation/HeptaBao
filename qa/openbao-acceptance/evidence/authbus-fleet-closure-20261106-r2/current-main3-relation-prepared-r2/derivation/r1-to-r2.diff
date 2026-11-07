@@ -1,0 +1,146 @@
+--- mac_current_selected_main3-r1.py
++++ mac_current_selected_main3-r2.py
+@@ -45,8 +45,35 @@
+ class CurrentOwnersCaptureFailure(CurrentOwnersRefused):
+     def __init__(self, closure, original):
+         super().__init__('current_three_original_read_refused')
+-        self.closure = closure
++        self.closure = public_closure(closure)
+         self.original = original
++
++
++
++CLOSURE_BOOLEANS = ('allOwnedDescriptorsClosed', 'allHeldDescriptorsClosed',
++    'allReturnedConnectionsClosed', 'allExplicitCursorsClosed',
++    'allPublicCodeDescriptorsClosed', 'emptyWalHeldFdRouteInvoked')
++CLOSURE_COUNTS = ('connectionAttemptCount', 'returnedConnectionCount', 'cursorCount', 'queryCount')
++
++
++def public_closure(value):
++    """One identical closed allowlist for success and failure receipts.
++
++    Bottom-layer error text and all unlisted keys remain private. A malformed
++    receipt cannot be represented as known resource closure.
++    """
++    qualified = (type(value) is dict
++        and all(type(value.get(key)) is bool for key in CLOSURE_BOOLEANS)
++        and all(type(value.get(key)) is int and 0 <= value[key] <= 2147483647 for key in CLOSURE_COUNTS)
++        and type(value.get('closeErrors')) is list and len(value['closeErrors']) <= 1024)
++    if not qualified:
++        return {**{key: False for key in CLOSURE_BOOLEANS},
++            **{key: None for key in CLOSURE_COUNTS}, 'closeErrors': ['closure_shape_unavailable'],
++            'closeErrorCount': None, 'closureShapeQualified': False}
++    return {**{key: value[key] for key in CLOSURE_BOOLEANS},
++        **{key: value[key] for key in CLOSURE_COUNTS},
++        'closeErrors': [] if not value['closeErrors'] else ['original_resource_close_failed'],
++        'closeErrorCount': len(value['closeErrors']), 'closureShapeQualified': True}
+ 
+ 
+ def need(value, code):
+@@ -301,8 +328,6 @@
+     verify_current_namespace(output, until=until)
+     scope.verify(); source_fence()
+     need(not cancelled() and time.monotonic() < until, 'current_three_original_deadline_after_closure')
+-    return output, {key: closure[key] for key in (
+-        'allOwnedDescriptorsClosed', 'allHeldDescriptorsClosed', 'allReturnedConnectionsClosed',
+-        'allExplicitCursorsClosed', 'allPublicCodeDescriptorsClosed', 'closeErrors',
+-        'connectionAttemptCount', 'returnedConnectionCount', 'cursorCount', 'queryCount',
+-        'emptyWalHeldFdRouteInvoked')}
++    projected = public_closure(closure)
++    need(projected['closureShapeQualified'], 'current_three_typed_success_closure_projection')
++    return output, projected
+--- read_current_main3_candidate_relation-r1.py
++++ read_current_main3_candidate_relation-r2.py
+@@ -22,7 +22,7 @@
+ START = time.monotonic()
+ PARENT_UNTIL = float(sys.argv[1])
+ UNTIL = min(PARENT_UNTIL, START + 20)
+-ROOT = Path('/Users/qianqi/heptabao-authbus-current-main3-candidate-relation-20261107-r1')
++ROOT = Path('/Users/qianqi/heptabao-authbus-current-main3-candidate-relation-20261107-r2')
+ QUAL = Path('/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2/qa')
+ CONFIG = Path('/Users/qianqi/.openclaw/openclaw.json')
+ MAIN = CONFIG.parent / 'agents/main/agent/openclaw-agent.sqlite'
+@@ -36,7 +36,7 @@
+           'st_size', 'st_mtime_ns', 'st_ctime_ns')
+ rows, codes, cancelled = [], set(), []
+ scope = None
+-report = {'schema': 'heptabao.current-main3-candidate-relation.worker.r1', 'ok': False,
++report = {'schema': 'heptabao.current-main3-candidate-relation.worker.r2', 'ok': False,
+     'providerCalls': 0, 'sdkImports': 0, 'productionWrites': 0, 'serviceActions': 0,
+     'keychainReads': 0, 'childProcesses': 0, 'sourceDatabasesCopied': 0,
+     'historicalCredentialValuesUsedAsCurrent': False, 'sdkSelectionRerun': False,
+@@ -187,7 +187,7 @@
+     own_manifest, _ = bounded_read(ROOT / 'code/reader-plan.public.json', 65536)
+     own_plan = strict_document(own_manifest, 65536)
+     own_pins = own_plan['readerPins']
+-    need(set(own_pins) == {'main3_source_authority.py', 'mac_current_selected_main3_r1.py',
++    need(set(own_pins) == {'main3_source_authority.py', 'mac_current_selected_main3_r2.py',
+                           'mac_codex_candidate_backend_r1.py', Path(__file__).name},
+          'relation_four_fixed_own_sources')
+     own_generations = {}
+@@ -207,7 +207,7 @@
+         exec(compile(raw, module.__file__, 'exec'), module.__dict__)
+     sys.path.insert(0, str(ROOT / 'code'))
+     import authbus_current_auth_wal as auth
+-    from mac_current_selected_main3_r1 import (ScopeInputs, read_current, CurrentOwnersCaptureFailure,
++    from mac_current_selected_main3_r2 import (ScopeInputs, read_current, CurrentOwnersCaptureFailure,
+                                               verify_current_namespace)
+     from mac_codex_candidate_backend_r1 import strict_json, compare_candidate_auth
+     packet_raw, packet_generation = bounded_read(PACKET, 2097152, private=True)
+--- observe_current_main3_candidate_relation.template-r1.py
++++ observe_current_main3_candidate_relation.template-r2.py
+@@ -15,7 +15,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 45
+-ROOT = Path('/Users/qianqi/heptabao-authbus-current-main3-candidate-relation-20261107-r1')
++ROOT = Path('/Users/qianqi/heptabao-authbus-current-main3-candidate-relation-20261107-r2')
+ QUAL = Path('/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2/qa')
+ CALLER_HOME = Path('/Users/qianqi')
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+@@ -28,7 +28,7 @@
+ candidate_inputs = None
+ owner = child = None
+ current_private = None
+-report = {'schema': 'heptabao.current-main3-candidate-relation.parent.r1', 'ok': False,
++report = {'schema': 'heptabao.current-main3-candidate-relation.parent.r2', 'ok': False,
+           'scope': 'four_prior_full_birth_processes', 'selectedPids': [66414, 66687, 89324, 89325],
+           'rawArgumentOrEnvironmentBytesPublished': False, 'rawArgumentOrEnvironmentBytesPersisted': False,
+           'onlyAllowlistedSourceSelectorValuesPersistedPrivately': True,
+@@ -211,8 +211,8 @@
+ 
+ 
+ def prepare_reader():
+-    need(set(PAYLOAD['readerSources']) == {'main3_source_authority.py', 'mac_current_selected_main3_r1.py',
+-         'mac_codex_candidate_backend_r1.py', 'read_current_main3_candidate_relation_r1.py'},
++    need(set(PAYLOAD['readerSources']) == {'main3_source_authority.py', 'mac_current_selected_main3_r2.py',
++         'mac_codex_candidate_backend_r1.py', 'read_current_main3_candidate_relation_r2.py'},
+          'relation_parent_four_reader_sources')
+     for name, source in PAYLOAD['readerSources'].items():
+         need(hashlib.sha256(source.encode()).hexdigest() == PAYLOAD['readerPins'][name],
+@@ -296,7 +296,7 @@
+         report['childProcesses'] = None
+         report['currentMainSqlObservationCount'] = None
+         child = subprocess.Popen(['/usr/bin/sandbox-exec', '-f', str(ROOT / 'reader.sb'), str(PYTHON),
+-            '-I', '-S', '-B', str(ROOT / 'code/read_current_main3_candidate_relation_r1.py'),
++            '-I', '-S', '-B', str(ROOT / 'code/read_current_main3_candidate_relation_r2.py'),
+             repr(min(candidate_until, UNTIL))], stdin=subprocess.DEVNULL,
+             stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=str(ROOT),
+             env={'PATH': '/usr/bin:/bin:/usr/sbin:/sbin', 'HOME': '/Users/qianqi', 'LANG': 'C', 'LC_ALL': 'C'})
+@@ -337,14 +337,14 @@
+     value = json.loads(raw)
+     need(value['schema'] == 'heptabao.current-main3-candidate-relation.private.r1'
+          and value['originalParentPid'] == os.getpid(), 'relation_original_same_parent_private_result')
+-    for name in ('main3_source_authority.py', 'mac_current_selected_main3_r1.py'):
++    for name in ('main3_source_authority.py', 'mac_current_selected_main3_r2.py'):
+         source = PAYLOAD['readerSources'][name]
+         key = Path(name).stem
+         need(key not in sys.modules, 'relation_parent_current_namespace_module_once')
+         module = types.ModuleType(key); module.__file__ = str(ROOT / 'code' / name)
+         sys.modules[key] = module
+         exec(compile(source, module.__file__, 'exec'), module.__dict__)
+-    from mac_current_selected_main3_r1 import verify_current_namespace
++    from mac_current_selected_main3_r2 import verify_current_namespace
+     verify_current_namespace(value['currentSelectedOwners'], until=candidate_until)
+     return value, raw, identity, verify_current_namespace
+ 

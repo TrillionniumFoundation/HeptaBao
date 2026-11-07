@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b27cfa81-fc05-7e3f\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22737461747573223a20227374616765645f7075626c69635f7472616e736665725f736f7572636573222c202266696c6573223a20372c202270726f647563745f62696e6172795f657865637574696f6e73223a20302c2022636f6d70696c65725f696e766f636174696f6e73223a20307d0a\",\n    \"eof\": true,\n    \"next_offset\": 116,\n    \"offset\": 0,\n    \"size\": 116,\n    \"text\": \"{\\\"status\\\": \\\"staged_public_transfer_sources\\\", \\\"files\\\": 7, \\\"product_binary_executions\\\": 0, \\\"compiler_invocations\\\": 0}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

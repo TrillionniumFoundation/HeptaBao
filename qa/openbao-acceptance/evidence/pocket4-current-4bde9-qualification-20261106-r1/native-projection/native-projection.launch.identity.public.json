@@ -1,0 +1,57 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1",
+  "executable": "/usr/bin/python3",
+  "host": "pocket4",
+  "idempotency_key": "pocket4-current4b-native-build-projection-20261106-r1",
+  "output_root": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1",
+  "projector_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/native_build_receipt_from_convergence.py",
+    "--receipt",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json",
+    "--receipt-sha256",
+    "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5",
+    "--selection",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/test-selection.public.json",
+    "--selection-sha256",
+    "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+    "--terminal",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/normal107.terminal.exact-tool-text.json",
+    "--terminal-sha256",
+    "8ec1de7b5b992112d479afa5f64233fd9196e83ab323581041b3f6f99670ef63",
+    "--job-id",
+    "1a1b2367cb2-fc05-7cfc",
+    "--source",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+    "--output",
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/native-build.public.json"
+  ],
+  "source_pins": [
+    {
+      "bytes": 14002,
+      "name": "native_build_receipt_from_convergence.py",
+      "sha256": "1f9b3c6660d49e4b4a9487dd753be4dbd124cd229cfca67a2ae4228e1ed5458f"
+    },
+    {
+      "bytes": 72065,
+      "name": "kv2_native_fresh_directory_dr_live.py",
+      "sha256": "01993e6c367bf8b896b4832c7723b1f36900fefbc20fcc05394ce401ec6b4f67"
+    },
+    {
+      "bytes": 733,
+      "name": "normal107.terminal.exact-tool-text.json",
+      "sha256": "8ec1de7b5b992112d479afa5f64233fd9196e83ab323581041b3f6f99670ef63"
+    }
+  ],
+  "stdin_sha256": "dcc1215789183c94a8ee454842415da5ad69f88d16a1b8044a7a8b88a28e2100",
+  "timeout_seconds": 90
+}

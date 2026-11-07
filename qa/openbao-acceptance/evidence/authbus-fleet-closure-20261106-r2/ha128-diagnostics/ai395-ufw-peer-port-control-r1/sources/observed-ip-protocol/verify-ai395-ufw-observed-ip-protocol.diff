@@ -1,0 +1,11 @@
+--- reviewed-334a14ee
++++ observed-ip-protocol-tcp-only
+@@ -155,7 +155,7 @@
+         match=expr['match']; need(set(match)=={'op','left','right'} and match['op']=='==','exact_owned_match')
+         left,right=match['left'],match['right']; key=None
+         if left=={'meta':{'key':'iifname'}}: key='interface'; value=right
+-        elif left=={'meta':{'key':'l4proto'}}:
++        elif left in ({'meta':{'key':'l4proto'}},{'payload':{'protocol':'ip','field':'protocol'}}):
+             need(protocol is None and right=='tcp','exact_owned_tcp_protocol'); protocol='tcp'; continue
+         elif left=={'payload':{'protocol':'ip','field':'saddr'}}: key='source'; value=address(right)
+         elif left=={'payload':{'protocol':'ip','field':'daddr'}}: key='destination'; value=address(right)

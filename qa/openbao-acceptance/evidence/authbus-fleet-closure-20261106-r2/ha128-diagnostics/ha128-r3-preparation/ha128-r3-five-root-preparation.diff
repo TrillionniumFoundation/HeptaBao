@@ -1,0 +1,69 @@
+--- launch_ha128_current_r2.body.py
++++ launch_ha128_current_r3.body.py
+@@ -18,8 +18,8 @@
+ 
+ BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
+ SOURCE = BASE / 'ha-qa-af91-preparation-20261106-r1/source'
+-CONTROL = BASE / 'ha128-current-launch-20261106-r2'
+-WORK = BASE / 'native-ha-official-history-4bde9-authbus-r2'
++CONTROL = BASE / 'ha128-current-launch-20261106-r3'
++WORK = BASE / 'native-ha-official-history-4bde9-authbus-r3'
+ QA = SOURCE / 'qa/openbao-acceptance'
+ QA_COMMIT = 'af91ec0cecbb1c0bd717095d6d8696a3f73a1cee'
+ QA_TREE = 'c3c5755344f407149b84bfaec285f1dba9be90f6'
+@@ -45,9 +45,9 @@
+     '--native-build-receipt', 'ai395,x230:' + LINUX_ROOT + '/provenance/native-build.public.json,' + LINUX_RECEIPT_SHA,
+     '--native-build-receipt', 'hepta-mac-local,hepta-mac-local:' + str(BASE / 'ha-native-build-projection-20261106-r1/native-build.public.json') + ',' + MAC_RECEIPT_SHA,
+     '--source-commit', PRODUCT_COMMIT, '--source-tree', PRODUCT_TREE,
+-    '--node', 'x230,192.168.0.13,/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r2',
+-    '--node', 'ai395,192.168.0.11,/home/qq/heptabao-native-ha-4bde9-authbus-20261106-r2',
+-    '--node', 'hepta-mac-local,192.168.0.8,' + str(BASE / 'native-ha-4bde9-authbus-node-r2'),
++    '--node', 'x230,192.168.0.13,/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r3',
++    '--node', 'ai395,192.168.0.11,/home/qq/heptabao-native-ha-4bde9-authbus-20261106-r3',
++    '--node', 'hepta-mac-local,192.168.0.8,' + str(BASE / 'native-ha-4bde9-authbus-node-r3'),
+     '--api-port', '31040', '--raft-port', '31041',
+     '--mesh-local-port-base', '55200', '--mesh-reverse-port-base', '55300', '--mesh-api-port-base', '55400',
+     '--work-root', str(WORK), '--allow-private-lan',
+--- observe_mac_fixed_ports_roots_r2.py
++++ observe_mac_fixed_ports_roots_r3.py
+@@ -77,7 +77,7 @@
+  sources={};owner=None;created=False
+  try:
+   need(sys.platform=='darwin' and os.getuid()==501 and platform.machine()=='arm64','fixed_mac_host')
+-  root=BASE/'ha128-fixed-port-observation-20261106-r2'
++  root=BASE/'ha128-fixed-port-observation-20261106-r3'
+   parent=root.parent.lstat()
+   need(root.parent.resolve(strict=True)==root.parent and stat.S_ISDIR(parent.st_mode) and parent.st_uid==501 and not parent.st_mode&0o022 and not root.exists() and not root.is_symlink(),'new_private_observation_root')
+   for name,(size,digest) in PINS.items():
+@@ -121,7 +121,7 @@
+    now,now_ident=read_public(path,max(32768,len(raw)))
+    need(now==raw and now_ident==ident,'source_or_tool_changed')
+   report['newOwnedHaRoots']=[]
+-  for name in ('ha128-current-launch-20261106-r2','native-ha-official-history-4bde9-authbus-r2','native-ha-4bde9-authbus-node-r2'):
++  for name in ('ha128-current-launch-20261106-r3','native-ha-official-history-4bde9-authbus-r3','native-ha-4bde9-authbus-node-r3'):
+    path=BASE/name
+    try:path.lstat();absent=False
+    except FileNotFoundError:absent=True
+--- capture_ai395_ufw_phase_r2.py
++++ capture_ai395_ufw_phase_r3.py
+@@ -17,7 +17,7 @@
+ import time
+ 
+ ROOT = Path('/home/qq/heptabao-ha-ufw-peer-ports-20261106-r2')
+-PHASES = {'before', 'after-add-mac', 'after-add-x230', 'after-delete-x230', 'after-delete-mac', 'before-delete-x230'}
++PHASES = {'before', 'after-add-mac', 'after-add-x230', 'after-delete-x230', 'after-delete-mac', 'before-delete-x230', 'before-ha-r3'}
+ CONFIGS = {
+  'etc-ufw-user.rules': '/etc/ufw/user.rules',
+  'etc-ufw-user6.rules': '/etc/ufw/user6.rules',
+--- verify_ai395_ufw_phase_r2.py
++++ verify_ai395_ufw_phase_r3.py
+@@ -23,7 +23,8 @@
+ STATES={'before':(), 'after-add-mac':('192.168.0.8',),
+         'after-add-x230':('192.168.0.8','192.168.0.13'),
+         'after-delete-x230':('192.168.0.8',), 'after-delete-mac':(),
+-        'before-delete-x230':('192.168.0.8','192.168.0.13')}
++        'before-delete-x230':('192.168.0.8','192.168.0.13'),
++        'before-ha-r3':('192.168.0.8','192.168.0.13')}
+ FILES={'etc-ufw-user.rules','etc-ufw-user6.rules','etc-ufw-before.rules','etc-ufw-after.rules',
+        'etc-ufw-before6.rules','etc-ufw-after6.rules','etc-ufw-ufw.conf','etc-default-ufw',
+        'nft.original.private.log','iptables-filter.original.private.log'}

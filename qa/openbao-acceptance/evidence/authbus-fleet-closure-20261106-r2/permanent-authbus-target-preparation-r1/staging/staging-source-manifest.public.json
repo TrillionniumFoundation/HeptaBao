@@ -1,0 +1,38 @@
+{
+  "allFourToolsPinnedBeforeAndAfter": true,
+  "apiRequests": 0,
+  "currentCredentialReads": 0,
+  "launcher": {
+    "bytes": 67604,
+    "sha256": "442d86d12118813f7fb7aae06566e6649f98fd2b9eae6df059c747b3fce145c3"
+  },
+  "libraryPins": {
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_production_t5_guard_r1.py": {
+      "bytes": 13379,
+      "sha256": "9f0b032264c4dd5db45478f08c1cdbc92354ac3153b2ed4d18ef2aab30b139f1"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    }
+  },
+  "newPathsOnly": true,
+  "parentSeconds": 180,
+  "providerCalls": 0,
+  "qualifiedT5GuardChange": "One fixed ROOT literal only; no function/class change.",
+  "schema": "heptabao.permanent-create-only-staging-source.r1",
+  "serviceActions": 0,
+  "supervisorSeconds": 210,
+  "template": {
+    "bytes": 22973,
+    "sha256": "6a9be1a3acdae2c6cb3415d6e3506ff0323dd569d175ef85c0128850e1596407"
+  }
+}

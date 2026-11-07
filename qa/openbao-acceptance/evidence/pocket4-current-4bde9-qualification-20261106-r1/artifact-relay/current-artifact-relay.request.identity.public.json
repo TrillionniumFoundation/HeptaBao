@@ -1,0 +1,14 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "host": "mac",
+  "idempotency_key": "mac-current-normal-artifacts-pocket4-to-x230-20261106-r1",
+  "stdin_sha256": "da038c4f94a7e0f5f58df4bb3b555605d4475ee7fbc3f405f5abd5965187d560",
+  "timeout_seconds": 900
+}

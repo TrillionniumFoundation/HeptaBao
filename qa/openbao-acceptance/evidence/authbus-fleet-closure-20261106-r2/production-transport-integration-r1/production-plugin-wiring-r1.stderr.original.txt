@@ -1,0 +1,13 @@
+/workspace/scratch/c9fe536787d9/production-deployment-work/production-plugin-r1/mac-rog/index.js:124
+  const temporary = `${target}.${process.pid}.tmp`;
+                                 ^
+
+ReferenceError: process is not defined
+    at writeStatus (/workspace/scratch/c9fe536787d9/production-deployment-work/production-plugin-r1/mac-rog/index.js:124:34)
+    at cycle (/workspace/scratch/c9fe536787d9/production-deployment-work/production-plugin-r1/mac-rog/index.js:1207:9)
+    at async Object.start (/workspace/scratch/c9fe536787d9/production-deployment-work/production-plugin-r1/mac-rog/index.js:1238:11)
+    at async file:///workspace/scratch/c9fe536787d9/production-deployment-work/qualify_production_plugin_wiring_r1.mjs:137:7
+    at async check (file:///workspace/scratch/c9fe536787d9/production-deployment-work/qualify_production_plugin_wiring_r1.mjs:121:3)
+    at async file:///workspace/scratch/c9fe536787d9/production-deployment-work/qualify_production_plugin_wiring_r1.mjs:134:3
+
+Node.js v24.22.1

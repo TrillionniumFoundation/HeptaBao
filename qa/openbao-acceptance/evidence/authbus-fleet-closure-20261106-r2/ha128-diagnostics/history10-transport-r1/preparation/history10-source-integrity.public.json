@@ -1,0 +1,33 @@
+{
+  "body": {
+    "bytes": 15761,
+    "sha256": "d00887721ee8d79656be7b964bbeff65b1eaff88ad471f7cd985a70363b5a1bb"
+  },
+  "launcher": {
+    "bytes": 155792,
+    "sha256": "6c4444baa8d9c65cc6491c79b7007f7c4c0b26d079f0cadf4154d8239d01d7f5"
+  },
+  "newProductCode": false,
+  "originalBodySha256": "a13b6afa5596efbd28c1ba8233c6e45919684a118b46204a7c5f698351a59014",
+  "originalFormal128Unchanged": true,
+  "originalLauncherSha256": "9d703c0b213e5fe9f4e5cd67f6127ca16dd303f870df85526b86e63893b27fd1",
+  "originalMutatingMethodsUnchanged": true,
+  "payloads": {
+    "ha_history10_transport_diagnostic_r1.py": {
+      "bytes": 13908,
+      "sha256": "b0343cb32f2407a099a03af43fb1a85c6910a68786a774c3b71593af2284cff5"
+    },
+    "ha_http_transport_observer_r1.py": {
+      "bytes": 9520,
+      "sha256": "2c4f629606729f5580881647008a02438ad619deb084a55ec2ef96abe0c83c6b"
+    },
+    "observe_history10_owned_x230_pid_r1.py": {
+      "bytes": 10920,
+      "sha256": "2aada0b8b96062597a73912e516b9f89c5eabc04c478fb8c8f882d86882b4d45"
+    }
+  },
+  "runtimeExecution": false,
+  "sameOriginal613Pins": true,
+  "schema": "heptabao.history10-source-integrity.v1",
+  "state": "prepared-not-dispatched"
+}

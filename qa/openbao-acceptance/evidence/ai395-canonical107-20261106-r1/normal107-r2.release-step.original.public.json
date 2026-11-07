@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--bin",
+    "heptabao-seed",
+    "--message-format=json-render-diagnostics"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 1800,
+  "exit_code": 101,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 100551768,
+    "pgid": 675353,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 675353,
+  "requested_cap_seconds": 1800,
+  "seconds": 102.09596,
+  "started_at_unix": 1793979756.0285606,
+  "stderr_bytes": 8135,
+  "stderr_sha256": "c908d73be0de8b39faa7f05bc51efa4f2d9f31d32dbfd530059fd7a1e0e858b9",
+  "stdout_bytes": 123848,
+  "stdout_sha256": "56a4bd10cbbafe96daba7372f701acbe991a96da16e4f9029121f85d66d57171",
+  "step": "13-normal-release-build",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

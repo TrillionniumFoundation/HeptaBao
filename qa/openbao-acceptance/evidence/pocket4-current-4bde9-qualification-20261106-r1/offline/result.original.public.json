@@ -1,0 +1,103 @@
+{
+  "actual_receiver_receipt_sha256": "9989b3beaa9774d875e5b7bdadc49053301ccc56b8dd5cbc4710acd23dc2031d",
+  "both_expected_full_tree_outputs_exact": true,
+  "cargo_dependency_metadata_commands_executed": true,
+  "cargo_home": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/cargo-home-public-linux-r1",
+  "expected_tree_path_adaptation": {
+    "all_other_tree_bytes_unchanged": true,
+    "expected_receiver_tree_pins": {
+      "peer": [
+        5221,
+        "8985a6f6ccfdd7b94e2b22dd3fbc9b46162b00099e39621545f05959fff84c06"
+      ],
+      "server": [
+        19322,
+        "1db4fc50cca8e55ea1238353bf00ddbdf91f58fd0c2fc69d5ec3aa1633c9a3e0"
+      ]
+    },
+    "only_replacement": {
+      "from": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+      "to": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9"
+    },
+    "original_tree_pins": {
+      "peer": [
+        5215,
+        "40e70fe078077d01cb304131a61c2fa54c1dbbd9a871fe56151a321cc94c420f"
+      ],
+      "server": [
+        19276,
+        "3d112e6e8671700cd9c87b10e7c3f917b95633d469189c63cadf747ed736e707"
+      ]
+    }
+  },
+  "finished_at_unix": 1793989816.0002027,
+  "formal_107_qualified": false,
+  "no_old_user_cache_modified": true,
+  "original_failed_preparation_preserved": true,
+  "production_changed": false,
+  "rust_build_or_product_tests_executed": false,
+  "schema": "heptabao.pocket4-linux-offline-dependencies.v2",
+  "selected_linux_dependency_closures_available": true,
+  "source_and_lock_unchanged": true,
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal,build,dev",
+        "--prefix",
+        "none",
+        "-p",
+        "heptabao-server"
+      ],
+      "attempts": 1,
+      "cap_seconds": 60,
+      "exact_expected_tree_bytes": true,
+      "exit_code": 0,
+      "label": "server",
+      "seconds": 0.9665669839596376,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 19322,
+      "stdout_sha256": "1db4fc50cca8e55ea1238353bf00ddbdf91f58fd0c2fc69d5ec3aa1633c9a3e0",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal,build,dev",
+        "--prefix",
+        "none",
+        "-p",
+        "heptabao-ha-service",
+        "--features",
+        "native-v6-peer-ingress"
+      ],
+      "attempts": 1,
+      "cap_seconds": 60,
+      "exact_expected_tree_bytes": true,
+      "exit_code": 0,
+      "label": "peer",
+      "seconds": 0.1652118971105665,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 5221,
+      "stdout_sha256": "8985a6f6ccfdd7b94e2b22dd3fbc9b46162b00099e39621545f05959fff84c06",
+      "timed_out": false
+    }
+  ]
+}

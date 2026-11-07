@@ -1,0 +1,12 @@
+{
+  "host": "main",
+  "executable": "/sbin/pfctl",
+  "args": [
+    "-s",
+    "info"
+  ],
+  "non_interactive": true,
+  "fresh_auth": false,
+  "rows": 40,
+  "cols": 160
+}

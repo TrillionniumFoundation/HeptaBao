@@ -1,0 +1,29 @@
+✔ unchanged producer validates enrollment, two exact authorized rotations and slot reuse (93.085234ms)
+✔ no grant and revoked grant stay pending; full single slot preserves backpressure (48.534688ms)
+✔ health ack and fixed report make zero scheduler/provider actions (38.323843ms)
+✔ profile unknown before remote commit retains original intent across cold process state (34.067933ms)
+✔ profile unknown after remote commit retains original intent across cold process state (42.519485ms)
+✔ manifest unknown before remote commit retains original intent across cold process state (38.86068ms)
+✔ manifest unknown after remote commit retains original intent across cold process state (36.265964ms)
+✔ ack unknown before remote commit retains original intent across cold process state (35.536268ms)
+✔ ack unknown after remote commit retains original intent across cold process state (41.202768ms)
+✔ exact retained manifest history resolves an original committed postimage without rewrite (36.075467ms)
+✔ immutable profile collision refuses before canonical mutation (26.716231ms)
+✔ missing private enrollment history cannot adopt a used remote control (20.104864ms)
+✔ close stops admission and awaits the original operation before releasing SQLite/journal (20.184713ms)
+✔ real owned SIGKILL durable-dispatched preserves ack custody and releases SQLite process lock (196.792399ms)
+✔ real owned SIGKILL remote-confirmed-before-receipt preserves ack custody and releases SQLite process lock (145.085166ms)
+✔ modified immutable profile, receipt and control heads cannot hide behind correct version-one history (168.076204ms)
+✔ too-far manifest, ack or producer-slot heads refuse even when original target history remains available (131.369078ms)
+✔ exact original Python grant/profile/manifest/receipt contract matches new transaction planning (96.870748ms)
+✔ concrete strict TLS/AppRole adapter and unchanged production client perform complete fixed-slot transaction (587.062409ms)
+✔ strict TLS wrong leaf pin prevents HTTP authentication or KV dispatch (69.63054ms)
+✔ real TLS dropped ack response remains unknown and cold coordinator only reads to reconcile (467.027824ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1224.568524

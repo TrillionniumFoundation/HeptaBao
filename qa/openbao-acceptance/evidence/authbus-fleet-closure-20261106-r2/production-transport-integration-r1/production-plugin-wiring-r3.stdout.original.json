@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.production-plugin-wiring-fixture.r3",
+  "ok": true,
+  "checks": [
+    {
+      "variant": "mac-rog",
+      "name": "missing_production_enrollment_refused_before_client",
+      "passed": true
+    },
+    {
+      "variant": "mac-rog",
+      "name": "nonfull_registration_does_not_create_transport",
+      "passed": true
+    },
+    {
+      "variant": "mac-rog",
+      "name": "reconcile_before_cycle_and_shared_event_client",
+      "passed": true
+    },
+    {
+      "variant": "mac-rog",
+      "name": "stop_during_startup_reconciliation_closes_after_original_work",
+      "passed": true
+    },
+    {
+      "variant": "mac-rog",
+      "name": "queued_health_callback_refuses_after_stop_and_cycle_drains",
+      "passed": true
+    },
+    {
+      "variant": "mac-rog",
+      "name": "startup_unknown_propagates_and_closes_once",
+      "passed": true
+    },
+    {
+      "variant": "mac-rog",
+      "name": "unknown_close_is_propagated_without_second_revoke",
+      "passed": true
+    },
+    {
+      "variant": "pocket4",
+      "name": "missing_production_enrollment_refused_before_client",
+      "passed": true
+    },
+    {
+      "variant": "pocket4",
+      "name": "nonfull_registration_does_not_create_transport",
+      "passed": true
+    },
+    {
+      "variant": "pocket4",
+      "name": "reconcile_before_cycle_and_shared_event_client",
+      "passed": true
+    },
+    {
+      "variant": "pocket4",
+      "name": "stop_during_startup_reconciliation_closes_after_original_work",
+      "passed": true
+    },
+    {
+      "variant": "pocket4",
+      "name": "queued_health_callback_refuses_after_stop_and_cycle_drains",
+      "passed": true
+    },
+    {
+      "variant": "pocket4",
+      "name": "startup_unknown_propagates_and_closes_once",
+      "passed": true
+    },
+    {
+      "variant": "pocket4",
+      "name": "unknown_close_is_propagated_without_second_revoke",
+      "passed": true
+    }
+  ],
+  "passed": 14,
+  "actualCompletePreparedPluginSourceLoaded": true,
+  "sdkBoundarySubstituted": true,
+  "transportNetworkBoundarySubstituted": true,
+  "originalLocalHelperSourcesLoaded": true,
+  "actualProviderCalls": 0,
+  "productionServiceActions": 0,
+  "actualTlsOrRenewRevokeQualified": false,
+  "productionCutoverQualified": false
+}

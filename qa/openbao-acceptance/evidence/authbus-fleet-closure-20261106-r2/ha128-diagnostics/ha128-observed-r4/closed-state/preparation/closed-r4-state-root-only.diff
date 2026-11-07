@@ -1,0 +1,23 @@
+--- approved-r3-observer
++++ closed-r4-observer
+@@ -1,4 +1,4 @@
+-"""Read five fixed files in one already-closed synthetic HA-r3 fixture.
++"""Read five fixed files in one already-closed synthetic HA-r4 fixture.
+ 
+ No product execution, key access, data decryption, request replay, file write,
+ child or network. Public output contains only audit kinds/status/time and Raft
+@@ -19,11 +19,11 @@
+ 
+ ROOTS = {
+     "x230": ("Linux", "qian-ThinkPad-X230", 1000,
+-             "/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r3"),
++             "/home/qian/heptabao-native-ha-4bde9-authbus-20261107-r4"),
+     "ai395": ("Linux", "ai395", 1000,
+-              "/home/qq/heptabao-native-ha-4bde9-authbus-20261106-r3"),
++              "/home/qq/heptabao-native-ha-4bde9-authbus-20261107-r4"),
+     "mac": ("Darwin", None, 501,
+-            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/native-ha-4bde9-authbus-node-r3"),
++            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/native-ha-4bde9-authbus-node-r4"),
+ }
+ FILES = ("audit.jsonl", "raft/log/raft-log.bin", "raft/log/raft-log.journal",
+          "raft/state-machine/state-bundle.bin", "raft/state-machine/state-machine.journal")

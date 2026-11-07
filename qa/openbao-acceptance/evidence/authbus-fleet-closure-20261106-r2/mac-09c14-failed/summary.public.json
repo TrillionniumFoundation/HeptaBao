@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.mac09-failed-public-summary.v1",
+  "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "job_id": "1a1b0e9a401-fc05-73ec",
+  "status": "failed",
+  "exit_code": 1,
+  "timed_out": false,
+  "failure": "native-jwt15_exact_test_result_failed",
+  "selected": 107,
+  "executed": 103,
+  "passed": 102,
+  "failed": 1,
+  "not_executed": 4,
+  "failed_test": "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+  "observed_status": 403,
+  "expected_status": 204,
+  "full_replacement_qualified": false,
+  "raw_result_sha256": "17d184d27c043a59e952ad3235497c066d8a2374d9a4d9fe816cee79eff80d0d",
+  "automatic_retry": false
+}

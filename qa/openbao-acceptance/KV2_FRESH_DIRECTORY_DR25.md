@@ -35,6 +35,14 @@ outer checksum, complete gzip framing, `HBV6PK01`, the V6 metadata and seal
 binding. This structural inspection makes no standalone AEAD claim; the real
 service must authenticate and restore the complete archive later.
 
+The 34 MiB requirement measures the original logical payload history. It is
+checked against the actual native capacity observation and the original API,
+raw-storage and cold-reopen cases. `meta.json.state_bytes` measures the encoded
+`HBV6PK01` object transport; shared immutable chunks are included once, so this
+encoded size can be smaller. The CLI and HTTP archives must have identical
+source metadata, including generation, encoded length and seal identity. Every
+original full34 case and every later recovery case remains mandatory.
+
 The backup kit contains the encrypted four-file seed, the native archive, the
 seed export receipt, a closed manifest and a verification witness containing
 metadata and hashes. It contains no original raw source bundle or plaintext

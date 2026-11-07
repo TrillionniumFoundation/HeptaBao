@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.root-5f9d4-preparation-evidence-verification.r1",
+  "pocketSourcePreparation": {
+    "jobId": "1a1b426459f-fc05-867c",
+    "nativeExitCode": 0,
+    "stdoutBytes": 27502,
+    "pages": 2,
+    "wholeHexEqual": true,
+    "bothStreamsAtEof": true,
+    "stderrBytes": 0,
+    "nativeCompleteAndDurable": true,
+    "bytes": 27502,
+    "sha256": "2144a772dc937d12599b93a55c5f36acf07a7dd9772fb664b7d036f0de6497ec",
+    "originalChildrenClosedOnce": 21,
+    "inputDescriptorsClosedOnce": 753,
+    "retainedInputsUnchanged": 322,
+    "sourceClean": true,
+    "noRustExecuted": true
+  },
+  "macStagingR2": {
+    "jobId": "1a1b42defac-fc05-869c",
+    "nativeExitCode": 0,
+    "stdoutBytes": 3539,
+    "pages": 1,
+    "wholeHexEqual": true,
+    "bothStreamsAtEof": true,
+    "stderrBytes": 0,
+    "nativeCompleteAndDurable": true,
+    "bytes": 3539,
+    "sha256": "c022231325deb0f46aa42c0a8d6b7ed9aa21325c7fd128cda3e0024e41509b57",
+    "twoExactWholeSources": true,
+    "originalHelperClosed": true,
+    "t5DescriptorsClosed": true,
+    "noCompilerExecuted": true
+  },
+  "macBundle": {
+    "uploadId": "mac-normal-5f9d4-bundle-20261107-r1",
+    "chunks": 20,
+    "bytes": 9985724,
+    "sha256": "e57a93e8f3c13f83259cc6f1a5ca1ddb2ebe8451a0da5ff677c38c83ee8d3d72",
+    "originalChunk3TimeoutPreserved": true,
+    "sameOffsetReconciliation": true,
+    "knownCommit": true,
+    "independentWholeReadback": true
+  },
+  "rustQualificationClaim": false,
+  "productionChanged": false
+}

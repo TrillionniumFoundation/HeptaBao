@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.mac-lan-observation-projection.r1",
+  "source_tool": "network_inspect",
+  "configured_host": "mac",
+  "source_components_known_exit_zero": {
+    "interfaces": true,
+    "listeners": true,
+    "routes": true
+  },
+  "interfaces": [
+    {
+      "interface": "en0",
+      "ipv4": "192.168.0.8",
+      "netmask_hex": "0xffffff00",
+      "broadcast": "192.168.0.255",
+      "observed_active": true
+    },
+    {
+      "interface": "bridge0",
+      "ipv4": "10.77.0.3",
+      "netmask_hex": "0xffffff00",
+      "broadcast": "10.77.0.255",
+      "observed_active": true
+    }
+  ],
+  "planned_direct_lan_voter": {
+    "alias": "hepta-mac-local",
+    "ip": "192.168.0.8"
+  },
+  "scope": "Relevant observed IPv4 interfaces only; this is not a cross-host reachability, free-port or future freshness qualification.",
+  "network_state_changed": false,
+  "wan_addresses_and_hardware_identifiers_published": false,
+  "production_changed": false
+}

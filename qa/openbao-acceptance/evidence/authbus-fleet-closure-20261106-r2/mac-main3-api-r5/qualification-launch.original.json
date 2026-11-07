@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,json,os,stat,sys,time,types,unittest\nfrom pathlib import Path\nQA=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r5/qa')\npath=QA/'main3_api_controller.py'\ndef identity(s):return tuple(str(getattr(s,k)) for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))\nfd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)\ntry:\n before=os.fstat(fd)\n assert stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600\n raw=os.read(fd,1048576)\n assert len(raw)==32986 and hashlib.sha256(raw).hexdigest()=='d2a9b7575e1be7d2a591660d89df3659fed39c1bbdf54ab49c3be57c0eb27c9f'\n assert os.read(fd,1)==b'' and identity(before)==identity(os.fstat(fd))==identity(path.lstat())\nfinally:os.close(fd)\nmodule=types.ModuleType('main3_api_controller');module.__file__=str(path)\nsys.modules[module.__name__]=module\nexec(compile(raw,str(path),'exec'),module.__dict__)\nplan,pin=module.load_inputs()\nassert pin=='e4e8315fc348cdbbfb9f8df001e952a940357a5d8fa9fcf43cb15c339c092ebb'\nsys.path.insert(0,str(QA))\nnames=['test_main3_api_controller','test_suid_ps_tls_r2','test_main3_api_guards','test_main3_inline_capture','test_main3_http_complete']\nsuite=unittest.defaultTestLoader.loadTestsFromNames(names)\nassert suite.countTestCases()==173\nstarted=time.monotonic()\nr=unittest.TextTestRunner(verbosity=2).run(suite)\npassed=r.wasSuccessful() and r.testsRun==173 and not r.skipped\nprint(json.dumps({'schema':'heptabao.main3-mac-qa-guards.r5','ok':passed,'testCount':r.testsRun,'skipCount':len(r.skipped),'sourcePins':plan['sourcePins'],'serviceActions':[],'providerCalled':False,'productionChanged':False,'elapsedSeconds':time.monotonic()-started},sort_keys=True),flush=True)\nif not passed:raise SystemExit(1)\nfrom qualify_main3_http_tls import run as qualify_tls\nreport=qualify_tls(QA.parent/'server/tls/server.crt',QA.parent/'server/tls/server.key')\nassert report['ok'] and report['checkCount']==15 and report['allPeerThreadsJoined'] and report['allPeerSocketsClosed']\nprint(json.dumps(report,sort_keys=True),flush=True)\nimport contextlib\nfrom mac_public_code_pin_excerpt_r1 import public_code_pin\npin_until=time.monotonic()+3.0\ndef pin_remaining():\n remaining=pin_until-time.monotonic();assert remaining>0;return remaining\npublic_pins=[]\nfor nominal in ('/sbin/mount','/opt/homebrew/lib/node_modules/openclaw/package.json'):\n before=identity(Path(nominal).lstat())\n value=public_code_pin(nominal,remaining=pin_remaining,critical=contextlib.nullcontext)\n assert before==identity(Path(nominal).lstat())\n value.update(nominal=nominal,nominalIdentity=list(before),resolvedIdentity=list(identity(Path(value['path']).lstat())))\n public_pins.append(value)\nprint(json.dumps({'schema':'heptabao.main3-sdk-required-public-runtime-pins.r1','ok':True,'publicCodePins':public_pins,'serviceActions':[],'credentialInputsRead':False},sort_keys=True),flush=True)\nsys.argv=[str(path),'--mode','preflight']\nraise SystemExit(module.main())\n"
+    ],
+    "created_unix_ms": 1793990703489,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b22db981-fc05-7cce",
+    "idempotency_key": "heptabao-mac-authbus-main3-api-qualification-20261106-r5",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b22db981-fc05-7cce",
+    "request_digest": "917c3427d561c553b3815cb0b5eb37e2803ddf0fa380a739ec8bba48e494108a",
+    "request_fingerprint": 10483311378299995475,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b22db981-fc05-7cce"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 29746,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b22db981-fc05-7cce"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

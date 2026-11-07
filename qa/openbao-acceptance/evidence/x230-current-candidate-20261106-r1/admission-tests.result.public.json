@@ -1,0 +1,100 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/home/qian/heptabao-x230-successor-admission-20261106-r1/qa/openbao-acceptance/tests",
+    "-p",
+    "test_x230_current_candidate_qualification.py",
+    "-v"
+  ],
+  "candidate_binary_executed": false,
+  "child_exit_code": 0,
+  "cloud_previous_22_result_transferred_to_reconstruction": false,
+  "comparison69_executed": false,
+  "elapsed_seconds": 0.57231,
+  "full34_executed": false,
+  "full_replacement_qualified": false,
+  "host": "qian-ThinkPad-X230",
+  "inputs": {
+    "clients/python/heptabao/__init__.py": {
+      "bytes": 194,
+      "reconstructed": false,
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2"
+    },
+    "clients/python/heptabao/consistency.py": {
+      "bytes": 4836,
+      "reconstructed": false,
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
+    },
+    "clients/python/heptabao/transport.py": {
+      "bytes": 21936,
+      "reconstructed": false,
+      "sha256": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f"
+    },
+    "evidence/mac09-failed.original.public.json": {
+      "bytes": 163811,
+      "reconstructed": false,
+      "sha256": "17d184d27c043a59e952ad3235497c066d8a2374d9a4d9fe816cee79eff80d0d"
+    },
+    "qa/openbao-acceptance/acceptance.py": {
+      "bytes": 36827,
+      "reconstructed": false,
+      "sha256": "8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d"
+    },
+    "qa/openbao-acceptance/bao_http.py": {
+      "bytes": 2349,
+      "reconstructed": false,
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f"
+    },
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": {
+      "bytes": 49393,
+      "reconstructed": false,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 70045,
+      "reconstructed": false,
+      "sha256": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0"
+    },
+    "qa/openbao-acceptance/tests/fixtures/x230-current-candidate-selection.public.json": {
+      "bytes": 45631,
+      "reconstructed": false,
+      "sha256": "d7f6d0971e7a6b3e0096e50a1e3d607bff851ce2295563ad068b80adf2294bfd"
+    },
+    "qa/openbao-acceptance/tests/test_x230_current_candidate_qualification.py": {
+      "bytes": 29798,
+      "reconstructed": true,
+      "sha256": "6196ec1af48e03692e787355e4853a650652a0f31adbbce2b285fa68528ca3ec"
+    },
+    "qa/openbao-acceptance/x230_current_candidate_qualification.py": {
+      "bytes": 27402,
+      "reconstructed": true,
+      "sha256": "7543741ffdac9fcfc93c523aa504777074a0bc6ce3d2f36f242e690c335477b2"
+    }
+  },
+  "inputs_unchanged": true,
+  "legacy_cleanup_qualified": false,
+  "normal_107_build_qualified": false,
+  "oracle_binary_executed": false,
+  "original_failed_receipt_refused_in_parser_and_before_fixture_launch": true,
+  "original_failed_receipt_sha256": "17d184d27c043a59e952ad3235497c066d8a2374d9a4d9fe816cee79eff80d0d",
+  "platform": "linux",
+  "positive_parser_receipts_are_fictional": true,
+  "production_changed": false,
+  "production_cutover": false,
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "runner_sha256": "3574e721dd656fce6580ac272d942e5ecd49cb75513d91bd97f6f882576d8bce",
+  "schema": "heptabao.x230-reconstructed-controller-admission-tests.v1",
+  "skipped": 0,
+  "status": "passed",
+  "stderr_sha256": "e9b215bf4eb1843410ac743433b29ccd98a276edc746c663070f9b1551d7d567",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "tests_passed": 24,
+  "tests_run": 24
+}

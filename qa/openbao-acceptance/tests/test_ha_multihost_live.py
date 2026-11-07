@@ -495,6 +495,21 @@ class NativeProcessIdentityTests(unittest.TestCase):
             with self.assertRaises(argparse.ArgumentTypeError):
                 MODULE.parse_node_binary(value + suffix, commit, tree)
 
+    def test_existing_runtime_mac_alias_keeps_external_volume_boundary(self):
+        alias = "hepta-mac-local"
+        path = "/Volumes/T5/private/heptabao-server"
+        self.assertEqual(MODULE.parse_binary_source(alias + ":" + path), (alias, path))
+        commit, tree = "a" * 40, "b" * 40
+        specification = alias + "," + alias + ":" + path + "," + "c" * 64
+        self.assertEqual(MODULE.parse_node_binary(
+            specification + "," + commit + "," + tree, commit, tree)[0], alias)
+        for rejected in ("/Users/qianqi/private/server", "/home/qian/server",
+                         "/Volumes/T5/../other/server", "/Volumes/T5//server"):
+            with self.subTest(path=rejected), self.assertRaises(argparse.ArgumentTypeError):
+                MODULE.parse_binary_source(alias + ":" + rejected)
+        with self.assertRaises(argparse.ArgumentTypeError):
+            MODULE.parse_binary_source("unregistered-mac:" + path)
+
     def test_native_build_receipt_cannot_borrow_another_build_or_failed_exit(self):
         commit, tree, binary = "a" * 40, "b" * 40, "c" * 64
         receipt = {"schema": "heptabao.native-build.v1", "source_commit": commit,

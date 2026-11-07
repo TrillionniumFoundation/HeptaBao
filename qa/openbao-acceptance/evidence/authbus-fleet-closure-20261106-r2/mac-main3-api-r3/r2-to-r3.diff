@@ -1,0 +1,133 @@
+--- retained-failed-r2/mac_t5_volume_guard_r1.py
++++ fresh-source-r3/mac_t5_volume_guard_r1.py
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2'
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 
+--- retained-failed-r2/mac_owned_launchd_r3.py
++++ fresh-source-r3/mac_owned_launchd_r3.py
+@@ -13,13 +13,13 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
+ DOMAIN='gui/501'
+-LABELS={'server':'org.heptabao.qa.mac-authbus-main3-api-20261106-r2.server',
+-        'consumer':'org.heptabao.qa.mac-authbus-main3-api-20261106-r2.consumer'}
+-SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2/bin/heptabao-server')
++LABELS={'server':'org.heptabao.qa.mac-authbus-main3-api-20261106-r3.server',
++        'consumer':'org.heptabao.qa.mac-authbus-main3-api-20261106-r3.consumer'}
++SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3/bin/heptabao-server')
+ SERVER_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ GRAPH=(('server-start','server-initial'),('server-kill','server-initial'),
+        ('server-start','server-cold-new-process'),('server-kill','server-cold-new-process'))
+@@ -95,7 +95,7 @@
+     return lines in ([exact],['Bad request.',exact])
+ 
+ 
+-HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r2')
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r3')
+ HOME_COPY_NAMES=('mac_current_server_owner_r1.py',)
+ HOME_GENERATIONS=('server-initial','server-cold-new-process')
+ HOME_FD_ATTEMPTS=64
+--- retained-failed-r2/mac_current_server_owner_r1.py
++++ fresh-source-r3/mac_current_server_owner_r1.py
+@@ -14,10 +14,10 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2/bin/heptabao-server')
++BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3/bin/heptabao-server')
+ BINARY_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ BINARY_BYTES=92359328
+ GENERATIONS=('server-initial','server-cold-new-process')
+--- retained-failed-r2/main3_api_controller.py
++++ fresh-source-r3/main3_api_controller.py
+@@ -19,12 +19,12 @@
+ import sys
+ import time
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
+-HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r2')
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r2')
+-JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-journal-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3')
++HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r3')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r3')
++JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-journal-20261106-r3')
+ QA=ROOT/'qa'
+-TARGET='gui/501/org.heptabao.qa.mac-authbus-main3-api-20261106-r2.server'
++TARGET='gui/501/org.heptabao.qa.mac-authbus-main3-api-20261106-r3.server'
+ SOURCE_NAMES=('mac_owned_launchd_r3.py','mac_current_server_owner_r1.py',
+     'mac_native_process_observer_r1.py','mac_owned_commands_r1.py',
+     'mac_owned_unreaped_r1.py','mac_public_code_pin_excerpt_r1.py',
+@@ -55,7 +55,7 @@
+ def load_inputs():
+     raw=stable_read(PREP/'plan.public.json',131072)
+     plan=json.loads(raw)
+-    need(plan['schema']=='heptabao.mac-main3-api-preparation.r2'
++    need(plan['schema']=='heptabao.mac-main3-api-preparation.r3'
+          and plan['root']==str(ROOT) and plan['home']==str(HOME)
+          and plan['journal']==str(JOURNAL) and plan['wrapperSeconds']==30
+          and plan['execObservationSeconds']==10 and plan['managerSeconds']==600
+@@ -96,7 +96,7 @@
+     def append(self,event,value):
+         self.check()
+         need(re.fullmatch(r'[a-z0-9-]{1,48}',event) and len(self.rows)<512,'journal_finite_events')
+-        raw=encoded({'schema':'heptabao.mac-main3-api-journal.r2','index':len(self.rows),'event':event,'value':value})
++        raw=encoded({'schema':'heptabao.mac-main3-api-journal.r3','index':len(self.rows),'event':event,'value':value})
+         need(len(raw)<=262144,'journal_bounded_record')
+         name='%03d-%s.public.json'%(len(self.rows),event)
+         with self.signals.critical():
+@@ -372,7 +372,7 @@
+         need(signals.pending is None,'outer_not_cancelled')
+         left=until-time.monotonic();need(left>0,'original_outer_600_seconds');return left
+     journal=None;guard=None;home=None;manager=None;active_api=None;active_fence=None;private_state=None
+-    result={'schema':'heptabao.mac-main3-current-api-qualification.r2','mode':args.mode,
++    result={'schema':'heptabao.mac-main3-current-api-qualification.r3','mode':args.mode,
+         'ok':False,'planSha256':plan_sha,'startupCustodyOnly':False,'businessCredentialInputsRead':False,
+         'providerValid':False,'providerCalled':False,'providerRefreshAttempted':False,
+         'productionTrafficCutover':False,'credentialValuesOrDigestsPublished':False,
+--- retained-failed-r2/main3_source_fence.py
++++ fresh-source-r3/main3_source_fence.py
+@@ -16,13 +16,13 @@
+ from main3_source_authority import validate_authority,SOURCE_SELECTION_AUTHORITY,SDK_SOURCE_PINS
+ 
+ LIVE=Path('/Users/qianqi/.openclaw')
+-CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-current-sdk-capsule-20261106-r1')
++CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-current-sdk-capsule-20261106-r2')
+ CAPSULE=CAPSULE_ROOT/'output/selected-owner-credentials.private.json'
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r2')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r3')
+ BINDING=PREP/'capsule-admission-binding.private.json'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+-CAPTURE_JOB='1a1b1a4c29c-fc05-7a0c'
+-CAPTURE_WORKER_SHA='dbbac9f6ee12704b1e6e73ca2587d6f4e6489b58ec36122c49d24a9605274628'
++CAPTURE_JOB='1a1b1e80c81-fc05-7b6c'
++CAPTURE_WORKER_SHA='4231b7a3976fd579eaf1deac319287a877365afa44e1240e838518a5dff8daba'
+ 
+ class Refused(RuntimeError):pass
+ def need(value,code):
+--- retained-failed-r2/main3_api_cycle.py
++++ fresh-source-r3/main3_api_cycle.py
+@@ -19,7 +19,7 @@
+ import time
+ from main3_source_fence import CapsuleFence,Refused,need,ident
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3')
+ MOUNT='openclaw-auth'
+ MAX_HTTP=192
+ MAX_BODY=1048576

@@ -1,0 +1,182 @@
+--- a/mac_refresh_provider_hooks_r1.mjs
++++ b/mac_refresh_provider_hooks_r2.mjs
+@@ -13,6 +13,8 @@
+ export const CLIENT_ID="app_EMoamEEZ73f0CkXaXp7hrann";
+ export const REGISTRY_SYMBOL="heptabao.main3.refresh-once.provider.r1";
+ export const PROVIDER_SOURCE_PINS=Object.freeze({
++  "dist/ssrf-BayeDjCv.js":"dd29e02505654eb7aac62519013fe9cdd883b56f78855806f6d643aadadc4295",
++  "dist/undici-runtime-BL8ZN-Ey.js":"3528db33bb716a2e30fe895cd93c4027750c2da57379c8107d0b748cb0857978",
+   "dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js":"e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d",
+   "dist/fetch-guard-6VNcgVVc.js":"ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc",
+   "dist/runtime-fetch-k5Zth7kk.js":"9bf76247c5901725af5db78bbab2830a5e0fd7caf19953b095be74d4382db611",
+@@ -20,6 +22,13 @@
+   "dist/provider-oauth-runtime-Bl5CxvHn.js":"72815eec3eb285768cd7fbe1495e9e3e34f309e6d828cc844322b1e411fb0b64",
+   "dist/openai-chatgpt-auth-identity-DrQLjrg2.js":"94d48f2fee6a6fc139438d53d1adbadb61dd9791febe11ea0ec1c960e30e3765"
+ });
++export const PROVIDER_UNDICI_PINS=Object.freeze({
++  "node_modules/undici/package.json":"4eed584bdf6a1545381c24674dfe8938421f7c66313c8960fb40f28f3a55c306",
++  "node_modules/undici/index.js":"93fc85c00a59b58f410c901e5477d56770de3816bfbe183e751624aeb4a5e6a5",
++  "node_modules/undici/lib/dispatcher/dispatcher-base.js":"88d306b49e472f4fac61b5fae1320ff8fb01a41ef211e7c2d9992782a297bb0e"
++});
++const UNDICI_TEST_OVERRIDE="__OPENCLAW_TEST_UNDICI_RUNTIME_DEPS__";
++const PATCHED_MODULES=["dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js","dist/fetch-guard-6VNcgVVc.js","dist/runtime-fetch-k5Zth7kk.js"];
+ export class ProviderOnceRefused extends Error {
+   constructor(code){super(code);this.name="ProviderOnceRefused";this.code=code;}
+ }
+@@ -36,20 +45,45 @@
+ }
+ `;
+ 
+-/** Observe original SDK calls only. No extra close/destroy call or retry is
+- * issued. The owning wrapper must await originalPromises before admitting the
+- * next ordinal. Original helper return is recorded separately from closure. */
++/** Observe original SDK calls without adding calls or blocking legitimate
++ * Promise-to-callback recursion. The pinned DispatcherBase also calls destroy
++ * from close's asynchronous chain; its original helper may independently invoke
++ * destroy after 100 ms. Every observed outer Promise must settle successfully.
++ * Internal callback overloads are accepted only as synchronous children of the
++ * corresponding no-callback original call. Unexpected shapes make closure
++ * unknown while preserving the original method's arguments and return value. */
+ export function observeOriginalDispatcherClosure(dispatcher,receipt){
+   need(dispatcher&&typeof dispatcher.close==="function"&&typeof dispatcher.destroy==="function","provider_original_owned_dispatcher_methods");
+-  const saved=new Map(),wrappers=new Map(),calls=[],originalPromises=[];let restored=false;
++  const saved=new Map(),wrappers=new Map(),calls=[],originalPromises=[],stack=[];let restored=false,overflow=false;
++  receipt.originalDispatcherMethodCalls??=0;receipt.originalDispatcherPromiseCalls??=0;
++  receipt.originalDispatcherInternalCallbackCalls??=0;
+   for(const name of ["close","destroy"]){
+     const descriptor=Object.getOwnPropertyDescriptor(dispatcher,name),original=dispatcher[name];saved.set(name,{descriptor,original});
+     const wrapper=function(...args){
+-      need(this===dispatcher&&!restored&&calls.filter(x=>x.name===name).length===0,"provider_original_dispatcher_call_not_replayed");
+-      const row={name,returnedPromise:false,settled:false,fulfilled:false};calls.push(row);receipt.originalDispatcherMethodCalls++;
+-      let result;try{result=original.apply(dispatcher,args);}catch(e){row.settled=true;throw e;}
+-      need(result&&typeof result.then==="function","provider_original_dispatcher_promise_required");row.returnedPromise=true;
+-      originalPromises.push(Promise.resolve(result).then(()=>{row.settled=true;row.fulfilled=true;},()=>{row.settled=true;}));
++      const parent=stack.at(-1),callbackShape=name==="close"?args.length===1&&typeof args[0]==="function":
++        args.length===2&&typeof args[1]==="function";
++      const internal=!!(parent&&parent.name===name&&parent.noCallback&&callbackShape);
++      const noCallback=args.length===0;
++      // Keep the original cleanup running even if an unexpected caller appears.
++      // The receipt refuses closure; it never invents a cleanup retry.
++      const row={name,noCallback,internal,parent,receiverExact:this===dispatcher,
++        shapeKnown:(noCallback&&!parent)||internal,returnedPromise:false,returnedUndefined:false,
++        settled:false,fulfilled:false,threw:false};
++      receipt.originalDispatcherMethodCalls++;
++      if(calls.length<32)calls.push(row);else overflow=true;
++      stack.push(row);
++      let result;
++      try{result=original.apply(this,args);}
++      catch(e){row.threw=true;row.settled=true;throw e;}
++      finally{stack.pop();}
++      if(internal){
++        receipt.originalDispatcherInternalCallbackCalls++;
++        row.returnedUndefined=result===undefined;
++      }else if(result&&typeof result.then==="function"){
++        row.returnedPromise=true;receipt.originalDispatcherPromiseCalls++;
++        const observed=Promise.resolve(result).then(()=>{row.settled=true;row.fulfilled=true;},()=>{row.settled=true;});
++        if(originalPromises.length<32)originalPromises.push(observed);else overflow=true;
++      }
+       return result;
+     };
+     wrappers.set(name,wrapper);
+@@ -61,8 +95,16 @@
+   }
+   return Object.freeze({
+     originalPromises,
++    async settleOriginalPromises(){
++      // Original close can append an original destroy Promise asynchronously.
++      // Observe each newly registered Promise; never race it against an abort.
++      let observed=0;
++      while(observed<originalPromises.length){const end=originalPromises.length;await Promise.all(originalPromises.slice(observed,end));observed=end;}
++    },
+     verifyInstalled(){need(!restored&&[...wrappers].every(([name,value])=>dispatcher[name]===value),"provider_original_dispatcher_observer_replaced");},
+-    known(){return calls.length>0&&calls.every(x=>x.returnedPromise&&x.settled&&x.fulfilled)&&(dispatcher.closed===true||dispatcher.destroyed===true);},
++    known(){return !overflow&&calls.length>0&&calls.every(x=>x.receiverExact&&x.shapeKnown&&!x.threw&&
++      (x.internal?x.returnedUndefined&&x.parent.returnedPromise&&x.parent.settled&&x.parent.fulfilled:
++        x.returnedPromise&&x.settled&&x.fulfilled))&&(dispatcher.closed===true||dispatcher.destroyed===true);},
+     restore(){
+       need(!restored,"provider_dispatcher_observer_restore_once");
+       const unchanged=[...wrappers].every(([name,value])=>dispatcher[name]===value);
+@@ -152,7 +194,7 @@
+       const {ctx,entry}=ticketContext(ticket);shape(ctx,url,init);entry.runtimeEntries++;ctx.receipt.runtimeEntries++;
+       need(entry.runtimeEntries===1&&init.redirect==="manual"&&init.dispatcher&&typeof init.dispatcher.close==="function"&&
+         typeof init.dispatcher.destroy==="function"&&init.signal&&!init.signal.aborted,"provider_one_owned_dispatcher_runtime_entry");
+-      entry.dispatcher=init.dispatcher;
++      entry.dispatcher=init.dispatcher;ctx.verifyOriginalDispatcher?.(init.dispatcher);
+       entry.observer=observeOriginalDispatcherClosure(init.dispatcher,ctx.receipt);ctx.dispatcherObservers.push(entry.observer);
+     },
+     dispatch(ticket,url,init,send,runtime){
+@@ -164,7 +206,7 @@
+       // All preceding SDK DNS/proxy/dispatcher awaits have completed. The
+       // controller persists its UNKNOWN latch, performs sync source/mutex/
+       // writer/ledger checks, then invokes this exact original native fetch.
+-      entry.observer.verifyInstalled();
++      entry.observer.verifyInstalled();ctx.verifyOriginalNativeFetch?.(send);
+       return ctx.finalDispatch(()=>{
+         ctx.receipt.originalNativeFetchInvocations++;let result;
+         try{result=send(url,init);}catch(e){ctx.receipt.originalNativeFetchSettlements++;throw e;}
+@@ -212,10 +254,28 @@
+   need(process.platform==="darwin"&&process.getuid()===501&&typeof moduleApi.registerHooks==="function","provider_exact_mac_fresh_runtime");
+   const symbol=Symbol.for(REGISTRY_SYMBOL);need(!Object.hasOwn(globalThis,symbol),"provider_no_previous_registry_context");
+   let ctx=null,disposed=false,flow=null;
+-  const sourceFence=()=>{for(const [relative,pin]of Object.entries(PROVIDER_SOURCE_PINS))need(sha(readPublic(path.join(PROVIDER_SDK_ROOT,relative)))===pin,"provider_current_source_pin");};
++  const sdkRequire=moduleApi.createRequire(path.join(PROVIDER_SDK_ROOT,"dist/undici-runtime-BL8ZN-Ey.js"));
++  const undiciIndex=path.join(PROVIDER_SDK_ROOT,"node_modules/undici/index.js");
++  const undiciBase=path.join(PROVIDER_SDK_ROOT,"node_modules/undici/lib/dispatcher/dispatcher-base.js");
++  const sourceFence=()=>{
++    need(!Reflect.has(globalThis,UNDICI_TEST_OVERRIDE),"provider_no_injected_undici_test_runtime");
++    need(sdkRequire.resolve("undici")===undiciIndex,"provider_exact_actual_undici_resolution");
++    for(const [relative,pin]of Object.entries({...PROVIDER_SOURCE_PINS,...PROVIDER_UNDICI_PINS}))
++      need(sha(readPublic(path.join(PROVIDER_SDK_ROOT,relative)))===pin,"provider_current_source_pin");
++  };
++  const loadedNative=()=>{
++    const actual=sdkRequire.cache[undiciIndex],base=sdkRequire.cache[undiciBase];
++    need(actual?.loaded===true&&base?.loaded===true&&typeof actual.exports?.Agent==="function"&&
++      typeof actual.exports?.fetch==="function"&&typeof base.exports==="function","provider_original_undici_actually_loaded_by_sdk");
++    report.undiciIndexObservedLoaded=true;report.undiciDispatcherBaseObservedLoaded=true;
++    return {actual:actual.exports,base:base.exports};
++  };
+   sourceFence();const sources=new Map();
+-  Object.assign(report,{schema:"heptabao.main3-provider-hook-source.public.r1",modules:[],installedSourceModified:false,
+-    actualSdkModuleHooks:true,sourcePins:PROVIDER_SOURCE_PINS,contextsStarted:0,successfulSdkRefreshCalls:0,disposed:false});
++  Object.assign(report,{schema:"heptabao.main3-provider-hook-source.public.r2",modules:[],installedSourceModified:false,
++    actualSdkModuleHooks:true,sourcePins:PROVIDER_SOURCE_PINS,undiciPublicSourcePins:PROVIDER_UNDICI_PINS,
++    undiciResolutionVerified:true,undiciPackageRequiredByThisLoader:false,
++    undiciIndexObservedLoaded:false,undiciDispatcherBaseObservedLoaded:false,
++    contextsStarted:0,successfulSdkRefreshCalls:0,disposed:false});
+   for(const [relative,pin]of Object.entries(PROVIDER_SOURCE_PINS)){
+     const original=readPublic(path.join(PROVIDER_SDK_ROOT,relative)).toString("utf8"),source=patchProviderSource(relative,original);
+     const row={relative,originalSha256:pin,overlaySha256:sha(source),changed:source!==original,loaded:false};report.modules.push(row);
+@@ -230,7 +290,7 @@
+   };
+   try{
+     flow=await import(pathToFileURL(path.join(PROVIDER_SDK_ROOT,"dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js")).href);
+-    need(typeof flow.r==="function"&&flow.n?.id==="openai"&&report.modules.every(x=>x.loaded),"provider_all_current_modules_loaded_through_hook");sourceFence();
++    need(typeof flow.r==="function"&&flow.n?.id==="openai"&&PATCHED_MODULES.every(relative=>report.modules.some(x=>x.relative===relative&&x.loaded)),"provider_three_changed_modules_loaded_through_hook");sourceFence();
+   }catch(e){try{dispose();}catch{}throw new ProviderOnceRefused(e instanceof ProviderOnceRefused?e.code:"provider_actual_sdk_import_refused");}
+   return Object.freeze({sourceFence,dispose,contextIsClosed:()=>ctx===null,
+     async refresh(params,receipt={}){
+@@ -247,7 +307,14 @@
+         completeBodyCaptures:0,originalDispatcherReleaseCompletions:0,originalDispatcherMethodCalls:0,
+         ownedDispatcherReleaseKnown:false,rawResponseFsyncedBeforeSdkParser:false,original30SecondBudget:true,
+         retries:0,redirectsFollowed:0,credentialValuesOrDigestsPublished:false,contextClosed:false});
+-      ctx={...params,until,signal,receipt,closed:false,dispatcherObservers:[],nativePromises:[]};report.contextsStarted++;
++      ctx={...params,until,signal,receipt,closed:false,dispatcherObservers:[],nativePromises:[],
++        verifyOriginalDispatcher(dispatcher){
++          const {actual,base}=loadedNative();
++          need(dispatcher instanceof actual.Agent&&dispatcher.close===base.prototype.close&&dispatcher.destroy===base.prototype.destroy,
++            "provider_original_direct_agent_dispatcher_methods");
++        },
++        verifyOriginalNativeFetch(send){need(send===loadedNative().actual.fetch,"provider_original_sdk_native_fetch_identity");}
++      };report.contextsStarted++;
+       try{
+         sourceFence();const value=await flow.r(params.oldCredential.refresh);
+         need(process.hrtime.bigint()<until&&!signal.aborted&&receipt.flowEntrypointChecks===2&&receipt.postFormEntries===1&&receipt.guardEntries===1&&
+@@ -261,7 +328,7 @@
+         // settles, the original owned supervisor retains its existing deadline;
+         // no next ordinal or mutex release is admitted from this wrapper.
+         await Promise.all(ctx.nativePromises);
+-        await Promise.all(ctx.dispatcherObservers.flatMap(x=>x.originalPromises));
++        for(const observer of ctx.dispatcherObservers)await observer.settleOriginalPromises();
+         receipt.ownedDispatcherReleaseKnown=ctx.dispatcherObservers.length===1&&ctx.dispatcherObservers.every(x=>x.known())&&
+           receipt.originalDispatcherReleaseCompletions===1;
+         receipt.noNativeTransportOpened=receipt.guardEntries===0&&receipt.originalNativeFetchInvocations===0&&ctx.dispatcherObservers.length===0;

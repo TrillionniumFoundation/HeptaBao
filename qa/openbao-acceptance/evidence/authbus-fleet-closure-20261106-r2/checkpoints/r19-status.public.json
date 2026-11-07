@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.authbus-fleet-checkpoint.r19",
+  "baseCommit": "5f9d4263b136685244aba93e45a69139cb8aba41",
+  "baseTree": "2c69f04159c112a883abe57f0d367a2627197c7a",
+  "productCandidate": "5f9d4263b136685244aba93e45a69139cb8aba41",
+  "productCompiledQualified": false,
+  "fixedSlotNormal4bSyntheticRecoveryQualified": true,
+  "freshCurrentMain3ReadQualified": true,
+  "currentProviderValidityQualified": false,
+  "productionRefreshAdmission": false,
+  "directPermanentServiceLifecycleQualified": false,
+  "permanentServiceRunning": false,
+  "autoloadInstalled": false,
+  "physicalHa128Qualified": false,
+  "productionClientCutovers": 0,
+  "legacyDeletions": 0,
+  "fullReplacementQualified": false
+}

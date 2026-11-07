@@ -1,0 +1,18 @@
+--- original-stage-r1-body
++++ new-stage-r2-body
+@@ -24,7 +24,7 @@
+     '/bin/ps': (170432, '3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c'),
+ }
+ # PAYLOAD_PLACEHOLDER
+-REPORT = {'schema': 'heptabao.mac-normal5f9d4-source-staging.r1', 'ok': False,
++REPORT = {'schema': 'heptabao.mac-normal5f9d4-source-staging.r2', 'ok': False,
+     'sourceCommit': '5f9d4263b136685244aba93e45a69139cb8aba41',
+     'sourceTree': '2c69f04159c112a883abe57f0d367a2627197c7a',
+     'newOutput': str(OUT), 'newCloneNotCreated': str(SOURCE),
+
+# PAYLOAD.sources evaluation order only:
+- mac_owned_commands_r1.py -> mac_owned_unreaped_r1.py -> mac_public_code_pin_excerpt_r1.py -> mac_normal_build_t5_guard_r1.py
++ mac_owned_unreaped_r1.py -> mac_owned_commands_r1.py -> mac_public_code_pin_excerpt_r1.py -> mac_normal_build_t5_guard_r1.py
+# All four helper strings and both public files are byte-identical.
+{"correctedExactFourModuleOrder": {"loaded": ["mac_owned_unreaped_r1.py", "mac_owned_commands_r1.py", "mac_public_code_pin_excerpt_r1.py", "mac_normal_build_t5_guard_r1.py"], "ok": true}, "localRealExecImportOnly": true, "macFilesystemQualified": false, "moduleBytesChanged": false, "moduleConstructorsOrCommandsInvoked": false, "newChildProcesses": 0, "ok": true, "originalExactFourModuleOrder": {"errorType": "ModuleNotFoundError", "loaded": [], "missingModule": "mac_owned_unreaped_r1", "ok": false}, "originalFourPins": {"mac_normal_build_t5_guard_r1.py": {"bytes": 13395, "sha256": "dd56a94458d6cd8cde4ab9270b6f499b91e31be0bdf68817de2c22ac97916bb9"}, "mac_owned_commands_r1.py": {"bytes": 6154, "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"}, "mac_owned_unreaped_r1.py": {"bytes": 14877, "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"}, "mac_public_code_pin_excerpt_r1.py": {"bytes": 1792, "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"}}, "passed": 2, "productProcesses": 0, "schema": "heptabao.mac5f9d4-staging-import-order-local.r2"}
+{"allFourHelperAndTwoFileBytesUnchanged": true, "bytes": 142675, "controllerOrCompileRun": false, "explicitDependencyOrderVerified": true, "newOutputStillMustBeAbsent": true, "originalFailurePreserved": true, "sha256": "09e109853b429d22d01936754b83dcabe70e2cfa03a50077d4f184a7b8b2d80a", "stagingOnlySuccessor": "r2"}

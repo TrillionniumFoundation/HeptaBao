@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import ast,hashlib,json,os\npayload=json.load(__import__('sys').stdin)\nassert set(payload)=={'runner','candidate','patch_blocks'}\nrunner=payload['runner'].encode()\ncandidate=payload['candidate'].encode()\ndef blob(raw):return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()\nassert blob(runner)=='4f6489dbb3e9b52a9e55df162d8a2f0cc0ed1b8a'\nassert blob(candidate)=='807917a7839998a2cc69b6ea437c0c5fa2a1d4a5'\nast.parse(runner)\nenvironment={k:os.environ[k] for k in ('HOME','USER','LOGNAME','LANG','LC_ALL','TZ') if k in os.environ}\nenvironment.update(PATH='/opt/homebrew/bin:/usr/bin:/bin',LC_ALL='C',PYTHONDONTWRITEBYTECODE='1')\nos.environ.clear();os.environ.update(environment)\nnamespace={'__name__':'__main__','__file__':'/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-jwt-default-diagnosis-r1/diagnose_existing_mac_binary.py',\n           'SELF_SOURCE':runner,'CANDIDATE_SOURCE':candidate,'PATCH_BLOCKS':payload['patch_blocks']}\nexec(compile(runner,namespace['__file__'],'exec'),namespace)\n"
+    ],
+    "created_unix_ms": 1793971733131,
+    "cwd": "/Users/qianqi",
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b10c428b-fc05-755b",
+    "idempotency_key": "heptabao-mac-jwt-default-policy-normal09-diagnosis-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b10c428b-fc05-755b",
+    "request_digest": "ea60e2aa3ac224f2010eccc31b71d0c6ca07f4ba38aca5119b4cc559a7b7b890",
+    "request_fingerprint": 16888747823397479666,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b10c428b-fc05-755b"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 65200,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b10c428b-fc05-755b"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

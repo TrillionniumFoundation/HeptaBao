@@ -1,0 +1,393 @@
+--- frozen-sdk-r3/mac_t5_volume_guard_r1.py
++++ new-sdk-r4/mac_t5_volume_guard_r1.py
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3'
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 
+--- frozen-sdk-r3/mac_owned_launchd_r3.py
++++ new-sdk-r4/mac_owned_launchd_r3.py
+@@ -13,13 +13,13 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
+ DOMAIN='gui/501'
+-LABELS={'server':'org.heptabao.qa.mac-authbus-main3-sdk-20261106-r3.server',
+-        'consumer':'org.heptabao.qa.mac-authbus-main3-sdk-20261106-r3.consumer'}
+-SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3/bin/heptabao-server')
++LABELS={'server':'org.heptabao.qa.mac-authbus-main3-sdk-20261106-r4.server',
++        'consumer':'org.heptabao.qa.mac-authbus-main3-sdk-20261106-r4.consumer'}
++SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4/bin/heptabao-server')
+ SERVER_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ GRAPH=(('server-start','server-initial'),('server-kill','server-initial'),
+        ('server-start','server-cold-new-process'),('server-kill','server-cold-new-process'))
+@@ -95,7 +95,7 @@
+     return lines in ([exact],['Bad request.',exact])
+ 
+ 
+-HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-20261106-r3')
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-20261106-r4')
+ HOME_COPY_NAMES=('mac_current_server_owner_r1.py',)
+ HOME_GENERATIONS=('server-initial','server-cold-new-process')
+ HOME_FD_ATTEMPTS=64
+--- frozen-sdk-r3/mac_current_server_owner_r1.py
++++ new-sdk-r4/mac_current_server_owner_r1.py
+@@ -14,10 +14,10 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3/bin/heptabao-server')
++BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4/bin/heptabao-server')
+ BINARY_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ BINARY_BYTES=92359328
+ GENERATIONS=('server-initial','server-cold-new-process')
+--- frozen-sdk-r3/main3_source_fence.py
++++ new-sdk-r4/main3_source_fence.py
+@@ -17,9 +17,9 @@
+ from main3_inline_capture import AUTHORITY,OPERATION_KEY,CAPTURE_WORKER_SHA,validate_authority as validate_inline_authority
+ 
+ LIVE=Path('/Users/qianqi/.openclaw')
+-CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r3')
++CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4')
+ CAPSULE=CAPSULE_ROOT/'output/selected-owner-credentials.private.json'
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r3')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r4')
+ BINDING=PREP/'capsule-admission-binding.private.json'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ 
+--- frozen-sdk-r3/main3_api_cycle.py
++++ new-sdk-r4/main3_api_cycle.py
+@@ -20,7 +20,7 @@
+ from main3_source_fence import CapsuleFence,Refused,need,ident
+ from main3_http_complete import DeadlineSocket,CompleteHTTPResponse,read_complete_body,safe_failure_code
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
+ MOUNT='openclaw-auth'
+ MAX_HTTP=192
+ MAX_BODY=1048576
+--- frozen-sdk-r3/main3_capture_launcher.py
++++ new-sdk-r4/main3_capture_launcher.py
+@@ -3,7 +3,7 @@
+ import contextlib,hashlib,json,os,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic();PARENT_COMMAND_UNTIL=float(sys.argv[1]);UNTIL=min(PARENT_COMMAND_UNTIL,START+45.0)
+-ROOT=Path("/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r3")
++ROOT=Path("/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4")
+ LIVE=Path("/Users/qianqi/.openclaw")
+ QUAL=Path("/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2")
+ SDK=Path("/opt/homebrew/lib/node_modules/openclaw")
+@@ -16,8 +16,8 @@
+ INPUT_PATHS={BINDING,ORDER_ROOT/"output/owner-mapping.private.json",*[CREDENTIAL_ROOT/"output"/("credentials-"+agent+".private.json") for agent in AGENTS]}
+ 
+ import ast,base64
+-CAPTURE_QA=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3/qa')
+-PAYLOAD_PART_PINS={'main3_capture_payload_0.py': {'bytes': 60008, 'sha256': '220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8'}, 'main3_capture_payload_1.py': {'bytes': 60008, 'sha256': '8b92d7bee773ba63f9e7d9e8ad1cc94f522baad298421f5269bc79a1d76d9184'}, 'main3_capture_payload_2.py': {'bytes': 60008, 'sha256': '6d561461f75354b985f23297e8f5a79bf974fe64e7dd9c666be7bcab365d92c8'}, 'main3_capture_payload_3.py': {'bytes': 36668, 'sha256': '742338b1acbc9ca240eab49d34f4ae586628c68773f48bb13c2ed15f51d9ef1e'}}
++CAPTURE_QA=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4/qa')
++PAYLOAD_PART_PINS={'main3_capture_payload_0.py': {'bytes': 60008, 'sha256': '220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8'}, 'main3_capture_payload_1.py': {'bytes': 60008, 'sha256': 'e2779f389949c85493974d633815becef08dc32209e47a8bd98d4a9b9a3383ac'}, 'main3_capture_payload_2.py': {'bytes': 60008, 'sha256': '423fc9d17111b90bc1f16f008dacd383cf55d92d3a53c5883ec5ea50b363c9de'}, 'main3_capture_payload_3.py': {'bytes': 36668, 'sha256': '742338b1acbc9ca240eab49d34f4ae586628c68773f48bb13c2ed15f51d9ef1e'}}
+ def read_payload():
+     need_deadline=lambda: time.monotonic()<UNTIL
+     values=[]
+@@ -39,7 +39,7 @@
+         value=ast.literal_eval(node.body[0].value);assert isinstance(value,str)
+         values.append(value)
+     raw=base64.b64decode(''.join(values),validate=True)
+-    assert len(raw)<=262144 and hashlib.sha256(raw).hexdigest()=='1787e925b8013a3fdbfd060a670cbc52e575f3c9b7dc6c4d4e3d551a54e39fdd' and need_deadline()
++    assert len(raw)<=262144 and hashlib.sha256(raw).hexdigest()=='39d3b111e31a96f6c8bede7940cb853c55c93732e778605bdabb59a059cdf6d4' and need_deadline()
+     return json.loads(raw)
+ PAYLOAD=read_payload()
+ 
+@@ -50,7 +50,7 @@
+ "mac_registry_readonly_wal_r1.py":"60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+ "kv2_dr_process_custody.py":"669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+ "owned_process.py":"0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"}
+-report={"schema":"heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r3","ok":False,
++report={"schema":"heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r4","ok":False,
+ "credentialValuesOrDigestsIncluded":False,"rawClientConfigHashIncluded":False,"profileIdsPublished":False,
+ "providerCalled":False,"refreshDispatched":False,"j3160Contacted":False,
+ "productionConfigurationChanged":False,"productionDatabaseChanged":False,"serviceActions":0,
+--- frozen-sdk-r3/main3_inline_capture.py
++++ new-sdk-r4/main3_inline_capture.py
+@@ -15,20 +15,20 @@
+ import time
+ from main3_source_authority import SDK_SOURCE_PINS
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
+ QA=ROOT/'qa'
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r3')
+-CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r3')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r4')
++CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4')
+ CAPSULE=CAPSULE_ROOT/'output/selected-owner-credentials.private.json'
+ AUTHORITY=PREP/'inline-capture-authority.public.json'
+ RESULT=PREP/'inline-capture-result.public.json'
+-OPERATION_KEY='heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r3'
++OPERATION_KEY='heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r4'
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+-CAPTURE_WORKER_SHA='054c09e0140b27d52afc883e46b41cd27f6a35af6fc30e20f0f763d56649eced'
+-CAPTURE_LAUNCHER_SHA='a43911416d634fb5e931793ba5c170fbf6282492817d9836f339ee89ac7f0948'
++CAPTURE_WORKER_SHA='130de20e8d76f68889ecd28925809b96667c5b7756cc34b1b23f934f4dc6b030'
++CAPTURE_LAUNCHER_SHA='6fe72ce9fe547d1d1f2167a2231752959529358ed11bd3f81369527a489214ea'
+ CAPTURE_GUARD_SHA='f5fb13e04b394320a44b6687b474f06c0bb49b2ef1e194b956f528e454453d1f'
+-CAPTURE_REGISTRY_SHA='79fa68d6483651a4f04df4adb16ca6c622626c5bc294eb78161d8400ffc5a9f7'
+-CAPTURE_PAYLOAD_SHA='1787e925b8013a3fdbfd060a670cbc52e575f3c9b7dc6c4d4e3d551a54e39fdd'
++CAPTURE_REGISTRY_SHA='bbf04b5a60edd4e4213d9df60aee3cf6338683f553b534cdea449da350b95c3b'
++CAPTURE_PAYLOAD_SHA='39d3b111e31a96f6c8bede7940cb853c55c93732e778605bdabb59a059cdf6d4'
+ CAPTURE_PRIOR_LAUNCHER_SHA='06bef1e6d68c2f9aa401639396c055f6c4d9694a2a14498193a5cad5e6b6cb88'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ 
+@@ -70,7 +70,7 @@
+     return pid
+ 
+ def validate_report(value,capture_pid):
+-    need(isinstance(value,dict) and value.get('schema')=='heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r3'
++    need(isinstance(value,dict) and value.get('schema')=='heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r4'
+          and value.get('ok') is True and value.get('childExitCode')==0 and value.get('stderrBytes')==0
+          and value.get('sharedSeconds')==45 and value.get('parentCommandSeconds')==45
+          and value.get('applicationRetries')==0 and value.get('serviceActions')==0,
+--- frozen-sdk-r3/test_main3_inline_capture.py
++++ new-sdk-r4/test_main3_inline_capture.py
+@@ -28,7 +28,7 @@
+         children.append({'pid':pid,'birth':{'pid':pid,'ppid':CAPTURE,'pgid':pid,'sid':pid,'uid':501},
+             'exec_admitted':True,'original_wait_completed':True,'original_wait_count':1,
+             'returncode':0,'no_live_members_before_reap':True,'gaps':[],'signals':[]})
+-    result={'schema':'heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r3',
++    result={'schema':'heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r4',
+         'ok':True,'childExitCode':0,'stderrBytes':0,'sharedSeconds':45,'parentCommandSeconds':45,
+         'applicationRetries':0,'serviceActions':0,
+         'workerSourceSha256':c.CAPTURE_WORKER_SHA,'guardSourceSha256':c.CAPTURE_GUARD_SHA,
+--- frozen-sdk-r3/main3_sdk_public_pins.py
++++ new-sdk-r4/main3_sdk_public_pins.py
+@@ -1,5 +1,5 @@
+ """Public installed sources and owned asset bindings; no private content pins."""
+-ASSET_PINS={'qa/main3_sdk_cycle_r2.mjs': {'bytes': 31439, 'sha256': 'be755ff0dfb7a833bf1c40a75f9c7dc68bc4c38ea12339b4af707f065e1abbe0'}, 'qa/main3_sdk_wire_r2.mjs': {'bytes': 12400, 'sha256': '2b06342e30703611729788a522ba764ae30adfe1e47c4f4673b7aa8f647170e2'}, 'qa/main3_auth_rows_cas_r1.mjs': {'bytes': 3040, 'sha256': 'f2e2d923fa017a70af64fb71efd6e92abf3f5117ce6c4952443aa115b52aa5e5'}, 'qa/main3_authbus_cache_cas_r1.mjs': {'bytes': 6983, 'sha256': 'fffa956fb3f3fd6042ec010a47275118603c42284187877648360a7052320d78'}, 'qa/main3_sdk_seed_r1.mjs': {'bytes': 7715, 'sha256': '1d37d3d6e16586297883fc316ee7968038ae077938e800b6dba98a96b94da6c1'}, 'plugin/index.js': {'bytes': 54455, 'sha256': 'b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b'}, 'plugin/package.json': {'bytes': 980, 'sha256': 'e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334'}, 'plugin/order-policy.js': {'bytes': 7376, 'sha256': '16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301'}, 'plugin/runtime-refresh-policy.js': {'bytes': 956, 'sha256': '8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547'}, 'plugin/codex-client-recycler.js': {'bytes': 2120, 'sha256': 'd3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d'}, 'plugin/provider-error-classifier.js': {'bytes': 4670, 'sha256': '3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77'}, 'plugin/bad-refresh-quarantine.js': {'bytes': 5438, 'sha256': '916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286'}, 'plugin/lease-assignments.js': {'bytes': 6932, 'sha256': '24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7'}}
++ASSET_PINS={'qa/main3_sdk_cycle_r2.mjs': {'bytes': 31439, 'sha256': '4a67ca8ec0effa91e35cde4d92eaaa28a18a58b8cab647e4e9ac4315b476b383'}, 'qa/main3_auth_rows_cas_r1.mjs': {'bytes': 3040, 'sha256': '4f3efdf344e61f5f1c95dadfd8b9c52f142f85ddc2794933f798142ab8324e9c'}, 'qa/main3_authbus_cache_cas_r1.mjs': {'bytes': 6983, 'sha256': '7fa83d69c5c9713d3be642434ad009e070e688890d0e0a23db11f7b46d702302'}, 'qa/main3_sdk_seed_r1.mjs': {'bytes': 7715, 'sha256': '6a156f3e8e0e51ad2492e76720a76e386a8020d991cfe66aa21131141f36e410'}, 'plugin/index.js': {'bytes': 54455, 'sha256': 'b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b'}, 'plugin/package.json': {'bytes': 980, 'sha256': 'e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334'}, 'plugin/order-policy.js': {'bytes': 7376, 'sha256': '16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301'}, 'plugin/runtime-refresh-policy.js': {'bytes': 956, 'sha256': '8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547'}, 'plugin/codex-client-recycler.js': {'bytes': 2120, 'sha256': 'd3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d'}, 'plugin/provider-error-classifier.js': {'bytes': 4670, 'sha256': '3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77'}, 'plugin/bad-refresh-quarantine.js': {'bytes': 5438, 'sha256': '916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286'}, 'plugin/lease-assignments.js': {'bytes': 6932, 'sha256': '24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7'}, 'qa/main3_sdk_wire_r3.mjs': {'bytes': 13346, 'sha256': 'e80c7eb22e2cd2fbc547eb085b8eb0b482e8e656baa8a59520e0cb93a4c0396c'}}
+ SDK_EXTRA_PINS={'package.json': '695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db', 'dist/profiles-DyU-YCq2.js': '075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5', 'dist/openclaw-agent-db-DKpxi-Ll.js': '5c99ab6de1ccc1419ed1bdbc783b79203afc34e564f794df4d91bf10e0b53360', 'dist/openclaw-state-db-DzSsA9Ji.js': 'ba920b2e6f63293a27c34615fc31dcb16a20a68a1e1e34fbccdcac56a9608149', 'dist/sqlite-wal-Bhk2Ro-u.js': 'ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da'}
+ NODE_SHA='a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e'
+ MOUNT_SHA='e0368cc89f48770e30dcbc639ae4d99d3ee478516b0186baf3e030ce9828e5dd'
+--- frozen-sdk-r3/main3_sdk_phase.py
++++ new-sdk-r4/main3_sdk_phase.py
+@@ -14,14 +14,14 @@
+ from main3_source_authority import SDK_SOURCE_PINS
+ from main3_sdk_public_pins import ASSET_PINS,SDK_EXTRA_PINS,NODE_SHA,MOUNT_SHA
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
+ STATE=ROOT/'state';SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ NODE='/opt/homebrew/Cellar/node/25.9.0_1/bin/node'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ ROLE='main3-installed-sdk'
+ PLUGINS=('index.js','package.json','order-policy.js','runtime-refresh-policy.js',
+  'codex-client-recycler.js','provider-error-classifier.js','bad-refresh-quarantine.js','lease-assignments.js')
+-WORKERS=('main3_sdk_cycle_r2.mjs','main3_sdk_wire_r2.mjs','main3_auth_rows_cas_r1.mjs','main3_authbus_cache_cas_r1.mjs')
++WORKERS=('main3_sdk_cycle_r2.mjs','main3_sdk_wire_r3.mjs','main3_auth_rows_cas_r1.mjs','main3_authbus_cache_cas_r1.mjs')
+ 
+ def encoded(value):return (json.dumps(value,ensure_ascii=False,separators=(',',':'))+'\n').encode()
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+--- frozen-sdk-r3/main3_sdk_controller.py
++++ new-sdk-r4/main3_sdk_controller.py
+@@ -19,12 +19,12 @@
+ import sys
+ import time
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
+-HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-20261106-r3')
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r3')
+-JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-journal-20261106-r3')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
++HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-20261106-r4')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r4')
++JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-journal-20261106-r4')
+ QA=ROOT/'qa'
+-TARGET='gui/501/org.heptabao.qa.mac-authbus-main3-sdk-20261106-r3.server'
++TARGET='gui/501/org.heptabao.qa.mac-authbus-main3-sdk-20261106-r4.server'
+ SOURCE_NAMES=('mac_owned_unreaped_r1.py', 'mac_owned_commands_r1.py', 'mac_t5_volume_guard_r1.py', 'mac_owned_launchd_r3.py', 'mac_native_process_observer_r1.py', 'mac_current_server_owner_r1.py', 'mac_public_code_pin_excerpt_r1.py', 'tls_complete_http_probe.py', 'test_suid_ps_tls_r2.py', 'main3_source_fence.py', 'main3_api_cycle.py', 'test_main3_api_guards.py', 'main3_source_authority.py', 'main3_capture_payload_0.py', 'main3_capture_payload_1.py', 'main3_capture_payload_2.py', 'main3_capture_payload_3.py', 'main3_capture_launcher.py', 'main3_inline_capture.py', 'test_main3_inline_capture.py', 'main3_http_complete.py', 'test_main3_http_complete.py', 'qualify_main3_http_tls.py', 'main3_sdk_public_pins.py', 'main3_sdk_phase.py', 'main3_sdk_controller.py', 'test_main3_sdk_controller.py')
+ 
+ def need(value,code):
+@@ -50,7 +50,7 @@
+ def load_inputs():
+     raw=stable_read(PREP/'plan.public.json',131072)
+     plan=json.loads(raw)
+-    need(plan['schema']=='heptabao.mac-main3-sdk-preparation.r3'
++    need(plan['schema']=='heptabao.mac-main3-sdk-preparation.r4'
+          and plan['root']==str(ROOT) and plan['home']==str(HOME)
+          and plan['journal']==str(JOURNAL) and plan['wrapperSeconds']==30
+          and plan['execObservationSeconds']==10 and plan['managerSeconds']==600
+@@ -91,7 +91,7 @@
+     def append(self,event,value):
+         self.check()
+         need(re.fullmatch(r'[a-z0-9-]{1,48}',event) and len(self.rows)<512,'journal_finite_events')
+-        raw=encoded({'schema':'heptabao.mac-main3-sdk-journal.r3','index':len(self.rows),'event':event,'value':value})
++        raw=encoded({'schema':'heptabao.mac-main3-sdk-journal.r4','index':len(self.rows),'event':event,'value':value})
+         need(len(raw)<=262144,'journal_bounded_record')
+         name='%03d-%s.public.json'%(len(self.rows),event)
+         with self.signals.critical():
+@@ -368,7 +368,7 @@
+         need(signals.pending is None,'outer_not_cancelled')
+         left=until-time.monotonic();need(left>0,'original_outer_600_seconds');return left
+     journal=None;guard=None;home=None;manager=None;active_api=None;active_fence=None;private_state=None
+-    result={'schema':'heptabao.mac-main3-current-sdk-qualification.r3','mode':args.mode,
++    result={'schema':'heptabao.mac-main3-current-sdk-qualification.r4','mode':args.mode,
+         'ok':False,'planSha256':plan_sha,'startupCustodyOnly':False,'businessCredentialInputsRead':False,
+         'providerValid':False,'providerCalled':False,'providerRefreshAttempted':False,
+         'productionTrafficCutover':False,'credentialValuesOrDigestsPublished':False,
+--- frozen-sdk-r3/qa/main3_sdk_cycle_r2.mjs
++++ new-sdk-r4/qa/main3_sdk_cycle_r2.mjs
+@@ -11,14 +11,14 @@
+ import {createHash} from 'node:crypto';
+ import {pathToFileURL,fileURLToPath} from 'node:url';
+ import {createRequire,syncBuiltinESMExports} from 'node:module';
+-import {installWireFence} from './main3_sdk_wire_r2.mjs';
++import {installWireFence} from './main3_sdk_wire_r3.mjs';
+ 
+-const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3';
++const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4';
+ const STATE=ROOT+'/state',SDK='/opt/homebrew/lib/node_modules/openclaw';
+ const AGENTS=Object.freeze(['main','trnm','hepta-ui','hepta','hepta-backend']);
+ const PLUGIN_FILES=Object.freeze(['index.js','package.json','order-policy.js','runtime-refresh-policy.js',
+   'codex-client-recycler.js','provider-error-classifier.js','bad-refresh-quarantine.js','lease-assignments.js']);
+-const WORKER_FILES=Object.freeze(['main3_sdk_cycle_r2.mjs','main3_sdk_wire_r2.mjs',
++const WORKER_FILES=Object.freeze(['main3_sdk_cycle_r2.mjs','main3_sdk_wire_r3.mjs',
+   'main3_auth_rows_cas_r1.mjs','main3_authbus_cache_cas_r1.mjs']);
+ const REQUIRED_SDK=Object.freeze(['package.json','dist/plugin-sdk/agent-runtime.js','dist/store-DH33UrUj.js',
+   'dist/order-CeBlX0NH.js','dist/profiles-DyU-YCq2.js','dist/sqlite-B1ze-fre.js',
+--- frozen-sdk-r3/qa/main3_auth_rows_cas_r1.mjs
++++ new-sdk-r4/qa/main3_auth_rows_cas_r1.mjs
+@@ -11,7 +11,7 @@
+ function boundDatabase(stateRoot, agentId) {
+   if (!['main','trnm','hepta-ui','hepta','hepta-backend'].includes(agentId)) throw new Error('auth_rows_agent_not_allowlisted');
+   const root = path.resolve(stateRoot);
+-  if (root !== '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3/state')
++  if (root !== '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4/state')
+     throw new Error('auth_rows_not_new_owned_state');
+   const file=path.join(root,'agents',agentId,'agent','openclaw-agent.sqlite');
+   if(fs.realpathSync(root)!==root||fs.realpathSync(path.dirname(file))!==path.dirname(file)
+--- frozen-sdk-r3/qa/main3_authbus_cache_cas_r1.mjs
++++ new-sdk-r4/qa/main3_authbus_cache_cas_r1.mjs
+@@ -16,7 +16,7 @@
+ }
+ function folder(stateRoot) {
+   const state = path.resolve(stateRoot);
+-  need(state === '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3/state', 'cache_fixed_main3_fixture_only');
++  need(state === '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4/state', 'cache_fixed_main3_fixture_only');
+   need(fs.realpathSync(state) === state, 'cache_state_root_no_symlink');
+   const root = path.join(state, 'authbus');
+   let info;
+--- frozen-sdk-r3/qa/main3_sdk_seed_r1.mjs
++++ new-sdk-r4/qa/main3_sdk_seed_r1.mjs
+@@ -8,7 +8,7 @@
+ import net from 'node:net';
+ import {fileURLToPath} from 'node:url';
+ 
+-const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3';
++const ROOT='/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4';
+ const INDEX_SHA='b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b';
+ const hash=raw=>crypto.createHash('sha256').update(raw).digest('hex');
+ const need=(value,code)=>{if(!value)throw Object.assign(new Error(code),{safeCode:code});};
+--- frozen-sdk-r3/qa/main3_sdk_wire_r2.mjs
++++ new-sdk-r4/qa/main3_sdk_wire_r3.mjs
+@@ -1,6 +1,7 @@
+ /** One current AuthBus cycle, with bounded verified HTTPS and public ordinals.
+- * The outer Mac sandbox admits only the one owned loopback listener. This
+- * adapter never publishes request paths, response bodies, identifiers or hashes.
++ * The outer Mac sandbox admits one port across local machine addresses. This
++ * adapter separately pins exact IPv4, CA, host, and leaf on each response and
++ * never publishes request paths, response bodies, identifiers or hashes.
+  */
+ import https from 'node:https';
+ import http from 'node:http';
+@@ -81,7 +82,7 @@
+       socketObserved:false,socketClosed:false,tlsVerified:false,outcomeUnknown:false,
+       originalHttpMaximumMs:15000,allocatedHttpMs:budget};
+     rows.push(row);
+-    let req,timer=null,ended=false,received=false,pinVerified=false,failureDelivered=false;
++    let req,timer=null,ended=false,received=false,failureDelivered=false;
+     const deadline=process.hrtime.bigint()+BigInt(budget)*1000000n;
+     const fail=code=>{
+       if(failureDelivered)return;
+@@ -106,13 +107,25 @@
+           if(normal)return normal;
+           if(host!==target.hostname||!certificate?.raw||hash(certificate.raw)!==certificateSha256)
+             return safeError('sdk_wire_tls_leaf_pin');
+-          pinVerified=true;return undefined;
++          return undefined;
+         }},response=>{
+         received=true;row.status=response.statusCode;
+         const socket=response.socket;
+         try{
+-          need(pinVerified&&socket.authorized===true&&
+-               hash(socket.getPeerCertificate().raw)===certificateSha256,'sdk_wire_verified_exact_peer');
++          // A TLS callback is a connection verification hook, not a request-local
++          // completion marker. The Mac synthetic reproduction observed a valid
++          // new connection without invoking this request's callback closure.
++          row.tlsSocketAuthorized=socket.authorized===true;
++          row.tlsEndpointMatched=socket.remoteAddress===target.hostname&&socket.remotePort===Number(target.port);
++          row.tlsPeerCertificateAvailable=false;row.tlsHostMatched=false;row.tlsLeafMatched=false;
++          const peer=socket.getPeerCertificate();
++          row.tlsPeerCertificateAvailable=Boolean(peer&&Buffer.isBuffer(peer.raw)&&peer.raw.length>0);
++          if(row.tlsPeerCertificateAvailable){
++            row.tlsHostMatched=tls.checkServerIdentity(target.hostname,peer)===undefined;
++            row.tlsLeafMatched=hash(peer.raw)===certificateSha256;
++          }
++          need(row.tlsSocketAuthorized&&row.tlsEndpointMatched&&row.tlsPeerCertificateAvailable&&
++               row.tlsHostMatched&&row.tlsLeafMatched,'sdk_wire_verified_exact_peer');
+           row.tlsVerified=true;row.tlsVersion=socket.getProtocol();
+           const expected=responseLength(response.headers,response.statusCode);
+           row.responseFraming=response.statusCode===204?'no-body':expected===null?'chunked':'content-length';
+--- frozen-sdk-r3/preparer.py
++++ new-sdk-r4/preparer.py
+@@ -13,17 +13,17 @@
+ import time
+ import types
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r3')
+-HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-20261106-r3')
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r3')
+-JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-journal-20261106-r3')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
++HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-20261106-r4')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r4')
++JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-journal-20261106-r4')
+ QA=ROOT/'qa'
+ CANONICAL=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/artifacts/heptabao-server')
+ CANONICAL_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ CANONICAL_BYTES=92359328
+-EXPECTED_PINS={'mac_owned_unreaped_r1.py': {'bytes': 14877, 'sha256': 'd735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298'}, 'mac_owned_commands_r1.py': {'bytes': 6154, 'sha256': '71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530'}, 'mac_t5_volume_guard_r1.py': {'bytes': 13385, 'sha256': 'f5a711a3817556f4b5297827b1ed31a9966e0030aeb760468ed88c278f14c733'}, 'mac_owned_launchd_r3.py': {'bytes': 58613, 'sha256': 'd1ef5c2ebc96ac621528d956b2ab01f55257ebb49b0ee26ee4dabb258740c4e8'}, 'mac_native_process_observer_r1.py': {'bytes': 13423, 'sha256': 'cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b'}, 'mac_current_server_owner_r1.py': {'bytes': 16143, 'sha256': '4f39b0dfc518693532b475001b8896c12ad75c35d980b21d35978308d96e7956'}, 'mac_public_code_pin_excerpt_r1.py': {'bytes': 1792, 'sha256': '7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f'}, 'tls_complete_http_probe.py': {'bytes': 4750, 'sha256': '7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc'}, 'test_suid_ps_tls_r2.py': {'bytes': 16309, 'sha256': '261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6'}, 'main3_source_fence.py': {'bytes': 16577, 'sha256': '1d11bd8dd25b52d390010389d893d114baf7a8946cbaea7ad417c8869cc0c3c5'}, 'main3_api_cycle.py': {'bytes': 17862, 'sha256': 'e4210181ee1989ff6f5594a648767383d806719b1930e24154a56962c839af36'}, 'test_main3_api_guards.py': {'bytes': 15130, 'sha256': '14f273d329325dd173e6ae995c309a62d0959595d144b85c04f31d83fc7148b6'}, 'main3_source_authority.py': {'bytes': 2406, 'sha256': '1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290'}, 'main3_capture_payload_0.py': {'bytes': 60008, 'sha256': '220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8'}, 'main3_capture_payload_1.py': {'bytes': 60008, 'sha256': '8b92d7bee773ba63f9e7d9e8ad1cc94f522baad298421f5269bc79a1d76d9184'}, 'main3_capture_payload_2.py': {'bytes': 60008, 'sha256': '6d561461f75354b985f23297e8f5a79bf974fe64e7dd9c666be7bcab365d92c8'}, 'main3_capture_payload_3.py': {'bytes': 36668, 'sha256': '742338b1acbc9ca240eab49d34f4ae586628c68773f48bb13c2ed15f51d9ef1e'}, 'main3_capture_launcher.py': {'bytes': 30681, 'sha256': 'a43911416d634fb5e931793ba5c170fbf6282492817d9836f339ee89ac7f0948'}, 'main3_inline_capture.py': {'bytes': 15731, 'sha256': '3ef6d004b95757da1747a80fdbadf1073d12ca0c2e217ba590af3b6b1d9689da'}, 'test_main3_inline_capture.py': {'bytes': 9233, 'sha256': '6b424d9d2cf8a36f7116f6ce58f7f1129c38109543ba3c6e62a13d2c008250dd'}, 'main3_http_complete.py': {'bytes': 9110, 'sha256': 'ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96'}, 'test_main3_http_complete.py': {'bytes': 10216, 'sha256': '2aaaa0225a1720f7bad4f1f4b2d9a0d1ed9a33469b45ed24cf951dc23a6a9f6c'}, 'qualify_main3_http_tls.py': {'bytes': 8195, 'sha256': '85955fd71a7ec8a350e08d2022cfd8dd84066eeaa10655342ac5851763c44308'}, 'main3_sdk_public_pins.py': {'bytes': 2391, 'sha256': '6c351204d8b87a7e36891e040b413028a4b7a95295b2fd545512a54708009ae2'}, 'main3_sdk_phase.py': {'bytes': 24508, 'sha256': 'ea8c5ad8abf252568bae5ca20c34ebf96152bd0822f27b2cb412f1e0e0838f76'}, 'main3_sdk_controller.py': {'bytes': 33429, 'sha256': 'ef7fb2cc9f1b2a34b3ceaefbde64055f7cc66fc80896f2fefafd089ace6c2900'}, 'test_main3_sdk_controller.py': {'bytes': 11340, 'sha256': '6c0d1a96dea4caac4803b1331478b070de4411f3d80286d1601e8956afbeefc6'}}
++EXPECTED_PINS={'mac_owned_unreaped_r1.py': {'bytes': 14877, 'sha256': 'd735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298'}, 'mac_owned_commands_r1.py': {'bytes': 6154, 'sha256': '71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530'}, 'mac_t5_volume_guard_r1.py': {'bytes': 13385, 'sha256': '33686b28e6342f7930c62042875d57606425c7f2f8e70b15e137db691dd836e0'}, 'mac_owned_launchd_r3.py': {'bytes': 58613, 'sha256': '2cad341335c5a0a227c134af68455b040b760651eeb137b284e4776eb664a374'}, 'mac_native_process_observer_r1.py': {'bytes': 13423, 'sha256': 'cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b'}, 'mac_current_server_owner_r1.py': {'bytes': 16143, 'sha256': '4f17d0b6b66a422d3473c3dd6d11ca78f8dee35719a1343d818c25165c0fdbf2'}, 'mac_public_code_pin_excerpt_r1.py': {'bytes': 1792, 'sha256': '7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f'}, 'tls_complete_http_probe.py': {'bytes': 4750, 'sha256': '7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc'}, 'test_suid_ps_tls_r2.py': {'bytes': 16309, 'sha256': '261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6'}, 'main3_source_fence.py': {'bytes': 16577, 'sha256': 'c0cca09c9f46ff7c5b0bce462934b731d003a02b6bf98da5f8469e4ce0ffb25f'}, 'main3_api_cycle.py': {'bytes': 17862, 'sha256': '44397a1a4c54ac29fef30a74dd808e2a0e5765641c4e3eadf2da506583a51df2'}, 'test_main3_api_guards.py': {'bytes': 15130, 'sha256': '14f273d329325dd173e6ae995c309a62d0959595d144b85c04f31d83fc7148b6'}, 'main3_source_authority.py': {'bytes': 2406, 'sha256': '1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290'}, 'main3_capture_payload_0.py': {'bytes': 60008, 'sha256': '220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8'}, 'main3_capture_payload_1.py': {'bytes': 60008, 'sha256': 'e2779f389949c85493974d633815becef08dc32209e47a8bd98d4a9b9a3383ac'}, 'main3_capture_payload_2.py': {'bytes': 60008, 'sha256': '423fc9d17111b90bc1f16f008dacd383cf55d92d3a53c5883ec5ea50b363c9de'}, 'main3_capture_payload_3.py': {'bytes': 36668, 'sha256': '742338b1acbc9ca240eab49d34f4ae586628c68773f48bb13c2ed15f51d9ef1e'}, 'main3_capture_launcher.py': {'bytes': 30681, 'sha256': '6fe72ce9fe547d1d1f2167a2231752959529358ed11bd3f81369527a489214ea'}, 'main3_inline_capture.py': {'bytes': 15731, 'sha256': 'a57572b4acad331c502eb768c2a8f3922402e132986c74b127e9e1510cef4d7f'}, 'test_main3_inline_capture.py': {'bytes': 9233, 'sha256': 'a593238b2169dda93d191647f51623e6b7213d154a20c972e48aa1364ab8a235'}, 'main3_http_complete.py': {'bytes': 9110, 'sha256': 'ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96'}, 'test_main3_http_complete.py': {'bytes': 10216, 'sha256': '2aaaa0225a1720f7bad4f1f4b2d9a0d1ed9a33469b45ed24cf951dc23a6a9f6c'}, 'qualify_main3_http_tls.py': {'bytes': 8195, 'sha256': '85955fd71a7ec8a350e08d2022cfd8dd84066eeaa10655342ac5851763c44308'}, 'main3_sdk_public_pins.py': {'bytes': 2391, 'sha256': '3db36703588e080187bc9aa2ae137d10ae1f7285c09c460168d13b13bfac23a4'}, 'main3_sdk_phase.py': {'bytes': 24508, 'sha256': 'ff596a663fcd0d8c6dda4e8a5a136d778fb8c454c7ce5fe271e0d31cc6108841'}, 'main3_sdk_controller.py': {'bytes': 33429, 'sha256': 'eb253c69eaa6f1f480f5f6e0a095066eb5e7a53b00c1060c52223072701720f1'}, 'test_main3_sdk_controller.py': {'bytes': 11340, 'sha256': '6c0d1a96dea4caac4803b1331478b070de4411f3d80286d1601e8956afbeefc6'}}
+ 
+-EXPECTED_ASSETS={'qa/main3_sdk_cycle_r2.mjs': {'bytes': 31439, 'sha256': 'be755ff0dfb7a833bf1c40a75f9c7dc68bc4c38ea12339b4af707f065e1abbe0'}, 'qa/main3_sdk_wire_r2.mjs': {'bytes': 12400, 'sha256': '2b06342e30703611729788a522ba764ae30adfe1e47c4f4673b7aa8f647170e2'}, 'qa/main3_auth_rows_cas_r1.mjs': {'bytes': 3040, 'sha256': 'f2e2d923fa017a70af64fb71efd6e92abf3f5117ce6c4952443aa115b52aa5e5'}, 'qa/main3_authbus_cache_cas_r1.mjs': {'bytes': 6983, 'sha256': 'fffa956fb3f3fd6042ec010a47275118603c42284187877648360a7052320d78'}, 'qa/main3_sdk_seed_r1.mjs': {'bytes': 7715, 'sha256': '1d37d3d6e16586297883fc316ee7968038ae077938e800b6dba98a96b94da6c1'}, 'plugin/index.js': {'bytes': 54455, 'sha256': 'b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b'}, 'plugin/package.json': {'bytes': 980, 'sha256': 'e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334'}, 'plugin/order-policy.js': {'bytes': 7376, 'sha256': '16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301'}, 'plugin/runtime-refresh-policy.js': {'bytes': 956, 'sha256': '8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547'}, 'plugin/codex-client-recycler.js': {'bytes': 2120, 'sha256': 'd3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d'}, 'plugin/provider-error-classifier.js': {'bytes': 4670, 'sha256': '3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77'}, 'plugin/bad-refresh-quarantine.js': {'bytes': 5438, 'sha256': '916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286'}, 'plugin/lease-assignments.js': {'bytes': 6932, 'sha256': '24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7'}}
++EXPECTED_ASSETS={'qa/main3_sdk_cycle_r2.mjs': {'bytes': 31439, 'sha256': '4a67ca8ec0effa91e35cde4d92eaaa28a18a58b8cab647e4e9ac4315b476b383'}, 'qa/main3_auth_rows_cas_r1.mjs': {'bytes': 3040, 'sha256': '4f3efdf344e61f5f1c95dadfd8b9c52f142f85ddc2794933f798142ab8324e9c'}, 'qa/main3_authbus_cache_cas_r1.mjs': {'bytes': 6983, 'sha256': '7fa83d69c5c9713d3be642434ad009e070e688890d0e0a23db11f7b46d702302'}, 'qa/main3_sdk_seed_r1.mjs': {'bytes': 7715, 'sha256': '6a156f3e8e0e51ad2492e76720a76e386a8020d991cfe66aa21131141f36e410'}, 'plugin/index.js': {'bytes': 54455, 'sha256': 'b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b'}, 'plugin/package.json': {'bytes': 980, 'sha256': 'e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334'}, 'plugin/order-policy.js': {'bytes': 7376, 'sha256': '16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301'}, 'plugin/runtime-refresh-policy.js': {'bytes': 956, 'sha256': '8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547'}, 'plugin/codex-client-recycler.js': {'bytes': 2120, 'sha256': 'd3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d'}, 'plugin/provider-error-classifier.js': {'bytes': 4670, 'sha256': '3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77'}, 'plugin/bad-refresh-quarantine.js': {'bytes': 5438, 'sha256': '916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286'}, 'plugin/lease-assignments.js': {'bytes': 6932, 'sha256': '24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7'}, 'qa/main3_sdk_wire_r3.mjs': {'bytes': 13346, 'sha256': 'e80c7eb22e2cd2fbc547eb085b8eb0b482e8e656baa8a59520e0cb93a4c0396c'}}
+ 
+ def need(value,code):
+     if not value:raise RuntimeError(code)
+@@ -81,7 +81,7 @@
+     from mac_public_code_pin_excerpt_r1 import public_code_pin
+     from mac_owned_launchd_r3 import HomeControl
+     signals=Signals();signals.install();commands=Commands(signals)
+-    guard=None;home=None;report={'schema':'heptabao.mac-main3-sdk-preparation-terminal.r3',
++    guard=None;home=None;report={'schema':'heptabao.mac-main3-sdk-preparation-terminal.r4',
+         'ok':False,'serviceMutationExecuted':False,'currentCredentialInputsRead':False,
+         'canonicalBinaryModified':False,'oldR2Modified':False,'sourcePins':EXPECTED_PINS}
+     try:
+@@ -163,7 +163,7 @@
+         home.write_new(HOME/'mac_current_server_owner_r1.py',sources['mac_current_server_owner_r1.py'],copy=True)
+         binding=home.actual_binding()
+         python_runtime=public_code_pin('/opt/homebrew/bin/python3',remaining=remaining,critical=signals.critical)
+-        plan={'schema':'heptabao.mac-main3-sdk-preparation.r3','root':str(ROOT),'home':str(HOME),'journal':str(JOURNAL),
++        plan={'schema':'heptabao.mac-main3-sdk-preparation.r4','root':str(ROOT),'home':str(HOME),'journal':str(JOURNAL),
+             'sourcePins':EXPECTED_PINS,'assetPins':EXPECTED_ASSETS,'homeCopyPins':{name:EXPECTED_PINS[name] for name in copy_pins},'homeBinding':binding,
+             'pythonRuntime':python_runtime,'anchorBase64':base64.b64encode(anchor_raw).decode(),'anchorSha256':sha(anchor_raw),
+             'canonicalProduct':{'commit':'4bde9aee03fcd27c59e13607e529b1cee594b249',

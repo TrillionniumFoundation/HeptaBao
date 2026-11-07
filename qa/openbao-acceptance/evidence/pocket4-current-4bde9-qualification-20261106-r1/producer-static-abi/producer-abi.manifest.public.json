@@ -1,0 +1,43 @@
+{
+  "expected_artifacts": {
+    "heptabao-seed": {
+      "bytes": 102211888,
+      "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-seed",
+      "sha256": "434c32ed59201c13d8af498f5a6b19f10935e744b085a4f8029c241523f4d968"
+    },
+    "heptabao-server": {
+      "bytes": 110799168,
+      "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-server",
+      "sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c"
+    }
+  },
+  "native_projection": {
+    "bytes": 3992,
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/native-build.public.json",
+    "sha256": "25263aa341d5525570da0c950ff519ed808110fc301c63fab7b1611015b7fa8e"
+  },
+  "normal107_job_id": "1a1b2367cb2-fc05-7cfc",
+  "normal107_terminal": {
+    "bytes": 733,
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/normal107.terminal.exact-tool-text.json",
+    "sha256": "8ec1de7b5b992112d479afa5f64233fd9196e83ab323581041b3f6f99670ef63"
+  },
+  "output_directory": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-static-abi-producer-r1/capture",
+  "projection_job_id": "1a1b275d6b4-fc05-7e18",
+  "projection_terminal": {
+    "bytes": 729,
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-static-abi-producer-r1/projection.terminal.exact-tool-text.json",
+    "sha256": "fa639c83f44a98ededc81a7a3deddb6a6c63a1db153972b573d6135990899d8f"
+  },
+  "role": "producer",
+  "schema": "heptabao.current-native-static-abi-capture-inputs.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "tools": {
+    "readelf": {
+      "bytes": 818312,
+      "path": "/usr/bin/x86_64-linux-gnu-readelf",
+      "sha256": "c857339616bbbfa5eba32733e22365048903fbaf6ed2126b897dd138bcb741fc"
+    }
+  }
+}

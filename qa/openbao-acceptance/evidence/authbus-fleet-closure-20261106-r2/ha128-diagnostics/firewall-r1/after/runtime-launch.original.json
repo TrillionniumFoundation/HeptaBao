@@ -1,0 +1,36 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,json,os,shutil,stat,sys\nfrom pathlib import Path\nassert sys.platform=='linux' and os.getuid()==1000\nnames=('nft','iptables','iptables-save')\ndef ident(s):return tuple(getattr(s,k) for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))\nreport={'schema':'heptabao.fixed-firewall-after-observation.r1','childCount':0,'networkCalls':0,'rulesChanged':False,'tools':[]}\nfor name in names:\n value=shutil.which(name,path='/usr/sbin:/usr/bin:/sbin:/bin')\n if value is None:report['tools'].append({'name':name,'present':False});continue\n alias=Path(value);path=alias.resolve(strict=True);s=path.lstat();assert stat.S_ISREG(s.st_mode) and s.st_uid==0 and not s.st_mode&0o022 and s.st_size<=4194304\n fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW);raw=bytearray()\n try:\n  assert ident(os.fstat(fd))==ident(s)\n  while True:\n   block=os.read(fd,65536)\n   if not block:break\n   raw.extend(block);assert len(raw)<=s.st_size\n  assert len(raw)==s.st_size and ident(os.fstat(fd))==ident(path.lstat())==ident(s) and alias.resolve(strict=True)==path\n finally:os.close(fd)\n report['tools'].append({'name':name,'present':True,'lookupPath':str(alias),'resolvedPath':str(path),'uid':s.st_uid,'gid':s.st_gid,'mode':oct(stat.S_IMODE(s.st_mode)),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()})\nexpected={'nft':'3f1c21553e62716ef1abfcf31f51ff94eb73ff4234a6653bac754a42f936d1c7','iptables':'a1610dd70bb5ab04180671280df65b0077b680b627c0b6c51480b327732a762d','iptables-save':'a1610dd70bb5ab04180671280df65b0077b680b627c0b6c51480b327732a762d'}\nassert all(t['present'] and t['sha256']==expected[t['name']] for t in report['tools'])\nreport['originalPtyPidObservations']=[{'pid':pid,'procEntryAbsent':not Path('/proc/'+str(pid)).exists()} for pid in (331386,331387,332563,332565)]\nreport['allOriginalPtyPidsAbsent']=all(x['procEntryAbsent'] for x in report['originalPtyPidObservations'])\nreport['toolBytesUnchanged']=True\nprint(json.dumps(report,sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1794001727296,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "x230",
+    "id": "1a1b2d5ef40-fc05-7ff7",
+    "idempotency_key": "x230-fixed-firewall-after-readonly-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian/.local/state/hepta-runtime-mac-worker/jobs/1a1b2d5ef40-fc05-7ff7",
+    "request_digest": "08184aeb0cb9f4f6b342117bc9bc3e6f20ee922956a93d26f97cc2e4b7a91741",
+    "request_fingerprint": 583298525135762678,
+    "ssh_target": "x230-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b2d5ef40-fc05-7ff7"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b2d5ef40-fc05-7ff7"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

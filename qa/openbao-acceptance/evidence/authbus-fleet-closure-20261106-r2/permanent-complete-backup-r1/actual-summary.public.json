@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.permanent-complete-runtime-backup-actual-projection.r1",
+  "actualJob": {
+    "host": "main",
+    "job_id": "1a1b3d4e115-fc05-84f3",
+    "state": "succeeded",
+    "exit_code": 0,
+    "stdoutBytes": 34879,
+    "stderrBytes": 0,
+    "elapsedSeconds": 3.837857333011925,
+    "originalCompleteDurableTerminalConfirmed": true
+  },
+  "originalScope": {
+    "runtime": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production",
+    "backup": "/Users/qianqi/heptabao-authbus-production-backups/complete-20261107-r1/runtime",
+    "restore": "/Users/qianqi/heptabao-authbus-production-recovery-20261107-r1/runtime",
+    "separateRequiredKeyCustody": "/Users/qianqi/heptabao-authbus-production-custody/bootstrap-r2"
+  },
+  "checks": [
+    {
+      "phase": "locked-positive",
+      "passed": 12,
+      "total": 12,
+      "strictTlsRequests": 6,
+      "unknownHttpOutcomes": 0,
+      "allDispatchedResponsesComplete": true,
+      "allCompleteResponsesPrivatelyDurable": true,
+      "allReturnedSocketsClosed": true
+    },
+    {
+      "phase": "recovered",
+      "passed": 27,
+      "total": 27,
+      "strictTlsRequests": 18,
+      "unknownHttpOutcomes": 0,
+      "allDispatchedResponsesComplete": true,
+      "allCompleteResponsesPrivatelyDurable": true,
+      "allReturnedSocketsClosed": true
+    },
+    {
+      "phase": "recovered-cold",
+      "passed": 8,
+      "total": 8,
+      "strictTlsRequests": 5,
+      "unknownHttpOutcomes": 0,
+      "allDispatchedResponsesComplete": true,
+      "allCompleteResponsesPrivatelyDurable": true,
+      "allReturnedSocketsClosed": true
+    }
+  ],
+  "all47ChecksPassed": true,
+  "writerFenceProof": {
+    "activeRustWriterDeniesPythonLock": true,
+    "originalServerStoppedBeforeColdCopy": true,
+    "pythonLockDeniesKnownCompleteUnseal": true,
+    "releasedPythonLockAdmitsSameKeyAndServer": true,
+    "sameOriginalServerAcrossNegativeAndPositive": true,
+    "sealedStartupIsNotWriterAcquisition": true,
+    "unknownRequestReplayed": false
+  },
+  "completeCopiedFiles": 46,
+  "completeCopiedBytes": 92571466,
+  "completeCopiedDirectories": 9,
+  "filesExcluded": 0,
+  "independentFilesystemBackup": true,
+  "sourceUnchangedThroughoutRestore": true,
+  "restoredServerKernelDeniedOriginalRuntime": true,
+  "actualRestoredNativeV6DecryptionAndV2ValueVerified": true,
+  "restoredV3WriteAndRevocationSurviveColdReopen": true,
+  "restoredBinaryFromFullBackup": true,
+  "allOriginalServersClosed": true,
+  "serverPids": [
+    96703,
+    96739,
+    96765
+  ],
+  "outerDescriptors": 133,
+  "copyDescriptors": 330,
+  "finalSourceMetadataDescriptors": 13,
+  "allExplicitDescriptorsClosed": true,
+  "allFinalSourceDescriptorsClosed": true,
+  "allCopyDescriptorsClosed": true,
+  "originalWriterFenceReleased": true,
+  "allCommandsClosed": true,
+  "unknownCommands": 0,
+  "volumeGuardClosed": true,
+  "deadlineAfterClosure": true,
+  "cancellationObserved": false,
+  "permanentStoreInitializedAgain": false,
+  "currentProductionCredentialCoverage": false,
+  "providerRequests": 0,
+  "productionClientServiceChanges": 0,
+  "permanentLaunchAgentInstalled": false,
+  "finalServersRunning": false,
+  "fullReplacementQualified": false,
+  "privateManifestOrCredentialValuesOrDigestsPublished": false
+}

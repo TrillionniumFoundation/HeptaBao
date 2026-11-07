@@ -1,0 +1,36 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import ctypes,json,os,platform,socket,time\nstart=time.monotonic()\nclass Ifaddrs(ctypes.Structure):pass\nIfaddrs._fields_=[('next',ctypes.POINTER(Ifaddrs)),('name',ctypes.c_char_p),('flags',ctypes.c_uint),('addr',ctypes.c_void_p),('netmask',ctypes.c_void_p),('broad',ctypes.c_void_p),('data',ctypes.c_void_p)]\nlib=ctypes.CDLL(None,use_errno=True)\nlib.getifaddrs.argtypes=[ctypes.POINTER(ctypes.POINTER(Ifaddrs))];lib.getifaddrs.restype=ctypes.c_int\nlib.freeifaddrs.argtypes=[ctypes.POINTER(Ifaddrs)];lib.freeifaddrs.restype=None\nhead=ctypes.POINTER(Ifaddrs)();assert lib.getifaddrs(ctypes.byref(head))==0\nrows=[];cursor=head;count=0\ntry:\n while bool(cursor):\n  count+=1;assert count<=1024 and time.monotonic()-start<10\n  value=cursor.contents\n  if value.addr:\n   prefix=ctypes.string_at(value.addr,8);family=prefix[1] if platform.system()=='Darwin' else int.from_bytes(prefix[:2],byteorder='little')\n   if family==socket.AF_INET:\n    addr=socket.inet_ntop(socket.AF_INET,prefix[4:8]);mask=socket.inet_ntop(socket.AF_INET,ctypes.string_at(value.netmask,8)[4:8]) if value.netmask else None\n    rows.append({'interface':value.name.decode('ascii'),'address':addr,'netmask':mask,'up':bool(value.flags&1),'loopback':bool(value.flags&8),'flags':value.flags})\n  cursor=value.next\nfinally:lib.freeifaddrs(head)\nprint(json.dumps({'schema':'heptabao.current-lan-interface-observation.r1','host':socket.gethostname(),'system':platform.system(),'machine':platform.machine(),'uid':os.geteuid(),'interfaces':rows,'interface_records_examined':count,'elapsed_seconds':time.monotonic()-start,'children_started':0,'connections_opened':0,'network_config_changed':False,'credential_files_read':False,'production_changed':False},sort_keys=True))\nfrom pathlib import Path\nimport re\nobserved=[];targets={731007,732656}\nfor path in Path('/proc').iterdir():\n if not path.name.isdigit():continue\n try:\n  name=(path/'comm').read_text().strip()\n  if name in {'cargo','rustc','rustfmt','rust-lld'}:observed.append({'pid':int(path.name),'comm':name});targets.add(int(path.name))\n except (FileNotFoundError,ProcessLookupError,PermissionError):pass\nassert len(targets)<=128\nancestry=[]\nfor target in sorted(targets):\n rows=[];pid=target;seen=set()\n for _ in range(32):\n  if pid<=0 or pid in seen:break\n  seen.add(pid)\n  try:\n   p=Path('/proc')/str(pid);raw=(p/'stat').read_text();assert len(raw)<=8192\n   fields=raw.rsplit(')',1)[1].split();comm=raw[raw.find('(')+1:raw.rfind(')')]\n   cg=(p/'cgroup').read_text();assert len(cg)<=65536\n   units=sorted(set(re.findall(r'(hepta-runtime-job-[A-Za-z0-9-]+)',cg)))\n   rows.append({'pid':pid,'ppid':int(fields[1]),'pgid':int(fields[2]),'session':int(fields[3]),'state':fields[0],'start_ticks':int(fields[19]),'comm':comm,'runtime_units':units})\n   pid=int(fields[1])\n  except (FileNotFoundError,ProcessLookupError):rows.append({'pid':pid,'observation':'absent_during_read'});break\n  except PermissionError:rows.append({'pid':pid,'observation':'permission_denied'});break\n ancestry.append({'queried_pid':target,'rows':rows})\nassert time.monotonic()-start<15\nprint(json.dumps({'schema':'heptabao.current-compiler-owner-observation.r1','observed_compilers':observed,'original_r3_admission_pids':[731007,732656],'ancestry':ancestry,'sample_is_atomic':False,'original_pid_birth_not_assumed':True,'cmdline_or_environment_read':False,'processes_modified':False,'elapsed_seconds':time.monotonic()-start},sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1793983016179,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "ai395",
+    "id": "1a1b1b86cf3-fc05-7a76",
+    "idempotency_key": "heptabao-current-ha-lan-ai395-compiler-owner-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b1b86cf3-fc05-7a76",
+    "request_digest": "255fcff9d1f6978f089a21eefe7b4ea2f83babbc33bd45c7a6cbdd5bb5b940dc",
+    "request_fingerprint": 2693099774067251087,
+    "ssh_target": "ai395-lan",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b1b86cf3-fc05-7a76"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b1b86cf3-fc05-7a76"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

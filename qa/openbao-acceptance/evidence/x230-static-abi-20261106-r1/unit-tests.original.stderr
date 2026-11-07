@@ -1,0 +1,30 @@
+test_actual_x230_original_provider_readelf_bytes (test_x230_native_abi_admission.AbiGuards.test_actual_x230_original_provider_readelf_bytes) ... ok
+test_artifact_hash_must_match_original_normal107 (test_x230_native_abi_admission.AbiGuards.test_artifact_hash_must_match_original_normal107) ... ok
+test_changed_input_inode_is_refused (test_x230_native_abi_admission.AbiGuards.test_changed_input_inode_is_refused) ... ok
+test_duplicate_elf_object_is_refused (test_x230_native_abi_admission.AbiGuards.test_duplicate_elf_object_is_refused) ... ok
+test_edited_parsed_summary_cannot_hide_original_requirements (test_x230_native_abi_admission.AbiGuards.test_edited_parsed_summary_cannot_hide_original_requirements) ... ok
+test_extra_unqualified_provider_is_refused (test_x230_native_abi_admission.AbiGuards.test_extra_unqualified_provider_is_refused) ... ok
+test_failed_or_timed_out_readelf_is_refused (test_x230_native_abi_admission.AbiGuards.test_failed_or_timed_out_readelf_is_refused) ... ok
+test_larger_maximum_version_does_not_replace_missing_member (test_x230_native_abi_admission.AbiGuards.test_larger_maximum_version_does_not_replace_missing_member) ... ok
+test_match_does_not_claim_runtime_or_normal107 (test_x230_native_abi_admission.AbiGuards.test_match_does_not_claim_runtime_or_normal107) ... ok
+test_missing_direct_dependency_is_refused (test_x230_native_abi_admission.AbiGuards.test_missing_direct_dependency_is_refused) ... ok
+test_missing_non_glibc_family_is_refused (test_x230_native_abi_admission.AbiGuards.test_missing_non_glibc_family_is_refused) ... ok
+test_missing_recursive_loader_version_is_refused (test_x230_native_abi_admission.AbiGuards.test_missing_recursive_loader_version_is_refused) ... ok
+test_missing_version_definition_section_is_refused (test_x230_native_abi_admission.AbiGuards.test_missing_version_definition_section_is_refused) ... ok
+test_missing_version_need_section_is_refused (test_x230_native_abi_admission.AbiGuards.test_missing_version_need_section_is_refused) ... ok
+test_output_hash_mismatch_is_refused (test_x230_native_abi_admission.AbiGuards.test_output_hash_mismatch_is_refused) ... ok
+test_readelf_header_cannot_override_actual_elf_class (test_x230_native_abi_admission.AbiGuards.test_readelf_header_cannot_override_actual_elf_class) ... ok
+test_required_newer_glibc_is_refused (test_x230_native_abi_admission.AbiGuards.test_required_newer_glibc_is_refused) ... ok
+test_runpath_is_not_silently_ignored (test_x230_native_abi_admission.AbiGuards.test_runpath_is_not_silently_ignored) ... ok
+test_same_basename_wrong_soname_is_refused (test_x230_native_abi_admission.AbiGuards.test_same_basename_wrong_soname_is_refused) ... ok
+test_seed_is_mandatory (test_x230_native_abi_admission.AbiGuards.test_seed_is_mandatory) ... ok
+test_truncated_dynamic_table_is_refused (test_x230_native_abi_admission.AbiGuards.test_truncated_dynamic_table_is_refused) ... ok
+test_truncated_requirement_names_are_refused (test_x230_native_abi_admission.AbiGuards.test_truncated_requirement_names_are_refused) ... ok
+test_version_needs_cannot_refer_to_undeclared_library (test_x230_native_abi_admission.AbiGuards.test_version_needs_cannot_refer_to_undeclared_library) ... ok
+test_wrong_actual_machine_is_refused (test_x230_native_abi_admission.AbiGuards.test_wrong_actual_machine_is_refused) ... ok
+test_wrong_receiver_interpreter_is_refused (test_x230_native_abi_admission.AbiGuards.test_wrong_receiver_interpreter_is_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.019s
+
+OK

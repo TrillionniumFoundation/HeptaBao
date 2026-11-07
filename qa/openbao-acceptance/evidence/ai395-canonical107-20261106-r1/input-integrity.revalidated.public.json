@@ -1,0 +1,23 @@
+{
+  "actual_current_host_retained_inputs": 9,
+  "changed_build_environment_keys": [
+    "CARGO_HOME",
+    "CARGO_TARGET_DIR",
+    "PATH"
+  ],
+  "controller_changes_limited_to_9_pins_and_docstring_label": true,
+  "controller_diff_sha256": "a29f2418ef77c669241f67af1b443ec6e815bd8acb8cebb0f3d37b04333195b3",
+  "controller_sha256": "2d5237fb1db25e6741f27685f99195f2e35afdeee7aa4b40adc094b0fa34fc1f",
+  "current_failed_result_sha256": "f3050df350c427ff34ef963b33704a144799b273ae3d37a612c96eb453e7a422",
+  "current_formal_attempt_state": "failed-normal-release-build-0-tests",
+  "exact_original_107_names_and_group_definitions": true,
+  "normal107_qualified": false,
+  "original_budgets_and_argument_tails_preserved": true,
+  "original_controller_sha256": "56b4696cc252d50d3ddeb9edad90465654e011045d2e3d9feba5919d42247c7f",
+  "prior_host_artifact_map_preserved_without_new_host_hash_claim": true,
+  "schema": "heptabao.ai395-input-integrity-reverification.v1",
+  "selection_sha256": "340e47e620fd963da419a0417a611ec3ba08a544b7962d908640fb14407569f9",
+  "status": "passed",
+  "this_verification_is_not_product_execution": true,
+  "verified_after_workspace_recovery": true
+}

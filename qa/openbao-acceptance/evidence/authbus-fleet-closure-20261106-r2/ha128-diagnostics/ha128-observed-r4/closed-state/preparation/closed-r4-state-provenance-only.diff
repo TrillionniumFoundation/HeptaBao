@@ -1,0 +1,13 @@
+--- unexecuted-r4-prepared
++++ correct-r4-provenance
+@@ -250,8 +250,8 @@
+ 
+ def main():
+     began = time.monotonic()
+-    output = {"schema": "heptabao.closed-ha-r3-cold-observation.v1", "ok": False,
+-              "originalJob": "1a1b357f5e0-fc05-8241", "productExecutions": 0,
++    output = {"schema": "heptabao.closed-ha-r4-cold-observation.v1", "ok": False,
++              "originalJob": "1a1b3c982b3-fc05-84bc", "productExecutions": 0,
+               "children": 0, "networkCalls": 0, "filesWritten": 0,
+               "keyFilesRead": 0, "valueOrDigestOutput": False}
+     held, directory_checks, file_checks = [], [], []

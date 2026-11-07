@@ -1,0 +1,9 @@
+{
+  "action": "commit",
+  "host": "mac",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/candidate-5f9d4-from-4bde9.bundle",
+  "upload_id": "mac-normal-5f9d4-bundle-20261107-r1",
+  "expected_version": "absent",
+  "size": 9985724,
+  "sha256": "e57a93e8f3c13f83259cc6f1a5ca1ddb2ebe8451a0da5ff677c38c83ee8d3d72"
+}

@@ -1,0 +1,68 @@
+--- r2/observe_registered_rog.py
++++ r3/observe_registered_rog.py
+@@ -10,17 +10,22 @@
+ 
+ CALLER_HOME=Path('/home/qian-qi')
+ LIVE=CALLER_HOME/'.openclaw'
+-ROOT=CALLER_HOME/'heptabao-rog-current-client-observation-20261106-r2'
++ROOT=CALLER_HOME/'heptabao-rog-current-client-observation-20261106-r3'
+ PID=599954
+ INVOCATION='7564ce91c7d4453ab7e0fdadc42e0166'
+ UNIT='openclaw-gateway.service'
+ SDK=CALLER_HOME/'.npm-global/lib/node_modules/openclaw'
+ PLUGIN=LIVE/'extensions/openclaw-authbus'
++# Exact public-package lstat observed by known-success job 1a1b29fde63-fc05-7f02.
++# This file remains unqualified for SDK execution; only its JSON metadata is read.
++SDK_PACKAGE_IDENTITY=['66306','28718589','1000','1000','33204','1','116017',
++ '1784858778581475684','1784858778581475684']
+ START=time.monotonic();UNTIL=START+25
+-report={'schema':'heptabao.rog-current-registered-client-observation.r2','ok':False,
++report={'schema':'heptabao.rog-current-registered-client-observation.r3','ok':False,
+  'selectedClient':UNIT,'productionMutations':0,'credentialDatabaseContentsRead':False,
+  'credentialValuesOrDigestsPublished':False,'rawConfigurationDigestPublished':False,
+  'sdkImported':False,'providerCalled':False,'networkOpened':False,'childrenStarted':0,
++ 'sdkSourceExecutionQualified':False,'sdkPackageSourceAuthorityEstablished':False,
+  'serviceActions':0,'runningPluginMemoryFlagsProven':False,'writerExclusionProven':False,
+  'oldUnknownSourcePreparationResolved':False,
+  'observedEnclosedPublicParentAdmission':False,
+@@ -95,6 +100,31 @@
+    out.extend(part)
+   need(len(out)==before.st_size and identity(before)==identity(os.fstat(fd))==identity(path.lstat()),'stable_source_file')
+   return bytes(out),identity(before)
++ finally:
++  if fd is not None:os.close(fd);row['closed']=True
++  for parent,entry in reversed(held):os.close(parent);entry['closed']=True
++def observed_sdk_package_shape(path,s):
++ # This narrow read exception is never used by read_regular/private inputs.
++ return (path==SDK/'package.json' and os.getuid()==1000
++  and identity(s)==SDK_PACKAGE_IDENTITY and stat.S_ISREG(s.st_mode)
++  and s.st_uid==1000 and s.st_gid==1000 and s.st_nlink==1
++  and stat.S_IMODE(s.st_mode)==0o664 and s.st_size==116017)
++def observe_sdk_package_metadata():
++ path=SDK/'package.json';remaining();canonical=anchor(path,False)
++ need(canonical==path,'observed_sdk_package_no_alias')
++ parent,held=open_regular_parent(path);fd=None;row=None
++ try:
++  fd=os.open(path.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=parent);row=track_fd(fd,'observational-public-sdk-package')
++  before=os.fstat(fd);need(observed_sdk_package_shape(path,before),'exact_observed_public_sdk_metadata')
++  raw=bytearray()
++  while len(raw)<=before.st_size:
++   remaining();part=os.read(fd,min(65536,before.st_size+1-len(raw)))
++   if not part:break
++   raw.extend(part);need(len(raw)<=before.st_size,'bounded_observed_sdk_package_read')
++  need(len(raw)==before.st_size and identity(before)==identity(os.fstat(fd))==identity(path.lstat()),'stable_observed_sdk_package')
++  return {'path':str(path),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),
++   'identity':identity(before),'sourceAuthority':'untrusted_group_writable_observation_only',
++   'trustedForSdkExecution':False,'sdkOwnerSourceEstablished':False},bytes(raw)
+  finally:
+   if fd is not None:os.close(fd);row['closed']=True
+   for parent,entry in reversed(held):os.close(parent);entry['closed']=True
+@@ -195,7 +225,7 @@
+   pin,_=public_code(PLUGIN/name);report['publicPluginPins'][name]=pin
+  report['expectedSdkPath']=str(SDK)
+  if (SDK/'package.json').exists():
+-  sdk_pin,sdk_raw=public_code(SDK/'package.json');package=json.loads(sdk_raw)
++  sdk_pin,sdk_raw=observe_sdk_package_metadata();package=json.loads(sdk_raw)
+   need(package.get('name')=='openclaw' and isinstance(package.get('version'),str) and len(package['version'])<80,'actual_installed_sdk_package')
+   report['publicSdkPackage']={**sdk_pin,'version':package['version']}
+  else:report['publicSdkPackage']={'exists':False}

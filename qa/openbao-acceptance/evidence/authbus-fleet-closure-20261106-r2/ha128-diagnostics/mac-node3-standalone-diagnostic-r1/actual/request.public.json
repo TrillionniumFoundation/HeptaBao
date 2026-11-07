@@ -1,0 +1,17 @@
+{
+  "host": "main",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "idempotency_key": "mac-ha128-node3-rust-tls-diagnostic-20261106-r1",
+  "timeout_seconds": 120,
+  "stdinSource": {
+    "bytes": 27788,
+    "sha256": "cc5a9af2a009126085e0a72731638b0de456a59be70a0da532caa963ac7f2334",
+    "gitBlob": "6c307f634763d25fce61a5d1b3274e1100f042b9"
+  }
+}

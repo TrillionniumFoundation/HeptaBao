@@ -1,0 +1,55 @@
+{
+  "actualMacLaunchdExecuted": false,
+  "cases": [
+    {
+      "case": "A01_same_original_plist_four_actions_preserve_absence",
+      "passed": true
+    },
+    {
+      "case": "A02_disable_has_no_dispatch_path",
+      "passed": true
+    },
+    {
+      "case": "A03_enable_has_no_dispatch_path",
+      "passed": true
+    },
+    {
+      "case": "A04_false_override_is_not_absence",
+      "passed": true
+    },
+    {
+      "case": "A05_cold_restore_requires_completed_two_round_absence",
+      "passed": true
+    },
+    {
+      "case": "A06_unknown_bootstrap_never_replayed_or_compensated",
+      "passed": true
+    },
+    {
+      "case": "A07_unknown_bootout_blocks_cold_restore",
+      "passed": true
+    },
+    {
+      "case": "A08_intent_fsync_unknown_consumes_slot_without_dispatch",
+      "passed": true
+    },
+    {
+      "case": "A09_completion_fsync_unknown_not_reported_complete",
+      "passed": true
+    },
+    {
+      "case": "A10_known_action_not_replayed",
+      "passed": true
+    },
+    {
+      "case": "A11_actual_envelope_absence_distinct_from_enabled_literal",
+      "passed": true
+    }
+  ],
+  "expected": 11,
+  "ok": true,
+  "passed": 11,
+  "productionOrServiceActions": 0,
+  "schema": "heptabao.preserve-absent-service-primitives-local.r1",
+  "sourceSha256": "32a471e45de11c653aa3eac3a2a76c7f8dea3da2666bea326f25e87f2f9fda48"
+}

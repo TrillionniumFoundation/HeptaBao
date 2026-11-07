@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.fixed-slot-coordinator-recovery-dispatch-intent.r2",
+  "beforeDispatchUTC": "2026-11-07 03:47:25 UTC",
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "idempotency_key": "heptabao-mac-fixed-slot-coordinator-recovery-20261107-r2",
+  "timeout_seconds": 630,
+  "stdinBytes": 250110,
+  "stdinSha256": "26607ac1cff11a8478ebfc09c0cb7a699c1897c188070c0278ef2dd02a8100f0",
+  "sourceBlob": "3abcceddc7ab9db1c4ad43eabba9004886ab9a92",
+  "originalFailedJob": "1a1b3e976fc-fc05-8575",
+  "originalReadOnlyPreflightJob": "1a1b40a9813-fc05-85f4",
+  "sameExistingInitializedStore": true,
+  "initializationRequests": 0,
+  "cryptoCommands": 0,
+  "providerCalls": 0,
+  "productionClientChanges": 0,
+  "automaticRetry": false
+}

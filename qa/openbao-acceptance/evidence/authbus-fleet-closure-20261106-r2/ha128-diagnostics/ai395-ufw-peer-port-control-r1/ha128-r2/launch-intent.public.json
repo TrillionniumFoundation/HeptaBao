@@ -1,0 +1,7 @@
+{
+  "once": true,
+  "dispatchStarted": true,
+  "sourceSha256": "b0b9c320a462828045a1046d99a9e2b65b50610780513a37b0d62e8d8a49d96a",
+  "fullCases": 128,
+  "outerTimeoutSeconds": 1800
+}

@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "#!/usr/bin/env python3\n\"\"\"Independent read-only absence proof after the completed API r5 owned retirement.\"\"\"\nimport ast,ctypes,errno,hashlib,json,os,re,stat,subprocess,sys,time\nfrom pathlib import Path\nROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r5')\nLABEL='org.heptabao.qa.mac-authbus-main3-api-20261106-r5.server'\nTARGET='gui/501/'+LABEL\nFINAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-journal-20261106-r5/210-final-result.public.json')\nFINAL_SHA='4fa236165be77911efa02d998db32b55f5d593dfc65f52940feeaacaa32d3d30'\nOBSERVER_SHA='cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b'\nEXPECTED=[{\"birthSec\":1793990786,\"birthUsec\":686367,\"executable\":\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r5/bin/heptabao-server\",\"pgid\":30336,\"pid\":30336,\"ppid\":1,\"uid\":501},{\"birthSec\":1793990794,\"birthUsec\":798133,\"executable\":\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r5/bin/heptabao-server\",\"pgid\":30658,\"pid\":30658,\"ppid\":1,\"uid\":501}]\nSTART=time.monotonic();UNTIL=START+15\nclass Refused(RuntimeError):pass\ndef need(v,c):\n if not v:raise Refused(c)\ndef identity(s):return (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ndef read(path,sha,maximum):\n fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)\n try:\n  before=os.fstat(fd)\n  need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1\n   and stat.S_IMODE(before.st_mode)==0o600 and before.st_size<=maximum,'input_custody')\n  raw=os.read(fd,maximum+1)\n  need(len(raw)==before.st_size and not os.read(fd,1)\n   and identity(before)==identity(os.fstat(fd))==identity(path.lstat()),'stable_complete_input')\n  need(hashlib.sha256(raw).hexdigest()==sha,'pinned_complete_input')\n  return raw\n finally:os.close(fd)\ndef call(argv):\n left=UNTIL-time.monotonic();need(left>0,'original_observation_deadline')\n p=subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,\n  timeout=min(4,left),check=False,env={'PATH':'/usr/bin:/bin','LANG':'C','LC_ALL':'C'})\n need(len(p.stdout)<=262144 and len(p.stderr)<=4096,'bounded_metadata_output')\n return p\nreport={'schema':'heptabao.mac-main3-api-r5-independent-absence.r1','ok':False,\n 'target':TARGET,'expectedCompletedCampaignRetiredLifetimes':EXPECTED,'finalResultSha256':FINAL_SHA,'rounds':[],\n 'serviceMutationDispatched':False,'processArgumentsRead':False,'credentialValuesOrDigestsIncluded':False,\n 'genericSystemScopeServiceStatusUsedAsGuiProof':False,'hostileEscapedDescendantContainmentClaimed':False}\ntry:\n need(sys.platform=='darwin' and os.geteuid()==501,'exact_mac_owner')\n final=json.loads(read(FINAL,FINAL_SHA,131072))['value']\n need(final['ok'] is True and final['closuresKnown'] and final['manager']['allRegistrationsClosed']\n  and final['manager']['allKnownLineagesClosed'] and final['manager']['failureCleanupAttempted'] is False\n  and final['commands']['unknownCommandCount']==0 and len(final['manager']['registrations'])==2\n  and final['providerValid'] is False and final['productionTrafficCutover'] is False,\n  'original_completed_campaign_owned_retirement_known_closed')\n for entry in final['manager']['registrations']:\n  need(set(entry['attempts'])=={'bootstrap','kill','bootout'} and all(\n   x['attempted'] is True and x['complete'] is True and x['exitCode']==0\n   and x['command']['outcomeUnknown'] is False for x in entry['attempts'].values()),\n   'original_once_bootstrap_kill_bootout_known_zero')\n need([e['execIdentity'] for e in final['manager']['registrations']]==EXPECTED,'exact_completed_lifetimes')\n raw=read(ROOT/'qa/mac_native_process_observer_r1.py',OBSERVER_SHA,65536)\n names={'ObservationRefused','require','BsdInfo','ProcessReader'}\n nodes=[n for n in ast.parse(raw).body if isinstance(n,(ast.FunctionDef,ast.ClassDef)) and n.name in names]\n need(len(nodes)==4 and {n.name for n in nodes}==names,'exact_pinned_observer_definitions')\n ns={'ctypes':ctypes,'Path':Path,'sys':sys}\n exec(compile(ast.Module(body=nodes,type_ignores=[]),'<pinned-absence-observer>','exec'),ns)\n reader=ns['ProcessReader']();Bsd=ns['BsdInfo'];pids={r['pid'] for r in EXPECTED}\n for index in range(2):\n  query=call(['/bin/launchctl','print',TARGET])\n  expected='Could not find service \"'+LABEL+'\" in domain for user gui: 501'\n  need(query.returncode in (3,113) and not query.stdout and query.stderr.decode().splitlines()\n   in ([expected],['Bad request.',expected]),'exact_gui_label_absent')\n  ps=call(['/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat='])\n  need(ps.returncode==0 and not ps.stderr,'complete_fixed_ps_metadata')\n  related=[];count=0\n  for line in ps.stdout.decode('ascii','strict').splitlines():\n   fields=line.split();count+=1\n   if not(len(fields)>=3 and all(v.isdecimal() and len(v)<=10 for v in fields[:3])):\n    report['rejectedProcessMetadataRow']={'fields':[v[:64] for v in fields[:5]],'fieldCount':len(fields)}\n    raise Refused('strict_process_selectors')\n   if any(int(v) in pids for v in fields[:3]):related.append(fields[:5])\n  native=[]\n  for pid in sorted(pids):\n   info=Bsd();ctypes.set_errno(0)\n   size=reader.lib.proc_pidinfo(pid,3,0,ctypes.byref(info),ctypes.sizeof(info));error=ctypes.get_errno()\n   native.append({'pid':pid,'returnedBytes':size,'errno':error})\n  record={'index':index,'guiLabelAbsent':True,'guiQueryExitCode':query.returncode,\n   'guiQueryExactStderr':query.stderr.decode(),'processMetadataRowsExamined':count,\n   'relatedPidGroupOrDirectChildRows':related,'nativePidAbsence':native}\n  report['rounds'].append(record)\n  need(not related and all(r['returnedBytes']==0 and r['errno']==errno.ESRCH for r in native),\n   'completed_lifetimes_pid_group_direct_children_absent')\n need(time.monotonic()<UNTIL,'original_observation_deadline')\n report['ok']=True\nexcept Refused as error:report['errorCode']=str(error)\nexcept BaseException as error:report['errorType']=type(error).__name__\nreport['elapsedSeconds']=time.monotonic()-START\nprint(json.dumps(report,sort_keys=True),flush=True)\nraise SystemExit(0 if report['ok'] else 1)\n"
+    ],
+    "created_unix_ms": 1793991024214,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b2329e56-fc05-7cea",
+    "idempotency_key": "heptabao-mac-authbus-main3-api-independent-absence-20261106-r5",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b2329e56-fc05-7cea",
+    "request_digest": "8055b0c06a46c1f97e60d5bc15247517f34d1d6af197fd62f70fe3fbde825995",
+    "request_fingerprint": 9247491750338413049,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b2329e56-fc05-7cea"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 32874,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b2329e56-fc05-7cea"
+  },
+  "local_record_pending": false,
+  "reused": false
+}
