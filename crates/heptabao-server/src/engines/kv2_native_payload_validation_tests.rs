@@ -293,7 +293,9 @@ fn payload_validation_transition_memo_binds_scoped_key_and_rechecks_current_loss
     Ok(())
 }
 
-fn first_payload_descriptor(view: &NativeReadView) -> CodecResult<(&AddressKey, &PayloadDescriptor)> {
+fn first_payload_descriptor(
+    view: &NativeReadView,
+) -> CodecResult<(&AddressKey, &PayloadDescriptor)> {
     let graph = view.graph.as_ref().ok_or(RecordError::Missing)?;
     let descriptor = graph
         .paged
@@ -336,8 +338,8 @@ fn payload_validation_streamed_hit_rejects_other_fully_keyed_blocks_by_complete_
 }
 
 #[test]
-fn payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo()
--> CodecResult<()> {
+fn payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo() -> CodecResult<()>
+{
     let (view, source) = fixture(66, json!({"body": "z".repeat(600_000)}))?;
     let memo = RefCell::new(PagedPayloadValidationMemo::default());
     view.verify_paged_payloads_with_memo(&source, &|| Ok(()), Some(&memo))?;

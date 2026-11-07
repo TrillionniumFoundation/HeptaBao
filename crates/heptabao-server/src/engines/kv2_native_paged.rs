@@ -244,8 +244,8 @@ impl PayloadDescriptor {
     ) -> CodecResult<Option<Zeroizing<Vec<u8>>>> {
         check()?;
         self.validate(key, path, version)?;
-        let mut value = retain_bytes
-            .then(|| Zeroizing::new(Vec::with_capacity(self.logical_bytes as usize)));
+        let mut value =
+            retain_bytes.then(|| Zeroizing::new(Vec::with_capacity(self.logical_bytes as usize)));
         let digest = key.digest_value_stream(PAYLOAD_DOMAIN, self.logical_bytes, |update| {
             for reference in &self.blocks {
                 check()?;
@@ -327,8 +327,7 @@ impl PayloadDescriptor {
             .needs_lossless
             .get(&memo_key)
             .copied();
-        let value =
-            self.authenticate_payload(key, path, version, reader, check, hint.is_none())?;
+        let value = self.authenticate_payload(key, path, version, reader, check, hint.is_none())?;
         check()?;
         let known = memo
             .try_borrow()
