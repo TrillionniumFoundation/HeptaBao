@@ -1,0 +1,217 @@
+--- qualified-r4-core
++++ preserve-absent-r1-core
+@@ -1,21 +1,23 @@
+ #!/usr/bin/env python3
+-"""Six once-only launchd primitives for one new, credential-free QA label.
+-
+-This is not a production gateway controller. Its sleep service has KeepAlive
+-false and a finite natural lifetime. Effective disabled state, not the absence
+-of a persisted false override entry, is the restoration claim.
++"""Four once-only actions preserve an absent disabled override.
++
++One new credential-free label uses KeepAlive=true and the same original plist
++for both cold generations. No disable/enable command is available. Unknown
++state dispatches no compensation; a remaining KeepAlive registration is
++reported and requires reconciliation of its original identity. This is not a
++production gateway, cold-credential-consumption, or full-state rollback proof.
+ """
+ from __future__ import annotations
+ import ctypes,errno,hashlib,json,os,plistlib,re,stat,time
+ from pathlib import Path
+ 
+-ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r4')
++ROOT=Path('/Users/qianqi/heptabao-authbus-preserve-absent-20261106-r1')
+ DOMAIN='gui/501'
+-LABEL='org.heptabao.qa.gateway-maintenance-actions-20261106-r4'
++LABEL='org.heptabao.qa.preserve-absent-20261106-r1'
+ TARGET=DOMAIN+'/'+LABEL
+ SLEEP='/bin/sleep'
+ ARGS=[SLEEP,'30']
+-GRAPH=('bootstrap-first','disable','bootout-first','enable','bootstrap-recovery','bootout-recovery')
++GRAPH=('bootstrap-first','bootout-first','bootstrap-recovery','bootout-recovery')
+ FIELDS=('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ 
+ class Refused(RuntimeError):pass
+@@ -58,13 +60,13 @@
+   self.commands=commands;self.reader=reader;self.bsd_info=bsd_info;self.parse_print=parse_print
+   self.missing_service=missing_service;self.until=until;self.runtime_fence=runtime_fence
+   self.root_identity=identity(ROOT.lstat());self.events=[];self.mutations={};self.identities=[]
+-  self.active_generation=None;self.unknown=False;self.finished=False;self.generation_closed=set()
++  self.active_generation=None;self.unknown=False;self.finished=False;self.generation_closed=set();self.disabled_observations=[]
+   self.plists={};self.public_commands=[]
+-  self.report={'schema':'heptabao.mac-gateway-service-primitives.r4','ok':False,
++  self.report={'schema':'heptabao.mac-preserve-absent-service-primitives.r1','ok':False,
+    'productionServiceChanged':False,'providerCalls':0,'credentialReads':0,'configurationReads':0,
+-   'keepAliveFalseSyntheticServiceOnly':True,'actualGatewayRegistrationQualified':False,
++   'keepAliveTrueSyntheticServiceOnly':True,'actualGatewayRegistrationQualified':False,
+    'productionKeepAliveRollbackQualified':False,'fullDisabledDomainOutputPublished':False,
+-   'effectiveDisabledStateRestorationOnly':True,'automaticRetry':False,'events':self.events,
++   'disableOrEnableActionPermitted':False,'disabledOverrideObservations':self.disabled_observations,'automaticRetry':False,'events':self.events,
+    'mutations':self.mutations,'serviceIdentities':self.identities,'commands':self.public_commands}
+  def remaining(self,cap=45):
+   left=self.until-time.monotonic();need(left>0,'original_service_primitives_deadline');return min(cap,left)
+@@ -103,7 +105,9 @@
+  def disabled(self):
+   row,out,err=self.command('read-disabled',['/bin/launchctl','print-disabled',DOMAIN])
+   need(row['exitCode']==0 and not err,'complete_disabled_projection')
+-  return parse_disabled(out)
++  value=parse_disabled(out);self.disabled_observations.append(value)
++  need(value is None,'original_disabled_override_stays_absent')
++  return value
+  def query(self,generation=None):
+   row,out,err=self.command('read-owned-label',['/bin/launchctl','print',TARGET])
+   if self.missing_service(row['exitCode'],out,err,LABEL):return None
+@@ -160,28 +164,27 @@
+  def dispatch(self,operation,generation=None):
+   need(not self.unknown and operation in GRAPH and operation not in self.mutations,'original_service_mutation_once')
+   self.runtime_fence();self.check_root()
+-  expected_index=len(self.mutations);need(expected_index<len(GRAPH) and GRAPH[expected_index]==operation,'six_action_graph_order')
++  expected_index=len(self.mutations);need(expected_index<len(GRAPH) and GRAPH[expected_index]==operation,'four_preserve_absence_action_graph_order')
+   if operation.startswith('bootstrap-'):
+-   need(generation in self.plists and self.query() is None and self.disabled() in (None,False),'bootstrap_only_absent_enabled_owned_label')
++   need(generation in self.plists and self.query() is None and self.disabled() is None,'bootstrap_only_absent_enabled_owned_label')
++   need(operation!='bootstrap-recovery' or 'first' in self.generation_closed,
++    'recovery_requires_two_round_original_generation_absence')
+    self.check_plist(generation);argv=['/bin/launchctl','bootstrap',DOMAIN,self.plists[generation]['path']]
+-  elif operation=='disable':
+-   need(generation=='first' and self.disabled() is None,'disable_only_new_initially_unoverridden_label');self.same_running(generation)
+-   argv=['/bin/launchctl','disable',TARGET]
+-  elif operation.startswith('bootout-'):
+-   need(generation in self.plists,'fixed_bootout_generation');self.same_running(generation)
+-   argv=['/bin/launchctl','bootout',TARGET]
+   else:
+-   need(operation=='enable' and 'first' in self.generation_closed and self.query() is None and self.disabled() is True,
+-    'enable_only_after_disabled_generation_absence')
+-   argv=['/bin/launchctl','enable',TARGET]
+-  self.event('mutation-intent',{'operation':operation,'argv':argv,'generation':generation})
+-  self.mutations[operation]={'intentPersisted':True,'dispatched':True,'outcome':'unknown'}
++   need(operation.startswith('bootout-') and generation in self.plists and self.disabled() is None,
++    'bootout_exact_original_generation_without_disabled_override')
++   self.same_running(generation);argv=['/bin/launchctl','bootout',TARGET]
++  self.mutations[operation]={'intentPersisted':False,'dispatched':False,'outcome':'unknown'}
+   try:
++   self.event('mutation-intent',{'operation':operation,'argv':argv,'generation':generation})
++   self.mutations[operation]['intentPersisted']=True
++   self.mutations[operation]['dispatched']=True
+    row,out,err=self.command(operation,argv)
+    need(row['exitCode']==0 and not err,'original_service_mutation_complete_zero')
+   except BaseException:self.unknown=True;raise
++  try:self.event('mutation-complete',{'operation':operation,'generation':generation,'exitCode':row['exitCode']})
++  except BaseException:self.unknown=True;raise
+   self.mutations[operation]['outcome']='complete';self.mutations[operation]['exitCode']=row['exitCode']
+-  self.event('mutation-complete',{'operation':operation,'generation':generation,'exitCode':row['exitCode']})
+  def absence(self,generation):
+   process=self.plists[generation]['process'];rounds=[];deadline=min(self.until,time.monotonic()+5)
+   while True:
+@@ -193,34 +196,41 @@
+      'no_replaced_label_during_retirement')
+    time.sleep(min(0.1,self.remaining()))
+   for number in range(2):
+-   need(self.query() is None and self.process_absent(process['pid']) and not self.rows(process['pid']),
++   need(self.disabled() is None and self.query() is None and self.process_absent(process['pid']) and not self.rows(process['pid']),
+     'exact_label_pid_group_and_child_absence')
+-   rounds.append({'round':number,'labelAbsent':True,'originalPidEsrch':True,'relatedRowsEmpty':True})
++   rounds.append({'round':number,'labelAbsent':True,'originalPidEsrch':True,'relatedRowsEmpty':True,'disabledOverrideAbsent':True})
+    if number==0:time.sleep(min(0.15,self.remaining()))
+   self.generation_closed.add(generation);self.active_generation=None
+   self.event('absence',{'generation':generation,'rounds':rounds})
+  def run(self):
+   self.runtime_fence();need(self.query() is None and self.disabled() is None,'new_unregistered_unoverridden_qa_label')
++  p=ROOT/'original-service.plist'
++  raw=plistlib.dumps({'Label':LABEL,'ProgramArguments':ARGS,'RunAtLoad':True,'KeepAlive':True,
++   'WorkingDirectory':str(ROOT),'StandardOutPath':str(ROOT/'service.stdout.private'),
++   'StandardErrorPath':str(ROOT/'service.stderr.private')},fmt=plistlib.FMT_XML,sort_keys=True)
++  self.write(p.name,raw);original_identity=identity(p.lstat())
+   for generation in ('first','recovery'):
+-   p=ROOT/(generation+'.plist')
+-   raw=plistlib.dumps({'Label':LABEL,'ProgramArguments':ARGS,'RunAtLoad':True,'KeepAlive':False,
+-    'WorkingDirectory':str(ROOT),'StandardOutPath':str(ROOT/(generation+'.stdout.private')),
+-    'StandardErrorPath':str(ROOT/(generation+'.stderr.private'))},fmt=plistlib.FMT_XML,sort_keys=True)
+-   self.write(p.name,raw);self.plists[generation]={'path':str(p),'raw':raw,'identity':identity(p.lstat())}
++   self.plists[generation]={'path':str(p),'raw':raw,'identity':original_identity}
+   self.dispatch('bootstrap-first','first');first=self.bind_running('first')
+-  self.dispatch('disable','first');need(self.disabled() is True,'disabled_effective_true')
+-  self.same_running('first');self.event('disable-keeps-running',{'sameOriginalBirth':True})
+-  self.dispatch('bootout-first','first');self.absence('first');need(self.disabled() is True,'disabled_persists_after_bootout')
+-  self.dispatch('enable');need(self.disabled() is False,'enabled_effective_false')
++  need(self.disabled() is None,'first_running_override_absent')
++  self.dispatch('bootout-first','first');self.absence('first')
++  need(self.disabled() is None,'first_retired_override_absent')
++  self.check_plist('first');self.check_plist('recovery')
+   self.dispatch('bootstrap-recovery','recovery');second=self.bind_running('recovery')
+   need(first['pid']!=second['pid'] and (first['birthSec'],first['birthUsec'])!=(second['birthSec'],second['birthUsec']),
+    'new_recovery_process_birth')
++  need(self.disabled() is None,'cold_restored_override_absent')
++  self.check_plist('first');self.check_plist('recovery')
+   self.dispatch('bootout-recovery','recovery');self.absence('recovery')
+-  need(self.disabled() is False,'restored_effective_enabled_state');self.runtime_fence();self.remaining()
+-  need(tuple(self.mutations)==GRAPH and all(x['outcome']=='complete' for x in self.mutations.values()),'all_six_original_mutations_known')
+-  self.finished=True;self.report.update(ok=True,allSixOriginalMutationsKnown=True,allOwnedServiceGenerationsAbsent=True,
+-   restoredEffectiveDisabledFalse=True,persistedFalseOverrideEntryCreatedForNewQaLabel=True,
+-   originalOverrideAbsenceRestored=False,productionGatewayOrRollbackQualified=False)
++  need(self.disabled() is None,'final_original_override_absent');self.runtime_fence();self.remaining()
++  need(tuple(self.mutations)==GRAPH and all(x['outcome']=='complete' for x in self.mutations.values()),
++   'all_four_original_mutations_known')
++  need(self.disabled_observations and all(value is None for value in self.disabled_observations),
++   'all_actual_disabled_override_observations_absent')
++  self.finished=True;self.report.update(ok=True,allFourOriginalMutationsKnown=True,allOwnedServiceGenerationsAbsent=True,
++   sameOriginalPlistWholeBytesAndFull9ColdRestored=True,originalKeepAliveTrue=True,
++   originalOverrideAbsencePreserved=True,disabledNamespaceEntryCreated=False,
++   productionGatewayOrRollbackQualified=False)
+   return self.report
+  def public(self):
+   self.report.update(unknown=self.unknown,finished=self.finished,
+--- qualified-r4-launcher
++++ preserve-absent-r1-launcher
+@@ -1,15 +1,15 @@
+ #!/usr/bin/env python3
+ """Single credential-free qualification of one new launchd QA label.
+ 
+-The original command helper owns each helper child. Launchd owns the two finite
+-sleep services. No production service, configuration or credential is read.
++The original command helper owns each helper child. Launchd owns the two KeepAlive=true
++sleep generations. A failed attempt can leave its original QA registration. No production service, configuration or credential is read.
+ Failure never dispatches a compensating service mutation or replays an intent.
+ """
+ import ast,hashlib,json,os,re,stat,sys,time,types
+ from pathlib import Path
+ 
+ START=time.monotonic();UNTIL=START+45.0
+-ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r4')
++ROOT=Path('/Users/qianqi/heptabao-authbus-preserve-absent-20261106-r1')
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+ # PAYLOAD_PLACEHOLDER
+ RUNTIME_PINS={
+@@ -19,11 +19,11 @@
+  '/bin/ps':(170432,'3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c',0o4755)}
+ SOURCE_NAMES=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',
+  'mac_native_process_observer_r1.py','mac_owned_launchd_r3.py',
+- 'mac_gateway_service_primitives_r4.py')
+-report={'schema':'heptabao.actual-mac-gateway-service-primitives-launcher.r4','ok':False,
++ 'mac_gateway_preserve_absent_primitives_r1.py')
++report={'schema':'heptabao.actual-mac-preserve-absent-primitives-launcher.r1','ok':False,
+  'sharedSeconds':45,'supervisorSeconds':70,'automaticRetry':False,
+  'actualProductionGatewayChanged':False,'credentialOrConfigurationReads':0,
+- 'providerCalls':0,'originalMutationsExpected':6,'sleepServiceGenerationsExpected':2,
++ 'providerCalls':0,'originalMutationsExpected':4,'sleepServiceGenerationsExpected':2,
+  'productionKeepAliveRollbackQualified':False,'originalDisabledMapPublished':False,
+  'sourcePins':{},'runtimePins':{},'recordedFileDescriptors':[]}
+ codes=set();anchors=[];runtime_bindings={};source_bindings={};created=False;commands=None;qualification=None
+@@ -109,7 +109,7 @@
+  need(sys.platform=='darwin' and os.getuid()==501 and os.geteuid()==501
+   and str(Path(sys.executable).resolve())==PYTHON,'exact_service_qualification_host_and_interpreter')
+  os.umask(0o077);sys.dont_write_bytecode=True
+- need(set(PAYLOAD)=={'schema','sources','parserNames'} and PAYLOAD['schema']=='heptabao.gateway-service-primitives.payload.r4'
++ need(set(PAYLOAD)=={'schema','sources','parserNames'} and PAYLOAD['schema']=='heptabao.preserve-absent-service-primitives.payload.r1'
+   and set(PAYLOAD['sources'])==set(SOURCE_NAMES)
+   and PAYLOAD['parserNames']==['ManagerRefused','need','parse_print','missing_service'],'fixed_embedded_service_source_scope')
+  for name,value in PAYLOAD['sources'].items():
+@@ -141,7 +141,7 @@
+  unreaped=import_exact('mac_owned_unreaped_r1');unreaped.require_waitid()
+  command_module=import_exact('mac_owned_commands_r1')
+  observer=import_exact('mac_native_process_observer_r1')
+- core=import_exact('mac_gateway_service_primitives_r4')
++ core=import_exact('mac_gateway_preserve_absent_primitives_r1')
+  manager_raw,_=read(ROOT/'mac_owned_launchd_r3.py',expected=source_bindings['mac_owned_launchd_r3.py'])
+  parsed=ast.parse(manager_raw);selected=[n for n in parsed.body if isinstance(n,(ast.ClassDef,ast.FunctionDef)) and n.name in PAYLOAD['parserNames']]
+  need([n.name for n in selected]==PAYLOAD['parserNames'],'exact_qualified_parser_excerpt_nodes')

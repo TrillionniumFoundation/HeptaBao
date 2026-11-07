@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.finite-codex-selector-r4-verification.r1",
+  "jobId": "1a1b3da33a3-fc05-8518",
+  "authoritativeState": "succeeded",
+  "exitCode": 0,
+  "stdoutBytes": 7223,
+  "stdoutSha256": "6d0380b34fa671b73f7555b03d64de5c41dcf6efbb246f7b73f9a790cc7f89eb",
+  "wholeHexMatchesUtf8": true,
+  "completeEof": true,
+  "outputDurable": true,
+  "stderrBytes": 0,
+  "originalSourceSha256": "6c150f3a324b3200e658247e9841e1b9bccbe6e07c16c4b01edc0f072089acda",
+  "fixedPriorBirths": 4,
+  "observationsPerBirth": 2,
+  "explicitFdClosures": 17,
+  "childProcesses": 0,
+  "sqliteCalls": 0,
+  "networkRequests": 0,
+  "authFileContentsRead": false,
+  "activeCredentialBackendQualified": false,
+  "completeActiveConsumerClosure": false
+}

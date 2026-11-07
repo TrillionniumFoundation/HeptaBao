@@ -1,0 +1,764 @@
+{
+  "schema": "heptabao.ha128-observed-r4-analysis.public.r1",
+  "scope": "analysis of complete immutable original terminal and stdout; no new product execution",
+  "jobId": "1a1b3c982b3-fc05-84bc",
+  "terminal": {
+    "state": "failed",
+    "exitCode": 1,
+    "complete": true,
+    "durable": true,
+    "timedOut": false,
+    "cancelled": false,
+    "automaticRetry": false,
+    "stdoutBytes": 224366,
+    "stderrBytes": 0
+  },
+  "originalChecks": {
+    "required": 128,
+    "executed": 63,
+    "passed": 63,
+    "missing": 65,
+    "duplicate": 0,
+    "unexpected": 0,
+    "failedCheckRows": 0,
+    "overallStatus": "failed",
+    "exactNamesCheckedAgainstPinnedAf91Source": true,
+    "missingNames": [
+      "all_voters_cold_unsealed",
+      "all_voters_local_raft_persistent",
+      "all_voters_stopped_for_cold_restart",
+      "cold_leader_retained_history_exact",
+      "cold_restart_all_hosts_readindex",
+      "cold_restart_new_write_once",
+      "denied_quorum_write_absent",
+      "different_leader_after_sigkill",
+      "failover_survivors_readindex",
+      "failover_write_once",
+      "leader_sigkill_identity_verified",
+      "missing_cipher_actual_leaves_rebuilt",
+      "missing_cipher_all_hosts_readindex",
+      "missing_cipher_leader_empty_before_unseal",
+      "missing_cipher_leader_exact_history",
+      "missing_cipher_leader_unsealed",
+      "missing_cipher_remaining_nodes_unsealed",
+      "missing_cipher_sealed_pair_elected",
+      "missing_cipher_source_rejoined",
+      "missing_cipher_targets_stopped",
+      "missing_cipher_two_targets_quarantined",
+      "native.complete",
+      "native_standby_small_readindex",
+      "native_standby_small_write_once",
+      "new_leader_retained_history_exact",
+      "official271_all_nodes_cold_restart",
+      "official271_capacity_full34",
+      "official271_cold_all_hosts_history_exact",
+      "official271_cold_raw_history_exact",
+      "official271_data_cas_denied_without_effect",
+      "official271_destroyed_payload_remains_absent",
+      "official271_history_cleanup_once",
+      "official271_import_all_hosts_readindex",
+      "official271_import_raw_history_exact",
+      "official271_inputs_and_binaries_unchanged",
+      "official271_leader_stopped",
+      "official271_metadata_cas_counter_exact",
+      "official271_metadata_cas_denied_without_effect",
+      "official271_mutation_effects_observed",
+      "official271_native_large_import_once",
+      "official271_old_leader_cold_rejoin_readindex",
+      "official271_post_snapshot_mutation_once",
+      "official271_pristine_before_import",
+      "official271_report_excludes_runtime_secrets",
+      "official271_restore_all_hosts_readindex",
+      "official271_restore_publication_advanced",
+      "official271_restore_raw_history_exact",
+      "official271_snapshot_download_once",
+      "official271_snapshot_restore_once",
+      "official271_snapshot_v6_ha_contract",
+      "official271_soft_deleted_payload_undelete_exact",
+      "official271_successor_elected",
+      "official271_successor_history_exact",
+      "old_leader_cold_restart",
+      "old_leader_forwarded_readindex",
+      "old_leader_local_raft_caught_up",
+      "quorum_loss_read_denied_no_payload",
+      "quorum_loss_write_denied_no_ack",
+      "quorum_recovery_write_once",
+      "quorum_restored",
+      "report_excludes_runtime_secrets",
+      "single_survivor_loses_authority",
+      "source_and_binaries_unchanged",
+      "synthetic_metadata_absent",
+      "synthetic_metadata_cleanup_once"
+    ]
+  },
+  "failedOperation": {
+    "code": "native_small_write_not_acknowledged_once_ha_leader_forwarding_failed",
+    "type": "FixtureError",
+    "recordedStage": "seventeen_actual_native_history_writes",
+    "actualLocation": "first original standby small write after seventeen native history writes, full retained reads and retention mutations",
+    "node": 2,
+    "method": "POST",
+    "knownHttpStatus": 503,
+    "originalHttpBudgetSeconds": 15,
+    "observation": {
+      "apiReturned": true,
+      "automaticRetry": false,
+      "bodyReadReturned": true,
+      "connectionCloseCalls": 1,
+      "connectionObjects": 1,
+      "elapsedMs": 7702.819416,
+      "events": [
+        {
+          "elapsedMs": 0.381208,
+          "phase": "tcp_connect"
+        },
+        {
+          "elapsedMs": 2.791583,
+          "phase": "after_tcp_before_tls_complete"
+        },
+        {
+          "elapsedMs": 7.136791,
+          "phase": "request_send"
+        },
+        {
+          "elapsedMs": 7.168416,
+          "phase": "request_send_returned"
+        },
+        {
+          "elapsedMs": 7.172416,
+          "phase": "request_send"
+        },
+        {
+          "elapsedMs": 7.1915,
+          "phase": "request_send_returned"
+        },
+        {
+          "elapsedMs": 7.196166,
+          "phase": "response_headers"
+        },
+        {
+          "elapsedMs": 7702.335958,
+          "phase": "response_headers_returned"
+        },
+        {
+          "elapsedMs": 7702.4885,
+          "phase": "response_body"
+        },
+        {
+          "elapsedMs": 7702.754375,
+          "phase": "response_body_returned"
+        },
+        {
+          "elapsedMs": 7702.816583,
+          "phase": "api_returned"
+        }
+      ],
+      "getresponseCalls": 1,
+      "httpsConnectCalls": 1,
+      "method": "POST",
+      "node": 2,
+      "ordinal": 208,
+      "originalTimeoutSeconds": 15,
+      "phase": "api_returned",
+      "responseCloseCalls": 1,
+      "responseReadCalls": 1,
+      "sendCalls": 2,
+      "status": 503,
+      "tcpConnectCalls": 1,
+      "tcpConnected": true,
+      "tlsConnected": true
+    },
+    "phaseDurationsMs": {
+      "tcp": 2.410375,
+      "tls": 4.3452079999999995,
+      "sendSpan": 0.05937500000000018,
+      "responseHeaders": 7695.139792,
+      "responseBodyReturned": 0.26587500000005093
+    },
+    "inference": "The originating Python client completed TCP, TLS and request-send and received an API error result. The internal standby-to-leader failure reason is not yet exposed by this record.",
+    "notClaimed": [
+      "internal TCP/TLS/leader-accept/storage cause",
+      "original r3 URLError cause resolved",
+      "503 proves no side effect"
+    ]
+  },
+  "syntheticMutations": {
+    "automatic_resume_or_retry": false,
+    "initialization_custody_saved": true,
+    "mutation_intents": 33,
+    "mutation_responses": 33,
+    "relative_root": "private-recovery",
+    "schema": "heptabao.synthetic-fixture-recovery-public.v1",
+    "secret_values_emitted": false,
+    "synthetic_only": true,
+    "unknown_transport_outcomes": 0
+  },
+  "syntheticMutationRetries": false,
+  "history": {
+    "writeCount": 17,
+    "bytesPerWrite": 2097152,
+    "versions": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "elapsedMsByWrite": [
+      {
+        "case": "native_history_write_01",
+        "version": 3,
+        "elapsedMs": 831.304
+      },
+      {
+        "case": "native_history_write_02",
+        "version": 4,
+        "elapsedMs": 1205.945
+      },
+      {
+        "case": "native_history_write_03",
+        "version": 5,
+        "elapsedMs": 1672.72
+      },
+      {
+        "case": "native_history_write_04",
+        "version": 6,
+        "elapsedMs": 1965.221
+      },
+      {
+        "case": "native_history_write_05",
+        "version": 7,
+        "elapsedMs": 2400.649
+      },
+      {
+        "case": "native_history_write_06",
+        "version": 8,
+        "elapsedMs": 2709.36
+      },
+      {
+        "case": "native_history_write_07",
+        "version": 9,
+        "elapsedMs": 3187.856
+      },
+      {
+        "case": "native_history_write_08",
+        "version": 10,
+        "elapsedMs": 3951.352
+      },
+      {
+        "case": "native_history_write_09",
+        "version": 11,
+        "elapsedMs": 4569.216
+      },
+      {
+        "case": "native_history_write_10",
+        "version": 12,
+        "elapsedMs": 4257.094
+      },
+      {
+        "case": "native_history_write_11",
+        "version": 13,
+        "elapsedMs": 5231.309
+      },
+      {
+        "case": "native_history_write_12",
+        "version": 14,
+        "elapsedMs": 5765.641
+      },
+      {
+        "case": "native_history_write_13",
+        "version": 15,
+        "elapsedMs": 5433.225
+      },
+      {
+        "case": "native_history_write_14",
+        "version": 16,
+        "elapsedMs": 5714.855
+      },
+      {
+        "case": "native_history_write_15",
+        "version": 17,
+        "elapsedMs": 5987.859
+      },
+      {
+        "case": "native_history_write_16",
+        "version": 18,
+        "elapsedMs": 6381.801
+      },
+      {
+        "case": "native_history_write_17",
+        "version": 19,
+        "elapsedMs": 6868.051
+      }
+    ],
+    "maxWriteElapsedMs": 6868.051,
+    "capacity": {
+      "case": "native_history_34mib_capacity",
+      "logical_payload_bytes": 35652188,
+      "minimum_expected_bytes": 35651584,
+      "passed": true
+    },
+    "allRetained": {
+      "case": "native_history_all_retained_exact",
+      "large_history_versions": 17,
+      "passed": true,
+      "retained_versions": 19
+    },
+    "retention": {
+      "case": "native_history_retention_states",
+      "passed": true,
+      "unchanged_large_payload_bytes": 35651584
+    }
+  },
+  "transport": {
+    "scope": "original-base-api-only; no CLI-or-wire-helper-coverage",
+    "rowCount": 208,
+    "originalBudgetUnchanged": true,
+    "workloadUnchanged": true,
+    "denominatorUnchanged": true,
+    "readOnlyPollErrors": [
+      {
+        "ordinal": 15,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 37.837125,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 16,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 38.842875,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 17,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 36.308375,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 18,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 37.984042,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 19,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 36.015917,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 20,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 35.757959,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 21,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 75.461375,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 22,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 36.057708,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 23,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 34.562667,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 24,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 36.067916,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 25,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 36.682208,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 26,
+        "node": 1,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 36.082791,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 29,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 0.629541,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 30,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 1.362292,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 31,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 1.386709,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 32,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 1.134583,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 33,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 1.367375,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 34,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 1.355459,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 35,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 0.840834,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 36,
+        "node": 3,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 1.84325,
+        "error": {
+          "class": "URLError",
+          "errno": 61,
+          "reasonClass": "ConnectionRefusedError"
+        },
+        "originalTimeoutSeconds": 1.5
+      },
+      {
+        "ordinal": 39,
+        "node": 2,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 2002.731333,
+        "error": {
+          "class": "URLError",
+          "reasonClass": "TimeoutError"
+        },
+        "originalTimeoutSeconds": 2
+      },
+      {
+        "ordinal": 42,
+        "node": 2,
+        "method": "GET",
+        "phase": "tcp_connect",
+        "elapsedMs": 2003.283333,
+        "error": {
+          "class": "URLError",
+          "reasonClass": "TimeoutError"
+        },
+        "originalTimeoutSeconds": 2
+      }
+    ],
+    "responseReadReturnIsNotIndependentEOFProof": true
+  },
+  "closure": {
+    "originalStartCount": 4,
+    "originalStartedAndStoppedIdentitySetsEqual": true,
+    "starts": [
+      {
+        "node": 1,
+        "pid": 502876,
+        "native": false
+      },
+      {
+        "node": 2,
+        "pid": 2445611,
+        "native": true
+      },
+      {
+        "node": 3,
+        "pid": 92333,
+        "native": true
+      },
+      {
+        "node": 1,
+        "pid": 503488,
+        "native": true
+      }
+    ],
+    "stops": [
+      {
+        "node": 1,
+        "pid": 502876,
+        "event": "owned_server_stopped"
+      },
+      {
+        "node": 3,
+        "pid": 92333,
+        "event": "final_owned_server_stopped"
+      },
+      {
+        "node": 2,
+        "pid": 2445611,
+        "event": "final_owned_server_stopped"
+      },
+      {
+        "node": 1,
+        "pid": 503488,
+        "event": "final_owned_server_stopped"
+      }
+    ],
+    "checks": [
+      {
+        "case": "owned_processes_stopped",
+        "passed": true
+      },
+      {
+        "case": "owned_mesh_stopped",
+        "passed": true
+      }
+    ],
+    "foreground": [
+      {
+        "node": 3,
+        "nativePid": 92333,
+        "stopped": true,
+        "originalStopDeadlineSatisfied": true,
+        "localSshCleanup": {
+          "leader_exit_code": 0,
+          "leader_pid": 92326,
+          "leader_reaped": true,
+          "live_group_before": [],
+          "live_group_before_leader_reap": [],
+          "owned_live_group_empty": true,
+          "ownership_verified": true,
+          "pgid": 92326,
+          "retained_exit": {
+            "code": 1,
+            "pid": 92326,
+            "signo": 20,
+            "status": 0
+          },
+          "signals": [],
+          "within_original_deadline": true
+        },
+        "remoteCleanup": {
+          "leader_exit_code": -9,
+          "leader_pid": 92333,
+          "leader_reaped": true,
+          "live_group_before": [
+            {
+              "pgid": 92333,
+              "pid": 92333,
+              "ppid": 92330,
+              "start": "Sat Nov  7 10:15:20 2026    ",
+              "uid": 501
+            }
+          ],
+          "live_group_before_leader_reap": [],
+          "owned_live_group_empty": true,
+          "ownership_verified": true,
+          "pgid": 92333,
+          "retained_exit": {
+            "code": 2,
+            "pid": 92333,
+            "signo": 20,
+            "status": 9
+          },
+          "signals": [
+            "SIGKILL"
+          ],
+          "within_original_deadline": true
+        }
+      }
+    ],
+    "optionalOwnedSnapshot": {
+      "attempted": false
+    },
+    "beforeGit": true,
+    "afterGit": true
+  },
+  "source": {
+    "canonicalCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "canonicalTree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "qaCommit": "af91ec0cecbb1c0bd717095d6d8696a3f73a1cee",
+    "qaTree": "c3c5755344f407149b84bfaec285f1dba9be90f6",
+    "inputs": 613,
+    "sourceBeforeAfterExact": true
+  },
+  "elapsedSeconds": 176.6931054997258,
+  "qualification": {
+    "formal128Passed": false,
+    "fullReplacementQualified": false,
+    "officialHistoryChainQualified": false,
+    "nativeHaBackupVerified": false,
+    "directLanQualification": false
+  },
+  "postFailureActions": {
+    "newProductRuns": 0,
+    "timeoutChanges": 0,
+    "firewallChanges": 0
+  },
+  "stdoutTransport": {
+    "finalFourteenFixedOffsetReadsExact": true,
+    "wholeByteCount": 224366,
+    "priorSequentialReaderOrchestratorInterruptedOnly": true,
+    "productDurableJobUnaffected": true,
+    "readsDoNotResampleProduct": true
+  }
+}

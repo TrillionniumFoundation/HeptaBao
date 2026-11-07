@@ -1,0 +1,154 @@
+{
+  "files": [
+    {
+      "bytes": 10351,
+      "path": "README.md",
+      "sha256": "e7194eeb597f2023a1ee503fd8d5d32c0a2373fcaccb710935796b497df5d4a5"
+    },
+    {
+      "bytes": 1350,
+      "path": "build_manifest.py",
+      "sha256": "57f523b981c7a9039373a4b9c7ae13ffd2e5d983bc68115d0b06aa78c977ac45"
+    },
+    {
+      "bytes": 2959,
+      "path": "cli.mjs",
+      "sha256": "9c36c47e2a8c0f3ea567321f53b2bde4506a018a6d1905ebd14752ac50553458"
+    },
+    {
+      "bytes": 27398,
+      "path": "coordinator.mjs",
+      "sha256": "2788c8ba026db045a2961c633aad83762ddceb125b174bcd56c0f782da598a77"
+    },
+    {
+      "bytes": 6076,
+      "path": "derive_r2_to_r3.py",
+      "sha256": "b05433748861b07aceca00f9424a40282c6cd68c5d8e441f84514d7981b429e5"
+    },
+    {
+      "bytes": 224,
+      "path": "package.json",
+      "sha256": "16e20a08d18e63788873553c23d9fe14306d016a80981ec938e9dd135f1df737"
+    },
+    {
+      "bytes": 6004,
+      "path": "private-journal.mjs",
+      "sha256": "068b240c36aa30eef04020036685c81d90598f82e598522990bda9c0c0f11315"
+    },
+    {
+      "bytes": 12155,
+      "path": "protocol.mjs",
+      "sha256": "1afa3a7dfaef49003a63edfa2fa48bfb5381a6b0c5cd4d5890c677e824dcdb7c"
+    },
+    {
+      "bytes": 0,
+      "path": "qualification/local-complete22-r3.stderr.original.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2444,
+      "path": "qualification/local-complete22-r3.stdout.original.txt",
+      "sha256": "ba59202a2c2d330ab73012fadacfbcefaef930d683348a2589fb8e94283a0534"
+    },
+    {
+      "bytes": 2148,
+      "path": "qualification/local-complete22-r3.terminal.public.json",
+      "sha256": "88ddad3b0764c4e8ee3ab55bf93f7582d3c42e924e0bf64e6a87c2ae8c45731a"
+    },
+    {
+      "bytes": 4770,
+      "path": "r2-to-r3-journal.diff",
+      "sha256": "2c69de17542c3728099d9d593d8bf96a69f468765141e407d266d7b235aa5832"
+    },
+    {
+      "bytes": 43122,
+      "path": "reference/authbus_coordinator.py",
+      "sha256": "cc46822439dfd33c86d1068c886941a92c5581871474cef846d2aee14ce80fe0"
+    },
+    {
+      "bytes": 2041,
+      "path": "source-manifest.public.json",
+      "sha256": "bb7dca78d2dc07da3fc56b343ffc811087447c4779065a402540a5830d4dc3f8"
+    },
+    {
+      "bytes": 2008,
+      "path": "source-verification.mjs",
+      "sha256": "0a4469d52afa7ada171cb85a41a7102244bf36e3220e80e8e92e1ecb6138f0c1"
+    },
+    {
+      "bytes": 8439,
+      "path": "tests/coordinator.test.mjs",
+      "sha256": "85c612527274c7b132fe65afb8caff1928c74994167f59bb611f88803132011d"
+    },
+    {
+      "bytes": 602,
+      "path": "tests/crash-child.mjs",
+      "sha256": "fa623ae14f5da639860d8845b28e500654ac95cbbb66e89f5bc82d9286057b7e"
+    },
+    {
+      "bytes": 3112,
+      "path": "tests/crash.test.mjs",
+      "sha256": "3ee7a77b2f9726d7049a6b1688e7ef39d0ea1968c8ce9ff6c72189e7a7a822ab"
+    },
+    {
+      "bytes": 4747,
+      "path": "tests/fixture.mjs",
+      "sha256": "394a63b30ab8ba11a402fb9584d1d1a1c55612748584c54cde476e725e529fa4"
+    },
+    {
+      "bytes": 4799,
+      "path": "tests/head-confirmation.test.mjs",
+      "sha256": "7b51e6d51290ff5a23b3d29dd32bd1c0ee450272f2476bfe3b7cbecaa667bd2a"
+    },
+    {
+      "bytes": 3138,
+      "path": "tests/journal-durability.test.mjs",
+      "sha256": "7ee8fab6e0fe424118253c72a73f11dc4c473afac5a6f3315d98ce0cad4b7424"
+    },
+    {
+      "bytes": 2103,
+      "path": "tests/legacy-oracle.py",
+      "sha256": "9497cb6f8ae091565701f25d784a13e10846378adc413f8a3c6a0ddc38d8677d"
+    },
+    {
+      "bytes": 1805,
+      "path": "tests/protocol-oracle.test.mjs",
+      "sha256": "f2cace6341afce555ace53fb884d9703df79fbecb805b8d5a82cc2ca89d99aae"
+    },
+    {
+      "bytes": 9555,
+      "path": "tests/strict-integration.test.mjs",
+      "sha256": "96cc88675187a7729e292bbbaf662e4356165953c1a7838225aa7cfbc82723e8"
+    },
+    {
+      "bytes": 18043,
+      "path": "transport/bounded-outbox.js",
+      "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+    },
+    {
+      "bytes": 8660,
+      "path": "transport/private-outbox-store.js",
+      "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+    },
+    {
+      "bytes": 3434,
+      "path": "transport/production-client.js",
+      "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+    },
+    {
+      "bytes": 26161,
+      "path": "transport/strict-bao-client.js",
+      "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+    },
+    {
+      "bytes": 771,
+      "path": "transport-source-pins.public.json",
+      "sha256": "c38e8fd136677804eaee77067f726d152a1f65bdc12e954405fa3b3e6a282a97"
+    }
+  ],
+  "macExecuted": false,
+  "preparedOnly": true,
+  "productionActions": 0,
+  "providerCalls": 0,
+  "schema": "heptabao.coordinator-evidence-source-pins.r3"
+}

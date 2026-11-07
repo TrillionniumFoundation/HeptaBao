@@ -1,0 +1,88 @@
+{
+  "actualExecuted": false,
+  "argumentStackIsNotRuntimeConfig": true,
+  "childProcesses": 0,
+  "credentialFileReads": 0,
+  "effectiveCredentialSourceQualified": false,
+  "fixedPids": [
+    66414,
+    66687,
+    89324,
+    89325
+  ],
+  "keychainReads": 0,
+  "launcherBytes": 54555,
+  "launcherSha256": "ad55a151f09da806f10c261c0783ec0f030d899f743c3612930101b68983c417",
+  "maximumArgc": 512,
+  "maximumEnvironmentEntries": 4096,
+  "maximumProcargsBytesIncludingArgc": 262148,
+  "missingEnvironmentIsUnknown": true,
+  "parentSeconds": 20,
+  "priorAuthority": {
+    "jobId": "1a1b3804d06-fc05-8343",
+    "originalPublicStdoutBlob": "a57a6a291d79b55366f732367eff10e56678439b",
+    "originalPublicStdoutSha256": "0ca56d604069315055ddda48cc5cd7e0d5151e852d72aa5a6c0898daefe52d72"
+  },
+  "productionWrites": 0,
+  "publicFilePins": {
+    "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/Info.plist": [
+      525,
+      "c40b0e6b87b94ef5a232ab8312678c5db2156428f57c3f3d6c32525373be7f59"
+    ],
+    "/opt/homebrew/lib/node_modules/@openai/codex/bin/codex.js": [
+      6911,
+      "aa3c64b122c9d06bf48eaf988f5970aa69556d69506c3118cf07d10b2401b48a"
+    ],
+    "/opt/homebrew/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/package.json": [
+      517,
+      "f0d3c19a894d9dcf4e416665837db9f3dec2c2ab4df7d91a4dde2b83dd215bd2"
+    ],
+    "/opt/homebrew/lib/node_modules/@openai/codex/package.json": [
+      977,
+      "1ddb42975de8a8a9088d609e2f639ee390f79dea9376ef04a97eac30bf586f5d"
+    ]
+  },
+  "rawArgumentsOrEnvironmentPersisted": false,
+  "readonlyMibs": [
+    [
+      1,
+      8
+    ],
+    [
+      1,
+      49,
+      "fixed_pid"
+    ]
+  ],
+  "samplesPerProcess": 2,
+  "schema": "heptabao.finite-codex-selector-preparation.r1",
+  "selectedProcesses": 4,
+  "selectorValuesPersistedOnlyPrivately": true,
+  "signalsToObservedConsumers": 0,
+  "sourcePins": {
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_procargs_selectors_r1.py": "d961308bfd86539f37aadf77f4be4d747f8a0efafc61393d4ed4160d81b2dc64"
+  },
+  "sourceReferences": [
+    {
+      "blob": "a6f02a86eb29dec5dc39e54ff3692f191c203879",
+      "path": "ps/print.c",
+      "repository": "apple-oss-distributions/adv_cmds"
+    },
+    {
+      "blob": "1e9baecfcbe6e56d8deac42fe59022266ab7db46",
+      "path": "bsd/kern/kern_sysctl.c",
+      "repository": "apple-oss-distributions/xnu"
+    },
+    {
+      "blob": "caa43569c78bae9f5cc875092f378f4d935b8063",
+      "path": "codex-rs/utils/home-dir/src/lib.rs",
+      "ref": "rust-v0.133.0",
+      "repository": "openai/codex"
+    }
+  ],
+  "supervisorSeconds": 30,
+  "templateBytes": 15272,
+  "templateSha256": "98c5aeabf59e45643e65fe941b47752914a80bb3b34b4f7cd6872f8611a5315d"
+}
