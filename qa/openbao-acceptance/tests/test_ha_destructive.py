@@ -121,8 +121,8 @@ class DestructiveFixtureGuards(unittest.TestCase):
                 instance.log = (instance.root / "process.log").open("ab")
                 instance.process = process
 
-            with patch.object(HA.Node, "start", new=start_without_wait), \\
-                    patch.object(HA.owned_process, "wait", return_value=1), \\
+            with patch.object(HA.Node, "start", new=start_without_wait), \
+                    patch.object(HA.owned_process, "wait", return_value=1), \
                     patch.object(HA.owned_process, "stop", return_value=1) as stop:
                 node.expect_startup_rejection(expected)
 
@@ -151,8 +151,8 @@ class DestructiveFixtureGuards(unittest.TestCase):
                 self.assertEqual(expected_codes, (-9,))
                 raise HA.owned_process.OwnedFailure("owned_standalone_shutdown_code")
 
-            with patch.object(HA.Node, "start", new=start_without_wait), \\
-                    patch.object(HA.owned_process, "wait", return_value=2), \\
+            with patch.object(HA.Node, "start", new=start_without_wait), \
+                    patch.object(HA.owned_process, "wait", return_value=2), \
                     patch.object(HA.owned_process, "stop", side_effect=reject_wrong_cleanup_code) as stop:
                 with self.assertRaisesRegex(
                         HA.owned_process.OwnedFailure, "^owned_standalone_shutdown_code$"):
