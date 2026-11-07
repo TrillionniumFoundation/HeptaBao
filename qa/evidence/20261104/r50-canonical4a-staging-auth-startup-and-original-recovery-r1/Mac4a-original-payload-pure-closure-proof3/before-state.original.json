@@ -1,0 +1,539 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root.successor4a.dual-bundle-INFO.GO.r1\",\n  \"authorization\": \"GO\",\n  \"scope\": \"exact-two-ordered-standalone-fixed-file-info-operations\",\n  \"issuedAtUTC\": \"2026-11-07 00:13:35 UTC\",\n  \"candidate\": {\n    \"commit\": \"4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\n    \"tree\": \"f02dd113d208d79f5275005dc65a5e8aecd0e9d3\",\n    \"parent\": \"5767739cd25e458ac052dc8d384019bab8688ae0\"\n  },\n  \"sourceTree\": \"7bedb4342025787ea71c9c1a206fe5a9c8f8a025\",\n  \"sourceRootQualification\": {\n    \"blob\": \"c749cd7f9ba000c3df4196f7ae98b7505b3d4f00\",\n    \"bytes\": 3465,\n    \"sha256\": \"67381660460058e5d24d8151aad3859bf7fc2547be136ef205b9876424ce6e3f\",\n    \"tree\": \"3611210a9c9b235204787a58d9329e532ec955ed\",\n    \"whole\": true\n  },\n  \"ordered_bindings\": [\n    {\n      \"tag\": \"mac\",\n      \"field\": \"canonical_bundle\",\n      \"from\": \"5767739c\",\n      \"slot\": \"successor4a_mac_canonical_bundle_info_gitfirst_r1\",\n      \"expected\": {\n        \"host\": \"rog\",\n        \"path\": \"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle\",\n        \"bytes\": 1253,\n        \"sha256\": \"0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851\",\n        \"full9\": [\n          \"66306\",\n          \"34603387\",\n          \"1000\",\n          \"1000\",\n          \"33152\",\n          \"1\",\n          \"1253\",\n          \"1794007675691817556\",\n          \"1794007675691817556\"\n        ]\n      },\n      \"header\": {\n        \"header_sha256\": \"ffa8977f7e4efa7ea246089229c566e9007efc3a8a64be8be1e3de5c4efe3626\",\n        \"heads\": [\n          [\n            \"4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\n            \"HEAD\"\n          ]\n        ],\n        \"prerequisites\": [\n          \"5767739cd25e458ac052dc8d384019bab8688ae0\"\n        ],\n        \"version\": 2\n      },\n      \"journal\": {\n        \"blob\": \"8cca9d145d91a844aa11a23b6402627c6c8416ac\",\n        \"bytes\": 20600,\n        \"sha256\": \"a229d3354ace8ea1cc25b891c3809c110503f2e7877f289404142340e1003321\"\n      },\n      \"exact_request\": {\n        \"blob\": \"40a1a717a0f07c5e588977e7ddc941b75d92bce4\",\n        \"bytes\": 273,\n        \"sha256\": \"8fcced2a71700b581d7b8981c64e2e0e61944f763c954b23aa8a2a1565a6bcfb\"\n      },\n      \"request\": {\n        \"idempotency_key\": \"heptabao-4a49405b-mac-bundle-info-rog-20261106-r1\",\n        \"operation\": {\n          \"tool\": \"file_info\",\n          \"arguments\": {\n            \"host\": \"rog\",\n            \"path\": \"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle\"\n          }\n        }\n      },\n      \"forward\": {\n        \"blob\": \"48d807a53d5e1d86aa86ba9c8a64987f84e9a2bf\",\n        \"bytes\": 1415,\n        \"sha256\": \"6e6ab6fb9e5e6352714d03b1b59f518f58382a9d44fc961effee56c241203378\"\n      },\n      \"reverse\": {\n        \"blob\": \"55e4c2ed5b0f5b34e7c23c34ffef2d756b86f47b\",\n        \"bytes\": 1423,\n        \"sha256\": \"81baa650a6c4bd34c09d48104f5aad9f98afabc00b448435b3e024118b119abc\"\n      },\n      \"actual_info\": null,\n      \"actual_body\": null,\n      \"stage_witness\": {\n        \"report\": {\n          \"blob\": \"1bc73accafe974e2ae7462c4e76b9093ad0edf12\",\n          \"bytes\": 31257,\n          \"sha256\": \"5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5\"\n        },\n        \"root_qualification\": {\n          \"blob\": \"489681f4680763539866097e650073729c68dee7\",\n          \"bytes\": 4276,\n          \"sha256\": \"65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576\"\n        },\n        \"root_qualification_tree\": \"4ad94074197d4f6f1c2205be36675f7d28cb519a\",\n        \"field\": \"canonical_bundle\"\n      }\n    },\n    {\n      \"tag\": \"x230\",\n      \"field\": \"canonical_x230_bundle\",\n      \"from\": \"02b90762\",\n      \"slot\": \"successor4a_x230_canonical_bundle_info_gitfirst_r1\",\n      \"expected\": {\n        \"host\": \"rog\",\n        \"path\": \"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle\",\n        \"bytes\": 6815,\n        \"sha256\": \"916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1\",\n        \"full9\": [\n          \"66306\",\n          \"34603406\",\n          \"1000\",\n          \"1000\",\n          \"33152\",\n          \"1\",\n          \"6815\",\n          \"1794007675734817691\",\n          \"1794007675734817691\"\n        ]\n      },\n      \"header\": {\n        \"header_sha256\": \"e1af68cc94dad436c795a3c1e7d809b73d8622bcd566b95a8c464b75ac50fa19\",\n        \"heads\": [\n          [\n            \"4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\n            \"HEAD\"\n          ]\n        ],\n        \"prerequisites\": [\n          \"02b90762b3d6cc8699cc88bffb6f76cb1f07e270\"\n        ],\n        \"version\": 2\n      },\n      \"journal\": {\n        \"blob\": \"bcf96bf934fdce521a8085ba501a51d648cc915b\",\n        \"bytes\": 20601,\n        \"sha256\": \"1c500fbd98e133fe763f4d7d79f0f9f3395f794f32ac974da118a29020d0e49f\"\n      },\n      \"exact_request\": {\n        \"blob\": \"0fd925cb1455c664dd02bc4937d2f18314d9dc3c\",\n        \"bytes\": 274,\n        \"sha256\": \"a3ed076f11fe278956e301c06af771922866f6ce5e5b06cf3347aaa3083e547d\"\n      },\n      \"request\": {\n        \"idempotency_key\": \"heptabao-4a49405b-x230-bundle-info-rog-20261106-r1\",\n        \"operation\": {\n          \"tool\": \"file_info\",\n          \"arguments\": {\n            \"host\": \"rog\",\n            \"path\": \"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle\"\n          }\n        }\n      },\n      \"forward\": {\n        \"blob\": \"199dbdfaf14bc029951d809f0c6ef3d3eeec8a79\",\n        \"bytes\": 1416,\n        \"sha256\": \"229d129663b6d0c3bb75604729fc3c71a8adcc4c3274190e42e12fffd4a4809f\"\n      },\n      \"reverse\": {\n        \"blob\": \"90ae48703a89ab1c40ad2dc616306e633d035de1\",\n        \"bytes\": 1426,\n        \"sha256\": \"9e8a21506ec554f42339efdd8ffeaf0524f499698e0b53297aa0e826c26dabf2\"\n      },\n      \"actual_info\": null,\n      \"actual_body\": null,\n      \"stage_witness\": {\n        \"report\": {\n          \"blob\": \"1bc73accafe974e2ae7462c4e76b9093ad0edf12\",\n          \"bytes\": 31257,\n          \"sha256\": \"5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5\"\n        },\n        \"root_qualification\": {\n          \"blob\": \"489681f4680763539866097e650073729c68dee7\",\n          \"bytes\": 4276,\n          \"sha256\": \"65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576\"\n        },\n        \"root_qualification_tree\": \"4ad94074197d4f6f1c2205be36675f7d28cb519a\",\n        \"field\": \"canonical_x230_bundle\"\n      }\n    }\n  ],\n  \"order\": [\n    \"mac\",\n    \"x230\"\n  ],\n  \"complete_first_original_operation_and_all_pages_and_release_before_second_initialize\": true,\n  \"new_contexts_only\": true,\n  \"existing_context_reset\": false,\n  \"maximum_file_info_starts\": 2,\n  \"per_operation_limits\": {\n    \"status\": 8,\n    \"pages\": 128,\n    \"page_bytes\": 8192,\n    \"payload_bytes\": 1048576,\n    \"native_calls_maximum\": 137,\n    \"one_call_or_future\": true\n  },\n  \"total_limits\": {\n    \"file_info\": 2,\n    \"status\": 16,\n    \"pages\": 256,\n    \"native_calls_maximum\": 274,\n    \"one_call_or_future\": true\n  },\n  \"metadata\": {\n    \"actual_native_version\": null,\n    \"expected_full9_from_lossless_actual_stage\": true,\n    \"mode\": \"0600\",\n    \"full_mode\": \"S_IFREG | permission_mode = 33152\",\n    \"uid\": 1000,\n    \"gid\": 1000,\n    \"nlink\": 1,\n    \"metadata_platform\": \"linux\",\n    \"match_size_sha_full9\": true\n  },\n  \"exact_request_content_from_source_only\": true,\n  \"binary_read_authorized\": false,\n  \"process_start_authorized\": false,\n  \"Mac_write_authorized\": false,\n  \"Cargo_authorized\": false,\n  \"B_store_access\": false,\n  \"lane_allocation\": {\n    \"A\": 0,\n    \"B\": \"1 UNKNOWN original BUILD\",\n    \"C\": 1,\n    \"root\": 0,\n    \"maximum\": 2\n  },\n  \"sequence\": [\n    \"Read this GO and exact SOURCE whole before initializing the first fresh slot.\",\n    \"Mac INFO first: initialize its absent fresh slot, prepare and whole-archive its exact original arm, cross a model boundary, dispatch once, preserve SDK before parse.\",\n    \"Follow only that original operation using the unchanged bounded journal, whole-read each original result page, verify fixed metadata and close the original observer.\",\n    \"Release first context before initialize of the separate X230 INFO context; then repeat only the second exact request and its own unchanged journal.\",\n    \"Return complete actual INFO witnesses and explicit C0. BODY requires a separate exact root GO tied to actual version.\"\n  ],\n  \"failure\": \"Preserve every original UNKNOWN, SDK, arm and state; stop later admissions. No request replay, no rekey, no guessed version or different path; recovery requires a separately reviewed original-operation plan.\",\n  \"actual_INFO\": null,\n  \"actual_BODY\": null,\n  \"product_qualification\": false,\n  \"full_replacement\": false,\n  \"client_cutovers\": 0,\n  \"old_cleanup_authorized\": false\n}\n",
+  "goPin": {
+    "blob": "6a1c9892ba89b1053d9aa3e75a7e061acea8aa56",
+    "bytes": 8632,
+    "sha256": "d7e69c5c68c63f21d9978aeae0fe0fdbde130bc9d6983e9d30cbd88c23980d8c"
+  },
+  "digest": null,
+  "fingerprint": null,
+  "job": null,
+  "startCalled": false,
+  "pending": null,
+  "activeObserver": {
+    "id": "1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f",
+    "request": {
+      "idempotency_key": "heptabao-4a49405b-mac-bundle-body-rog-20261106-r1",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+          "offset": 0,
+          "limit": 1253,
+          "expected_version": "66306:34603387:1253:1794007675691817556:1794007675691817556"
+        }
+      }
+    },
+    "tool": "binary_read",
+    "futureClosed": true,
+    "nextPageOffset": 2096,
+    "eof": true,
+    "pages": [
+      {
+        "offset": 0,
+        "next": 2096,
+        "base64": "eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJjaHVua19zaGEyNTZcIjpcIjBiZGJiNjlhZWQ4MmU4Y2I1ZDU1MzZlZjhiNzgyYWM3NjFjZWNhNzNkMDNlNDVhZjRkMzA3M2Y4OTBmMTg4NTFcIixcImRhdGFfYmFzZTY0XCI6XCJJeUIyTWlCbmFYUWdZblZ1Wkd4bENpMDFOelkzTnpNNVkyUXlOV1UwTlRoaFl6QTFNbVJqT0dRek9EUXdNVGxpWVdJNE5qZzRZV1V3SUVacGVDQnpibUZ3YzJodmRDQlRaWEoyYVdObElHUmxZV1JzYVc1bElHeHZZMnR6SUdGdVpDQmhaRzFwZENCdVlYUnBkbVVnYkc5allXd2dTbGRVSUdKaGRHTm9JSFJ2YTJWdWN3bzBZVFE1TkRBMVlqa3pZelExWVdJeFl6STFaV05pWVRFeFkyUmxOak5oTjJWa1pUSXdaR05sSUVoRlFVUUtDbEJCUTBzQUFBQUNBQUFBQ0pzMGVKeXRVc3VPMnpBTXZQc3JlRy9zT2s3OHlLSW8ya01YWGZSU3RMMFh0RVRIeE1xU1Y0OGt1MTlmMnRuWEIvUmd5S0NHTThPaG9pZUNvYXkwM201M3VpbzczUjZHdW1ycnNxeTFhbXFzcVVOU3VxU0QzbVV6ZXJJUjZyWnAyOTFCNmFxbWZkMmhLdXRLcTA3dnVuMjVQZlRZZDAwblhXV0dLWTdPdzYxSGV4K1NkaE5hK0ZTMXU2WVZYUFhoZmYxTEN1UkRZWjJuMlR3V1I0NWo2Z3ZscHMrd2JRLzdzbXgyZFFONUtjWXlxVTRjSS8xLzV1eVdMNkJwd0dSaVBuczNzQ0g0L2hVR3ZzVGtDZEJxQ0Jibk1Mb0ltRFJIaUJRaUNOdk1CaU03bTJWM2xpT2o0U2VDT01wM2RtRGw2a1Q1cWNsSGZDTVltSXdPd0hiRjBZVkRaSHNFSXlkWjh2bXdMRWZVVjRsbkM2R0FIMFR6MnFIUW1CN1ZQV0FmbHIwczdwYjZUTkk4QysyRU05QTB4OGNDZnNud3FLNXVrZzBSZTVuczJ3VlYvQzFHN3lSTWpNN2YzSEQ0dTNZQUJvbHRHU2pBV1NJRGVraDhRclBvUEhjL2tYZTVGSTV5KzRZdXNreTBrSDFZdlF3dWVSQ1ZoT1lsV0Jtd2Y1ZWFySkc4ZDRJZnZKdGVIMWNCUDczVFNTMmtndFMwdWVaZ2NhS3dlU2U0RVY3VWhpMnR2ek5aVFZZeGhkYzhxcnI2V0hVbEJES2tJdWtya2VSaFFSNDBPTUg0TXdlU1lOU0k5a2k2Z0Q4akJ3aGlYaks3dmplUWdsM1dEajdaeUJQQmd3ekZBNnQxNzhVL1VpUWtVZkVDUWtkOVlpM1BsdUhpc0pLZjZlekd0N3BJUjBCNG5OdkV2b2w5UXhLalNQbmlzbWdkM2FOL3BuVE1lZGZyZTA5Uk1qNjhlM01ab3cwVEFQRk5EZUR4QWpXUUhVaElUbWVzNkx6TlRvNHhsbmlXMHF2QWVKeGJMYlJhYU1NM2RoRWV5Uks5ak1XWFhjVjNiVlU2ZGxiQVF1dTFydVZtTGc1RlJnRGNFZ3dMOEFJS3JVWXV2dWRKaFE3RmZVbDJValJjbmJYOWszaWNPOFYwaW1tRE1LTkltOExiTjBxVnkvY2xxUWdzVXpnOWJib014eTdOeWVxTXlnRFVFUXdwK2dYK1ExellxdWRlOThJV0dsYW55NmRSN2M2dHRIaWNBVm9BcGYrcDNRS3AzUUt3QmpjVVF5cUoyMjJYQXIxVVNCTk5yZktLMS9tOVpVeVRHamVKRk9oaDc1aGc4bHV5VUhrZDkrU1QvVW9mdEo5anM3YzN1RUVVZktFakFELzFkQU1sd1J1UTI3aEVXNmpWUlY2VEFYa1hzNXA1RHpXVVhDblQrZ01rU2hjbmxGZDlVTDlTdTdtR1JJOFhIWkJmcm5pY2U2QThYM1ZERTgvaytSeWFuTVY1aVFYRkdma2w4Wk45ZVV4QklzSndrZUxVb3JMVW92aUN6THpKQjdsbE5qZnh4TEVDQUpLekZnUDZBK2J4QXgydWZiZkd3SjVqTUYwS0J2QkhRM0FGZUp6YllUL2RjVU8rNk9ST1FVUE80cnpFZ3VLTS9KTDR5VWFpdGlBUlliaEljV3BSV1dwUmZFRm0zdVEyRVpYTithS2VYQUNNL0JXcDhBTU1VYmRad2xmWU5xMzFJYjZqMTF1UXJ3c3dIM2ljdTFCN3FYWkRxTmhrQ3pHZXlYRmlZcE0zcUxFekdteXVFNHRUWjQ1UExaeDh4MVlPSWpUNXBiNzVaR3U3cVFDMmp4RlYyZURWZmQ2azFGZXJWRVozMytwZmtjREFNc0E9XCIsXCJlb2ZcIjp0cnVlLFwibmV4dF9vZmZzZXRcIjoxMjUzLFwib2Zmc2V0XCI6MCxcInBhdGhcIjpcIi9ob21lL3FpYW4tcWkvaGItNGE0OTQwNWItc3JjLTIwMjYxMTA2LXIxL2NvbnRyb2wvY2Fub25pY2FsLWhiLTRhNDk0MDViLWZyb201NzYuYnVuZGxlXCIsXCJzaXplXCI6MTI1MyxcInZlcnNpb25cIjpcIjY2MzA2OjM0NjAzMzg3OjEyNTM6MTc5NDAwNzY3NTY5MTgxNzU1NjoxNzk0MDA3Njc1NjkxODE3NTU2XCJ9In1dLCJpc0Vycm9yIjpmYWxzZX0=",
+        "originalSDK": {
+          "blob": "7d4af78e23b4450624b5a4f205537b2c1cc38acf",
+          "bytes": 3650,
+          "sha256": "05ac12f38602381d920106d19c5dca3738d754f91166230cfa16f854dca28430"
+        },
+        "nativeText": {
+          "blob": "c50869eedf3dd6ea6c09923aac861231c5f1147d",
+          "bytes": 3479,
+          "sha256": "dcca5cc2479cd12bcf3b5d4ba8ca280a36cb9f95939e129a4687492b2a70ef8a"
+        }
+      }
+    ],
+    "total": 2096,
+    "digest": "6a746ee482b96d481d2e76856e101d3e43c9beb3652cd5906376e6e725fe21d8"
+  },
+  "nativeCallInFlight": false,
+  "paused": true,
+  "calls": {
+    "4a-mac-bundle-info-r1-admit": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-4a49405b-mac-bundle-info-rog-20261106-r1\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "40a1a717a0f07c5e588977e7ddc941b75d92bce4",
+        "bytes": 273,
+        "sha256": "8fcced2a71700b581d7b8981c64e2e0e61944f763c954b23aa8a2a1565a6bcfb"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "4be35991394f4a18318786d1b30243703becb8ee",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "5566ea312f0a3960e0ed7d934b985da7cb415368",
+            "bytes": 835,
+            "sha256": "cfd66a55f1da46f1047948f461ca879bb3d547f9a5d690409b9511cdc4f89d0f",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "38c99a77b8720e60cfffbab67cba0e29ff374960",
+            "bytes": 698,
+            "sha256": "3c9c87da8258c7c70054eb1cbb0c241ae852b84f4a05c594444316a3acf0d3cd",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "40a1a717a0f07c5e588977e7ddc941b75d92bce4",
+            "bytes": 273,
+            "sha256": "8fcced2a71700b581d7b8981c64e2e0e61944f763c954b23aa8a2a1565a6bcfb",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1806,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "a04b3cb83eb9f70d02f8e6591ef27b85b1c66b6a",
+        "bytes": 704,
+        "sha256": "01cb128e608e025e86148d78d68222553ff4b944390e58945fd8971dd27b7b32"
+      },
+      "sdkArchive": {
+        "tree": "36ea4080362f48c97f9f719104be8fc14c28cd3e",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "a04b3cb83eb9f70d02f8e6591ef27b85b1c66b6a",
+            "bytes": 704,
+            "sha256": "01cb128e608e025e86148d78d68222553ff4b944390e58945fd8971dd27b7b32",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 704,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "b848ced8a33d1554d92db4ba6f60a446952b9fd9",
+        "bytes": 543,
+        "sha256": "d991b85a68adc1486e0d137747a06b73c403abd7911b9e3a26cc927c1931b886"
+      }
+    },
+    "4a-mac-bundle-info-r1-status0": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2\"\n}\n",
+      "requestPin": {
+        "blob": "fdb0d214457f1773fb6ff0181a4d087f07f9dddb",
+        "bytes": 89,
+        "sha256": "12485cb47754b650028ed57bbbb02b811acc711ada8ab0576c92330d18cbd927"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "9607b1cc444fb63c7b3282774ea7c89253fe0b75",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "a9f79f714b713c0a49f382f81334de8cb192c3f9",
+            "bytes": 899,
+            "sha256": "3ffc53c7872936e972e909f9807a129b8720ac0d61bda0be5fe80021e0ed1d3d",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "66928b7a63d105e5c129c2ac87daa4bc9c032608",
+            "bytes": 762,
+            "sha256": "01ee3b3bf18b83b3948dd0d2d72d126fdc62bf8d55ab2f1cdff6d54cf090c68d",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "fdb0d214457f1773fb6ff0181a4d087f07f9dddb",
+            "bytes": 89,
+            "sha256": "12485cb47754b650028ed57bbbb02b811acc711ada8ab0576c92330d18cbd927",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1750,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "c796caef9e12d3b2ca984b8afd3364f42b83407d",
+        "bytes": 975,
+        "sha256": "4e8a15a5912a0da663f3a3684b8fa06390963d373df26166efd5a7ee557db6cb"
+      },
+      "sdkArchive": {
+        "tree": "ed65c3f873f8f385b075c9569baaa5e4fbc81f43",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "c796caef9e12d3b2ca984b8afd3364f42b83407d",
+            "bytes": 975,
+            "sha256": "4e8a15a5912a0da663f3a3684b8fa06390963d373df26166efd5a7ee557db6cb",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 975,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "13811db69c273214a2be43c3c378775ab9326060",
+        "bytes": 800,
+        "sha256": "33d6fd7d84ffef8075d065858edcc8266658a3680f18713cefddee5eebe95e4b"
+      }
+    },
+    "4a-mac-bundle-info-r1-page0": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "1d49cdb475cd710f85fa418453550b99439e892a",
+        "bytes": 121,
+        "sha256": "e053bb96f129564b62d911f0825acc4b789cfcc91f502e513eec582fdadbe45a"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "7c35422f40df29182c998415b2e77360b20fca49",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "2745e9c80e9fbb91cc6c79f6be2b00b16c89136f",
+            "bytes": 898,
+            "sha256": "6f38ccd0dd98ded693aa112fb3320823f5575e65c1d88182ac323de48c52513d",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "8c51e48d620c0772cf117bc01c0aa814da9ca88f",
+            "bytes": 761,
+            "sha256": "0b714f10837bfaa01ea6ff593c301b2468598d68d8ac8f4be2dfa6320672e690",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "1d49cdb475cd710f85fa418453550b99439e892a",
+            "bytes": 121,
+            "sha256": "e053bb96f129564b62d911f0825acc4b789cfcc91f502e513eec582fdadbe45a",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1780,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "ff9b7585b691469914bb84cac4be8952076f42d6",
+        "bytes": 1640,
+        "sha256": "79023fa5af78a78c2daf27fc8a359b77273435727994e63dca85c7f9b65924c8"
+      },
+      "sdkArchive": {
+        "tree": "93ebf381e39f31b517359f35a829c8117a23e124",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "ff9b7585b691469914bb84cac4be8952076f42d6",
+            "bytes": 1640,
+            "sha256": "79023fa5af78a78c2daf27fc8a359b77273435727994e63dca85c7f9b65924c8",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1640,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "7aa8203bb72b1d5414fda15e82560378b31ddcaa",
+        "bytes": 1469,
+        "sha256": "4fd04a78576ecab19849eb7511f86220ee6ce1ca4370b0c48248dc2dedbb0ddb"
+      }
+    },
+    "4a-mac-bundle-body-r1-admit": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-4a49405b-mac-bundle-body-rog-20261106-r1\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle\",\n      \"offset\": 0,\n      \"limit\": 1253,\n      \"expected_version\": \"66306:34603387:1253:1794007675691817556:1794007675691817556\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "b6778404640bf6b307d7c43576ae374b76f1aabe",
+        "bytes": 404,
+        "sha256": "dd4ed331874d4ef93baa6af27aef4e44dab7211dd7f59e7976f150628fbe5d98"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "127972987e9366ab196f46a20344965e38f81842",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "7f065fb4016b5db01a1fd47100cf150ec47a1afc",
+            "bytes": 835,
+            "sha256": "79105b264fdaba0932abbbe29a01f8f030b7e3aa4105f3d2ceb436ead8beeb91",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "382915be512ae45f0ea19538a38371eabc7e0f65",
+            "bytes": 698,
+            "sha256": "47226aeb98f6739284536636e16c56b3b51e6a1377509f6e423fa5e47fc0c0fe",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "b6778404640bf6b307d7c43576ae374b76f1aabe",
+            "bytes": 404,
+            "sha256": "dd4ed331874d4ef93baa6af27aef4e44dab7211dd7f59e7976f150628fbe5d98",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1937,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "849e92ebc47ea9d7f9928d5715d1730eba8d928d",
+        "bytes": 706,
+        "sha256": "edff5cfcd860711e1af770c85f6c44fa33cdbb516d3faaebfd78bb044652d909"
+      },
+      "sdkArchive": {
+        "tree": "d64509c9cdacad991632916854427c41db399c46",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "849e92ebc47ea9d7f9928d5715d1730eba8d928d",
+            "bytes": 706,
+            "sha256": "edff5cfcd860711e1af770c85f6c44fa33cdbb516d3faaebfd78bb044652d909",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 706,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "a3c3b5cc933d9b4c7565abee9c87a1d7c9073712",
+        "bytes": 545,
+        "sha256": "379ebe2eb332fc77e7810d553e3403d13ac3ce2fa1da785d752add375cee7c67"
+      }
+    },
+    "4a-mac-bundle-body-r1-status0": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f\"\n}\n",
+      "requestPin": {
+        "blob": "3cef40585e5d44811e4d5baa4d5ef71eacbe2cd7",
+        "bytes": 89,
+        "sha256": "f80295204956f51ca31237e26a3e0784246ca36eb1d19ee5176542de68835954"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "60f38f1d9e4e3ff0c76357db24129d89959dda47",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "58b0f09425bd6027409216a36cfbd5b3ed86f679",
+            "bytes": 899,
+            "sha256": "64bf569006f7f71b4c71685c200e8ce94d9d67402a41c235ee485242fe73fb09",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "8708811359fb6c332607a4964a5b73a509e01705",
+            "bytes": 762,
+            "sha256": "66ca7c3cc9066ab2ba78553cab9ff62543707f1099e597d76ad98b9131652476",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "3cef40585e5d44811e4d5baa4d5ef71eacbe2cd7",
+            "bytes": 89,
+            "sha256": "f80295204956f51ca31237e26a3e0784246ca36eb1d19ee5176542de68835954",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1750,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "9d4f4eea2f22d080ea63daeb2fba65e501443e2f",
+        "bytes": 977,
+        "sha256": "a9af0d938cf99a462cdf55b92e647b8637419512230c7fef20b87ba6641ed21a"
+      },
+      "sdkArchive": {
+        "tree": "1e2f5fb79850fb76770830bff6202cbe02ad6341",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "9d4f4eea2f22d080ea63daeb2fba65e501443e2f",
+            "bytes": 977,
+            "sha256": "a9af0d938cf99a462cdf55b92e647b8637419512230c7fef20b87ba6641ed21a",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 977,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "32303d2b239aa5cabe6e9b6f6d3f4afb3158b32e",
+        "bytes": 802,
+        "sha256": "f11c3b4d6ded6c470fae82edb6f17ee7657cb2f5b7d1927bbc19d67977457150"
+      }
+    },
+    "4a-mac-bundle-body-r1-page0": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f\",\n  \"offset\": 0,\n  \"limit\": 16384\n}\n",
+      "requestPin": {
+        "blob": "f2b4a9272f2e877cf2711e0029517df62089b3a5",
+        "bytes": 122,
+        "sha256": "e1c9ffccd892b71bcba19179997f35fbae72fa514f3bd0e1544512aa150bb2bb"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "e4b3bf00951a67aaa50a75350be3f51c238f7009",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "0cf4485de351cdbd0daafc9e954a5dcd5f869522",
+            "bytes": 898,
+            "sha256": "5f618e4e578a2b6066a0a8cf78e9933b138f21eaf88161a756ac62f109a8aa10",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "8b3cbd070b84c5cccfa45d1de32e0b1ab11a99d3",
+            "bytes": 761,
+            "sha256": "6261c4fcd1600d29079eedde5c970bb5824fed4ff5b5c10fda6d7a104b4a49d6",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "f2b4a9272f2e877cf2711e0029517df62089b3a5",
+            "bytes": 122,
+            "sha256": "e1c9ffccd892b71bcba19179997f35fbae72fa514f3bd0e1544512aa150bb2bb",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1781,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "7d4af78e23b4450624b5a4f205537b2c1cc38acf",
+        "bytes": 3650,
+        "sha256": "05ac12f38602381d920106d19c5dca3738d754f91166230cfa16f854dca28430"
+      },
+      "sdkArchive": {
+        "tree": "5749919dc238fe746bcf7bda75feaffe5f25fcc9",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "7d4af78e23b4450624b5a4f205537b2c1cc38acf",
+            "bytes": 3650,
+            "sha256": "05ac12f38602381d920106d19c5dca3738d754f91166230cfa16f854dca28430",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 3650,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c50869eedf3dd6ea6c09923aac861231c5f1147d",
+        "bytes": 3479,
+        "sha256": "dcca5cc2479cd12bcf3b5d4ba8ca280a36cb9f95939e129a4687492b2a70ef8a"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2",
+      "tool": "file_info",
+      "payload": {
+        "blob": "2e52b1e3080a1d09d93786cd8d7e174977f3c08b",
+        "bytes": 589,
+        "sha256": "0ffeacc7f4c48ec00b49ce5213fa20aaedf97e5bf0b2c75b308108e9e3a23053"
+      },
+      "payloadTree": "27b8fdcbad3780659f0435c0b12422cb37ae0bd1",
+      "nativeText": {
+        "blob": "f8629d29e51e1101386ea925bed8bcbb08750d3b",
+        "bytes": 472,
+        "sha256": "645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 0,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true,
+  "onlyFixedCanonicalBundleFileInfo": true,
+  "bundleInfo": {
+    "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+    "bytes": 1253,
+    "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+    "version": "66306:34603387:1253:1794007675691817556:1794007675691817556",
+    "derivedFull9": [
+      "66306",
+      "34603387",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "1253",
+      "1794007675691817556",
+      "1794007675691817556"
+    ],
+    "full9ModeDerivation": "S_IFREG | permission_mode",
+    "nativeText": {
+      "blob": "f8629d29e51e1101386ea925bed8bcbb08750d3b",
+      "bytes": 472,
+      "sha256": "645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073"
+    },
+    "bodyObserved": false
+  },
+  "bundleBodyGO": {
+    "pin": {
+      "blob": "228206b2ce965c25681e2b48779c4cd389ff61f3",
+      "bytes": 3900,
+      "sha256": "f7421b8f27f74c6bd2c33f64ad15ddf63b5c04b5ddff8450ca332350c7bddd92"
+    },
+    "raw": "{\n  \"schema\": \"heptabao.root.successor4a.mac-bundle-BODY.GO.r1\",\n  \"authorization\": \"GO\",\n  \"scope\": \"canonical_bundle_binary_read_ranges_only\",\n  \"issuedAtUTC\": \"2026-11-07 00:20:52 UTC\",\n  \"existing_slot\": \"successor4a_mac_canonical_bundle_info_gitfirst_r1\",\n  \"initialize_allowed\": false,\n  \"info_operation\": \"652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2\",\n  \"maximum_binary_read_starts\": 1,\n  \"immutable_body_page_bytes\": 16384,\n  \"fixed_bundle\": {\n    \"path\": \"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle\",\n    \"bytes\": 1253,\n    \"sha256\": \"0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851\",\n    \"version\": \"66306:34603387:1253:1794007675691817556:1794007675691817556\"\n  },\n  \"exact_requests\": [\n    {\n      \"blob\": \"b6778404640bf6b307d7c43576ae374b76f1aabe\",\n      \"bytes\": 404,\n      \"sha256\": \"dd4ed331874d4ef93baa6af27aef4e44dab7211dd7f59e7976f150628fbe5d98\"\n    }\n  ],\n  \"journal\": {\n    \"blob\": \"78eb68a0845aab1221e4b9a857e8e693861b2352\",\n    \"bytes\": 28431,\n    \"sha256\": \"199910130ad5bf0f2f3c6fede332d3c41d0873357c4ba654009327a56df81313\"\n  },\n  \"original_info_state\": {\n    \"blob\": \"27b3674947cd481b4f5c396739d5bbd1241f801a\",\n    \"bytes\": 18911,\n    \"sha256\": \"dd77a0938496f9bf5d3355674795615ddefa13de24bf2949d5eb9715cf8f9078\"\n  },\n  \"original_info_native\": {\n    \"blob\": \"f8629d29e51e1101386ea925bed8bcbb08750d3b\",\n    \"bytes\": 472,\n    \"sha256\": \"645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073\"\n  },\n  \"expected_full9\": [\n    \"66306\",\n    \"34603387\",\n    \"1000\",\n    \"1000\",\n    \"33152\",\n    \"1\",\n    \"1253\",\n    \"1794007675691817556\",\n    \"1794007675691817556\"\n  ],\n  \"range\": {\n    \"offset\": 0,\n    \"limit\": 1253,\n    \"expected_version\": \"66306:34603387:1253:1794007675691817556:1794007675691817556\"\n  },\n  \"maximum_original_status_calls\": 8,\n  \"maximum_original_pages\": 128,\n  \"maximum_original_payload_bytes\": 1048576,\n  \"maximum_file_info_starts\": 0,\n  \"maximum_process_start_calls\": 0,\n  \"sourceTree\": \"c8baef757d489fb444c3f599a21ad7a0382bff8a\",\n  \"sourceRootQualification\": {\n    \"blob\": \"565238d4e1993b4a1ee7f3542d4b3f20583838f2\",\n    \"bytes\": 4900,\n    \"sha256\": \"585b4acef20253d79aa8b5709b5e73e3962c9a6d3349b46857247d3c88db6970\",\n    \"tree\": \"6b68aee0bf71699d3fc1d110601f15ceeabe7b47\",\n    \"whole\": true\n  },\n  \"infoRootQualification\": {\n    \"blob\": \"98108d53d0e192a53621217832f9b16a90429cb7\",\n    \"bytes\": 12861,\n    \"sha256\": \"85dc0379c0a5a733fb4722b9a5c4163ff62dd8437e08abf2ba6bf1cac6a024bf\",\n    \"tree\": \"6b68aee0bf71699d3fc1d110601f15ceeabe7b47\",\n    \"whole\": true\n  },\n  \"execute_only_after\": \"The already-authorized PKI12 report INFO original operation and every page are closed and C has released that operation.\",\n  \"order\": [\n    \"mac\",\n    \"x230\"\n  ],\n  \"serial_only\": true,\n  \"lane_allocation\": {\n    \"A\": 0,\n    \"B\": \"1 UNKNOWN original BUILD\",\n    \"C\": 1,\n    \"root\": 0,\n    \"maximum\": 2\n  },\n  \"preserve_all_three_original_INFO_calls\": true,\n  \"sequence\": [\n    \"Root whole exact BODY GO for Mac -> authorize_bundle_body on its original closed INFO slot -> whole arm -> separate model boundary -> one exact binary_read -> only that original ID -> whole SDK/payload/body -> close and release.\",\n    \"Then the equivalent exact X230 body on its separate original INFO slot after Mac has no pending call/future; no INFO replay or reinitialize.\",\n    \"Reconstruct canonical base64 and binary header only after each actual whole body is external; MacStage requires its own exact GO.\"\n  ],\n  \"onError\": \"Keep original UNKNOWN, SDK, arm and exact state. No replay, rekey, INFO restart, initialize, other range or path. Stop later admission pending an exact original-operation recovery.\",\n  \"actual_BODY\": null,\n  \"Mac_stage_authorized\": false,\n  \"X230_stage_authorized\": false,\n  \"Cargo_authorized\": false,\n  \"product_qualification\": false,\n  \"full_replacement\": false\n}\n",
+    "whole": true
+  },
+  "bundleBodyStarted": 1,
+  "bundleBodyRanges": [],
+  "outerFailure": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "close_observer",
+    "name": "Error",
+    "message": "archive_already_admitted_no_mutation_retry",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  }
+}

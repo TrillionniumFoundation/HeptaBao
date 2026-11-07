@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.root.PKI12.cached-page0-actual-apply-qualification.r2",
+  "audit": {
+    "tree": "b79774c68b3dbc3992abcb34c6fc64bd39fe926d",
+    "files": 5,
+    "bytes": 273650,
+    "merkle": {
+      "root_sha": "b79774c68b3dbc3992abcb34c6fc64bd39fe926d",
+      "trees_verified": 1,
+      "leaf_count": 5
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "exact authorized pure GO",
+      "pass": true
+    },
+    {
+      "name": "actual exact proposed state",
+      "pass": true
+    },
+    {
+      "name": "receipt actual once pure",
+      "pass": true
+    },
+    {
+      "name": "receipt state pin exact",
+      "pass": true
+    },
+    {
+      "name": "original13 calls exact",
+      "pass": true
+    },
+    {
+      "name": "original failed page0 retained",
+      "pass": true
+    },
+    {
+      "name": "original failure and history exact",
+      "pass": true
+    },
+    {
+      "name": "original operation still future closed",
+      "pass": true
+    },
+    {
+      "name": "exact recovered cursor and total",
+      "pass": true
+    },
+    {
+      "name": "no pending call or pause",
+      "pass": true
+    },
+    {
+      "name": "only three allowed fields changed",
+      "pass": true
+    }
+  ],
+  "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "afterState": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "actualReceipt": {
+    "blob": "f8ac5d0b1bbfc05de60a33ecfb344b9f0cbb5e80",
+    "bytes": 1247,
+    "sha256": "6c0686a3515e782f0bd7117e7be0b574a2dc4bf174e86d388e2c7cab0f5a7d6f"
+  },
+  "rootNativeCalls": 0,
+  "pkiBodyQualified": false
+}

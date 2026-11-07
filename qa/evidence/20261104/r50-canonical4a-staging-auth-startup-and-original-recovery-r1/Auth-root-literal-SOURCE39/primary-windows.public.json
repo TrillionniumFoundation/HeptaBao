@@ -1,0 +1,31 @@
+{
+  "implementation": [
+    {
+      "start": 871,
+      "end": 884,
+      "text": "871: *   (allow file-read* ...)    ← re-allow allowWithinDeny\n872: *   (deny file-read* ...)     ← re-emit the denies the allows would clobber:\n873: *                               literal denies nested in an allow, and every\n874: *                               glob deny minus the allows it covers\n875: *                               (see lateReadDenyFilters)\n876: *   (allow file-read* (literal \"/\"))  ← only if a deny covers \"/\" itself\n877: *\n878: * REVIEW INVARIANT: after the allowWithinDeny block, this function only\n879: * ever adds denies (or narrows one with require-not). The one exception is\n880: * the pre-existing literal-\"/\" re-allow, which matches exactly one vnode.\n881: * Do not append another `(allow file-read* …)` layer here — every deny\n882: * above it would then need re-auditing for re-open bypasses.\n883: */\n884:function generateReadRules("
+    },
+    {
+      "start": 908,
+      "end": 927,
+      "text": "908:  const late = lateReadDenyFilters(resolved)\n909:  rules.push(\n910:    ...renderRule('deny', ['file-read*'], new Set(late.filters), logTag),\n911:  )\n912:\n913:  // (subpath \"/\") — or a re-emitted `/*`-shaped glob — denies the root inode\n914:  // itself; no allowWithinDeny entry covers \"/\", so dyld aborts before exec\n915:  // (#190). Re-allow the literal root, after the re-emitted denies so a\n916:  // glob landing later can't take it away again. This exposes `ls /` dirent\n917:  // names but no subtree contents.\n918:  if (deniesRoot || late.coversRoot) {\n919:    rules.push(`(allow file-read* (literal \"/\"))`)\n920:  }\n921:\n922:  // Allow stat/lstat on all directories so that realpath() can traverse\n923:  // path components within denied regions. Without this, C realpath() fails\n924:  // when resolving symlinks because it needs to lstat every intermediate\n925:  // directory (e.g. /Users, /Users/chris) even if only a subdirectory like\n926:  // ~/.local is in allowWithinDeny. This only allows metadata reads on\n927:  // directories — not listing contents (readdir) or reading files."
+    }
+  ],
+  "regression": [
+    {
+      "start": 241,
+      "end": 255,
+      "text": "241:})\n242:\n243:/**\n244: * Regression: denyRead: ['/'] + allowRead: [<project>] used to deny everything.\n245: *\n246: * macOS: (subpath \"/\") denies the root inode; no allowWithinDeny subpath covers\n247: *   \"/\", so dyld SIGABRTs before exec. Fix emits (allow file-read* (literal \"/\")).\n248: * Linux: --tmpfs / wiped all prior mounts, and the carve-out prefix check\n249: *   startsWith('/' + '/') never matched. Fix expands '/' into its children.\n250: *\n251: * Test dir lives under $HOME (not tmpdir) so the macOS /tmp → /private/tmp\n252: * symlink doesn't confuse Seatbelt path matching.\n253: */\n254:describe('allowRead carve-out with denyRead at filesystem root (issue #10)', () => {\n255:  const TEST_DIR = join("
+    },
+    {
+      "start": 330,
+      "end": 343,
+      "text": "330:        shell: true,\n331:        encoding: 'utf8',\n332:        timeout: 5000,\n333:      })\n334:\n335:      // Process must exec (no SIGABRT) and stdout must be empty (cat denied)\n336:      expect(result.status).toBe(0)\n337:      expect(result.stdout).toBe('')\n338:    },\n339:  )\n340:\n341:  it.if(isLinux)(\n342:    'Linux: re-allows carve-out under a root-level deny',\n343:    async () => {"
+    },
+    {
+      "start": 1084,
+      "end": 1097,
+      "text": "1084:  })\n1085:})\n1086:\n1087:/**\n1088: * denyRead: ['/'] plus a `/*` glob. The re-emitted `/*` (rendered as a\n1089: * subtree regex) matches \"/\" itself, so the root re-allow that keeps dyld\n1090: * alive has to land after it — otherwise nothing execs. Same fixture shape\n1091: * as the issue #10 test above.\n1092: */\n1093:describe.if(isMacOS)('macOS root deny alongside a /* glob deny', () => {\n1094:  const TEST_DIR = join(\n1095:    homedir(),\n1096:    '.sandbox-runtime-test-root-glob-' + Date.now(),\n1097:  )"
+    }
+  ]
+}

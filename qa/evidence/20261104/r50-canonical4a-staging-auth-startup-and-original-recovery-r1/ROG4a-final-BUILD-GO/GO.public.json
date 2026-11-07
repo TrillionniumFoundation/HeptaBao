@@ -1,0 +1,396 @@
+{
+  "schema": "heptabao.root.4a-fresh-full-build.GO.r1",
+  "status": "EXACT_ONE_START_AUTHORIZED",
+  "authorization": "GO",
+  "NativeCalls": 0,
+  "initializeCalled": false,
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "source": "/home/qian-qi/hb-4a49405b-src-20261106-r1/source",
+    "sourceFormatted": false
+  },
+  "controlRoot": "/home/qian-qi/hb-4a49405b-controls-20261106-r1",
+  "target": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1",
+  "sourceRootUnchanged": true,
+  "oldControlRootUnchanged": "/home/qian-qi/hb-5767739c-controls-20261106-r1",
+  "newSlot": "combined_4a49405b_fresh_build_gitfirst_r1",
+  "exactRequest": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "typed": {
+    "sha256": "33dcdfaa308ff7e6669737a1326ec90e9f6275038ee7f27d896aeb95981f2d50",
+    "native_fingerprint": "3737107712862844902"
+  },
+  "journal": {
+    "blob": "391f2bef67b32e5ef4a3f1cd8ae660bbd096aa3e",
+    "bytes": 19043,
+    "sha256": "0ad2f2fad1e77767623dadb5cf0c5255ee7aac5331c772faa1c96a0399ecd645"
+  },
+  "publisher": {
+    "blob": "f5cdd26a0ce776dc38781342386be5f879062aca",
+    "bytes": 6643,
+    "sha256": "a4d5995385e040db0eff93b86c84f2441cf19b42d1eb6a129a031fa13d63a2fe"
+  },
+  "launcher": {
+    "blob": "4077f402625114c48cab2fd88b871cfeb877ab4d",
+    "bytes": 39650,
+    "sha256": "f39c03fd166ea30a466189446596506fd0f570c9949d4d9da7d497c85c0fd466"
+  },
+  "runner": {
+    "blob": "b3901c3ef34b4384c54e130637ea4ab8df0c6839",
+    "bytes": 38598,
+    "sha256": "3adf3aa07ec747e978f8484f670b41b2874d5f1d2b5a1a7afb45ea5989635a09"
+  },
+  "groups": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "stdin": {
+    "blob": "abfcfbbf653063a9039ada0189513c89d8f3ff6e",
+    "bytes": 151575,
+    "sha256": "4dfaa5c19880a8a25486034b67d05c8183a3765b58a9793fd705465776797dad"
+  },
+  "journalLiteralChanges": [
+    {
+      "name": "slot",
+      "before": "const GF_SLOT = \"combined_5767739c_fresh_build_gitfirst_r1\";",
+      "after": "const GF_SLOT = \"combined_4a49405b_fresh_build_gitfirst_r1\";"
+    },
+    {
+      "name": "request_pin",
+      "before": "const GF_REQUEST = {blob:\"43b4a12ca91aa73e60e90b30b6a5884b969b82a9\",\n bytes:155691,sha256:\"9a3b483d4b36206a21984882c0abc63dda539fb866354f0e5bfff6ebb18767e7\"};",
+      "after": "const GF_REQUEST = {blob:\"f2c05f2d50e494b1046b57e727f89ce49a4d5d5a\",\n bytes:158691,sha256:\"0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e\"};"
+    },
+    {
+      "name": "observer_prefix",
+      "before": "/^heptabao-combined-5767739c-fresh-observe-r1-/",
+      "after": "/^heptabao-combined-4a49405b-fresh-observe-r1-/"
+    }
+  ],
+  "failureEvidence": {
+    "candidate": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "job": "1a1b2d90976-fc05-7fff",
+    "report": {
+      "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+      "bytes": 46828,
+      "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+    },
+    "stderr": {
+      "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+      "bytes": 2146,
+      "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+    },
+    "logsClosedPacket": "4a1b220f07f74f20991c2c03ad35f8bbd16fc096",
+    "failurePhase": "default-libtest-build",
+    "phaseExitCode": 101,
+    "normalReleasePhaseSucceeded": true,
+    "runtimeTests": 0,
+    "diagnostic": "2 E0063 fixture fields and 2 E0658 iterator.is_empty; candidate4a changes exactly the three reviewed test leaves.",
+    "replay": false
+  },
+  "metadataEvidence": {
+    "tree": "52782b301184359bfd169af49bda93c1af969f74",
+    "report": {
+      "blob": "858622888dba9af61bdd557b85879dad673af7b4",
+      "bytes": 59736,
+      "sha256": "47ea247da0a38c51468821bbcd8c34800ebf9c27790b5968e09141b53f799972"
+    },
+    "job": "1a1b266df76-fc05-7de7",
+    "scope": 121,
+    "metadataOnly": true,
+    "missingOldTarget": true,
+    "runnerHistoricalMissingLeaves": 6,
+    "notProofOfDeletionOrMove": true
+  },
+  "originalStageQualification": {
+    "blob": "489681f4680763539866097e650073729c68dee7",
+    "bytes": 4276,
+    "sha256": "65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576"
+  },
+  "runtimeQualificationInherited": false,
+  "independentNativeControlsMetadataPlanned": false,
+  "independentNativeControlBodiesPlanned": false,
+  "jointSequence": [
+    "One separately approved process_start runs the inline publisher; new root must be absent.",
+    "From publisher monotonic entry: original 60-second publication cap; no children. Exact three source bytes compile-only, create-only publication, fsync and whole before/after/name identity checks, actual receipt publish+whole.",
+    "One same-PID exec to launcher carrying actual receipt SHA, publisher PID and original clock. Launcher entry itself must be before publication60 and within total12000.",
+    "Launcher verifies actual stage/source, current controls/receipt full9+whole SHA; new target must be absent, created relative to held new controls root, empty/owner/mode/named identity checked; actual first5 passed to runner.",
+    "Same-PID exec to runner; no clock reset. Before any rustc/Cargo: target actual identity, current cargo/rustc exact metadata then whole hash+stable full9; Cargo-home object; offline contents not claimed qualified.",
+    "One release_until absolute1800: actual default libtest precheck check --lib --profile test at most300 within that deadline, actual Cargo JSON mode gate, then original normal release with only remaining time. Original shared compile3600, three libtest no-run gates and all18 runtime groups280 remain.",
+    "Only original returned job status/full bounded streams. No output file reads under this source proposal; result metadata/body is separate."
+  ],
+  "budgets": {
+    "outerSeconds": 12000,
+    "releaseSeconds": 1800,
+    "allCompileGatesSharedSeconds": 3600,
+    "perFamilySeconds": 600,
+    "listSeconds": 30,
+    "cleanupTermSeconds": 5,
+    "cleanupKillSeconds": 5,
+    "publicationPhaseSeconds": 60,
+    "publicationCountsAgainstOuter": true,
+    "publicationHardTimeoutExit": 124,
+    "publisherInputBytes": 262144,
+    "launcherBytes": 40000,
+    "runnerBytes": 40000,
+    "precheckMaxWithinReleaseSeconds": 300
+  },
+  "compileGates": {
+    "ordinaryNoDefaultCheck": 1,
+    "libtestProfiles": [
+      "file",
+      "default",
+      "ha-native-v6-peer-ingress"
+    ],
+    "totalWithinSharedDeadline": 4,
+    "preReleaseDefaultLibtestCheck": {
+      "profile": "test",
+      "target": "heptabao-server lib",
+      "maximumSeconds": 300,
+      "countsAgainstRelease1800": true,
+      "actualJSONRequired": true,
+      "replacesNoRun": false
+    }
+  },
+  "denominators": {
+    "uniqueNames": 252,
+    "profileInstances": 280,
+    "families": 18,
+    "fileProfileInstances": 28,
+    "defaultProfileInstances": 235,
+    "haPeerIngressProfileInstances": 17,
+    "snapshotLowLevel": 23,
+    "snapshotServiceRegressions": 4,
+    "normal61": 61,
+    "localNativeJwtBatchNewUnique": 6,
+    "localNativeJwtBatchNewInstances": 12
+  },
+  "originalObservationScope": {
+    "note": "These numeric observation counts are new explicit limits of this GO. The original33b GO did not specify total status/read counts; the original worker/compile/test/cleanup deadlines and per-read/page limits stay unchanged.",
+    "maximumProcessStatusObservers": 256,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutableResultPagesPerObserver": 128,
+    "immutableResultPageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "streamBytesPerRead": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyReturnedOriginalJob": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "contiguousOriginalStreamOffsets": true,
+    "completeEachObserverBeforeNext": true,
+    "noAutomaticRetry": true
+  },
+  "noOldTargetIO": true,
+  "noOldTargetLockIO": true,
+  "noOldArtifactIOInNewBuild": true,
+  "originalHistoricalFunctionsAndTablesRetained": true,
+  "targetAdmission": {
+    "fixedChild": "cargo-target-r1",
+    "createdOnlyAfterCurrentControls": true,
+    "parentHeldFd": true,
+    "full9AtCreation": true,
+    "actualFirst5CarriedAcrossExec": true,
+    "parentOwnMkdirComparison": "first5 before/after, full9 held-vs-named after",
+    "retainedTargetFdsAcrossExec": false,
+    "onceCloseBeforeExec": true,
+    "lifetimeFlockClaimed": false,
+    "rootSoleCargoWindowRequired": true
+  },
+  "toolReadScope": {
+    "roles": [
+      "cargo",
+      "rustc"
+    ],
+    "firstMetadataBound": true,
+    "readWholeInSameRunner": true,
+    "previousIndependentToolSHA": false,
+    "maxBytes": [
+      40688400,
+      645016
+    ],
+    "perReadBytes": 1048576,
+    "noMetadataOrBodyRPC": true,
+    "cargoHomeContentsRead": false
+  },
+  "publicationTimeoutSemantics": "The publication phase has no subprocesses; SIGALRM os._exit(124) stops that process within its 60-second phase. OS closes FDs; a timeout may leave only its create-only partial root/temps. It is never retried or treated as successful publication; no Cargo starts. Timer is disabled immediately before same-PID exec, and launcher rejects entry after60.",
+  "removedExecutionGates": [
+    "old TARGET existence/inode and shared .cargo-lock/holders probe",
+    "launcher old r8/r9/r10/observer/early-cache host revalidations",
+    "runner two preserve_prior_df026 call sites"
+  ],
+  "preserved": [
+    "all original helper definitions and historical tables",
+    "stage original failed-observer immutable report references",
+    "original failure/effect/UNKNOWN evidence",
+    "candidate unformatted fact",
+    "global test contracts and phase/owned cleanup budgets"
+  ],
+  "outputPaths": {
+    "controlsReceipt": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/inert-stage.result.public.json",
+    "admission": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-control-r1/launch-preflight.public.json",
+    "buildResult": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json"
+  },
+  "sourcePreparationErrorsPreserved": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "limitations": [
+    "No compile/run of these Python candidates during this SOURCE preparation.",
+    "The candidate's three test-fixture compile corrections are source reviewed; actual precheck, release, all no-run profiles and252/280 execution remain required.",
+    "Current cargo/rustc whole SHA and full9 are verified in the admitted runner before its first rustc/Cargo subprocess; Cargo-home first5 retained and offline contents not prequalified.",
+    "Independent create-only target; no576 release or previous product pass is inherited.",
+    "Only the exact 252/280 matrix is proposed; official23/strict HTTP12/full34/LAN/comparison69 product gates require separate current-candidate work.",
+    "No formatter added. Old02b errors, all previous UNKNOWNs and source history remain.",
+    "No formatter added. All previous failures/UNKNOWNs and source history remain, including the local4a INFO closure-action error and exact pure recovery."
+  ],
+  "key": "heptabao-combined-4a49405b-fresh-build-20261106-r1-a4d59953",
+  "before": {
+    "publisher": {
+      "blob": "1a360dc6a9e28de8f5acfdddda8416f86692f5ee",
+      "bytes": 6643,
+      "sha256": "b02e250edf978169197e8de2bb6a3228a70e26b10995cb8af73110f9855f253c"
+    },
+    "launcher": {
+      "blob": "2309dee7ade1fd52dde88cace75be58717a2ff72",
+      "bytes": 39650,
+      "sha256": "0f2419c1f9fb1ad10219b2c184108338693161200d74c2f0065311f7b394da3b"
+    },
+    "runner": {
+      "blob": "6499b982ec8562bc52c22416f6eaf7979e1050bc",
+      "bytes": 36346,
+      "sha256": "b02b398a3dfe1ab2f57a6ab70056c2b4aa58f4e221644513187f991d80654166"
+    },
+    "journal": {
+      "blob": "f64f88c90fddb0199d5a866ee70742255d62127d",
+      "bytes": 19043,
+      "sha256": "f9e05317f95b7d1a4fc3a90d8dc50aeba80809e7c941c79c2aaf6562e21fdc78"
+    }
+  },
+  "historicalInitialFailureEvidence": {
+    "tree": "55ace66fb7c0d963385fd481f8088cb920d22546",
+    "job": "1a1b2580881-fc05-7da1",
+    "stderr": {
+      "blob": "7300e23e4242e96cbc29487ee289b9d7c098f136",
+      "bytes": 613,
+      "sha256": "95d2fb8549a5bd9b488c3f1250f9cdc9e38975087e558b044eec067bedd62b98"
+    },
+    "phase": "original launcher at TARGET.resolve before current source/control read or ADMISSION/lock/Cargo",
+    "replay": false
+  },
+  "actualStageReport": {
+    "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+    "bytes": 31257,
+    "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+  },
+  "actualStageWholeTree": "2a786c309aec0e898ecc4d23635b40bb8681a172",
+  "actualStageMinPacket": "568ef9984622508ace7bbffd5fbcec9930c18147",
+  "actualStageInfoPacket": "345a9d16943b283a792a9e2c01f30a7b6ae4c1a8",
+  "rootStageQualificationPendingAtSourceCutoff": false,
+  "newLocalBatchCases": [
+    "service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+    "service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+    "service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+    "service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+    "service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+    "service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+  ],
+  "testSourceGroups": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "candidateRootProof": {
+    "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+    "bytes": 4223,
+    "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+  },
+  "buildQualified": false,
+  "localNativeJwtBatchSourceExtended": true,
+  "localNativeJwtBatchRuntimeQualified": false,
+  "distributedNativeJwtQualified": false,
+  "requiredFollowup": [
+    "current-candidate official ACL23 and strict HTTP12",
+    "current-candidate X230 34MiB/restore",
+    "current-candidate LAN/Pocket consumers"
+  ],
+  "sourceStageRootQualified": true,
+  "historical02bCompilerFailure": {
+    "candidate": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "job": "1a1b282ded0-fc05-7e57",
+    "tree": "d360a3c0b3fbe51be1834e9364a9162f4f306abf",
+    "report": {
+      "blob": "3749276afcc6e1ead912370e9626dc3645c111df",
+      "bytes": 40591,
+      "sha256": "db0079589bd50c271486056283825ba1c3a415c19204f707ed4b5d1b786ec3b4"
+    },
+    "stderr": {
+      "blob": "01ad767ff659ea7f5d7ccfcb9d73d01cc7b03a31",
+      "bytes": 20639,
+      "sha256": "0b2916602918b7e3d05457d6445c20a55478846d99d7cd7067db0058f66c23cc"
+    },
+    "normalReleaseExitCode": 101,
+    "runtimeTests": 0,
+    "diagnostic": "9 E0599 Service lock_for_request calls; 2 E0277 may be cascading but unconfirmed until new compilation",
+    "replay": false
+  },
+  "precheckSourceTree": "d47fd022860b95f1b9c63eb6c5ba35afa0e45f25",
+  "precheckSource": {
+    "blob": "b3901c3ef34b4384c54e130637ea4ab8df0c6839",
+    "bytes": 38598,
+    "sha256": "3adf3aa07ec747e978f8484f670b41b2874d5f1d2b5a1a7afb45ea5989635a09"
+  },
+  "fastGateReplacesRelease": false,
+  "fastGateReplacesNoRun": false,
+  "fastGateReplacesTestRun": false,
+  "cargoPrimaryPacket": "cff31859a2a890d6a0b94b7abbe5a7bda65a5a3b",
+  "actualCargoBinaryToGitlinkProven": false,
+  "actualCargoVersion": null,
+  "old4aInfoLocalActionErrorPreserved": true,
+  "old4aInfoPureRecoveryGO": {
+    "blob": "aa47dee0c6a6218e5870831661f69216847dca8d",
+    "bytes": 1625,
+    "sha256": "50cb85ec4614f13c2594dd7b4ac91d14825c2a3c2961ffe136d1ec83e898b6d7"
+  },
+  "actualMetadataToBodyBindingsEqual": true,
+  "actualStageBodyFullPacket": "8467d33ccfaac87f59704d85012c29ee76fbdec6",
+  "scope": "fresh_current_candidate_publisher_launcher_runner_precheck_release_full252_280",
+  "sourcePacket": "2ea20aa7a25c59a4b0879d953d0f737e3cc2b016",
+  "rootQualification": {
+    "blob": "0c696fbc79d8bc05cf0efea62463e1a063f7f47f",
+    "bytes": 13406,
+    "sha256": "d60476578f9356be7cf1f74acf5ffbb66471fe71bd3595c41451173a9e2b7903",
+    "tree": "5369bb84a63b9fb3edba5e9cdcdf84d61580f1d0"
+  },
+  "rootSourceChecks": 136,
+  "rootActualBindings": 13,
+  "rootStageQualified": true,
+  "onlyOneProcessStart": true,
+  "rootSoleCargoWindowForThisFreshTarget": true,
+  "requestedNativeStartCount": 1,
+  "gitFirstExplicitlyRequired": true,
+  "localDurableJournalClaimed": false,
+  "wholeOriginalSDKRequiredBeforeInterpretation": true,
+  "requireArmModelBoundary": true,
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "secondLane": "Root-coordinated A short public diagnostic or C fixed transport; never both concurrently.",
+  "issuedAtUTC": "2026-11-06 23:57:27 UTC",
+  "additionalAuthority": {
+    "metadataOrBodyReads": false,
+    "formatter": false,
+    "productionTraffic": false,
+    "productionCredentialCutover": false,
+    "oldServicesDeletion": false,
+    "oldTargetsReadOrWrite": false
+  },
+  "onError": "Preserve original FAILED/UNKNOWN with exact SDK and identifiers. Observe only original job/operation; no retry, rekey, reinitialize, toolchain mutation, dependency fetch or timeout reset. Do not start any successor from this GO."
+}

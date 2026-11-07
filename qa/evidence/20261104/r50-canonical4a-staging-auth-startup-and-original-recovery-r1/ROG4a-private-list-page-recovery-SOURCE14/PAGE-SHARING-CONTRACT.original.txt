@@ -1,0 +1,24 @@
+Read a Page's sharing policy and your permissions. If the full roster is unavailable, the canonical owner can still receive scope=page_owner with sharing_available=false and a fresh owner_only observation: true means only owner grants were found, false means nonowner grants exist, and null means unknown. This limited result contains no collaborator roster and does not authorize sharing changes. It remains available to the owner even if get_sharing_availability reports management disabled. Drive sharing returns direct and read-only inherited grants and visible sources; complete=false never means no access. A Space-root Page returns its Space sharing snapshot and space_id; use get_space_sharing and update_space_sharing for changes. Library child Pages return canonical Library shares and workspace_id for workspace sharing, even before a workspace grant exists. They have no revision precondition. This tool is part of plugin `Pages`.
+
+Read, search, create, and edit pages and spaces in ChatGPT Space, within your current account.
+
+exec tool declaration:
+```ts
+declare const tools: { mcp__codex_apps__chatgpt_space_get_page_sharing(args: {
+  // Exact Page ID, including any prefix. For a Space's home Page, use its root_page_id. For a page_space_ Space ID, use get_space_sharing with space_id instead.
+  page_id: string;
+}): Promise<CallToolResult<{ scope: "page_and_backing_library_folder" | "space_and_backing_library_folder"; sharing_available: true; } | { scope: "page_owner"; sharing_available: false; } | { error: {
+  cause?: "timeout";
+  code?: string;
+  commit_status?: string;
+  conflict_reason?: string;
+  // Optional upstream error details.
+  details?: unknown;
+  limit_actual?: number;
+  limit_dimension?: string;
+  limit_maximum?: number;
+  limit_reason?: string;
+  message: string;
+  retryable?: boolean;
+}; }>>; };
+```

@@ -1,0 +1,150 @@
+{
+  "schema": "heptabao.official-pki12.page-cap-pure-checks.r2",
+  "pass": true,
+  "checkCount": 35,
+  "checks": [
+    {
+      "name": "only_one_expression",
+      "pass": true
+    },
+    {
+      "name": "one_strict_hunk",
+      "pass": true
+    },
+    {
+      "name": "forward_whole",
+      "pass": true
+    },
+    {
+      "name": "reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "original_request_unchanged",
+      "pass": true
+    },
+    {
+      "name": "binary_constant_16384",
+      "pass": true
+    },
+    {
+      "name": "prepare_already_selects_same_cap",
+      "pass": true
+    },
+    {
+      "name": "old_8192_branch_retained",
+      "pass": true
+    },
+    {
+      "name": "real_paused_original",
+      "pass": true
+    },
+    {
+      "name": "real_failed_call_retained",
+      "pass": true
+    },
+    {
+      "name": "actual_original_sdk_whole",
+      "pass": true
+    },
+    {
+      "name": "actual_original_page_16384",
+      "pass": true
+    },
+    {
+      "name": "real_page_old_source_rejects",
+      "pass": true
+    },
+    {
+      "name": "real_page_new_source_accepts",
+      "pass": true
+    },
+    {
+      "name": "new_binary_16385_still_rejected",
+      "pass": true
+    },
+    {
+      "name": "old_INFO_8192_accepted",
+      "pass": true
+    },
+    {
+      "name": "old_INFO_8193_rejected",
+      "pass": true
+    },
+    {
+      "name": "old_process_8193_rejected",
+      "pass": true
+    },
+    {
+      "name": "exact_proposed_after",
+      "pass": true
+    },
+    {
+      "name": "only_three_state_fields",
+      "pass": true
+    },
+    {
+      "name": "all13_original_calls_exact",
+      "pass": true
+    },
+    {
+      "name": "original_failed_record_still_refused",
+      "pass": true
+    },
+    {
+      "name": "outerFailure_exact",
+      "pass": true
+    },
+    {
+      "name": "old_completed_observers_exact",
+      "pass": true
+    },
+    {
+      "name": "original_SDK_page_reference",
+      "pass": true
+    },
+    {
+      "name": "known_future_closed_kept",
+      "pass": true
+    },
+    {
+      "name": "cursor_and_digest_no_body_parse",
+      "pass": true
+    },
+    {
+      "name": "proposal_is_not_applied",
+      "pass": true
+    },
+    {
+      "name": "no_native_or_Git_in_recovery",
+      "pass": true
+    },
+    {
+      "name": "all_five_archive_call_sites_unchanged",
+      "pass": true
+    },
+    {
+      "name": "fake_apply_is_exact_proposed_state",
+      "pass": true
+    },
+    {
+      "name": "fake_apply_only_slot_and_new_receipt",
+      "pass": true
+    },
+    {
+      "name": "fake_apply_old_error_history_unchanged",
+      "pass": true
+    },
+    {
+      "name": "fake_apply_records_pure_once",
+      "pass": true
+    },
+    {
+      "name": "fake_second_apply_refused",
+      "pass": true
+    }
+  ],
+  "actualNativeCalls": 0,
+  "actualRealStateApply": false,
+  "onlyPrivateClones": true
+}

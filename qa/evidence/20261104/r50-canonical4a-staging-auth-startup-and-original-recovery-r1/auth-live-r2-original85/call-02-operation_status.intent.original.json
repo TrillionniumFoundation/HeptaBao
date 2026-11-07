@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "public-node-live-denial-r2-status-01-state",
+  "kind": "operation_status",
+  "request": {
+    "blob": "464d0707b8a7500616b3a98e61b5e6710fe00803",
+    "bytes": 89,
+    "sha256": "f57068375f3d0fa63b5ef7f44a0ea28edf9f31defb13ccbcdc92c726ff2f8c47"
+  },
+  "rootGo": {
+    "blob": "d6ae07de2d1e8249267f38c452f9475624b7f285",
+    "bytes": 13290,
+    "sha256": "165ebeb49eaaa8a4abf2c0d922075ed60e45d51a9c24084e99d501b6cba8a83e"
+  },
+  "originalJob": "1a1b33bc0d5-fc05-814d",
+  "originalOperation": "8aaf2e2aae91fc33bd39a152e673e46fa47ba69b2a1d5cd3be3f5a9ed976f538",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

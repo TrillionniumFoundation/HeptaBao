@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.official271.strict-pki12-report-info-release.v1",
+  "rootGO": {
+    "blob": "b8b07014e44a3aff1f5f2225a2e5905c78c92011",
+    "bytes": 3765,
+    "sha256": "c926049234411f46a426006dd2b6153ee7b05e106a1595bab17a144d2ab2443e"
+  },
+  "originalJob": "1a1b3461a2c-fc05-81a9",
+  "slot": "official271_x230_pki12_oracle_gitfirst_r1",
+  "originalOperation": "7c8264be8bf15411a57a136bc89128f35aeb91c0c259f8bf47583d2c4f593f58",
+  "info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0",
+    "size": 41509,
+    "version": "2053:3321457:41509:1794009102635552960:1794009102635552960"
+  },
+  "infoNative": {
+    "blob": "45708d6a42e99dcbfc90191120104953a171550f",
+    "bytes": 461,
+    "sha256": "162a4757adf5aaea2d84bdb80129607d832fc8e53fee4093c2421448f4852ebc"
+  },
+  "payload": {
+    "blob": "715614e6d015e71a8e8d77cf5ecca4f6a3876212",
+    "bytes": 578,
+    "sha256": "455fdf82eca67ae884e39b1df7923d953c45c9f7c94d5f966e4a21dbd845446a"
+  },
+  "payloadTree": "7bb0b60ded894593077bdff45e26d31455964596",
+  "newCalls": 3,
+  "newClosedObservers": 1,
+  "newImmutablePages": 1,
+  "totalCalls": 10,
+  "totalClosedObservers": 3,
+  "originalSevenCallsUnchanged": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "unresolvedFuture": 0,
+  "C_lane_released": true,
+  "reportBodyRead": false,
+  "caseStatusesQualified": false
+}

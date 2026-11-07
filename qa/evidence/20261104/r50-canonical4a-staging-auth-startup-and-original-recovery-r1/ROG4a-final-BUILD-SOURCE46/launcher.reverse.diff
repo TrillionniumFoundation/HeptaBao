@@ -1,0 +1,44 @@
+--- a/launcher.py
++++ b/launcher.py
+@@ -13,9 +13,9 @@
+ 
+ BINDING_READY = True
+ assert BINDING_READY, 'formatted source and published controls need separate exact admission'
+-FINAL_COMMIT = '4a49405b93c45ab1c25ecba11cde63a7ede20dce'
+-FINAL_TREE = 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'
+-SOURCE_STAGE_ROOT = Path('/home/qian-qi/hb-4a49405b-src-20261106-r1')
++FINAL_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
++FINAL_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
++SOURCE_STAGE_ROOT = Path('/home/qian-qi/hb-5767739c-src-20261106-r1')
+ SOURCE_STAGE_SCHEMA = 'heptabao.native-jwt-independent-source-stage.v1'
+ GROUPS_SHA256 = '617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df'
+ LAUNCHER_ENTERED = time.monotonic()
+@@ -73,7 +73,7 @@
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = Path('/home/qian-qi/hb-4a49405b-controls-20261106-r1')
++    ROOT = Path('/home/qian-qi/hb-5767739c-controls-20261106-r1')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'
+@@ -88,7 +88,7 @@
+     OLD_LIBTEST_SHA = '9f498c4c2c14f2198dcbe746be81be1cf0c7caabca28671bba83fb003a65b46a'
+     OLD_LIBTEST_BYTES = 188077176
+     OLD_STATUS = 'passed'
+-    TARGET = Path('/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1')
++    TARGET = Path('/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1')
+     TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'
+     CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'
+     PYTHON = '/usr/bin/python3'
+@@ -488,8 +488,8 @@
+ assert stage['source'] == str(SOURCE) and stage['root'] == str(SOURCE_STAGE_ROOT)
+ assert stage['full_worktree'] == {
+     'all_tracked_worktree_blobs_and_modes_match': True,
+-    'full_leaf_index_sha256': '7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d',
+-    'index_matches_tree': True, 'tracked_bytes': 62553956, 'tracked_leaf_count': 3932}
++    'full_leaf_index_sha256': '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423',
++    'index_matches_tree': True, 'tracked_bytes': 62553540, 'tracked_leaf_count': 3932}
+ assert stage['within_new_stage_deadline'] and not stage['compiler_started'] and not stage['rust_tests_executed']
+ assert not stage['formatter_executed'] and not stage['historical_controls_executed']
+ runner = CONTROL / RUNNER_NAME

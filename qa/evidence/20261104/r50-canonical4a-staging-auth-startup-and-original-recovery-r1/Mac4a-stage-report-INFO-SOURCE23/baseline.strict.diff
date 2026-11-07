@@ -1,0 +1,40 @@
+--- a/journal.js
++++ b/journal.js
+@@ -5,22 +5,22 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "successor576_mac_source_only_stage_gitfirst_r1";
+-const GF_REQUEST = {"blob":"3b86e61a47028c1b5d8e23369ef336490dc6382b","bytes":32676,"sha256":"8e6ce333244da2ddb8d295f89fc3921bcd4205048222bb6756e736eca115add2"};
++const GF_SLOT = "successor4a_mac_source_only_stage_gitfirst_r1";
++const GF_REQUEST = {"blob":"c64853ad2e18f250d6e30424d6468e25b7a6b590","bytes":26577,"sha256":"65d51bfef3b4103cbbec8e65d1c546a6b8aac3fd3b7f95197729bb9f5868bbed"};
+ 
+ /* One separately approved observation of the newly owned public stage report.
+  * This does not authorize binary_read or any new process. Existing state is kept.
+  */
+-const GF_STAGE_RESULT_PATH = "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/control/stage-result.public.json";
++const GF_STAGE_RESULT_PATH = "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json";
+ const GF_STAGE_RESULT_MAX_BYTES = 65536;
+-const GF_STAGE_INFO_REQUEST = {"blob":"0c9a7c35ea5ec5fe421d9001e49990c916786980","bytes":294,"sha256":"cde135205ca4c3fea50ad25c4192ced6370ae3b4ff4638341c9ab2a8e3139e03"};
+-const GF_STAGE_INFO_PREREQUISITES = [{"id":"24996cdec21dd44779c9fac959650c6f2cb0d301928340729434ca3e82173560","tool":"process_status","nativeText":{"blob":"f9084348857631a6581c8a866b4357ed022746f5","bytes":729,"sha256":"8c5c94c4eac3a90288d73475e5e5e3f26d4b1eea636b56414e607a15011fae03"}},{"id":"0ebddadd7036f8130d22f5fa31736136c38447225792c1e80f43bc8f2ee17d2a","tool":"process_read","nativeText":{"blob":"1f46ed412756d169c8b38885959705c96b6aca47","bytes":1480,"sha256":"162de84f9b5f4ff5c1b6dc42a8ceca7cc730076eeb37404907ef2b3cccff42be"}}];
++const GF_STAGE_INFO_REQUEST = {"blob":"9bf9f5bb8504545d573111946df821cb696858c6","bytes":294,"sha256":"67404bcf86c695010f43575c6b4eaad28790b81262da673d11632e4e6955bfff"};
++const GF_STAGE_INFO_PREREQUISITES = [{"id":"2b0d670530f0c86de8009a4e33ca7bbfb8bd62167d4835509fb577e67a9da3c6","tool":"process_status","nativeText":{"blob":"4f9f2dbeb2cc024508e8f338194c940acdea3e96","bytes":729,"sha256":"23436ff3376e2e4bb4e5e63750a101742efb127a6db346c6c9202353fb4b5daa"}},{"id":"50aa9edffe760f6b33f5d3f37616b7ae9159fa14121950dd16bd0bd8f498c7d7","tool":"process_read","nativeText":{"blob":"18c77f109dbe6e47df9c815d2001f35efcd49e36","bytes":1480,"sha256":"11ae575787ad688a9b127260e2019b15a1db357d0b6f67a13a4d4fb6bad7e862"}}];
+ 
+ function gfAuthorizeStageResultInfoOnly({goRaw,goPin,goWholeReadback}) {
+  const s=gfState();
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
+    && s.activeObserver===null && s.startCalled===true
+-   && s.job==="1a1b2f48641-fc05-8042" && s.stageResultInfoGO===undefined
++   && s.job==="1a1b382714d-fc05-8350" && s.stageResultInfoGO===undefined
+    && s.stageResultInfoStarted!==true,"closed_existing_stage_before_info_only_GO");
+  gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
+    && goPin.blob!==s.goPin.blob,"separate_whole_info_only_GO");
+@@ -92,7 +92,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-5767739c-mac-source-only-a70bc4e2-/.test(q.idempotency_key),
++    && /^heptabao-4a49405b-mac-source-only-a88b3787-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

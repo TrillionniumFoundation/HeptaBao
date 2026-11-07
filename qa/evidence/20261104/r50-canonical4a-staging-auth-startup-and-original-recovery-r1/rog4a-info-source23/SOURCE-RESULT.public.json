@@ -1,0 +1,286 @@
+{
+  "schema": "heptabao.4a.stage-info.source-verification.r1",
+  "ok": true,
+  "checks": 66,
+  "results": [
+    {
+      "name": "whole-before",
+      "pass": true
+    },
+    {
+      "name": "whole-base",
+      "pass": true
+    },
+    {
+      "name": "whole-after",
+      "pass": true
+    },
+    {
+      "name": "whole-request",
+      "pass": true
+    },
+    {
+      "name": "whole-state",
+      "pass": true
+    },
+    {
+      "name": "whole-authority",
+      "pass": true
+    },
+    {
+      "name": "whole-streams",
+      "pass": true
+    },
+    {
+      "name": "exact-request-full-pin",
+      "pass": true
+    },
+    {
+      "name": "exact-nine-replacements",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-slot",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-original-start-blob",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-original-start-bytes",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-original-start-sha",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-fixed-path",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-info-exact-pin",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-original-two-prerequisites",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-original-job",
+      "pass": true
+    },
+    {
+      "name": "unique-literal-observer-prefix",
+      "pass": true
+    },
+    {
+      "name": "literal-rebuild-whole",
+      "pass": true
+    },
+    {
+      "name": "strict-donor-forward",
+      "pass": true
+    },
+    {
+      "name": "strict-donor-reverse",
+      "pass": true
+    },
+    {
+      "name": "strict-current-forward",
+      "pass": true
+    },
+    {
+      "name": "strict-current-reverse",
+      "pass": true
+    },
+    {
+      "name": "two-donor-hunks",
+      "pass": true
+    },
+    {
+      "name": "six-current-hunks",
+      "pass": true
+    },
+    {
+      "name": "same-function-set",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfNeed",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfState",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfSave",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfRun",
+      "pass": true
+    },
+    {
+      "name": "same-original-job",
+      "pass": true
+    },
+    {
+      "name": "no-live-or-armed-call",
+      "pass": true
+    },
+    {
+      "name": "seven-original-calls-accepted",
+      "pass": true
+    },
+    {
+      "name": "two-original-observers-closed",
+      "pass": true
+    },
+    {
+      "name": "actual-zero-full-durable",
+      "pass": true
+    },
+    {
+      "name": "both-full-streams",
+      "pass": true
+    },
+    {
+      "name": "exact-fixed-report-path",
+      "pass": true
+    },
+    {
+      "name": "source-stage-summary",
+      "pass": true
+    },
+    {
+      "name": "prerequisite-0",
+      "pass": true
+    },
+    {
+      "name": "prerequisite-1",
+      "pass": true
+    },
+    {
+      "name": "metadata-cap-and-lossless-full9",
+      "pass": true
+    },
+    {
+      "name": "old-payload-page-caps",
+      "pass": true
+    },
+    {
+      "name": "original-stage-GO-alone-refuses-INFO",
+      "pass": true
+    },
+    {
+      "name": "new-exact-GO-enables-only-request",
+      "pass": true
+    },
+    {
+      "name": "unread-GO-refused",
+      "pass": true
+    },
+    {
+      "name": "old-GO-not-new-scope",
+      "pass": true
+    },
+    {
+      "name": "no-reinitialize",
+      "pass": true
+    },
+    {
+      "name": "paused-refused",
+      "pass": true
+    },
+    {
+      "name": "inflight-refused",
+      "pass": true
+    },
+    {
+      "name": "wrong-job-refused",
+      "pass": true
+    },
+    {
+      "name": "open-observer-refused",
+      "pass": true
+    },
+    {
+      "name": "prerequisite-drift-refused",
+      "pass": true
+    },
+    {
+      "name": "repeat-info-refused",
+      "pass": true
+    },
+    {
+      "name": "different-path-refused",
+      "pass": true
+    },
+    {
+      "name": "rekey-refused",
+      "pass": true
+    },
+    {
+      "name": "binary-read-refused",
+      "pass": true
+    },
+    {
+      "name": "new-process-refused",
+      "pass": true
+    },
+    {
+      "name": "zero-tools-private-model-only",
+      "pass": true
+    }
+  ],
+  "candidate": {
+    "blob": "90ac83d6e48744399e1508f0b86ac4a8c62f33cb",
+    "bytes": 23858,
+    "sha256": "256effb6f6cd3906653c4d85e4cd465f83056bf4bece4725c2672f1d45064483"
+  },
+  "exactRequest": {
+    "blob": "e55cc1096e11c01c5fdfd4a520c4ecef0130017c",
+    "bytes": 272,
+    "sha256": "b3d8fde039965ca8f27544fb552c7fedcd08832923638406cd949e593930fa24"
+  },
+  "runtimeCalls": 0,
+  "liveStateChanged": false,
+  "actualMetadata": null,
+  "actualBody": null,
+  "detailReportQualified": false
+}

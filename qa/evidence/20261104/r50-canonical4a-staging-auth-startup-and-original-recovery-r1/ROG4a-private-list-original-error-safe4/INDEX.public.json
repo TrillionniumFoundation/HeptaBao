@@ -1,0 +1,23 @@
+{
+  "entries": [
+    {
+      "path": "FULL-ROSTER-VERIFY.source.js",
+      "blob": "2e5ecda0d8e81cd8ec53a74dfe27f0890634c238",
+      "bytes": 3054,
+      "sha256": "c73b57ac1d42abdce4ba9f61baf40424a11ca52af417d8d768691271ef09f7be"
+    },
+    {
+      "path": "PRIVATE-WHOLE.public.json",
+      "blob": "18a3a65aa679ad523338521c1345c341416bf400",
+      "bytes": 1591,
+      "sha256": "a0c5e426ce70a31aeb784c85e86a43d3463538019c81383fb9a33f1a5ddc9b83"
+    },
+    {
+      "path": "NATIVE-ERROR.public.json",
+      "blob": "1e7b3b1883eef17d940ccebd38157f8ec99a402e",
+      "bytes": 742,
+      "sha256": "9918774990757f7d6caf3ef97e9537a8f5e5ff2c0aeecf86df8bee51b4b7b8b9"
+    }
+  ],
+  "privateRawSDKExcluded": true
+}

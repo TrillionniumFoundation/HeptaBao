@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.4a-stage-report-info.owner-release.r1",
+  "originalJob": "1a1b3307dc2-fc05-80f8",
+  "originalOperation": {
+    "id": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+    "tool": "file_info",
+    "payload": {
+      "blob": "9ce34fc1fae98026ec1680b3fb050449be429167",
+      "bytes": 579,
+      "sha256": "bb04e9597cf05d4754c948887542b75441414e90e4f01552f4546caa66eb5e20"
+    },
+    "payloadTree": "c25044cd98a3001fe591084988f8896d83ceee99",
+    "nativeText": {
+      "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+      "bytes": 462,
+      "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "increment": {
+    "calls": 3,
+    "observers": 1,
+    "pages": 1
+  },
+  "cumulative": {
+    "calls": 10,
+    "observers": 3,
+    "pages": 3
+  },
+  "metadata": {
+    "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "size": 31257,
+    "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5",
+    "version": "66306:34603472:31257:1794007676686666010:1794007676686666010",
+    "nativeText": {
+      "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+      "bytes": 462,
+      "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+    },
+    "originalOperation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+    "full9Strings": [
+      "66306",
+      "34603472",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "31257",
+      "1794007676686666010",
+      "1794007676686666010"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "state": {
+    "blob": "5a72af70c8ab27178533d6f353fc43bc4cbbfe92",
+    "bytes": 157266,
+    "sha256": "37929b631fb8ea1d9849e318833837b423382c199e78890433b47a5395e8974b"
+  },
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "NativeLaneReleased": true,
+  "NativeFutureCount": 0,
+  "bodyAuthorized": false,
+  "detailReportQualified": false,
+  "localActionErrorPreserved": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "close",
+    "name": "Error",
+    "message": "closed_gfRun_action",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "recoveryPacket": "cd4dacfa68402b7ec7febd22c57fb7c85b87baca",
+  "recoveryGO": {
+    "blob": "aa47dee0c6a6218e5870831661f69216847dca8d",
+    "bytes": 1625,
+    "sha256": "50cb85ec4614f13c2594dd7b4ac91d14825c2a3c2961ffe136d1ec83e898b6d7"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.mac4a-stage-INFO-source-verification.v1",
+  "pass": true,
+  "check_count": 24,
+  "checks": [
+    {
+      "name": "exact_old_Mac_INFO_baseline",
+      "pass": true
+    },
+    {
+      "name": "binding_once_1",
+      "pass": true
+    },
+    {
+      "name": "binding_once_2",
+      "pass": true
+    },
+    {
+      "name": "binding_once_3",
+      "pass": true
+    },
+    {
+      "name": "binding_once_4",
+      "pass": true
+    },
+    {
+      "name": "binding_once_5",
+      "pass": true
+    },
+    {
+      "name": "binding_once_6",
+      "pass": true
+    },
+    {
+      "name": "binding_once_7",
+      "pass": true
+    },
+    {
+      "name": "only_seven_literal_bindings",
+      "pass": true
+    },
+    {
+      "name": "baseline_strict_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "current_stage_strict_forward_reverse",
+      "pass": true
+    },
+    {
+      "name": "source_and_request_whole_pins",
+      "pass": true
+    },
+    {
+      "name": "one_path_INFO_scope",
+      "pass": true
+    },
+    {
+      "name": "original_Mac_metadata_guard",
+      "pass": true
+    },
+    {
+      "name": "original_page_payload_caps",
+      "pass": true
+    },
+    {
+      "name": "closed_actual_original_state",
+      "pass": true
+    },
+    {
+      "name": "exact_original_closure_native",
+      "pass": true
+    },
+    {
+      "name": "actual_terminal_full_streams",
+      "pass": true
+    },
+    {
+      "name": "authorize_preserves_all_original_calls_observers",
+      "pass": true
+    },
+    {
+      "name": "new_info_arm_references_new_INFO_GO",
+      "pass": true
+    },
+    {
+      "name": "new_status_arm_references_new_INFO_GO",
+      "pass": true
+    },
+    {
+      "name": "new_page_arm_references_new_INFO_GO",
+      "pass": true
+    },
+    {
+      "name": "original_calls_untouched_after_fake_prepare",
+      "pass": true
+    },
+    {
+      "name": "actual_values_unobserved",
+      "pass": true
+    }
+  ],
+  "fake_archives": 3,
+  "Native_calls": 0,
+  "Git_calls": 0,
+  "Python_runs": 0,
+  "real_slot_modified": false
+}

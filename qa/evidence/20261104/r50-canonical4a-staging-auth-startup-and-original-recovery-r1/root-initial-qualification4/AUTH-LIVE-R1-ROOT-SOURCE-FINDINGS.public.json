@@ -1,0 +1,14 @@
+{
+  "sourceTree": "57d06bd19940d997ea2ef8817cc0e295f28abcd5",
+  "source": "dee81d92d9e78cf0295bf7598a706a945e72732e",
+  "NativeExecuted": false,
+  "GO": false,
+  "knownSourceBlocker": "Completed Node exit+EOF state is recomputed and becomes false after its 5-second deadline while the 8-second logger is still running. Completion must latch once without widening deadlines.",
+  "independentlyFoundByRootAndC": true,
+  "additionalSourceBlocker": "Post-observation projection and input fences could consume the declared 18-second cleanup reserve before pair.close. Immediate original once-only pair closure after observation is required before cached projection/fencing.",
+  "predicateFieldAlreadyObservedAccepted": {
+    "source": "r49 fixed log show actual",
+    "toolSHA256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "argvUsesMessage": true
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.root.official271-pki12-report-INFO.source21.r1",
+  "source": {
+    "tree": "22e963cefbfb0adc9b8d7e2fbd98289867639197",
+    "files": 16,
+    "bytes": 308822,
+    "merkle": {
+      "root_sha": "22e963cefbfb0adc9b8d7e2fbd98289867639197",
+      "trees_verified": 1,
+      "leaf_count": 16
+    },
+    "whole": true
+  },
+  "reproduced": {
+    "schema": "heptabao.C.pki12-report-INFO-source-verification.r1",
+    "pass": true,
+    "check_count": 21,
+    "checks": [
+      {
+        "name": "donor_exact",
+        "pass": true
+      },
+      {
+        "name": "after_pin",
+        "pass": true
+      },
+      {
+        "name": "strict_forward",
+        "pass": true
+      },
+      {
+        "name": "strict_reverse",
+        "pass": true
+      },
+      {
+        "name": "two_hunks",
+        "pass": true
+      },
+      {
+        "name": "exact_request",
+        "pass": true
+      },
+      {
+        "name": "actual_seven_closed_calls",
+        "pass": true
+      },
+      {
+        "name": "original_state_pin",
+        "pass": true
+      },
+      {
+        "name": "actual_stdout_pin",
+        "pass": true
+      },
+      {
+        "name": "actual_terminal",
+        "pass": true
+      },
+      {
+        "name": "actual_report_whole_identity",
+        "pass": true
+      },
+      {
+        "name": "unchanged_dispatch_core",
+        "pass": true
+      },
+      {
+        "name": "unchanged_existing_context_core",
+        "pass": true
+      },
+      {
+        "name": "newGO_arm_selection_retained",
+        "pass": true
+      },
+      {
+        "name": "oldINFO_noBODY_scope",
+        "pass": true
+      },
+      {
+        "name": "private_fake_authorizes",
+        "pass": true
+      },
+      {
+        "name": "private_fake_preserves_seven_calls",
+        "pass": true
+      },
+      {
+        "name": "private_fake_rejects_process",
+        "pass": true
+      },
+      {
+        "name": "private_fake_archives_once",
+        "pass": true
+      },
+      {
+        "name": "private_fake_arm_uses_newGO",
+        "pass": true
+      },
+      {
+        "name": "private_fake_original_history_unchanged",
+        "pass": true
+      }
+    ],
+    "Native_calls": 0,
+    "real_slots_modified": false,
+    "fake_archive_only": true
+  },
+  "exactExpectedResult": true,
+  "actualBindings": {
+    "closedState": true,
+    "stdout": true,
+    "authority": true,
+    "release": true
+  },
+  "actualOuterProof": {
+    "tree": "4333317b60d0b354fc286f20331ab0aa37c46f75",
+    "blob": "d4fd31dbda6e51451391730eb1b2ef029ef47c2f",
+    "bytes": 6724,
+    "sha256": "18f116f57ca4e997c77506c9397292c1bc72f817f160a4127e26f94843285329"
+  },
+  "NativeCalls": 0
+}

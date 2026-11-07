@@ -1,0 +1,67 @@
+[
+  {
+    "label": "fresh-root",
+    "oldText": "ROOT = Path('/home/qian-qi/hb-5767739c-src-20261106-r1')",
+    "newText": "ROOT = Path('/home/qian-qi/hb-4a49405b-src-20261106-r1')"
+  },
+  {
+    "label": "candidate-commit",
+    "oldText": "COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'",
+    "newText": "COMMIT = '4a49405b93c45ab1c25ecba11cde63a7ede20dce'"
+  },
+  {
+    "label": "candidate-tree",
+    "oldText": "TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'",
+    "newText": "TREE = 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'"
+  },
+  {
+    "label": "sole-parent",
+    "oldText": "PARENT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'",
+    "newText": "PARENT = '5767739cd25e458ac052dc8d384019bab8688ae0'"
+  },
+  {
+    "label": "prepend-one-parent",
+    "oldText": "ANCESTRY = (\n",
+    "newText": "ANCESTRY = (\n    ('4a49405b93c45ab1c25ecba11cde63a7ede20dce', '5767739cd25e458ac052dc8d384019bab8688ae0'),\n"
+  },
+  {
+    "label": "history-report",
+    "oldText": "'canonical_history_count': 3769",
+    "newText": "'canonical_history_count': 3770"
+  },
+  {
+    "label": "ancestry-count",
+    "oldText": "assert len(added) == 17 and",
+    "newText": "assert len(added) == 18 and"
+  },
+  {
+    "label": "history-check",
+    "oldText": "COMMIT).decode().strip() == '3769'",
+    "newText": "COMMIT).decode().strip() == '3770'"
+  },
+  {
+    "label": "tracked-bytes",
+    "oldText": "['tracked_bytes'] == 62553540",
+    "newText": "['tracked_bytes'] == 62553956"
+  },
+  {
+    "label": "index-SHA",
+    "oldText": "'20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'",
+    "newText": "'7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d'"
+  },
+  {
+    "label": "bundle-header-parameter",
+    "oldText": "def canonical_bundle_header(raw):",
+    "newText": "def canonical_bundle_header(raw, prerequisite):"
+  },
+  {
+    "label": "bundle-header-prerequisite",
+    "oldText": "assert prerequisites == [BASE_COMMIT]",
+    "newText": "assert prerequisites == [prerequisite]"
+  },
+  {
+    "label": "two-fixed-bundles-shared-cap",
+    "oldText": "    canonical_path = CONTROL / 'canonical-hb-5767739c-from02b.bundle'\n    assert not os.path.lexists(canonical_path)\n    git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + BASE_COMMIT)\n    canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024)\n    assert 0 < len(canonical_raw) <= 4 * 1024 * 1024\n    canonical_identity = identity(canonical_path.lstat())\n    assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600\n    canonical_header = canonical_bundle_header(canonical_raw)\n    fd = os.open(canonical_path, os.O_RDONLY | os.O_NOFOLLOW)\n    try:\n        assert identity(os.fstat(fd)) == canonical_identity\n        os.fsync(fd)\n    finally:\n        os.close(fd)\n    fsync_dir(CONTROL)\n    git(SOURCE, 'bundle', 'verify', str(canonical_path))\n    assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == COMMIT + ' HEAD'\n    assert identity(canonical_path.lstat()) == canonical_identity\n    assert stable_read(canonical_path, 4 * 1024 * 1024) == canonical_raw\n    result['canonical_bundle'] = {'path': str(canonical_path), 'bytes': len(canonical_raw),\n                                  'sha256': digest(canonical_raw), 'header': canonical_header,\n                                  'identity': list(canonical_identity),\n                                  'public_network_import_required_on_mac': False}\n",
+    "newText": "    canonical_total_bytes = 0\n    for bundle_name, prerequisite, result_key in (\n        ('canonical-hb-4a49405b-from576.bundle', PARENT, 'canonical_bundle'),\n        ('canonical-hb-4a49405b-from02b.bundle', BASE_COMMIT, 'canonical_x230_bundle'),\n    ):\n        bundle_remaining = 4 * 1024 * 1024 - canonical_total_bytes\n        assert bundle_remaining > 0\n        canonical_path = CONTROL / bundle_name\n        assert not os.path.lexists(canonical_path)\n        git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + prerequisite)\n        canonical_raw = stable_read(canonical_path, bundle_remaining)\n        assert 0 < len(canonical_raw) <= bundle_remaining\n        canonical_total_bytes += len(canonical_raw)\n        canonical_identity = identity(canonical_path.lstat())\n        assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600\n        canonical_header = canonical_bundle_header(canonical_raw, prerequisite)\n        fd = os.open(canonical_path, os.O_RDONLY | os.O_NOFOLLOW)\n        try:\n            assert identity(os.fstat(fd)) == canonical_identity\n            os.fsync(fd)\n        finally:\n            os.close(fd)\n        fsync_dir(CONTROL)\n        git(SOURCE, 'bundle', 'verify', str(canonical_path))\n        assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == COMMIT + ' HEAD'\n        assert identity(canonical_path.lstat()) == canonical_identity\n        assert stable_read(canonical_path, bundle_remaining) == canonical_raw\n        result[result_key] = {'path': str(canonical_path), 'bytes': len(canonical_raw),\n                                      'sha256': digest(canonical_raw), 'header': canonical_header,\n                                      'identity': list(canonical_identity),\n                                      'public_network_import_required_on_mac': False}\n    result['canonical_bundle_total_bytes'] = canonical_total_bytes\n    result['canonical_bundle_total_cap_bytes'] = 4 * 1024 * 1024\n"
+  }
+]

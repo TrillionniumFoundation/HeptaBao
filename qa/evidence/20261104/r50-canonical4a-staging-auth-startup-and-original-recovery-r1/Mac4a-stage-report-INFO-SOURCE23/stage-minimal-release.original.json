@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.mac4a.source-stage.release.r1",
+  "GO": {
+    "blob": "38e5b91ff8873eb94ba434b581d3543deee0b3a6",
+    "bytes": 10208,
+    "sha256": "095d270661275a310c149a5218f6b5ba0cc4d06c36adba1b9848d11ebf0b1560"
+  },
+  "slot": "successor4a_mac_source_only_stage_gitfirst_r1",
+  "originalJob": "1a1b382714d-fc05-8350",
+  "source": {
+    "blob": "93b1baab9aa59a87cf3550d8be51607e9eaf6dbb",
+    "bytes": 23630,
+    "sha256": "a88b3787d181e16d217db8a8f16091ce40fc12d7af035bbb19cead3a03f61559"
+  },
+  "request": {
+    "blob": "c64853ad2e18f250d6e30424d6468e25b7a6b590",
+    "bytes": 26577,
+    "sha256": "65d51bfef3b4103cbbec8e65d1c546a6b8aac3fd3b7f95197729bb9f5868bbed"
+  },
+  "actualExitCode": 0,
+  "timedOut": false,
+  "outputComplete": true,
+  "outputDurable": true,
+  "stdout": {
+    "blob": "9cba0799c18d2cd86b49a2091e726f050ebd3bda",
+    "bytes": 378,
+    "sha256": "4600a4e00cf87ac5a9bc03a696cdc702aae2e828844766b1f8525ec73d0eabbe"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualSummary": {
+    "all_owned_stopped": true,
+    "compiler_started": false,
+    "result_path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "server_started": false,
+    "source_commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "source_tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "status": "prepared",
+    "within_new_stage_deadline": true
+  },
+  "calls": 7,
+  "completedObservers": [
+    {
+      "id": "2b0d670530f0c86de8009a4e33ca7bbfb8bd62167d4835509fb577e67a9da3c6",
+      "tool": "process_status",
+      "pages": 1,
+      "completedInactive": true,
+      "native": {
+        "blob": "4f9f2dbeb2cc024508e8f338194c940acdea3e96",
+        "bytes": 729,
+        "sha256": "23436ff3376e2e4bb4e5e63750a101742efb127a6db346c6c9202353fb4b5daa"
+      }
+    },
+    {
+      "id": "50aa9edffe760f6b33f5d3f37616b7ae9159fa14121950dd16bd0bd8f498c7d7",
+      "tool": "process_read",
+      "pages": 1,
+      "completedInactive": true,
+      "native": {
+        "blob": "18c77f109dbe6e47df9c815d2001f35efcd49e36",
+        "bytes": 1480,
+        "sha256": "11ae575787ad688a9b127260e2019b15a1db357d0b6f67a13a4d4fb6bad7e862"
+      }
+    }
+  ],
+  "state": {
+    "blob": "7b769732c467e5aaa0c4a703075a3683ac241034",
+    "bytes": 57558,
+    "sha256": "8a82eae87c6833f0cba696217c0074d3efc3ecb05bb9341b08bd0e6dd6248813"
+  },
+  "C_lanes": 0,
+  "liveCalls": 0,
+  "liveFutures": 0,
+  "pending": null,
+  "activeObserver": null,
+  "PKIOriginalSlotStillPaused": true,
+  "detailedStageReportIndependentBody": false,
+  "compilerStarted": false,
+  "serverStarted": false,
+  "normal117Qualified": false,
+  "formal34Qualified": false
+}

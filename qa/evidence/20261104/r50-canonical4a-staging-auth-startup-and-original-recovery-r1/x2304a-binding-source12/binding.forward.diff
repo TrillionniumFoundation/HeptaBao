@@ -1,0 +1,64 @@
+--- a/X230-candidate-binding.public.json
++++ b/X230-candidate-binding.public.json
+@@ -1,6 +1,6 @@
+ {
+   "schema": "heptabao.x230.two-incremental-bundle-source-binding.v1",
+-  "fresh_root": "/home/qian/hb-5767739c-src-20261106-r1",
++  "fresh_root": "/home/qian/hb-4a49405b-src-20261106-r1",
+   "readonly_base": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+   "base_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+   "base_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+@@ -8,20 +8,20 @@
+   "first_prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+   "intermediate_commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+   "candidate": {
+-    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+-    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+-    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
++    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
++    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
++    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+     "leaves": 3932,
+-    "tracked_bytes": 62553540,
+-    "full_index_sha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+-    "history": 3769
++    "tracked_bytes": 62553956,
++    "full_index_sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
++    "history": 3770
+   },
+   "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+   "carrier": {
+-    "schema": "heptabao.x230576.two-bundle-source-only-carrier.v1",
+-    "blob": "79d6845b1826171788333c906e77faf02ac02bb6",
+-    "bytes": 235828,
+-    "sha256": "746de82dd389c7fe3cd1a169c5ace88737b3d94c00cf953eef4c0be9b5d7e1b0"
++    "schema": "heptabao.x2304a.two-bundle-source-only-carrier.v1",
++    "blob": null,
++    "bytes": null,
++    "sha256": null
+   },
+   "bundles": [
+     {
+@@ -36,15 +36,15 @@
+       "header_sha256": "bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5"
+     },
+     {
+-      "field": "canonical_576_base64",
+-      "name": "canonical-hb-5767739c-from02b.bundle",
+-      "bytes": 5766,
+-      "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a",
++      "field": "canonical_4a_base64",
++      "name": "canonical-hb-4a49405b-from02b.bundle",
++      "bytes": null,
++      "sha256": null,
+       "target_mode": 256,
+       "prerequisite": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+-      "head": "5767739cd25e458ac052dc8d384019bab8688ae0",
+-      "header": "# v2 git bundle\n-02b90762b3d6cc8699cc88bffb6f76cb1f07e270 fix(storage,auth): integrate streaming snapshots and JWT policy schema 147\n5767739cd25e458ac052dc8d384019bab8688ae0 HEAD\n\n",
+-      "header_sha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9"
++      "head": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
++      "header": null,
++      "header_sha256": null
+     }
+   ]
+ }

@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.private-list-r2.row-schema-only.r1",
+  "nativeKeys": [
+    "has_more",
+    "inventory_complete",
+    "jobs",
+    "next_cursor",
+    "snapshot_semantics",
+    "snapshot_sha256",
+    "status_authoritative",
+    "total"
+  ],
+  "oneRow": true,
+  "rowFieldNames": [
+    "created_unix_ms",
+    "execution_mode",
+    "host",
+    "id",
+    "launch_state"
+  ],
+  "hasHost": true,
+  "hasIdempotencyKey": false,
+  "hasCreatedUnixMs": true,
+  "createdComparable": true,
+  "createdBeforeOriginalGo": true,
+  "identityOrArgumentsPublished": false,
+  "targetComparisonHasRequiredHostAndKey": false,
+  "interpretationCorrection": "The earlier match=null did not prove a completed key comparison because idempotency_key is absent. Original projection is preserved."
+}

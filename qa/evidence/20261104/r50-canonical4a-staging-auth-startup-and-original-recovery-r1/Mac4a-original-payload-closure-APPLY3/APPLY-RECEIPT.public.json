@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.successor4a.mac-bundle-pure-closure-actual-apply.v1",
+  "rootGO": {
+    "blob": "59485242ee460f5dab6b3e9588b0cc846e45dca5",
+    "bytes": 3528,
+    "sha256": "0eacb723d5f19f762067a6256c50e693666ff81daa07fb13aa98c4b568795e64"
+  },
+  "source": {
+    "blob": "4c81e36dd4483dbd5996db2c60b4cafe2dcb31b2",
+    "bytes": 9842,
+    "sha256": "3446d6895dac17434cefd50004bfadb25b7ecba684539fb77c2eaa495d4e65a6"
+  },
+  "recoverySlot": "successor4a_mac_bundle_original_payload_closure_r1",
+  "actualApply": {
+    "ok": true,
+    "NativeCalls": 0,
+    "GitCalls": 0,
+    "afterState": {
+      "blob": "bb80ff31e9dae0cb6658fd37a00f525f99905c91",
+      "bytes": 35314,
+      "sha256": "c15a1533c8fee14a60105891553a73f943d1a9e665f3dc21963090a89a3acae6"
+    },
+    "proofArchive": {
+      "tree": "6c130b5d6a59da0cf25576582973647753420746",
+      "entries": [
+        {
+          "path": "PROOF.public.json",
+          "blob": "75891c460f6aff203a9875bd39769ce4b4d386f3",
+          "bytes": 2856,
+          "sha256": "1f6ea188350fd0a4decf43c7e1d2d070437d6f901b57fff25f1b634b4b7dbe4b",
+          "whole": true
+        },
+        {
+          "path": "after-state.proposed.json",
+          "blob": "bb80ff31e9dae0cb6658fd37a00f525f99905c91",
+          "bytes": 35314,
+          "sha256": "c15a1533c8fee14a60105891553a73f943d1a9e665f3dc21963090a89a3acae6",
+          "whole": true
+        },
+        {
+          "path": "before-state.original.json",
+          "blob": "20e0200a0b0ae7d2fe75bce2a890004912ab5869",
+          "bytes": 35435,
+          "sha256": "66631828cf47fdb31f5da3b29dc8b7f9dfa2bdabd5f730c7bc3f3ccb6ec01b1d",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 73605,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "originalErrorRetained": true
+  },
+  "actualRecoveryPhase": "applied_once",
+  "actualApplied": true,
+  "currentState": {
+    "blob": "bb80ff31e9dae0cb6658fd37a00f525f99905c91",
+    "bytes": 35314,
+    "sha256": "c15a1533c8fee14a60105891553a73f943d1a9e665f3dc21963090a89a3acae6"
+  },
+  "canonicalBase64": {
+    "blob": "0c484a368ed4477cb0be462292a17262adf621c9",
+    "bytes": 1673,
+    "sha256": "7424490267abd9c6f5aaf2cff5edc5a7894ddf10fa26ae622b9751fbf635c6f5"
+  },
+  "wholeTransportTree": "e41bec7a3d488589bb7212c57ff0d0ee1f93ac7b",
+  "oldError": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "close_observer",
+    "name": "Error",
+    "message": "archive_already_admitted_no_mutation_retry",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "oldErrorHistory": {
+    "blob": "82d4ea450c3e0b453683248361e3778b69f51208",
+    "bytes": 304,
+    "sha256": "598f553a6250aae134e3604114e981996674947ff0e3c926aa0f14c12b13cd99"
+  },
+  "NativeCalls": 0,
+  "applyGitCalls": 0
+}

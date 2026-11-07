@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.root.4a-info-local-close-action-recovery.GO.r1",
+  "authorization": "GO",
+  "scope": "4a_info_local_close_action_recovery_only",
+  "before_state": {
+    "blob": "bd06c489e911bf65d630ae8665e9ca5e00d96de2",
+    "bytes": 157674,
+    "sha256": "99343cb695f2bfda2c47111dd8b226d02479ad15f051179bc13b9bb60e605efe"
+  },
+  "after_state": {
+    "blob": "22cb576c41caea26beb8f931dfa8a8a9e48a0262",
+    "bytes": 157675,
+    "sha256": "3808482edffd2a0fb68de8bf15ae42af22a52b5eff80c36ae521ef47ed7b1c0d"
+  },
+  "native_calls_authorized": 0,
+  "journal": {
+    "blob": "90ac83d6e48744399e1508f0b86ac4a8c62f33cb",
+    "bytes": 23858,
+    "sha256": "256effb6f6cd3906653c4d85e4cd465f83056bf4bece4725c2672f1d45064483"
+  },
+  "source": {
+    "blob": "4bd9c8630de656431e502352246f85dda8eb5e0d",
+    "bytes": 2226,
+    "sha256": "046852aeaf467843c8b02d3619a4fb770fb9dcb5f8a5994820902caaeb3c622b"
+  },
+  "sourceTree": "cd4dacfa68402b7ec7febd22c57fb7c85b87baca",
+  "originalOperation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+  "originalJob": "1a1b3307dc2-fc05-80f8",
+  "originalInfoGO": {
+    "blob": "95052fcffe2188e809cc261cb1125e3accd6ad8b",
+    "bytes": 4247,
+    "sha256": "e205630f07939a8a652cf31b2b8210142f6642431959aad1387631400e57fd90"
+  },
+  "rootChecks": 13,
+  "issuedAtUTC": "2026-11-06 23:40:07 UTC",
+  "required": "Apply only the exact once-only paused=false transition, retain outerFailure and all original calls/payload, then invoke the existing close_observer local action once. No new Native call, INFO, status, page, process or rekey.",
+  "metadataQualificationPending": true
+}

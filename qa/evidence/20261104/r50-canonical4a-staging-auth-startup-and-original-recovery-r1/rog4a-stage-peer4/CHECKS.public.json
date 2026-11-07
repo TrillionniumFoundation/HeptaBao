@@ -1,0 +1,62 @@
+{
+  "pass": true,
+  "count": 14,
+  "checks": [
+    {
+      "label": "forward exact before->after",
+      "pass": true
+    },
+    {
+      "label": "forward inverse exact after->before",
+      "pass": true
+    },
+    {
+      "label": "reverse exact after->before",
+      "pass": true
+    },
+    {
+      "label": "reverse forward exact after->before",
+      "pass": true
+    },
+    {
+      "label": "six strict hunks",
+      "pass": true
+    },
+    {
+      "label": "20 definitions each",
+      "pass": true
+    },
+    {
+      "label": "all function names and order unchanged",
+      "pass": true
+    },
+    {
+      "label": "only canonical_bundle_header definition changed",
+      "pass": true
+    },
+    {
+      "label": "fences and final cleanup exact",
+      "pass": true
+    },
+    {
+      "label": "unchanged absolute clock",
+      "pass": true
+    },
+    {
+      "label": "one accumulated cap",
+      "pass": true
+    },
+    {
+      "label": "two fixed inputs only",
+      "pass": true
+    },
+    {
+      "label": "exact prerequisite and HEAD",
+      "pass": true
+    },
+    {
+      "label": "success only after both results",
+      "pass": true
+    }
+  ]
+}

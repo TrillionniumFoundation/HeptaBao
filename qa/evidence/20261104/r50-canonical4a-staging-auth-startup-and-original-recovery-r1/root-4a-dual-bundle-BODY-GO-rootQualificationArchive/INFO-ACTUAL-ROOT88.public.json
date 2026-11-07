@@ -1,0 +1,578 @@
+{
+  "schema": "heptabao.root.successor4a.dual-bundle-INFO.actual88.r1",
+  "result": {
+    "schema": "heptabao.root.dual-bundle-info-original-qualification.r1",
+    "passed": true,
+    "checkCount": 88,
+    "checks": [
+      {
+        "name": "root-GO-exact",
+        "pass": true
+      },
+      {
+        "name": "two-bindings",
+        "pass": true
+      },
+      {
+        "name": "release-six-two-two",
+        "pass": true
+      },
+      {
+        "name": "released",
+        "pass": true
+      },
+      {
+        "name": "reported-serial-release",
+        "pass": true
+      },
+      {
+        "name": "no-body-stage-build",
+        "pass": true
+      },
+      {
+        "name": "mac/tag",
+        "pass": true
+      },
+      {
+        "name": "mac/native-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/state-GO",
+        "pass": true
+      },
+      {
+        "name": "mac/never-process",
+        "pass": true
+      },
+      {
+        "name": "mac/closed-state",
+        "pass": true
+      },
+      {
+        "name": "mac/three-calls",
+        "pass": true
+      },
+      {
+        "name": "mac/observer",
+        "pass": true
+      },
+      {
+        "name": "mac/metadata-path-size-sha",
+        "pass": true
+      },
+      {
+        "name": "mac/version-lossless",
+        "pass": true
+      },
+      {
+        "name": "mac/linux-owner-mode",
+        "pass": true
+      },
+      {
+        "name": "mac/metadata-no-acl-xattrs",
+        "pass": true
+      },
+      {
+        "name": "mac/actual-binding-native",
+        "pass": true
+      },
+      {
+        "name": "mac/payload-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/payload-complete",
+        "pass": true
+      },
+      {
+        "name": "mac/payload-exact-native",
+        "pass": true
+      },
+      {
+        "name": "mac/0/arm-request",
+        "pass": true
+      },
+      {
+        "name": "mac/0/arm-root-go",
+        "pass": true
+      },
+      {
+        "name": "mac/0/accepted-original",
+        "pass": true
+      },
+      {
+        "name": "mac/0/sdk-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/0/sdk-shape",
+        "pass": true
+      },
+      {
+        "name": "mac/0/native-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/1/arm-request",
+        "pass": true
+      },
+      {
+        "name": "mac/1/arm-root-go",
+        "pass": true
+      },
+      {
+        "name": "mac/1/accepted-original",
+        "pass": true
+      },
+      {
+        "name": "mac/1/sdk-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/1/sdk-shape",
+        "pass": true
+      },
+      {
+        "name": "mac/1/native-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/2/arm-request",
+        "pass": true
+      },
+      {
+        "name": "mac/2/arm-root-go",
+        "pass": true
+      },
+      {
+        "name": "mac/2/accepted-original",
+        "pass": true
+      },
+      {
+        "name": "mac/2/sdk-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/2/sdk-shape",
+        "pass": true
+      },
+      {
+        "name": "mac/2/native-pin",
+        "pass": true
+      },
+      {
+        "name": "mac/exact-info-request",
+        "pass": true
+      },
+      {
+        "name": "mac/admission",
+        "pass": true
+      },
+      {
+        "name": "mac/status-request",
+        "pass": true
+      },
+      {
+        "name": "mac/status-terminal",
+        "pass": true
+      },
+      {
+        "name": "mac/closed-status-original",
+        "pass": true
+      },
+      {
+        "name": "mac/page-request",
+        "pass": true
+      },
+      {
+        "name": "mac/immutable-page-bounds",
+        "pass": true
+      },
+      {
+        "name": "mac/page-payload",
+        "pass": true
+      },
+      {
+        "name": "x230/tag",
+        "pass": true
+      },
+      {
+        "name": "x230/native-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/state-GO",
+        "pass": true
+      },
+      {
+        "name": "x230/never-process",
+        "pass": true
+      },
+      {
+        "name": "x230/closed-state",
+        "pass": true
+      },
+      {
+        "name": "x230/three-calls",
+        "pass": true
+      },
+      {
+        "name": "x230/observer",
+        "pass": true
+      },
+      {
+        "name": "x230/metadata-path-size-sha",
+        "pass": true
+      },
+      {
+        "name": "x230/version-lossless",
+        "pass": true
+      },
+      {
+        "name": "x230/linux-owner-mode",
+        "pass": true
+      },
+      {
+        "name": "x230/metadata-no-acl-xattrs",
+        "pass": true
+      },
+      {
+        "name": "x230/actual-binding-native",
+        "pass": true
+      },
+      {
+        "name": "x230/payload-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/payload-complete",
+        "pass": true
+      },
+      {
+        "name": "x230/payload-exact-native",
+        "pass": true
+      },
+      {
+        "name": "x230/0/arm-request",
+        "pass": true
+      },
+      {
+        "name": "x230/0/arm-root-go",
+        "pass": true
+      },
+      {
+        "name": "x230/0/accepted-original",
+        "pass": true
+      },
+      {
+        "name": "x230/0/sdk-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/0/sdk-shape",
+        "pass": true
+      },
+      {
+        "name": "x230/0/native-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/1/arm-request",
+        "pass": true
+      },
+      {
+        "name": "x230/1/arm-root-go",
+        "pass": true
+      },
+      {
+        "name": "x230/1/accepted-original",
+        "pass": true
+      },
+      {
+        "name": "x230/1/sdk-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/1/sdk-shape",
+        "pass": true
+      },
+      {
+        "name": "x230/1/native-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/2/arm-request",
+        "pass": true
+      },
+      {
+        "name": "x230/2/arm-root-go",
+        "pass": true
+      },
+      {
+        "name": "x230/2/accepted-original",
+        "pass": true
+      },
+      {
+        "name": "x230/2/sdk-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/2/sdk-shape",
+        "pass": true
+      },
+      {
+        "name": "x230/2/native-pin",
+        "pass": true
+      },
+      {
+        "name": "x230/exact-info-request",
+        "pass": true
+      },
+      {
+        "name": "x230/admission",
+        "pass": true
+      },
+      {
+        "name": "x230/status-request",
+        "pass": true
+      },
+      {
+        "name": "x230/status-terminal",
+        "pass": true
+      },
+      {
+        "name": "x230/closed-status-original",
+        "pass": true
+      },
+      {
+        "name": "x230/page-request",
+        "pass": true
+      },
+      {
+        "name": "x230/immutable-page-bounds",
+        "pass": true
+      },
+      {
+        "name": "x230/page-payload",
+        "pass": true
+      }
+    ],
+    "originalSDKsIndependentlyWhole": 6,
+    "armTreesIndependentlyWhole": 6,
+    "payloadTreesIndependentlyWhole": 2,
+    "NativeCallsAdded": 0,
+    "CReleased": true,
+    "bundleBodyQualified": false
+  },
+  "audit": {
+    "tree": "d78b66e7505a5c39f883bf82c2f0494db25e0e0b",
+    "files": 10,
+    "bytes": 70769,
+    "merkle": {
+      "root_sha": "d78b66e7505a5c39f883bf82c2f0494db25e0e0b",
+      "trees_verified": 1,
+      "leaf_count": 10
+    },
+    "whole": true
+  },
+  "originalArchives": [
+    {
+      "label": "4a-dual-INFO-4a-mac-bundle-info-r1-admit-arm",
+      "audit": {
+        "tree": "4be35991394f4a18318786d1b30243703becb8ee",
+        "files": 3,
+        "bytes": 1806,
+        "merkle": {
+          "root_sha": "4be35991394f4a18318786d1b30243703becb8ee",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-mac-bundle-info-r1-admit-SDK",
+      "audit": {
+        "tree": "36ea4080362f48c97f9f719104be8fc14c28cd3e",
+        "files": 1,
+        "bytes": 704,
+        "merkle": {
+          "root_sha": "36ea4080362f48c97f9f719104be8fc14c28cd3e",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-mac-bundle-info-r1-status0-arm",
+      "audit": {
+        "tree": "9607b1cc444fb63c7b3282774ea7c89253fe0b75",
+        "files": 3,
+        "bytes": 1750,
+        "merkle": {
+          "root_sha": "9607b1cc444fb63c7b3282774ea7c89253fe0b75",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-mac-bundle-info-r1-status0-SDK",
+      "audit": {
+        "tree": "ed65c3f873f8f385b075c9569baaa5e4fbc81f43",
+        "files": 1,
+        "bytes": 975,
+        "merkle": {
+          "root_sha": "ed65c3f873f8f385b075c9569baaa5e4fbc81f43",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-mac-bundle-info-r1-page0-arm",
+      "audit": {
+        "tree": "7c35422f40df29182c998415b2e77360b20fca49",
+        "files": 3,
+        "bytes": 1780,
+        "merkle": {
+          "root_sha": "7c35422f40df29182c998415b2e77360b20fca49",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-mac-bundle-info-r1-page0-SDK",
+      "audit": {
+        "tree": "93ebf381e39f31b517359f35a829c8117a23e124",
+        "files": 1,
+        "bytes": 1640,
+        "merkle": {
+          "root_sha": "93ebf381e39f31b517359f35a829c8117a23e124",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-mac-payload",
+      "audit": {
+        "tree": "27b8fdcbad3780659f0435c0b12422cb37ae0bd1",
+        "files": 1,
+        "bytes": 589,
+        "merkle": {
+          "root_sha": "27b8fdcbad3780659f0435c0b12422cb37ae0bd1",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-x230-bundle-info-r1-admit-arm",
+      "audit": {
+        "tree": "cb8212dcd5dd3476ffcd1514fb671836ee538678",
+        "files": 3,
+        "bytes": 1809,
+        "merkle": {
+          "root_sha": "cb8212dcd5dd3476ffcd1514fb671836ee538678",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-x230-bundle-info-r1-admit-SDK",
+      "audit": {
+        "tree": "9e34fd07176420be3f1f098312b379018705b576",
+        "files": 1,
+        "bytes": 704,
+        "merkle": {
+          "root_sha": "9e34fd07176420be3f1f098312b379018705b576",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-x230-bundle-info-r1-status0-arm",
+      "audit": {
+        "tree": "10d47b00158ec99f7d6e7a46bfc3769b85333534",
+        "files": 3,
+        "bytes": 1752,
+        "merkle": {
+          "root_sha": "10d47b00158ec99f7d6e7a46bfc3769b85333534",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-x230-bundle-info-r1-status0-SDK",
+      "audit": {
+        "tree": "ee5e18e109accf8899d2579b8e56426c800d3c75",
+        "files": 1,
+        "bytes": 975,
+        "merkle": {
+          "root_sha": "ee5e18e109accf8899d2579b8e56426c800d3c75",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-x230-bundle-info-r1-page0-arm",
+      "audit": {
+        "tree": "a7b17521b775cb315f850d54fcde40340aad8099",
+        "files": 3,
+        "bytes": 1782,
+        "merkle": {
+          "root_sha": "a7b17521b775cb315f850d54fcde40340aad8099",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-4a-x230-bundle-info-r1-page0-SDK",
+      "audit": {
+        "tree": "8f7e62876c67e08ae9dafba5911b7190dee772b8",
+        "files": 1,
+        "bytes": 1640,
+        "merkle": {
+          "root_sha": "8f7e62876c67e08ae9dafba5911b7190dee772b8",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "label": "4a-dual-INFO-x230-payload",
+      "audit": {
+        "tree": "f4a36956eb625d368feb04f3a84fa93fe42107cf",
+        "files": 1,
+        "bytes": 589,
+        "merkle": {
+          "root_sha": "f4a36956eb625d368feb04f3a84fa93fe42107cf",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    }
+  ],
+  "scope": "Two original fixed metadata operations; all six original SDKs, arms and both immutable payloads independently read whole. Bodies unobserved."
+}

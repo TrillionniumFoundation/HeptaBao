@@ -1,0 +1,17 @@
+[
+  {
+    "label": "current-commit",
+    "oldText": "DIAGNOSTIC_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'",
+    "newText": "DIAGNOSTIC_COMMIT = '4a49405b93c45ab1c25ecba11cde63a7ede20dce'"
+  },
+  {
+    "label": "current-tree",
+    "oldText": "DIAGNOSTIC_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'",
+    "newText": "DIAGNOSTIC_TREE = 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'"
+  },
+  {
+    "label": "fresh-exclusive-target",
+    "oldText": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1",
+    "newText": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1"
+  }
+]

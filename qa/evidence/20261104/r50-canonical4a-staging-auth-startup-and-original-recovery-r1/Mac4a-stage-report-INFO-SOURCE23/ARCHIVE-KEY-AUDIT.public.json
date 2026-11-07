@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.mac4a-stage-INFO-archive-audit.r1",
+  "journal": {
+    "blob": "e55d186e6e4d403fd4902efc5eb02df828d74bd4",
+    "bytes": 24086,
+    "sha256": "e9f557b35c9595a10ddd5facd8a35f8baf7bb79c390d603d901454f5e21b20a5"
+  },
+  "allArchiveCallsites": [
+    {
+      "line": 147,
+      "text": "  const archive=await archiveFlatPublicTextsOnce({"
+    },
+    {
+      "line": 180,
+      "text": "  try {c.exceptionArchive=await archiveFlatPublicTextsOnce({"
+    },
+    {
+      "line": 193,
+      "text": "  c.sdkArchive=await archiveFlatPublicTextsOnce({"
+    },
+    {
+      "line": 282,
+      "text": "  archive=await archiveFlatPublicTextsOnce({key:archiveKey,repository:\"TrillionniumFoundation/HeptaBao\","
+    }
+  ],
+  "fixedExecutionArchiveKeys": [],
+  "keyForms": [
+    "gfa-<fresh callKey>",
+    "gfx-<same callKey>",
+    "gfs-<same callKey>",
+    "gfc-<original returned operation_id>"
+  ],
+  "prospectiveKeys": [
+    {
+      "key": "gfa-4a-mac-stage-r1-result-info",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfs-4a-mac-stage-r1-result-info",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfx-4a-mac-stage-r1-result-info",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfa-4a-mac-stage-r1-result-info-status0",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfs-4a-mac-stage-r1-result-info-status0",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfx-4a-mac-stage-r1-result-info-status0",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfa-4a-mac-stage-r1-result-info-page0",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfs-4a-mac-stage-r1-result-info-page0",
+      "currentlyAbsent": true
+    },
+    {
+      "key": "gfx-4a-mac-stage-r1-result-info-page0",
+      "currentlyAbsent": true
+    }
+  ],
+  "futureOperationID": null,
+  "futurePayloadKeyAbsenceNotClaimed": true,
+  "exactPreparedInfoLimit": 8192,
+  "exactAcceptedPageLimit": 8192,
+  "payloadMaximum": 1048576,
+  "originalProcessReadStreamLimit": 16384,
+  "INFOCalled": false
+}

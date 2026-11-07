@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"resultType\":\"complete\",\"content\":[{\"type\":\"text\",\"text\":\"{\\\"chunk_sha256\\\":\\\"0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851\\\",\\\"data_base64\\\":\\\"IyB2MiBnaXQgYnVuZGxlCi01NzY3NzM5Y2QyNWU0NThhYzA1MmRjOGQzODQwMTliYWI4Njg4YWUwIEZpeCBzbmFwc2hvdCBTZXJ2aWNlIGRlYWRsaW5lIGxvY2tzIGFuZCBhZG1pdCBuYXRpdmUgbG9jYWwgSldUIGJhdGNoIHRva2Vucwo0YTQ5NDA1YjkzYzQ1YWIxYzI1ZWNiYTExY2RlNjNhN2VkZTIwZGNlIEhFQUQKClBBQ0sAAAACAAAACJs0eJytUsuO2zAMvPsreG/sOk78yKIo2kMXXfRStL0XtETHxMqSV48ku19f2tnXB/RgyKCGM8OhoieCoay03m53uio73R6Gumrrsqy1amqsqUNSuqSD3mUzerIR6rZp291B6aqmfd2hKutKq07vun25PfTYd00nXWWGKY7Ow61Hex+SdhNa+FS1u6YVXPXhff1LCuRDYZ2n2TwWR45j6gvlps+wbQ/7smx2dQN5KcYyqU4cI/1/5uyWL6BpwGRiPns3sCH4/hUGvsTkCdBqCBbnMLoImDRHiBQiCNvMBiM7m2V3liOj4SeCOMp3dmDl6kT5qclHfCMYmIwOwHbF0YVDZHsEIydZ8vmwLEfUV4lnC6GAH0Tz2qHQmB7VPWAflr0s7pb6TNI8C+2EM9A0x8cCfsnwqK5ukg0Re5ns2wVV/C1G7yRMjM7f3HD4u3YABoltGSjAWSIDekh8QrPoPHc/kXe5FI5y+4Yusky0kH1YvQwueRCVhOYlWBmwf5earJG8d4IfvJteH1cBP73TSS2kgtS0ueZgcaKweSe4EV7Uhi2tvzNZTVYxhdc8qrr6WHUlBDKkIukrkeRhQR40OMH4MweSYNSI9ki6gD8jBwhiXjK7vjeQgl3WDj7ZyBPBgwzFA6t178U/UiQkUfECQkd9Yi3PluHisJKf6ezGt7pIR0B4nNvEvol9QxKjSPnismgd3aN/pnTMedfre09RMj68e3MZow0TAPFNDeDxAjWQHUhITmes6LzNTo4xlniW0qvAeJxbLbRaaMM3dhEeyRK9jMWXXcV3bVU6dlbAQuu1ruVmLg5FRgDcEgwL8AIKrUYuvudJhQ7FfUl2UjRcnbX9k3icO8V0immDMKNIm8LbN0qVy/clqQgsUzg9bboMxy7NyeqMygDUEQwp+gX+Q1zYqude98IWGlany6dR7c6ttHicAVoApf+p3QKp3QKwBjcUQyqJ222XAr1USBNNrfKK1/m9ZUyTGjeJFOhh75hg8luyUHkd9+ST/UoftJ9js7c3uEEUfKEjAD/1dAMlwRuQ27hEW6jVRV6TAXkXs5p5DzWUXCnT+gMkShcnlFd9UL9Su7mGRI8XHZBfrnice6A8X3VDE8/k+RyanMV5iQXFGfkl8ZN9eUxBIsJwkeLUorLUoviCzLzJB7llNjfxxLECAJKzFgP6A+bxAx2ufbfGwJ5jMF0KBvBHQ3AFeJzbYT/dcUO+6OROQUPO4rzEguKM/JL4yUaitiARYbhIcWpRWWpRfEFm3uQ2EZXN+aKeXACM/BWp8AMMUbdZwlfYNq31Ib6j11uQrwswH3icu1B7qXZDqNhkCzGeyXFiYpM3qLEzGmyuE4tTZ45PLZx8x1YOIjT5pb75ZGu7qQC2jxFV2eDVfd6k1FerVEZ33+pfkcDAMsA=\\\",\\\"eof\\\":true,\\\"next_offset\\\":1253,\\\"offset\\\":0,\\\"path\\\":\\\"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle\\\",\\\"size\\\":1253,\\\"version\\\":\\\"66306:34603387:1253:1794007675691817556:1794007675691817556\\\"}\"}],\"isError\":false}"
+  },
+  "isError": false
+}

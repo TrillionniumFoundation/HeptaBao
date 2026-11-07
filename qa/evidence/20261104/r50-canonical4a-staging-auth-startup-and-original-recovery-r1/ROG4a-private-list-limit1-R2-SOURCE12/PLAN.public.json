@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.combined4a.private-original-sdk-discovery-source.r2",
+  "status": "SOURCE_ONLY_NO_NATIVE_OR_PAGE_EXECUTED",
+  "scope": "combined4a_unknown_start_private_list_page_limit1_only",
+  "maximumNativeCalls": 1,
+  "onlyReadOnlyNative": true,
+  "host": "rog",
+  "request": {
+    "blob": "828019befe1e6529fead23a24db811c15db7a462",
+    "bytes": 34,
+    "sha256": "e31531bed4ff4a89122bd1f8bb56fe4076390fd1f48352353597d46a096d481d"
+  },
+  "originalUnknownState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "source": {
+    "blob": "b8e58ec9737e4570e657c2f2ea7e2768ca43f90f",
+    "bytes": 14022,
+    "sha256": "09b86d988630b7c357cdedff660b37d2ebafd205fda37fe3a10eeb129c25762a"
+  },
+  "originalUnknownPacket": "8f31dd325169b68eb10bb3cc442d7571f73346ab",
+  "originalRequest": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "originalJournal": "391f2bef67b32e5ef4a3f1cd8ae660bbd096aa3e",
+  "privatePage": {
+    "title": "HeptaBao 4a build original job discovery evidence",
+    "idempotency_key": "heptabao-4a49405b-start-list-private-sdk-r2",
+    "omitSpaceAndParent": true,
+    "maximumCreates": 1,
+    "maximumFullReads": 1,
+    "maximumSharingReads": 1,
+    "rawSDKRepresentationLimit": 131072,
+    "base64PartCharacters": 8192,
+    "maximumEncodedParts": 22,
+    "ownerOnlyRequired": true,
+    "rawAndPageSdkNeverPublicGit": true
+  },
+  "newSlot": "combined_4a49405b_unknown_start_private_list_r2",
+  "sequence": [
+    "b4pRun prepare with exact whole root GO -> external public request/intent/armed whole",
+    "independent model boundary",
+    "b4pRun invoke -> one rog/1 query -> private full SDK + one private Page + full read/sharing",
+    "b4pRun accept only after private byte/hash and owner proof; safe own-target projection only"
+  ],
+  "oldStateMustRemainExact": true,
+  "failedStartMustRemainFailed": true,
+  "publicAllowlist": [
+    "exact own request/intent/armed",
+    "adapter/pure/archive/contracts",
+    "raw SDK content digests",
+    "safe matching target identity projection"
+  ],
+  "publicProhibited": [
+    "raw list SDK",
+    "unrelated job identities",
+    "all argv bodies",
+    "env keys or values",
+    "ssh_target",
+    "private Page create/read SDK",
+    "opaque cursor"
+  ],
+  "bounds": {
+    "nativePages": 1,
+    "rowsPerPage": 1,
+    "wireCapByTool": 65536,
+    "cursorContinuation": 0,
+    "processStart": 0,
+    "processStatus": 0,
+    "processRead": 0
+  },
+  "unknownRules": [
+    "Any Native, private creation, readback, sharing, hash or schema error stops; no retry, no cursor, no mutation replay.",
+    "Create Page uncertainty is retained with the same key; this SOURCE authorizes no second create.",
+    "Missing target in this bounded page does not prove absence.",
+    "Only literal owner_only=true accepted; absent/null/false/partial sharing stops before native semantic parse.",
+    "Current provider jobs/coverage schema is tested only with synthetic fixtures; an actual mismatch stops with raw SDK privately preserved.",
+    "Found target is retained metadata, not authoritative live status; a new explicit same-ID observation authorization is needed.",
+    "No original BUILD state field is changed, including its failed START and paused state."
+  ],
+  "testBoundary": {
+    "pureChecks": 37,
+    "NativeCalls": 0,
+    "PagesCalls": 0,
+    "oldProductDenominatorsUnchanged": true
+  },
+  "originalR1": {
+    "sourceTree": "0da14babff1d75b3a580d5349ee3d7f5edaf6b7a",
+    "safeActualTree": "78621f29774d5d55be65b81cf80385fcaa27612e",
+    "originalSdk": {
+      "blob": "1c474f064defffead7cf385298dab342e895f4fd",
+      "bytes": 236,
+      "sha256": "07ecbfc6b5855f5ce6e9eedcac2707b424b17d7db376da1e7189632732da6b5c"
+    },
+    "error": "INVALID_ARGUMENT",
+    "category": "time_budget_exceeded",
+    "noRawSdkOrPageIdPublic": true,
+    "privatePagePreserved": true,
+    "oldOwnerOnlyGuardFailurePreserved": true
+  },
+  "reason": "One new smaller read-only query reduces returned registry work after an observed time-budget error. It does not establish that 128 was an invalid parameter and does not guarantee recovery.",
+  "before": {
+    "blob": "f04143022a6d9dfe5e518898c5fd2129e21c8889",
+    "bytes": 12303,
+    "sha256": "1b95c4a6b616944d9a66dcdb9d73a5a0222357ef847b789c7b4efa00f3a189d7"
+  },
+  "diff": {
+    "blob": "e72c58fbfbc559deb6063ac0f8568c1e13e8ee14",
+    "bytes": 6707,
+    "sha256": "fcfedb450a4fd99bc0a35b15cabcba497d79ab2bfc28d35e840dbf1ae3a9f885"
+  },
+  "privateOwnerOnlyAcceptance": [
+    "Positive owner_only literal from the documented owner scope, or the observed full-roster shape with no owner_only field.",
+    "Full roster: exact page/drive; personal metadata; no owning workspace/Space; owner is canonical user; direct shares empty; each of three inherited-source views complete and empty; null continuation.",
+    "Unknown/false literal, partial, any grant, identity mismatch, or nonpersonal destination rejects."
+  ],
+  "publicEntry": "Only b4pRun prepare/invoke/accept; catch retains full exception privately and returns fixed {ok:false,stopped:true,code:private_adapter_stopped}."
+}

@@ -1,0 +1,280 @@
+{
+  "schema": "heptabao.C.official271-pki12-outer-actual-verification.r1",
+  "pass": true,
+  "check_count": 67,
+  "checks": [
+    {
+      "name": "exact_GO",
+      "pass": true
+    },
+    {
+      "name": "exact_executed_journal",
+      "pass": true
+    },
+    {
+      "name": "original_unique_job",
+      "pass": true
+    },
+    {
+      "name": "seven_original_calls",
+      "pass": true
+    },
+    {
+      "name": "call-00_original_pins",
+      "pass": true
+    },
+    {
+      "name": "call-00_SDK_before_native_source",
+      "pass": true
+    },
+    {
+      "name": "call-00_accepted_original_state",
+      "pass": true
+    },
+    {
+      "name": "call-00_exact_intent_and_arm",
+      "pass": true
+    },
+    {
+      "name": "call-00_arm_Merkle_CREATE",
+      "pass": true
+    },
+    {
+      "name": "START_exact_request",
+      "pass": true
+    },
+    {
+      "name": "START_typed_stdin",
+      "pass": true
+    },
+    {
+      "name": "START_original_ACK",
+      "pass": true
+    },
+    {
+      "name": "call-01_original_pins",
+      "pass": true
+    },
+    {
+      "name": "call-01_SDK_before_native_source",
+      "pass": true
+    },
+    {
+      "name": "call-01_accepted_original_state",
+      "pass": true
+    },
+    {
+      "name": "call-01_exact_intent_and_arm",
+      "pass": true
+    },
+    {
+      "name": "call-01_arm_Merkle_CREATE",
+      "pass": true
+    },
+    {
+      "name": "call-01_original_observer_admission",
+      "pass": true
+    },
+    {
+      "name": "call-02_original_pins",
+      "pass": true
+    },
+    {
+      "name": "call-02_SDK_before_native_source",
+      "pass": true
+    },
+    {
+      "name": "call-02_accepted_original_state",
+      "pass": true
+    },
+    {
+      "name": "call-02_exact_intent_and_arm",
+      "pass": true
+    },
+    {
+      "name": "call-02_arm_Merkle_CREATE",
+      "pass": true
+    },
+    {
+      "name": "call-02_original_future_closed",
+      "pass": true
+    },
+    {
+      "name": "call-03_original_pins",
+      "pass": true
+    },
+    {
+      "name": "call-03_SDK_before_native_source",
+      "pass": true
+    },
+    {
+      "name": "call-03_accepted_original_state",
+      "pass": true
+    },
+    {
+      "name": "call-03_exact_intent_and_arm",
+      "pass": true
+    },
+    {
+      "name": "call-03_arm_Merkle_CREATE",
+      "pass": true
+    },
+    {
+      "name": "call-03_immutable_exact_range",
+      "pass": true
+    },
+    {
+      "name": "call-03_immutable_whole_sha",
+      "pass": true
+    },
+    {
+      "name": "call-04_original_pins",
+      "pass": true
+    },
+    {
+      "name": "call-04_SDK_before_native_source",
+      "pass": true
+    },
+    {
+      "name": "call-04_accepted_original_state",
+      "pass": true
+    },
+    {
+      "name": "call-04_exact_intent_and_arm",
+      "pass": true
+    },
+    {
+      "name": "call-04_arm_Merkle_CREATE",
+      "pass": true
+    },
+    {
+      "name": "call-04_original_observer_admission",
+      "pass": true
+    },
+    {
+      "name": "call-05_original_pins",
+      "pass": true
+    },
+    {
+      "name": "call-05_SDK_before_native_source",
+      "pass": true
+    },
+    {
+      "name": "call-05_accepted_original_state",
+      "pass": true
+    },
+    {
+      "name": "call-05_exact_intent_and_arm",
+      "pass": true
+    },
+    {
+      "name": "call-05_arm_Merkle_CREATE",
+      "pass": true
+    },
+    {
+      "name": "call-05_original_future_closed",
+      "pass": true
+    },
+    {
+      "name": "call-06_original_pins",
+      "pass": true
+    },
+    {
+      "name": "call-06_SDK_before_native_source",
+      "pass": true
+    },
+    {
+      "name": "call-06_accepted_original_state",
+      "pass": true
+    },
+    {
+      "name": "call-06_exact_intent_and_arm",
+      "pass": true
+    },
+    {
+      "name": "call-06_arm_Merkle_CREATE",
+      "pass": true
+    },
+    {
+      "name": "call-06_immutable_exact_range",
+      "pass": true
+    },
+    {
+      "name": "call-06_immutable_whole_sha",
+      "pass": true
+    },
+    {
+      "name": "two_closed_original_observers",
+      "pass": true
+    },
+    {
+      "name": "observer-00_whole_payload_and_native",
+      "pass": true
+    },
+    {
+      "name": "observer-00_page_reconstructs_payload",
+      "pass": true
+    },
+    {
+      "name": "observer-00_matching_closed_admission",
+      "pass": true
+    },
+    {
+      "name": "observer-00_original_job_identity",
+      "pass": true
+    },
+    {
+      "name": "observer-01_whole_payload_and_native",
+      "pass": true
+    },
+    {
+      "name": "observer-01_page_reconstructs_payload",
+      "pass": true
+    },
+    {
+      "name": "observer-01_matching_closed_admission",
+      "pass": true
+    },
+    {
+      "name": "observer-01_original_job_identity",
+      "pass": true
+    },
+    {
+      "name": "terminal_actual",
+      "pass": true
+    },
+    {
+      "name": "stdout_lossless_full_EOF",
+      "pass": true
+    },
+    {
+      "name": "stdout_terminal_sizes",
+      "pass": true
+    },
+    {
+      "name": "stderr_lossless_full_EOF",
+      "pass": true
+    },
+    {
+      "name": "stderr_terminal_sizes",
+      "pass": true
+    },
+    {
+      "name": "actual_676_0",
+      "pass": true
+    },
+    {
+      "name": "terminal_summary_only",
+      "pass": true
+    },
+    {
+      "name": "reported_fixed_public_file",
+      "pass": true
+    }
+  ],
+  "scope": "Original seven-call outer transport and reported summary only",
+  "runtime_calls_added": 0,
+  "report_body_observed": false,
+  "PKI12_actual_statuses": null,
+  "owner_receipt_semantics_qualified": false
+}

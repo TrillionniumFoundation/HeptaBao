@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.bundle-archive-r2.pure-source-review.v1",
+  "pass": true,
+  "check_count": 25,
+  "checks": [
+    {
+      "label": "mac unique archive literal",
+      "pass": true
+    },
+    {
+      "label": "mac unique archive literal",
+      "pass": true
+    },
+    {
+      "label": "mac only two key literals",
+      "pass": true
+    },
+    {
+      "label": "mac strict forward reverse",
+      "pass": true
+    },
+    {
+      "label": "mac two bounded hunks",
+      "pass": true
+    },
+    {
+      "label": "mac original request unchanged",
+      "pass": true
+    },
+    {
+      "label": "mac everything outside close unchanged",
+      "pass": true
+    },
+    {
+      "label": "x230 unique archive literal",
+      "pass": true
+    },
+    {
+      "label": "x230 unique archive literal",
+      "pass": true
+    },
+    {
+      "label": "x230 only two key literals",
+      "pass": true
+    },
+    {
+      "label": "x230 strict forward reverse",
+      "pass": true
+    },
+    {
+      "label": "x230 two bounded hunks",
+      "pass": true
+    },
+    {
+      "label": "x230 original request unchanged",
+      "pass": true
+    },
+    {
+      "label": "x230 everything outside close unchanged",
+      "pass": true
+    },
+    {
+      "label": "pure original-payload closure preparation succeeds",
+      "pass": true
+    },
+    {
+      "label": "real reviewed paused slot unchanged before apply",
+      "pass": true
+    },
+    {
+      "label": "only two output and proof archives; original payload never recreated",
+      "pass": true
+    },
+    {
+      "label": "no historical archive key reused",
+      "pass": true
+    },
+    {
+      "label": "pure apply only after whole proof",
+      "pass": true
+    },
+    {
+      "label": "one original completed observer closed",
+      "pass": true
+    },
+    {
+      "label": "original body budget not reset",
+      "pass": true
+    },
+    {
+      "label": "all six original calls unchanged",
+      "pass": true
+    },
+    {
+      "label": "original error and history retained exactly",
+      "pass": true
+    },
+    {
+      "label": "whole original body identity",
+      "pass": true
+    },
+    {
+      "label": "second apply rejected",
+      "pass": true
+    }
+  ],
+  "realNativeCalls": 0,
+  "realGitCalls": 0,
+  "realOriginalStateMutated": false
+}

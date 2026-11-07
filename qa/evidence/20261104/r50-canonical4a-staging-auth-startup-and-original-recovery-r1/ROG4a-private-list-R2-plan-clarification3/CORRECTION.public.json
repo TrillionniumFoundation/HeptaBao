@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.private-list-r2-plan-correction.r1",
+  "originalSourceTree": "155f70c392ae246dffabbf623c19ca3712bb0518",
+  "before": {
+    "blob": "d9a44c037c13187b2b1d30ec48cc9bd20a74605b",
+    "bytes": 5312,
+    "sha256": "3f2c6559f5717b9e6508b3b823f3c1cce60241c31b2af0ddf9bb3955cb88e080"
+  },
+  "after": {
+    "blob": "bdf7af2b215eb86f50888981afbf2c8ed778c6ec",
+    "bytes": 5479,
+    "sha256": "5e53b84ce7a4c393c95921bc707aea94d4246a2efb478ef5ff39a87165c04f90"
+  },
+  "strictDiff": {
+    "blob": "313642fa00e1ec1b294188c061e3952340cc09ad",
+    "bytes": 1136,
+    "sha256": "e23e5c4d8bcfe404eb7658ffa83a73a4172247a794e8a9eba86de3e1477fb87d"
+  },
+  "changedField": "unknownRules[3]",
+  "candidateUnchanged": {
+    "blob": "b8e58ec9737e4570e657c2f2ea7e2768ca43f90f",
+    "bytes": 14022,
+    "sha256": "09b86d988630b7c357cdedff660b37d2ebafd205fda37fe3a10eeb129c25762a"
+  },
+  "requestUnchanged": {
+    "blob": "828019befe1e6529fead23a24db811c15db7a462",
+    "bytes": 34,
+    "sha256": "e31531bed4ff4a89122bd1f8bb56fe4076390fd1f48352353597d46a096d481d"
+  },
+  "sourceChecksUnchanged": 37,
+  "oldPacketPreserved": true,
+  "NativeCalls": 0,
+  "PagesCalls": 0,
+  "slotInitialized": false
+}

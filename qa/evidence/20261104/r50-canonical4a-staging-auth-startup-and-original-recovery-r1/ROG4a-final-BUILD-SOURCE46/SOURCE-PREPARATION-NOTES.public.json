@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.4a-build-source-preparation-notes.r1",
+  "metadataDraftPreparedBeforeBody": true,
+  "actualBodyRebuildMatchedAllSevenOriginalControlAndRequestStrings": true,
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "rootStageQualificationWhole": true,
+  "old4aLocalCloseErrorPreserved": true,
+  "precheckSourcePreserved": "d47fd022860b95f1b9c63eb6c5ba35afa0e45f25",
+  "runtimeQualificationInherited": false
+}

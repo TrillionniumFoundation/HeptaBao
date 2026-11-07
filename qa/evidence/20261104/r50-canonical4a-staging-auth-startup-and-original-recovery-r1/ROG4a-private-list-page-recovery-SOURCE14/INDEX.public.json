@@ -1,0 +1,82 @@
+{
+  "entries": [
+    {
+      "path": "ADAPTER.source.js",
+      "blob": "f04143022a6d9dfe5e518898c5fd2129e21c8889",
+      "bytes": 12303,
+      "sha256": "1b95c4a6b616944d9a66dcdb9d73a5a0222357ef847b789c7b4efa00f3a189d7"
+    },
+    {
+      "path": "VERIFIER.source.js",
+      "blob": "6b75f439ce34c5c892bf23dcf22898b5a1d57ebf",
+      "bytes": 4617,
+      "sha256": "4ade866032cd2e3a316c51dc9c7abc3b0adad7e2e2e5578e1b3b49172c667d11"
+    },
+    {
+      "path": "PURE-CHECKS.actual.json",
+      "blob": "a3ff5c7bfc9dba371b9ff373f02db4e7959bebc7",
+      "bytes": 1781,
+      "sha256": "9ac30b23f01b655d1f47100acce14ac8a6386fec61422e87347fe7e084e70193"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "0acc3798db2447b46bead5df8460e15772f3e9ce",
+      "bytes": 4064,
+      "sha256": "54b6326d9bfbb3e215e496ec16968c223db9eb83495d766af9f23c109473713a"
+    },
+    {
+      "path": "REQUEST.public.json",
+      "blob": "4cdfd04d45ec603245fd363f17b2c9b799dfb096",
+      "bytes": 36,
+      "sha256": "602b020eabe72d6c262db7b0551d0d3fbf625102b51da7c4923630ed8009afd8"
+    },
+    {
+      "path": "pure_helpers.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "git_archive_once.js",
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    {
+      "path": "INPUTS.public.json",
+      "blob": "d802d584f7cc2810235e5ae8d87e0713a38e618c",
+      "bytes": 722,
+      "sha256": "3d41d315ef2ad05436dd9c4edd9d96da4c6d3734d4aeb81070d3deab01b418d7"
+    },
+    {
+      "path": "LIST-TOOL-CONTRACT.original.txt",
+      "blob": "da8f00ef9e10f87d797c1cf9cd151df355bed663",
+      "bytes": 1460,
+      "sha256": "8dac7eabad08cffe874a2c17fc34ec082136518af4eadaabb04d66838365114c"
+    },
+    {
+      "path": "PAGE-CREATE-CONTRACT.original.txt",
+      "blob": "6cf4b26cd6a3ea8936b173b938e4c33758c2f281",
+      "bytes": 3159,
+      "sha256": "59a132907ea7fd96e0a81ba71a4b3d2f7079f48f8ad2d4f46953788a7342f3c1"
+    },
+    {
+      "path": "PAGE-READ-CONTRACT.original.txt",
+      "blob": "c947116842ba120e6e27a1e3250d22504fc59260",
+      "bytes": 14007,
+      "sha256": "cc40dae84daa07057e48d1432bb9f0c2304958c562555296e2601d7635502322"
+    },
+    {
+      "path": "PAGE-SHARING-CONTRACT.original.txt",
+      "blob": "c79cec259d956265179025a48ea730bd292f84b8",
+      "bytes": 1842,
+      "sha256": "9099395e559588e0d5c637ae22231b5d7472fb86233a9d8a205e5c4c031c9cf7"
+    },
+    {
+      "path": "PURE-DRAFT-ERRORS.original.json",
+      "blob": "ed70fb54694c5be86e4fb66294844d14cbdc0edd",
+      "bytes": 871,
+      "sha256": "64f6ae6f77492511ce974760addf7f996da1c23c6d1540fd941d98dc256a87a9"
+    }
+  ]
+}

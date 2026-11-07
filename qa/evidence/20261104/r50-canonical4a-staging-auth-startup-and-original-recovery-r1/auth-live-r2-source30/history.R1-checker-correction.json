@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.source-checker-correction.r1",
+  "beforeCheck": "preserved/home_instance-only-public-context-name",
+  "afterCheck": "preserved/home_instance-byte-exact",
+  "reason": "Internal context __name__ remains exactly original. New CONTROL/EMPTY are bound globally; the first checker assumed an additional internal-name replacement which was not present. No source, request, journal or core17 leaf changed.",
+  "NativeCalls": 0,
+  "PythonOrModuleExecution": false
+}

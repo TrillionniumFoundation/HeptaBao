@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.root.mac4a-bundle-archive-collision-actual.r1",
+  "actualTree": {
+    "tree": "4679563152e933459a27ecd4c14ba5e4b29f7d77",
+    "files": 14,
+    "bytes": 89636,
+    "merkle": {
+      "root_sha": "4679563152e933459a27ecd4c14ba5e4b29f7d77",
+      "trees_verified": 1,
+      "leaf_count": 14
+    },
+    "whole": true
+  },
+  "checks": {
+    "rootGO": true,
+    "journal": true,
+    "pausedState": true,
+    "noJob": true,
+    "noCall": true,
+    "paused": true,
+    "futureClosed": true,
+    "statusSDK": true,
+    "pageSDK": true,
+    "pageExactPayload": true,
+    "payloadPin": true,
+    "payloadNative": true,
+    "actualRange": true,
+    "actualBundle": true,
+    "knownArchiveFailure": true,
+    "CRelease": true,
+    "x230NoBody": true
+  },
+  "checkCount": 17,
+  "CNativeLane": 0,
+  "logicalObserverClosed": false,
+  "originalBinaryBytes": 1253,
+  "originalBinarySha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+  "payload": {
+    "path": "payload.original.json",
+    "blob": "1d552dc540cd50d9142693e25ab7e57472fc8d30",
+    "bytes": 2096,
+    "sha256": "6a746ee482b96d481d2e76856e101d3e43c9beb3652cd5906376e6e725fe21d8",
+    "whole": true
+  },
+  "payloadTree": "1d5ddf9d4b62cb26fa62837dacaf8312ca08bf02",
+  "failurePreserved": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "close_observer",
+    "name": "Error",
+    "message": "archive_already_admitted_no_mutation_retry",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "scope": "Original Native body read is complete and its bytes match the actual fixed bundle. Pure Git chunk/whole archival closure is incomplete; the original operation must not be replayed.",
+  "NativeCallsAdded": 0
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.official-pki12.cached-page0-recovery.proposed.r2",
+  "afterState": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "beforeState": {
+    "blob": "e48bb16c1d18b72506546378eac09aad7996cd63",
+    "bytes": 246355,
+    "sha256": "c5bc674d2f31e94aa018f97a0896db3e7382fb1cd19a50be06d29fa767ded5b4"
+  },
+  "pageSDK": {
+    "blob": "5ceec5345171ff27f8bd0265c94f0f8e6a0cef7c",
+    "bytes": 22705,
+    "sha256": "d613452f7e603c59f49e059bbb987b53bc1aab73549cf7df464974f59912c309"
+  },
+  "journalAfter": {
+    "blob": "86edcf2a0d2d5206025a6a702883e6b645e2cc87",
+    "bytes": 28904,
+    "sha256": "0940f9d7b0c206864962e77cf40106e7b4d3faf2ec0ad225b472840e214fc107"
+  },
+  "errorHistory": {
+    "blob": "aa0fce14552b552107d94619a154ee4fb229e66e",
+    "bytes": 304,
+    "sha256": "22d97a34eed7cbd16ce7e58fcadc05d0fc0e1aa4cc608b11efa81a122071fc50"
+  },
+  "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "acceptedCursor": 16384,
+  "failedCallRetained": true,
+  "changedFields": [
+    "paused",
+    "pending",
+    "activeObserver"
+  ],
+  "nativeCalls": 0,
+  "gitCalls": 0,
+  "applied": false,
+  "realSlotUnchanged": true,
+  "failedOriginalCallPhase": "native_interpretation_refused",
+  "newNativePagesAuthorized": false
+}

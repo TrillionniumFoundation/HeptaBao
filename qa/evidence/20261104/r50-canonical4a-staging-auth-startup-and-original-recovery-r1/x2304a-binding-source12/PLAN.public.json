@@ -1,0 +1,148 @@
+{
+  "schema": "heptabao.x2304a.candidate-binding-source-only.v1",
+  "status": "SOURCE_ONLY_CANDIDATE_DATA_READY_BUNDLE_UNOBSERVED",
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "leaves": 3932,
+    "tracked_bytes": 62553956,
+    "full_index_sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "history": 3770
+  },
+  "candidate_manifest": {
+    "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+    "bytes": 4223,
+    "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+  },
+  "accepted_original_source_packet": "b4cc37bfde4c036f1ad5dbc7cf5678916517583d",
+  "source_template": {
+    "blob": "d40b9565ddc74b93caf150fad29c612f7160c8c8",
+    "bytes": 27734,
+    "sha256": "431932d2bd1ea268887d9ce2f22a34a9a12dd3814b872efe1401df5d6c255cb7"
+  },
+  "binder": {
+    "blob": "5ee4b7696af740666382c8af80d31aba37343b4e",
+    "bytes": 3117,
+    "sha256": "75fd681504517961fe4d41628793f2b9f6d47b51e4daba91036a6d8babe6332f"
+  },
+  "binding": {
+    "blob": "9ce4569cf77a74b75f42f0d334b5a675933a546b",
+    "bytes": 2077,
+    "sha256": "f72ee9193e4d956401304988cc8d1932e4a2d480f4d9469f3fdcb192323ce6ec"
+  },
+  "binding_diff": {
+    "blob": "0ff030d1128103946ca9a2a7ee2813805d6e867a",
+    "bytes": 2855,
+    "sha256": "dadabfac1254d2d7a429efdbd81c1798b5442a008080bf2c96461898510cd2e2"
+  },
+  "binding_source_hunks": 3,
+  "controller_algorithm_changed": false,
+  "binder_changed": false,
+  "original_template_binding_remains_null": true,
+  "source_only_candidate_data_binding": true,
+  "runtime_source": null,
+  "carrier": null,
+  "request": null,
+  "typed_binding": null,
+  "journal": null,
+  "product_slot": null,
+  "NativeGO": null,
+  "fixed_readonly_base": {
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "history": 3763,
+    "first_prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "current_presence": null
+  },
+  "future_paths": {
+    "root": "/home/qian/hb-4a49405b-src-20261106-r1",
+    "source": "/home/qian/hb-4a49405b-src-20261106-r1/source",
+    "control": "/home/qian/hb-4a49405b-src-20261106-r1/control",
+    "artifacts": "/home/qian/hb-4a49405b-src-20261106-r1/artifacts",
+    "report": "/home/qian/hb-4a49405b-src-20261106-r1/control/stage-result.public.json"
+  },
+  "first_bundle": {
+    "immutable_original": {
+      "field": "canonical_02b_base64",
+      "name": "canonical-hb-02b-from495.bundle",
+      "bytes": 171016,
+      "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800",
+      "target_mode": 256,
+      "prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "head": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "header": "# v2 git bundle\n-49503322c7f446e5eb41e7744f1fdbd7f1192ecc test: witness authenticated native state in NoForward HA regressions\n02b90762b3d6cc8699cc88bffb6f76cb1f07e270 HEAD\n\n",
+      "header_sha256": "bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5"
+    },
+    "transported_base64_blob": "aa2b5e2c231b7784603f8ccf621c405dacdeae08",
+    "root_transport_qualification": "6b95f49c60c5a7441668cb0edb43ea2769d0c606",
+    "new_read_requested": false
+  },
+  "second_bundle": {
+    "producer_stage_source": "eda0620d3bbf62f0add68918e2e948d540239e0e",
+    "expected_report_result_key": "canonical_x230_bundle",
+    "expected_producer_path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+    "expected_prerequisites": [
+      "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    ],
+    "expected_heads": [
+      [
+        "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+        "HEAD"
+      ]
+    ],
+    "expected_version": 2,
+    "bytes": null,
+    "sha256": null,
+    "full9": null,
+    "metadata_version": null,
+    "header": null,
+    "header_sha256": null,
+    "base64_blob": null,
+    "actual_producer_report": null,
+    "actual_file_info": null,
+    "actual_body": null,
+    "root_transport_qualification": null,
+    "mac_from576_bundle_usable_here": false
+  },
+  "original_budgets": {
+    "stageSeconds": 300,
+    "cloneSeconds": 90,
+    "gitCommandSeconds": 60,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "processSnapshotSeconds": 5,
+    "commandStdoutAndStderrBytesEach": 2097152
+  },
+  "input_caps": {
+    "stdin_bytes": 262144,
+    "bundle_bytes_total": 262144,
+    "read_write_chunk_bytes": 65536,
+    "tracked_single_file": 2097152,
+    "tracked_total_bytes": 134217728,
+    "report_bytes": 1048576,
+    "files_exactly": 2,
+    "actual_carrier_bytes": null,
+    "actual_total_bundle_bytes": null
+  },
+  "full_finally_and_source_base_fences_unchanged": true,
+  "controls_published": false,
+  "CargoStarted": false,
+  "PythonExecuted": false,
+  "NativeCalls": 0,
+  "actualX230Stage": null,
+  "actualCurrentCandidateBinary": null,
+  "actualNormal117": null,
+  "actualFull34": null,
+  "actualLAN": null,
+  "followup": [
+    "Wait for the fixed producer report's canonical_x230_bundle actual values. The separate Mac canonical_bundle from576 cannot fill this slot.",
+    "Use the existing independent single-file INFO then actual-version BODY transport workflow only after root's exact GO; no new operation or probe is authorized by this source packet.",
+    "Once the second bundle is externally whole and independently qualified, fill its bytes/SHA/header and compose the original bounded two-value carrier with the already transported first bundle.",
+    "Run the unchanged pure binder with the accepted4a candidate, whole carrier and unchanged template; preserve both original262144-byte caps and reject any excess.",
+    "Freeze the resulting source, request, typed binding and journal as a later packet for root review and exact execution GO. Current runtime source/request/slot remain null."
+  ],
+  "limits": "Existing source acceptance proves an unexecuted mechanism, not current X230 base existence, bundle creation, transport or runtime qualification. No old576 request or Native idempotency key is reused."
+}

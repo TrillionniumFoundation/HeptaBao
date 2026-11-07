@@ -1,0 +1,59 @@
+--- a/input-audit.after.py
++++ b/input-audit.before.py
+@@ -1,8 +1,8 @@
+ class InputAudit:
++    """Four fixed public executables only; held full9/hash witnesses, no arbitrary input."""
+-    """Two fixed public executables only; held full9/hash witnesses, no arbitrary input."""
+     def __init__(self, signals):
+         self.signals=signals;self.remaining=remaining
++        self.rows=[];self.close_errors=[];self.max_rows=4
+-        self.rows=[];self.close_errors=[];self.max_rows=2
+         self.open_ledger={'attempts':0,'knownNoReturnErrors':0,'registered':0,
+                           'pending':0,'registrationUnknown':False}
+         self.read_calls=0;self.read_bytes=0;self.metadata_calls=0;self.admitted={}
+@@ -60,7 +60,7 @@
+ 
+     def admit(self,path,pin):
+         path=Path(path);need(str(path) in INPUT_PINS and str(path) not in self.admitted,
++                            'five_fixed_input_once')
+-                            'two_fixed_input_once')
+         before=self.meta(os.lstat,path)
+         need(stat.S_ISREG(before.st_mode) and before.st_nlink==1
+              and tuple(str(v) for v in identity(before))==tuple(pin['identity'])
+@@ -69,22 +69,32 @@
+         need(identity(self.meta(os.fstat,row['fd']))==identity(before),'fixed_input_open_full9')
+         h=hashlib.sha256();total=0
+         while True:
++            remaining();need(self.read_calls<128 and self.read_bytes<375828,'fixed_input_read_cap')
+-            remaining();need(self.read_calls<128 and self.read_bytes<205074,'fixed_input_read_cap')
+             self.read_calls+=1
++            block=os.read(row['fd'],min(65536,pin['bytes']+1-total,375828-self.read_bytes))
+-            block=os.read(row['fd'],min(65536,pin['bytes']+1-total,205074-self.read_bytes))
+             self.read_bytes+=len(block);total+=len(block)
++            need(total<=pin['bytes'] and self.read_bytes<=375828,'fixed_input_byte_cap')
+-            need(total<=pin['bytes'] and self.read_bytes<=205074,'fixed_input_byte_cap')
+             if not block:break
+             h.update(block)
+         need(total==pin['bytes'] and h.hexdigest()==pin['sha256'],'fixed_input_whole_hash')
+         need(identity(self.meta(os.fstat,row['fd']))==identity(before)
+              ==identity(self.meta(os.lstat,path)),'fixed_input_whole_stable')
+         row['expected']=identity(before);self.admitted[str(path)]=row
++    def alias(self):
++        expected=NODE_ALIAS['identity'];before=self.meta(os.lstat,NODE)
++        need(stat.S_ISLNK(before.st_mode)
++             and tuple(str(v) for v in identity(before))==tuple(expected),'fixed_node_alias_full9')
++        link=self.meta(os.readlink,NODE)
++        need(type(link) is str and len(link.encode())<=512
++             and os.path.normpath(os.path.join(os.path.dirname(NODE),link))==NODE_REAL,
++             'fixed_node_alias_target')
++        need(identity(before)==identity(self.meta(os.lstat,NODE)),'fixed_node_alias_stable')
++        return True
+     def verify(self):
+         for path,row in self.admitted.items():
+             need(not row['closed'] and row['expected']==identity(self.meta(os.fstat,row['fd']))
+                  ==identity(self.meta(os.lstat,path)),'fixed_held_input_after')
++        return self.alias()
+-        return True
+     def public(self):
+         ledger=dict(self.open_ledger)
+         closed=(not ledger['pending'] and not ledger['registrationUnknown']

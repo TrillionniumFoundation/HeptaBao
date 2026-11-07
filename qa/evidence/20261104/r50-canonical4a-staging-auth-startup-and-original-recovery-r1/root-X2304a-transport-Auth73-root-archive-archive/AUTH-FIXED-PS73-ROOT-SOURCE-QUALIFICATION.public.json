@@ -1,0 +1,446 @@
+{
+  "schema": "heptabao.root.auth-fixed-ps-SOURCE73.r1",
+  "audit": {
+    "tree": "eee0363103afb513ebc602eb37cec78405320caf",
+    "files": 59,
+    "bytes": 788188,
+    "merkle": {
+      "root_sha": "eee0363103afb513ebc602eb37cec78405320caf",
+      "trees_verified": 1,
+      "leaf_count": 59
+    },
+    "whole": true
+  },
+  "verification": {
+    "schema": "heptabao.fixed-ps-source-review.result.r1",
+    "passed": true,
+    "checkCount": 73,
+    "checks": [
+      {
+        "name": "prospective controller exact whole",
+        "passed": true
+      },
+      {
+        "name": "prospective request exact whole",
+        "passed": true
+      },
+      {
+        "name": "prospective journal exact whole",
+        "passed": true
+      },
+      {
+        "name": "wire input actual stdin only",
+        "passed": true
+      },
+      {
+        "name": "exact Python isolated argv / cwd / 60",
+        "passed": true
+      },
+      {
+        "name": "key and fresh slot/source binding",
+        "passed": true
+      },
+      {
+        "name": "current stdin typed digest/fingerprint",
+        "passed": true
+      },
+      {
+        "name": "reader strict forward whole",
+        "passed": true
+      },
+      {
+        "name": "reader strict inverse whole",
+        "passed": true
+      },
+      {
+        "name": "unreaped strict forward whole",
+        "passed": true
+      },
+      {
+        "name": "unreaped strict inverse whole",
+        "passed": true
+      },
+      {
+        "name": "commands strict forward whole",
+        "passed": true
+      },
+      {
+        "name": "commands strict inverse whole",
+        "passed": true
+      },
+      {
+        "name": "manager strict forward whole",
+        "passed": true
+      },
+      {
+        "name": "manager strict inverse whole",
+        "passed": true
+      },
+      {
+        "name": "outer strict forward whole",
+        "passed": true
+      },
+      {
+        "name": "outer strict inverse whole",
+        "passed": true
+      },
+      {
+        "name": "materializer strict forward whole",
+        "passed": true
+      },
+      {
+        "name": "materializer strict inverse whole",
+        "passed": true
+      },
+      {
+        "name": "only two repaired helper modules embedded",
+        "passed": true
+      },
+      {
+        "name": "mac_owned_unreaped_r1 complete embedded pin matches source",
+        "passed": true
+      },
+      {
+        "name": "mac_owned_commands_r1 complete embedded pin matches source",
+        "passed": true
+      },
+      {
+        "name": "two fixed inputs only",
+        "passed": true
+      },
+      {
+        "name": "actual ps fixed setuid full9/hash",
+        "passed": true
+      },
+      {
+        "name": "retained helper require_waitid entire unchanged",
+        "passed": true
+      },
+      {
+        "name": "retained helper exit_observation entire unchanged",
+        "passed": true
+      },
+      {
+        "name": "retained helper stable entire unchanged",
+        "passed": true
+      },
+      {
+        "name": "retained helper ps_rows entire unchanged",
+        "passed": true
+      },
+      {
+        "name": "retained helper verify_unreaped entire unchanged",
+        "passed": true
+      },
+      {
+        "name": "retained helper observed_returncode entire unchanged",
+        "passed": true
+      },
+      {
+        "name": "fixed descriptor binds all fields and operator 501",
+        "passed": true
+      },
+      {
+        "name": "only fixed marker changes expected euid",
+        "passed": true
+      },
+      {
+        "name": "parent group and explicit effective uid still conjunctive",
+        "passed": true
+      },
+      {
+        "name": "fixed ps evidence precedes guard",
+        "passed": true
+      },
+      {
+        "name": "uid0 exception is only exact stable primary",
+        "passed": true
+      },
+      {
+        "name": "complete once cleanup only fixed-pin forwarding differs",
+        "passed": true
+      },
+      {
+        "name": "Commands explicit fixed opt-in default false",
+        "passed": true
+      },
+      {
+        "name": "Commands exact label argv and 262144 guard",
+        "passed": true
+      },
+      {
+        "name": "whole descriptor admission before any row",
+        "passed": true
+      },
+      {
+        "name": "exact two named full9 fences",
+        "passed": true
+      },
+      {
+        "name": "primary stream/select/bounds and retained exit unchanged",
+        "passed": true
+      },
+      {
+        "name": "Popen explicit environment/setsid/close_fds unchanged",
+        "passed": true
+      },
+      {
+        "name": "reader keeps actual use_errno",
+        "passed": true
+      },
+      {
+        "name": "default read does not accept absence",
+        "passed": true
+      },
+      {
+        "name": "three original C calls unchanged",
+        "passed": true
+      },
+      {
+        "name": "three explicit errno reset/capture pairs",
+        "passed": true
+      },
+      {
+        "name": "only count/length zero plus ESRCH",
+        "passed": true
+      },
+      {
+        "name": "only phase reader uses opt-in",
+        "passed": true
+      },
+      {
+        "name": "same observed PID before opt-in read",
+        "passed": true
+      },
+      {
+        "name": "ESRCH same registration runs1 noPID and exit-zero retained",
+        "passed": true
+      },
+      {
+        "name": "all phase terminal result resource and bootout gates unchanged",
+        "passed": true
+      },
+      {
+        "name": "manager ps flag reaches only same Commands call",
+        "passed": true
+      },
+      {
+        "name": "outer existing tool loop retains full9 to admit fixed ps",
+        "passed": true
+      },
+      {
+        "name": "materializer exactly one root-literal append",
+        "passed": true
+      },
+      {
+        "name": "component contract actual LF33 correction only documentation",
+        "passed": true
+      },
+      {
+        "name": "InputAudit controller slice exact",
+        "passed": true
+      },
+      {
+        "name": "InputAudit strict forward/inverse",
+        "passed": true
+      },
+      {
+        "name": "controller common and loader entire inherited",
+        "passed": true
+      },
+      {
+        "name": "InputAudit two held FDs plus pending/unknown ledger",
+        "passed": true
+      },
+      {
+        "name": "InputAudit full-loop critical once-close retained",
+        "passed": true
+      },
+      {
+        "name": "InputAudit no writes/alias/scans",
+        "passed": true
+      },
+      {
+        "name": "only one primary streaming fixed ps call",
+        "passed": true
+      },
+      {
+        "name": "four seconds plus nine cleanup reserved",
+        "passed": true
+      },
+      {
+        "name": "only own table row and bounded count exported",
+        "passed": true
+      },
+      {
+        "name": "public command projection excludes hashes/raw streams",
+        "passed": true
+      },
+      {
+        "name": "known raw errors not exported by public command",
+        "passed": true
+      },
+      {
+        "name": "final fixed fences / FD / children / handler gates",
+        "passed": true
+      },
+      {
+        "name": "journal strict forward/inverse",
+        "passed": true
+      },
+      {
+        "name": "journal only slot request prefix changed",
+        "passed": true
+      },
+      {
+        "name": "no original namespace or credential execution permission",
+        "passed": true
+      },
+      {
+        "name": "whole Apple primary Apple-ps.original.c",
+        "passed": true
+      },
+      {
+        "name": "whole Apple primary Apple-ps-keyword.original.c",
+        "passed": true
+      },
+      {
+        "name": "Apple UID column means effective uid",
+        "passed": true
+      }
+    ],
+    "failed": [],
+    "NativeCalls": 0,
+    "PythonModulesExecuted": 0,
+    "authorCandidateExecuted": false,
+    "scope": "Exact source bindings and finite safety predicates only; real ps custody remains unobserved."
+  },
+  "actualNativeCalls": 0,
+  "actualPythonRuns": 0,
+  "actualBindings": [
+    {
+      "name": "whole core27 after--mac_current_fixture_materializer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 after--mac_current_outer_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 after--mac_native_process_observer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 after--mac_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 after--mac_owned_launchd_r3.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 after--mac_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 before--mac_current_fixture_materializer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 before--mac_current_outer_wal_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 before--mac_native_process_observer_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 before--mac_owned_commands_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 before--mac_owned_launchd_r3.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 before--mac_owned_unreaped_r1.py",
+      "pass": true
+    },
+    {
+      "name": "whole core27 forward--mac_current_fixture_materializer_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 forward--mac_current_outer_wal_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 forward--mac_native_process_observer_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 forward--mac_owned_commands_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 forward--mac_owned_launchd_r3.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 forward--mac_owned_unreaped_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 inverse--mac_current_fixture_materializer_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 inverse--mac_current_outer_wal_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 inverse--mac_native_process_observer_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 inverse--mac_owned_commands_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 inverse--mac_owned_launchd_r3.py.diff",
+      "pass": true
+    },
+    {
+      "name": "whole core27 inverse--mac_owned_unreaped_r1.py.diff",
+      "pass": true
+    },
+    {
+      "name": "journal before is actually executed public-imports journal",
+      "pass": true
+    },
+    {
+      "name": "root independent actual stdin binding",
+      "pass": true
+    },
+    {
+      "name": "peer17 whole",
+      "pass": true
+    }
+  ],
+  "nativeBinding": {
+    "sha256": "4c0158e049e5e0ca6ef168f880dab7e88c740db927321c0f88e517f454bb96f2",
+    "native_fingerprint": "5476756342194954442",
+    "canonicalBytes": 57078
+  },
+  "peerAudit": {
+    "tree": "fe2c73f5803335db4d15c69824ddd116bb2e0c1d",
+    "files": 2,
+    "bytes": 6377,
+    "merkle": {
+      "root_sha": "fe2c73f5803335db4d15c69824ddd116bb2e0c1d",
+      "trees_verified": 1,
+      "leaf_count": 2
+    },
+    "whole": true
+  }
+}

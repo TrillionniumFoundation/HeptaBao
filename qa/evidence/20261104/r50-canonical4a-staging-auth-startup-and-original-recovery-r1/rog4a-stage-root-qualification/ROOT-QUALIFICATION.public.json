@@ -1,0 +1,432 @@
+{
+  "result": {
+    "schema": "heptabao.b.4a-stage-source-verification.r1",
+    "checks": [
+      {
+        "id": "deterministic_exact_after",
+        "ok": true
+      },
+      {
+        "id": "deterministic_exact_request",
+        "ok": true
+      },
+      {
+        "id": "deterministic_exact_journal",
+        "ok": true
+      },
+      {
+        "id": "thirteen_named_source_edits",
+        "ok": true
+      },
+      {
+        "id": "strict_source_forward",
+        "ok": true
+      },
+      {
+        "id": "strict_source_reverse",
+        "ok": true
+      },
+      {
+        "id": "strict_journal_forward",
+        "ok": true
+      },
+      {
+        "id": "strict_journal_reverse",
+        "ok": true
+      },
+      {
+        "id": "six_source_two_journal_hunks",
+        "ok": true
+      },
+      {
+        "id": "candidate_identity",
+        "ok": true
+      },
+      {
+        "id": "candidate_only_three_test_leaves",
+        "ok": true
+      },
+      {
+        "id": "candidate_unqualified",
+        "ok": true
+      },
+      {
+        "id": "whole_index_hash",
+        "ok": true
+      },
+      {
+        "id": "whole_index_count",
+        "ok": true
+      },
+      {
+        "id": "whole_index_bytes",
+        "ok": true
+      },
+      {
+        "id": "index:crates/heptabao-server/src/ha_request_deadline_tests.rs",
+        "ok": true
+      },
+      {
+        "id": "index:crates/heptabao-server/src/ha_snapshot_test_support.rs",
+        "ok": true
+      },
+      {
+        "id": "index:crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+        "ok": true
+      },
+      {
+        "id": "history3770",
+        "ok": true
+      },
+      {
+        "id": "eighteen_actual_parent_links",
+        "ok": true
+      },
+      {
+        "id": "chain_connected",
+        "ok": true
+      },
+      {
+        "id": "same_definition_count",
+        "ok": true
+      },
+      {
+        "id": "definition-name-0",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-0",
+        "ok": true
+      },
+      {
+        "id": "definition-name-1",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-1",
+        "ok": true
+      },
+      {
+        "id": "definition-name-2",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-2",
+        "ok": true
+      },
+      {
+        "id": "definition-name-3",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-3",
+        "ok": true
+      },
+      {
+        "id": "definition-name-4",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-4",
+        "ok": true
+      },
+      {
+        "id": "definition-name-5",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-5",
+        "ok": true
+      },
+      {
+        "id": "definition-name-6",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-6",
+        "ok": true
+      },
+      {
+        "id": "definition-name-7",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-7",
+        "ok": true
+      },
+      {
+        "id": "definition-name-8",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-8",
+        "ok": true
+      },
+      {
+        "id": "definition-name-9",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-9",
+        "ok": true
+      },
+      {
+        "id": "definition-name-10",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-10",
+        "ok": true
+      },
+      {
+        "id": "definition-name-11",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-11",
+        "ok": true
+      },
+      {
+        "id": "definition-name-12",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-12",
+        "ok": true
+      },
+      {
+        "id": "definition-name-13",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-13",
+        "ok": true
+      },
+      {
+        "id": "definition-name-14",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-14",
+        "ok": true
+      },
+      {
+        "id": "definition-name-15",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-15",
+        "ok": true
+      },
+      {
+        "id": "definition-name-16",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-16",
+        "ok": true
+      },
+      {
+        "id": "definition-name-17",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-17",
+        "ok": true
+      },
+      {
+        "id": "definition-name-18",
+        "ok": true
+      },
+      {
+        "id": "unchanged-definition-18",
+        "ok": true
+      },
+      {
+        "id": "definition-name-19",
+        "ok": true
+      },
+      {
+        "id": "base02b_literal_retained",
+        "ok": true
+      },
+      {
+        "id": "old495_failed_fence_unchanged",
+        "ok": true
+      },
+      {
+        "id": "original_finally_exact",
+        "ok": true
+      },
+      {
+        "id": "stage300_unchanged",
+        "ok": true
+      },
+      {
+        "id": "leaf90_clone180",
+        "ok": true
+      },
+      {
+        "id": "shared_bundle_fourMiB",
+        "ok": true
+      },
+      {
+        "id": "two_fixed_bundle_specs",
+        "ok": true
+      },
+      {
+        "id": "one_prerequisite_bound_header",
+        "ok": true
+      },
+      {
+        "id": "fresh_create_no_overwrite",
+        "ok": true
+      },
+      {
+        "id": "request_shape_same",
+        "ok": true
+      },
+      {
+        "id": "request-unchanged-host",
+        "ok": true
+      },
+      {
+        "id": "request-unchanged-executable",
+        "ok": true
+      },
+      {
+        "id": "request-unchanged-cwd",
+        "ok": true
+      },
+      {
+        "id": "request-unchanged-timeout_seconds",
+        "ok": true
+      },
+      {
+        "id": "request-unchanged-stdin",
+        "ok": true
+      },
+      {
+        "id": "original_outer360",
+        "ok": true
+      },
+      {
+        "id": "original_stdin79951",
+        "ok": true
+      },
+      {
+        "id": "source_exact_args",
+        "ok": true
+      },
+      {
+        "id": "remaining_arguments_exact",
+        "ok": true
+      },
+      {
+        "id": "key_specific",
+        "ok": true
+      },
+      {
+        "id": "typed_correct_stdin_binding",
+        "ok": true
+      },
+      {
+        "id": "same_journal_except_five_literals",
+        "ok": true
+      },
+      {
+        "id": "exact_start_allowed",
+        "ok": true
+      },
+      {
+        "id": "reject-start-host",
+        "ok": true
+      },
+      {
+        "id": "reject-start-key",
+        "ok": true
+      },
+      {
+        "id": "reject-start-timeout",
+        "ok": true
+      },
+      {
+        "id": "reject-start-source",
+        "ok": true
+      },
+      {
+        "id": "reject-start-stdin",
+        "ok": true
+      },
+      {
+        "id": "reject_second_start",
+        "ok": true
+      },
+      {
+        "id": "actual576_stage_reference",
+        "ok": true
+      }
+    ],
+    "checksPassed": 91,
+    "source": {
+      "blob": "384892ebb06ac6511318380e3383bbf99d5dee17",
+      "bytes": 30326,
+      "sha256": "60fd63decdf0e51a6154871a33d5e5da538b474817c330870d53013e4a708f1e"
+    },
+    "request": {
+      "blob": "0d7da3d10202045af2e06a2d598a82b2fa18194d",
+      "bytes": 113356,
+      "sha256": "43857487d44efaff0dbd5c2378474ed04211229aa73030784850f8ca415f4276"
+    },
+    "journal": {
+      "blob": "254e10fc6158f4952469a427d89b798c2c8873e4",
+      "bytes": 19047,
+      "sha256": "2bf44bc20fc91ed4b6092116b51952f4874484437221120c57ac3ec4334945be"
+    },
+    "definitions": 20,
+    "unchangedDefinitions": 19,
+    "NativeCalls": 0,
+    "PythonExecuted": false,
+    "RustExecuted": false,
+    "bundleActual": null,
+    "stageActual": null
+  },
+  "audit": {
+    "tree": "eda0620d3bbf62f0add68918e2e948d540239e0e",
+    "files": 26,
+    "bytes": 938309,
+    "merkle": {
+      "root_sha": "eda0620d3bbf62f0add68918e2e948d540239e0e",
+      "trees_verified": 1,
+      "leaf_count": 26
+    },
+    "whole": true
+  },
+  "binding": {
+    "sha256": "b2ca6b6145cd9cdf0d9221a54e285744e1f67f6c20a8679f7cd1147c0a1ca971",
+    "native_fingerprint": "12883227749573827807"
+  },
+  "actualCandidateExact": true,
+  "oldExecutedSourceExact": {
+    "path": "stager.after.py",
+    "blob": "6857eee5bc607f11417a88c1b9fece964f0261a5",
+    "bytes": 29601,
+    "sha256": "a1b67f5aeb968b173886217a26987c3ead111778158136bb036906faa488b35f"
+  },
+  "baseQualification": {
+    "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+    "bytes": 2941,
+    "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+  },
+  "NativeCalls": 0,
+  "builderAndActualChecks": {
+    "baseQualificationExact": true,
+    "afterExact": true,
+    "requestExact": true,
+    "journalExact": true,
+    "sourceDiffExact": true,
+    "journalDiffExact": true,
+    "stdinExact": true
+  },
+  "pureLookupErrorPreserved": true
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.b.4a-source-stage.owner-release.r1",
+  "job": "1a1b3307dc2-fc05-80f8",
+  "slot": "combined_4a49405b_rog_source_gitfirst_r1",
+  "NativeCall": 0,
+  "NativeFuture": 0,
+  "ownerRelease": true,
+  "allCallsAccepted": true,
+  "calls": 7,
+  "observers": 2,
+  "pages": 2,
+  "originalRequest": {
+    "blob": "0d7da3d10202045af2e06a2d598a82b2fa18194d",
+    "bytes": 113356,
+    "sha256": "43857487d44efaff0dbd5c2378474ed04211229aa73030784850f8ca415f4276"
+  },
+  "go": {
+    "blob": "b9d78174fd68b87b34f2c124adb14ff85662889f",
+    "bytes": 5350,
+    "sha256": "d51de5a6aa4e44c9e8e3bdb817232cdda70d658263079729432f346e15b9d195"
+  },
+  "state": {
+    "blob": "dfc212dc54995d22ec12cc8c5f140f9e046bec39",
+    "bytes": 143150,
+    "sha256": "ed9847a0fb82c69456fb055263819f42d36649fa6ea36b38c967b7def927f109"
+  },
+  "authority": {
+    "id": "d3b2bf702e5fd327fc074a76a0311b1710c88d695ccc3c420c94146a8c79d244",
+    "tool": "process_status",
+    "payload": {
+      "blob": "42dac78918f48a49381b1723a2db42abaa8b96f1",
+      "bytes": 908,
+      "sha256": "3b25d204f64c3032886d932130cb15304782c7443d8330b606cada6056b97b30"
+    },
+    "payloadTree": "198d316d5dc00cfd3ae8fb3a679b5f19abaf0d68",
+    "nativeText": {
+      "blob": "1e39f3d224e4a27f2b2cf0fd37a2085b1f43008b",
+      "bytes": 729,
+      "sha256": "2153318bf775fe756b43c8f70f928db0977d32e609b70f5d98c970f8ebf26ec0"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "streams": {
+    "id": "915416c05ed1b6a38263fe4bb4d931749b1948066a0658de5bb733ee9dc38595",
+    "tool": "process_read",
+    "payload": {
+      "blob": "9817c602b0ab4877a98c8961f482422171fb3e9a",
+      "bytes": 1585,
+      "sha256": "c8552659112d52fc9bfff78ca9a0a700c8b81794b42e93acbf9c47cc4976f5d9"
+    },
+    "payloadTree": "8142cd46d5c31ed8ba585b220f392d1c70dd9f31",
+    "nativeText": {
+      "blob": "784f4be7e98a228d7162039b25062d9b369fe5da",
+      "bytes": 1396,
+      "sha256": "071c20e311d4131598ed30df7cae4e18d753f1edf49004657fdd84a9bf012d16"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "stdout": {
+    "blob": "071e3aa869a87b535e909e9fc789bbe10c4b657c",
+    "bytes": 350,
+    "sha256": "b9a804c0d7b968289c0fa4ec7f2308233798ec64cdb6f2b269f586a452491a4b"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminalExitCode": 0,
+  "full": true,
+  "durable": true,
+  "summaryOnlyPrepared": true,
+  "stageDetailsQualified": false,
+  "bundleBytes": null,
+  "bundleSHA": null,
+  "bundleFull9": null,
+  "buildQualified": false,
+  "compilerStarted": false,
+  "newNativeAfterClosure": false
+}

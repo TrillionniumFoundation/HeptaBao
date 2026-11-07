@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+  "action": "close",
+  "name": "Error",
+  "message": "closed_gfRun_action",
+  "automaticRetry": false,
+  "newAdmissionAllowed": false,
+  "returnedNormally": true
+}

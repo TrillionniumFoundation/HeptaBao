@@ -1,0 +1,1 @@
+{"resultType":"complete","content":[{"type":"text","text":"remote helper on rog-ts failed with 1\nstdout:\n\nstderr:\nFileNotFoundError: [Errno 2] No such file or directory: 'hb-4a49405b-controls-20261106-r1'"}],"isError":true}

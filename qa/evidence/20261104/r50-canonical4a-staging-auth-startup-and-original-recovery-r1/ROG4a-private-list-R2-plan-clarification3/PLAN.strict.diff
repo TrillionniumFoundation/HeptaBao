@@ -1,0 +1,11 @@
+--- a/PLAN.public.json
++++ b/PLAN.public.json
+@@ -77,7 +77,7 @@
+     "Any Native, private creation, readback, sharing, hash or schema error stops; no retry, no cursor, no mutation replay.",
+     "Create Page uncertainty is retained with the same key; this SOURCE authorizes no second create.",
+     "Missing target in this bounded page does not prove absence.",
+-    "Only literal owner_only=true accepted; absent/null/false/partial sharing stops before native semantic parse.",
++    "Accept literal owner_only=true from the documented owner scope, or an absent owner_only field only with the strict complete-empty full-roster positive proof. Explicit null/false, partial sharing, any grant, or identity/destination mismatch stops before native semantic parse.",
+     "Current provider jobs/coverage schema is tested only with synthetic fixtures; an actual mismatch stops with raw SDK privately preserved.",
+     "Found target is retained metadata, not authoritative live status; a new explicit same-ID observation authorization is needed.",
+     "No original BUILD state field is changed, including its failed START and paused state."

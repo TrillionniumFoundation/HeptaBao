@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.current-typed-stdin-binding-correction.r1",
+  "originalFailure": "binding-checker-error.original.json",
+  "secondLocalError": "The second fixture uses native_binding fields; the first correction compared undefined top-level fields. The computed digest itself already matched.",
+  "correction": "Current wire and canonical field is stdin. Verified exact digests and decimal fingerprints against two separately authorized actual fixtures; legacy stdin_text helper retained unchanged.",
+  "fixtures": [
+    {
+      "prefix": "authbus_sdk_root_literal_r1_",
+      "request": {
+        "blob": "31a1dd0e435548261bc6c8d88acd7db76e8ca5c1",
+        "bytes": 151430,
+        "sha256": "4560a291c460eea06768d373012b7178467c1848e9cc95c9dbdfde48002b8f8b"
+      },
+      "expected": {
+        "sha256": "4fe5568c8a949c251b637dd084425db90ff0ce7a27bec61251f7ca6085df837c",
+        "native_fingerprint": "5757102860283452453"
+      },
+      "actual": {
+        "sha256": "4fe5568c8a949c251b637dd084425db90ff0ce7a27bec61251f7ca6085df837c",
+        "native_fingerprint": "5757102860283452453",
+        "canonicalBytes": 151363
+      },
+      "passed": true
+    },
+    {
+      "prefix": "authbus_node_root_literal_r1_",
+      "request": {
+        "blob": "136ba17947f49cf5cdf2a281dda46bcebaa124fd",
+        "bytes": 92994,
+        "sha256": "015b7ba1cb858f7eea8f49ce3b1b3fdef066147fe49746ffa9831778db232617"
+      },
+      "expected": {
+        "sha256": "6b76d62e814bced9585dd05e69e95742d3118739dd709539e9d3f7d9d48df7f4",
+        "native_fingerprint": "7743612104536215257"
+      },
+      "actual": {
+        "sha256": "6b76d62e814bced9585dd05e69e95742d3118739dd709539e9d3f7d9d48df7f4",
+        "native_fingerprint": "7743612104536215257",
+        "canonicalBytes": 92927
+      },
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "GitMutations": 0
+}

@@ -1,0 +1,95 @@
+--- a/mac_owned_unreaped_r1.py
++++ b/mac_owned_unreaped_r1.py
+@@ -70,13 +70,40 @@
+         need(len(rows) == 1 and rows[0]["pid"] == pid, "process_projection_ambiguous")
+     return rows
+ 
++def fixed_setuid_ps_pin(pin):
++    # This public descriptor is evidence supplied after the caller's whole
++    # file/full9 read. It is not a reusable authority token or an arbitrary UID.
++    expected = {"path": "/bin/ps", "bytes": 170432,
++        "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c",
++        "identity": ["16777233", "1152921500312571399", "0", "0",
++                     "35309", "1", "170432", "1786589515000000000",
++                     "1786589515000000000"]}
++    need(type(pin) is dict and pin == expected and os.geteuid() == 501,
++         "exact_admitted_setuid_ps_only")
++    return {"path": expected["path"], "bytes": expected["bytes"],
++            "sha256": expected["sha256"], "identity": list(expected["identity"])}
++
++def capture_child(child, *, until, fixed_setuid_ps=None, admission_evidence=None):
+-def capture_child(child, *, until):
+     require_waitid()
++    admitted = None if fixed_setuid_ps is None else fixed_setuid_ps_pin(fixed_setuid_ps)
++    expected_uid = os.geteuid() if admitted is None else 0
++    need(admission_evidence is None or (admitted is not None
++         and type(admission_evidence) is dict and not admission_evidence),
++         "fresh_fixed_ps_admission_evidence")
+     rows = ps_rows(child.pid, until=until)
+     need(len(rows) == 1, "owned_child_identity_missing")
+     row = rows[0]
++    if admission_evidence is not None:
++        admission_evidence.update({"pid": child.pid,
++            "expectedParent": os.getpid(), "expectedGroup": child.pid,
++            "expectedEffectiveUid": expected_uid,
++            "observedParent": row["ppid"], "observedGroup": row["pgid"],
++            "observedEffectiveUid": row["uid"],
++            "parentMatches": row["ppid"] == os.getpid(),
++            "groupMatches": row["pgid"] == child.pid,
++            "effectiveUidMatches": row["uid"] == expected_uid})
+     need(row["ppid"] == os.getpid() and row["pgid"] == child.pid
++         and row["uid"] == expected_uid, "owned_child_scope_mismatch")
+-         and row["uid"] == os.geteuid(), "owned_child_scope_mismatch")
+     # Darwin keeps an unreaped zombie in ps but getpgid/getsid return ESRCH.
+     # Use the real live APIs only for a still-live child; otherwise independently
+     # repeat WNOWAIT and retain ps plus Popen direct-parent custody.
+@@ -98,8 +125,12 @@
+              and fresh[0]["state"].startswith("Z") and exit_observation(child) == event,
+              "owned_exit_not_retained")
+         row = fresh[0]
++    owner = {"ps": stable(row), "sid_observed_while_live": live_sid,
++             "captured_exit": event}
++    if admitted is not None:
++        owner["fixedSetuidPs"] = admitted
++        owner["expectedEffectiveUid"] = 0
++    return owner
+-    return {"ps": stable(row), "sid_observed_while_live": live_sid,
+-            "captured_exit": event}
+ 
+ def verify_unreaped(child, owner, *, until=None):
+     event = exit_observation(child)
+@@ -122,7 +153,15 @@
+     verify_unreaped(child, owner, until=until)
+     rows = ps_rows(until=until)
+     selected = [row for row in rows if row["pgid"] == child.pid and not row["state"].startswith("Z")]
++    admitted = owner.get("fixedSetuidPs")
++    if admitted is not None:
++        fixed_setuid_ps_pin(admitted)
++        need(owner.get("expectedEffectiveUid") == 0 and owner["ps"]["uid"] == 0,
++             "fixed_setuid_ps_owner_effective_uid")
++    need(all(row["uid"] == os.geteuid()
++             or (admitted is not None and row["pid"] == child.pid
++                 and stable(row) == owner["ps"] and row["uid"] == 0)
++             for row in selected), "owned_group_uid_changed_no_signal")
+-    need(all(row["uid"] == os.geteuid() for row in selected), "owned_group_uid_changed_no_signal")
+     need(time.monotonic() < until, "original_stop_deadline_expired")
+     return [stable(row) for row in selected]
+ 
+@@ -130,7 +169,7 @@
+     if event is None:return None
+     return event['status'] if event['code']==os.CLD_EXITED else -event['status']
+ 
++def stop_once_unreaped(child, owner, *, fixed_setuid_ps=None):
+-def stop_once_unreaped(child, owner):
+     """Called once by the wrapper's protected ledger; never calls Popen.poll."""
+     require_waitid()
+     started=time.monotonic()
+@@ -142,7 +181,7 @@
+         need(child.returncode is None,'already_reaped_no_group_signal')
+         term_until=time.monotonic()+1.0
+         if owner is None:
++            owner=capture_child(child,until=term_until,fixed_setuid_ps=fixed_setuid_ps)
+-            owner=capture_child(child,until=term_until)
+             receipt['custody']=owner
+         members=live_group(child,owner,until=term_until)
+         receipt['initialLiveGroup']=members

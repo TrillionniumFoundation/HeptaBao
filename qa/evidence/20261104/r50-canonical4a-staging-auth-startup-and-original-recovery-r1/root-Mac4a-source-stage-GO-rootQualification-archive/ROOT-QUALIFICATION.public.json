@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.root.Mac4a-final-stage.SOURCE21.r1",
+  "result": {
+    "schema": "heptabao.mac4a-final-stage-source-checks.v1",
+    "pass": true,
+    "check_count": 21,
+    "checks": [
+      {
+        "label": "exact binder replay source",
+        "pass": true
+      },
+      {
+        "label": "exact binder replay sourceDiff",
+        "pass": true
+      },
+      {
+        "label": "exact binder replay carrier",
+        "pass": true
+      },
+      {
+        "label": "exact binder replay requestRaw",
+        "pass": true
+      },
+      {
+        "label": "exact binder replay journal",
+        "pass": true
+      },
+      {
+        "label": "exact binder replay journalDiff",
+        "pass": true
+      },
+      {
+        "label": "exact typed binding and decimal fingerprint",
+        "pass": true
+      },
+      {
+        "label": "exact root transport qualification",
+        "pass": true
+      },
+      {
+        "label": "root transport facts only, no inherited Macstage",
+        "pass": true
+      },
+      {
+        "label": "root exact candidate and actual bundle",
+        "pass": true
+      },
+      {
+        "label": "root exact whole transport pins",
+        "pass": true
+      },
+      {
+        "label": "actual producer candidate whole source",
+        "pass": true
+      },
+      {
+        "label": "actual producer whole identity matches independently transferred bytes",
+        "pass": true
+      },
+      {
+        "label": "independent metadata version pinned",
+        "pass": true
+      },
+      {
+        "label": "one original Mac source-stage interface",
+        "pass": true
+      },
+      {
+        "label": "exact source self and complete carrier SHA",
+        "pass": true
+      },
+      {
+        "label": "actual complete carrier original cap",
+        "pass": true
+      },
+      {
+        "label": "original stage clocks unchanged",
+        "pass": true
+      },
+      {
+        "label": "all function-body archive keys reviewed",
+        "pass": true
+      },
+      {
+        "label": "future normal117 and original full34 remain unobserved",
+        "pass": true
+      },
+      {
+        "label": "source-only proposal",
+        "pass": true
+      }
+    ],
+    "NativeCalls": 0,
+    "PythonExecutions": 0,
+    "sourceTemplateChecksReused": 27
+  },
+  "exact": true,
+  "audit": {
+    "tree": "40f3f4875b54119e7bb70bd85928b0d88a767d59",
+    "files": 29,
+    "bytes": 211632,
+    "merkle": {
+      "root_sha": "40f3f4875b54119e7bb70bd85928b0d88a767d59",
+      "trees_verified": 1,
+      "leaf_count": 29
+    },
+    "whole": true
+  },
+  "actualBindings": {
+    "actualTransport": true,
+    "actualBase64": true,
+    "rootTransport": true,
+    "producerReport": true,
+    "producerRootQualification": true,
+    "actualInfo": true,
+    "priorWholeBinder": true,
+    "priorReviewedTemplate": true,
+    "typedDigest": true,
+    "fingerprint": true,
+    "actualStdin": true,
+    "candidateManifest": true
+  },
+  "nativeBinding": {
+    "sha256": "daaf371ff184868de626925c2fec497abae04ed539222d53f561d10d77bdb01e",
+    "native_fingerprint": "15757874231528162957",
+    "canonical_bytes": 26474
+  },
+  "priorTemplateRootChecks": 27,
+  "priorThreeLayerBindingRootChecks": 44,
+  "priorMinimalBinderRootChecks": {
+    "beforePin": true,
+    "afterPin": true,
+    "forward": true,
+    "reverse": true,
+    "exact10DataEdits": true,
+    "fourHunks": true
+  },
+  "actualTransportRoot": {
+    "blob": "a4a543327bd5ec9235f746a1c5511f1fd7db3c27",
+    "bytes": 5764,
+    "sha256": "8ed5f7e017e1f26a55dfae724a04e12b01a01cc05501438965def72cd7a6546b"
+  },
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "branch": "codex/heptabao-test-fixture-f02dd113-20261106",
+    "leaves": 3932,
+    "trackedBytes": 62553956,
+    "indexSha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "history": 3770,
+    "manifest": {
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    }
+  },
+  "scope": "Only new Mac T5 independent source clone and actual bundle import; no compiler, tests, server or SDK execution.",
+  "NativeCalls": 0,
+  "sourceFormatting": false
+}

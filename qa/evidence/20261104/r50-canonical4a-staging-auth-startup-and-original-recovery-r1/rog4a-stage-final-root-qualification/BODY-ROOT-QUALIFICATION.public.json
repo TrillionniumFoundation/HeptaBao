@@ -1,0 +1,577 @@
+{
+  "result": {
+    "schema": "heptabao.root.4a-stage-report-BODY-original-qualification.r1",
+    "ok": true,
+    "checks": 71,
+    "results": [
+      {
+        "name": "exact-BODY-GO",
+        "pass": true
+      },
+      {
+        "name": "INFO-original-exact",
+        "pass": true
+      },
+      {
+        "name": "old-ten-calls-exact",
+        "pass": true
+      },
+      {
+        "name": "old-three-observers-exact",
+        "pass": true
+      },
+      {
+        "name": "local-error-recovery-retained",
+        "pass": true
+      },
+      {
+        "name": "eight-original-delta",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-start-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-start-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-start-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-start-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-start-original-op",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-status0-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-status0-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-status0-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-status0-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-status0-original-op",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p0-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p0-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p0-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p0-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p0-original-op",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p1-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p1-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p1-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p1-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p1-original-op",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p2-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p2-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p2-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p2-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p2-original-op",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p3-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p3-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p3-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p3-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p3-original-op",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p4-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p4-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p4-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p4-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p4-original-op",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p5-request-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p5-original-arm",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p5-original-sdk",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p5-native-exact",
+        "pass": true
+      },
+      {
+        "name": "c4a-source-r1-reportbody-p5-original-op",
+        "pass": true
+      },
+      {
+        "name": "one-reviewed-body-request",
+        "pass": true
+      },
+      {
+        "name": "one-start-nonreused",
+        "pass": true
+      },
+      {
+        "name": "status-completed-inactive",
+        "pass": true
+      },
+      {
+        "name": "status-sdk-exact-min",
+        "pass": true
+      },
+      {
+        "name": "page0-cursor",
+        "pass": true
+      },
+      {
+        "name": "page0-snapshot",
+        "pass": true
+      },
+      {
+        "name": "page1-cursor",
+        "pass": true
+      },
+      {
+        "name": "page1-snapshot",
+        "pass": true
+      },
+      {
+        "name": "page2-cursor",
+        "pass": true
+      },
+      {
+        "name": "page2-snapshot",
+        "pass": true
+      },
+      {
+        "name": "page3-cursor",
+        "pass": true
+      },
+      {
+        "name": "page3-snapshot",
+        "pass": true
+      },
+      {
+        "name": "page4-cursor",
+        "pass": true
+      },
+      {
+        "name": "page4-snapshot",
+        "pass": true
+      },
+      {
+        "name": "page5-cursor",
+        "pass": true
+      },
+      {
+        "name": "page5-snapshot",
+        "pass": true
+      },
+      {
+        "name": "six-pages-whole",
+        "pass": true
+      },
+      {
+        "name": "payload-native-exact",
+        "pass": true
+      },
+      {
+        "name": "binary-path-version",
+        "pass": true
+      },
+      {
+        "name": "binary-fixed-extent",
+        "pass": true
+      },
+      {
+        "name": "decoded-original-report",
+        "pass": true
+      },
+      {
+        "name": "all-eighteen-calls-accepted",
+        "pass": true
+      },
+      {
+        "name": "four-observers-closed",
+        "pass": true
+      },
+      {
+        "name": "state-released",
+        "pass": true
+      },
+      {
+        "name": "release-agrees",
+        "pass": true
+      }
+    ],
+    "originalJob": "1a1b3307dc2-fc05-80f8",
+    "operation": "c577930dab615d3c97a41b0296313ca4d03805b614becfbe033a40fdb736edd3",
+    "report": {
+      "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+      "bytes": 31257,
+      "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+    },
+    "originalCallsIndependentlyRead": 8,
+    "originalArmsIndependentlyRead": 8,
+    "originalImmutablePages": 6,
+    "allCalls18Closed": true,
+    "knownLocalActionErrorPreserved": true,
+    "pureRecoveryPreserved": true,
+    "NativeLaneReleased": true,
+    "productQualification": false
+  },
+  "audit": {
+    "tree": "568ef9984622508ace7bbffd5fbcec9930c18147",
+    "files": 10,
+    "bytes": 309507,
+    "merkle": {
+      "root_sha": "568ef9984622508ace7bbffd5fbcec9930c18147",
+      "trees_verified": 1,
+      "leaf_count": 10
+    },
+    "whole": true
+  },
+  "originalsWhole": [
+    {
+      "key": "c4a-source-r1-reportbody-start",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-start-SDK",
+      "audit": {
+        "tree": "4a1ae4b7ee590735213946853b69fbe1b7d049ae",
+        "files": 1,
+        "bytes": 706,
+        "merkle": {
+          "root_sha": "4a1ae4b7ee590735213946853b69fbe1b7d049ae",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-start",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-start-arm",
+      "audit": {
+        "tree": "d643dd0c9416135afbe56e6391093e9116cf135d",
+        "files": 3,
+        "bytes": 1982,
+        "merkle": {
+          "root_sha": "d643dd0c9416135afbe56e6391093e9116cf135d",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-status0",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-status0-SDK",
+      "audit": {
+        "tree": "938025cc9bd3e934019dcf895ad2bf5b326dd9be",
+        "files": 1,
+        "bytes": 977,
+        "merkle": {
+          "root_sha": "938025cc9bd3e934019dcf895ad2bf5b326dd9be",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-status0",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-status0-arm",
+      "audit": {
+        "tree": "70c30d23ced48e0615528ee4fb80c79220dcf723",
+        "files": 3,
+        "bytes": 1788,
+        "merkle": {
+          "root_sha": "70c30d23ced48e0615528ee4fb80c79220dcf723",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p0",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p0-SDK",
+      "audit": {
+        "tree": "0db5e421b2e696ec9c4680a4077475f20c2f333c",
+        "files": 1,
+        "bytes": 11780,
+        "merkle": {
+          "root_sha": "0db5e421b2e696ec9c4680a4077475f20c2f333c",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p0",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p0-arm",
+      "audit": {
+        "tree": "b6af0b02445df8b84bb48ca1a107864ee86153c1",
+        "files": 3,
+        "bytes": 1804,
+        "merkle": {
+          "root_sha": "b6af0b02445df8b84bb48ca1a107864ee86153c1",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p1",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p1-SDK",
+      "audit": {
+        "tree": "264b8cf056f72159032be869422c2d0a2c747842",
+        "files": 1,
+        "bytes": 11784,
+        "merkle": {
+          "root_sha": "264b8cf056f72159032be869422c2d0a2c747842",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p1",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p1-arm",
+      "audit": {
+        "tree": "65450b1ad2189862d14ed3743278292296999608",
+        "files": 3,
+        "bytes": 1807,
+        "merkle": {
+          "root_sha": "65450b1ad2189862d14ed3743278292296999608",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p2",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p2-SDK",
+      "audit": {
+        "tree": "7a6308c16444ff72a51b4b3a4dbd13dc8b5ac2df",
+        "files": 1,
+        "bytes": 11785,
+        "merkle": {
+          "root_sha": "7a6308c16444ff72a51b4b3a4dbd13dc8b5ac2df",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p2",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p2-arm",
+      "audit": {
+        "tree": "870f6a3411d57a13317836bf5e9b8aaf5354ff81",
+        "files": 3,
+        "bytes": 1808,
+        "merkle": {
+          "root_sha": "870f6a3411d57a13317836bf5e9b8aaf5354ff81",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p3",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p3-SDK",
+      "audit": {
+        "tree": "28f7a65a4ccd782cc37cda718e87a6c6a54e8575",
+        "files": 1,
+        "bytes": 11785,
+        "merkle": {
+          "root_sha": "28f7a65a4ccd782cc37cda718e87a6c6a54e8575",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p3",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p3-arm",
+      "audit": {
+        "tree": "746cfff6ce69943ca57d24cc71335898964deb91",
+        "files": 3,
+        "bytes": 1808,
+        "merkle": {
+          "root_sha": "746cfff6ce69943ca57d24cc71335898964deb91",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p4",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p4-SDK",
+      "audit": {
+        "tree": "e5a3bb06f87c64778e7bc380be323ac7d9d1e50c",
+        "files": 1,
+        "bytes": 11785,
+        "merkle": {
+          "root_sha": "e5a3bb06f87c64778e7bc380be323ac7d9d1e50c",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p4",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p4-arm",
+      "audit": {
+        "tree": "3634f4865474cdce0ca9f939cddcc272d2650eab",
+        "files": 3,
+        "bytes": 1808,
+        "merkle": {
+          "root_sha": "3634f4865474cdce0ca9f939cddcc272d2650eab",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p5",
+      "kind": "SDK",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p5-SDK",
+      "audit": {
+        "tree": "449430ab052fe2fa62716f652f122a99a2e31106",
+        "files": 1,
+        "bytes": 2368,
+        "merkle": {
+          "root_sha": "449430ab052fe2fa62716f652f122a99a2e31106",
+          "trees_verified": 1,
+          "leaf_count": 1
+        },
+        "whole": true
+      }
+    },
+    {
+      "key": "c4a-source-r1-reportbody-p5",
+      "kind": "arm",
+      "label": "ROG4a-stage-BODY-c4a-source-r1-reportbody-p5-arm",
+      "audit": {
+        "tree": "b4f31d4cecc92417af3d14c3fe8943af26093f56",
+        "files": 3,
+        "bytes": 1808,
+        "merkle": {
+          "root_sha": "b4f31d4cecc92417af3d14c3fe8943af26093f56",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "whole": true
+      }
+    }
+  ]
+}

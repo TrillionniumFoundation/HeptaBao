@@ -1,0 +1,56 @@
+--- a/undefined
++++ b/undefined
+@@ -5,13 +5,13 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "official271_x230_acl23_oracle_gitfirst_r1";
+-const GF_REQUEST = {"blob":"90b68f243c6dfc77cedce08b6d1095ffdd1a79a1","bytes":164440,"sha256":"f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"};
++const GF_SLOT = "official271_x230_pki12_oracle_gitfirst_r1";
++const GF_REQUEST = {"blob":"ecc21302bb94a0b40b856577371cd11d826c6f57","bytes":171446,"sha256":"f8678baebc997e19b8770609b52a7ffad8248e7f9ff94dc947e83f60fd4f7377"};
+ 
+-const GF_ORACLE_REPORT_INFO_REQUEST = {"blob":"3d4b0ac9b5e642da091ae07c6e446c2c4947b817","bytes":267,"sha256":"4a98bc7695715f1cdc1e50ba56ffe85a16511f11af6305d356eaf2092a1b3094"};
+-const GF_ORACLE_REPORT_INFO_TARGET = {"path":"/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json","bytes":36658,"sha256":"4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece","full9Strings":["2053","3318893","1000","1000","33152","1","36658","1793979309530036044","1793979309530036044"]};
+-const GF_ORACLE_REPORT_PRIOR_STATE = {"blob":"79d77bf0c3c347a504641becf40670db09cf2bac","bytes":213768,"sha256":"bb7c9bca85b753a5ce96f767043d02ef23a801473b7f252809f8343f3e7d5906"};
+-const GF_ORACLE_REPORT_STDOUT = {"blob":"4cadde347ce3fb4b3dd8a175dea060bb73ccb1db","bytes":782,"sha256":"a423a851fc982b94aa352315f29a5c30f099988b820421a43f84c369d42ec426"};
++const GF_ORACLE_REPORT_INFO_REQUEST = {"blob":"2f4e6117554a8818ece0d5e06692bc9ab84d43c6","bytes":269,"sha256":"fbd273d05f6bc3fb3062a4ea82fc3bd524ccd2b735374e4163c2faa3d10502d1"};
++const GF_ORACLE_REPORT_INFO_TARGET = {"path":"/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json","bytes":41509,"sha256":"5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0","full9Strings":["2053","3321457","1000","1000","33152","1","41509","1794009102635552960","1794009102635552960"]};
++const GF_ORACLE_REPORT_PRIOR_STATE = {"blob":"ba875d198144416dd4206e1a60e1c47a34b28232","bytes":219686,"sha256":"eafafc8bbea6eb7757f954587f5596c503c3fc54a6faad9c8745d6e80f609494"};
++const GF_ORACLE_REPORT_STDOUT = {"blob":"ea2c76305ee16677874cbfd6ec5cedc4c72bbc7f","bytes":676,"sha256":"83fff2ea0f207fa002a52ae2da23cd016780bba1fb928a1211563bfdc508146a"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -46,27 +46,27 @@
+  gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"whole_report_info_GO");
+  const g=JSON.parse(goRaw);
+  gfNeed(g.authorization==="GO" && g.scope==="official271_oracle_result_file_info_only"
+-   && g.original_job==="1a1b17f9eff-fc05-7932"
++   && g.original_job==="1a1b3461a2c-fc05-81a9"
+    && g.maximum_file_info_operations===1 && g.maximum_process_start_calls===0
+    && g.maximum_binary_read_operations===0
+    && JSON.stringify(g.exact_request)===JSON.stringify(GF_ORACLE_REPORT_INFO_REQUEST),
+    "one_exact_oracle_report_info_authority");
+  gfNeed(gfMetaEquals(priorStateRaw,GF_ORACLE_REPORT_PRIOR_STATE)
+    && JSON.stringify(s,null,2)+"\n"===priorStateRaw
+-   && s.job==="1a1b17f9eff-fc05-7932" && s.startCalled===true
++   && s.job==="1a1b3461a2c-fc05-81a9" && s.startCalled===true
+    && !s.paused && !s.nativeCallInFlight && s.pending===null && s.activeObserver===null
+    && Object.keys(s.calls).length===7 && s.completedObservers.length===2
+    && s.completedObservers.every(o=>o.completedInactive===true)
+    && Object.values(s.calls).every(c=>c.phase==="accepted"&&c.sdkArchive?.whole===true)
+-   && s.oracleReportInfoGO===undefined,"original_failed_fixture_whole_closed_boundary");
++   && s.oracleReportInfoGO===undefined,"original_completed_fixture_whole_closed_boundary");
+  gfNeed(gfMetaEquals(stdoutRaw,GF_ORACLE_REPORT_STDOUT),"actual_terminal_stdout_whole");
+  const terminal=JSON.parse(stdoutRaw),r=terminal.report;
+- gfNeed(terminal.capture_complete===false && terminal.failure?.code==="common_config_projection_mismatch"
+-   && terminal.all_entry_file_descriptors_closed===true && terminal.entry_fd_count===12
++ gfNeed(terminal.capture_complete===true && terminal.failure===null
++   && terminal.all_entry_file_descriptors_closed===true && terminal.entry_fd_count===10
+    && terminal.pending_signal===null && r?.relative==="result.public.json" && r.closed===true
+    && r.bytes===GF_ORACLE_REPORT_INFO_TARGET.bytes && r.sha256===GF_ORACLE_REPORT_INFO_TARGET.sha256
+    && JSON.stringify(r.full9_decimal)===JSON.stringify(GF_ORACLE_REPORT_INFO_TARGET.full9Strings),
+-   "actual_failed_terminal_binds_one_report_only");
++   "actual_complete_terminal_binds_one_report_only");
+  s.oracleReportInfoGO={raw:goRaw,pin:goPin,whole:true};
+  s.onlyOracleReportInfo=true;s.oracleReportInfoStarted=false;s.oracleReportInfo=null;
+  gfSave(s);

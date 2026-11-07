@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.private-list-whole-safe-proof.r1",
+  "sdk": {
+    "blob": "1c474f064defffead7cf385298dab342e895f4fd",
+    "bytes": 236,
+    "sha256": "07ecbfc6b5855f5ce6e9eedcac2707b424b17d7db376da1e7189632732da6b5c"
+  },
+  "readSdk": {
+    "blob": "eeab0ac3d42933cc97d217127020c35a1376b0a6",
+    "bytes": 6258,
+    "sha256": "005d358e64f8a11422f5f0305d4e696317d5bf23c525de4723f4902a40f3be2f"
+  },
+  "sharingSdk": {
+    "blob": "b6b01c845b835641e37abe2b81f0a97532991b25",
+    "bytes": 2417,
+    "sha256": "e2bc6df046f10fdd01d54c9461e2cc45d6d5ad6d6e9a69d7be52437c332c3464"
+  },
+  "helper": {
+    "blob": "2e5ecda0d8e81cd8ec53a74dfe27f0890634c238",
+    "bytes": 3054,
+    "sha256": "c73b57ac1d42abdce4ba9f61baf40424a11ca52af417d8d768691271ef09f7be"
+  },
+  "ownerOnlyBasis": "complete_full_roster_derived_not_literal_owner_only",
+  "ownerEqualsCanonical": true,
+  "ownerPrincipalType": "user",
+  "directShareCount": 0,
+  "inherited": [
+    {
+      "complete": true,
+      "sources": 0
+    },
+    {
+      "complete": true,
+      "sources": 0
+    },
+    {
+      "complete": true,
+      "sources": 0
+    }
+  ],
+  "nextCursorNull": true,
+  "spaceIdNull": true,
+  "workspaceIdNull": true,
+  "exactPageIdsMatchPrivately": true,
+  "privatePageReferenceNotPublished": true,
+  "decodedOriginalBytes": 236,
+  "allBytesAndHashesVerified": true,
+  "originalMissingOwnerOnlyFieldAndRejectionPreserved": true,
+  "originalBuildStateStill": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+  "oldListSlotNotMutated": true,
+  "newNativeCallsForThisVerification": 0,
+  "newPagesCallsForThisVerification": 0
+}

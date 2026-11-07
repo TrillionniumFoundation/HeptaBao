@@ -1,0 +1,154 @@
+{
+  "schema": "heptabao.root.successor4a49405b-fresh-ROG-dual-bundle-source-stage.GO.r1",
+  "lane": "B single Native lane",
+  "authorization": "User requested completing implementation and real Mac/Linux/LAN validation; one isolated source stage required for the reviewed candidate.",
+  "sourceTree": "eda0620d3bbf62f0add68918e2e948d540239e0e",
+  "sourceRootQualification": {
+    "blob": "22a606b634a9d9e357a0f7babc926850c27b2f50",
+    "bytes": 8974,
+    "sha256": "b7956fc2fab2a741ddb3d6535ecf53635a6bcb46849e16ee954048e167ec74e4"
+  },
+  "candidateCommit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "candidateTree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+  "exactRequest": {
+    "blob": "0d7da3d10202045af2e06a2d598a82b2fa18194d",
+    "bytes": 113356,
+    "sha256": "43857487d44efaff0dbd5c2378474ed04211229aa73030784850f8ca415f4276"
+  },
+  "source": {
+    "blob": "384892ebb06ac6511318380e3383bbf99d5dee17",
+    "bytes": 30326,
+    "sha256": "60fd63decdf0e51a6154871a33d5e5da538b474817c330870d53013e4a708f1e"
+  },
+  "journal": {
+    "blob": "254e10fc6158f4952469a427d89b798c2c8873e4",
+    "bytes": 19047,
+    "sha256": "2bf44bc20fc91ed4b6092116b51952f4874484437221120c57ac3ec4334945be"
+  },
+  "slot": "combined_4a49405b_rog_source_gitfirst_r1",
+  "key": "heptabao-combined-4a49405b-rog-source-20261106-r1-60fd63de",
+  "native_binding": {
+    "sha256": "b2ca6b6145cd9cdf0d9221a54e285744e1f67f6c20a8679f7cd1147c0a1ca971",
+    "native_fingerprint": "12883227749573827807"
+  },
+  "host": "rog",
+  "freshRoot": "/home/qian-qi/hb-4a49405b-src-20261106-r1",
+  "scope": "one unique process_start; original job process_status/process_read observations only under the unchanged journal",
+  "maxNativeLanes": 1,
+  "budgets": {
+    "stage": 300,
+    "gitLeaf": 90,
+    "clone": 180,
+    "outer": 360,
+    "term": 5,
+    "kill": 5,
+    "stdin": 262144,
+    "bundle": 4194304,
+    "eachLeaf": 2097152,
+    "totalTracked": 134217728,
+    "processRead": 16384,
+    "immutablePage": 8192,
+    "payload": 1048576,
+    "processStarts": 1,
+    "processStatusObservers": 64,
+    "processReadObservers": 129,
+    "perObserverStatusCalls": 8,
+    "perObserverImmutablePages": 128,
+    "originalStdoutBytes": 2097152,
+    "originalStderrBytes": 2097152
+  },
+  "required": {
+    "freshSlotInitializeOnlyOnce": true,
+    "wholeOriginalIntentBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "originalSDKWholeBeforeParse": true,
+    "sameOriginalJobOnly": true,
+    "oldSourceAndFailedObserverFences": true,
+    "allOwnedHelpersAndDescriptorsClosed": true,
+    "originalAuthorityAndFullStreamsRequired": true,
+    "eachBundleUniqueCorrectPrerequisiteAndHead": true,
+    "twoBundlesShareOriginal4MiBCap": true,
+    "noInheritedBuildOrRuntimeQualification": true
+  },
+  "onError": "Preserve original UNKNOWN or failure; no replay or replacement. Only exact-SHA Git read reconciliation is routine; Native recovery needs its own concrete scope.",
+  "notIncluded": {
+    "reportFileInfoOrBody": false,
+    "bundleTransport": false,
+    "formatter": false,
+    "Cargo": false,
+    "productServer": false,
+    "credentials": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  },
+  "qualification": {
+    "stageSuccessNotAssumed": true,
+    "sourceFormatted": false,
+    "buildQualified": false,
+    "fullReplacementQualified": false,
+    "actualBundleTransportQualified": false
+  },
+  "issuedAtUTC": "2026-11-06 23:26:34 UTC",
+  "readOnlyCloneBase": "/home/qian-qi/hb-02b90762-src-20261106-r1/source",
+  "preserved495Source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+  "expectedHistoryCount": 3770,
+  "expectedAncestryLinks": 18,
+  "expectedFullLeafCount": 3932,
+  "expectedTrackedBytes": 62553956,
+  "expectedFullLeafIndexSha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "sourceAuthor91": {
+    "blob": "b6a603c3e66aad28da625ff015f59fa6b961c8d7",
+    "bytes": 7034,
+    "sha256": "64641e040f2238faaf81c3cd494a0bd0448454d71fe1b23b606796715b6d21e7"
+  },
+  "expectedBundles": [
+    {
+      "resultKey": "canonical_bundle",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+      "prerequisites": [
+        "5767739cd25e458ac052dc8d384019bab8688ae0"
+      ],
+      "heads": [
+        [
+          "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+          "HEAD"
+        ]
+      ],
+      "version": 2,
+      "bytes": null,
+      "sha256": null,
+      "full9": null,
+      "consumer": "Mac actual576 base"
+    },
+    {
+      "resultKey": "canonical_x230_bundle",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+      "prerequisites": [
+        "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+      ],
+      "heads": [
+        [
+          "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+          "HEAD"
+        ]
+      ],
+      "version": 2,
+      "bytes": null,
+      "sha256": null,
+      "full9": null,
+      "consumer": "X230 reviewed 495->02b then 02b->target"
+    }
+  ],
+  "bundleTotalCapBytes": 4194304,
+  "expectedDirectCommandsSourceOnly": 72,
+  "previousCheckpoint": "0449368aa49e196d5ca16073c00acc00b620e884",
+  "rootChecks": 91,
+  "rootActualBindingChecks": 7
+}

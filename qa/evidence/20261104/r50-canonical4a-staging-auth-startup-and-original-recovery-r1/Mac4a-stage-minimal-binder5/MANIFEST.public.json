@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.mac4a.stage-binder-minimal-source-delta.r1",
+  "status": "SOURCE_ONLY_WAIT_ACTUAL_BUNDLE",
+  "original_binder": "e353530f3a579d88554928d070790661fa720114",
+  "template": "33d304b409630c9e2e87c5d24dd44b04e905ec29",
+  "data_edits": 10,
+  "hunks": 4,
+  "actual_info": null,
+  "actual_body": null,
+  "request": null,
+  "runtime_slot": null,
+  "Native_calls": 0,
+  "files": [
+    {
+      "path": "binder.before.js",
+      "blob": "e353530f3a579d88554928d070790661fa720114",
+      "bytes": 6971,
+      "sha256": "bb79258cdd0357bcd56915c762eeafabb85bfca62715d8126e8d59ccb765f8a5"
+    },
+    {
+      "path": "binder.forward.diff",
+      "blob": "dec087e59677e764ba738c4223a874e422587a22",
+      "bytes": 4425,
+      "sha256": "f288c85f8603512a4fe812e667922eaf44cae6c5307a69151d457445870513ff"
+    },
+    {
+      "path": "binder.reverse.diff",
+      "blob": "d0025822a41d7f0f2f22ac9d5123ec8831c5953a",
+      "bytes": 4425,
+      "sha256": "3de5c77fae21931e34e0cf96e53308eb7af4b700685a76dfb7a05b84831d46af"
+    },
+    {
+      "path": "binder.source.js",
+      "blob": "f3fe13af215cd78ef3a5f12718719560daa79654",
+      "bytes": 6967,
+      "sha256": "af20a078f9a6cd2a13dfa2d9fc19768e31faa3299d6f467095685b3d4f901812"
+    }
+  ]
+}

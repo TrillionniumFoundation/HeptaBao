@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.mac-successor4a.actual-bundle-bindings.v1",
+  "ready": true,
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0"
+  },
+  "producer": {
+    "host": "rog",
+    "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+    "report": {
+      "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+      "bytes": 31257,
+      "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+    },
+    "rootQualification": {
+      "blob": "489681f4680763539866097e650073729c68dee7",
+      "bytes": 4276,
+      "sha256": "65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576"
+    }
+  },
+  "infoNative": {
+    "blob": "f8629d29e51e1101386ea925bed8bcbb08750d3b",
+    "bytes": 472,
+    "sha256": "645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073"
+  },
+  "infoOperation": "652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2",
+  "bodyOperations": [
+    "1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f"
+  ],
+  "bundle": {
+    "bytes": 1253,
+    "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+    "full9": [
+      "66306",
+      "34603387",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "1253",
+      "1794007675691817556",
+      "1794007675691817556"
+    ],
+    "version": "66306:34603387:1253:1794007675691817556:1794007675691817556",
+    "headerSha256": "ffa8977f7e4efa7ea246089229c566e9007efc3a8a64be8be1e3de5c4efe3626"
+  },
+  "base64": {
+    "blob": "0c484a368ed4477cb0be462292a17262adf621c9",
+    "bytes": 1673,
+    "sha256": "7424490267abd9c6f5aaf2cff5edc5a7894ddf10fa26ae622b9751fbf635c6f5"
+  },
+  "transport": {
+    "blob": "3650eb4dde4116eca631e82316aba08eb472fd5e",
+    "bytes": 869,
+    "sha256": "1386ebfb447740e7b393875be6df46ffff515104c69ee3e1cd1ac65ed64257ab"
+  },
+  "transportRootQualification": {
+    "blob": "a4a543327bd5ec9235f746a1c5511f1fd7db3c27",
+    "bytes": 5764,
+    "sha256": "8ed5f7e017e1f26a55dfae724a04e12b01a01cc05501438965def72cd7a6546b"
+  },
+  "recovery": {
+    "source": {
+      "blob": "4c81e36dd4483dbd5996db2c60b4cafe2dcb31b2",
+      "bytes": 9842,
+      "sha256": "3446d6895dac17434cefd50004bfadb25b7ecba684539fb77c2eaa495d4e65a6"
+    },
+    "GO": {
+      "blob": "59485242ee460f5dab6b3e9588b0cc846e45dca5",
+      "bytes": 3528,
+      "sha256": "0eacb723d5f19f762067a6256c50e693666ff81daa07fb13aa98c4b568795e64"
+    },
+    "proof": "6c130b5d6a59da0cf25576582973647753420746",
+    "actualApplyPacket": "c455c5a261a7854313133a7e37ec5ce3f35a7e03",
+    "originalErrorRetained": true
+  },
+  "MacStageGO": null,
+  "MacStageExecuted": false
+}

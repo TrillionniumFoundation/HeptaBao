@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.private-adapter-outercatch-narrow-peer.r2",
+  "status": "ORIGINAL_PUBLIC_EXCEPTION_FINDING_RESOLVED_SOURCE_ONLY",
+  "before": {
+    "blob": "f04143022a6d9dfe5e518898c5fd2129e21c8889",
+    "bytes": 12303,
+    "sha256": "1b95c4a6b616944d9a66dcdb9d73a5a0222357ef847b789c7b4efa00f3a189d7"
+  },
+  "after": {
+    "blob": "b8e58ec9737e4570e657c2f2ea7e2768ca43f90f",
+    "bytes": 14022,
+    "sha256": "09b86d988630b7c357cdedff660b37d2ebafd205fda37fe3a10eeb129c25762a"
+  },
+  "inspected": "Only the final b4pRun public entry and the three returned function boundaries; full source blobs were hashed, no candidate functions executed.",
+  "sourceSlice": {
+    "blob": "e12139565dc54a2beaf955fc8d370706fb29fb62",
+    "bytes": 616,
+    "sha256": "ec8196b9d58eefdd65424f9837e0fe07bf0e51db81f85f5c32c1a28a583cdb19"
+  },
+  "findings": [
+    "prepare and invoke await inside the outer try, so promise rejection as well as immediate guard exceptions enters the fixed catch.",
+    "accept executes synchronously inside the same try; b4pOld/precondition failures outside inner catches are contained here.",
+    "The catch stores exception name/message/stack only under the private slot key.",
+    "The public failure return is exactly ok:false, stopped:true, code:private_adapter_stopped; no exception text/stack and no rethrow.",
+    "This closes the earlier failed-cell/public-error boundary; no Native/Page behavior or remaining R2 semantics are qualified."
+  ],
+  "exclusions": [
+    "No private Page SDK read",
+    "No adapter function invoked",
+    "No Native call",
+    "No repetition of 21/37 source checks",
+    "No assertion of original job discovery or closure"
+  ],
+  "NativeCalls": 0
+}

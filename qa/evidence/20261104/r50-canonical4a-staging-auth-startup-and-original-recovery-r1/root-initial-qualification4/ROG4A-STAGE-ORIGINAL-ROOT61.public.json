@@ -1,0 +1,284 @@
+{
+  "result": {
+    "schema": "heptabao.root.rog4a-source-stage-original-chain.r1",
+    "passed": true,
+    "checkCount": 61,
+    "checks": [
+      {
+        "name": "exact root GO",
+        "passed": true
+      },
+      {
+        "name": "7 calls and original state root pin",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-start exact accepted state",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-start request original",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-start SDK/native original pins",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-start SDK native bytes",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-start arm and intent binding",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-start original GO admission",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-start exact accepted state",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-start request original",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-start SDK/native original pins",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-start SDK native bytes",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-start arm and intent binding",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-start original GO admission",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-status0 exact accepted state",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-status0 request original",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-status0 SDK/native original pins",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-status0 SDK native bytes",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-status0 arm and intent binding",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-status0 original GO admission",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-p0 exact accepted state",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-p0 request original",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-p0 SDK/native original pins",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-p0 SDK native bytes",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-p0 arm and intent binding",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-authority0-p0 original GO admission",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-start exact accepted state",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-start request original",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-start SDK/native original pins",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-start SDK native bytes",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-start arm and intent binding",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-start original GO admission",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-status0 exact accepted state",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-status0 request original",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-status0 SDK/native original pins",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-status0 SDK native bytes",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-status0 arm and intent binding",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-status0 original GO admission",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-p0 exact accepted state",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-p0 request original",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-p0 SDK/native original pins",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-p0 SDK native bytes",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-p0 arm and intent binding",
+        "passed": true
+      },
+      {
+        "name": "c4a-source-r1-streams0-p0 original GO admission",
+        "passed": true
+      },
+      {
+        "name": "one exact START",
+        "passed": true
+      },
+      {
+        "name": "exact original Native identity",
+        "passed": true
+      },
+      {
+        "name": "2 original observers 2 pages",
+        "passed": true
+      },
+      {
+        "name": "authority0 original once observer",
+        "passed": true
+      },
+      {
+        "name": "authority0 completed inactive future",
+        "passed": true
+      },
+      {
+        "name": "authority0 exact immutable one-page payload",
+        "passed": true
+      },
+      {
+        "name": "authority0 original native payload",
+        "passed": true
+      },
+      {
+        "name": "streams0 original once observer",
+        "passed": true
+      },
+      {
+        "name": "streams0 completed inactive future",
+        "passed": true
+      },
+      {
+        "name": "streams0 exact immutable one-page payload",
+        "passed": true
+      },
+      {
+        "name": "streams0 original native payload",
+        "passed": true
+      },
+      {
+        "name": "original successful durable full terminal",
+        "passed": true
+      },
+      {
+        "name": "stdout original EOF bytes",
+        "passed": true
+      },
+      {
+        "name": "stderr original EOF bytes",
+        "passed": true
+      },
+      {
+        "name": "actual summary correct candidate",
+        "passed": true
+      },
+      {
+        "name": "fixed report path",
+        "passed": true
+      },
+      {
+        "name": "explicit original owner closed",
+        "passed": true
+      }
+    ],
+    "job": "rog/1a1b3307dc2-fc05-80f8",
+    "counts": {
+      "calls": 7,
+      "observers": 2,
+      "pages": 2
+    },
+    "summary": {
+      "all_owned_stopped": true,
+      "compiler_started": false,
+      "result_path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+      "server_started": false,
+      "source_commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+      "source_tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+      "status": "prepared",
+      "within_new_stage_deadline": true
+    },
+    "stageDetailsQualified": false,
+    "buildQualified": false,
+    "laneReleased": true,
+    "NativeCallsAdded": 0
+  },
+  "audit": {
+    "tree": "40b2c95927225b15833210c88b96c06422aed423",
+    "files": 47,
+    "bytes": 508681,
+    "merkle": {
+      "root_sha": "40b2c95927225b15833210c88b96c06422aed423",
+      "trees_verified": 1,
+      "leaf_count": 47
+    },
+    "whole": true
+  }
+}

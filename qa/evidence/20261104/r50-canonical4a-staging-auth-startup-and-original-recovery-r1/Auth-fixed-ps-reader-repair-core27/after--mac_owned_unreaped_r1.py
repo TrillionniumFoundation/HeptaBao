@@ -1,0 +1,250 @@
+#!/usr/bin/env python3
+"""Retained direct-child custody for Mac phase workers.
+
+Derived from canonical native_ha_foreground_watchdog.py 74925449. No child is
+started here. WNOWAIT observes exit; it never makes the numeric PGID reusable
+before signaling. Cleanup keeps the previous wrapper's TERM1 / wait5 /
+group3 limits and PS4 maximum. No stage grants business more than phase120.
+"""
+import os, signal, subprocess, time
+
+MIB=1024*1024
+class Refusal(RuntimeError): pass
+def need(value,code):
+    if not value:raise Refusal(code)
+
+def require_waitid():
+    need(all(hasattr(os, name) for name in ("waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT",
+                                          "CLD_EXITED", "CLD_KILLED", "CLD_DUMPED")),
+         "wnowait_required_no_child_started")
+    need(signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL,
+         "direct_child_reaping_policy_changed")
+
+def exit_observation(child):
+    """This is an observation, never Popen.poll/wait/communicate."""
+    need(child.returncode is None, "child_already_reaped_no_signal")
+    event = os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    if event is None:
+        return None
+    need(event.si_pid == child.pid and event.si_signo == signal.SIGCHLD
+         and event.si_code in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED),
+         "child_exit_identity_changed")
+    # Darwin reports si_uid=0 even for an observed uid501 child. Actual UID is
+    # bound independently by ps; si_uid never grants ownership here.
+    return {"pid": event.si_pid, "signo": event.si_signo, "code": event.si_code, "status": event.si_status}
+
+def stable(row):
+    return {key: row[key] for key in ("pid", "ppid", "pgid", "uid", "start")}
+
+def ps_rows(pid=None, *, seconds=4.0, until=None):
+    if until is not None:
+        remaining = until - time.monotonic()
+        need(remaining > 0, "original_stop_deadline_expired")
+        seconds = min(seconds, remaining)
+    argv = ["/bin/ps"]
+    argv += ["-p", str(pid)] if pid is not None else ["-ax"]
+    argv += ["-o", "pid=,ppid=,pgid=,uid=,stat=,lstart="]
+    try:
+        result = subprocess.run(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, env=dict(os.environ, LC_ALL="C"),
+                                timeout=seconds)
+    except subprocess.TimeoutExpired as error:
+        code = ("original_stop_deadline_expired" if until is not None and time.monotonic() >= until
+                else "process_projection_deadline_expired")
+        raise Refusal(code) from error
+    if until is not None:
+        need(time.monotonic() < until, "original_stop_deadline_expired")
+    need(len(result.stdout) <= 2 * MIB and len(result.stderr) <= 65536,
+         "process_projection_bound")
+    if pid is not None and result.returncode == 1 and not result.stdout.strip():
+        return []
+    need(result.returncode == 0, "process_projection_unavailable")
+    rows = []
+    for line in result.stdout.decode("ascii").splitlines():
+        fields = line.split(None, 5)
+        need(len(fields) == 6, "process_projection_malformed")
+        rows.append({"pid": int(fields[0]), "ppid": int(fields[1]),
+                     "pgid": int(fields[2]), "uid": int(fields[3]),
+                     "state": fields[4], "start": fields[5]})
+    if pid is not None:
+        need(len(rows) == 1 and rows[0]["pid"] == pid, "process_projection_ambiguous")
+    return rows
+
+def fixed_setuid_ps_pin(pin):
+    # This public descriptor is evidence supplied after the caller's whole
+    # file/full9 read. It is not a reusable authority token or an arbitrary UID.
+    expected = {"path": "/bin/ps", "bytes": 170432,
+        "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c",
+        "identity": ["16777233", "1152921500312571399", "0", "0",
+                     "35309", "1", "170432", "1786589515000000000",
+                     "1786589515000000000"]}
+    need(type(pin) is dict and pin == expected and os.geteuid() == 501,
+         "exact_admitted_setuid_ps_only")
+    return {"path": expected["path"], "bytes": expected["bytes"],
+            "sha256": expected["sha256"], "identity": list(expected["identity"])}
+
+def capture_child(child, *, until, fixed_setuid_ps=None, admission_evidence=None):
+    require_waitid()
+    admitted = None if fixed_setuid_ps is None else fixed_setuid_ps_pin(fixed_setuid_ps)
+    expected_uid = os.geteuid() if admitted is None else 0
+    need(admission_evidence is None or (admitted is not None
+         and type(admission_evidence) is dict and not admission_evidence),
+         "fresh_fixed_ps_admission_evidence")
+    rows = ps_rows(child.pid, until=until)
+    need(len(rows) == 1, "owned_child_identity_missing")
+    row = rows[0]
+    if admission_evidence is not None:
+        admission_evidence.update({"pid": child.pid,
+            "expectedParent": os.getpid(), "expectedGroup": child.pid,
+            "expectedEffectiveUid": expected_uid,
+            "observedParent": row["ppid"], "observedGroup": row["pgid"],
+            "observedEffectiveUid": row["uid"],
+            "parentMatches": row["ppid"] == os.getpid(),
+            "groupMatches": row["pgid"] == child.pid,
+            "effectiveUidMatches": row["uid"] == expected_uid})
+    need(row["ppid"] == os.getpid() and row["pgid"] == child.pid
+         and row["uid"] == expected_uid, "owned_child_scope_mismatch")
+    # Darwin keeps an unreaped zombie in ps but getpgid/getsid return ESRCH.
+    # Use the real live APIs only for a still-live child; otherwise independently
+    # repeat WNOWAIT and retain ps plus Popen direct-parent custody.
+    event, live_sid = exit_observation(child), None
+    if event is None and not row["state"].startswith("Z"):
+        try:
+            need(os.getpgid(child.pid) == child.pid and os.getsid(child.pid) == child.pid,
+                 "owned_live_session_mismatch")
+            live_sid = child.pid
+        except ProcessLookupError:
+            # A fast exit between the first ps/waitid and a live API call is
+            # not loss of Popen custody, nor proof that the group is empty.
+            event = exit_observation(child)
+            need(event is not None, "owned_live_api_failed_without_retained_exit")
+    if event is not None or row["state"].startswith("Z"):
+        event = exit_observation(child)
+        fresh = ps_rows(child.pid, until=until)
+        need(event is not None and len(fresh) == 1 and stable(fresh[0]) == stable(row)
+             and fresh[0]["state"].startswith("Z") and exit_observation(child) == event,
+             "owned_exit_not_retained")
+        row = fresh[0]
+    owner = {"ps": stable(row), "sid_observed_while_live": live_sid,
+             "captured_exit": event}
+    if admitted is not None:
+        owner["fixedSetuidPs"] = admitted
+        owner["expectedEffectiveUid"] = 0
+    return owner
+
+def verify_unreaped(child, owner, *, until=None):
+    event = exit_observation(child)
+    rows = ps_rows(child.pid, until=until)
+    need(len(rows) == 1 and stable(rows[0]) == owner["ps"]
+         and rows[0]["ppid"] == os.getpid(), "owned_child_identity_changed_no_signal")
+    if event is None and not rows[0]["state"].startswith("Z"):
+        # Exact ps PGID/start plus direct Popen/WNOWAIT custody keeps the
+        # originally observed session leader reserved. Do not race a normal
+        # exit by consulting Darwin's zombie-unsupported getpgid/getsid here.
+        need(owner["ps"]["pgid"] == child.pid, "owned_live_session_changed_no_signal")
+    else:
+        event = exit_observation(child)
+        need(event is not None and rows[0]["state"].startswith("Z") and exit_observation(child) == event,
+             "owned_zombie_identity_changed_no_signal")
+    return event
+
+def live_group(child, owner, *, until):
+    need(time.monotonic() < until, "original_stop_deadline_expired")
+    verify_unreaped(child, owner, until=until)
+    rows = ps_rows(until=until)
+    selected = [row for row in rows if row["pgid"] == child.pid and not row["state"].startswith("Z")]
+    admitted = owner.get("fixedSetuidPs")
+    if admitted is not None:
+        fixed_setuid_ps_pin(admitted)
+        need(owner.get("expectedEffectiveUid") == 0 and owner["ps"]["uid"] == 0,
+             "fixed_setuid_ps_owner_effective_uid")
+    need(all(row["uid"] == os.geteuid()
+             or (admitted is not None and row["pid"] == child.pid
+                 and stable(row) == owner["ps"] and row["uid"] == 0)
+             for row in selected), "owned_group_uid_changed_no_signal")
+    need(time.monotonic() < until, "original_stop_deadline_expired")
+    return [stable(row) for row in selected]
+
+def observed_returncode(event):
+    if event is None:return None
+    return event['status'] if event['code']==os.CLD_EXITED else -event['status']
+
+def stop_once_unreaped(child, owner, *, fixed_setuid_ps=None):
+    """Called once by the wrapper's protected ledger; never calls Popen.poll."""
+    require_waitid()
+    started=time.monotonic()
+    receipt={'pid':child.pid,'pgid':child.pid,'stopAttempted':True,'signals':[],
+             'directChildReaped':False,'ownedLiveGroupEmptyBeforeReap':False,
+             'allGroupRowsEmptyAfterReap':False,'cleanupCaps':{'term':1,'wait':5,'group':3,'psMax':4},
+             'postReapSignalSent':False,'custody':owner}
+    try:
+        need(child.returncode is None,'already_reaped_no_group_signal')
+        term_until=time.monotonic()+1.0
+        if owner is None:
+            owner=capture_child(child,until=term_until,fixed_setuid_ps=fixed_setuid_ps)
+            receipt['custody']=owner
+        members=live_group(child,owner,until=term_until)
+        receipt['initialLiveGroup']=members
+        if members:
+            verify_unreaped(child,owner,until=term_until)
+            need(time.monotonic()<term_until,'original_stop_deadline_expired')
+            os.killpg(child.pid,signal.SIGTERM);receipt['signals'].append('SIGTERM')
+            while time.monotonic()<term_until:
+                try:
+                    members=live_group(child,owner,until=term_until)
+                    if not members:break
+                except Refusal as error:
+                    if str(error)!='original_stop_deadline_expired' or time.monotonic()<term_until:
+                        raise
+                    break
+                time.sleep(min(0.02,max(0,term_until-time.monotonic())))
+        wait_until=time.monotonic()+5.0
+        members=live_group(child,owner,until=wait_until)
+        if members:
+            verify_unreaped(child,owner,until=wait_until)
+            need(time.monotonic()<wait_until,'original_stop_deadline_expired')
+            os.killpg(child.pid,signal.SIGKILL);receipt['signals'].append('SIGKILL')
+        event=exit_observation(child)
+        while event is None:
+            verify_unreaped(child,owner,until=wait_until)
+            need(time.monotonic()<wait_until,'original_stop_deadline_expired')
+            time.sleep(min(0.02,max(0,wait_until-time.monotonic())))
+            event=exit_observation(child)
+        need(time.monotonic()<wait_until,'original_stop_deadline_expired')
+        receipt['retainedExit']=event
+        # The old post-exit group3 interval now precedes the first reap.
+        # This retains actual Popen PID custody while other live members leave.
+        group_until=time.monotonic()+3.0
+        while True:
+            members=live_group(child,owner,until=group_until)
+            if not members and exit_observation(child)==event:break
+            need(time.monotonic()<group_until,'original_stop_deadline_expired')
+            time.sleep(min(0.02,max(0,group_until-time.monotonic())))
+        receipt['ownedLiveGroupEmptyBeforeReap']=True
+        need(time.monotonic()<group_until,'original_stop_deadline_expired')
+        child.wait(timeout=group_until-time.monotonic())
+        receipt['directChildReaped']=True
+        receipt['exitCode']=child.returncode
+        need(child.returncode==observed_returncode(event),'actual_reap_matches_retained_exit')
+        # After the first reap, only observe. No signal or ownership claim is
+        # derived from this now-reusable numeric PGID.
+        while True:
+            rows=[row for row in ps_rows(until=group_until) if row['pgid']==child.pid]
+            receipt['remainingGroupRows']=rows
+            if not rows:break
+            need(time.monotonic()<group_until,'original_stop_deadline_expired')
+            time.sleep(min(0.02,max(0,group_until-time.monotonic())))
+        receipt['allGroupRowsEmptyAfterReap']=True
+        need(time.monotonic()<group_until,'original_stop_deadline_expired')
+        receipt['ok']=True
+    except BaseException as error:
+        receipt['ok']=False
+        receipt['errorType']=type(error).__name__
+        receipt['errorCode']=str(error) if isinstance(error,Refusal) else None
+        receipt['directChildReaped']=child.returncode is not None
+        receipt['exitCode']=child.returncode
+        # No second signal sequence, no renewed deadline, no automatic retry.
+    receipt['elapsedSeconds']=time.monotonic()-started
+    receipt['outcomeUnknown']=not(receipt.get('ok') is True
+       and receipt['directChildReaped'] and receipt['allGroupRowsEmptyAfterReap'])
+    return receipt

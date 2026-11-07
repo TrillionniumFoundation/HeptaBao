@@ -1,0 +1,93 @@
+function verifyFixedLiveDenialSource(files) {
+ const checks=[];
+ const eq=(name,a,b)=>checks.push({name,passed:JSON.stringify(a)===JSON.stringify(b)});
+ const yes=(name,v)=>checks.push({name,passed:v===true});
+ const source=files["source.py"],before=files["before.source.py"],journal=files["journal.js"],oldJournal=files["before.journal.js"];
+ const request=JSON.parse(files["request.public.json"]),contract=JSON.parse(files["CONTRACT.public.json"]);
+ const lines=source.split("\n"),oldLines=before.split("\n");
+ const jsonConstant=(text,name)=>JSON.parse(text.split("\n").find(x=>x.startsWith(name+"=")).slice(name.length+1));
+ const b64Constant=(text,name)=>{
+  const line=text.split("\n").find(x=>x.startsWith(name+"="));
+  return JSON.parse(utf8Text(unb64(line.slice(line.indexOf("('")+2,line.lastIndexOf("'")))));
+ };
+ const block=(text,name)=>{
+  const re=new RegExp("^(?:def|class) "+name+"(?:\\(|:)","m"),match=re.exec(text);
+  if(!match)throw Error("missing "+name);
+  const tail=text.slice(match.index),next=/\n(?:def|class) [A-Za-z_][A-Za-z0-9_]*/.exec(tail);
+  return (next?tail.slice(0,next.index+1):tail).replace(/\n+$/,"");
+ };
+ eq("source/pin",gitBlobMeta(source),contract.source);
+ eq("request/pin",gitBlobMeta(files["request.public.json"]),contract.exactRequest);
+ eq("journal/pin",gitBlobMeta(journal),contract.journal);
+ eq("before/source-pin",gitBlobMeta(before),contract.before.source);
+ eq("before/journal-pin",gitBlobMeta(oldJournal),contract.before.journal);
+ const f=strictApplySource(before,files["source.forward.diff"]),r=strictApplySource(source,files["source.inverse.diff"]);
+ eq("diff/source-forward",f.raw,source);eq("diff/source-inverse",r.raw,before);
+ eq("diff/source-hunks",[f.hunks,r.hunks],[7,7]);
+ const jf=strictApplySource(oldJournal,files["journal.forward.diff"]),jr=strictApplySource(journal,files["journal.inverse.diff"]);
+ eq("diff/journal-forward",jf.raw,journal);eq("diff/journal-inverse",jr.raw,oldJournal);
+ eq("diff/journal-hunks",[jf.hunks,jr.hunks],[2,2]);
+ for(const name of ["critical","need","interrupt","remaining","sha","encoded","identity","error_projection","SignalFacade","public_command","load_modules","version_projection"])
+  eq("preserved/"+name,block(source,name),block(before,name));
+ eq("preserved/InputAudit-only-five-fixed-input-budget",block(source,"InputAudit"),
+  block(before,"InputAudit").replace("Four fixed public executables","Five fixed public executables").replace("self.max_rows=4","self.max_rows=5").replaceAll("375828","1183365"));
+ eq("preserved/home_instance-only-public-context-name",block(source,"home_instance"),block(before,"home_instance").replace("fixed_public_node_version_","fixed_public_node_live_denial_"));
+ eq("profile/literal-exact",jsonConstant(source,"PROFILE"),jsonConstant(before,"PROFILE"));
+ const profile=jsonConstant(source,"PROFILE"),profileRaw=utf8Text(unb64(profile.base64));
+ eq("profile/whole",[gitBlobMeta(profileRaw).blob,gitBlobMeta(profileRaw).bytes,gitBlobMeta(profileRaw).sha256],["84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",6909,"acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"]);
+ eq("home/class-literal-exact",jsonConstant(source,"HOME_CLASS"),jsonConstant(before,"HOME_CLASS"));
+ eq("home/class-whole",utf8Text(unb64(jsonConstant(source,"HOME_CLASS").base64)),files["HomeControl.original.py"]);
+ const modules=b64Constant(source,"MODULES");
+ eq("helpers/closed-two-module-list",Object.keys(modules),["mac_owned_unreaped_r1","mac_owned_commands_r1"]);
+ for(const [name,path] of [["mac_owned_unreaped_r1","mac_owned_unreaped.original.py"],["mac_owned_commands_r1","mac_owned_commands.original.py"]]){
+  eq("helpers/"+name+"/whole",utf8Text(unb64(modules[name].base64)),files[path]);
+  eq("helpers/"+name+"/pin",gitBlobMeta(files[path]),{blob:modules[name].blob,bytes:modules[name].bytes,sha256:modules[name].sha256});
+ }
+ const inputs=b64Constant(source,"INPUT_PINS"),oldInputs=b64Constant(before,"INPUT_PINS");
+ eq("inputs/count",Object.keys(inputs).length,5);
+ for(const path of Object.keys(oldInputs))eq("inputs/original/"+path,inputs[path],oldInputs[path]);
+ eq("inputs/log",inputs["/usr/bin/log"],{identity:["16777233","1152921500312572288","0","0","33261","1","807536","1786589515000000000","1786589515000000000"],bytes:807536,sha256:"2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974"});
+ eq("inputs/whole-byte-sum",Object.values(inputs).reduce((n,x)=>n+x.bytes,0),1183360);
+ eq("inputs/EOF-sentinel-cap",Object.values(inputs).reduce((n,x)=>n+x.bytes,0)+5,contract.budgets.inputReadBytesCap);
+ eq("gate/whole",gitBlobMeta(files["gate.public.py"]),contract.gate);
+ eq("gate/embedded",jsonConstant(source,"GATE_SOURCE"),files["gate.public.py"]);
+ eq("gate/argv",jsonConstant(files["gate.public.py"],"ARGV"),contract.nodeExecArgv);
+ eq("gate/environment",jsonConstant(files["gate.public.py"],"ENV"),contract.closedPrimaryEnvironment);
+ eq("parent/environment",jsonConstant(source,"PUBLIC_ENV"),contract.closedPrimaryEnvironment);
+ eq("parent/nodeargv",jsonConstant(source,"NODE_EXEC_ARGV"),contract.nodeExecArgv);
+ eq("gate/single-exec-call",(files["gate.public.py"].match(/os\.execve\(/g)||[]).length,1);
+ yes("gate/only-version",contract.nodeExecArgv.length===5&&contract.nodeExecArgv[4]==="--version");
+ yes("gate/one-byte-and-no-private-input",files["gate.public.py"].includes("token!=b'G'")&&files["gate.public.py"].includes("os.read(0,2)")&&files["gate.public.py"].includes("HEPTA_NODE_GATE_RELEASED"));
+ eq("request/source-exact",request.stdin,source);
+ yes("request/typed-stdin",!Object.hasOwn(request,"stdin_text")&&Object.keys(request).sort().join(",")==="args,cwd,executable,host,idempotency_key,stdin,timeout_seconds");
+ eq("request/executable-args",[request.executable,request.args,request.cwd,request.host,request.timeout_seconds],["/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",["-I","-S","-B","-"],"/Users/qianqi","mac",60]);
+ yes("journal/new-absent-slot-string",journal.includes('const GF_SLOT = "'+contract.slot+'";'));
+ yes("journal/exact-request-pin",journal.includes(JSON.stringify(contract.exactRequest,null,1)));
+ yes("journal/fixed-observer-prefix",journal.includes(contract.observerKeyPrefix));
+ eq("help/whole",gitBlobMeta(files["actual.help.original.txt"]),contract.actualSyntax.help);
+ const actualHelp=JSON.parse(files["actual.help.stdout.original.json"]);
+ eq("help/stdout-whole",gitBlobMeta(files["actual.help.stdout.original.json"]),contract.actualSyntax.originalStdout);
+ eq("help/actual-text",actualHelp.help.publicHelpText,files["actual.help.original.txt"]);
+ for(const token of ["--level","debug","--style","ndjson","--predicate","--timeout"])yes("help/token/"+token,files["actual.help.original.txt"].includes(token));
+ const pair=block(source,"FixedLivePair");
+ eq("pair/one-fixed-Popen-site",(pair.match(/subprocess\.Popen\(/g)||[]).length,1);
+ eq("pair/two-fixed-launch-sites",[(pair.match(/self\.launch\('node'/g)||[]).length,(pair.match(/self\.launch\('log'/g)||[]).length],[1,1]);
+ yes("pair/pre-Popen-attempt-ledger",pair.indexOf("self.rows.append(row)")<pair.indexOf("subprocess.Popen")&&pair.indexOf("self.spawn_pending+=1")<pair.indexOf("subprocess.Popen"));
+ yes("pair/pending-blocks-known-closure",source.includes("not pair.spawn_pending")&&source.includes("not pair.pipe_pending")&&source.includes("not pair.pipe_registration_unknown"));
+ yes("pair/one-gate-attempt-before-write",pair.indexOf("self.gate_attempted=True")<pair.indexOf("wrote=os.write(gate['fd'],b'G')"));
+ yes("pair/birth-before-log",pair.indexOf("row['custody']=capture_child")<pair.indexOf("log=self.launch"));
+ yes("pair/old-custody-functions-used",pair.includes("capture_child(child,until=until)")&&pair.includes("exit_observation(row['process'])")&&pair.includes("stop_once_unreaped(row['process'],row['custody'])"));
+ yes("pair/no-early-reap-api",!pair.includes(".poll(")&&!pair.includes(".wait(")&&!pair.includes(".communicate("));
+ yes("pair/once-stop-marker",pair.indexOf("row['stopAttempted']=True")<pair.indexOf("row['cleanup']=stop_once_unreaped"));
+ yes("pair/once-pipe-marker",pair.indexOf("item['closeAttempted']=True")<pair.indexOf("item['stream'].close()"));
+ eq("budget/parent-fds",contract.budgets.inputFDs+contract.budgets.HOMEFDs+contract.budgets.parentPipeFDs,20);
+ eq("budget/shared-ceilings",[contract.budgets.originalWorkSeconds,contract.budgets.originalFinalSeconds,contract.budgets.NativeSeconds],[35,45,60]);
+ yes("budget/reserved-cleanup",pair.includes("self.work_until=UNTIL-18.0")&&source.includes("UNTIL=START+35.0")&&source.includes("FINAL_UNTIL=START+45.0"));
+ yes("budget/caps-in-source",pair.includes("self.read_calls<512")&&pair.includes("self.read_bytes<=69634")&&source.includes("ordinal<64")&&source.includes("<=8192,'bounded_log_json_line'")&&source.includes("len(public)<=131072"));
+ yes("scope/no-subscription-claim",source.includes("'subscriptionAcknowledged':False")&&source.includes("'queueWarmupIsNotSubscriptionProof':True"));
+ yes("scope/no-absence-or-old-cause-claim",source.includes("'noMatchesDoesNotProveNoDenial':True")&&source.includes("'startupRootCauseQualified':False")&&source.includes("'historicalOutcomesRewritten':False"));
+ yes("scope/unknown-raw-not-exported",source.includes("'rawTextOrUnknownHashExported':False")&&source.includes("'stderrTextOrHashExported':False")&&source.includes("'unknownLineSemanticClassification':None"));
+ yes("scope/same-PID-exec-only-inference",source.includes("'samePidExecChainIsSourceControlFlowInference':True")&&source.includes("'NodeExecImageIndependentlyObserved':False"));
+ yes("scope/QA-boundary-not-freshHOME-substitute",files["README.public.md"].includes("do not provide equivalent access control")&&files["README.public.md"].includes("same active global registry"));
+ return {schema:"heptabao.fixed-live-denial-source-pure-checks.r1",passed:checks.every(x=>x.passed),checkCount:checks.length,checks,NativeCalls:0,PythonOrModuleExecution:false,scope:"exact public source and binding comparisons only; not a running coordinator, log subscription, resource closure or business qualification"};
+}

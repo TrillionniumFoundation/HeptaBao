@@ -1,0 +1,307 @@
+{
+  "schema": "heptabao.public-node-root-literal-original-release.r1",
+  "job": {
+    "host": "mac",
+    "id": "1a1b3500b8b-fc05-81f7"
+  },
+  "originalGO": {
+    "blob": "044a0bea954708ae1fa2808d9e788907e892a789",
+    "bytes": 14906,
+    "sha256": "7c69c98d4c1b1fc7e78e51d51566981242dab4456fdf9240340eb7bb95c3a0c8"
+  },
+  "exactRequest": {
+    "blob": "136ba17947f49cf5cdf2a281dda46bcebaa124fd",
+    "bytes": 92994,
+    "sha256": "015b7ba1cb858f7eea8f49ce3b1b3fdef066147fe49746ffa9831778db232617"
+  },
+  "status": "COMPLETE_PUBLIC_VERSION_BOTH_ARMS_SUCCEEDED_NO_SDK_QUALIFICATION",
+  "NativeCalls": 11,
+  "originalObservers": [
+    {
+      "id": "ae43ce92f5ff714999741d886814f2c27ddf7690c4aa15c935885260d0cbeaf6",
+      "tool": "process_status",
+      "payload": {
+        "blob": "4108431def4acb219d9fe1eb624d6b2d511f579c",
+        "bytes": 912,
+        "sha256": "80c6c9574e1df07197b4387d5eb0d17979492bf0fd68ebd0844bae1d887bf525"
+      },
+      "payloadTree": "d0c796b95c4fc1ad46ab022ef22c6373d2f93236",
+      "nativeText": {
+        "blob": "163c7e9e1d51d3e3d1198083498c172a20208561",
+        "bytes": 733,
+        "sha256": "3d30e71994b8cedf2c6efa7b4f396f62026286de7202b995f5280a84bbc9f237"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1a81c2dff96d8d399ac2fdb336ac7380f49d6bc49d433741b762e06e2f222c39",
+      "tool": "process_read",
+      "payload": {
+        "blob": "5f942a7e74239e47d9092b5cec550bab10e167db",
+        "bytes": 39818,
+        "sha256": "5d6b5f6d1caee0063e13a7b9b5e407c449cd9c0d26e8ea1ec9817d6ef86fe9f8"
+      },
+      "payloadTree": "78598fc326373b062acbc8f2dd4617aecac48466",
+      "nativeText": {
+        "blob": "44f5823db0741ab903c8eeb3684f3c345f626f84",
+        "bytes": 37207,
+        "sha256": "1e421d4f6531fdfa9d8427e33e22598d6eb6a2031255a19c83118dde31dca3e3"
+      },
+      "pages": 5,
+      "completedInactive": true
+    }
+  ],
+  "immutablePages": 6,
+  "authority": {
+    "state": "succeeded",
+    "exit": 0,
+    "full": true,
+    "durable": true,
+    "terminalConfirmed": true,
+    "stdout": {
+      "seen": 11882,
+      "stored": 11882
+    },
+    "stderr": {
+      "seen": 0,
+      "stored": 0
+    }
+  },
+  "stdout": {
+    "blob": "79ebee9e0a73a382e9d7e38bc388e3a1d7473e1d",
+    "bytes": 11882,
+    "sha256": "f095fd99f0fc3d2235d380d2c5d1e221466c73010809f117d13e8c36b1eab8da"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "streamsEOF": {
+    "stdout": true,
+    "stderr": true,
+    "nextStdout": 11882,
+    "nextStderr": 0
+  },
+  "actual": {
+    "observationComplete": true,
+    "bothVersionArmsSucceeded": true,
+    "outcomeUnknown": false,
+    "comparison": "both-report-same-version",
+    "profile": {
+      "bytes": 6942,
+      "identity": [
+        "16777233",
+        "593623003",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "6942",
+        "1794009730249380207",
+        "1794009730249380207"
+      ],
+      "path": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-control/consumer.sb",
+      "sha256": "33723469d1cbd03a04c6832b5d16ec55814103eeeb29ba6cb75014a83304d50e"
+    },
+    "originalProfilePrefixUnchanged": true,
+    "onlyProfileAddition": "(allow file-read* (literal \"/\"))\n",
+    "arms": [
+      {
+        "label": "restricted-version",
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-f",
+          "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-control/consumer.sb",
+          "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+          "--version"
+        ],
+        "testProfileApplied": true,
+        "pid": 39310,
+        "exit": 0,
+        "stdout": {
+          "bytes": 8,
+          "publicVersionSyntax": true,
+          "unknownTextOrHashExported": false,
+          "value": "v25.9.0"
+        },
+        "stderrBytes": 0,
+        "versionSucceeded": true,
+        "custody": {
+          "captured_exit": null,
+          "ps": {
+            "pgid": 39310,
+            "pid": 39310,
+            "ppid": 39308,
+            "start": "Sat Nov  7 08:02:10 2026    ",
+            "uid": 501
+          },
+          "sid_observed_while_live": 39310
+        },
+        "retained": {
+          "code": 1,
+          "pid": 39310,
+          "signo": 20,
+          "status": 0
+        },
+        "cleanup": {
+          "allGroupRowsEmptyAfterReap": true,
+          "cleanupCaps": {
+            "group": 3,
+            "psMax": 4,
+            "term": 1,
+            "wait": 5
+          },
+          "custody": {
+            "captured_exit": null,
+            "ps": {
+              "pgid": 39310,
+              "pid": 39310,
+              "ppid": 39308,
+              "start": "Sat Nov  7 08:02:10 2026    ",
+              "uid": 501
+            },
+            "sid_observed_while_live": 39310
+          },
+          "directChildReaped": true,
+          "elapsedSeconds": 0.0449946247972548,
+          "exitCode": 0,
+          "initialLiveGroup": [],
+          "ok": true,
+          "outcomeUnknown": false,
+          "ownedLiveGroupEmptyBeforeReap": true,
+          "pgid": 39310,
+          "pid": 39310,
+          "postReapSignalSent": false,
+          "remainingGroupRows": [],
+          "retainedExit": {
+            "code": 1,
+            "pid": 39310,
+            "signo": 20,
+            "status": 0
+          },
+          "signals": [],
+          "stopAttempted": true
+        }
+      },
+      {
+        "label": "baseline-version",
+        "argv": [
+          "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+          "--version"
+        ],
+        "testProfileApplied": false,
+        "pid": 39319,
+        "exit": 0,
+        "stdout": {
+          "bytes": 8,
+          "publicVersionSyntax": true,
+          "unknownTextOrHashExported": false,
+          "value": "v25.9.0"
+        },
+        "stderrBytes": 0,
+        "versionSucceeded": true,
+        "custody": {
+          "captured_exit": null,
+          "ps": {
+            "pgid": 39319,
+            "pid": 39319,
+            "ppid": 39308,
+            "start": "Sat Nov  7 08:02:10 2026    ",
+            "uid": 501
+          },
+          "sid_observed_while_live": 39319
+        },
+        "retained": {
+          "code": 1,
+          "pid": 39319,
+          "signo": 20,
+          "status": 0
+        },
+        "cleanup": {
+          "allGroupRowsEmptyAfterReap": true,
+          "cleanupCaps": {
+            "group": 3,
+            "psMax": 4,
+            "term": 1,
+            "wait": 5
+          },
+          "custody": {
+            "captured_exit": null,
+            "ps": {
+              "pgid": 39319,
+              "pid": 39319,
+              "ppid": 39308,
+              "start": "Sat Nov  7 08:02:10 2026    ",
+              "uid": 501
+            },
+            "sid_observed_while_live": 39319
+          },
+          "directChildReaped": true,
+          "elapsedSeconds": 0.04415466682985425,
+          "exitCode": 0,
+          "initialLiveGroup": [],
+          "ok": true,
+          "outcomeUnknown": false,
+          "ownedLiveGroupEmptyBeforeReap": true,
+          "pgid": 39319,
+          "pid": 39319,
+          "postReapSignalSent": false,
+          "remainingGroupRows": [],
+          "retainedExit": {
+            "code": 1,
+            "pid": 39319,
+            "signo": 20,
+            "status": 0
+          },
+          "signals": [],
+          "stopAttempted": true
+        }
+      }
+    ],
+    "elapsedSeconds": 0.13566224975511432,
+    "sameEnvironmentAndCwd": true,
+    "environment": {
+      "HOME": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-empty",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      "TMPDIR": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-empty"
+    },
+    "cwd": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-empty"
+  },
+  "closure": {
+    "parentEnumeratedFDs": 14,
+    "inputFDs": 4,
+    "homeFDs": 10,
+    "allOwnDescriptorsAndChildrenClosed": true,
+    "allOwnedCommandsStopped": true,
+    "unknownCommandCount": 0,
+    "allFixedHeldNamedFencesPassed": true,
+    "handlersRestored": true,
+    "pendingSignalObserved": false,
+    "deadline45Met": true,
+    "bothPrimaryChildrenReaped": true,
+    "signals": [
+      [],
+      []
+    ]
+  },
+  "lane": {
+    "A": 0,
+    "activeRuntimeCall": false,
+    "knownFuture": false,
+    "activeObserver": null,
+    "pending": null,
+    "paused": false
+  },
+  "noReplay": true,
+  "noKnownGitOrSDKError": true,
+  "rootLiteralSufficientForThisPublicVersionRun": true,
+  "historicalRootCauseProved": false,
+  "SDKOrCredentialWorkExecuted": false,
+  "historicalUnknownUpgraded": false,
+  "legacyManagedCleanup": false,
+  "additionalNativeAuthorized": false
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.fixed-info-failed-stored-status-boundary.r1",
+  "sourceTree": "e6d2003113830214b0f64ee9790469e3780417c5",
+  "state": {
+    "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+    "bytes": 11134,
+    "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+  },
+  "originalBuildState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "nativeCalls": 2,
+  "infoAdmissions": 1,
+  "statusCalls": 1,
+  "pageCalls": 0,
+  "operationId": "0a3d2c5c158da55c07f9db9202ada37d9670254e650c70eff7cfa08bb8d6d7d2",
+  "actualAsyncState": "failed",
+  "actualOwnedFutureActive": false,
+  "actualResultState": "stored_observed",
+  "payloadAvailable": true,
+  "metadataQualified": false,
+  "nativeFailureReason": "UNREAD",
+  "helperPaused": true,
+  "helperFutureClosed": false,
+  "pending": "c4a-unknown-build-report-info-r1-s0",
+  "failedCallPhase": "native_interpretation_refused",
+  "failedCallPreserved": true,
+  "informationOperationPhysicallyInactive": true,
+  "originalBuildOutcome": "UNKNOWN",
+  "originalBuildPossibleLaneStillHeld": true,
+  "noInfoRetry": true,
+  "noStatusRetry": true,
+  "noBodyOrPageAdmitted": true
+}

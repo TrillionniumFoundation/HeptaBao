@@ -1,0 +1,28 @@
+{
+  "scope": "4a_info_local_close_action_recovery_only",
+  "sourceOnly": true,
+  "authorization": null,
+  "before_state": {
+    "blob": "bd06c489e911bf65d630ae8665e9ca5e00d96de2",
+    "bytes": 157674,
+    "sha256": "99343cb695f2bfda2c47111dd8b226d02479ad15f051179bc13b9bb60e605efe"
+  },
+  "after_state": {
+    "blob": "22cb576c41caea26beb8f931dfa8a8a9e48a0262",
+    "bytes": 157675,
+    "sha256": "3808482edffd2a0fb68de8bf15ae42af22a52b5eff80c36ae521ef47ed7b1c0d"
+  },
+  "journal": {
+    "blob": "90ac83d6e48744399e1508f0b86ac4a8c62f33cb",
+    "bytes": 23858,
+    "sha256": "256effb6f6cd3906653c4d85e4cd465f83056bf4bece4725c2672f1d45064483"
+  },
+  "originalOperation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+  "originalInfoAndStatusAndPageAllCalledOnce": true,
+  "allOriginalSDKWhole": true,
+  "payloadParseNotPerformed": true,
+  "fullPayloadCloseNotYetCalled": true,
+  "localActionErrorPreserved": true,
+  "native_calls_authorized": 0,
+  "next": "Only after exact root recovery GO, apply the fixed paused=false state, then original gfRun close_observer once. No new Native or request."
+}

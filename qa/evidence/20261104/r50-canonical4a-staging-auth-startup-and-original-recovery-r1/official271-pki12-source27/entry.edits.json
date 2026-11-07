@@ -1,0 +1,134 @@
+[
+  {
+    "label": "scope_doc",
+    "before": "\"\"\"SOURCE proposal: one fixed official2.7.1 X230 ACL23 fixture.\n\nThe existing official launcher, Linux Owner, HTTP transport, 23-cell executor,\nmatrix and four-class component source are immutable inputs. No candidate is\nstarted and no historical full34 wrapper is rerun. This entry has no Runtime GO.\n\"\"\"",
+    "after": "\"\"\"SOURCE proposal: one fixed official2.7.1 X230 strict PKI12 fixture.\n\nThe existing official launcher, Linux Owner, current exact acceptance.pki_cases,\nraw response observer and four-class component source are immutable inputs.\nNo candidate or old ACL23 fixture is started. This entry has no Runtime GO.\n\"\"\"",
+    "count": 1
+  },
+  {
+    "label": "fresh_root",
+    "before": "/home/qian/heptabao-official271-acl23-oracle-20261106-r2",
+    "after": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1",
+    "count": 1
+  },
+  {
+    "label": "fixed_port",
+    "before": "PORT = 23625",
+    "after": "PORT = 23627",
+    "count": 1
+  },
+  {
+    "label": "run_id",
+    "before": "RUN_ID = \"official271-acl23-r2\"",
+    "after": "RUN_ID = \"official271-pki12-r1\"",
+    "count": 1
+  },
+  {
+    "label": "payload_bytes",
+    "before": "PAYLOAD_BYTES = 134677",
+    "after": "PAYLOAD_BYTES = 140624",
+    "count": 1
+  },
+  {
+    "label": "payload_sha",
+    "before": "PAYLOAD_SHA256 = \"8a8681e59c5572ed01fa6e824c4a2e03692baceb8d272bba857431c9c5c8e30f\"",
+    "after": "PAYLOAD_SHA256 = \"71fd26d3e4b1cb49b6017222ea65aa956a0a39585202a255bea58620e4111541\"",
+    "count": 1
+  },
+  {
+    "label": "fixed_nine_inputs",
+    "before": "INPUTS = [\n  [\n    \"source/qa/openbao-acceptance/owned_process.py\",\n    28442,\n    \"0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/official_openbao_launcher.py\",\n    20008,\n    \"5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/bao_http.py\",\n    2349,\n    \"6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/raw_status_observer.py\",\n    13664,\n    \"1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/acl23_executor.py\",\n    15892,\n    \"60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/current_record_component.py\",\n    5355,\n    \"660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9\"\n  ],\n  [\n    \"source/clients/python/heptabao/__init__.py\",\n    194,\n    \"6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2\"\n  ],\n  [\n    \"source/clients/python/heptabao/transport.py\",\n    21936,\n    \"fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f\"\n  ],\n  [\n    \"source/clients/python/heptabao/consistency.py\",\n    4836,\n    \"657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe\"\n  ],\n  [\n    \"MATRIX23.original.public.json\",\n    14285,\n    \"59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8\"\n  ],\n  [\n    \"PUBLIC-KEY.pem\",\n    451,\n    \"db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938\"\n  ]\n]",
+    "after": "INPUTS = [\n  [\n    \"source/qa/openbao-acceptance/owned_process.py\",\n    28442,\n    \"0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/official_openbao_launcher.py\",\n    20008,\n    \"5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/bao_http.py\",\n    2349,\n    \"6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/raw_status_observer.py\",\n    13664,\n    \"1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/acceptance.py\",\n    36333,\n    \"c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042\"\n  ],\n  [\n    \"source/qa/openbao-acceptance/current_record_component.py\",\n    5355,\n    \"660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9\"\n  ],\n  [\n    \"source/clients/python/heptabao/__init__.py\",\n    194,\n    \"6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2\"\n  ],\n  [\n    \"source/clients/python/heptabao/transport.py\",\n    21936,\n    \"fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f\"\n  ],\n  [\n    \"source/clients/python/heptabao/consistency.py\",\n    4836,\n    \"657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe\"\n  ]\n]",
+    "count": 1
+  },
+  {
+    "label": "exact_twelve_observed_requests",
+    "before": "ACL_REQUEST_CAP = 853",
+    "after": "PKI_REQUEST_CAP = 12",
+    "count": 1
+  },
+  {
+    "label": "source_bytes",
+    "before": "SOURCE_BYTES = 127412",
+    "after": "SOURCE_BYTES = 133117",
+    "count": 1
+  },
+  {
+    "label": "fd_count_reduced",
+    "before": "FD_LIMIT = 12  # Eleven fixed source outputs plus the one public result.",
+    "after": "FD_LIMIT = 10  # Nine fixed source outputs plus the one public result.",
+    "count": 1
+  },
+  {
+    "label": "pki_locals",
+    "before": "    root_created = False\n",
+    "after": "    root_created = False\n    calls = None\n    cleanup = {\"result\": \"not_run\", \"reason\": \"fixture_not_entered\"}\n    stop_reason = None\n",
+    "count": 1
+  },
+  {
+    "label": "input_schema",
+    "before": "bundle[\"schema\"] == \"heptabao.X230-official271-acl23-fixed-inputs.v1\"",
+    "after": "bundle[\"schema\"] == \"heptabao.X230-official271-pki12-fixed-inputs.v1\"",
+    "count": 1
+  },
+  {
+    "label": "nine_published_sources",
+    "before": "len(FD_ROWS) == 11",
+    "after": "len(FD_ROWS) == 9",
+    "count": 1
+  },
+  {
+    "label": "acceptance_import",
+    "before": "acl = importlib.import_module(\"acl23_executor\")",
+    "after": "acceptance = importlib.import_module(\"acceptance\")",
+    "count": 1
+  },
+  {
+    "label": "exact_acceptance_origin",
+    "before": "(raw, \"raw_status_observer\"), (acl, \"acl23_executor\"),",
+    "after": "(raw, \"raw_status_observer\"), (acceptance, \"acceptance\"),",
+    "count": 1
+  },
+  {
+    "label": "owner_label",
+    "before": "profile=\"official271_acl23_oracle\"",
+    "after": "profile=\"official271_pki12_oracle\"",
+    "count": 1
+  },
+  {
+    "label": "stage_label",
+    "before": "stage = \"original_launcher_and_acl23\"",
+    "after": "stage = \"original_launcher_and_strict_pki12\"",
+    "count": 1
+  },
+  {
+    "label": "same_owner_exact_pki12_and_original_cleanup",
+    "before": "                def remaining():\n                    if executor is not None and len(executor.calls.records) >= ACL_REQUEST_CAP:\n                        raise raw.BaoError(\"fixed_original_acl_request_cap\")\n                    return owner.remaining()\n\n                executor = acl.FixedAcl23(\n                    client, remaining, source_bytes[\"MATRIX23.original.public.json\"],\n                    source_bytes[\"PUBLIC-KEY.pem\"].decode(\"ascii\"), RUN_ID)\n                capture = executor.run()",
+    "after": "                def remaining():\n                    if calls is not None and len(calls.records) >= PKI_REQUEST_CAP:\n                        raise raw.BaoError(\"fixed_original_pki_request_cap\")\n                    return owner.remaining()\n\n                calls = raw.RawStatusCalls(client, remaining)\n                executor = acceptance.Suite(client, RUN_ID, {\"pki\"}, True)\n                try:\n                    raw.run_original_pki12(executor, calls)\n                except raw.BaoError as error:\n                    stop_reason = error.code\n                    raise\n                finally:\n                    cleanup = executor.cleanup()\n                    capture = raw.pki_public_result(executor, calls, cleanup, stop_reason)",
+    "count": 1
+  },
+  {
+    "label": "exact_twelve_closure",
+    "before": "        need(capture[\"actual_case_records\"] == 23\n             and all(row[\"transition_checked\"] and row[\"wire\"][\"complete\"]\n                     for row in capture[\"cases\"]), \"incomplete_original_23_capture\")",
+    "after": "        need(capture[\"denominator\"] == 12 and capture[\"pki12_passed\"] is True\n             and len(calls.records) == 12\n             and all(row[\"complete\"] for row in calls.records),\n             \"incomplete_original_strict_12_capture\")",
+    "count": 1
+  },
+  {
+    "label": "report_schemas",
+    "before": "heptabao.official271.acl23.oracle-only.",
+    "after": "heptabao.official271.pki12.oracle-only.",
+    "count": 2
+  },
+  {
+    "label": "report_public_pki_fields",
+    "before": "            \"matrix_case_denominator\": 23, \"http12_product_cases_executed\": 0,\n            \"acl\": capture if capture is not None else (\n                executor.public_partial() if executor is not None else None),\n            \"admin_and_case_wire_records\": executor.calls.records if executor is not None else [],\n            \"acl_requests_observed\": len(executor.calls.records) if executor is not None else 0,\n            \"acl_request_cap\": ACL_REQUEST_CAP,",
+    "after": "            \"pki_case_denominator\": 12,\n            \"pki\": capture,\n            \"pki_wire_records\": calls.records if calls is not None else [],\n            \"pki_requests_observed\": len(calls.records) if calls is not None else 0,\n            \"pki_request_cap\": PKI_REQUEST_CAP,\n            \"unobserved_suite_admin_requests_source_upper_bound\": 3,\n            \"strict_raw_status_required\": True,\n            \"official_acl23_reexecuted\": False,",
+    "count": 1
+  },
+  {
+    "label": "terminal_denominator",
+    "before": "\"matrix_case_denominator\": 23, \"component_product_cases\": 0",
+    "after": "\"pki_case_denominator\": 12, \"component_product_cases\": 0",
+    "count": 1
+  }
+]

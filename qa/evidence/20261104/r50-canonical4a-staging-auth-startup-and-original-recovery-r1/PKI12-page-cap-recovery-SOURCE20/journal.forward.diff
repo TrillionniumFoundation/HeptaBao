@@ -1,0 +1,11 @@
+--- a/journal.js
++++ b/journal.js
+@@ -271,7 +271,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
++   gfNeed(b.length<=(a.tool==="binary_read"?GF_ORACLE_REPORT_BODY_PAGE_BYTES:8192) && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),

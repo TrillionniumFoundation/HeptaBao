@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.successor4a.bundle-archive-key-fix-and-original-payload-closure.v1",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "originalSourceTree": "c8baef757d489fb444c3f599a21ad7a0382bff8a",
+  "original44SourceChecksWerePassButMissedFixedArchiveKeyCollision": true,
+  "failurePacket": "4679563152e933459a27ecd4c14ba5e4b29f7d77",
+  "rootFailureQualification": {
+    "blob": "facfff1f4e8f7f9a893878a72f6ec86089fd6bb2",
+    "bytes": 1772,
+    "sha256": "49b601a49a867aca5e024c0726f02c18db90fc67e1a22da7980623cfcde1c1b7"
+  },
+  "bindings": [
+    {
+      "tag": "mac",
+      "before": {
+        "blob": "78eb68a0845aab1221e4b9a857e8e693861b2352",
+        "bytes": 28431,
+        "sha256": "199910130ad5bf0f2f3c6fede332d3c41d0873357c4ba654009327a56df81313"
+      },
+      "after": {
+        "blob": "45b18f060093f8dc06f2e2ab7ef7fc8f871469a1",
+        "bytes": 28437,
+        "sha256": "251fe8bf5a476d87b50ddef2a488c1c46c1cca48a42ceef0814ae1e90b570685"
+      },
+      "forward": {
+        "blob": "8f8ee7c3ba05e2972a5cf1f5c01b5b45733209f2",
+        "bytes": 1261,
+        "sha256": "8d4718c9fd4a80e9d6a7a3f29416b3f2d6ec4b3e7c341f37e15460b0ee0c633d"
+      },
+      "reverse": {
+        "blob": "978e42cbc61b3e0e9655795cecf01ca9aa0e08b7",
+        "bytes": 1261,
+        "sha256": "9ddb15fa9caa0b450e5286a7cc0dfba5d1259ade66994df551efa7832d28af4b"
+      },
+      "request": {
+        "blob": "b6778404640bf6b307d7c43576ae374b76f1aabe",
+        "bytes": 404,
+        "sha256": "dd4ed331874d4ef93baa6af27aef4e44dab7211dd7f59e7976f150628fbe5d98"
+      },
+      "changes": [
+        {
+          "before": "key:\"successor576-canonical-bundle-chunk-\"+index+\"-r1\"",
+          "after": "key:\"successor4a-mac-canonical-bundle-chunk-\"+index+\"-r1\""
+        },
+        {
+          "before": "key:\"successor576-canonical-source-bundle-whole-r1\"",
+          "after": "key:\"successor4a-mac-canonical-source-bundle-whole-r1\""
+        }
+      ],
+      "hunks": 2,
+      "newKeys": [
+        "successor4a-mac-canonical-bundle-chunk-0-r1",
+        "successor4a-mac-canonical-source-bundle-whole-r1"
+      ]
+    },
+    {
+      "tag": "x230",
+      "before": {
+        "blob": "6dbcb558b98d8eabffa10a7792f42b79e40aa2c7",
+        "bytes": 28432,
+        "sha256": "1b96362c95b755681cfe92c34b124c7d35ce5f223477714a64d15e5763ba7166"
+      },
+      "after": {
+        "blob": "0c59e401fbf9fcbb69aec47e0447a3cfba2d3da6",
+        "bytes": 28440,
+        "sha256": "3a6e3437a70bdcaee71cd3f25ffa50fc2b71458dbec11b6defab3f01c30a944e"
+      },
+      "forward": {
+        "blob": "31c59fff793b26541d260d28366fde3660170149",
+        "bytes": 1265,
+        "sha256": "539527382decd51169cd0002c394541fa3ab1ece5ed8c1478eb03facee27f29b"
+      },
+      "reverse": {
+        "blob": "5d47d2cebdbf63d99778781a13d894ffe08ef12e",
+        "bytes": 1265,
+        "sha256": "c4f6ad21af7d702819479bc84140b8e41de440229fed6b3b521dbe87da426166"
+      },
+      "request": {
+        "blob": "4aed8263b1d74eca260cea2ad20a4859db7c0f53",
+        "bytes": 405,
+        "sha256": "03fe11d0925dcce446d07b8f94c042b211600766042d539486b6f764360e8973"
+      },
+      "changes": [
+        {
+          "before": "key:\"successor576-canonical-bundle-chunk-\"+index+\"-r1\"",
+          "after": "key:\"successor4a-x230-canonical-bundle-chunk-\"+index+\"-r1\""
+        },
+        {
+          "before": "key:\"successor576-canonical-source-bundle-whole-r1\"",
+          "after": "key:\"successor4a-x230-canonical-source-bundle-whole-r1\""
+        }
+      ],
+      "hunks": 2,
+      "newKeys": [
+        "successor4a-x230-canonical-bundle-chunk-0-r1",
+        "successor4a-x230-canonical-source-bundle-whole-r1"
+      ]
+    }
+  ],
+  "mechanism": "Only the two fixed archive key literals inside gfCloseOriginalObserver change per journal. Original requests, native idempotency keys, limits, payload checks and all other code remain byte identical.",
+  "MacRecovery": {
+    "source": {
+      "blob": "4c81e36dd4483dbd5996db2c60b4cafe2dcb31b2",
+      "bytes": 9842,
+      "sha256": "3446d6895dac17434cefd50004bfadb25b7ecba684539fb77c2eaa495d4e65a6"
+    },
+    "scope": "successor4a_mac_bundle_pure_git_closure_only",
+    "originalOperation": "1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f",
+    "pausedState": {
+      "blob": "20e0200a0b0ae7d2fe75bce2a890004912ab5869",
+      "bytes": 35435,
+      "sha256": "66631828cf47fdb31f5da3b29dc8b7f9dfa2bdabd5f730c7bc3f3ccb6ec01b1d"
+    },
+    "payload": {
+      "blob": "1d552dc540cd50d9142693e25ab7e57472fc8d30",
+      "bytes": 2096,
+      "sha256": "6a746ee482b96d481d2e76856e101d3e43c9beb3652cd5906376e6e725fe21d8"
+    },
+    "payloadTree": "1d5ddf9d4b62cb26fa62837dacaf8312ca08bf02",
+    "maximumNativeCalls": 0,
+    "maximumNewGitArchives": 3,
+    "newOutputKeys": [
+      "successor4a-mac-canonical-bundle-chunk-0-r1",
+      "successor4a-mac-canonical-source-bundle-whole-r1"
+    ],
+    "proofKey": "successor4a-mac-bundle-closure-proof-r1",
+    "preparation": "Exact original paused state is cloned privately; only the clone's paused flag is cleared. The corrected original journal closes the original observer. Its first payload archive call reuses the exact known whole archive without Git. Only two new unique output archives are admitted. All six calls and the original failure/history remain unchanged.",
+    "publication": "After new output archives and before/after proof are external whole, cross a model boundary and invoke the pure apply function once. Five named state fields change; original error and budget counters stay."
+  },
+  "X230": {
+    "source": {
+      "blob": "0c59e401fbf9fcbb69aec47e0447a3cfba2d3da6",
+      "bytes": 28440,
+      "sha256": "3a6e3437a70bdcaee71cd3f25ffa50fc2b71458dbec11b6defab3f01c30a944e"
+    },
+    "requestUnchanged": {
+      "blob": "4aed8263b1d74eca260cea2ad20a4859db7c0f53",
+      "bytes": 405,
+      "sha256": "03fe11d0925dcce446d07b8f94c042b211600766042d539486b6f764360e8973"
+    },
+    "existingInfoSlot": "successor4a_x230_canonical_bundle_info_gitfirst_r1",
+    "bodyNotAuthorizedLocally": true,
+    "bodyNotCalled": true,
+    "oldBodyGoSuspended": true,
+    "newExactGoRequired": true
+  },
+  "limitsUnchanged": {
+    "oldInfoPageBytes": 8192,
+    "bodyPageBytes": 16384,
+    "statusPerID": 8,
+    "pagesPerID": 128,
+    "payloadBytes": 1048576,
+    "totalOriginalBinaryStarts": 2,
+    "MacBytes": 1253,
+    "X230Bytes": 6815
+  },
+  "noNativeRecovery": true,
+  "automaticRetry": false,
+  "oldArchivesNeverReset": true
+}

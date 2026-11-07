@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.official-pki12.page-cap-source-r2",
+  "status": "SOURCE_ONLY_NO_NATIVE_NO_REAL_STATE_APPLY",
+  "failurePacket": "cd2f4ad1fc63d1fa01ff7f82ec476b68703af037",
+  "originalGO": {
+    "blob": "f0328f282f20cb6b378ea53aaf039fa17f1bea57",
+    "bytes": 4038,
+    "sha256": "d80bac33e32e7b39eaa4ebab0e1b564942b8ab3ca7849feaedbf0567eb280536"
+  },
+  "sourceR1": "af2005ebabbb8be00bf930ad4f48b893e0b7d5e9",
+  "journalBefore": {
+    "blob": "f83797d03a41092340ba39074b155594464d8bf2",
+    "bytes": 28846,
+    "sha256": "0b4f9cc8c62104d96cbc4c021c4e500074b45b8fad24609874f851bd19b7297c"
+  },
+  "journalAfter": {
+    "blob": "86edcf2a0d2d5206025a6a702883e6b645e2cc87",
+    "bytes": 28904,
+    "sha256": "0940f9d7b0c206864962e77cf40106e7b4d3faf2ec0ad225b472840e214fc107"
+  },
+  "change": "One accept-page expression selects the already authorized 16384 bytes for this binary observer and preserves8192 for old file_info/process observers.",
+  "originalState": {
+    "blob": "e48bb16c1d18b72506546378eac09aad7996cd63",
+    "bytes": 246355,
+    "sha256": "c5bc674d2f31e94aa018f97a0896db3e7382fb1cd19a50be06d29fa767ded5b4"
+  },
+  "proposedAfterState": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "originalPageSDK": {
+    "blob": "5ceec5345171ff27f8bd0265c94f0f8e6a0cef7c",
+    "bytes": 22705,
+    "sha256": "d613452f7e603c59f49e059bbb987b53bc1aab73549cf7df464974f59912c309"
+  },
+  "totalOriginalPayload": 55762,
+  "receivedButLocallyRejectedPage": {
+    "offset": 0,
+    "next": 16384,
+    "bytes": 16384,
+    "eof": false
+  },
+  "originalFutureCompletedInactive": true,
+  "realNativeCalls": 0,
+  "realGitCallsForRecovery": 0,
+  "realStateApplied": false,
+  "recoveryFields": [
+    "paused",
+    "pending",
+    "activeObserver"
+  ],
+  "old13CallsAndFailureHistoryUnchanged": true,
+  "originalStatusCallsUsed": 1,
+  "originalPageCallsUsed": 1,
+  "originalBinaryCallsUsed": 1,
+  "remainingProposedPages": [
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 16384,
+      "limit": 16384
+    },
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 32768,
+      "limit": 16384
+    },
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 49152,
+      "limit": 16384
+    }
+  ],
+  "nextPagesAuthorized": false,
+  "limits": {
+    "statusPerOriginalOperation": 8,
+    "allPageCallsPerOriginalOperation": 128,
+    "oldPageBytes": 8192,
+    "binaryPageBytes": 16384,
+    "payloadBytes": 1048576
+  },
+  "futureScheduling": "Root may run separately authorized Mac source-stage while this original PKI slot stays paused and future inactive. This proposal grants no Native call; new original pages require root scheduling/GO.",
+  "applyScope": "official271_pki12_cached_page0_acceptance_recovery_only",
+  "archiveKeysUnchanged": {
+    "arm": "gfa-<fresh callKey>",
+    "sdk": "gfs-<same callKey>",
+    "exception": "gfx-<same callKey>",
+    "payload": "gfc-<original op>",
+    "decodedReport": "gfr-<original op>"
+  },
+  "fixedCandidateArchiveKeyLiterals": []
+}

@@ -1,0 +1,179 @@
+{
+  "schema": "heptabao.public-whole-manifest.r1",
+  "files": [
+    {
+      "path": "source.py",
+      "blob": "b575735512bf008ae28f737c24d2352199397a2f",
+      "bytes": 113950,
+      "sha256": "19a394eead32c22d405d871133c111b03ed77c6750dbf45528f0e6836174e92c"
+    },
+    {
+      "path": "request.public.json",
+      "blob": "4492f4530bac7655e5ff4cbdac4d5309df74435e",
+      "bytes": 115529,
+      "sha256": "76e997483c53874309679586ef8bb7ad38d4af5c0ae886d26785bcafe0557627"
+    },
+    {
+      "path": "journal.js",
+      "blob": "2d44d9b7108dcfb7404dc18de7277e630e67c538",
+      "bytes": 19067,
+      "sha256": "fb816ee08ec8303fb9dc77467d0ca2bcdf25667d223617d85ad82ee31c9691c1"
+    },
+    {
+      "path": "before.source.py",
+      "blob": "dee81d92d9e78cf0295bf7598a706a945e72732e",
+      "bytes": 113478,
+      "sha256": "438c883ab686899b36293bf67e53d7ae74b2a764c9b71bf8ca6bc3289e158460"
+    },
+    {
+      "path": "before.journal.js",
+      "blob": "b8c2370e06a26d8afe5e0831ecc75fa212d3989a",
+      "bytes": 19067,
+      "sha256": "623006d4ac1d449247779f75369c0da1af508eae2cc7143f4727904beeee0e93"
+    },
+    {
+      "path": "source.forward.diff",
+      "blob": "7f8c1ca71e21d55bfcba788dbfa14cf55c5a17f6",
+      "bytes": 1931,
+      "sha256": "3e2060f16097dc915fbd017b4f6eca1926bce06c785042db4004b75c8e7663ae"
+    },
+    {
+      "path": "source.inverse.diff",
+      "blob": "91f46b1a57e02761d303762a476c3a67fb91abf9",
+      "bytes": 1931,
+      "sha256": "0e37f22d212379cc55e71d63008fa6c226089b913d43535ad9bbe2a06ab9ab47"
+    },
+    {
+      "path": "journal.forward.diff",
+      "blob": "0faa4cb083789c1ab5980cd866da75b2f0245af7",
+      "bytes": 1312,
+      "sha256": "9bad389926985b28d4b27b6adf172680ebd20835a843084d4998fc6e9c8b986f"
+    },
+    {
+      "path": "journal.inverse.diff",
+      "blob": "a177c6d5d620feaf1e144a0e82a7bdbafc6eaab4",
+      "bytes": 1312,
+      "sha256": "e7942332c88d9e00170bb821f330b8ef4051f5204110399b6d859d440121fa03"
+    },
+    {
+      "path": "gate.public.py",
+      "blob": "3616af28612740ad1b9dc0e5363153ca816c3c99",
+      "bytes": 884,
+      "sha256": "3b320f1508d4ccfc1f58c5bbb27467128ef973e318b539ef7d3623e837cda59a"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "blob": "4e4c81f1871cb9adf9423c5b12a75adf5c05b5cc",
+      "bytes": 15382,
+      "sha256": "b2513d368a748aec06b371fa1a429555a67451aecaf83e231f63d21718b998b2"
+    },
+    {
+      "path": "actual.help.original.txt",
+      "blob": "86cbdf5723f13a86db8af7efe21315e0d69c26a0",
+      "bytes": 1684,
+      "sha256": "7dab64f70c9f470dd78aa7176e9b1c2599f210a54b576865e4d2f7705bfe9184"
+    },
+    {
+      "path": "actual.help.stdout.original.json",
+      "blob": "bd910af9d69d42ca4416f26cc5462d4785bab341",
+      "bytes": 5028,
+      "sha256": "46b769a0dec069759799eb57fc553d59a4c63d0556667d862fbc615c45b4db19"
+    },
+    {
+      "path": "mac_owned_unreaped.original.py",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "mac_owned_commands.original.py",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "HomeControl.original.py",
+      "blob": "3e11b93844559bb9ae8bfe9a69314a42c5461149",
+      "bytes": 18346,
+      "sha256": "c05d932ede565390244199e8b3b6c613c93116db3b3471223d945f611f9d73c4"
+    },
+    {
+      "path": "README.public.md",
+      "blob": "a8fc307f6f29fceca58381815b304a622529c242",
+      "bytes": 5652,
+      "sha256": "83ccaeacc9cbbbfbefbf829103b38c3e2d84f084552f2ecffb3100ba7f682dd8"
+    },
+    {
+      "path": "ancestor20eac.commands.original.py",
+      "blob": "e58e0586b4c2ba009196c4d69aa706cdfbfab580",
+      "bytes": 6837,
+      "sha256": "011bdb481d10d09a3814f22fd701a0c7f95913a5dc3a49a11d6c9775f388920b"
+    },
+    {
+      "path": "pure-helper.original.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "strict-diff-helper.original.js",
+      "blob": "b7bf282bd4029dd599946752a9ad544a28ce14d6",
+      "bytes": 2034,
+      "sha256": "4b08bfdde9075267947758067627fde5e561f11b40ad0e3ea3f6c13afa376916"
+    },
+    {
+      "path": "source.verifier.js",
+      "blob": "825fa4957ec6b8ae6a677c7519b653192eee7c5c",
+      "bytes": 12076,
+      "sha256": "4d3be00fa290dc540a5da590396eb749cf67b614425308bb5968677caa71dc6e"
+    },
+    {
+      "path": "source.actual-checks.json",
+      "blob": "ea00a8a7dcd32922840fe35aaeab503185db857c",
+      "bytes": 7590,
+      "sha256": "6dfd0243d437319b5a23101d52afd6c45169f9a2e86e42ec7b9e330b6d524037"
+    },
+    {
+      "path": "history.R1-first-checker.js",
+      "blob": "3cdd1822c92d16c8c0c870ffa65abaa55bf8e5a7",
+      "bytes": 10121,
+      "sha256": "64a25db7e1ca1e961e9fc0004f4b461cbd3f61affa6f70e6b82e87c984304bf0"
+    },
+    {
+      "path": "history.R1-first-checker-result.json",
+      "blob": "040326e6daf301385e2134e3f1793b69cdaffaa7",
+      "bytes": 6777,
+      "sha256": "dca9e43f2589506bd1fac9a991565d28e2ae4e4dc0c11e9d59396981ea4793dc"
+    },
+    {
+      "path": "history.R1-corrected-checker.js",
+      "blob": "1951d7d3cdabaabd21546b0d9171df4af4d7a5a7",
+      "bytes": 10036,
+      "sha256": "f3cf22b64f265977cc676cdd0d0b513460be4c40513e80f014f1b6f440f3e03b"
+    },
+    {
+      "path": "history.R1-corrected-checker-result.json",
+      "blob": "c0db08b1d730cf15cceddbcd7820256e69a9d537",
+      "bytes": 6761,
+      "sha256": "019800d2430772169ba3807f5ec07ccf021c1b5e9b98bb5d0bdf0b0d403fa4a5"
+    },
+    {
+      "path": "history.R1-checker-correction.json",
+      "blob": "0a49b94bb3c5822924104039ba8655aebccc097f",
+      "bytes": 481,
+      "sha256": "92d6d88423b1c1e7f8e7d08de2b8b8156bc0735b0bc3cb5478f2dc0171763b5d"
+    },
+    {
+      "path": "history.source-core-packets.json",
+      "blob": "3947204d59e19c9c98d5dd0c020a8d291959d789",
+      "bytes": 9848,
+      "sha256": "3b4e28ca0ad8e95ab3b0c6b628a462930de11d83c28283ae4ee810bb629aca5a"
+    },
+    {
+      "path": "REVIEW.public.md",
+      "blob": "4a9dc8abf87af14329c06f3a0b53994f472ee427",
+      "bytes": 2645,
+      "sha256": "01d82322206f5c8b2db69c925d36eb7e165ccfa6d9e789d69e941dcab5f2ca03"
+    }
+  ]
+}

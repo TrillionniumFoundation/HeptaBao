@@ -1,0 +1,250 @@
+{
+  "schema": "heptabao.mac4a49405b.candidate-binding-pure-checks.r1",
+  "pass": true,
+  "count": 44,
+  "checks": [
+    {
+      "name": "actual candidate manifest",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "exact current candidate",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "stage.candidate.py whole pins",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "stage.candidate.py strict forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "stage.candidate.py strict reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "stage.candidate.py only listed literal replacements",
+      "pass": true,
+      "detail": {
+        "hunks": 3
+      }
+    },
+    {
+      "name": "runner.candidate.py whole pins",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "runner.candidate.py strict forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "runner.candidate.py strict reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "runner.candidate.py only listed literal replacements",
+      "pass": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "launcher.candidate.py whole pins",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "launcher.candidate.py strict forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "launcher.candidate.py strict reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "launcher.candidate.py only listed literal replacements",
+      "pass": true,
+      "detail": {
+        "hunks": 3
+      }
+    },
+    {
+      "name": "publisher.candidate.template.py whole pins",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "publisher.candidate.template.py strict forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "publisher.candidate.template.py strict reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "publisher.candidate.template.py only listed literal replacements",
+      "pass": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "build-binder.candidate.js whole pins",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "build-binder.candidate.js strict forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "build-binder.candidate.js strict reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "build-binder.candidate.js only listed literal replacements",
+      "pass": true,
+      "detail": {
+        "hunks": 2
+      }
+    },
+    {
+      "name": "full34-admission.candidate.py whole pins",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "full34-admission.candidate.py strict forward",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "full34-admission.candidate.py strict reverse",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "full34-admission.candidate.py only listed literal replacements",
+      "pass": true,
+      "detail": {
+        "hunks": 1
+      }
+    },
+    {
+      "name": "stage.candidate.template.py complete original definitions",
+      "pass": true,
+      "detail": {
+        "count": 20
+      }
+    },
+    {
+      "name": "runner.candidate.py complete original definitions",
+      "pass": true,
+      "detail": {
+        "count": 10
+      }
+    },
+    {
+      "name": "launcher.candidate.template.py complete original definitions",
+      "pass": true,
+      "detail": {
+        "count": 7
+      }
+    },
+    {
+      "name": "publisher.candidate.template.py complete original definitions",
+      "pass": true,
+      "detail": {
+        "count": 5
+      }
+    },
+    {
+      "name": "groups original exact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "publisher pin mac_normal_same_root_publication_build.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "publisher pin launch_normal_same_root_publication.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "publisher pin normal-test-groups.public.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "bundle remains unbound",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "controls remain unbound",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "admission sole runner SHA replacement",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "stage current candidate/base relation",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "stage original budgets",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "bundle and runtime actual slots absent",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "normal actual inputs absent",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "normal exact89/117 binding",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "full34 fragment current before/diff",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "full34 original scope and unobserved",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "Native_calls": 0,
+  "Python_runs": 0,
+  "Cargo_runs": 0
+}

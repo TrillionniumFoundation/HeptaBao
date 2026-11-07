@@ -1,0 +1,15 @@
+{
+  "message": "stage generation exact failed",
+  "cause": "builder returns source/request/journal but does not expose sourceDiff or journalDiff fields",
+  "actualOutputKeys": [
+    "after",
+    "edits",
+    "requestRaw",
+    "requestPin",
+    "journal",
+    "binding"
+  ],
+  "pureOnly": true,
+  "NativeCalls": 0,
+  "sourceAndRequestsUnchanged": true
+}

@@ -1,0 +1,494 @@
+{
+  "schema": "heptabao.authbus-public-import-root-literal-source-contract.r1",
+  "authorization": "SOURCE_ONLY_NO_NATIVE_GO",
+  "NativeCallsSubmitted": 0,
+  "slotInitialized": false,
+  "source": {
+    "blob": "ef8e1b63c56adb0413ca3edd9a1b09f858bb4b63",
+    "bytes": 150501,
+    "sha256": "2cce4cec0fdb4ae338a0d46b8cfc5924180a8eb7bf71d57f35c04b2ee955775c"
+  },
+  "exactRequest": {
+    "blob": "31a1dd0e435548261bc6c8d88acd7db76e8ca5c1",
+    "bytes": 151430,
+    "sha256": "4560a291c460eea06768d373012b7178467c1848e9cc95c9dbdfde48002b8f8b"
+  },
+  "journal": {
+    "blob": "1ed36fbdd70d87dab064fb3aca5365d04307634b",
+    "bytes": 19065,
+    "sha256": "a90843bd83b500e1fe5cf0f623e6f258e20c5fa8a30def19b1a11e4611cd6dc4"
+  },
+  "slot": "owner_authbus_public_node_startup_root_read_gitfirst_r1",
+  "observerPrefix": "heptabao-mac-public-node-startup-root-read-2cce4cec-",
+  "before": {
+    "source": {
+      "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+      "bytes": 150406,
+      "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+    },
+    "exactRequest": {
+      "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+      "bytes": 151322,
+      "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+    },
+    "journal": {
+      "blob": "ed4e0248df0336f91832e7d3a27a7a51a8afc998",
+      "bytes": 19045,
+      "sha256": "f7a5f0e07b606671d31efb2f0060c645e5bc4179c6ff8b37976fcb2334f427f1"
+    },
+    "GO": {
+      "blob": "7ebe24a86015cf0fa5b377c66e30576d70d6ec7d",
+      "bytes": 12126,
+      "sha256": "d0029f0d49010122b1d5ecac30173108b3aa300341daa0a625793747411c87ee"
+    },
+    "profile": {
+      "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+      "bytes": 6909,
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    },
+    "HeldT5": {
+      "blob": "bfeec9a4b3f7a1cfd3e90afb3bc4e60338414ce0",
+      "bytes": 13395,
+      "sha256": "620319affd03217ed3d53a5a806a0b79cf8a7bdee89cff74f5b31d990e3c4bda"
+    }
+  },
+  "completedPublicVersionBasis": {
+    "job": "mac/1a1b3500b8b-fc05-81f7",
+    "GO": {
+      "blob": "044a0bea954708ae1fa2808d9e788907e892a789",
+      "bytes": 14906,
+      "sha256": "7c69c98d4c1b1fc7e78e51d51566981242dab4456fdf9240340eb7bb95c3a0c8"
+    },
+    "fullOriginalChain": "4e48b3b07ede7bcdfc3c37b10f193ac4dd799171",
+    "stdout": {
+      "blob": "79ebee9e0a73a382e9d7e38bc388e3a1d7473e1d",
+      "bytes": 11882,
+      "sha256": "f095fd99f0fc3d2235d380d2c5d1e221466c73010809f117d13e8c36b1eab8da"
+    },
+    "release": {
+      "blob": "7c67b4aeaa2ab83d36fecd1f79afc53f18230cc0",
+      "bytes": 8828,
+      "sha256": "00d835466ce86b334e5366ebed0876e810f7ad033d017b5454fe76cbce92aa17"
+    },
+    "bothArmsExit": 0,
+    "bothArmsVersion": "v25.9.0",
+    "SDKQualified": false,
+    "historicalCauseQualified": false
+  },
+  "proposedChange": {
+    "sourceStrictHunks": [
+      7,
+      7
+    ],
+    "HeldT5StrictHunks": [
+      1,
+      1
+    ],
+    "journalStrictHunks": [
+      2,
+      2
+    ],
+    "materializerStrictHunks": [
+      1,
+      1
+    ],
+    "profileStrictHunks": [
+      2,
+      2
+    ],
+    "rule": "(allow file-read* (literal \"/\"))\n",
+    "ruleBytes": 33,
+    "namespaceBefore": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1",
+    "namespaceAfter": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2",
+    "namespaceBytesEqual": true,
+    "oldProfileAfterOnlyNamespaceRebind": {
+      "blob": "e158e02c7c6cde89cba40cc4c49f135477c56355",
+      "bytes": 6909,
+      "sha256": "5f42f2e82105b8f9a5cc49d5e569caeb10436fd67649e88eff7bb08e8f4e5406"
+    },
+    "profileAfter": {
+      "blob": "ba39fe0868d2207233fe0aee30d5de34d174c503",
+      "bytes": 6942,
+      "sha256": "be65432dd6a7358903c7753e9f1a760344d954d2d5b69ddeba29d6f0d34d0008"
+    },
+    "additionalMapExecutableRule": false,
+    "otherProfileRulesUnchanged": true,
+    "modeledConsumersOrProviderChanged": false
+  },
+  "newScope": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2",
+    "exclusiveCreate": true,
+    "noFallback": true,
+    "directories": [
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/qa",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/installed-plugin-copy",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state/home",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state/oauth",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/tmp",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/workers"
+    ],
+    "fixedCreatedPublicFiles": [
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/qa/startup-imports.mjs",
+        "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+        "bytes": 1052,
+        "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/qa/mac_auth_rows_cas_r1.mjs",
+        "blob": "408959d22873855f79f28570c611d24db44005cd",
+        "bytes": 3108,
+        "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/qa/mac_authbus_cache_cas_r1.mjs",
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/consumer.sb",
+        "blob": "ba39fe0868d2207233fe0aee30d5de34d174c503",
+        "bytes": 6942,
+        "sha256": "be65432dd6a7358903c7753e9f1a760344d954d2d5b69ddeba29d6f0d34d0008"
+      }
+    ],
+    "captures": [
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/workers/startup.stdout.public",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/workers/startup.stderr.public"
+    ],
+    "existingRootsModified": false,
+    "privateCredentialsDirectoryCreated": false
+  },
+  "process": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotencyKey": "heptabao-mac-public-node-startup-root-read-2cce4cec-20261106-r1",
+    "stdin": {
+      "blob": "ef8e1b63c56adb0413ca3edd9a1b09f858bb4b63",
+      "bytes": 150501,
+      "sha256": "2cce4cec0fdb4ae338a0d46b8cfc5924180a8eb7bf71d57f35c04b2ee955775c"
+    },
+    "correctNativeTypedBinding": null,
+    "bindingRequiredFromRootActualStdinCanonicalization": true
+  },
+  "fixedInputs": {
+    "/usr/sbin/diskutil": {
+      "identity": [
+        "16777233",
+        "1152921500312575979",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "1937776",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 1937776,
+      "sha256": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f"
+    },
+    "/usr/bin/sandbox-exec": {
+      "identity": [
+        "16777233",
+        "1152921500312572700",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "102368",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 102368,
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+    },
+    "/bin/ps": {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/Cellar/node/25.9.0_1/bin/node": {
+      "identity": [
+        "16777233",
+        "42479374",
+        "501",
+        "80",
+        "33133",
+        "1",
+        "68384",
+        "1775693589374925413",
+        "1775693590180968789"
+      ],
+      "bytes": 68384,
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "nodeAlias": {
+    "identity": [
+      "16777233",
+      "42479387",
+      "501",
+      "80",
+      "41453",
+      "1",
+      "32",
+      "1775693590102524708",
+      "1775693590102524708"
+    ],
+    "path": "/opt/homebrew/bin/node",
+    "resolved": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+    "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+  },
+  "anchor": {
+    "base64": "ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",
+    "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+    "volumeIdentityIsNotMachineIdentity": true
+  },
+  "execution": {
+    "diskutil": {
+      "argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5"
+      ],
+      "commandSeconds": 4,
+      "outputMaximumEach": 262144
+    },
+    "worker": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/consumer.sb",
+        "/opt/homebrew/bin/node",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/qa/startup-imports.mjs"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial",
+      "commandSeconds": 10,
+      "env": {
+        "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state/home",
+        "TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/tmp",
+        "OPENCLAW_STATE_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state",
+        "OPENCLAW_CONFIG_PATH": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state/openclaw.json",
+        "OPENCLAW_OAUTH_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state/oauth",
+        "OPENCLAW_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2/initial/state/home"
+      }
+    },
+    "ownDirectPopenEntries": 2,
+    "commandsInternalPsSubprocessesAreSeparate": true,
+    "internalPsOriginalCapsUnchanged": true,
+    "foregroundParentNotOriginalLaunchdParent": true,
+    "noClaimToReproduceOldProcessState": true,
+    "publicMarkerSequence": [
+      "entered-js",
+      "before-fs",
+      "after-fs",
+      "before-path",
+      "after-path",
+      "before-crypto",
+      "after-crypto",
+      "before-sqlite",
+      "after-sqlite",
+      "before-rows-cas",
+      "after-rows-cas",
+      "before-cache-cas",
+      "after-cache-cas",
+      "before-https",
+      "after-https",
+      "before-http",
+      "after-http",
+      "before-child-process",
+      "after-child-process",
+      "before-url",
+      "after-url",
+      "before-module",
+      "after-module",
+      "complete"
+    ],
+    "markerScriptUnchanged": true,
+    "markerModules": [
+      "node:fs",
+      "node:path",
+      "node:crypto",
+      "node:sqlite",
+      "./mac_auth_rows_cas_r1.mjs",
+      "./mac_authbus_cache_cas_r1.mjs",
+      "node:https",
+      "node:http",
+      "node:child_process",
+      "node:url",
+      "node:module"
+    ],
+    "CASFunctionsCalled": false,
+    "databaseMethodsCalled": false,
+    "SDKImported": false,
+    "networkCallsDispatched": false
+  },
+  "budgets": {
+    "workSeconds": 35,
+    "afterClosureSeconds": 45,
+    "nativeOuterSeconds": 60,
+    "oldOnceCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psEachMaximum": 4
+    },
+    "fixedInputFiles": 5,
+    "fixedInputBytes": 2313600,
+    "fixedInputPhysicalReadCapIncludingEOFReserve": 2313605,
+    "inputReadCalls": 128,
+    "inputMetadataCalls": 128,
+    "heldGuardReturnedFdStaticMaximum": 79,
+    "heldGuardRuntimeLedgerCeiling": 80,
+    "inputFdAttemptMaximum": 5,
+    "fixedGuardPublicIoOperations": 21,
+    "createdInputBytes": 17948,
+    "publicReadbackCalls": 6,
+    "successfulReadbackByteMaximum": 87580,
+    "physicalReadMaximumIncludingPerReadEOFSentinel": 87586,
+    "stdoutCapturePostExitLimit": 4096,
+    "stderrCapturePostExitLimit": 65536,
+    "captureLimitsArePostExitChecksNotKernelRLIMIT": true,
+    "wholePublicReportMaximum": 65536,
+    "observation": {
+      "processStatusMaximum": 8,
+      "processReadObserverMaximum": 8,
+      "processReadBytesPerStream": 16384,
+      "perObserverStatusMaximum": 8,
+      "immutablePageBytes": 8192,
+      "perObserverMaximumPages": 128,
+      "perObserverMaximumPayloadBytes": 1048576
+    },
+    "oldCreatedInputBytes": 17915,
+    "oldSuccessfulReadbackByteMaximum": 87547,
+    "oldPhysicalReadMaximumIncludingPerReadEOFSentinel": 87553,
+    "soleByteCapDelta": 33,
+    "timeAndPerCaptureCapsUnchanged": true,
+    "fixedInputWholeHashCostIsSeparateFromCreatedReadbackCap": true
+  },
+  "ownership": {
+    "originalCommandsWhole": true,
+    "originalUnreapedWhole": true,
+    "originalNativeObserverWholeButNotInstantiated": true,
+    "HeldT5OnlyRootLiteralChanged": true,
+    "captureFunctionOnlyOutputLimitsChanged": true,
+    "noBlindCloseOrReap": true,
+    "noHistoricalPidOrGroupSignal": true,
+    "allGuardCallsConservativePendingFlag": true,
+    "HeldT5PartialInitializationConservativeUnknown": true,
+    "inputReturnRegistrationPendingLedgerPreserved": true,
+    "closeLoopsProtected": true,
+    "handlerRestorationRequired": true,
+    "mac_owned_unreaped_r1WholeUnchanged": true,
+    "mac_owned_commands_r1WholeUnchanged": true,
+    "mac_native_process_observer_r1WholeUnchangedAndNotInstantiated": true,
+    "HeldT5OnlyExactNewRootLiteralChanged": true
+  },
+  "materializerComponent": {
+    "before": {
+      "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+      "bytes": 25973,
+      "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+    },
+    "after": {
+      "blob": "6a3b8911ac391fea1884113625fde555cae132e8",
+      "bytes": 26026,
+      "sha256": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+    },
+    "dispatchable": false,
+    "fullOriginalRootLiteralStillUnboundToAnyNewRuntime": true,
+    "consumerProfileFunctionMatchesDiagnosticExactly": true,
+    "onlyInsertedLine": "    lines.append('(allow file-read* (literal \"/\"))')",
+    "existingPhaseProfileHashCalculatedFromActualNewPolicy": true,
+    "phaseSourcePinAssignmentUnchanged": true,
+    "allOtherMaterializerDefinitionsWholeUnchanged": true,
+    "privateCapsuleOrPlansReadByThisSourceWork": false
+  },
+  "resultInterpretation": {
+    "observationComplete": "Known original worker terminal and complete accepted marker protocol, own FD/helper closure, and final deadline. Empty markers with a known negative child exit may qualify only an empty observed prefix.",
+    "executionSucceeded": "Child exit0/finalReturnCode0, full 24-marker sequence, all own closure/deadline. This is startup/import only.",
+    "historicalManagedClosureClaimed": false,
+    "originalAbortCauseProved": false,
+    "credentialQualification": false,
+    "authbusRuntimeQualification": false,
+    "combined02bQualification": false
+  },
+  "independentUnresolvedIssues": {
+    "oldPsHelpers84947And85012CustodyUnknown": true,
+    "oldProcessReaderCountOrPIDRefusalNotProvedESRCH": true,
+    "consumerTerminationGuardMustRemainRealExitZero": true,
+    "oldManagedUnknownNotClosed": true,
+    "noAutomaticBusinessRetry": true
+  },
+  "futureAuthBusBinding": {
+    "wholeCurrentCandidate": null,
+    "observedServerBinaryFull9": null,
+    "observedServerBinaryVersion": null,
+    "actualTrustedIssuer": null,
+    "privateCredentialGeneration": null,
+    "currentFiveAgentAndFullConfigChanged": false,
+    "newExactRuntimeGO": null,
+    "requireExistingTrustedCredentialSameGenerationAndSameInstanceAssertions": true,
+    "oldCredentialOrIssuerQualificationReused": false
+  },
+  "primaryReferenceReuse": {
+    "source39": "9681e01488d28e441e43a6d1c0c974df362d45f2",
+    "commit": "27fce0dbd58925061c57eb8b38707b9a98349dad",
+    "implementationBlob": "1eb0db73ff9116bc5fab0299eb3a002bbe5ffb31",
+    "testBlob": "b085f729adf1246aa055be91158069cf31cc6227",
+    "upstreamTestsNotRun": true
+  },
+  "sourceWork": {
+    "pureV8Only": true,
+    "PythonNotExecuted": true,
+    "candidateNotExecuted": true,
+    "localBuilderErrorPreserved": {
+      "blob": "aec25ba3220077a81e3d265fbefe8b1a7293cc64",
+      "bytes": 459,
+      "sha256": "d780b6a3247b1c1de6eec5d82f95698651e01e684e59c0bdfddca9dd33508a36"
+    },
+    "firstAttemptExpectedWrongGuardStringShape": true,
+    "correctionOnlyBuilderUsesExactExistingMOUNTJoinedLiteral": true
+  },
+  "wholeReadBeforeDispatchRequired": true,
+  "GOIsSeparate": true
+}

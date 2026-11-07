@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.b.4a-fast-libtest-precheck-mechanism-source.r1",
+  "scope": "SOURCE_ONLY; 4a runner bound, final combined publisher request waits actual stage report SHA",
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "CargoExecuted": false,
+  "source": {
+    "blob": "b3901c3ef34b4384c54e130637ea4ab8df0c6839",
+    "bytes": 38598,
+    "sha256": "3adf3aa07ec747e978f8484f670b41b2874d5f1d2b5a1a7afb45ea5989635a09"
+  },
+  "before": {
+    "blob": "6499b982ec8562bc52c22416f6eaf7979e1050bc",
+    "bytes": 36346,
+    "sha256": "b02b398a3dfe1ab2f57a6ab70056c2b4aa58f4e221644513187f991d80654166"
+  },
+  "mechanismIntermediate": {
+    "blob": "7494ab7c48c200ada4b5be385d39ec5cc8ab87af",
+    "bytes": 38598,
+    "sha256": "6f82dee6d55c868f4ad7ea67332078cd88905b7cfaf4830be8694732069372e7"
+  },
+  "candidate": {
+    "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+    "bytes": 4223,
+    "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+  },
+  "sourceEdits": 2,
+  "mechanicalBindings": 3,
+  "mechanismHunks": 1,
+  "combinedHunks": 3,
+  "originalRunnerCapBytes": 40000,
+  "actualRunnerBytes": 38598,
+  "originalLauncherCapBytes": 40000,
+  "launcherUnmodifiedByPrecheck": true,
+  "launcherAndPublisherActualStageBindingPending": true,
+  "buildExactRequest": null,
+  "budgets": {
+    "jointOuter": 12000,
+    "publishWithinOuter": 60,
+    "releaseAbsoluteOnce": 1800,
+    "precheckMaxWithinRelease": 300,
+    "subsequentAllCompileShared": 3600,
+    "eachRuntimeFamily": 600,
+    "eachList": 30,
+    "ownedTerm": 5,
+    "ownedKill": 5
+  },
+  "exactPrecheckArgs": [
+    "cargo",
+    "check",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--lib",
+    "--profile",
+    "test",
+    "--message-format=json-render-diagnostics"
+  ],
+  "actualJsonRequired": {
+    "compilerArtifactTargetName": "heptabao_server",
+    "targetKind": [
+      "lib"
+    ],
+    "profileTest": true,
+    "sourcePath": "SOURCE/crates/heptabao-server/src/lib.rs",
+    "manifestPath": "SOURCE/crates/heptabao-server/Cargo.toml",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "oneBuildFinishedSuccess": true,
+    "executableRequired": false
+  },
+  "runtime": {
+    "unique": 252,
+    "instances": 280,
+    "families": 18,
+    "unchangedNamesAndProfiles": true,
+    "normal61Retained": true
+  },
+  "fastGateReplacesRelease": false,
+  "fastGateReplacesNoRun": false,
+  "fastGateReplacesTestRun": false,
+  "primaryReport": {
+    "blob": "db99ce776b7267a4174388c79d9160a318695f92",
+    "bytes": 6291,
+    "sha256": "4b3b538df21469af84b6c2874d5a27a6413f13493281387ad2b3c458c9326901"
+  },
+  "primaryPacket": "cff31859a2a890d6a0b94b7abbe5a7bda65a5a3b",
+  "actualCargoBinaryToGitlinkProven": false,
+  "actualCargoVersion": null,
+  "actualFastGate": null,
+  "priorFailed576Preserved": true,
+  "fullReplacement": false
+}

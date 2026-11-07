@@ -1,0 +1,7 @@
+--- a/profile.after
++++ b/profile.before
+@@ -66,4 +66,3 @@
+ (allow file-write* (subpath "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial"))
+ (allow file-write* (literal "/dev/null"))
+ (allow network-outbound (remote ip "localhost:63611"))
+-(allow file-read* (literal "/"))

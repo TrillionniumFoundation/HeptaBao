@@ -1,0 +1,25 @@
+{
+  "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+  "size": 31257,
+  "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5",
+  "version": "66306:34603472:31257:1794007676686666010:1794007676686666010",
+  "nativeText": {
+    "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+    "bytes": 462,
+    "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+  },
+  "originalOperation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+  "full9Strings": [
+    "66306",
+    "34603472",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "31257",
+    "1794007676686666010",
+    "1794007676686666010"
+  ],
+  "regularFileFromNativeFileInfoContract": true,
+  "binaryReadAuthorized": false
+}

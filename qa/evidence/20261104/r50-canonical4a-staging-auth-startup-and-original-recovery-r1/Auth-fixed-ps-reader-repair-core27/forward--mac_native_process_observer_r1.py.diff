@@ -1,0 +1,71 @@
+--- a/mac_native_process_observer_r1.py
++++ b/mac_native_process_observer_r1.py
+@@ -11,6 +11,7 @@
+ from __future__ import annotations
+ 
+ import ctypes
++import errno
+ import json
+ import os
+ from pathlib import Path
+@@ -26,6 +27,16 @@
+     pass
+ 
+ 
++class ProcessAbsent(ObservationRefused):
++    def __init__(self, pid, stage, count, error_number):
++        require(type(pid) is int and pid > 1 and stage in ('info-before', 'path', 'info-after')
++                and count == 0 and error_number == errno.ESRCH,
++                'exact_process_absence_evidence')
++        super().__init__('process_absent_esrch')
++        self.evidence = {'requestedPid': pid, 'stage': stage,
++                         'returnCount': count, 'errno': error_number}
++
++
+ def require(value, code):
+     if not value:
+         raise ObservationRefused(code)
+@@ -59,19 +70,42 @@
+         self.lib.proc_listchildpids.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
+         self.lib.proc_listchildpids.restype = ctypes.c_int
+ 
++    def read(self, pid, *, allow_absent=False):
+-    def read(self, pid):
+         require(type(pid) is int and pid > 1, 'exact_pid_required')
++        require(type(allow_absent) is bool, 'typed_process_absence_switch')
++        self.last_read_numeric = []
+         info = BsdInfo()
++        ctypes.set_errno(0)
+         count = self.lib.proc_pidinfo(pid, 3, 0, ctypes.byref(info), ctypes.sizeof(info))
++        error_number = ctypes.get_errno()
++        if allow_absent:
++            self.last_read_numeric.append({'stage': 'info-before', 'requestedPid': pid,
++                'returnCount': count, 'errno': error_number, 'exactPid': info.pid == pid})
++            if count == 0 and error_number == errno.ESRCH:
++                raise ProcessAbsent(pid, 'info-before', count, error_number)
+         require(count == ctypes.sizeof(info) and info.pid == pid, 'process_info_complete')
+         executable = ctypes.create_string_buffer(4096)
++        ctypes.set_errno(0)
+         length = self.lib.proc_pidpath(pid, executable, len(executable))
++        error_number = ctypes.get_errno()
++        if allow_absent:
++            self.last_read_numeric.append({'stage': 'path', 'requestedPid': pid,
++                'returnCount': length, 'errno': error_number, 'exactPid': None})
++            if length == 0 and error_number == errno.ESRCH:
++                raise ProcessAbsent(pid, 'path', length, error_number)
+         require(0 < length < len(executable), 'process_path_complete')
+         actual_path = executable.value.decode('utf-8', errors='strict')
+         require(actual_path.startswith('/'), 'absolute_process_path')
+         # A second birth read binds path lookup to the same process lifetime.
+         again = BsdInfo()
++        ctypes.set_errno(0)
+         count = self.lib.proc_pidinfo(pid, 3, 0, ctypes.byref(again), ctypes.sizeof(again))
++        error_number = ctypes.get_errno()
++        if allow_absent:
++            self.last_read_numeric.append({'stage': 'info-after', 'requestedPid': pid,
++                'returnCount': count, 'errno': error_number, 'exactPid': again.pid == pid})
++            if count == 0 and error_number == errno.ESRCH:
++                raise ProcessAbsent(pid, 'info-after', count, error_number)
+         require(count == ctypes.sizeof(again)
+                 and (again.pid, again.ppid, again.pgid, again.uid,
+                      again.birth_sec, again.birth_usec)

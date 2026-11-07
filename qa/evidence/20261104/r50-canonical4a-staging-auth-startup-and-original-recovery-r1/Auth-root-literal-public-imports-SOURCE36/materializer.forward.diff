@@ -1,0 +1,10 @@
+--- a/materializer.before
++++ b/materializer.after
+@@ -106,6 +106,7 @@
+         '(allow file-write* (subpath '+q(root)+'))',
+         '(allow file-write* (literal "/dev/null"))',
+         '(allow network-outbound (remote ip '+q('localhost:'+str(port))+'))'])
++    lines.append('(allow file-read* (literal "/"))')
+     return ('\n'.join(lines)+'\n').encode()
+ 
+ class Materializer:

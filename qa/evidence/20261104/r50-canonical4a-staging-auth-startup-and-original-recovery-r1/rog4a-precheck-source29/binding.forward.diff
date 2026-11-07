@@ -1,0 +1,22 @@
+--- a/combined_build_runner4a.py
++++ b/combined_build_runner4a.py
+@@ -27,8 +27,8 @@
+ OUTER_UNTIL = args.outer_started_monotonic + ORIGINAL_OUTER_SECONDS
+ assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before runner'
+ source, output = Path(args.source), Path(args.output)
+-DIAGNOSTIC_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
+-DIAGNOSTIC_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
++DIAGNOSTIC_COMMIT = '4a49405b93c45ab1c25ecba11cde63a7ede20dce'
++DIAGNOSTIC_TREE = 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'
+ children = []
+ protected = 0
+ pending_signal = None
+@@ -103,7 +103,7 @@
+ 
+ def fresh_target_pin():
+     path = Path(args.target)
+-    assert path == Path('/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1')
++    assert path == Path('/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1')
+     assert path.parent == Path(__file__).resolve(strict=True).parent
+     assert path.resolve(strict=True) == path
+     info = path.lstat()

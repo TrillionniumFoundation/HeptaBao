@@ -1,0 +1,293 @@
+{
+  "schema": "heptabao.4a.stage-body.source-verification.r1",
+  "ok": true,
+  "checks": 67,
+  "results": [
+    {
+      "name": "whole-before",
+      "pass": true
+    },
+    {
+      "name": "whole-base",
+      "pass": true
+    },
+    {
+      "name": "whole-after",
+      "pass": true
+    },
+    {
+      "name": "whole-request",
+      "pass": true
+    },
+    {
+      "name": "whole-info",
+      "pass": true
+    },
+    {
+      "name": "twelve-declared-substitutions",
+      "pass": true
+    },
+    {
+      "name": "literal-count-slot",
+      "pass": true
+    },
+    {
+      "name": "literal-count-original-start-blob",
+      "pass": true
+    },
+    {
+      "name": "literal-count-original-start-bytes",
+      "pass": true
+    },
+    {
+      "name": "literal-count-original-start-sha",
+      "pass": true
+    },
+    {
+      "name": "literal-count-fixed-path",
+      "pass": true
+    },
+    {
+      "name": "literal-count-info-exact-pin",
+      "pass": true
+    },
+    {
+      "name": "literal-count-original-two-prerequisites",
+      "pass": true
+    },
+    {
+      "name": "literal-count-original-job",
+      "pass": true
+    },
+    {
+      "name": "literal-count-observer-prefix",
+      "pass": true
+    },
+    {
+      "name": "literal-count-exact-body-request",
+      "pass": true
+    },
+    {
+      "name": "literal-count-actual-INFO-body-binding",
+      "pass": true
+    },
+    {
+      "name": "literal-count-descriptive-bound-size",
+      "pass": true
+    },
+    {
+      "name": "exact-donor-rebuild",
+      "pass": true
+    },
+    {
+      "name": "donor-forward",
+      "pass": true
+    },
+    {
+      "name": "donor-reverse",
+      "pass": true
+    },
+    {
+      "name": "current-forward",
+      "pass": true
+    },
+    {
+      "name": "current-reverse",
+      "pass": true
+    },
+    {
+      "name": "donor-three-hunks",
+      "pass": true
+    },
+    {
+      "name": "current-six-hunks",
+      "pass": true
+    },
+    {
+      "name": "same-functions",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfNeed",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfState",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfSave",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "donor-function-whole-gfRun",
+      "pass": true
+    },
+    {
+      "name": "original-slot-closed",
+      "pass": true
+    },
+    {
+      "name": "ten-original-calls-retained",
+      "pass": true
+    },
+    {
+      "name": "three-closed-observers",
+      "pass": true
+    },
+    {
+      "name": "original-local-error-retained",
+      "pass": true
+    },
+    {
+      "name": "actual-info-whole-binding",
+      "pass": true
+    },
+    {
+      "name": "metadata-exact31257",
+      "pass": true
+    },
+    {
+      "name": "metadata-original-version",
+      "pass": true
+    },
+    {
+      "name": "metadata-owner-mode-link",
+      "pass": true
+    },
+    {
+      "name": "fixed-body-extent",
+      "pass": true
+    },
+    {
+      "name": "no-old-page-cap-change",
+      "pass": true
+    },
+    {
+      "name": "exact-request-pin",
+      "pass": true
+    },
+    {
+      "name": "INFO-GO-alone-no-BODY",
+      "pass": true
+    },
+    {
+      "name": "exact-private-model-accepted",
+      "pass": true
+    },
+    {
+      "name": "unread-GO",
+      "pass": true
+    },
+    {
+      "name": "old-INFO-GO",
+      "pass": true
+    },
+    {
+      "name": "no-reinitialize",
+      "pass": true
+    },
+    {
+      "name": "paused",
+      "pass": true
+    },
+    {
+      "name": "metadata-drift",
+      "pass": true
+    },
+    {
+      "name": "native-info-drift",
+      "pass": true
+    },
+    {
+      "name": "open-observer",
+      "pass": true
+    },
+    {
+      "name": "repeat-body",
+      "pass": true
+    },
+    {
+      "name": "different-offset",
+      "pass": true
+    },
+    {
+      "name": "different-limit",
+      "pass": true
+    },
+    {
+      "name": "different-version",
+      "pass": true
+    },
+    {
+      "name": "different-path",
+      "pass": true
+    },
+    {
+      "name": "different-rekey",
+      "pass": true
+    },
+    {
+      "name": "metadata-refresh",
+      "pass": true
+    },
+    {
+      "name": "new-process",
+      "pass": true
+    },
+    {
+      "name": "zero-tools-private-model-only",
+      "pass": true
+    }
+  ],
+  "candidate": {
+    "blob": "be146f7191451c264e374facd59611dc061d5ca4",
+    "bytes": 28216,
+    "sha256": "15110c94a8131d25bcdd18ce720595996307d8b0c87c0e7d02955e5451e1e3b2"
+  },
+  "request": {
+    "blob": "b6048e8adb57144a814f2935978114b136958396",
+    "bytes": 405,
+    "sha256": "ac599c2432aed05b11fb3178e7c62a384d8879c5a130eefbef24a96974c4fc0b"
+  },
+  "actualMetadata": {
+    "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+    "bytes": 462,
+    "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+  },
+  "NativeCalls": 0,
+  "actualBody": null,
+  "semanticReportQualification": false
+}

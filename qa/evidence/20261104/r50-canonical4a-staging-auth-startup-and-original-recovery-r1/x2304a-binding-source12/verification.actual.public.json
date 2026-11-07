@@ -1,0 +1,118 @@
+{
+  "pass": true,
+  "count": 28,
+  "checks": [
+    {
+      "label": "strict forward data binding",
+      "pass": true
+    },
+    {
+      "label": "strict inverse data binding",
+      "pass": true
+    },
+    {
+      "label": "three data-only hunks",
+      "pass": true
+    },
+    {
+      "label": "entire original controller unchanged including finally",
+      "pass": true
+    },
+    {
+      "label": "entire original binder unchanged",
+      "pass": true
+    },
+    {
+      "label": "original unbound fail-closed marker retained",
+      "pass": true
+    },
+    {
+      "label": "candidate exact frozen manifest",
+      "pass": true
+    },
+    {
+      "label": "four final source geometry values",
+      "pass": true
+    },
+    {
+      "label": "fresh candidate root",
+      "pass": true
+    },
+    {
+      "label": "unchanged schema",
+      "pass": true
+    },
+    {
+      "label": "unchanged readonly_base",
+      "pass": true
+    },
+    {
+      "label": "unchanged base_commit",
+      "pass": true
+    },
+    {
+      "label": "unchanged base_tree",
+      "pass": true
+    },
+    {
+      "label": "unchanged base_history",
+      "pass": true
+    },
+    {
+      "label": "unchanged first_prerequisite",
+      "pass": true
+    },
+    {
+      "label": "unchanged intermediate_commit",
+      "pass": true
+    },
+    {
+      "label": "unchanged root_commit",
+      "pass": true
+    },
+    {
+      "label": "first495->02b bundle byte-values unchanged",
+      "pass": true
+    },
+    {
+      "label": "second02b->4a distinct from Macfrom576",
+      "pass": true
+    },
+    {
+      "label": "candidate sole parent576 retained independently of bundle02b prerequisite",
+      "pass": true
+    },
+    {
+      "label": "second bundle names and original0400 mode",
+      "pass": true
+    },
+    {
+      "label": "second actual binary values null",
+      "pass": true
+    },
+    {
+      "label": "actual carrier values null",
+      "pass": true
+    },
+    {
+      "label": "all actual producer and transport evidence null",
+      "pass": true
+    },
+    {
+      "label": "no execution envelope generated",
+      "pass": true
+    },
+    {
+      "label": "original300/90/60/360 retained",
+      "pass": true
+    },
+    {
+      "label": "both original carrier and bundle total caps retained",
+      "pass": true
+    },
+    {
+      "label": "source-only flags",
+      "pass": true
+    }
+  ]
+}

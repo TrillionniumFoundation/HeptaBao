@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.pki12-cached-page0-recovery.no-Native.release.r2",
+  "C_lanes": 0,
+  "liveNativeCalls": 0,
+  "liveFutures": 0,
+  "pending": null,
+  "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "originalFutureCompletedInactive": true,
+  "logicalObserverClosed": false,
+  "acceptedCursor": 16384,
+  "acceptedPages": 1,
+  "originalCalls": 13,
+  "failedOriginalPage0Phase": "native_interpretation_refused",
+  "errorHistory": {
+    "blob": "aa0fce14552b552107d94619a154ee4fb229e66e",
+    "bytes": 304,
+    "sha256": "22d97a34eed7cbd16ce7e58fcadc05d0fc0e1aa4cc608b11efa81a122071fc50"
+  },
+  "actualState": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "newNativePagesAuthorized": false,
+  "fullPayloadQualified": false,
+  "bodyQualified": false
+}

@@ -1,0 +1,620 @@
+{
+  "schema": "heptabao.root.4a-stage-body-admission-qualification.r1",
+  "info": {
+    "schema": "heptabao.root.4a-stage-info-actual-qualification.r1",
+    "ok": true,
+    "checks": 61,
+    "results": [
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-start.request.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-start.intent.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-start.armed.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-start.SDK.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-start.native.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-status0.request.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-status0.intent.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-status0.armed.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-status0.SDK.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-status0.native.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-p0.request.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-p0.intent.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-p0.armed.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-p0.SDK.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-c4a-source-r1-reportinfo-p0.native.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-INFO.native.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-INFO.payload.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-STATE.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-GO.INFO.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-GO.RECOVERY.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-LOCAL-ERROR.original.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-RECOVERY-REFERENCES.public.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-METADATA.public.json",
+        "pass": true
+      },
+      {
+        "name": "manifest-RELEASE.public.json",
+        "pass": true
+      },
+      {
+        "name": "old-seven-calls-exact",
+        "pass": true
+      },
+      {
+        "name": "old-two-observers-exact",
+        "pass": true
+      },
+      {
+        "name": "GO-INFO-exact",
+        "pass": true
+      },
+      {
+        "name": "GO-RECOVERY-exact",
+        "pass": true
+      },
+      {
+        "name": "known-local-error-retained",
+        "pass": true
+      },
+      {
+        "name": "recovered-original-calls-exact",
+        "pass": true
+      },
+      {
+        "name": "start-accepted-single-call",
+        "pass": true
+      },
+      {
+        "name": "start-armed-binding",
+        "pass": true
+      },
+      {
+        "name": "start-SDK-whole-original",
+        "pass": true
+      },
+      {
+        "name": "start-archives-whole",
+        "pass": true
+      },
+      {
+        "name": "start-same-operation",
+        "pass": true
+      },
+      {
+        "name": "status0-accepted-single-call",
+        "pass": true
+      },
+      {
+        "name": "status0-armed-binding",
+        "pass": true
+      },
+      {
+        "name": "status0-SDK-whole-original",
+        "pass": true
+      },
+      {
+        "name": "status0-archives-whole",
+        "pass": true
+      },
+      {
+        "name": "status0-same-operation",
+        "pass": true
+      },
+      {
+        "name": "p0-accepted-single-call",
+        "pass": true
+      },
+      {
+        "name": "p0-armed-binding",
+        "pass": true
+      },
+      {
+        "name": "p0-SDK-whole-original",
+        "pass": true
+      },
+      {
+        "name": "p0-archives-whole",
+        "pass": true
+      },
+      {
+        "name": "p0-same-operation",
+        "pass": true
+      },
+      {
+        "name": "fixed-file-info",
+        "pass": true
+      },
+      {
+        "name": "admission-one-nonreused",
+        "pass": true
+      },
+      {
+        "name": "original-completed-inactive",
+        "pass": true
+      },
+      {
+        "name": "one-contiguous-original-page",
+        "pass": true
+      },
+      {
+        "name": "payload-original-exact",
+        "pass": true
+      },
+      {
+        "name": "original-native-exact",
+        "pass": true
+      },
+      {
+        "name": "metadata-actual-fixed-path",
+        "pass": true
+      },
+      {
+        "name": "metadata-actual-size-SHA",
+        "pass": true
+      },
+      {
+        "name": "metadata-original-version",
+        "pass": true
+      },
+      {
+        "name": "metadata-owner-mode-link",
+        "pass": true
+      },
+      {
+        "name": "empty-ACL-xattrs",
+        "pass": true
+      },
+      {
+        "name": "full9-derived-strings",
+        "pass": true
+      },
+      {
+        "name": "native-pin-and-state-metadata",
+        "pass": true
+      },
+      {
+        "name": "original-state-closed",
+        "pass": true
+      },
+      {
+        "name": "release-bound-state",
+        "pass": true
+      },
+      {
+        "name": "release-original-observer",
+        "pass": true
+      }
+    ],
+    "sourceTree": "345a9d16943b283a792a9e2c01f30a7b6ae4c1a8",
+    "originalJob": "1a1b3307dc2-fc05-80f8",
+    "operation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+    "metadata": {
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+      "size": 31257,
+      "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5",
+      "version": "66306:34603472:31257:1794007676686666010:1794007676686666010",
+      "nativeText": {
+        "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+        "bytes": 462,
+        "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+      },
+      "originalOperation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+      "full9Strings": [
+        "66306",
+        "34603472",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "31257",
+        "1794007676686666010",
+        "1794007676686666010"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    "release": {
+      "blob": "57400830c259236dcee35e27c0fc35013ac7e074",
+      "bytes": 2617,
+      "sha256": "94b166a38665bc9c1cc887ef7580e88228ee3f86ff8e5e1582b5a6612f846871"
+    },
+    "knownLocalErrorPreserved": true,
+    "recoveryOnlyLocalPausedFlag": true,
+    "nativeReplay": false,
+    "bodyQualified": false,
+    "productQualified": false,
+    "NativeLaneReleased": true
+  },
+  "bodySource": {
+    "schema": "heptabao.4a.stage-body.source-verification.r1",
+    "ok": true,
+    "checks": 67,
+    "results": [
+      {
+        "name": "whole-before",
+        "pass": true
+      },
+      {
+        "name": "whole-base",
+        "pass": true
+      },
+      {
+        "name": "whole-after",
+        "pass": true
+      },
+      {
+        "name": "whole-request",
+        "pass": true
+      },
+      {
+        "name": "whole-info",
+        "pass": true
+      },
+      {
+        "name": "twelve-declared-substitutions",
+        "pass": true
+      },
+      {
+        "name": "literal-count-slot",
+        "pass": true
+      },
+      {
+        "name": "literal-count-original-start-blob",
+        "pass": true
+      },
+      {
+        "name": "literal-count-original-start-bytes",
+        "pass": true
+      },
+      {
+        "name": "literal-count-original-start-sha",
+        "pass": true
+      },
+      {
+        "name": "literal-count-fixed-path",
+        "pass": true
+      },
+      {
+        "name": "literal-count-info-exact-pin",
+        "pass": true
+      },
+      {
+        "name": "literal-count-original-two-prerequisites",
+        "pass": true
+      },
+      {
+        "name": "literal-count-original-job",
+        "pass": true
+      },
+      {
+        "name": "literal-count-observer-prefix",
+        "pass": true
+      },
+      {
+        "name": "literal-count-exact-body-request",
+        "pass": true
+      },
+      {
+        "name": "literal-count-actual-INFO-body-binding",
+        "pass": true
+      },
+      {
+        "name": "literal-count-descriptive-bound-size",
+        "pass": true
+      },
+      {
+        "name": "exact-donor-rebuild",
+        "pass": true
+      },
+      {
+        "name": "donor-forward",
+        "pass": true
+      },
+      {
+        "name": "donor-reverse",
+        "pass": true
+      },
+      {
+        "name": "current-forward",
+        "pass": true
+      },
+      {
+        "name": "current-reverse",
+        "pass": true
+      },
+      {
+        "name": "donor-three-hunks",
+        "pass": true
+      },
+      {
+        "name": "current-six-hunks",
+        "pass": true
+      },
+      {
+        "name": "same-functions",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfNeed",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfMetaEquals",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfState",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfSave",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfIntegerText",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfInitializeOnlyAfterRootGO",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfPrepareOne",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfInvokePreparedOnce",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfAcceptArchivedSDK",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfCloseOriginalObserver",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfReconcileSameGitArchiveReadOnly",
+        "pass": true
+      },
+      {
+        "name": "donor-function-whole-gfRun",
+        "pass": true
+      },
+      {
+        "name": "original-slot-closed",
+        "pass": true
+      },
+      {
+        "name": "ten-original-calls-retained",
+        "pass": true
+      },
+      {
+        "name": "three-closed-observers",
+        "pass": true
+      },
+      {
+        "name": "original-local-error-retained",
+        "pass": true
+      },
+      {
+        "name": "actual-info-whole-binding",
+        "pass": true
+      },
+      {
+        "name": "metadata-exact31257",
+        "pass": true
+      },
+      {
+        "name": "metadata-original-version",
+        "pass": true
+      },
+      {
+        "name": "metadata-owner-mode-link",
+        "pass": true
+      },
+      {
+        "name": "fixed-body-extent",
+        "pass": true
+      },
+      {
+        "name": "no-old-page-cap-change",
+        "pass": true
+      },
+      {
+        "name": "exact-request-pin",
+        "pass": true
+      },
+      {
+        "name": "INFO-GO-alone-no-BODY",
+        "pass": true
+      },
+      {
+        "name": "exact-private-model-accepted",
+        "pass": true
+      },
+      {
+        "name": "unread-GO",
+        "pass": true
+      },
+      {
+        "name": "old-INFO-GO",
+        "pass": true
+      },
+      {
+        "name": "no-reinitialize",
+        "pass": true
+      },
+      {
+        "name": "paused",
+        "pass": true
+      },
+      {
+        "name": "metadata-drift",
+        "pass": true
+      },
+      {
+        "name": "native-info-drift",
+        "pass": true
+      },
+      {
+        "name": "open-observer",
+        "pass": true
+      },
+      {
+        "name": "repeat-body",
+        "pass": true
+      },
+      {
+        "name": "different-offset",
+        "pass": true
+      },
+      {
+        "name": "different-limit",
+        "pass": true
+      },
+      {
+        "name": "different-version",
+        "pass": true
+      },
+      {
+        "name": "different-path",
+        "pass": true
+      },
+      {
+        "name": "different-rekey",
+        "pass": true
+      },
+      {
+        "name": "metadata-refresh",
+        "pass": true
+      },
+      {
+        "name": "new-process",
+        "pass": true
+      },
+      {
+        "name": "zero-tools-private-model-only",
+        "pass": true
+      }
+    ],
+    "candidate": {
+      "blob": "be146f7191451c264e374facd59611dc061d5ca4",
+      "bytes": 28216,
+      "sha256": "15110c94a8131d25bcdd18ce720595996307d8b0c87c0e7d02955e5451e1e3b2"
+    },
+    "request": {
+      "blob": "b6048e8adb57144a814f2935978114b136958396",
+      "bytes": 405,
+      "sha256": "ac599c2432aed05b11fb3178e7c62a384d8879c5a130eefbef24a96974c4fc0b"
+    },
+    "actualMetadata": {
+      "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+      "bytes": 462,
+      "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+    },
+    "NativeCalls": 0,
+    "actualBody": null,
+    "semanticReportQualification": false
+  },
+  "actualBindings": {
+    "bodyStateExact": true,
+    "actualInfoExact": true,
+    "bodyBaseJournalExact": true,
+    "actualINFOGOExact": true,
+    "actualRecoveryGOExact": true,
+    "actualINFOReleaseExact": true,
+    "actualStatePinExact": true,
+    "actualMetadataRootQualified": true
+  },
+  "sourceAudit": {
+    "tree": "196ebeb091d43e274effb0674a84e594e597f57a",
+    "files": 24,
+    "bytes": 318721,
+    "merkle": {
+      "root_sha": "196ebeb091d43e274effb0674a84e594e597f57a",
+      "trees_verified": 1,
+      "leaf_count": 24
+    },
+    "whole": true
+  },
+  "INFOAudit": {
+    "tree": "345a9d16943b283a792a9e2c01f30a7b6ae4c1a8",
+    "files": 25,
+    "bytes": 186330,
+    "merkle": {
+      "root_sha": "345a9d16943b283a792a9e2c01f30a7b6ae4c1a8",
+      "trees_verified": 1,
+      "leaf_count": 25
+    },
+    "whole": true
+  },
+  "rootNativeCalls": 0,
+  "detailsQualified": false
+}

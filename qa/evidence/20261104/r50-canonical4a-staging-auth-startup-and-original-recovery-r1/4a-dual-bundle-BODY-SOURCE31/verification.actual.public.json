@@ -1,0 +1,186 @@
+{
+  "schema": "heptabao.source-verification.v1",
+  "pass": true,
+  "check_count": 44,
+  "checks": [
+    {
+      "label": "two ordered bindings",
+      "pass": true
+    },
+    {
+      "label": "whole donor journal",
+      "pass": true
+    },
+    {
+      "label": "mac unique GF_SLOT",
+      "pass": true
+    },
+    {
+      "label": "mac unique GF_REQUEST",
+      "pass": true
+    },
+    {
+      "label": "mac unique GF_EXPECTED",
+      "pass": true
+    },
+    {
+      "label": "mac unique GF_BUNDLE_BODY_EXPECTED",
+      "pass": true
+    },
+    {
+      "label": "mac unique GF_BUNDLE_BODY_RANGES",
+      "pass": true
+    },
+    {
+      "label": "mac unique GF_BUNDLE_INFO_STATE",
+      "pass": true
+    },
+    {
+      "label": "mac only six fixed constants",
+      "pass": true
+    },
+    {
+      "label": "mac every function byte unchanged",
+      "pass": true
+    },
+    {
+      "label": "mac exact request and journal",
+      "pass": true
+    },
+    {
+      "label": "mac strict donor bidirectional",
+      "pass": true
+    },
+    {
+      "label": "mac exact executed INFO to BODY bidirectional",
+      "pass": true
+    },
+    {
+      "label": "mac original actual state and native",
+      "pass": true
+    },
+    {
+      "label": "mac actual original operation version size SHA",
+      "pass": true
+    },
+    {
+      "label": "mac three original calls closed",
+      "pass": true
+    },
+    {
+      "label": "mac old INFO GO retained no BODY admission",
+      "pass": true
+    },
+    {
+      "label": "mac lossless actual full9",
+      "pass": true
+    },
+    {
+      "label": "mac one exact original version whole-file range",
+      "pass": true
+    },
+    {
+      "label": "mac private authorize preserves original call map",
+      "pass": true
+    },
+    {
+      "label": "mac actual prepare selects new BODY GO",
+      "pass": true
+    },
+    {
+      "label": "mac private prepare keeps all three old calls",
+      "pass": true
+    },
+    {
+      "label": "x230 unique GF_SLOT",
+      "pass": true
+    },
+    {
+      "label": "x230 unique GF_REQUEST",
+      "pass": true
+    },
+    {
+      "label": "x230 unique GF_EXPECTED",
+      "pass": true
+    },
+    {
+      "label": "x230 unique GF_BUNDLE_BODY_EXPECTED",
+      "pass": true
+    },
+    {
+      "label": "x230 unique GF_BUNDLE_BODY_RANGES",
+      "pass": true
+    },
+    {
+      "label": "x230 unique GF_BUNDLE_INFO_STATE",
+      "pass": true
+    },
+    {
+      "label": "x230 only six fixed constants",
+      "pass": true
+    },
+    {
+      "label": "x230 every function byte unchanged",
+      "pass": true
+    },
+    {
+      "label": "x230 exact request and journal",
+      "pass": true
+    },
+    {
+      "label": "x230 strict donor bidirectional",
+      "pass": true
+    },
+    {
+      "label": "x230 exact executed INFO to BODY bidirectional",
+      "pass": true
+    },
+    {
+      "label": "x230 original actual state and native",
+      "pass": true
+    },
+    {
+      "label": "x230 actual original operation version size SHA",
+      "pass": true
+    },
+    {
+      "label": "x230 three original calls closed",
+      "pass": true
+    },
+    {
+      "label": "x230 old INFO GO retained no BODY admission",
+      "pass": true
+    },
+    {
+      "label": "x230 lossless actual full9",
+      "pass": true
+    },
+    {
+      "label": "x230 one exact original version whole-file range",
+      "pass": true
+    },
+    {
+      "label": "x230 private authorize preserves original call map",
+      "pass": true
+    },
+    {
+      "label": "x230 actual prepare selects new BODY GO",
+      "pass": true
+    },
+    {
+      "label": "x230 private prepare keeps all three old calls",
+      "pass": true
+    },
+    {
+      "label": "two bodies 8068 bytes",
+      "pass": true
+    },
+    {
+      "label": "original bounded limits unchanged",
+      "pass": true
+    }
+  ],
+  "NativeCalls": 0,
+  "realSlotsMutated": false,
+  "purePrivateArchiveOnly": true
+}

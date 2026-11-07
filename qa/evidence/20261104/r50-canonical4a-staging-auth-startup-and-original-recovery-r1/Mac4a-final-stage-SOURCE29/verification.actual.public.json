@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.mac4a-final-stage-source-checks.v1",
+  "pass": true,
+  "check_count": 21,
+  "checks": [
+    {
+      "label": "exact binder replay source",
+      "pass": true
+    },
+    {
+      "label": "exact binder replay sourceDiff",
+      "pass": true
+    },
+    {
+      "label": "exact binder replay carrier",
+      "pass": true
+    },
+    {
+      "label": "exact binder replay requestRaw",
+      "pass": true
+    },
+    {
+      "label": "exact binder replay journal",
+      "pass": true
+    },
+    {
+      "label": "exact binder replay journalDiff",
+      "pass": true
+    },
+    {
+      "label": "exact typed binding and decimal fingerprint",
+      "pass": true
+    },
+    {
+      "label": "exact root transport qualification",
+      "pass": true
+    },
+    {
+      "label": "root transport facts only, no inherited Macstage",
+      "pass": true
+    },
+    {
+      "label": "root exact candidate and actual bundle",
+      "pass": true
+    },
+    {
+      "label": "root exact whole transport pins",
+      "pass": true
+    },
+    {
+      "label": "actual producer candidate whole source",
+      "pass": true
+    },
+    {
+      "label": "actual producer whole identity matches independently transferred bytes",
+      "pass": true
+    },
+    {
+      "label": "independent metadata version pinned",
+      "pass": true
+    },
+    {
+      "label": "one original Mac source-stage interface",
+      "pass": true
+    },
+    {
+      "label": "exact source self and complete carrier SHA",
+      "pass": true
+    },
+    {
+      "label": "actual complete carrier original cap",
+      "pass": true
+    },
+    {
+      "label": "original stage clocks unchanged",
+      "pass": true
+    },
+    {
+      "label": "all function-body archive keys reviewed",
+      "pass": true
+    },
+    {
+      "label": "future normal117 and original full34 remain unobserved",
+      "pass": true
+    },
+    {
+      "label": "source-only proposal",
+      "pass": true
+    }
+  ],
+  "NativeCalls": 0,
+  "PythonExecutions": 0,
+  "sourceTemplateChecksReused": 27
+}

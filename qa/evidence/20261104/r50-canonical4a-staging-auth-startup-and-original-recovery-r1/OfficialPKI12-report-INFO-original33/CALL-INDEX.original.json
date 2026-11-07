@@ -1,0 +1,212 @@
+[
+  {
+    "key": "off271-pki12-r1-report-info-admit",
+    "kind": "operation_start",
+    "requestRaw": "{\n  \"idempotency_key\": \"heptabao-official271-x230-pki12-report-info-20261106-r1\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"x230\",\n      \"path\": \"/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json\"\n    }\n  }\n}\n",
+    "requestPin": {
+      "blob": "2f4e6117554a8818ece0d5e06692bc9ab84d43c6",
+      "bytes": 269,
+      "sha256": "fbd273d05f6bc3fb3062a4ea82fc3bd524ccd2b735374e4163c2faa3d10502d1"
+    },
+    "phase": "accepted",
+    "called": true,
+    "armed": {
+      "tree": "7cf9eca7854ca50d8fc315e9a9a715ca852fc62e",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "49afc32d3fd1b585413ce1caeb7186c0ad2ffe12",
+          "bytes": 860,
+          "sha256": "06d463b6b7bf3ccf3dba61c639b3fdea4fe88e97187e65db0f0a145e3452f4ff",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "b4d75ff2792334f6344a10709eb87c4dcc32f0f4",
+          "bytes": 723,
+          "sha256": "62310075776cb65c581021b042831c4037f4bb38b3991449b17468e4a12e64a7",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "2f4e6117554a8818ece0d5e06692bc9ab84d43c6",
+          "bytes": 269,
+          "sha256": "fbd273d05f6bc3fb3062a4ea82fc3bd524ccd2b735374e4163c2faa3d10502d1",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1852,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdkPin": {
+      "blob": "7acec05b474f5761527076394d3ae41b131550c0",
+      "bytes": 704,
+      "sha256": "abac0a54cd3c457705bf919ebd8b13bb68a55488cb683c8c07836e38f16d4200"
+    },
+    "sdkArchive": {
+      "tree": "55caed9aae35b5269b1701e93e72f3aab75e9d72",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "7acec05b474f5761527076394d3ae41b131550c0",
+          "bytes": 704,
+          "sha256": "abac0a54cd3c457705bf919ebd8b13bb68a55488cb683c8c07836e38f16d4200",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 704,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "nativePin": {
+      "blob": "3613bb3d3e4f7cef0a784117f6ee7eb8b2b9b695",
+      "bytes": 543,
+      "sha256": "4e94d79b07e2b33a9fec4b438305e932494b994372a65ccd3786c166fc0374c2"
+    }
+  },
+  {
+    "key": "off271-pki12-r1-report-info-status0",
+    "kind": "operation_status",
+    "requestRaw": "{\n  \"operation_id\": \"7c8264be8bf15411a57a136bc89128f35aeb91c0c259f8bf47583d2c4f593f58\"\n}\n",
+    "requestPin": {
+      "blob": "7c2f7058bbb21fcad893dec0d6180e00fa96cd2c",
+      "bytes": 89,
+      "sha256": "4fa3dd3abdfd928a879e519ef6e0cc7daee50460d053b83af5f4aa6b3e8ee672"
+    },
+    "phase": "accepted",
+    "called": true,
+    "armed": {
+      "tree": "0d248cf4d3bc332f3fa91bb63e42fa113256f1af",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "1b00553c2421cb89b8c5579ab809ed8a82b8d63a",
+          "bytes": 924,
+          "sha256": "dca542eb7879d17111fdc80bc8af248b0329fa9eac04252bae4158432e39e5a6",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "e1c1b6eb16eed81e2a8dee8af32080b916d00f52",
+          "bytes": 787,
+          "sha256": "01d092143b98b2abf04cfc9b5229e7f8db4551af347efb55e905804f5856cde4",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "7c2f7058bbb21fcad893dec0d6180e00fa96cd2c",
+          "bytes": 89,
+          "sha256": "4fa3dd3abdfd928a879e519ef6e0cc7daee50460d053b83af5f4aa6b3e8ee672",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1800,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdkPin": {
+      "blob": "49ccb8aa668c4e5d59030984e2b0c4bea4b1ce3a",
+      "bytes": 975,
+      "sha256": "80a76b89bdb22048d02d83ceea373d471c2f08ff029b4bbf3e4ee7ccdff336df"
+    },
+    "sdkArchive": {
+      "tree": "48f94291e5d6bd2f9f96950802e54ee7aa398268",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "49ccb8aa668c4e5d59030984e2b0c4bea4b1ce3a",
+          "bytes": 975,
+          "sha256": "80a76b89bdb22048d02d83ceea373d471c2f08ff029b4bbf3e4ee7ccdff336df",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 975,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "nativePin": {
+      "blob": "26a344942d7487da480b05cb863b3f1a80f7495a",
+      "bytes": 800,
+      "sha256": "6bb004918b66c28edb0b74d7152b3e40dc562b17bfcad693cb412e7b436fdda6"
+    }
+  },
+  {
+    "key": "off271-pki12-r1-report-info-page0",
+    "kind": "operation_result",
+    "requestRaw": "{\n  \"operation_id\": \"7c8264be8bf15411a57a136bc89128f35aeb91c0c259f8bf47583d2c4f593f58\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+    "requestPin": {
+      "blob": "fd02d2620ad9d7fccafba66ee25b2b922e61930a",
+      "bytes": 121,
+      "sha256": "fc302df0432b8d6f2d7b6cbbc6b91115c92aa95105ef17a82e8cf2d00bbe9219"
+    },
+    "phase": "accepted",
+    "called": true,
+    "armed": {
+      "tree": "4904128623f05ccd5edeabfe8746864ebeb07e19",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "b9389d7adb8904298034ec3f3ea1b52a952fc21a",
+          "bytes": 923,
+          "sha256": "3831c20152dfb931f44ec4123222a288f734e41621b35cfa2761eea5bbda4c7d",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "874572ea1060ae7d52bb0b79eb3363f567fc5824",
+          "bytes": 786,
+          "sha256": "a59361c97d721e19946ab502017efa2afd3da63c5c20994d7bb917bb5bfd71fc",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "fd02d2620ad9d7fccafba66ee25b2b922e61930a",
+          "bytes": 121,
+          "sha256": "fc302df0432b8d6f2d7b6cbbc6b91115c92aa95105ef17a82e8cf2d00bbe9219",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1830,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdkPin": {
+      "blob": "8defa66550ad3e2806bda1c75e0d8bdbde9258e7",
+      "bytes": 1624,
+      "sha256": "f3f14e267b62b36e6f2c28c584126d7f9b39cba44de4b89a93712154942ae9d8"
+    },
+    "sdkArchive": {
+      "tree": "5fd1d0ba74cb4c8c62557c6d76e57bf6e8e24a16",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "8defa66550ad3e2806bda1c75e0d8bdbde9258e7",
+          "bytes": 1624,
+          "sha256": "f3f14e267b62b36e6f2c28c584126d7f9b39cba44de4b89a93712154942ae9d8",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 1624,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "nativePin": {
+      "blob": "8bdc84e52b8dd5c199252a36f9a87c06d2653e2a",
+      "bytes": 1453,
+      "sha256": "fb16e6e9d6ddf7d32b5064db78db187b6786cb4b8234ee6e7446e4d971e92d49"
+    }
+  }
+]

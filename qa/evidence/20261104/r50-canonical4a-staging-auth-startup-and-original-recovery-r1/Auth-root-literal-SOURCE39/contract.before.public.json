@@ -1,0 +1,504 @@
+{
+  "schema": "heptabao.public-node-bounded-executable-map-comparison-source.r1",
+  "state": "SOURCE_ONLY_NOT_INITIALIZED_NOT_SUBMITTED",
+  "source": {
+    "blob": "d5eb83cfa9d6508467b85bafd0e3ab8c251c7e45",
+    "bytes": 92066,
+    "sha256": "bc7e259228661eb470c4e6cf86a94953940796b8b03df746258a665488912552"
+  },
+  "exactRequest": {
+    "blob": "d9277bf54c0330ee0f64a1451d2af141b60204c2",
+    "bytes": 93089,
+    "sha256": "dcacaffaad36f49a778a2d41c59e7e26f7ccd6a5d110d58089bb4984ff4c897a"
+  },
+  "journal": {
+    "blob": "d3f54199b5c50acbe49e86beacb34b310599f368",
+    "bytes": 19060,
+    "sha256": "84b5aadb2071100eb2444c02480cc7342c3bf365f1dbe2d5e8236995421e71d4"
+  },
+  "slot": "owner_authbus_public_node_map_version_compare_gitfirst_r1",
+  "rootGo": null,
+  "NativeSubmitted": 0,
+  "purpose": "A new public --version comparison tests one bounded file-map-executable addition to the original profile against a matched no-test-profile baseline. No specific rule has yet been observed denying the prior child. This is not an SDK/business repair admission.",
+  "originalFacts": {
+    "publicProbeInputs": {
+      "schema": "heptabao.fixed-public-node-inputs-provenance.r1",
+      "originalPublicProbeJob": "mac/1a1b25c3c54-fc05-7db1",
+      "source": {
+        "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+        "bytes": 150406,
+        "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+      },
+      "request": {
+        "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+        "bytes": 151322,
+        "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+      },
+      "actualStdout": {
+        "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+        "bytes": 9930,
+        "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+      },
+      "actualAuthority": {
+        "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+        "bytes": 731,
+        "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+      },
+      "actualWholeTree": "73e04ba4466bcdd042bff9c776c2c607c7150057",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+        "/opt/homebrew/bin/node",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial",
+      "explicitEnvironment": {
+        "HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home",
+        "OPENCLAW_CONFIG_PATH": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/openclaw.json",
+        "OPENCLAW_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home",
+        "OPENCLAW_OAUTH_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/oauth",
+        "OPENCLAW_STATE_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state",
+        "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/tmp"
+      },
+      "environmentInheritance": false,
+      "environmentSourceLine": "child_env={...} passed as env=child_env to subprocess.Popen; only the seven public fixed path/environment values listed here.",
+      "markerSource": {
+        "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+        "bytes": 1052,
+        "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+      },
+      "publicModuleSources": {
+        "rows": {
+          "blob": "408959d22873855f79f28570c611d24db44005cd",
+          "bytes": 3108,
+          "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+        },
+        "cache": {
+          "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+          "bytes": 6846,
+          "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+        }
+      },
+      "actualCreatedPublicFiles": [
+        {
+          "bytes": 1052,
+          "identity": [
+            "16777244",
+            "72751133",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "1052",
+            "1793993752046025997",
+            "1793993752046034789"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs",
+          "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+        },
+        {
+          "bytes": 3108,
+          "identity": [
+            "16777244",
+            "72751134",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "3108",
+            "1793993752046284547",
+            "1793993752046290588"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_auth_rows_cas_r1.mjs",
+          "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+        },
+        {
+          "bytes": 6846,
+          "identity": [
+            "16777244",
+            "72751135",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "6846",
+            "1793993752046969359",
+            "1793993752046976526"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_authbus_cache_cas_r1.mjs",
+          "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+        },
+        {
+          "bytes": 6909,
+          "identity": [
+            "16777244",
+            "72751136",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "6909",
+            "1793993752047449790",
+            "1793993752047457623"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+          "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+        }
+      ],
+      "profileSha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12",
+      "inputSourceExtraction": "The three public texts are decoded without execution from the exact source PUBLIC_FILES base64-JSON literal; each SHA/length equals the original actual held readback receipt.",
+      "sourceAuthorizationBasis": "Root expressly authorizes the fixed termination.namespace field and bounded public frames from this public-only Node child. No credential, private plan, database method, provider, CAS function, SDK or network call appears in the marker script; it dynamically imports only the eleven exact listed modules. An empty marker channel does not establish how far the child executed.",
+      "currentReadDoesNotExecuteTheseInputs": true,
+      "originalMarkerAbsenceDoesNotProveNoJs": true,
+      "actualNodeAbortDoesNotReclassifyOldRuntime": true
+    },
+    "latestLogFullTree": "c9483fb5f71a319871dfa78d36aa7ab21c4aedc0",
+    "latestLogStdout": {
+      "blob": "5966bedd4adce3e0dc12ac3d26c1280ab6c97c22",
+      "bytes": 5588,
+      "sha256": "71594fae5203a35c10c54de55e0ea04f821db4616935ae0db591fccc6b716f09"
+    },
+    "latestLogDidNotQualifyCause": true,
+    "versionComparison": {
+      "minimumTree": "f5e41e0250c59dee3d05f387879c8f0643470dcf",
+      "fullTree": "3504e0990166a307f38a749c0e868ee117287e2d",
+      "release": {
+        "blob": "dfe9d9aa685292f2ecbd31ccc1d7aa9cac894c72",
+        "bytes": 17143,
+        "sha256": "16b018d3aedc83ff368bcda0086dd0c06cb172ffb50bc3467e1e32d47a29c4e3"
+      },
+      "stdout": {
+        "blob": "78cd8bf07cd5ad277bed942eb61819ace932716e",
+        "bytes": 11541,
+        "sha256": "9b80b771febdca6c9434779056248639b49c2acc545e2a1df186c4529b7432c3"
+      },
+      "job": "mac/1a1b2feebf1-fc05-8067",
+      "restrictedKnownExit": -6,
+      "baselineKnownExit": 0,
+      "baselineVersion": "v25.9.0",
+      "closed": true,
+      "oldCauseQualified": false
+    }
+  },
+  "fixedProcessInputs": {
+    "inputPins": {
+      "/usr/bin/sandbox-exec": {
+        "identity": [
+          "16777233",
+          "1152921500312572700",
+          "0",
+          "0",
+          "33261",
+          "1",
+          "102368",
+          "1786589515000000000",
+          "1786589515000000000"
+        ],
+        "bytes": 102368,
+        "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+      },
+      "/bin/ps": {
+        "identity": [
+          "16777233",
+          "1152921500312571399",
+          "0",
+          "0",
+          "35309",
+          "1",
+          "170432",
+          "1786589515000000000",
+          "1786589515000000000"
+        ],
+        "bytes": 170432,
+        "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+      },
+      "/opt/homebrew/Cellar/node/25.9.0_1/bin/node": {
+        "identity": [
+          "16777233",
+          "42479374",
+          "501",
+          "80",
+          "33133",
+          "1",
+          "68384",
+          "1775693589374925413",
+          "1775693590180968789"
+        ],
+        "bytes": 68384,
+        "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+      },
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+        "identity": [
+          "16777233",
+          "587518380",
+          "501",
+          "80",
+          "33261",
+          "1",
+          "34640",
+          "1793798038915516382",
+          "1793798038915695047"
+        ],
+        "bytes": 34640,
+        "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+      }
+    },
+    "argv": {
+      "restricted-version": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control/consumer.sb",
+        "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+        "--version"
+      ],
+      "baseline-version": [
+        "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+        "--version"
+      ]
+    },
+    "orderedLabels": [
+      "restricted-version",
+      "baseline-version"
+    ],
+    "environment": {
+      "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "HOME": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty",
+      "TMPDIR": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty"
+    },
+    "sameEnvironmentAndCwdForBoth": true,
+    "environmentInherited": false,
+    "cwd": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty",
+    "profile": {
+      "blob": "47230fc3b5f862531caf82d1cc00537f1c7a06c7",
+      "bytes": 7011,
+      "sha256": "87e8a1bb04e36524a350420fce46f1a051bc05b967058fc79a5990c7929a8d30"
+    },
+    "profileCopy": "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control/consumer.sb",
+    "noJSEntryPointOrEvalOrRequireImportFlags": true,
+    "originalProfile": {
+      "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+      "bytes": 6909,
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    },
+    "onlyProfileAddition": "(allow file-map-executable (subpath \"/System\") (subpath \"/usr/lib\") (subpath \"/opt/homebrew/Cellar\"))\n",
+    "mappingRuleSubpaths": [
+      "/System",
+      "/usr/lib",
+      "/opt/homebrew/Cellar"
+    ],
+    "noAdditionalFileReadWriteNetworkMachOrJitPermission": true
+  },
+  "newFilesystem": {
+    "roots": [
+      "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-control",
+      "/Users/qianqi/heptabao-public-node-map-version-20261106-r1-empty"
+    ],
+    "exclusiveCreate": true,
+    "rootMode": "0700",
+    "profileMode": "0600",
+    "rootOwner": 501,
+    "rootGid": 20,
+    "rootAlreadyExists": "refuse; no fallback or deletion",
+    "sharedEmptyHomeCwdTmp": true,
+    "emptyDirectoryEvidence": "new exclusive mkdir, zero admitted leaf writes, unchanged current held/name full9 before and after both arms; no claim to exhaustive directory inventory",
+    "oldDirectoriesOrProfilesWritten": false,
+    "oldProfileRead": false,
+    "controllerT5Io": false,
+    "unlinkOrRmdirOrChmod": false,
+    "originalProfilePrefixByteExact": true,
+    "onlyNewPublicProfileAdditionBytes": 102,
+    "newProfileWholeBound": true
+  },
+  "reusedSource": {
+    "homeControlWhole": {
+      "blob": "3e11b93844559bb9ae8bfe9a69314a42c5461149",
+      "bytes": 18346,
+      "sha256": "c05d932ede565390244199e8b3b6c613c93116db3b3471223d945f611f9d73c4"
+    },
+    "homeParentManagerWhole": {
+      "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+      "bytes": 58584,
+      "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+    },
+    "unreapedWhole": {
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    "commandsBefore": {
+      "blob": "e58e0586b4c2ba009196c4d69aa706cdfbfab580",
+      "bytes": 6837,
+      "sha256": "011bdb481d10d09a3814f22fd701a0c7f95913a5dc3a49a11d6c9775f388920b"
+    },
+    "commandsAfter": {
+      "blob": "030e1426825d3feb7b8c91cbb2a994629dc96a1c",
+      "bytes": 6853,
+      "sha256": "e212558d31c2aec3c704474903530bd2c0008d3b10b41d6fd394cb5b4a28b361"
+    },
+    "commandsStrictHunks": [
+      1,
+      1
+    ],
+    "commandsOnlyChanges": [
+      "two fixed new HOME path literals in argv/env/cwd; all owner/WNOWAIT/pipe/custody/cleanup code byte-identical"
+    ],
+    "inputAuditChanges": [],
+    "journalStrictHunks": [
+      2,
+      2
+    ],
+    "journalOnlyChanges": [
+      "slot",
+      "request pin",
+      "observer key prefix"
+    ],
+    "inputAuditByteExact": true
+  },
+  "budgets": {
+    "sharedWorkSeconds": 35,
+    "postClosureDeadlineSeconds": 45,
+    "processStartSeconds": 60,
+    "maximumPrimaryNodeChildren": 2,
+    "perChildObservedSeconds": 10,
+    "unchangedCleanup": {
+      "termSeconds": 1,
+      "waitSeconds": 5,
+      "groupSeconds": 3,
+      "psMaximumSeconds": 4
+    },
+    "childAbsoluteDeadlineLatest": "START+26; unchanged cleanup 1+5+3 reserved before admission; second arm refused if <=9 seconds remain",
+    "inputFdAttempts": 4,
+    "homeFdAttempts": {
+      "control": 6,
+      "empty": 4
+    },
+    "totalApplicationReturnedFdAttempts": 14,
+    "inputMetadataCalls": 128,
+    "homeMetadataCallsEach": 256,
+    "inputWholeBytes": 375824,
+    "inputReturnedReadByteCap": 375828,
+    "inputReadCalls": 128,
+    "profileWriteBytes": 7011,
+    "profileReadBytes": 7011,
+    "profileReadRequestCapIncludingEof": 7012,
+    "profileReads": 2,
+    "profileWrites": 16,
+    "perChildPerStreamAcceptanceBytes": 4096,
+    "originalPerPipeReadBytes": 65536,
+    "maximumReturnedPerStreamBeforeOriginalOverflowRefusal": 69632,
+    "publicReportBytes": 65536,
+    "maxNativeStatusObservers": 8,
+    "maxNativeStreamObservers": 8,
+    "maxStatusPerObserver": 8,
+    "immutablePageBytes": 8192,
+    "maxImmutablePagesPerObserver": 128,
+    "maxImmutablePayloadBytes": 1048576,
+    "processReadBytes": 16384,
+    "synchronousSyscallsIndividuallyPreemptable": false,
+    "profileByteCapDeltaOnly": 102,
+    "allOtherBudgetsComparedToPreviousExact": true
+  },
+  "observationProtocol": {
+    "sameOriginalPopenPidReservedWithWnowait": true,
+    "uidPpidPgidGuardsUnchanged": true,
+    "onlySameAdmittedGroupMayReceiveOriginalCleanupSignals": true,
+    "onceCleanupPerReturnedChild": true,
+    "secondArmOnlyAfterFirstKnownReapedAndGroupEmpty": true,
+    "knownNonzeroOrSigabrtAllowsSecondArm": true,
+    "unknownStopsNewChildAdmission": true,
+    "stdoutOnlyVersionGrammarMaximum128Bytes": true,
+    "stderrOnlyLengthAndEmptyFlag": true,
+    "unknownChildTextOrHashExported": false,
+    "baselineNeverSdkQualification": true,
+    "noCompatibilityFlagAdded": true,
+    "noRuntimeProfileModified": true,
+    "noCausalClaimAutomaticallyFromComparison": true,
+    "oldUnknownPreserved": true,
+    "mappingProfileSuccessNeverSdkQualification": true
+  },
+  "references": [
+    {
+      "url": "https://nodejs.org/download/release/v25.9.0/docs/api/cli.html#-v---version",
+      "retrievedRef": "turn94view1",
+      "lineRange": "2225-2229",
+      "permittedShortQuote": "Print node's version.",
+      "meaning": "The sole Node CLI argument requests version reporting; the fixture supplies no program entry point or preload environment. Host outcome remains unobserved."
+    }
+  ],
+  "linux576InterfaceSeparate": {
+    "sourceInterface": {
+      "blob": "b305ab3d113d925794f2ec98c7913f2176022bbc",
+      "bytes": 7227,
+      "sha256": "2fee2c79f1282c316f51ad8d08673cacd674cbaf6ef117ad5beab454d9d2e16b"
+    },
+    "currentWholeBuildReportedFailedExit1": true,
+    "normalReleaseDeclarationPreserved": true,
+    "finalArtifactQualification": false,
+    "actualFinalReport": null,
+    "actualFull9": null,
+    "actualVersion": null,
+    "issuerQualified": false,
+    "issuedCredential": null
+  },
+  "primaryReferences": [
+    {
+      "name": "DyldDelegates.cpp",
+      "url": "https://github.com/apple-oss-distributions/dyld/blob/main/dyld/DyldDelegates.cpp",
+      "lines": "992–1014",
+      "fact": "The loader asks separate sandbox operations for executable mmap, data open and metadata stat.",
+      "pin": {
+        "blob": "5195e6667ec13b3200697f09c3f8c0f95181a4c8",
+        "bytes": 42289,
+        "sha256": "70c23729bc9a753bcfa7c4d1a2c936a1c2dcbda21b4ed06d2890fd07c5b5df1b"
+      }
+    },
+    {
+      "name": "Loader.cpp",
+      "url": "https://github.com/apple-oss-distributions/dyld/blob/main/dyld/Loader.cpp",
+      "lines": "1699–1707",
+      "fact": "The mmap error branch distinguishes a sandbox mapping refusal only after actual mmap EPERM and a sandbox check. It is not proof that this branch produced the observed libignition stack.",
+      "pin": {
+        "blob": "a69b28be111c9855762d439610116ab23e55e649",
+        "bytes": 203893,
+        "sha256": "82de7dbe69cfd805927b7b416b5af4bffc7e1e571ef9a31cb6056f747400a9a2"
+      }
+    },
+    {
+      "name": "com.apple.WebProcess.sb.in",
+      "url": "https://github.com/WebKit/WebKit/blob/main/Source/WebKit/WebProcess/com.apple.WebProcess.sb.in",
+      "lines": "93–123",
+      "fact": "Apple-authored WebKit policy separately grants system file reads and executable mappings.",
+      "pin": {
+        "blob": "f1bbcd7313fe46e5beee655e10c59d8efacd7925",
+        "bytes": 59735,
+        "sha256": "a8e71c3fc913348b0f6ecef1e3d969f5fd55c441e8be6c0258ffd6a90ff4716f"
+      }
+    },
+    {
+      "name": "common.sb",
+      "url": "https://github.com/WebKit/WebKit/blob/main/Source/WebKit/Shared/Sandbox/common.sb",
+      "lines": "24–29,42–61",
+      "fact": "The public policy supports version 1/3 build branches; this does not establish the exact shipped OS profile semantics.",
+      "pin": {
+        "blob": "fcde054ce62306b00433c12cc84608ec52f9de8f",
+        "bytes": 4043,
+        "sha256": "2971741640096b3cff7c31a895dc04037e506113e6253c104ea4bd85fec9c158"
+      }
+    },
+    {
+      "name": "node.cc",
+      "url": "https://github.com/nodejs/node/blob/v25.9.0/src/node.cc",
+      "lines": "1062–1097,1239",
+      "fact": "The public v25.9.0 source prints version and returns before its later V8 initialization; earlier loader/platform initialization can still fail.",
+      "pin": {
+        "blob": "de21740386cffa26befdac2d10cc0dc9d66bef91",
+        "bytes": 55692,
+        "sha256": "7a4d01041ad28383856b839867562d64a51998176153e8f1c1ff51ca1a5f5022"
+      }
+    }
+  ]
+}

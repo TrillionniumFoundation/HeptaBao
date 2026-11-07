@@ -1,0 +1,25 @@
+--- a/publisher.candidate.template.py
++++ b/publisher.candidate.template.py
+@@ -4,18 +4,18 @@
+ import base64, hashlib, json, os, stat, sys, time
+ 
+ os.umask(0o077)
+-PARENT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1")
++PARENT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1")
+ ROOT = PARENT / 'normal-build-r1'
+ BASE = ROOT / 'control'
+ BINDING_READY = False
+ STAGE_REPORT = PARENT / 'control/stage-result.public.json'
+ STAGE_EXPECTED = None
+-COMMIT = "5767739cd25e458ac052dc8d384019bab8688ae0"
+-TREE = "42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
++COMMIT = "4a49405b93c45ab1c25ecba11cde63a7ede20dce"
++TREE = "f02dd113d208d79f5275005dc65a5e8aecd0e9d3"
+ created_root = False
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+-PINS = {"mac_normal_same_root_publication_build.py":[42977,"9ad6026ea175fbbeb52ad7ac68ec2f150d9a1bf4da08db7a36dc0d820df31913"],"launch_normal_same_root_publication.py":[25832,"367c86cd52cfc373f99f23dac75cdf2f562010605f563b237559dafabd93a0d6"],"normal-test-groups.public.json":[13725,"3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"]}
++PINS = {"mac_normal_same_root_publication_build.py":[42977,"9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"],"launch_normal_same_root_publication.py":[25832,"16b5b0fec596e59f8d4369f2597487e25282aae206f3030b0839038acb7d9b68"],"normal-test-groups.public.json":[13725,"3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"]}
+ def sha(raw):
+     return hashlib.sha256(raw).hexdigest()
+ def ident(s):

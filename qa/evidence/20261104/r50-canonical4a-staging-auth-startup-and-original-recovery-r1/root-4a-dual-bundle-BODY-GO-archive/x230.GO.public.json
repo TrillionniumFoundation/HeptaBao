@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.root.successor4a.x230-bundle-BODY.GO.r1",
+  "authorization": "GO",
+  "scope": "canonical_bundle_binary_read_ranges_only",
+  "issuedAtUTC": "2026-11-07 00:20:52 UTC",
+  "existing_slot": "successor4a_x230_canonical_bundle_info_gitfirst_r1",
+  "initialize_allowed": false,
+  "info_operation": "0a0f15f600727169c2a9a9798d1ff11335f1c480ee6d869a04d27568c8c7f636",
+  "maximum_binary_read_starts": 1,
+  "immutable_body_page_bytes": 16384,
+  "fixed_bundle": {
+    "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+    "bytes": 6815,
+    "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+    "version": "66306:34603406:6815:1794007675734817691:1794007675734817691"
+  },
+  "exact_requests": [
+    {
+      "blob": "4aed8263b1d74eca260cea2ad20a4859db7c0f53",
+      "bytes": 405,
+      "sha256": "03fe11d0925dcce446d07b8f94c042b211600766042d539486b6f764360e8973"
+    }
+  ],
+  "journal": {
+    "blob": "6dbcb558b98d8eabffa10a7792f42b79e40aa2c7",
+    "bytes": 28432,
+    "sha256": "1b96362c95b755681cfe92c34b124c7d35ce5f223477714a64d15e5763ba7166"
+  },
+  "original_info_state": {
+    "blob": "4d333eed260d7c13d478efc1b59057166c588e7a",
+    "bytes": 18915,
+    "sha256": "06f6fe6b26b0b03d50713672d3d005efc3e2f4f25486907ca9adc4fb0acf8f89"
+  },
+  "original_info_native": {
+    "blob": "3f660169529613ccd01ba8a8b8ff0a31a0ad0a29",
+    "bytes": 472,
+    "sha256": "958e789211775c1537a97e36fc56d1fa427c1a79c8e6a70743e914e4bbdfa2f0"
+  },
+  "expected_full9": [
+    "66306",
+    "34603406",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "6815",
+    "1794007675734817691",
+    "1794007675734817691"
+  ],
+  "range": {
+    "offset": 0,
+    "limit": 6815,
+    "expected_version": "66306:34603406:6815:1794007675734817691:1794007675734817691"
+  },
+  "maximum_original_status_calls": 8,
+  "maximum_original_pages": 128,
+  "maximum_original_payload_bytes": 1048576,
+  "maximum_file_info_starts": 0,
+  "maximum_process_start_calls": 0,
+  "sourceTree": "c8baef757d489fb444c3f599a21ad7a0382bff8a",
+  "sourceRootQualification": {
+    "blob": "565238d4e1993b4a1ee7f3542d4b3f20583838f2",
+    "bytes": 4900,
+    "sha256": "585b4acef20253d79aa8b5709b5e73e3962c9a6d3349b46857247d3c88db6970",
+    "tree": "6b68aee0bf71699d3fc1d110601f15ceeabe7b47",
+    "whole": true
+  },
+  "infoRootQualification": {
+    "blob": "98108d53d0e192a53621217832f9b16a90429cb7",
+    "bytes": 12861,
+    "sha256": "85dc0379c0a5a733fb4722b9a5c4163ff62dd8437e08abf2ba6bf1cac6a024bf",
+    "tree": "6b68aee0bf71699d3fc1d110601f15ceeabe7b47",
+    "whole": true
+  },
+  "execute_only_after": "The Mac bundle BODY original operation and every page are closed, whole actual binary recovered, and C has released that context.",
+  "order": [
+    "mac",
+    "x230"
+  ],
+  "serial_only": true,
+  "lane_allocation": {
+    "A": 0,
+    "B": "1 UNKNOWN original BUILD",
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "preserve_all_three_original_INFO_calls": true,
+  "sequence": [
+    "Root whole exact BODY GO for Mac -> authorize_bundle_body on its original closed INFO slot -> whole arm -> separate model boundary -> one exact binary_read -> only that original ID -> whole SDK/payload/body -> close and release.",
+    "Then the equivalent exact X230 body on its separate original INFO slot after Mac has no pending call/future; no INFO replay or reinitialize.",
+    "Reconstruct canonical base64 and binary header only after each actual whole body is external; MacStage requires its own exact GO."
+  ],
+  "onError": "Keep original UNKNOWN, SDK, arm and exact state. No replay, rekey, INFO restart, initialize, other range or path. Stop later admission pending an exact original-operation recovery.",
+  "actual_BODY": null,
+  "Mac_stage_authorized": false,
+  "X230_stage_authorized": false,
+  "Cargo_authorized": false,
+  "product_qualification": false,
+  "full_replacement": false
+}

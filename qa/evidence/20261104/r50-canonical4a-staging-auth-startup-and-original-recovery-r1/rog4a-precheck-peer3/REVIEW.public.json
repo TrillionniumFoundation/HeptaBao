@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.c.independent.b4a-fast-libtest-precheck-review.v1",
+  "verdict": "NO_NEW_SOURCE_BLOCKER_IN_REVIEWED_DELTA",
+  "scope": "SOURCE_ONLY: single shared release deadline, actual Cargo JSON gate, original failure and cleanup preservation",
+  "source_tree": "d47fd022860b95f1b9c63eb6c5ba35afa0e45f25",
+  "source": {
+    "blob": "b3901c3ef34b4384c54e130637ea4ab8df0c6839",
+    "bytes": 38598,
+    "sha256": "3adf3aa07ec747e978f8484f670b41b2874d5f1d2b5a1a7afb45ea5989635a09"
+  },
+  "before": {
+    "blob": "6499b982ec8562bc52c22416f6eaf7979e1050bc",
+    "bytes": 36346,
+    "sha256": "b02b398a3dfe1ab2f57a6ab70056c2b4aa58f4e221644513187f991d80654166"
+  },
+  "forward_diff": {
+    "blob": "05b4a7a3b5158e7301ebfb440b061eeee2eaa4ff",
+    "bytes": 4153,
+    "sha256": "668153e74d99d3ec8dff7a14eef9d003a08276891643d2c8da6900b953c9bdcd"
+  },
+  "reverse_diff": {
+    "blob": "71da6c9e0465582aa4181e6425382610199a21ee",
+    "bytes": 4153,
+    "sha256": "bc986e13b6783f0d8805da7bfea40fbfdf99f808ea9206dd89357b3c29718ebe"
+  },
+  "plan": {
+    "blob": "d3a2222b523d5f5acdd6b8fc297b3afe0244c317",
+    "bytes": 2877,
+    "sha256": "07a3a1a0605a195708f40546b9e77dc4716e4bba8f2cce635ec4a5f33a86b7d1"
+  },
+  "reviewed_after_lines": 678,
+  "independent_checks": 23,
+  "author45_reexecuted": false,
+  "python_executed": false,
+  "cargo_executed": false,
+  "native_calls": 0,
+  "findings": [
+    {
+      "topic": "One release budget",
+      "evidence": "runner.after.py 423-430 and454-457; unchanged owned296-340",
+      "conclusion": "release_until is initialized exactly once as min(release_started+1800,OUTER_UNTIL). The precheck gets min(300,remaining) and the same absolute deadline; owned clamps it again at admission and wait. JSON parsing and the intervening freeze occur before the release call and consume elapsed time against the same absolute endpoint. Release receives only bounded_remaining(release_until) with that same deadline. No second1800 window is introduced."
+    },
+    {
+      "topic": "Actual JSON gate",
+      "evidence": "runner.after.py 432-452",
+      "conclusion": "Precheck exit0 and not-timed-out are required before reading events. It requires exactly one build-finished with success true and exactly one heptabao_server compiler artifact with profile.test exactly true. It then checks kind ['lib'], exact current source/lib.rs and Cargo.toml paths, and exact default/native-v6-ha/native-v6-storage feature set. The gate does not require an executable or claim link/no-run/runtime success."
+    },
+    {
+      "topic": "Failure stops before release",
+      "evidence": "runner.after.py 431-459 and639-678",
+      "conclusion": "A failed/late precheck or rejected JSON shape raises within the existing main try before the release subprocess is admitted. The registered precheck child follows the byte-identical owned process lifecycle and outer finally; errors preserve failed result state. No retry or suppression of failure was added."
+    },
+    {
+      "topic": "Downstream budget and coverage unchanged",
+      "evidence": "Strict exact comparison from result['normal_release_build']=release through final exit",
+      "conclusion": "The full post-release body remains byte-identical, including independent release artifact verification, shared3600-second subsequent compile budget, four compile commands, exact18 families/252unique/280profile executions, per-family600/list30, final source/binary fences, cleanup and12000-second outer deadline. Precheck is an added compiler gate, not an added product testcase."
+    },
+    {
+      "topic": "Input and implementation boundaries",
+      "evidence": "before6499b982… / afterb3901c3e… / diff05b4a7a3…",
+      "conclusion": "The exact combined diff has3hunks: two identity/target binding locations and the single precheck mechanism hunk. The unchanged owned helper still uses the original5+5 cleanup allowance. The runner is38598bytes, below its original40000 limit. Final publisher/launcher actual stage binding and exact BUILD request are still pending."
+    }
+  ],
+  "primary_reference": {
+    "packet": "cff31859a2a890d6a0b94b7abbe5a7bda65a5a3b",
+    "report": "db99ce776b7267a4174388c79d9160a318695f92",
+    "scope": "Existing fixed Cargo primary mapping supports Check{test:true}/profile.test. It does not prove the deployed Cargo binary version. No new source research in this review."
+  },
+  "limitations": [
+    "No Python, Cargo, candidate, host or Native execution.",
+    "This review does not qualify actual precheck success, release build, linked libtests, runtime cases, current path presence or stage result.",
+    "The gate must consume real Cargo output; static source and primary API mapping do not stand in for actual JSON.",
+    "Stage and BUILD execution remain subject to root's separate exact GO and lane allocation."
+  ]
+}

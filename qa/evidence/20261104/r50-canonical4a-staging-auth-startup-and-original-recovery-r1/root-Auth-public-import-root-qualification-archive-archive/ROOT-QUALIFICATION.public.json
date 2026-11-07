@@ -1,0 +1,570 @@
+{
+  "schema": "heptabao.root.Auth-public-import-root-literal.SOURCE128.r1",
+  "source": {
+    "tree": "e7e2dc4b296ddbf1576fd804c9eb9a766a8f0c39",
+    "files": 36,
+    "bytes": 1222602,
+    "merkle": {
+      "root_sha": "e7e2dc4b296ddbf1576fd804c9eb9a766a8f0c39",
+      "trees_verified": 1,
+      "leaf_count": 36
+    },
+    "whole": true
+  },
+  "reproduced": {
+    "schema": "heptabao.authbus-public-import-root-literal-source-pure-checks.r1",
+    "passed": true,
+    "checkCount": 128,
+    "checks": [
+      {
+        "name": "source/before-whole",
+        "passed": true
+      },
+      {
+        "name": "source/after-whole",
+        "passed": true
+      },
+      {
+        "name": "source/predecessor-GO",
+        "passed": true
+      },
+      {
+        "name": "source/defs-same",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/Refused",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/Cancelled",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/critical",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/need",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/interrupt",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/remaining",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/sha",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/encoded",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/identity",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/error_projection",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/SignalFacade",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/InputAudit",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/close_observer_once",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/run_owned_capture",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/public_command",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/marker_projection",
+        "passed": true
+      },
+      {
+        "name": "source/unchanged-definition/load_modules",
+        "passed": true
+      },
+      {
+        "name": "source/profile-one-statement",
+        "passed": true
+      },
+      {
+        "name": "materializer/whole-before",
+        "passed": true
+      },
+      {
+        "name": "materializer/whole-after",
+        "passed": true
+      },
+      {
+        "name": "materializer/one-added-statement",
+        "passed": true
+      },
+      {
+        "name": "materializer/same-profile-function",
+        "passed": true
+      },
+      {
+        "name": "materializer/before-same-profile",
+        "passed": true
+      },
+      {
+        "name": "materializer/class-whole-unchanged",
+        "passed": true
+      },
+      {
+        "name": "materializer/hash-derived-after-policy",
+        "passed": true
+      },
+      {
+        "name": "materializer/not-dispatchable",
+        "passed": true
+      },
+      {
+        "name": "strict/source/forward",
+        "passed": true
+      },
+      {
+        "name": "strict/source/inverse",
+        "passed": true
+      },
+      {
+        "name": "strict/source/hunks",
+        "passed": true
+      },
+      {
+        "name": "strict/guard/forward",
+        "passed": true
+      },
+      {
+        "name": "strict/guard/inverse",
+        "passed": true
+      },
+      {
+        "name": "strict/guard/hunks",
+        "passed": true
+      },
+      {
+        "name": "strict/materializer/forward",
+        "passed": true
+      },
+      {
+        "name": "strict/materializer/inverse",
+        "passed": true
+      },
+      {
+        "name": "strict/materializer/hunks",
+        "passed": true
+      },
+      {
+        "name": "strict/journal/forward",
+        "passed": true
+      },
+      {
+        "name": "strict/journal/inverse",
+        "passed": true
+      },
+      {
+        "name": "strict/journal/hunks",
+        "passed": true
+      },
+      {
+        "name": "strict/profile/forward",
+        "passed": true
+      },
+      {
+        "name": "strict/profile/inverse",
+        "passed": true
+      },
+      {
+        "name": "strict/profile/hunks",
+        "passed": true
+      },
+      {
+        "name": "modules/names",
+        "passed": true
+      },
+      {
+        "name": "modules/mac_owned_unreaped_r1/whole",
+        "passed": true
+      },
+      {
+        "name": "modules/mac_owned_unreaped_r1/whole-unchanged",
+        "passed": true
+      },
+      {
+        "name": "modules/mac_owned_commands_r1/whole",
+        "passed": true
+      },
+      {
+        "name": "modules/mac_owned_commands_r1/whole-unchanged",
+        "passed": true
+      },
+      {
+        "name": "modules/mac_native_process_observer_r1/whole",
+        "passed": true
+      },
+      {
+        "name": "modules/mac_native_process_observer_r1/whole-unchanged",
+        "passed": true
+      },
+      {
+        "name": "modules/mac_t5_volume_guard_r1/whole",
+        "passed": true
+      },
+      {
+        "name": "modules/guard/decoded-before",
+        "passed": true
+      },
+      {
+        "name": "modules/guard/decoded-after",
+        "passed": true
+      },
+      {
+        "name": "guard/only-root",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/INPUT_PINS",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/NODE_ALIAS",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/PUBLIC_SOURCE_PINS",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/HARNESS_ROOTS",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/HARNESS_BINDINGS",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/MARKERS",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/PUBLIC_FILES",
+        "passed": true
+      },
+      {
+        "name": "constants/unchanged/ERROR_CODES",
+        "passed": true
+      },
+      {
+        "name": "constants/root",
+        "passed": true
+      },
+      {
+        "name": "namespace/fresh-equal-length",
+        "passed": true
+      },
+      {
+        "name": "profile/original-whole",
+        "passed": true
+      },
+      {
+        "name": "profile/namespace-only-plus-root",
+        "passed": true
+      },
+      {
+        "name": "profile/after-whole",
+        "passed": true
+      },
+      {
+        "name": "profile/exact-33-byte-rule",
+        "passed": true
+      },
+      {
+        "name": "profile/retain-deny-default",
+        "passed": true
+      },
+      {
+        "name": "profile/no-map-rule",
+        "passed": true
+      },
+      {
+        "name": "profile/source-expected-sha",
+        "passed": true
+      },
+      {
+        "name": "profile/source-length-fence",
+        "passed": true
+      },
+      {
+        "name": "main/only-declared-identity-profile-bound-changes",
+        "passed": true
+      },
+      {
+        "name": "public-file/marker/unchanged",
+        "passed": true
+      },
+      {
+        "name": "public-file/rows/unchanged",
+        "passed": true
+      },
+      {
+        "name": "public-file/cache/unchanged",
+        "passed": true
+      },
+      {
+        "name": "marker/exact-eleven-imports",
+        "passed": true
+      },
+      {
+        "name": "marker/builtins-nine",
+        "passed": true
+      },
+      {
+        "name": "marker/local-CAS-two",
+        "passed": true
+      },
+      {
+        "name": "marker/24-ordered",
+        "passed": true
+      },
+      {
+        "name": "marker/import-only-no-methods",
+        "passed": true
+      },
+      {
+        "name": "marker/no-error-text-output",
+        "passed": true
+      },
+      {
+        "name": "request/whole",
+        "passed": true
+      },
+      {
+        "name": "request/stdin-is-exact-source",
+        "passed": true
+      },
+      {
+        "name": "request/binding-fields-unchanged",
+        "passed": true
+      },
+      {
+        "name": "request/key",
+        "passed": true
+      },
+      {
+        "name": "request/correct-stdin-key",
+        "passed": true
+      },
+      {
+        "name": "journal/whole",
+        "passed": true
+      },
+      {
+        "name": "journal/only-three-binding-values",
+        "passed": true
+      },
+      {
+        "name": "contract/own-direct-popencap",
+        "passed": true
+      },
+      {
+        "name": "contract/old-input-five",
+        "passed": true
+      },
+      {
+        "name": "contract/inputs-whole-hash-byte-sum",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/workSeconds",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/afterClosureSeconds",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/nativeOuterSeconds",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/oldOnceCleanup",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/fixedInputFiles",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/fixedInputBytes",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/fixedInputPhysicalReadCapIncludingEOFReserve",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/inputReadCalls",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/inputMetadataCalls",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/heldGuardReturnedFdStaticMaximum",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/heldGuardRuntimeLedgerCeiling",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/inputFdAttemptMaximum",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/fixedGuardPublicIoOperations",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/publicReadbackCalls",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/stdoutCapturePostExitLimit",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/stderrCapturePostExitLimit",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/captureLimitsArePostExitChecksNotKernelRLIMIT",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/wholePublicReportMaximum",
+        "passed": true
+      },
+      {
+        "name": "budget/unchanged/observation",
+        "passed": true
+      },
+      {
+        "name": "budget/created-exact",
+        "passed": true
+      },
+      {
+        "name": "budget/read-sum",
+        "passed": true
+      },
+      {
+        "name": "budget/read-physical-six-EOF",
+        "passed": true
+      },
+      {
+        "name": "budget/exact33-only",
+        "passed": true
+      },
+      {
+        "name": "ownership/protected-closure-unchanged",
+        "passed": true
+      },
+      {
+        "name": "scope/no-new-private-plan",
+        "passed": true
+      },
+      {
+        "name": "actual/positive-whole",
+        "passed": true
+      },
+      {
+        "name": "actual/release-whole",
+        "passed": true
+      },
+      {
+        "name": "actual/version-only-closure",
+        "passed": true
+      },
+      {
+        "name": "actual/version-not-SDK",
+        "passed": true
+      },
+      {
+        "name": "source/not-executed",
+        "passed": true
+      },
+      {
+        "name": "scope/unresolved-owner-separate",
+        "passed": true
+      },
+      {
+        "name": "future/actual-slots-null",
+        "passed": true
+      },
+      {
+        "name": "future/no-old-credential-reuse",
+        "passed": true
+      },
+      {
+        "name": "history/local-builder-only",
+        "passed": true
+      }
+    ],
+    "NativeCalls": 0,
+    "PythonExecution": false,
+    "JavaScriptCandidateExecution": false,
+    "SDKQualified": false,
+    "sourceOnly": true,
+    "historicalUnknownPreserved": true
+  },
+  "exactExpectedResult": true,
+  "rootActualBindings": {
+    "positiveStdout": true,
+    "positiveRelease": true,
+    "profileOriginal": true,
+    "sourceUsesActualStdin": true,
+    "argsExact": true,
+    "sourcePin": true,
+    "requestPin": true,
+    "sameValidatedNode": true
+  },
+  "nativeBinding": {
+    "sha256": "4fe5568c8a949c251b637dd084425db90ff0ce7a27bec61251f7ca6085df837c",
+    "native_fingerprint": "5757102860283452453",
+    "canonical_bytes": 151363
+  },
+  "positiveVersionRoot": {
+    "tree": "4333317b60d0b354fc286f20331ab0aa37c46f75",
+    "blob": "8dff0bb95d82c34b329f1853c3b606cb935e2e75",
+    "bytes": 32724,
+    "sha256": "7fe15cb1de6ffced2aa512f5c016891e44bc0f1dc9e17e77cc79828aa0801481"
+  },
+  "interpretation": "Source-only continuation of the original fixed 24-marker startup import program with a new public T5 namespace and the literal-root rule. Startup auxiliary CAS modules only; actual SDK/issuer/credential qualification remains false.",
+  "closureIssuesIndependent": {
+    "oldPsHelpers84947And85012CustodyUnknown": true,
+    "oldProcessReaderCountOrPIDRefusalNotProvedESRCH": true,
+    "consumerTerminationGuardMustRemainRealExitZero": true,
+    "oldManagedUnknownNotClosed": true,
+    "noAutomaticBusinessRetry": true
+  },
+  "NativeCalls": 0
+}

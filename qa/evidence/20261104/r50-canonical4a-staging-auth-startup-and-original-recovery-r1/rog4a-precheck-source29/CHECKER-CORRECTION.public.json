@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-source-checker-correction.r1",
+  "changes": [
+    "Count actual3 hunks: adjacent commit/tree share one",
+    "Use present PRIOR_DF026_FILES and def write anchors with explicit existence assertions instead of absent marker slicing"
+  ],
+  "candidateChanged": false,
+  "NativeCalls": 0
+}

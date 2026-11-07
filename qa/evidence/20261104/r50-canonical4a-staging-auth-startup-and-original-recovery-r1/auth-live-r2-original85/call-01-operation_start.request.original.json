@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-public-node-live-denial-19a394ee-status-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b33bc0d5-fc05-814d"
+    }
+  }
+}

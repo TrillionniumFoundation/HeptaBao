@@ -1,0 +1,172 @@
+{
+  "schema": "heptabao.successor4a.dual-bundle-body-source.v1",
+  "sourceOnly": true,
+  "NativeGO": null,
+  "NativeCalls": 0,
+  "priorInfoMin": {
+    "tree": "d78b66e7505a5c39f883bf82c2f0494db25e0e0b",
+    "release": {
+      "blob": "5651de98fcdd9cf19d9503e7341ee2a05287d8ba",
+      "bytes": 4010,
+      "sha256": "3f7af7a1345c3b29ddcd826489df216daba60772ec462ee87f01a53bb1f5f3f5"
+    }
+  },
+  "donorJournal": {
+    "blob": "45b5e9adc11936acae8b594cd09b525b5a8973b7",
+    "bytes": 28428,
+    "sha256": "17c23f367815a0a6d192fa00e535f09c14497346a3c01ee8af6b6f0553496732"
+  },
+  "order": [
+    "mac",
+    "x230"
+  ],
+  "separateExistingContexts": true,
+  "authorizationShape": "one exact separate BODY GO per original INFO context; root may archive both GO leaves together",
+  "bindings": [
+    {
+      "tag": "mac",
+      "slot": "successor4a_mac_canonical_bundle_info_gitfirst_r1",
+      "expected": {
+        "host": "rog",
+        "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+        "bytes": 1253,
+        "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+        "full9": [
+          "66306",
+          "34603387",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "1253",
+          "1794007675691817556",
+          "1794007675691817556"
+        ],
+        "version": "66306:34603387:1253:1794007675691817556:1794007675691817556",
+        "infoOperation": "652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2",
+        "infoNative": {
+          "blob": "f8629d29e51e1101386ea925bed8bcbb08750d3b",
+          "bytes": 472,
+          "sha256": "645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073"
+        }
+      },
+      "request": {
+        "blob": "b6778404640bf6b307d7c43576ae374b76f1aabe",
+        "bytes": 404,
+        "sha256": "dd4ed331874d4ef93baa6af27aef4e44dab7211dd7f59e7976f150628fbe5d98"
+      },
+      "request_value": {
+        "idempotency_key": "heptabao-4a49405b-mac-bundle-body-rog-20261106-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "rog",
+            "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+            "offset": 0,
+            "limit": 1253,
+            "expected_version": "66306:34603387:1253:1794007675691817556:1794007675691817556"
+          }
+        }
+      },
+      "journal": {
+        "blob": "78eb68a0845aab1221e4b9a857e8e693861b2352",
+        "bytes": 28431,
+        "sha256": "199910130ad5bf0f2f3c6fede332d3c41d0873357c4ba654009327a56df81313"
+      },
+      "state": {
+        "blob": "27b3674947cd481b4f5c396739d5bbd1241f801a",
+        "bytes": 18911,
+        "sha256": "dd77a0938496f9bf5d3355674795615ddefa13de24bf2949d5eb9715cf8f9078"
+      }
+    },
+    {
+      "tag": "x230",
+      "slot": "successor4a_x230_canonical_bundle_info_gitfirst_r1",
+      "expected": {
+        "host": "rog",
+        "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+        "bytes": 6815,
+        "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+        "full9": [
+          "66306",
+          "34603406",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "6815",
+          "1794007675734817691",
+          "1794007675734817691"
+        ],
+        "version": "66306:34603406:6815:1794007675734817691:1794007675734817691",
+        "infoOperation": "0a0f15f600727169c2a9a9798d1ff11335f1c480ee6d869a04d27568c8c7f636",
+        "infoNative": {
+          "blob": "3f660169529613ccd01ba8a8b8ff0a31a0ad0a29",
+          "bytes": 472,
+          "sha256": "958e789211775c1537a97e36fc56d1fa427c1a79c8e6a70743e914e4bbdfa2f0"
+        }
+      },
+      "request": {
+        "blob": "4aed8263b1d74eca260cea2ad20a4859db7c0f53",
+        "bytes": 405,
+        "sha256": "03fe11d0925dcce446d07b8f94c042b211600766042d539486b6f764360e8973"
+      },
+      "request_value": {
+        "idempotency_key": "heptabao-4a49405b-x230-bundle-body-rog-20261106-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "rog",
+            "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+            "offset": 0,
+            "limit": 6815,
+            "expected_version": "66306:34603406:6815:1794007675734817691:1794007675734817691"
+          }
+        }
+      },
+      "journal": {
+        "blob": "6dbcb558b98d8eabffa10a7792f42b79e40aa2c7",
+        "bytes": 28432,
+        "sha256": "1b96362c95b755681cfe92c34b124c7d35ce5f223477714a64d15e5763ba7166"
+      },
+      "state": {
+        "blob": "4d333eed260d7c13d478efc1b59057166c588e7a",
+        "bytes": 18915,
+        "sha256": "06f6fe6b26b0b03d50713672d3d005efc3e2f4f25486907ca9adc4fb0acf8f89"
+      }
+    }
+  ],
+  "mechanism": "Each successor changes only the six fixed data constants in the already reviewed single-range bundle BODY journal. All functions are unchanged relative to that donor.",
+  "noNewInitializer": true,
+  "bodyRangesPerContext": 1,
+  "totalBodyRanges": 2,
+  "totalWholeBinaryBytes": 8068,
+  "limits": {
+    "binaryReadRangeMax65536": 65536,
+    "actualRangeBytes": [
+      1253,
+      6815
+    ],
+    "immutableBodyPageBytes": 16384,
+    "oldInfoPageBytes": 8192,
+    "statusPerOriginalID": 8,
+    "pagesPerOriginalID": 128,
+    "payloadPerOriginalID": 1048576,
+    "MacCarrierCap": 262144,
+    "maximumActiveCallsOrFutures": 1
+  },
+  "sequence": [
+    "Root whole exact BODY GO for Mac -> authorize_bundle_body on its original closed INFO slot -> whole arm -> separate model boundary -> one exact binary_read -> only that original ID -> whole SDK/payload/body -> close and release.",
+    "Then the equivalent exact X230 body on its separate original INFO slot after Mac has no pending call/future; no INFO replay or reinitialize.",
+    "Reconstruct canonical base64 and binary header only after each actual whole body is external; MacStage requires its own exact GO."
+  ],
+  "notAuthorized": [
+    "file_info",
+    "process_start",
+    "Mac files or controls",
+    "Cargo",
+    "original slot reset",
+    "different path/version/range"
+  ],
+  "rootActualInfoQualification": null
+}

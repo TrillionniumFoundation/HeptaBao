@@ -1,0 +1,58 @@
+--- a/undefined
++++ b/undefined
+@@ -3,21 +3,21 @@
+  * This pure function neither fetches evidence nor calls Native or Git.
+  * The caller/root must first qualify the producer + INFO + body chains.
+  */
+-function bindMac4aSourceOnlyStage({sourceTemplate,canonicalBase64Text,transportRaw,bindings,baseJournal}) {
++function bindMac576SourceOnlyStage({sourceTemplate,canonicalBase64Text,transportRaw,bindings,baseJournal}) {
+  const need=(value,code)=>{if(!value)throw Error(code);};
+  const samePin=(raw,pin)=>pin&&JSON.stringify(gitBlobMeta(raw))===JSON.stringify(pin);
+  const isPin=pin=>pin&&/^[0-9a-f]{40}$/.test(pin.blob)&&Number.isSafeInteger(pin.bytes)&&pin.bytes>0&&/^[0-9a-f]{64}$/.test(pin.sha256);
+- const templatePin={"blob":"33d304b409630c9e2e87c5d24dd44b04e905ec29","bytes":23568,"sha256":"a4a9fd066c134625695740eff14a21e1dd65ce2e95db82a0c20a2860fda42489"};
++ const templatePin={"blob":"79c2bae6e400b385a5efa8c57a23c6e5f0ea72ed","bytes":23651,"sha256":"7addc497cc836a7b6cc43081518d9fc37dbec009eddedcf2bc9f5b532a83f83c"};
+  const journalPin={"blob":"0bcb0ae541da1865f788a26cdb4a884425c50cbd","bytes":19047,"sha256":"f74c58e06d949fe5e3aac9c9e7f33b3f68504ce9e6721bc59c3309c6a7c7424d"};
+  need(samePin(sourceTemplate,templatePin)&&samePin(baseJournal,journalPin),"exact_reviewed_stage_and_journal");
+- need(bindings?.schema==="heptabao.mac-successor4a.actual-bundle-bindings.v1"
++ need(bindings?.schema==="heptabao.mac-successor576.actual-bundle-bindings.v1"
+    &&bindings.ready===true,"actual_bundle_binding_unresolved");
+  const c=bindings.candidate,b=bindings.bundle;
+- need(c?.commit==="4a49405b93c45ab1c25ecba11cde63a7ede20dce"
+-   &&c.tree==="f02dd113d208d79f5275005dc65a5e8aecd0e9d3"
+-   &&c.parent==="5767739cd25e458ac052dc8d384019bab8688ae0","one_actual_candidate");
++ need(c?.commit==="5767739cd25e458ac052dc8d384019bab8688ae0"
++   &&c.tree==="42477d622dcf96e1e2b0929fe9ecc6b7ba484740"
++   &&c.parent==="02b90762b3d6cc8699cc88bffb6f76cb1f07e270","one_actual_candidate");
+  need(bindings.producer?.host==="rog"
+-   &&bindings.producer.path==="/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle"
++   &&bindings.producer.path==="/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle"
+    &&isPin(bindings.producer.report)&&isPin(bindings.producer.rootQualification)
+    &&isPin(bindings.infoNative)&&isPin(bindings.transportRootQualification),"reviewed_actual_evidence_references_required");
+  need(b&&Number.isSafeInteger(b.bytes)&&b.bytes>0&&b.bytes<=4*1024*1024
+@@ -56,7 +56,7 @@
+  const lines=prefix.slice(0,marker).split("\n");
+  need(lines.length===3&&lines[0]==="# v2 git bundle"
+    &&lines[1].startsWith("-"+c.parent+" ")
+-   &&lines[2]===c.commit+" HEAD","sole576_prerequisite_and4a_HEAD");
++   &&lines[2]===c.commit+" HEAD","sole02b_prerequisite_and576_HEAD");
+  let source=sourceTemplate;
+  function oneSource(a,z){need(source.split(a).length===2,"one_exact_source_binding");source=source.replace(a,z);}
+  oneSource("CANONICAL_BUNDLE_BYTES = None\n","CANONICAL_BUNDLE_BYTES = "+b.bytes+"\n");
+@@ -68,7 +68,7 @@
+  const carrier=JSON.stringify({schema:"heptabao.final-mac-source-only-carrier.v1",
+    canonical_bundle_base64:canonicalBase64Text.slice(0,-1)})+"\n",carrierPin=gitBlobMeta(carrier);
+  need(carrierPin.bytes<=262144,"original_complete_carrier_cap");
+- const keyPrefix="heptabao-4a49405b-mac-source-only-";
++ const keyPrefix="heptabao-5767739c-mac-source-only-";
+  const q={host:"mac",executable:"/opt/homebrew/bin/python3",
+    args:["-I","-S","-B","-c",source,"--self-sha256",sourcePin.sha256,
+      "--carrier-sha256",carrierPin.sha256,"--canonical-bundle-bytes",String(b.bytes),
+@@ -79,7 +79,7 @@
+  let journal=baseJournal;
+  function oneJournal(a,z){need(journal.split(a).length===2,"one_exact_journal_binding");journal=journal.replace(a,z);}
+  oneJournal('const GF_SLOT = "final02b_mac_source_only_stage_gitfirst_r1";',
+-   'const GF_SLOT = "successor4a_mac_source_only_stage_gitfirst_r1";');
++   'const GF_SLOT = "successor576_mac_source_only_stage_gitfirst_r1";');
+  oneJournal('const GF_REQUEST = {"blob":"bd3f20cc6390cc8519265142cf2fb8624cf87008","bytes":254446,"sha256":"21ca75b8e1ca736dd96f3e564a70e757dc487d758d216793af5b420c5d46c99e"};',
+    "const GF_REQUEST = "+JSON.stringify(requestPin)+";");
+  oneJournal("^heptabao-final02b-mac-source-only-ea096d7a-","^"+keyPrefix+sourcePin.sha256.slice(0,8)+"-");

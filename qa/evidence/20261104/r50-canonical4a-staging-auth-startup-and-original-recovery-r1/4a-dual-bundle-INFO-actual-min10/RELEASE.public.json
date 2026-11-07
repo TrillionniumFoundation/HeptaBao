@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.successor4a.dual-bundle-info-release.v1",
+  "rootGO": {
+    "blob": "6a1c9892ba89b1053d9aa3e75a7e061acea8aa56",
+    "bytes": 8632,
+    "sha256": "d7e69c5c68c63f21d9978aeae0fe0fdbde130bc9d6983e9d30cbd88c23980d8c"
+  },
+  "actual": [
+    {
+      "tag": "mac",
+      "slot": "successor4a_mac_canonical_bundle_info_gitfirst_r1",
+      "operation": "652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+        "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+        "size": 1253,
+        "version": "66306:34603387:1253:1794007675691817556:1794007675691817556"
+      },
+      "native": {
+        "blob": "f8629d29e51e1101386ea925bed8bcbb08750d3b",
+        "bytes": 472,
+        "sha256": "645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073"
+      },
+      "payload": {
+        "blob": "2e52b1e3080a1d09d93786cd8d7e174977f3c08b",
+        "bytes": 589,
+        "sha256": "0ffeacc7f4c48ec00b49ce5213fa20aaedf97e5bf0b2c75b308108e9e3a23053"
+      },
+      "payloadTree": "27b8fdcbad3780659f0435c0b12422cb37ae0bd1",
+      "state": {
+        "blob": "27b3674947cd481b4f5c396739d5bbd1241f801a",
+        "bytes": 18911,
+        "sha256": "dd77a0938496f9bf5d3355674795615ddefa13de24bf2949d5eb9715cf8f9078"
+      },
+      "originalCalls": 3,
+      "closedObservers": 1,
+      "pages": 1,
+      "bodyRead": false
+    },
+    {
+      "tag": "x230",
+      "slot": "successor4a_x230_canonical_bundle_info_gitfirst_r1",
+      "operation": "0a0f15f600727169c2a9a9798d1ff11335f1c480ee6d869a04d27568c8c7f636",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+        "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+        "size": 6815,
+        "version": "66306:34603406:6815:1794007675734817691:1794007675734817691"
+      },
+      "native": {
+        "blob": "3f660169529613ccd01ba8a8b8ff0a31a0ad0a29",
+        "bytes": 472,
+        "sha256": "958e789211775c1537a97e36fc56d1fa427c1a79c8e6a70743e914e4bbdfa2f0"
+      },
+      "payload": {
+        "blob": "ebab24cd440066e35e5bc385633b1b3e8ebb64c6",
+        "bytes": 589,
+        "sha256": "a46667c20793fad35a08cab68e128db8735b4f6a4746772eebcbd6672634a5a0"
+      },
+      "payloadTree": "f4a36956eb625d368feb04f3a84fa93fe42107cf",
+      "state": {
+        "blob": "4d333eed260d7c13d478efc1b59057166c588e7a",
+        "bytes": 18915,
+        "sha256": "06f6fe6b26b0b03d50713672d3d005efc3e2f4f25486907ca9adc4fb0acf8f89"
+      },
+      "originalCalls": 3,
+      "closedObservers": 1,
+      "pages": 1,
+      "bodyRead": false
+    }
+  ],
+  "originalCalls": 6,
+  "closedObservers": 2,
+  "pages": 2,
+  "firstContextReleasedBeforeSecondInitialize": true,
+  "firstRelease": {
+    "path": "RELEASE.public.json",
+    "blob": "55f25d747010140bc36864d99c167a562be8b73f",
+    "bytes": 1636,
+    "sha256": "eb95acf8b7b4b5b5aedfe25ef0d1e968c9ccff2dc8acb496478dcea456543b23",
+    "whole": true
+  },
+  "pending": null,
+  "activeObservers": 0,
+  "nativeCallsInFlight": 0,
+  "unresolvedFutures": 0,
+  "C_lane_released": true,
+  "binaryBodyRead": false,
+  "MacStageQualified": false,
+  "CargoExecuted": false
+}

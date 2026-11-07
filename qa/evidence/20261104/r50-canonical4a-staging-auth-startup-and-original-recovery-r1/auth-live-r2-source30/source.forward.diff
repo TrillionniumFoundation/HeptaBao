@@ -1,0 +1,33 @@
+--- a/before-live-denial-r1.py
++++ b/after-live-denial-r2.py
+@@ -332,11 +332,16 @@
+                     self.queue['lastLogLiveObservationMonotonic']=time.monotonic()
+                     if any(r['role']=='node' and r['observedExit'] is not None for r in self.rows):
+                         self.queue['logLiveObservedAfterNodeExit']=True
+-            all_eof=all(i['eof'] for i in row['pipes'] if i['name']!='stdin')
+-            row['completeBeforeDeadline']=bool(row['observedExit'] is not None and all_eof
+-                                               and time.monotonic()<=row['until'])
+             if not row['completeBeforeDeadline']:
++                all_eof=all(i['eof'] for i in row['pipes'] if i['name']!='stdin')
++                completed_at=time.monotonic()
++                if row['observedExit'] is not None and all_eof:
++                    need(completed_at<=row['until'],'live_original_child_deadline')
++                    row['completeBeforeDeadline']=True
++                    self.queue[row['role']+'FirstCompleteMonotonic']=completed_at
++                    self.queue[row['role']+'FirstCompleteWallUs']=time.time_ns()//1000
++                else:
++                    need(completed_at<row['until'],'live_original_child_deadline')
+-                need(time.monotonic()<row['until'],'live_original_child_deadline')
+         self.check_time(until)
+     def observe(self):
+         self.check_time()
+@@ -682,6 +687,9 @@
+         io.verify();control.check();empty.check()
+         pair=FixedLivePair(signals)
+         node,log=pair.observe()
++        # Preserve START+17 -> START+35 for the original two once-only cleanups.
++        # Projection below uses only already captured bytes; finally is idempotent.
++        with critical():pair.close()
+         ready=('HEPTA_NODE_GATE_READY '+str(pair.pid)+'\n').encode('ascii')
+         released=b'HEPTA_NODE_GATE_RELEASED\n'
+         raw=bytes(node['out'])

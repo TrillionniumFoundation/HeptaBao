@@ -1,0 +1,1 @@
+Evaluate pure_helpers.js + strict_diff.js + correct_stdin_binding.js + SOURCE-VERIFIER.js in one lexical scope; call verifyNext4aFreshBuildSource(files). SOURCE-only; do not invoke candidate Python or journal functions. Compare exact pretty result JSON plus LF.

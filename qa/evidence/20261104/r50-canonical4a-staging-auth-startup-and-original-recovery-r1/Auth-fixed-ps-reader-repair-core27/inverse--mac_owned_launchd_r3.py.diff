@@ -1,0 +1,60 @@
+--- a/mac_owned_launchd_r3.py
++++ b/mac_owned_launchd_r3.py
+@@ -9,7 +9,7 @@
+ from __future__ import annotations
+ import base64, hashlib, json, os, plistlib, re, stat, time
+ from pathlib import Path
++from mac_native_process_observer_r1 import ProcessReader
+-from mac_native_process_observer_r1 import ProcessReader, ProcessAbsent, ObservationRefused
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+@@ -480,8 +480,7 @@
+         bound=min(self.cleanup_until if cleanup else self.until,time.monotonic()+limit)
+         if until is not None:bound=min(bound,until)
+         row,out,err=self.commands.run(label,argv,until=bound,
++                                      allow_cancelled_cleanup=cleanup,maximum=262144)
+-                                      allow_cancelled_cleanup=cleanup,maximum=262144,
+-                                      fixed_setuid_ps=ps)
+         if row['outcomeUnknown'] or not row['completeBeforeDeadline']:
+             self.unknown=True
+             raise ManagerRefused('owned_manager_command_unknown')
+@@ -784,27 +783,8 @@
+                 state=self._query(entry['label'],entry)
+                 need(state is not None and state.get('runs')==1,'same_phase_registration')
+                 if state.get('pid') is None:break
++                need(state['pid']==entry['wrapperIdentity']['pid']
++                     and self.reader.read(state['pid'])==entry['wrapperIdentity'],'same_phase_process')
+-                need(state['pid']==entry['wrapperIdentity']['pid'],'same_phase_process')
+-                try:
+-                    observed=self.reader.read(state['pid'],allow_absent=True)
+-                except ProcessAbsent as error:
+-                    need(error.evidence['requestedPid']==entry['wrapperIdentity']['pid'],
+-                         'same_phase_absence_requested_pid')
+-                    self._record('phase-process-absence-observed',generation,
+-                        {'evidence':error.evidence,'numericObservations':self.reader.last_read_numeric,
+-                         'historicalReapProved':False})
+-                    state=self._query(entry['label'],entry)
+-                    need(state is not None and state.get('runs')==1 and state.get('pid') is None,
+-                         'same_phase_registration_after_observed_absence')
+-                    break
+-                except ObservationRefused as error:
+-                    code=str(error)
+-                    self._record('phase-process-read-refused',generation,
+-                        {'code':code if code in ('process_info_complete','process_path_complete',
+-                         'absolute_process_path','process_identity_changed_during_read') else None,
+-                         'numericObservations':self.reader.last_read_numeric})
+-                    raise
+-                need(observed==entry['wrapperIdentity'],'same_phase_process')
+                 time.sleep(min(NEW_MANAGER_POLL_SECONDS,self._remaining()))
+             need(state.get('last exit code')==0,'actual_launchd_phase_exit_zero')
+             raw=self.guard.read(ROOT/'launchd'/(generation+'.result.public.json'))
+@@ -946,7 +926,7 @@
+             'elapsedSeconds':time.monotonic()-self.started,
+             'noNumericPidOrGroupSignals':True,'productionManagerQualification':False}
+ 
++PUBLIC_MANAGER_FAILURE_CODES=frozenset(["actual_bound_home_control","actual_launchctl_pid","actual_launchd_phase_exit_zero","actual_launchd_sigkill_terminal","actual_server_before_kill","actual_wrapper_birth_executable","all_actual_phase_groups_empty","all_manager_helpers_and_descriptors_closed","balanced_launchctl_print","bounded_launchctl_arguments","bounded_launchctl_print","cleanup_deadline_exists","cleanup_exact_current_owned_identity","cleanup_no_replacement_pid","complete_group_observation","complete_launchctl_arguments","complete_wrapper_prefix","entire_finite_manager_graph_complete","exact_four_phase_matrix","exact_launchctl_target","exact_owned_plist_no_keepalive","exact_public_anchor","exact_registered_generation","exact_server_before_sigkill","exact_staged_wrapper_copy_before_registration","exact_wrapper_before_registration","finite_launchd_operation_graph","finite_manager_command_count","fixed_generation_plan","fixed_manager_operation","held_t5_before_manager","home_actual_copy_binding","home_actual_copy_whole_before_private_inputs","home_actual_root_full9_before_effects","home_all_leaf_closures_before_manager_success","home_bounded_once_create","home_copy_size_hash_contract","home_create_only_root_already_exists","home_create_or_actual_binding","home_created_leaf_full9","home_exact_actual_binding","home_exact_copy_inventory","home_exact_write_role","home_fd_attempt_bound","home_finite_body_read","home_finite_leaf_name","home_fixed_flat_path","home_fixed_leaf_identity","home_full9_decimal_strings","home_initialized_held_root","home_known_file_whole_hash","home_metadata_bound","home_new_regular_600","home_nonempty_progress","home_only_two_server_public_prefixes","home_own_create_preserves_root_object","home_owned_root_fd_name_mode","home_owned_root_held_named_current_full9","home_parent_actual_first5_binding","home_parent_fd_name_owner_mode","home_precreated_empty_stdio_only","home_prefix_fd_close_known","home_read_fd_close_known","home_read_full9_interval","home_read_leaf_custody","home_read_remaining_bound","home_read_return_bound","home_read_whole_plus_eof_remaining","home_server_prefix_size_identity","home_shared_parent_held_named_first5","home_stage_copy_set","home_total_write_bound","home_whole_eof","home_write_call_bound","home_write_fd_close_known","home_write_progress","known_launchctl_mutation_success","known_launchctl_query","known_wrapper_exit_before_bootout","label_absent_before_new_generation","launchd_actual_wrapper_pid","mac_normal61_binding_not_admitted","manager_cancelled","no_business_after_unknown","no_foreign_executable","no_server_restart","no_unexplained_registration_disappearance","once_exact_manager_dispatch","one_complete_launchctl_record","one_final_phase_stdout_record","one_launchctl_arguments_block","one_launchd_run_only","one_new_manager_deadline","only_two_owned_labels","original_manager_or_cleanup_deadline","owned_group_empty_after_label_removal","owned_label_initially_absent","owned_manager_command_unknown","phase_raw_result_terminal_exit_conjunction","phase_t5_closure_after_candidate_publication","plain_fixed_launchctl_argument","plan_identity_around_whole_read","plist_identity_around_whole_read","previous_owned_registration_closed","registration_input_identity_unchanged","registration_present_while_waiting_ready","same_actual_synthetic_python_for_wrappers","same_launchd_pid_before_server_exec","same_phase_process","same_phase_registration","same_registration_after_sigkill","separate_actual_single_native_observer","server_exec_same_birth","server_group_empty_after_sigkill","server_stdout_name_and_prefix_fence","server_wrapper_closure","server_wrapper_completion_before_exec","typed_launchctl_integer","typed_owned_worker_group","typed_process_row","typed_qa_pins","typed_wrapper_ready","unique_launchctl_field","worker_known_and_actual_lineage_closed","wrapper_did_not_exit_before_ready","wrapper_prefix_same_fd_exact"])
+-PUBLIC_MANAGER_FAILURE_CODES=frozenset(["actual_bound_home_control","actual_launchctl_pid","actual_launchd_phase_exit_zero","actual_launchd_sigkill_terminal","actual_server_before_kill","actual_wrapper_birth_executable","all_actual_phase_groups_empty","all_manager_helpers_and_descriptors_closed","balanced_launchctl_print","bounded_launchctl_arguments","bounded_launchctl_print","cleanup_deadline_exists","cleanup_exact_current_owned_identity","cleanup_no_replacement_pid","complete_group_observation","complete_launchctl_arguments","complete_wrapper_prefix","entire_finite_manager_graph_complete","exact_four_phase_matrix","exact_launchctl_target","exact_owned_plist_no_keepalive","exact_public_anchor","exact_registered_generation","exact_server_before_sigkill","exact_staged_wrapper_copy_before_registration","exact_wrapper_before_registration","finite_launchd_operation_graph","finite_manager_command_count","fixed_generation_plan","fixed_manager_operation","held_t5_before_manager","home_actual_copy_binding","home_actual_copy_whole_before_private_inputs","home_actual_root_full9_before_effects","home_all_leaf_closures_before_manager_success","home_bounded_once_create","home_copy_size_hash_contract","home_create_only_root_already_exists","home_create_or_actual_binding","home_created_leaf_full9","home_exact_actual_binding","home_exact_copy_inventory","home_exact_write_role","home_fd_attempt_bound","home_finite_body_read","home_finite_leaf_name","home_fixed_flat_path","home_fixed_leaf_identity","home_full9_decimal_strings","home_initialized_held_root","home_known_file_whole_hash","home_metadata_bound","home_new_regular_600","home_nonempty_progress","home_only_two_server_public_prefixes","home_own_create_preserves_root_object","home_owned_root_fd_name_mode","home_owned_root_held_named_current_full9","home_parent_actual_first5_binding","home_parent_fd_name_owner_mode","home_precreated_empty_stdio_only","home_prefix_fd_close_known","home_read_fd_close_known","home_read_full9_interval","home_read_leaf_custody","home_read_remaining_bound","home_read_return_bound","home_read_whole_plus_eof_remaining","home_server_prefix_size_identity","home_shared_parent_held_named_first5","home_stage_copy_set","home_total_write_bound","home_whole_eof","home_write_call_bound","home_write_fd_close_known","home_write_progress","known_launchctl_mutation_success","known_launchctl_query","known_wrapper_exit_before_bootout","label_absent_before_new_generation","launchd_actual_wrapper_pid","mac_normal61_binding_not_admitted","manager_cancelled","no_business_after_unknown","no_foreign_executable","no_server_restart","no_unexplained_registration_disappearance","once_exact_manager_dispatch","one_complete_launchctl_record","one_final_phase_stdout_record","one_launchctl_arguments_block","one_launchd_run_only","one_new_manager_deadline","only_two_owned_labels","original_manager_or_cleanup_deadline","owned_group_empty_after_label_removal","owned_label_initially_absent","owned_manager_command_unknown","phase_raw_result_terminal_exit_conjunction","phase_t5_closure_after_candidate_publication","plain_fixed_launchctl_argument","plan_identity_around_whole_read","plist_identity_around_whole_read","previous_owned_registration_closed","registration_input_identity_unchanged","registration_present_while_waiting_ready","same_actual_synthetic_python_for_wrappers","same_launchd_pid_before_server_exec","same_phase_absence_requested_pid","same_phase_process","same_phase_registration","same_phase_registration_after_observed_absence","same_registration_after_sigkill","separate_actual_single_native_observer","server_exec_same_birth","server_group_empty_after_sigkill","server_stdout_name_and_prefix_fence","server_wrapper_closure","server_wrapper_completion_before_exec","typed_launchctl_integer","typed_owned_worker_group","typed_process_row","typed_qa_pins","typed_wrapper_ready","unique_launchctl_field","worker_known_and_actual_lineage_closed","wrapper_did_not_exit_before_ready","wrapper_prefix_same_fd_exact"])
+ def public_failure_code(error):
+     if not isinstance(error,ManagerRefused):return None
+     code=str(error)

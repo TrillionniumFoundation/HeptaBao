@@ -1,0 +1,150 @@
+{
+  "schema": "heptabao.root.mac4a.stage-INFO-SOURCE24.r1",
+  "sourceAudit": {
+    "tree": "cbad6efdea5c91da69475b256ac0c319eaef2c72",
+    "files": 23,
+    "bytes": 190824,
+    "merkle": {
+      "root_sha": "cbad6efdea5c91da69475b256ac0c319eaef2c72",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "verification": {
+    "schema": "heptabao.mac4a-stage-INFO-source-verification.v1",
+    "pass": true,
+    "check_count": 24,
+    "checks": [
+      {
+        "name": "exact_old_Mac_INFO_baseline",
+        "pass": true
+      },
+      {
+        "name": "binding_once_1",
+        "pass": true
+      },
+      {
+        "name": "binding_once_2",
+        "pass": true
+      },
+      {
+        "name": "binding_once_3",
+        "pass": true
+      },
+      {
+        "name": "binding_once_4",
+        "pass": true
+      },
+      {
+        "name": "binding_once_5",
+        "pass": true
+      },
+      {
+        "name": "binding_once_6",
+        "pass": true
+      },
+      {
+        "name": "binding_once_7",
+        "pass": true
+      },
+      {
+        "name": "only_seven_literal_bindings",
+        "pass": true
+      },
+      {
+        "name": "baseline_strict_forward_reverse",
+        "pass": true
+      },
+      {
+        "name": "current_stage_strict_forward_reverse",
+        "pass": true
+      },
+      {
+        "name": "source_and_request_whole_pins",
+        "pass": true
+      },
+      {
+        "name": "one_path_INFO_scope",
+        "pass": true
+      },
+      {
+        "name": "original_Mac_metadata_guard",
+        "pass": true
+      },
+      {
+        "name": "original_page_payload_caps",
+        "pass": true
+      },
+      {
+        "name": "closed_actual_original_state",
+        "pass": true
+      },
+      {
+        "name": "exact_original_closure_native",
+        "pass": true
+      },
+      {
+        "name": "actual_terminal_full_streams",
+        "pass": true
+      },
+      {
+        "name": "authorize_preserves_all_original_calls_observers",
+        "pass": true
+      },
+      {
+        "name": "new_info_arm_references_new_INFO_GO",
+        "pass": true
+      },
+      {
+        "name": "new_status_arm_references_new_INFO_GO",
+        "pass": true
+      },
+      {
+        "name": "new_page_arm_references_new_INFO_GO",
+        "pass": true
+      },
+      {
+        "name": "original_calls_untouched_after_fake_prepare",
+        "pass": true
+      },
+      {
+        "name": "actual_values_unobserved",
+        "pass": true
+      }
+    ],
+    "fake_archives": 3,
+    "Native_calls": 0,
+    "Git_calls": 0,
+    "Python_runs": 0,
+    "real_slot_modified": false
+  },
+  "actualBindings": [
+    {
+      "name": "exact actual state",
+      "pass": true
+    },
+    {
+      "name": "actual GO",
+      "pass": true
+    },
+    {
+      "name": "actual authority",
+      "pass": true
+    },
+    {
+      "name": "actual output",
+      "pass": true
+    },
+    {
+      "name": "actual streams",
+      "pass": true
+    },
+    {
+      "name": "actual executing source journal",
+      "pass": true
+    }
+  ],
+  "NativeCalls": 0,
+  "actualReportObserved": false
+}

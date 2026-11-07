@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.pki12.page-cap-r2.source-manifest",
+  "files": [
+    {
+      "path": "pure_helpers.original.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "git_archive_once.original.js",
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    {
+      "path": "strict_diff.corrected.js",
+      "blob": "e3930af73f99eea2593423d548c77239556fc0e2",
+      "bytes": 2267,
+      "sha256": "cb6cb089fbc54e48d774cd7b9c7cee1e57fd94bd52412f9a66c3aab69170ebf6"
+    },
+    {
+      "path": "journal.before.js",
+      "blob": "f83797d03a41092340ba39074b155594464d8bf2",
+      "bytes": 28846,
+      "sha256": "0b4f9cc8c62104d96cbc4c021c4e500074b45b8fad24609874f851bd19b7297c"
+    },
+    {
+      "path": "journal.after.js",
+      "blob": "86edcf2a0d2d5206025a6a702883e6b645e2cc87",
+      "bytes": 28904,
+      "sha256": "0940f9d7b0c206864962e77cf40106e7b4d3faf2ec0ad225b472840e214fc107"
+    },
+    {
+      "path": "journal.forward.diff",
+      "blob": "de48489deaa4052734d0c2ce2818718313dba815",
+      "bytes": 673,
+      "sha256": "ce5e324be4488db51026ce3021db03dd9c1ee910d8a68ff1812c8bdd1ec441ad"
+    },
+    {
+      "path": "journal.reverse.diff",
+      "blob": "a19f58f909b30cc18236710114a1003efd7e1ef2",
+      "bytes": 673,
+      "sha256": "1506c37122b6bc435a97bd6cad45c7b42ea506faaf25c38a2b85a7ddf3244142"
+    },
+    {
+      "path": "cached-recovery.source.js",
+      "blob": "dbc81960fb8593f731c08449fa681d15f2029fab",
+      "bytes": 6251,
+      "sha256": "e89f083eae02572ce4a554ed770fd12eb0079d7202fd6bce7a006b03c4e4c58f"
+    },
+    {
+      "path": "paused-state.original.json",
+      "blob": "e48bb16c1d18b72506546378eac09aad7996cd63",
+      "bytes": 246355,
+      "sha256": "c5bc674d2f31e94aa018f97a0896db3e7382fb1cd19a50be06d29fa767ded5b4"
+    },
+    {
+      "path": "after-state.proposed.json",
+      "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+      "bytes": 268747,
+      "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+    },
+    {
+      "path": "page0.original.sdk.json",
+      "blob": "5ceec5345171ff27f8bd0265c94f0f8e6a0cef7c",
+      "bytes": 22705,
+      "sha256": "d613452f7e603c59f49e059bbb987b53bc1aab73549cf7df464974f59912c309"
+    },
+    {
+      "path": "error-history.original.json",
+      "blob": "aa0fce14552b552107d94619a154ee4fb229e66e",
+      "bytes": 304,
+      "sha256": "22d97a34eed7cbd16ce7e58fcadc05d0fc0e1aa4cc608b11efa81a122071fc50"
+    },
+    {
+      "path": "BODY-request.original.json",
+      "blob": "d358686f2a39455eda39a972043f71d8a3282f5d",
+      "bytes": 400,
+      "sha256": "4342a960ed2dfc4ff9b163f59b262647ad3dd6d4320f0a140a7ff6532eb6ba0d"
+    },
+    {
+      "path": "BODY-GO.original.json",
+      "blob": "f0328f282f20cb6b378ea53aaf039fa17f1bea57",
+      "bytes": 4038,
+      "sha256": "d80bac33e32e7b39eaa4ebab0e1b564942b8ab3ca7849feaedbf0567eb280536"
+    },
+    {
+      "path": "RECOVERY-PROPOSAL.public.json",
+      "blob": "ef30a7786f74b7a02da61ca7831f6934b2c264df",
+      "bytes": 1387,
+      "sha256": "c9d024ecb68a3993f9dee6ff9b09deaeda3f32530ef0e70984cdeb8e7fe82114"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "60ce13e791d7bce2d9572c076911c642a1d0cf36",
+      "bytes": 3342,
+      "sha256": "126f7c3039f80fa64ce3cf2e0f908be9b7004b78eaad4b5abf1febb5339439be"
+    },
+    {
+      "path": "verifier.source.js",
+      "blob": "4ae522875b60cef5f86139b69556973c1f4f512b",
+      "bytes": 7158,
+      "sha256": "a0482e4ce2cb508424db75bc19699bb8f14fe7bc28079be8eff991540865331b"
+    },
+    {
+      "path": "verification.actual.public.json",
+      "blob": "bf6ce7268aa2028260b418f0278780442bf53fa7",
+      "bytes": 2856,
+      "sha256": "2cfefc38b1f62cd25533e86a67f474f2cb6bf445d9af781dccb2dca189b05c7d"
+    },
+    {
+      "path": "README.md",
+      "blob": "233e841ba2a0da8a8e46a1059b049c7d29064651",
+      "bytes": 1092,
+      "sha256": "b350346cb0b99cd9fd43efcf740e1fdf2c60fcd0347b319d70a580b22be812df"
+    }
+  ],
+  "pass": true,
+  "checks": 35,
+  "realStateApplied": false,
+  "NativeCalls": 0
+}

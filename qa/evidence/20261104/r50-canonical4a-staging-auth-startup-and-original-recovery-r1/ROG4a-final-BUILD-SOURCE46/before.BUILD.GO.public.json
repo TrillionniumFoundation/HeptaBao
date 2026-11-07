@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.root.ROG5767739.fresh-joint-build.GO.r1",
+  "authorization": "GO",
+  "scope": "one_fresh_joint_publication_and_build_with_original_job_observation",
+  "sourceTree": "f01b58b8833bc83c78c7f538187859f7bc9bb8c4",
+  "rootSourceQualification": {
+    "blob": "290744eece80d699f3995140b88b2f1b99e7656c",
+    "bytes": 1774,
+    "sha256": "8d8139a770ccc5f43917a2205dc3aeebea83ed3dfe02623c399d43fc8e1c2303"
+  },
+  "candidate": {
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "source": "/home/qian-qi/hb-5767739c-src-20261106-r1/source",
+    "sourceFormatted": false
+  },
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "key": "heptabao-combined-5767739c-fresh-build-20261106-r1-b02e250e",
+  "exactRequest": {
+    "blob": "43b4a12ca91aa73e60e90b30b6a5884b969b82a9",
+    "bytes": 155691,
+    "sha256": "9a3b483d4b36206a21984882c0abc63dda539fb866354f0e5bfff6ebb18767e7"
+  },
+  "native_binding": {
+    "sha256": "3adf47933cd4a0ae4240093c37b868631a3fbe613c0db744972f92e369623b04",
+    "native_fingerprint": "4242188071712628910"
+  },
+  "journal": {
+    "blob": "f64f88c90fddb0199d5a866ee70742255d62127d",
+    "bytes": 19043,
+    "sha256": "f9e05317f95b7d1a4fc3a90d8dc50aeba80809e7c941c79c2aaf6562e21fdc78"
+  },
+  "publisher": {
+    "blob": "1a360dc6a9e28de8f5acfdddda8416f86692f5ee",
+    "bytes": 6643,
+    "sha256": "b02e250edf978169197e8de2bb6a3228a70e26b10995cb8af73110f9855f253c"
+  },
+  "launcher": {
+    "blob": "2309dee7ade1fd52dde88cace75be58717a2ff72",
+    "bytes": 39650,
+    "sha256": "0f2419c1f9fb1ad10219b2c184108338693161200d74c2f0065311f7b394da3b"
+  },
+  "runner": {
+    "blob": "6499b982ec8562bc52c22416f6eaf7979e1050bc",
+    "bytes": 36346,
+    "sha256": "b02b398a3dfe1ab2f57a6ab70056c2b4aa58f4e221644513187f991d80654166"
+  },
+  "groups": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "stdin": {
+    "blob": "e4855ad4b588e27e0e052f0b3697db0aa398180f",
+    "bytes": 148575,
+    "sha256": "6ee30b372f4942b30a9a0d4f4437ab18663063ca3947ca3d5b9039113210a3bb"
+  },
+  "stageQualification": {
+    "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+    "bytes": 2941,
+    "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+  },
+  "stageReport": {
+    "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+    "bytes": 29748,
+    "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+  },
+  "controlsRoot": "/home/qian-qi/hb-5767739c-controls-20261106-r1",
+  "target": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1",
+  "budgets": {
+    "outerSeconds": 12000,
+    "releaseSeconds": 1800,
+    "allCompileGatesSharedSeconds": 3600,
+    "perFamilySeconds": 600,
+    "listSeconds": 30,
+    "cleanupTermSeconds": 5,
+    "cleanupKillSeconds": 5,
+    "publicationPhaseSeconds": 60,
+    "publicationCountsAgainstOuter": true,
+    "publicationHardTimeoutExit": 124,
+    "publisherInputBytes": 262144,
+    "launcherBytes": 40000,
+    "runnerBytes": 40000
+  },
+  "compileGates": {
+    "ordinaryNoDefaultCheck": 1,
+    "libtestProfiles": [
+      "file",
+      "default",
+      "ha-native-v6-peer-ingress"
+    ],
+    "totalWithinSharedDeadline": 4
+  },
+  "denominators": {
+    "uniqueNames": 252,
+    "profileInstances": 280,
+    "families": 18,
+    "fileProfileInstances": 28,
+    "defaultProfileInstances": 235,
+    "haPeerIngressProfileInstances": 17,
+    "snapshotLowLevel": 23,
+    "snapshotServiceRegressions": 4,
+    "normal61": 61,
+    "localNativeJwtBatchNewUnique": 6,
+    "localNativeJwtBatchNewInstances": 12
+  },
+  "originalObservationScope": {
+    "note": "These numeric observation counts are new explicit limits of this GO. The original33b GO did not specify total status/read counts; the original worker/compile/test/cleanup deadlines and per-read/page limits stay unchanged.",
+    "maximumProcessStatusObservers": 256,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutableResultPagesPerObserver": 128,
+    "immutableResultPageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "streamBytesPerRead": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyReturnedOriginalJob": true,
+    "onlyProcessStatusAndProcessRead": true,
+    "contiguousOriginalStreamOffsets": true,
+    "completeEachObserverBeforeNext": true,
+    "noAutomaticRetry": true
+  },
+  "sequence": [
+    "One separately approved process_start runs the inline publisher; new root must be absent.",
+    "From publisher monotonic entry: original 60-second publication cap; no children. Exact three source bytes compile-only, create-only publication, fsync and whole before/after/name identity checks, actual receipt publish+whole.",
+    "One same-PID exec to launcher carrying actual receipt SHA, publisher PID and original clock. Launcher entry itself must be before publication60 and within total12000.",
+    "Launcher verifies actual stage/source, current controls/receipt full9+whole SHA; new target must be absent, created relative to held new controls root, empty/owner/mode/named identity checked; actual first5 passed to runner.",
+    "Same-PID exec to runner; no clock reset. Before any rustc/Cargo: target actual identity, current cargo/rustc exact metadata then whole hash+stable full9; Cargo-home object; offline contents not claimed qualified.",
+    "Original normal release, ordinary feature compile, three libtests and all 18 groups with only the separately frozen first-two-group local-batch delta; other16 groups exact; original result and owned cleanup paths.",
+    "Only original returned job status/full bounded streams. No output file reads under this source proposal; result metadata/body is separate."
+  ],
+  "maximum_process_starts": 1,
+  "freshInitializeOnlyOnce": true,
+  "wholeArmBeforeDispatch": true,
+  "modelBoundaryBeforeDispatch": true,
+  "originalSDKWholeBeforeParse": true,
+  "rootSoleROGCargoWindow": true,
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "resultFileMetadataAndBodyAuthorized": false,
+  "bundleTransportAuthorized": false,
+  "productionChanged": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "onError": "Preserve original UNKNOWN or failure and every original SDK. Follow only original job/operation within exact budgets. No start replay, key change, new target attempt, reset, or inferred success.",
+  "issuedAtUTC": "2026-11-06 21:51:14 UTC"
+}

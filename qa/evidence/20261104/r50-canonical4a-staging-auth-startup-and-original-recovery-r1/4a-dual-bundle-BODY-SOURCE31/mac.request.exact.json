@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4a49405b-mac-bundle-body-rog-20261106-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+      "offset": 0,
+      "limit": 1253,
+      "expected_version": "66306:34603387:1253:1794007675691817556:1794007675691817556"
+    }
+  }
+}

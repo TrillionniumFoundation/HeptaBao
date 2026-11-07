@@ -1,0 +1,129 @@
+--- a/gitfirst_stage_info.js
++++ b/gitfirst_stage_info.js
+@@ -9,6 +9,53 @@
+ const GF_REQUEST = {blob:"0d7da3d10202045af2e06a2d598a82b2fa18194d",
+  bytes:113356,sha256:"43857487d44efaff0dbd5c2378474ed04211229aa73030784850f8ca415f4276"};
+ 
++/* One separately approved observation of the newly owned public stage report.
++ * This does not authorize binary_read or any new process. Existing state is kept.
++ */
++const GF_STAGE_RESULT_PATH = "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json";
++const GF_STAGE_RESULT_MAX_BYTES = 65536;
++const GF_STAGE_INFO_REQUEST = {"blob":"e55cc1096e11c01c5fdfd4a520c4ecef0130017c","bytes":272,"sha256":"b3d8fde039965ca8f27544fb552c7fedcd08832923638406cd949e593930fa24"};
++const GF_STAGE_INFO_PREREQUISITES = [{"id":"d3b2bf702e5fd327fc074a76a0311b1710c88d695ccc3c420c94146a8c79d244","tool":"process_status","nativeText":{"blob":"1e39f3d224e4a27f2b2cf0fd37a2085b1f43008b","bytes":729,"sha256":"2153318bf775fe756b43c8f70f928db0977d32e609b70f5d98c970f8ebf26ec0"}},{"id":"915416c05ed1b6a38263fe4bb4d931749b1948066a0658de5bb733ee9dc38595","tool":"process_read","nativeText":{"blob":"784f4be7e98a228d7162039b25062d9b369fe5da","bytes":1396,"sha256":"071c20e311d4131598ed30df7cae4e18d753f1edf49004657fdd84a9bf012d16"}}];
++
++function gfAuthorizeStageResultInfoOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState();
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
++   && s.activeObserver===null && s.startCalled===true
++   && s.job==="1a1b3307dc2-fc05-80f8" && s.stageResultInfoGO===undefined
++   && s.stageResultInfoStarted!==true,"closed_existing_stage_before_info_only_GO");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++   && goPin.blob!==s.goPin.blob,"separate_whole_info_only_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="stage_result_file_info_only"
++   && g.original_job===s.job && g.maximum_file_info_starts===1
++   && g.binary_read_authorized===false
++   && g.exact_request?.blob===GF_STAGE_INFO_REQUEST.blob
++   && g.exact_request?.bytes===GF_STAGE_INFO_REQUEST.bytes
++   && g.exact_request?.sha256===GF_STAGE_INFO_REQUEST.sha256,
++   "exact_new_root_file_info_scope");
++ for(const need of GF_STAGE_INFO_PREREQUISITES) {
++  const prior=s.completedObservers.find(o=>o.id===need.id);
++  const priorRaw=load(GF_SLOT+":closed_native:"+need.id);
++  gfNeed(prior?.completedInactive===true && prior.tool===need.tool
++    && gfMetaEquals(priorRaw,need.nativeText)
++    && prior.nativeText.blob===need.nativeText.blob,"original_stage_closure_pin");
++ }
++ const authority=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_STAGE_INFO_PREREQUISITES[0].id));
++ const streams=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_STAGE_INFO_PREREQUISITES[1].id));
++ const terminal=JSON.parse(streams.stdout.text);
++ gfNeed(authority.exit_code===0 && authority.output_complete===true
++   && authority.output_durable===true && authority.terminal_publication_confirmed===true
++   && !authority.timed_out && !authority.cancelled
++   && streams.stdout.eof===true && streams.stderr.eof===true
++   && s.nextStdout===350 && s.nextStderr===0
++   && terminal.all_owned_stopped===true && terminal.status==="prepared"
++   && terminal.result_path===GF_STAGE_RESULT_PATH,"stage_zero_and_full_summary");
++ s.stageResultInfoGO={pin:goPin,raw:goRaw,whole:true};
++ gfSave(s);
++ return {originalJob:s.job,exactRequest:GF_STAGE_INFO_REQUEST,
++   maximumFileInfoStarts:1,binaryReadAuthorized:false};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -50,11 +97,17 @@
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+-    && a && a.host==="rog" && a.job_id===s.job,"same_original_job_only");
+-  if(op.tool==="process_status") {
++    && a && a.host==="rog","same_original_host_only");
++  if(op.tool==="file_info") {
++   gfNeed(s.stageResultInfoGO?.whole===true && s.stageResultInfoStarted!==true
++     && gfMetaEquals(raw,GF_STAGE_INFO_REQUEST)
++     && Object.keys(a).sort().join(",")==="host,path"
++     && a.path===GF_STAGE_RESULT_PATH,"one_exact_newly_owned_stage_result_info");
++  } else if(op.tool==="process_status") {
++   gfNeed(a.job_id===s.job,"same_original_job_only");
+    gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+   } else {
+-   gfNeed(op.tool==="process_read"
++   gfNeed(op.tool==="process_read" && a.job_id===s.job
+      && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+      && a.limit===16384 && a.stdout_offset===s.nextStdout
+      && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+@@ -78,7 +131,10 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
++  callKey,kind,request:requestPin,
++  rootGo:(kind==="operation_start" && q.operation.tool==="file_info")
++    || s.activeObserver?.tool==="file_info" ? s.stageResultInfoGO.pin : s.goPin,
++  originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -108,6 +164,7 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
++ if(c.kind==="operation_start" && q.operation.tool==="file_info")s.stageResultInfoStarted=true;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -233,7 +290,22 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  gfNeed(v.job_id===s.job,"original_job_native_result_binding");
++  if(a.tool==="file_info") {
++   const md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
++   gfNeed(v.path===GF_STAGE_RESULT_PATH && Number.isSafeInteger(v.size)
++     && v.size>0 && v.size<=GF_STAGE_RESULT_MAX_BYTES
++     && /^[a-f0-9]{64}$/.test(v.sha256) && v.mode===384
++     && md?.metadata_platform==="linux" && md.mode===384
++     && md.uid===1000 && md.gid===1000 && md.link_count===1
++     && parts.length===5 && parts.every(x=>/^[0-9]+$/.test(x))
++     && parts[2]===String(v.size),"fixed_report_content_metadata_and_version");
++   s.stageResultInfo={path:v.path,size:v.size,sha256:v.sha256,version:v.version,
++     nativeText:gitBlobMeta(nativeRaw),originalOperation:a.id,
++     full9Strings:[parts[0],parts[1],"1000","1000",String(32768|v.mode),
++       "1",String(v.size),parts[3],parts[4]],
++     regularFileFromNativeFileInfoContract:true,
++     binaryReadAuthorized:false};
++  } else gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+   if(a.tool==="process_read") {
+    for(const stream of ["stdout","stderr"]) {
+     const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];
+@@ -318,6 +390,7 @@
+  try {
+   let value;
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
++  else if(action==="authorize_stage_result_info")value=gfAuthorizeStageResultInfoOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.primary-root-inode-sandbox-regression.references.r1",
+  "repository": "anthropics/sandbox-runtime",
+  "fixedCommit": "27fce0dbd58925061c57eb8b38707b9a98349dad",
+  "commitResponse": {
+    "blob": "53a97ed65eec4cb74b17063222b2ea73edc1a528",
+    "bytes": 160373,
+    "sha256": "c67f5925ecdf1fc9a4c39ac1d397d4e08ee3cde0676ebff2fcd1a3d0e8b3a934"
+  },
+  "sources": [
+    {
+      "name": "macos-sandbox-utils.ts",
+      "path": "src/sandbox/macos-sandbox-utils.ts",
+      "url": "https://github.com/anthropics/sandbox-runtime/blob/27fce0dbd58925061c57eb8b38707b9a98349dad/src/sandbox/macos-sandbox-utils.ts",
+      "pin": {
+        "blob": "1eb0db73ff9116bc5fab0299eb3a002bbe5ffb31",
+        "bytes": 63952,
+        "sha256": "3d28f5271a8432faaba18d15c189ed832ea7dadf5a57d702f91bc16dbeee11da"
+      },
+      "lines": [
+        913,
+        920
+      ],
+      "meaning": "Maintainer implementation adds literal-root file-read after root-covering denies. Its comment identifies dyld abortion and distinguishes root entry names from subtree contents."
+    },
+    {
+      "name": "allow-read.test.ts",
+      "path": "test/sandbox/allow-read.test.ts",
+      "url": "https://github.com/anthropics/sandbox-runtime/blob/27fce0dbd58925061c57eb8b38707b9a98349dad/test/sandbox/allow-read.test.ts",
+      "pin": {
+        "blob": "b085f729adf1246aa055be91158069cf31cc6227",
+        "bytes": 38895,
+        "sha256": "fb017fc8720e7ff5a3ba2ee576ffc3555d9d4d156342addd7e7ffe909a207d19"
+      },
+      "lines": [
+        243,
+        338
+      ],
+      "meaning": "The conditional macOS regression checks allowed startup/read within a carve-out and rejection of a file outside it. These tests were not run here."
+    }
+  ],
+  "ownImplementationPrimaryEvidence": true,
+  "AppleImplementationOrCurrentHostDeniedOperationProof": false,
+  "hypothesisOnly": true,
+  "actualRootReadDeniedHereObserved": false,
+  "oldLibignitionCode2NotMappedToErrno": true,
+  "oldPathFalseNotUpgraded": true,
+  "publicVersionOnly": true,
+  "rootLiteralIsNotRootSubpath": true,
+  "newPolicyChangeBytes": 33,
+  "regressionExecutedByThisAgent": false,
+  "sourceWebRefs": [
+    "turn119view0",
+    "turn119view1",
+    "turn120view0",
+    "turn120view1"
+  ]
+}

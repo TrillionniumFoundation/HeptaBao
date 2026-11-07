@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.fixed-ps-source-review-correction.r1",
+  "observedFailures": [
+    {
+      "kind": "unpublished SOURCE journal descriptor",
+      "reason": "One-line replacement did not match the frozen two-line original GF_REQUEST. Source verifier caught the original request descriptor remaining.",
+      "resolution": "Replace exactly the complete two-line declaration with the already frozen new request pin; no new request/source or Native invocation."
+    },
+    {
+      "kind": "pure verifier anchor",
+      "reason": "Assumed diskutil command label; actual unchanged outer label is outer-t5-volume.",
+      "resolution": "Only the verifier anchor corrected; outer remains whole unchanged from core27."
+    }
+  ],
+  "originalJournal": {
+    "blob": "a21cbf777dfa01b70579893254382b40f75ffc24",
+    "bytes": 19053,
+    "sha256": "6cfab23153bb90b1ddfc8568baddeb9f0b14bc22070a2fc48b8e1d1956d72799"
+  },
+  "correctedJournal": {
+    "blob": "225aea4ff2abb64763eee631108d61a9b6a26fb2",
+    "bytes": 19056,
+    "sha256": "3a35571434326df1ca37b4470a73405040b7c39d70c5ddf6bf0b9b7ab89b9ea1"
+  },
+  "NativeCalls": 0,
+  "GitMutationsBeforeCorrection": 0,
+  "oldDraftNeverAuthorizedOrInitialized": true
+}

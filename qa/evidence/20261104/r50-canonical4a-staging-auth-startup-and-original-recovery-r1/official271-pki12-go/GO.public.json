@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.root.official271-strict-pki12.GO.r1",
+  "authorization": "GO",
+  "scope": "one-fresh-isolated-official271-pki12-oracle",
+  "source_packet": "6952142f531c0bcf1ae59f7382b65cebec723703",
+  "root_qualification": {
+    "blob": "7e83eee0673be7da99b8fa4decdc9629e1703c52",
+    "bytes": 8334,
+    "sha256": "a8c6dd2f712b96f604bdf92a087ab714016e8e5c53f972a7fd348e3b50427f0c",
+    "tree": "f9d77c67ec9acf37b2a0a33ba1a8f74b6e8b111d"
+  },
+  "host": "x230",
+  "slot": "official271_x230_pki12_oracle_gitfirst_r1",
+  "exact_request": {
+    "blob": "ecc21302bb94a0b40b856577371cd11d826c6f57",
+    "bytes": 171446,
+    "sha256": "f8678baebc997e19b8770609b52a7ffad8248e7f9ff94dc947e83f60fd4f7377"
+  },
+  "journal": {
+    "blob": "cde02ae68396ec97d4f0bc7a33281331377aa09e",
+    "bytes": 19055,
+    "sha256": "bea509318ec725ba111d244921488ee746cc174bbfd603a29c081e7a8f7bd6a8"
+  },
+  "entry": {
+    "blob": "b12287d30fa924b12415106d129ff7f1c792e167",
+    "bytes": 18459,
+    "sha256": "b28bc92c8d9589f1b6dbbe12be7cce20fddea3ab75dacbcc5f158ad68c3dfe98"
+  },
+  "payload": {
+    "blob": "c0cb9c3c1270e332aef23dd95e23b38a81262637",
+    "bytes": 140624,
+    "sha256": "71fd26d3e4b1cb49b6017222ea65aa956a0a39585202a255bea58620e4111541"
+  },
+  "native_binding": {
+    "sha256": "f93cf56a688e5aa92c054b92bf9302b43f3796233576e52bd60e219a6510469b",
+    "native_fingerprint": "17959499251416193705"
+  },
+  "idempotency_key": "heptabao-official271-x230-pki12-oracle-r1-b28bc92c",
+  "root": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1",
+  "ports": [
+    23627,
+    23628
+  ],
+  "maximum_process_starts": 1,
+  "maximum_official_server_launches": 1,
+  "original_twelve_case_names": [
+    "pki.mount",
+    "pki.root",
+    "pki.role",
+    "pki.role_read",
+    "pki.issue",
+    "pki.lease_lookup",
+    "pki.lease_expire_issue",
+    "pki.lease_expire_lookup",
+    "pki.cert_lookup",
+    "pki.lease_revoke",
+    "pki.revoked_lease_absent",
+    "pki.crl_json"
+  ],
+  "budgets": {
+    "ownerAbsoluteSeconds": 360,
+    "outerSeconds": 390,
+    "deadlineAtEntry": true,
+    "reset": false,
+    "httpTimeoutMaximum": 15,
+    "rawPkiRequestsMaximum": 12,
+    "suiteUnobservedAdminRequestsSourceUpperBound": 3,
+    "launcherHealthPollMaximum": 100,
+    "launcherStartupSourceUpperBound": 103,
+    "extraHealthMaximum": 1,
+    "sourceInputBytes": 133117,
+    "stdinBytes": 140624,
+    "reportBytesMaximum": 1048576,
+    "entryFDsMaximum": 10,
+    "perReadWriteChunkMaximum": 65536,
+    "entryReadbackBytesMaximum": 1181693,
+    "components": {
+      "classes": 4,
+      "variants": 8,
+      "productCases": 0
+    }
+  },
+  "original_observation_caps": {
+    "maxProcessStatusObservers": 32,
+    "maxProcessReadObservers": 129,
+    "maxStatusPerObserver": 8,
+    "maxPagesPerObserver": 128,
+    "pageBytes": 8192,
+    "payloadCap": 1048576,
+    "processReadStreamChunk": 16384,
+    "streamTotalMaximum": 2097152,
+    "oneCallFuture": true,
+    "wholeSDKBeforeInterpretation": true
+  },
+  "required_invariants": {
+    "noCandidateStarted": true,
+    "noOldACL23Reexecution": true,
+    "originalOwnerAndLauncherWholeUnchanged": true,
+    "originalAcceptancePkiCasesWholeUnchanged": true,
+    "exactTwo400NoNormalization": true,
+    "unknownTransportStopsPreservingPartial": true,
+    "noWritesOutsideNewOwnedFixture": true,
+    "noOldFixtureMutation": true,
+    "privateCredentialsNeverExported": true,
+    "wholeOriginalArtifactHashByLauncherRequired": true
+  },
+  "report": {
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "createOnly": true,
+    "mode": "0600",
+    "nativeINFOBODYAuthority": false,
+    "terminalAfterEntryClose": true
+  },
+  "sequence": [
+    "Read this exact GO whole and initialize only this fresh reviewed slot once.",
+    "Whole exact request, intent and arm; cross a model boundary and invoke process_start once.",
+    "Archive each original SDK whole before interpretation; observe only that original job and original operation IDs.",
+    "Freeze original terminal status and all stream bytes/EOF under the reviewed bounds; preserve any UNKNOWN and no replay.",
+    "Close original observers and owned future, then release C lane. Full report INFO/BODY requires separate fixed metadata authority."
+  ],
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "issuedAtUTC": "2026-11-06 23:49:19 UTC",
+  "gitFirstExplicitlyRequired": true,
+  "localJournalSubstitute": "Reviewed immutable external whole archives before Native and before parsing; no claim of local durable journal.",
+  "business_cutover": false,
+  "legacy_cleanup": false,
+  "full_replacement": false,
+  "onError": "Preserve original UNKNOWN or failure; observe original identifiers only. No key change, replay, alternate executable, additional suite or deadline reset."
+}

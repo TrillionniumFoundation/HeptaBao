@@ -1,0 +1,47 @@
+{
+  "originalError": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "close",
+    "name": "Error",
+    "message": "closed_gfRun_action",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "recoveryPacket": "cd4dacfa68402b7ec7febd22c57fb7c85b87baca",
+  "recoveryGO": {
+    "blob": "aa47dee0c6a6218e5870831661f69216847dca8d",
+    "bytes": 1625,
+    "sha256": "50cb85ec4614f13c2594dd7b4ac91d14825c2a3c2961ffe136d1ec83e898b6d7"
+  },
+  "recoveryActual": {
+    "goPin": {
+      "blob": "aa47dee0c6a6218e5870831661f69216847dca8d",
+      "bytes": 1625,
+      "sha256": "50cb85ec4614f13c2594dd7b4ac91d14825c2a3c2961ffe136d1ec83e898b6d7"
+    },
+    "beforePin": {
+      "blob": "bd06c489e911bf65d630ae8665e9ca5e00d96de2",
+      "bytes": 157674,
+      "sha256": "99343cb695f2bfda2c47111dd8b226d02479ad15f051179bc13b9bb60e605efe"
+    },
+    "afterPin": {
+      "blob": "22cb576c41caea26beb8f931dfa8a8a9e48a0262",
+      "bytes": 157675,
+      "sha256": "3808482edffd2a0fb68de8bf15ae42af22a52b5eff80c36ae521ef47ed7b1c0d"
+    },
+    "oldOuterFailure": {
+      "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+      "action": "close",
+      "name": "Error",
+      "message": "closed_gfRun_action",
+      "automaticRetry": false,
+      "newAdmissionAllowed": false,
+      "returnedNormally": true
+    },
+    "NativeCalls": 0,
+    "reason": "wrong local action close; correct close_observer not yet reached"
+  },
+  "unchangedOriginalCalls": true,
+  "NativeReplayed": false
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-combined-4a49405b-unknown-report-info-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json"
+    }
+  }
+}

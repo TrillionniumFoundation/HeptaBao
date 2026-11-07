@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root.Auth-public-imports-min-release.r1",
+  "audit": {
+    "tree": "62eec6952811c9b8c99ff9747f02471a99a887cb",
+    "files": 9,
+    "bytes": 81037,
+    "merkle": {
+      "root_sha": "62eec6952811c9b8c99ff9747f02471a99a887cb",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "checks": {
+    "GOExact": true,
+    "jobTerminal": true,
+    "observersClosed": true,
+    "laneReleased": true,
+    "allClosed": true,
+    "markers24": true,
+    "noSDK": true,
+    "stdoutHash": true
+  },
+  "rootMinChecks": 8,
+  "allOriginalSDKsIndependentlyRead": false,
+  "A": 0,
+  "NativeCallsAdded": 0
+}

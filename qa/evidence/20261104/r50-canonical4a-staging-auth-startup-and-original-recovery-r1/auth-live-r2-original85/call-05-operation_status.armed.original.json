@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "public-node-live-denial-r2-stream-01-state",
+  "kind": "operation_status",
+  "request": {
+    "blob": "cd5f2f5071d6b810b2d96ad89ca6de4599ce8f93",
+    "bytes": 89,
+    "sha256": "9a0d3ae4e10496a0dbf069096bfcc99757e0d051ded42b3d1470ad1105c52248"
+  },
+  "rootGo": {
+    "blob": "d6ae07de2d1e8249267f38c452f9475624b7f285",
+    "bytes": 13290,
+    "sha256": "165ebeb49eaaa8a4abf2c0d922075ed60e45d51a9c24084e99d501b6cba8a83e"
+  },
+  "originalJob": "1a1b33bc0d5-fc05-814d",
+  "originalOperation": "d4ebe059dc1c618a6ca149977645004b83e141747c289b32320cc808bca759d3",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

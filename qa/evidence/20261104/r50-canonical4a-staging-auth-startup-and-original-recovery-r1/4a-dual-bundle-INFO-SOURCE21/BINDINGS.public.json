@@ -1,0 +1,166 @@
+[
+  {
+    "tag": "mac",
+    "field": "canonical_bundle",
+    "from": "5767739c",
+    "slot": "successor4a_mac_canonical_bundle_info_gitfirst_r1",
+    "expected": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+      "bytes": 1253,
+      "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+      "full9": [
+        "66306",
+        "34603387",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1253",
+        "1794007675691817556",
+        "1794007675691817556"
+      ]
+    },
+    "header": {
+      "header_sha256": "ffa8977f7e4efa7ea246089229c566e9007efc3a8a64be8be1e3de5c4efe3626",
+      "heads": [
+        [
+          "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "5767739cd25e458ac052dc8d384019bab8688ae0"
+      ],
+      "version": 2
+    },
+    "journal": {
+      "blob": "8cca9d145d91a844aa11a23b6402627c6c8416ac",
+      "bytes": 20600,
+      "sha256": "a229d3354ace8ea1cc25b891c3809c110503f2e7877f289404142340e1003321"
+    },
+    "exact_request": {
+      "blob": "40a1a717a0f07c5e588977e7ddc941b75d92bce4",
+      "bytes": 273,
+      "sha256": "8fcced2a71700b581d7b8981c64e2e0e61944f763c954b23aa8a2a1565a6bcfb"
+    },
+    "request": {
+      "idempotency_key": "heptabao-4a49405b-mac-bundle-info-rog-20261106-r1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle"
+        }
+      }
+    },
+    "forward": {
+      "blob": "48d807a53d5e1d86aa86ba9c8a64987f84e9a2bf",
+      "bytes": 1415,
+      "sha256": "6e6ab6fb9e5e6352714d03b1b59f518f58382a9d44fc961effee56c241203378"
+    },
+    "reverse": {
+      "blob": "55e4c2ed5b0f5b34e7c23c34ffef2d756b86f47b",
+      "bytes": 1423,
+      "sha256": "81baa650a6c4bd34c09d48104f5aad9f98afabc00b448435b3e024118b119abc"
+    },
+    "actual_info": null,
+    "actual_body": null,
+    "stage_witness": {
+      "report": {
+        "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+        "bytes": 31257,
+        "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+      },
+      "root_qualification": {
+        "blob": "489681f4680763539866097e650073729c68dee7",
+        "bytes": 4276,
+        "sha256": "65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576"
+      },
+      "root_qualification_tree": "4ad94074197d4f6f1c2205be36675f7d28cb519a",
+      "field": "canonical_bundle"
+    }
+  },
+  {
+    "tag": "x230",
+    "field": "canonical_x230_bundle",
+    "from": "02b90762",
+    "slot": "successor4a_x230_canonical_bundle_info_gitfirst_r1",
+    "expected": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+      "bytes": 6815,
+      "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+      "full9": [
+        "66306",
+        "34603406",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "6815",
+        "1794007675734817691",
+        "1794007675734817691"
+      ]
+    },
+    "header": {
+      "header_sha256": "e1af68cc94dad436c795a3c1e7d809b73d8622bcd566b95a8c464b75ac50fa19",
+      "heads": [
+        [
+          "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+      ],
+      "version": 2
+    },
+    "journal": {
+      "blob": "bcf96bf934fdce521a8085ba501a51d648cc915b",
+      "bytes": 20601,
+      "sha256": "1c500fbd98e133fe763f4d7d79f0f9f3395f794f32ac974da118a29020d0e49f"
+    },
+    "exact_request": {
+      "blob": "0fd925cb1455c664dd02bc4937d2f18314d9dc3c",
+      "bytes": 274,
+      "sha256": "a3ed076f11fe278956e301c06af771922866f6ce5e5b06cf3347aaa3083e547d"
+    },
+    "request": {
+      "idempotency_key": "heptabao-4a49405b-x230-bundle-info-rog-20261106-r1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle"
+        }
+      }
+    },
+    "forward": {
+      "blob": "199dbdfaf14bc029951d809f0c6ef3d3eeec8a79",
+      "bytes": 1416,
+      "sha256": "229d129663b6d0c3bb75604729fc3c71a8adcc4c3274190e42e12fffd4a4809f"
+    },
+    "reverse": {
+      "blob": "90ae48703a89ab1c40ad2dc616306e633d035de1",
+      "bytes": 1426,
+      "sha256": "9e8a21506ec554f42339efdd8ffeaf0524f499698e0b53297aa0e826c26dabf2"
+    },
+    "actual_info": null,
+    "actual_body": null,
+    "stage_witness": {
+      "report": {
+        "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+        "bytes": 31257,
+        "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+      },
+      "root_qualification": {
+        "blob": "489681f4680763539866097e650073729c68dee7",
+        "bytes": 4276,
+        "sha256": "65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576"
+      },
+      "root_qualification_tree": "4ad94074197d4f6f1c2205be36675f7d28cb519a",
+      "field": "canonical_x230_bundle"
+    }
+  }
+]

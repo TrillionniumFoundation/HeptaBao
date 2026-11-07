@@ -1,0 +1,98 @@
+{
+  "pass": true,
+  "count": 23,
+  "checks": [
+    {
+      "label": "before whole pin",
+      "pass": true
+    },
+    {
+      "label": "after whole pin",
+      "pass": true
+    },
+    {
+      "label": "forward exact",
+      "pass": true
+    },
+    {
+      "label": "forward inverse exact",
+      "pass": true
+    },
+    {
+      "label": "reverse exact",
+      "pass": true
+    },
+    {
+      "label": "reverse inverse exact",
+      "pass": true
+    },
+    {
+      "label": "three combined hunks",
+      "pass": true
+    },
+    {
+      "label": "entire post-release implementation byte-identical",
+      "pass": true
+    },
+    {
+      "label": "owned child implementation byte-identical",
+      "pass": true
+    },
+    {
+      "label": "single release deadline initialization",
+      "pass": true
+    },
+    {
+      "label": "single release started initialization",
+      "pass": true
+    },
+    {
+      "label": "1800 capped to outer",
+      "pass": true
+    },
+    {
+      "label": "precheck within 300 and same release deadline",
+      "pass": true
+    },
+    {
+      "label": "release receives remaining same deadline",
+      "pass": true
+    },
+    {
+      "label": "all precheck acceptance before release",
+      "pass": true
+    },
+    {
+      "label": "precheck child success and no timeout mandatory",
+      "pass": true
+    },
+    {
+      "label": "one build-finished true",
+      "pass": true
+    },
+    {
+      "label": "one library artifact with actual test profile",
+      "pass": true
+    },
+    {
+      "label": "exact current source and manifest",
+      "pass": true
+    },
+    {
+      "label": "exact default features",
+      "pass": true
+    },
+    {
+      "label": "no link or runtime qualification from check",
+      "pass": true
+    },
+    {
+      "label": "unchanged 3600/12000 and exact runtime denominator",
+      "pass": true
+    },
+    {
+      "label": "runner under original 40000 bytes",
+      "pass": true
+    }
+  ]
+}

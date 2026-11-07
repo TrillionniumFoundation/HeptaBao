@@ -1,0 +1,400 @@
+{
+  "schema": "heptabao.root-literal-public-version-source-pure-checks.r1",
+  "passed": true,
+  "checkCount": 97,
+  "checks": [
+    {
+      "name": "base/source",
+      "passed": true
+    },
+    {
+      "name": "base/contract",
+      "passed": true
+    },
+    {
+      "name": "binding/source",
+      "passed": true
+    },
+    {
+      "name": "binding/exactRequest",
+      "passed": true
+    },
+    {
+      "name": "binding/journal",
+      "passed": true
+    },
+    {
+      "name": "source/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "source/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "source/hunks",
+      "passed": true
+    },
+    {
+      "name": "commands/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "commands/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "commands/hunks",
+      "passed": true
+    },
+    {
+      "name": "profile/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "profile/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "profile/hunks",
+      "passed": true
+    },
+    {
+      "name": "replaced-profile/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "replaced-profile/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "replaced-profile/hunks",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "journal/hunks",
+      "passed": true
+    },
+    {
+      "name": "unchanged/critical",
+      "passed": true
+    },
+    {
+      "name": "unchanged/need",
+      "passed": true
+    },
+    {
+      "name": "unchanged/interrupt",
+      "passed": true
+    },
+    {
+      "name": "unchanged/remaining",
+      "passed": true
+    },
+    {
+      "name": "unchanged/sha",
+      "passed": true
+    },
+    {
+      "name": "unchanged/encoded",
+      "passed": true
+    },
+    {
+      "name": "unchanged/identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged/error_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged/public_command",
+      "passed": true
+    },
+    {
+      "name": "unchanged/load_modules",
+      "passed": true
+    },
+    {
+      "name": "unchanged/version_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged/comparison_projection",
+      "passed": true
+    },
+    {
+      "name": "inputs/audit-exact",
+      "passed": true
+    },
+    {
+      "name": "inputs/four-pins",
+      "passed": true
+    },
+    {
+      "name": "inputs/alias-pin",
+      "passed": true
+    },
+    {
+      "name": "home/class-exact",
+      "passed": true
+    },
+    {
+      "name": "home/class-pin",
+      "passed": true
+    },
+    {
+      "name": "home/only-smaller-profile-cap",
+      "passed": true
+    },
+    {
+      "name": "modules/exact-two",
+      "passed": true
+    },
+    {
+      "name": "modules/unreaped-byte-exact",
+      "passed": true
+    },
+    {
+      "name": "modules/unreaped-pin",
+      "passed": true
+    },
+    {
+      "name": "commands/embedded-after",
+      "passed": true
+    },
+    {
+      "name": "commands/embedded-before",
+      "passed": true
+    },
+    {
+      "name": "commands/embedded-pin",
+      "passed": true
+    },
+    {
+      "name": "commands/only-root-literals",
+      "passed": true
+    },
+    {
+      "name": "profile/exact-sole-addition",
+      "passed": true
+    },
+    {
+      "name": "profile/original-whole",
+      "passed": true
+    },
+    {
+      "name": "profile/new-whole",
+      "passed": true
+    },
+    {
+      "name": "profile/addition-33B",
+      "passed": true
+    },
+    {
+      "name": "profile/no-failed-mapping",
+      "passed": true
+    },
+    {
+      "name": "profile/no-broad-root-read",
+      "passed": true
+    },
+    {
+      "name": "profile/original-deny-metadata",
+      "passed": true
+    },
+    {
+      "name": "profile/embedded",
+      "passed": true
+    },
+    {
+      "name": "profile/original-pin",
+      "passed": true
+    },
+    {
+      "name": "profile/embedded-rule",
+      "passed": true
+    },
+    {
+      "name": "profile/contract-rule",
+      "passed": true
+    },
+    {
+      "name": "profile/literal-target",
+      "passed": true
+    },
+    {
+      "name": "profile/permission-boundary",
+      "passed": true
+    },
+    {
+      "name": "budgets/only-profile-reduced-69B",
+      "passed": true
+    },
+    {
+      "name": "budgets/absolute",
+      "passed": true
+    },
+    {
+      "name": "main/two-arm-loop-exact",
+      "passed": true
+    },
+    {
+      "name": "main/finally-exact",
+      "passed": true
+    },
+    {
+      "name": "errors/one-code-rename",
+      "passed": true
+    },
+    {
+      "name": "main/prefix-fence-before-write",
+      "passed": true
+    },
+    {
+      "name": "request/wrapper",
+      "passed": true
+    },
+    {
+      "name": "request/stdin-exact",
+      "passed": true
+    },
+    {
+      "name": "request/no-stdin-text",
+      "passed": true
+    },
+    {
+      "name": "request/new-key",
+      "passed": true
+    },
+    {
+      "name": "journal/only-slot-request-prefix",
+      "passed": true
+    },
+    {
+      "name": "argv/contract",
+      "passed": true
+    },
+    {
+      "name": "env/contract",
+      "passed": true
+    },
+    {
+      "name": "argv/baseline",
+      "passed": true
+    },
+    {
+      "name": "argv/restricted",
+      "passed": true
+    },
+    {
+      "name": "env/exact-five",
+      "passed": true
+    },
+    {
+      "name": "env/home-tmp",
+      "passed": true
+    },
+    {
+      "name": "roots/fresh",
+      "passed": true
+    },
+    {
+      "name": "roots/exclusive-no-fallback",
+      "passed": true
+    },
+    {
+      "name": "scope/no-upgrade",
+      "passed": true
+    },
+    {
+      "name": "primary/fixed-commit",
+      "passed": true
+    },
+    {
+      "name": "primary/commit-whole",
+      "passed": true
+    },
+    {
+      "name": "primary/whole/macos-sandbox-utils.ts",
+      "passed": true
+    },
+    {
+      "name": "primary/commit-url/macos-sandbox-utils.ts",
+      "passed": true
+    },
+    {
+      "name": "primary/whole/allow-read.test.ts",
+      "passed": true
+    },
+    {
+      "name": "primary/commit-url/allow-read.test.ts",
+      "passed": true
+    },
+    {
+      "name": "primary/exact-rule",
+      "passed": true
+    },
+    {
+      "name": "primary/root-not-subtree",
+      "passed": true
+    },
+    {
+      "name": "primary/two-regression-directions",
+      "passed": true
+    },
+    {
+      "name": "primary/hypothesis-only",
+      "passed": true
+    },
+    {
+      "name": "actual/map-whole",
+      "passed": true
+    },
+    {
+      "name": "actual/map-release-whole",
+      "passed": true
+    },
+    {
+      "name": "actual/map-negative",
+      "passed": true
+    },
+    {
+      "name": "actual/live-whole",
+      "passed": true
+    },
+    {
+      "name": "actual/live-release-whole",
+      "passed": true
+    },
+    {
+      "name": "actual/live-unknowns",
+      "passed": true
+    },
+    {
+      "name": "actual/crash-no-upgrade",
+      "passed": true
+    },
+    {
+      "name": "source-only/no-dispatch",
+      "passed": true
+    },
+    {
+      "name": "issuer/no-inheritance",
+      "passed": true
+    }
+  ],
+  "NativeCallsAdded": 0,
+  "PythonNodeOrUpstreamRegressionExecuted": false,
+  "existingProfileModified": false,
+  "hypothesisOnly": true,
+  "rootRuntimeGORequired": true
+}

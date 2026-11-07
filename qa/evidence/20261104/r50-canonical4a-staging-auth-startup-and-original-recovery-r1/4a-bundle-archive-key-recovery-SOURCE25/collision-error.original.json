@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+  "action": "close_observer",
+  "name": "Error",
+  "message": "archive_already_admitted_no_mutation_retry",
+  "automaticRetry": false,
+  "newAdmissionAllowed": false,
+  "returnedNormally": true
+}

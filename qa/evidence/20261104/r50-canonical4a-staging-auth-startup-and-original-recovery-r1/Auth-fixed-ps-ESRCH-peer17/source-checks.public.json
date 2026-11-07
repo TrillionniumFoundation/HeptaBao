@@ -1,0 +1,74 @@
+{
+  "checks": [
+    {
+      "name": "unreaped_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "unreaped_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "commands_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "commands_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "reader_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "reader_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "manager_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "manager_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "ps_rows_original_whole",
+      "pass": true
+    },
+    {
+      "name": "verify_unreaped_original_whole",
+      "pass": true
+    },
+    {
+      "name": "fixed_ps_exact_argv_and_output",
+      "pass": true
+    },
+    {
+      "name": "root_exception_stable_primary_only",
+      "pass": true
+    },
+    {
+      "name": "default_uid_current_euid",
+      "pass": true
+    },
+    {
+      "name": "errno_swap_enabled",
+      "pass": true
+    },
+    {
+      "name": "three_optin_ESRCH_tests",
+      "pass": true
+    },
+    {
+      "name": "single_phase_allow_absent",
+      "pass": true
+    },
+    {
+      "name": "phase_post_exit_qualification_tail_exact",
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "checkCount": 17
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.pki12-report-body-source-checks.v1",
+  "pass": true,
+  "check_count": 23,
+  "checks": [
+    {
+      "label": "exact new source request",
+      "pass": true
+    },
+    {
+      "label": "strict bidirectional original INFO delta",
+      "pass": true
+    },
+    {
+      "label": "seven exact bounded hunks",
+      "pass": true
+    },
+    {
+      "label": "exact actual closed state",
+      "pass": true
+    },
+    {
+      "label": "ten original calls and three original observers closed",
+      "pass": true
+    },
+    {
+      "label": "actual independent INFO exact identity",
+      "pass": true
+    },
+    {
+      "label": "same actual Linux full9 owner mode",
+      "pass": true
+    },
+    {
+      "label": "single actual-version whole-body range",
+      "pass": true
+    },
+    {
+      "label": "no inherited fixed output archive key",
+      "pass": true
+    },
+    {
+      "label": "new exact GO selected for all later arms",
+      "pass": true
+    },
+    {
+      "label": "once marker immediately before original dispatch",
+      "pass": true
+    },
+    {
+      "label": "private authorization keeps ten original calls",
+      "pass": true
+    },
+    {
+      "label": "reject wrong path",
+      "pass": true
+    },
+    {
+      "label": "reject wrong version",
+      "pass": true
+    },
+    {
+      "label": "reject wrong offset",
+      "pass": true
+    },
+    {
+      "label": "reject wrong limit",
+      "pass": true
+    },
+    {
+      "label": "reject wrong metadata",
+      "pass": true
+    },
+    {
+      "label": "reject process restart",
+      "pass": true
+    },
+    {
+      "label": "actual private prepare selects new BODY GO",
+      "pass": true
+    },
+    {
+      "label": "private prepare preserves original call map",
+      "pass": true
+    },
+    {
+      "label": "new body16K old pages8K",
+      "pass": true
+    },
+    {
+      "label": "finite status page and payload limits",
+      "pass": true
+    },
+    {
+      "label": "decoded body external before published observation",
+      "pass": true
+    }
+  ],
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "realSlotsMutated": false
+}

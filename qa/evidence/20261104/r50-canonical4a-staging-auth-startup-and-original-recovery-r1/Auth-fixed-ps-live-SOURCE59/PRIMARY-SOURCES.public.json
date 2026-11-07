@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.fixed-ps-public-primary-source.r1",
+  "commit": "6bed8737a34dbb54782a18f47dccf933a9967a12",
+  "sources": [
+    {
+      "path": "Apple-ps.original.c",
+      "url": "https://github.com/apple-oss-distributions/adv_cmds/blob/6bed8737a34dbb54782a18f47dccf933a9967a12/ps/ps.c",
+      "pin": {
+        "blob": "f77896791aec508282a72eed31cfc797cfb21370",
+        "bytes": 36552,
+        "sha256": "d338ad022a81a53a3f34149778b0a3dbe3e31b154395589c333c080ad308ea5a"
+      }
+    },
+    {
+      "path": "Apple-ps-keyword.original.c",
+      "url": "https://github.com/apple-oss-distributions/adv_cmds/blob/6bed8737a34dbb54782a18f47dccf933a9967a12/ps/keyword.c",
+      "pin": {
+        "blob": "aad756d34520c213286959a12615592376f919d7",
+        "bytes": 12615,
+        "sha256": "0af8cc559f9e7e830e5568eb61769df806be8b80a22f3745beeab6431ffa6444"
+      }
+    }
+  ],
+  "meaning": "The public uid column is effective uid (e_ucred.cr_uid), distinct from ruid (e_pcred.p_ruid). This source is not attested as the exact installed binary build; the prospective runtime relies on the observed current binary full9/hash and actual custody evidence.",
+  "historicalFailureSpecificPredicateProved": false
+}

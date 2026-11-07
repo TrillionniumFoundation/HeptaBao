@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.root.ROG4a-build-start-unknown.r1",
+  "actualTree": {
+    "tree": "8f31dd325169b68eb10bb3cc442d7571f73346ab",
+    "files": 9,
+    "bytes": 363486,
+    "merkle": {
+      "root_sha": "8f31dd325169b68eb10bb3cc442d7571f73346ab",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "checks": {
+    "GOExact": true,
+    "requestExact": true,
+    "SDKExact": true,
+    "noJob": true,
+    "paused": true,
+    "called": true,
+    "noLiveFuture": true,
+    "noObserver": true,
+    "timeoutRetained": true
+  },
+  "observed": {
+    "uniqueNativeInvocation": 1,
+    "originalSdkWhole": true,
+    "ackReceived": false,
+    "jobId": null,
+    "errorCode": -32603,
+    "errorText": "MCP request timed out",
+    "called": true,
+    "startCalled": true,
+    "phase": "native_interpretation_refused",
+    "paused": true,
+    "pending": "c4a-build-r1-start",
+    "nativeCallInFlight": false,
+    "activeObserver": null,
+    "processStatusCalls": 0,
+    "processReadCalls": 0
+  },
+  "possibleOwnedJob": 1,
+  "controllerAdmission": "UNKNOWN",
+  "processStarted": "UNKNOWN",
+  "cargoStarted": "UNKNOWN",
+  "retryAuthorized": false,
+  "originalFailedCallUntouched": true,
+  "NativeCallsAdded": 0
+}

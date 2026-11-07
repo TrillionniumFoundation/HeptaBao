@@ -1,0 +1,156 @@
+{
+  "schema": "heptabao.root.X2304a.actual-bundle-transport-qualification.r2",
+  "audit": {
+    "tree": "bb84256a3237d79a358a7533706601045859dffd",
+    "files": 8,
+    "bytes": 82584,
+    "merkle": {
+      "root_sha": "bb84256a3237d79a358a7533706601045859dffd",
+      "trees_verified": 1,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "outputAudit": {
+    "tree": "b0c1eb47f288d4af715268c38145b6b4d65a37dc",
+    "files": 2,
+    "bytes": 9958,
+    "merkle": {
+      "root_sha": "b0c1eb47f288d4af715268c38145b6b4d65a37dc",
+      "trees_verified": 1,
+      "leaf_count": 2
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "actual R2 body GO exact",
+      "pass": true
+    },
+    {
+      "name": "three original INFO calls unchanged",
+      "pass": true
+    },
+    {
+      "name": "original INFO observer unchanged",
+      "pass": true
+    },
+    {
+      "name": "closed six calls two observers",
+      "pass": true
+    },
+    {
+      "name": "no active call observer or pause",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-admit actual archived arm",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-admit SDK exact and accepted",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-admit native exact",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-status0 actual archived arm",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-status0 SDK exact and accepted",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-status0 native exact",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-page0 actual archived arm",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-page0 SDK exact and accepted",
+      "pass": true
+    },
+    {
+      "name": "4a-x230-bundle-body-r1-page0 native exact",
+      "pass": true
+    },
+    {
+      "name": "actual original operation bound",
+      "pass": true
+    },
+    {
+      "name": "actual status completed inactive",
+      "pass": true
+    },
+    {
+      "name": "actual single whole immutable page",
+      "pass": true
+    },
+    {
+      "name": "page whole SHA and original payload exact",
+      "pass": true
+    },
+    {
+      "name": "native binary pin exact",
+      "pass": true
+    },
+    {
+      "name": "actual path version and extent exact",
+      "pass": true
+    },
+    {
+      "name": "exact base64 transport file pin",
+      "pass": true
+    },
+    {
+      "name": "actual body and transport bytes equal",
+      "pass": true
+    },
+    {
+      "name": "6815 whole bytes SHA exact",
+      "pass": true
+    },
+    {
+      "name": "exact v2 sole prerequisite and HEAD",
+      "pass": true
+    },
+    {
+      "name": "exact entire header SHA",
+      "pass": true
+    }
+  ],
+  "rootINFOQualification": {
+    "tree": "d78b66e7505a5c39f883bf82c2f0494db25e0e0b",
+    "files": 10,
+    "bytes": 70769,
+    "merkle": {
+      "root_sha": "d78b66e7505a5c39f883bf82c2f0494db25e0e0b",
+      "trees_verified": 1,
+      "leaf_count": 10
+    },
+    "whole": true
+  },
+  "binary": {
+    "bytes": 6815,
+    "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+    "headerSHA256": "e1af68cc94dad436c795a3c1e7d809b73d8622bcd566b95a8c464b75ac50fa19"
+  },
+  "transport": {
+    "blob": "ee0d2ca9413ef27af0a5102235b67a2030fbc9f6",
+    "bytes": 9089,
+    "sha256": "33d2f11af704b853e5f0518c594fde36a412f78d6b574b54b37a31463c369eea"
+  },
+  "manifest": {
+    "blob": "0e9351441d34280826fd0355c4c7891d5585150c",
+    "bytes": 869,
+    "sha256": "719eaa0f97363a15380e9e590c448a4983b4aac450876b10c953cc7626531225"
+  },
+  "rootNativeCalls": 0,
+  "X230StageExecuted": false,
+  "compileRuntimeQualified": false
+}

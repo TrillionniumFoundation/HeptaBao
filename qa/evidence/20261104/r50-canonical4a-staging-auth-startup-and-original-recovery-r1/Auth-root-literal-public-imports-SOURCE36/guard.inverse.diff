@@ -1,0 +1,11 @@
+--- a/guard.after
++++ b/guard.before
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1'
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r2'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 

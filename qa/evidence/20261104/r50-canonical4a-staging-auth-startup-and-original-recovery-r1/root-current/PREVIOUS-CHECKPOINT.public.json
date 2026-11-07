@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.root.r49-publication-proof.r1",
+  "commit": "0449368aa49e196d5ca16073c00acc00b620e884",
+  "branch": "codex/heptabao-validation-20261104",
+  "parent": "e07d835dcb201221c8e5f87194de7aae129967ee",
+  "tree": "2ae1eca4c597b43743a4f61a3dcda68ab9029d07",
+  "prefix": "qa/evidence/20261104/r49-release-success-test-build-failure-fixture-successor-and-node-diagnostics-r1",
+  "prefixTree": "27cb1048b53ce77be7592fbd6ebbc5e6ca9bf9ed",
+  "rootCurrent": "7bfb9195612d3cc73c985981c5dbd2455a294c34",
+  "cutoffUTC": "2026-11-06 23:21:45 UTC",
+  "sourceMountedPackets": 91,
+  "files": 1833,
+  "bytes": 27065287,
+  "treeVerification": {
+    "schema": "heptabao.root.r49-prefix-tree-verification.r1",
+    "audit": {
+      "root_sha": "27cb1048b53ce77be7592fbd6ebbc5e6ca9bf9ed",
+      "trees_verified": 196,
+      "leaf_count": 1833
+    },
+    "allExpectedLeavesExact": true,
+    "leafCount": 1833,
+    "bytes": 27065287,
+    "priorWholeContentChecked": true
+  },
+  "exactFourAncestorReplacementReadbacks": true,
+  "commitReadbackExact": true,
+  "branchCASAndReadbackExact": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "taskContinues": true,
+  "url": "https://github.com/TrillionniumFoundation/HeptaBao/tree/0449368aa49e196d5ca16073c00acc00b620e884/qa/evidence/20261104/r49-release-success-test-build-failure-fixture-successor-and-node-diagnostics-r1/root-current"
+}

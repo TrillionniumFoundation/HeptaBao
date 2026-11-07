@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.canonical-source-bundle-base64-transport.v1",
+  "encoding": "base64-with-one-terminal-LF",
+  "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+  "version": "66306:34603387:1253:1794007675691817556:1794007675691817556",
+  "binary_bytes": 1253,
+  "binary_sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+  "encoded_file": {
+    "blob": "0c484a368ed4477cb0be462292a17262adf621c9",
+    "bytes": 1673,
+    "sha256": "7424490267abd9c6f5aaf2cff5edc5a7894ddf10fa26ae622b9751fbf635c6f5"
+  },
+  "original_operations": [
+    "1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f"
+  ],
+  "info_operation": "652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2",
+  "native_binary_body_observed": true,
+  "mac_published": false,
+  "product_executed": false
+}

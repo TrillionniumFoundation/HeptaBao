@@ -1,0 +1,106 @@
+--- a/private_list_adapter.js
++++ b/private_list_adapter.js
+@@ -3,12 +3,12 @@
+  * Pages SDKs stay private; only request, code, digests and safe projection may
+  * be public. The old failed BUILD context is never written or reinitialized.
+  */
+-const B4P_SLOT="combined_4a49405b_unknown_start_private_list_r1";
++const B4P_SLOT="combined_4a49405b_unknown_start_private_list_r2";
+ const B4P_OLD_SLOT="combined_4a49405b_fresh_build_gitfirst_r1";
+ const B4P_OLD={blob:"2d512764d26256fabaaaf7deb3eae41120d92d3e",bytes:181122,sha256:"196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"};
+-const B4P_Q={blob:"4cdfd04d45ec603245fd363f17b2c9b799dfb096",bytes:36,sha256:"602b020eabe72d6c262db7b0551d0d3fbf625102b51da7c4923630ed8009afd8"};
++const B4P_Q={"blob":"828019befe1e6529fead23a24db811c15db7a462","bytes":34,"sha256":"e31531bed4ff4a89122bd1f8bb56fe4076390fd1f48352353597d46a096d481d"};
+ const B4P_TITLE="HeptaBao 4a build original job discovery evidence";
+-const B4P_PAGE_KEY="heptabao-4a49405b-start-list-private-sdk-r1";
++const B4P_PAGE_KEY="heptabao-4a49405b-start-list-private-sdk-r2";
+ const B4P_KEY="heptabao-combined-4a49405b-fresh-build-20261106-r1-a4d59953";
+ const B4P_DIGEST="33dcdfaa308ff7e6669737a1326ec90e9f6275038ee7f27d896aeb95981f2d50";
+ const B4P_FP="3737107712862844902";
+@@ -49,16 +49,31 @@
+  ];
+  return {manifest,parts,request:{title:B4P_TITLE,idempotency_key:B4P_PAGE_KEY,initial_blocks:blocks}};
+ }
++function b4pRequireFullOwner(a,pageId){
++ b4pNeed(a.scope==="page_and_backing_library_folder"&&a.sharing_available===true,"full_roster_scope");
++ b4pNeed(a.page_id===pageId&&a.backing_type==="drive","same_private_drive_page");
++ b4pNeed(a.workspace_id===null&&a.space_id===null&&a.next_cursor===null,"no_workspace_space_or_roster_continuation");
++ b4pNeed(a.owner?.principal_type==="user"&&typeof a.owner.principal_id==="string"
++  &&a.owner.principal_id.length>0&&a.owner.principal_id===a.page_owner?.principal_id,"canonical_owner_only_identity");
++ b4pNeed(Array.isArray(a.shares)&&a.shares.length===0,"zero_direct_nonowner_grants");
++ for(const k of ["inherited_access","inherited_access_summary","inherited_workspace_link_access"]){
++  b4pNeed(a[k]?.complete===true&&Array.isArray(a[k].sources)&&a[k].sources.length===0,"complete_zero_inherited_grants");
++ }
++ return {ownerOnly:true,basis:"complete_full_roster",originalLiteralOwnerOnlyFieldAbsent:!Object.prototype.hasOwnProperty.call(a,"owner_only")};
++}
++
+ function b4pDecode(readSDK,sharingSDK,pageId,expectedRaw,packed){
+  b4pNeed(readSDK.isError!==true&&sharingSDK.isError!==true,"private_read_or_sharing_tool_error");
+  const r=readSDK.structuredContent,a=sharingSDK.structuredContent;
+  b4pNeed(r&&!r.error&&a&&!a.error,"private_structured_read_and_sharing");
+- b4pNeed(a.owner_only===true&&["page_owner","page_and_backing_library_folder"].includes(a.scope),
+-  "fresh_owner_only_required_no_unknown_or_nonowner");
++ if(!(a.owner_only===true&&["page_owner","page_and_backing_library_folder"].includes(a.scope))){
++  b4pNeed(!Object.prototype.hasOwnProperty.call(a,"owner_only"),"literal_owner_only_false_or_unknown");
++  b4pRequireFullOwner(a,pageId);
++ }
+  if(a.complete!==undefined)b4pNeed(a.complete===true,"sharing_snapshot_not_partial");
+  b4pNeed(r.metadata?.page_id===pageId&&r.content?.page_id===pageId
+   &&r.content.title===B4P_TITLE
+-  &&["personal","workspace_private"].includes(r.metadata.drive_scope)
++  &&r.metadata.drive_scope==="personal"&&r.metadata.owner_workspace_id==null
+   &&Array.isArray(r.content.blocks),"exact_private_page_full_read");
+  if(r.selection)b4pNeed(r.selection.whole_page_complete===true,"whole_page_required");
+  const chunks=new Map();let manifest=null,fences=0;
+@@ -96,7 +111,7 @@
+  b4pNeed(sdk.isError!==true,"native_list_tool_error_private_raw_preserved");
+  b4pNeed(sdk.content?.length===1&&sdk.content[0].type==="text","one_native_list_text");
+  const v=parseLosslessIntegers(sdk.content[0].text);
+- b4pNeed(Array.isArray(v.jobs)&&v.jobs.length<=128,"actual_list_schema_jobs_required");
++ b4pNeed(Array.isArray(v.jobs)&&v.jobs.length<=1,"actual_list_schema_jobs_required");
+  b4pNeed(typeof v.inventory_complete==="boolean"&&(v.next_cursor===null||typeof v.next_cursor==="string"),
+   "actual_list_page_coverage_fields");
+  const rows=v.jobs.filter(x=>x&&x.host==="rog"&&x.idempotency_key===B4P_KEY);
+@@ -124,14 +139,14 @@
+  b4pOld();b4pNeed(load(B4P_SLOT)===undefined,"fresh_discovery_context_once");
+  b4pNeed(goWholeReadback===true&&b4pEq(goRaw,goPin),"root_go_external_whole");
+  const g=JSON.parse(goRaw);
+- b4pNeed(g.scope==="combined4a_unknown_start_private_list_page_only"
++ b4pNeed(g.scope==="combined4a_unknown_start_private_list_page_limit1_only"
+   &&g.maximumNativeCalls===1&&g.onlyReadOnlyNative===true&&g.host==="rog"
+   &&JSON.stringify(g.request)===JSON.stringify(B4P_Q)
+   &&JSON.stringify(g.originalUnknownState)===JSON.stringify(B4P_OLD)
+   &&g.privatePage?.title===B4P_TITLE&&g.privatePage.idempotency_key===B4P_PAGE_KEY
+   &&g.privatePage.omitSpaceAndParent===true&&g.privatePage.maximumCreates===1,
+   "exact_private_page_discovery_go");
+- const requestRaw=b4pJ({host:"rog",limit:128});
++ const requestRaw=b4pJ({host:"rog",limit:1});
+  const intent={schema:"heptabao.original-job-private-discovery-intent.r1",
+   tool:"process_list_page",request:B4P_Q,originalUnknownState:B4P_OLD,rootGo:goPin,
+   maximumNativeCalls:1,maximumPrivatePageCreates:1,
+@@ -142,7 +157,7 @@
+  const s={phase:"arming",called:false,inflight:false,paused:false,requestRaw,goPin,goRaw};
+  store(B4P_SLOT,s);
+  try{
+-  s.arm=await archiveFlatPublicTextsOnce({key:"c4a-private-list-arm-r1",
++  s.arm=await archiveFlatPublicTextsOnce({key:"c4a-private-list-arm-r2",
+    repository:"TrillionniumFoundation/HeptaBao",texts:{"request.json":requestRaw,
+    "intent.json":b4pJ(intent),"armed.json":b4pJ(armed)}});
+   s.phase="armed_whole";store(B4P_SLOT,s);
+@@ -195,3 +210,17 @@
+   s.phase="safe_projection_no_job_binding";store(B4P_SLOT,s);b4pOld();return projection;
+  }catch(e){s.paused=true;s.failure=String(e);store(B4P_SLOT,s);throw e;}
+ }
++
++/* The only public entry. No exception-derived text or stack is returned. */
++async function b4pRun(action,input){
++ try{
++  if(action==="prepare")return {ok:true,value:await b4pPrepare(input)};
++  if(action==="invoke")return {ok:true,value:await b4pInvokeAndArchivePrivate()};
++  if(action==="accept")return {ok:true,value:b4pAcceptSafeProjection()};
++  throw new Error("closed_private_action_set");
++ }catch(error){
++  store(B4P_SLOT+":private-entry-exception",{
++   name:String(error?.name),message:String(error?.message),stack:String(error?.stack)});
++  return {ok:false,stopped:true,code:"private_adapter_stopped"};
++ }
++}

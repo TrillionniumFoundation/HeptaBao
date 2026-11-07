@@ -1,0 +1,23 @@
+{
+  "originalRequest": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "originalState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "source": {
+    "blob": "b8e58ec9737e4570e657c2f2ea7e2768ca43f90f",
+    "bytes": 14022,
+    "sha256": "09b86d988630b7c357cdedff660b37d2ebafd205fda37fe3a10eeb129c25762a"
+  },
+  "sourceR1": {
+    "blob": "f04143022a6d9dfe5e518898c5fd2129e21c8889",
+    "bytes": 12303,
+    "sha256": "1b95c4a6b616944d9a66dcdb9d73a5a0222357ef847b789c7b4efa00f3a189d7"
+  },
+  "contractsFromR1Tree": "0da14babff1d75b3a580d5349ee3d7f5edaf6b7a"
+}

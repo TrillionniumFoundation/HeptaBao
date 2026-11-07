@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.root.PKI12-local-page-cap-failure-boundary.r1",
+  "actual": {
+    "tree": "cd2f4ad1fc63d1fa01ff7f82ec476b68703af037",
+    "files": 10,
+    "bytes": 308370,
+    "merkle": {
+      "root_sha": "cd2f4ad1fc63d1fa01ff7f82ec476b68703af037",
+      "trees_verified": 1,
+      "leaf_count": 10
+    },
+    "whole": true
+  },
+  "checks": {
+    "oldBODYGO": true,
+    "exactRequest": true,
+    "knownOperation": true,
+    "nativeFutureClosed": true,
+    "noNativeCall": true,
+    "originalPage": true,
+    "pausedKnownLocalFailure": true,
+    "exactRejectedExtent": true,
+    "CReleased": true,
+    "MacNeverStarted": true,
+    "noReplay": true
+  },
+  "checkCount": 11,
+  "originalCompletedOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "originalPage0": {
+    "blob": "938d422f5043d1e976a909deb2afd07a11a8c65f",
+    "bytes": 22534,
+    "sha256": "de714ae786b6b583b83b8be3bc9b6b75730494cd86d2aa9678509a4abb61a6f6"
+  },
+  "currentState": {
+    "blob": "e48bb16c1d18b72506546378eac09aad7996cd63",
+    "bytes": 246355,
+    "sha256": "c5bc674d2f31e94aa018f97a0896db3e7382fb1cd19a50be06d29fa767ded5b4"
+  },
+  "NativeLane": 0,
+  "logicalObserverClosed": false,
+  "originalPage0Accepted": false,
+  "bodyComplete": false,
+  "MacStageNeverStarted": true,
+  "scope": "Known completed remote read; original page0 retained, rejected only by the old local 8192-byte check. No Native replay. Pure cached recovery remains pending.",
+  "NativeCallsAdded": 0
+}

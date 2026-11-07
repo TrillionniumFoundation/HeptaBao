@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.local-source-builder-error.r1",
+  "step": "Before source successor construction; no Native, Git mutation or new slot initialization",
+  "errorType": "Error",
+  "message": "guard literal root 0",
+  "reason": "Builder expected absolute startup root in embedded HeldT5; actual helper literal shape must be inspected before exact namespace rebinding",
+  "candidateCreated": false,
+  "NativeCalls": 0,
+  "historicalResultUnchanged": true
+}

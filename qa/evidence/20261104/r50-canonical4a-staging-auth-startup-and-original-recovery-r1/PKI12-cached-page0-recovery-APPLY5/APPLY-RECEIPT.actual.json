@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.official-pki12.cached-page0-recovery.applied.r2",
+  "applied": true,
+  "phase": "applied_once",
+  "rootGo": {
+    "blob": "8e46e02764f34cc8e7f6dce9d5f793609934949a",
+    "bytes": 2436,
+    "sha256": "32b9b56d3667536c666d092826c801aafe5301851f641200b3cb4204b04c5f34"
+  },
+  "proof": {
+    "blob": "ef30a7786f74b7a02da61ca7831f6934b2c264df",
+    "bytes": 1387,
+    "sha256": "c9d024ecb68a3993f9dee6ff9b09deaeda3f32530ef0e70984cdeb8e7fe82114"
+  },
+  "beforeState": {
+    "blob": "e48bb16c1d18b72506546378eac09aad7996cd63",
+    "bytes": 246355,
+    "sha256": "c5bc674d2f31e94aa018f97a0896db3e7382fb1cd19a50be06d29fa767ded5b4"
+  },
+  "afterState": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "failedCallRetained": true,
+  "errorHistory": {
+    "blob": "aa0fce14552b552107d94619a154ee4fb229e66e",
+    "bytes": 304,
+    "sha256": "22d97a34eed7cbd16ce7e58fcadc05d0fc0e1aa4cc608b11efa81a122071fc50"
+  },
+  "changedFields": [
+    "paused",
+    "pending",
+    "activeObserver"
+  ],
+  "nativeCalls": 0,
+  "gitCalls": 0
+}

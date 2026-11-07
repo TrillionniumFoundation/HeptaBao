@@ -1,0 +1,38 @@
+[
+  {
+    "name": "candidate commit",
+    "before": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "after": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "count": 1
+  },
+  {
+    "name": "candidate tree",
+    "before": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "after": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "count": 1
+  },
+  {
+    "name": "source root",
+    "before": "/home/qian-qi/hb-5767739c-src-20261106-r1",
+    "after": "/home/qian-qi/hb-4a49405b-src-20261106-r1",
+    "count": 1
+  },
+  {
+    "name": "controls root",
+    "before": "/home/qian-qi/hb-5767739c-controls-20261106-r1",
+    "after": "/home/qian-qi/hb-4a49405b-controls-20261106-r1",
+    "count": 2
+  },
+  {
+    "name": "leaf index",
+    "before": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+    "after": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "count": 1
+  },
+  {
+    "name": "tracked bytes",
+    "before": "62553540",
+    "after": "62553956",
+    "count": 1
+  }
+]

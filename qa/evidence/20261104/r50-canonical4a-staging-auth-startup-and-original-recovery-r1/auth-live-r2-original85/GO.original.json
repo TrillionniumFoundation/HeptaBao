@@ -1,0 +1,357 @@
+{
+  "schema": "heptabao.root.public-node-live-denial.GO.r2",
+  "authorization": "GO",
+  "scope": "one fresh public Node --version exec attempt under the unchanged original QA profile with one bounded exact-current-PID log stream; original job observations only",
+  "issuedAtUTC": "2026-11-06 23:39:07 UTC",
+  "userAuthorization": "Continue resolving HeptaBao migration blockers and validate actual Mac/Linux/LAN behavior; this bounded public startup diagnosis is required for the existing AuthBus SDK blocker.",
+  "sourceTree": "03a8b1bbf24aa26e25ba02c985dfbeaf13fa3964",
+  "source": {
+    "blob": "b575735512bf008ae28f737c24d2352199397a2f",
+    "bytes": 113950,
+    "sha256": "19a394eead32c22d405d871133c111b03ed77c6750dbf45528f0e6836174e92c"
+  },
+  "exactRequest": {
+    "blob": "4492f4530bac7655e5ff4cbdac4d5309df74435e",
+    "bytes": 115529,
+    "sha256": "76e997483c53874309679586ef8bb7ad38d4af5c0ae886d26785bcafe0557627"
+  },
+  "journal": {
+    "blob": "2d44d9b7108dcfb7404dc18de7277e630e67c538",
+    "bytes": 19067,
+    "sha256": "fb816ee08ec8303fb9dc77467d0ca2bcdf25667d223617d85ad82ee31c9691c1"
+  },
+  "slot": "owner_authbus_public_node_live_denial_gitfirst_r2",
+  "key": "heptabao-mac-public-node-live-denial-19a394ee-20261106-r2",
+  "native_binding": {
+    "sha256": "e5038954ae79926958284fa9fb7520efd76faeddd3e1006693c9f44f0b8d1e70",
+    "native_fingerprint": "16502184456413090409"
+  },
+  "host": "mac",
+  "freshRoots": {
+    "control": "/Users/qianqi/heptabao-public-node-live-denial-20261106-r1-control",
+    "empty": "/Users/qianqi/heptabao-public-node-live-denial-20261106-r1-empty",
+    "createOnly": true,
+    "absenceRequiredNoFallback": true,
+    "oldRootsUntouched": true,
+    "retainedPublicQAMaterials": true
+  },
+  "fixedProfile": {
+    "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+    "bytes": 6909,
+    "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12",
+    "originalBytesUnchanged": true,
+    "mappingAdditionNotIncluded": true
+  },
+  "fixedInputs": {
+    "/usr/bin/sandbox-exec": {
+      "identity": [
+        "16777233",
+        "1152921500312572700",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "102368",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 102368,
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+    },
+    "/bin/ps": {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/Cellar/node/25.9.0_1/bin/node": {
+      "identity": [
+        "16777233",
+        "42479374",
+        "501",
+        "80",
+        "33133",
+        "1",
+        "68384",
+        "1775693589374925413",
+        "1775693590180968789"
+      ],
+      "bytes": 68384,
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "/usr/bin/log": {
+      "identity": [
+        "16777233",
+        "1152921500312572288",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "807536",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 807536,
+      "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974"
+    }
+  },
+  "closedPrimaryEnvironment": {
+    "HOME": "/Users/qianqi/heptabao-public-node-live-denial-20261106-r1-empty",
+    "TMPDIR": "/Users/qianqi/heptabao-public-node-live-denial-20261106-r1-empty",
+    "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "LANG": "C",
+    "LC_ALL": "C"
+  },
+  "nodeExecArgv": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/qianqi/heptabao-public-node-live-denial-20261106-r1-control/consumer.sb",
+    "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+    "--version"
+  ],
+  "gate": {
+    "blob": "3616af28612740ad1b9dc0e5363153ca816c3c99",
+    "bytes": 884,
+    "sha256": "3b320f1508d4ccfc1f58c5bbb27467128ef973e318b539ef7d3623e837cda59a"
+  },
+  "logSyntax": {
+    "help": {
+      "blob": "86cbdf5723f13a86db8af7efe21315e0d69c26a0",
+      "bytes": 1684,
+      "sha256": "7dab64f70c9f470dd78aa7176e9b1c2599f210a54b576865e4d2f7705bfe9184"
+    },
+    "originalStdout": {
+      "blob": "bd910af9d69d42ca4416f26cc5462d4785bab341",
+      "bytes": 5028,
+      "sha256": "46b769a0dec069759799eb57fc553d59a4c63d0556667d862fbc615c45b4db19"
+    },
+    "wholeActual": "977d3eda11e4bf646b6aa1fe83704a8054481e17",
+    "exactRelevantTokens": [
+      "stream",
+      "--level",
+      "debug",
+      "--style",
+      "ndjson",
+      "--predicate",
+      "--timeout",
+      "8"
+    ],
+    "numberTimeoutNotReliedOnForIndependentControllerDeadline": true,
+    "showOnlyFlagsUsed": false
+  },
+  "predicateTemplate": "(process == \"node\" OR process == \"kernel\" OR process == \"sandboxd\") AND message CONTAINS \"node(<actual Popen PID>)\"",
+  "ownership": {
+    "maximumPrimaryDirectChildren": 2,
+    "primaryRoles": [
+      "gated Node carrier, same PID through exec attempt",
+      "log stream"
+    ],
+    "unreapedHelper": {
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    "commandsHelper": {
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    "commandsUse": "Exact Commands.__init__ and Commands.public; synchronous Commands.run is not called because it cannot overlap two children. New fixed coordinator calls exact original capture/exit/stop functions.",
+    "psObservationHelpersAreAdditional": true,
+    "psSetuidNoNewOuterCapturePath": true,
+    "noPIDReapOrSignalFromLogFields": true,
+    "extraGateSemantics": "The child closes its standard input after consuming G; it executes no JS and receives no private data. Ready/released markers plus source support an exec-attempt inference, not an independently observed kernel-image transition."
+  },
+  "budgets": {
+    "originalWorkSeconds": 35,
+    "originalFinalSeconds": 45,
+    "NativeSeconds": 60,
+    "captureWorkEndsAtStartPlus17": true,
+    "cleanupReserveSeconds": 18,
+    "unchangedCleanupPerChild": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "nodeCarrierMaximumSeconds": 10,
+    "nodeAfterGateMaximumSeconds": 5,
+    "gatePrivateWaitHardSeconds": 12,
+    "gateReadyMaximumSeconds": 3,
+    "logMaximumSeconds": 10,
+    "logTimeoutLiteral": "8",
+    "queueWarmupSeconds": 0.25,
+    "pregateLogElapsedMaximumSeconds": 2,
+    "inputFDs": 5,
+    "HOMEFDs": 10,
+    "parentPipeFDs": 5,
+    "totalEnumeratedParentFDs": 20,
+    "inputReadBytesCap": 1183365,
+    "inputActualExpectedBytes": 1183360,
+    "inputReadCalls": 128,
+    "inputMetadata": 128,
+    "homeMetadataEach": 256,
+    "homeReadCallsEach": 2,
+    "profileWriteBytes": 6909,
+    "profileReadCap": 6910,
+    "nodeCombinedPipeBytes": 4096,
+    "logCombinedPipeBytes": 65536,
+    "maximumActualPipeReturnedIncludingOverflowSentinels": 69634,
+    "pipeReadCalls": 512,
+    "pipeReadChunk": 8192,
+    "logNonemptyLinesAcrossBothStreams": 64,
+    "logLineBytes": 8192,
+    "denialsPerAdmittedRow": 4,
+    "resourceBytes": 512,
+    "publicOutputBytes": 131072,
+    "statusObservers": 8,
+    "readObservers": 8,
+    "statusPerObserver": 8,
+    "processRead": 16384,
+    "immutablePage": 8192,
+    "pagesPerObserver": 128,
+    "payloadPerObserver": 1048576
+  },
+  "projection": {
+    "allowedOrigins": [
+      "node",
+      "kernel",
+      "sandboxd"
+    ],
+    "knownMessageKeys": [
+      "eventMessage",
+      "message",
+      "composedMessage"
+    ],
+    "knownPIDKeys": [
+      "processID",
+      "processIdentifier",
+      "pid"
+    ],
+    "otherKnownKeys": [
+      "process",
+      "processImagePath",
+      "timestamp"
+    ],
+    "required": "Consistent closed process, all supplied message candidates equal strings, exact numeric current PID for node OR complete current node(PID) subject for kernel/sandboxd, parsed timezone-bearing timestamp in measured gate-to-EOF window, and explicit node(PID) deny syntax.",
+    "operationAllowlist": [
+      "file-read-data",
+      "file-read-metadata",
+      "file-map-executable",
+      "mach-lookup",
+      "sysctl-read",
+      "process-exec",
+      "process-fork",
+      "ipc-posix-shm-read-data",
+      "network-outbound"
+    ],
+    "publicResourceRule": "Byte-exact known public inputs (including /), com.apple.* Mach names, bounded public sysctl names, safe system/library paths; original public_resource grammar retained. Unknown operations/resources produce null/false only.",
+    "unknownRawTextHashesAndKeysExported": false,
+    "nonJSONOrConflictingObjectsRemainUnknown": true,
+    "onlyTypedKnownFieldsAndClosedReasonsForRejectedRows": true,
+    "noWholeSystemLogClaim": true,
+    "noMatchesDoesNotProveNoDeny": true,
+    "subscriptionAcknowledgementClaimed": false,
+    "originalBusinessOrOldCrashCauseQualified": false
+  },
+  "rootSourceQualification": {
+    "blob": "55b2bb1d02021cd9ac34c1dd59eff942ee96d96c",
+    "bytes": 9514,
+    "sha256": "a0d3c8fcfdde7bae32eabb645d36a247e4e199215d6e72c936dfba1ff105967b"
+  },
+  "rootSourceChecks": 95,
+  "rootActualBindingChecks": 9,
+  "independentReview": {
+    "tree": "fc3860348d19142036201689e8be2831b69ee7ee",
+    "report": {
+      "path": "REVIEW.public.json",
+      "blob": "baa963386b0f3cae2bb6e931bae1be8a78ec506b",
+      "bytes": 3315,
+      "sha256": "6596d55e91f41f3756d2e5afc42fc074604b09c0c65ab895543f87a5bbb12223"
+    },
+    "sourceChecks": 15
+  },
+  "priorRejectedSource": {
+    "tree": "57d06bd19940d997ea2ef8817cc0e295f28abcd5",
+    "source": "dee81d92d9e78cf0295bf7598a706a945e72732e",
+    "executed": false,
+    "findings": "d94ff36a5c01a4e1fb154ac5a8f8e9ebfed4ee60",
+    "resolvedByTwoStrictHunks": true
+  },
+  "required": {
+    "freshSlotInitializeOnceOnly": true,
+    "exactWholeRequestAndExternalArmBeforeDispatch": true,
+    "modelBoundaryBeforeUniqueInvoke": true,
+    "originalSDKWholeBeforeParse": true,
+    "sameOriginalJobOnly": true,
+    "allOriginalObserversClosed": true,
+    "originalExact6909Profile": true,
+    "firstOnTimeCompletionLatched": true,
+    "originalPairClosedBeforeProjectionAndInputFences": true,
+    "oneGateByteAttemptNoReplay": true,
+    "unknownRawTextsHashesAndKeyNamesNotExported": true,
+    "allOwnedPrimaryChildrenPipesInputsHomeDescriptorsClosed": true
+  },
+  "sequence": [
+    "Read this exact GO whole; initialize the fresh R2 slot once with its fixed typed binding.",
+    "Archive the exact original request, intent and armed record; cross a model boundary; invoke the one process_start.",
+    "Archive the complete original SDK before parsing; observe only the returned original job with the fixed source journal.",
+    "Do not replace or replay on UNKNOWN. Preserve actual node/log result, raw-original SDK lineage and all closure evidence; release the lane explicitly."
+  ],
+  "onFailure": "Retain failure or UNKNOWN and all original returns. No rekey, repeated gate, new process, profile modification, OS/logging/security-setting change or credential/SDK work is authorized.",
+  "excluded": [
+    "SDK/provider/credential/private capsule",
+    "business replay or qualification",
+    "old process/scope cleanup",
+    "modification of any existing profile",
+    "permissions/TCC/logging configuration changes",
+    "filesystem scan",
+    "crash-report or historical-log reread",
+    "resource-file reads inferred from logs"
+  ],
+  "limitations": [
+    "A normal log process, warmup, banner or elapsed time is not a subscription readiness proof.",
+    "The token/origin filter can miss redacted PIDs, different reporters and formats. Dropped/unknown rows remain unknown; no empty-result absence inference.",
+    "A shared wall clock can regress: measured-order validation then fails. Every monotonic deadline stays independent.",
+    "Popen and file syscalls are synchronous; checks occur before/after, and the outer Native60 cap is unchanged. Kernel-internal/loader/temporary Popen FDs are not claimed individually inventoried.",
+    "The true direct-child ownership source still contains its original bounded ps observations; their possible refusal is not masked.",
+    "Source markers and execve control flow do not alone prove the kernel reached the final Node image. A public version string or known retained exit is a new observation only."
+  ],
+  "maxNativeLanesForThisOwner": 1,
+  "lane_allocation": {
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "startupCauseQualified": false,
+  "SDKQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-official271-x230-pki12-report-info-20261106-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "phase": "independent pure text check",
+    "error": "SyntaxError: Unexpected token ')'",
+    "cause": "extra closing parenthesis in local definition extractor",
+    "candidate_changed": false,
+    "native_calls": 0
+  }
+]

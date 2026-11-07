@@ -1,0 +1,190 @@
+{
+  "schema": "heptabao.mac4a.source-only-stage.final-source.v1",
+  "status": "SOURCE_ONLY_ACTUAL_BUNDLE_BOUND",
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "branch": "codex/heptabao-test-fixture-f02dd113-20261106",
+    "leaves": 3932,
+    "trackedBytes": 62553956,
+    "indexSha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "history": 3770,
+    "manifest": {
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    }
+  },
+  "acceptedTemplate": {
+    "blob": "33d304b409630c9e2e87c5d24dd44b04e905ec29",
+    "bytes": 23568,
+    "sha256": "a4a9fd066c134625695740eff14a21e1dd65ce2e95db82a0c20a2860fda42489"
+  },
+  "templateBefore": {
+    "blob": "33d304b409630c9e2e87c5d24dd44b04e905ec29",
+    "bytes": 23568,
+    "sha256": "a4a9fd066c134625695740eff14a21e1dd65ce2e95db82a0c20a2860fda42489"
+  },
+  "source": {
+    "blob": "93b1baab9aa59a87cf3550d8be51607e9eaf6dbb",
+    "bytes": 23630,
+    "sha256": "a88b3787d181e16d217db8a8f16091ce40fc12d7af035bbb19cead3a03f61559"
+  },
+  "request": {
+    "blob": "c64853ad2e18f250d6e30424d6468e25b7a6b590",
+    "bytes": 26577,
+    "sha256": "65d51bfef3b4103cbbec8e65d1c546a6b8aac3fd3b7f95197729bb9f5868bbed"
+  },
+  "carrier": {
+    "blob": "eefc59345c8bddb72226042833e4c25c237854fc",
+    "bytes": 1756,
+    "sha256": "0c0d32c4cd55631a15b6be63af74d996b5abd5e394670abf7b0a83877fedb51d"
+  },
+  "journal": {
+    "blob": "de11da67ee16e58248f939483b5f20fd09114a9d",
+    "bytes": 19049,
+    "sha256": "34efe4b61e146a99b9057d6ed1fddcdd92a46209328808fea79b2cda756b5211"
+  },
+  "binder": {
+    "blob": "f3fe13af215cd78ef3a5f12718719560daa79654",
+    "bytes": 6967,
+    "sha256": "af20a078f9a6cd2a13dfa2d9fc19768e31faa3299d6f467095685b3d4f901812"
+  },
+  "typed": {
+    "sha256": "daaf371ff184868de626925c2fec497abae04ed539222d53f561d10d77bdb01e",
+    "native_fingerprint": "15757874231528162957",
+    "canonical_bytes": 26474
+  },
+  "slot": "successor4a_mac_source_only_stage_gitfirst_r1",
+  "nativeIdempotencyKey": "heptabao-4a49405b-mac-source-only-20261106-r1-a88b3787",
+  "stageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+  "readonlyBase": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1/source",
+  "sourcePath": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/source",
+  "reportPath": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+  "T5UUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+  "baseMustRevalidateInsideOriginalSource": true,
+  "bundle": {
+    "schema": "heptabao.mac-successor4a.actual-bundle-bindings.v1",
+    "ready": true,
+    "candidate": {
+      "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+      "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+      "parent": "5767739cd25e458ac052dc8d384019bab8688ae0"
+    },
+    "producer": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+      "report": {
+        "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+        "bytes": 31257,
+        "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+      },
+      "rootQualification": {
+        "blob": "489681f4680763539866097e650073729c68dee7",
+        "bytes": 4276,
+        "sha256": "65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576"
+      }
+    },
+    "infoNative": {
+      "blob": "f8629d29e51e1101386ea925bed8bcbb08750d3b",
+      "bytes": 472,
+      "sha256": "645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073"
+    },
+    "infoOperation": "652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2",
+    "bodyOperations": [
+      "1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f"
+    ],
+    "bundle": {
+      "bytes": 1253,
+      "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+      "full9": [
+        "66306",
+        "34603387",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1253",
+        "1794007675691817556",
+        "1794007675691817556"
+      ],
+      "version": "66306:34603387:1253:1794007675691817556:1794007675691817556",
+      "headerSha256": "ffa8977f7e4efa7ea246089229c566e9007efc3a8a64be8be1e3de5c4efe3626"
+    },
+    "base64": {
+      "blob": "0c484a368ed4477cb0be462292a17262adf621c9",
+      "bytes": 1673,
+      "sha256": "7424490267abd9c6f5aaf2cff5edc5a7894ddf10fa26ae622b9751fbf635c6f5"
+    },
+    "transport": {
+      "blob": "3650eb4dde4116eca631e82316aba08eb472fd5e",
+      "bytes": 869,
+      "sha256": "1386ebfb447740e7b393875be6df46ffff515104c69ee3e1cd1ac65ed64257ab"
+    },
+    "transportRootQualification": {
+      "blob": "a4a543327bd5ec9235f746a1c5511f1fd7db3c27",
+      "bytes": 5764,
+      "sha256": "8ed5f7e017e1f26a55dfae724a04e12b01a01cc05501438965def72cd7a6546b"
+    },
+    "recovery": {
+      "source": {
+        "blob": "4c81e36dd4483dbd5996db2c60b4cafe2dcb31b2",
+        "bytes": 9842,
+        "sha256": "3446d6895dac17434cefd50004bfadb25b7ecba684539fb77c2eaa495d4e65a6"
+      },
+      "GO": {
+        "blob": "59485242ee460f5dab6b3e9588b0cc846e45dca5",
+        "bytes": 3528,
+        "sha256": "0eacb723d5f19f762067a6256c50e693666ff81daa07fb13aa98c4b568795e64"
+      },
+      "proof": "6c130b5d6a59da0cf25576582973647753420746",
+      "actualApplyPacket": "c455c5a261a7854313133a7e37ec5ce3f35a7e03",
+      "originalErrorRetained": true
+    },
+    "MacStageGO": null,
+    "MacStageExecuted": false
+  },
+  "changes": {
+    "source": "Only actual bundle byte count and SHA replace the two reviewed None constants.",
+    "journal": "Only original GF_SLOT, exact GF_REQUEST and process-observer idempotency prefix are mechanically rebound.",
+    "binder": "Previously whole root-reviewed data-only successor; exact function replay."
+  },
+  "budgets": {
+    "stageSeconds": 300,
+    "gitSeconds": 90,
+    "cloneSeconds": 180,
+    "NativeOuterSeconds": 360,
+    "completeStdinCarrierCap": 262144,
+    "actualCarrierBytes": 1756,
+    "trackedWorktreeBytes": 134217728
+  },
+  "proposedObservationLimits": {
+    "originalJobStatus": 64,
+    "originalJobRead": 129,
+    "perObserverStatus": 8,
+    "perObserverPages": 128,
+    "immutablePageBytes": 8192,
+    "originalPayloadBytes": 1048576,
+    "streamReadBytes": 16384,
+    "eachStreamTotalBytes": 2097152,
+    "maximumCConcurrentCallOrFuture": 1
+  },
+  "observationAuthorization": null,
+  "afterThisStage": {
+    "normalUnique": 89,
+    "normalProfileExecutions": 117,
+    "normalGO": null,
+    "full34OriginalChecks": 31,
+    "full34LogicalBytes": 35651584,
+    "full34GO": null,
+    "actualBinary": null,
+    "actualStageReport": null,
+    "actualStageQualification": null
+  },
+  "MacStageGO": null,
+  "NativeCalls": 0,
+  "MacWritesPerformed": 0,
+  "CargoPerformed": false,
+  "originalBundleFailurePreserved": true
+}

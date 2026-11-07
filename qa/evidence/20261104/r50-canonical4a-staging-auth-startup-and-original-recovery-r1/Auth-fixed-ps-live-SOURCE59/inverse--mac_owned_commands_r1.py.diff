@@ -1,0 +1,88 @@
+--- a/mac_owned_commands_r1.py
++++ b/mac_owned_commands_r1.py
+@@ -8,7 +8,7 @@
+ from __future__ import annotations
+ from contextlib import contextmanager
+ import hashlib, os, select, signal, subprocess, time
++from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped
+-from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped, fixed_setuid_ps_pin
+ 
+ class CommandRefused(RuntimeError):pass
+ def need(value,code):
+@@ -31,12 +31,8 @@
+ 
+ class Commands:
+     def __init__(self,signals):
++        self.signals=signals;self.rows=[]
++    def run(self,label,argv,*,until,allow_cancelled_cleanup=False,maximum=2*1024*1024):
+-        self.signals=signals;self.rows=[];self.fixed_setuid_ps=None
+-    def admit_fixed_setuid_ps(self,pin):
+-        need(self.fixed_setuid_ps is None and not self.rows,'setuid_ps_admitted_once_before_commands')
+-        self.fixed_setuid_ps=fixed_setuid_ps_pin(pin)
+-    def run(self,label,argv,*,until,allow_cancelled_cleanup=False,maximum=2*1024*1024,
+-            fixed_setuid_ps=False):
+         need(isinstance(label,str) and label.replace('-','').replace('_','').isalnum(),'safe_command_label')
+         need(type(maximum) is int and 0<maximum<=2*1024*1024,'fixed_command_output_bound')
+         need(isinstance(argv,list) and argv and all(isinstance(x,str) for x in argv),'explicit_argv')
+@@ -44,20 +40,6 @@
+             if not allow_cancelled_cleanup:need(self.signals.pending is None,'command_cancelled')
+             n=until-time.monotonic();need(n>0,'original_command_deadline_exhausted');return n
+         require_waitid();remaining()
+-        need(type(fixed_setuid_ps) is bool,'typed_fixed_setuid_ps_switch')
+-        admitted=None
+-        def verify_fixed_ps_name():
+-            remaining()
+-            current=os.lstat('/bin/ps')
+-            full9=[str(x) for x in (current.st_dev,current.st_ino,current.st_uid,current.st_gid,
+-                current.st_mode,current.st_nlink,current.st_size,current.st_mtime_ns,current.st_ctime_ns)]
+-            need(full9==admitted['identity'],'fixed_setuid_ps_current_full9')
+-        if fixed_setuid_ps:
+-            need(label=='owned-launchd-group-observation'
+-                 and argv==['/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat=']
+-                 and maximum==262144,'only_fixed_setuid_ps_group_projection')
+-            admitted=fixed_setuid_ps_pin(self.fixed_setuid_ps)
+-            verify_fixed_ps_name()
+         started=time.monotonic();row=None;out=bytearray();err=bytearray()
+         try:
+             with self.signals.critical():
+@@ -69,9 +51,7 @@
+                      'stopAttempted':False,'streamsCloseAttempted':False,'streamsClosed':False,
+                      'completeBeforeDeadline':False,'errorType':None,'errorCode':None}
+                 self.rows.append(row)
++            row['custody']=capture_child(p,until=until)
+-            if admitted is not None:row['fixedPsAdmissionEvidence']={}
+-            row['custody']=capture_child(p,until=until,fixed_setuid_ps=admitted,
+-                admission_evidence=row.get('fixedPsAdmissionEvidence'))
+             streams={p.stdout.fileno():out,p.stderr.fileno():err}
+             for fd in streams:os.set_blocking(fd,False)
+             event=None
+@@ -86,7 +66,6 @@
+                         need(len(target)<=maximum,'command_output_bound')
+                 event=exit_observation(p)
+             remaining()
+-            if admitted is not None:verify_fixed_ps_name()
+             row['completeBeforeDeadline']=True
+             row['observedExit']=event
+             row['observedExitCode']=observed_returncode(event)
+@@ -98,7 +77,7 @@
+             if row is not None:
+                 with self.signals.critical():
+                     row['stopAttempted']=True
++                    try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'])
+-                    try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'],fixed_setuid_ps=admitted)
+                     except BaseException as error:
+                         row['cleanup']={'ok':False,'outcomeUnknown':True,
+                             'errorType':type(error).__name__,'directChildReaped':row['process'].returncode is not None,
+@@ -120,12 +99,6 @@
+             'outcomeUnknown':not(row['completeBeforeDeadline'] and cleanup.get('ok') is True
+                 and cleanup.get('directChildReaped') is True and cleanup.get('allGroupRowsEmptyAfterReap') is True
+                 and row['streamsClosed'] and row['errorType'] is None)}
+-        if admitted is not None:
+-            public['fixedSetuidPsAdmission']=admitted
+-            public['fixedPsAdmissionEvidence']=dict(row.get('fixedPsAdmissionEvidence',{}))
+-            public['expectedEffectiveUid']=0
+-            public['setuidPsNameFull9FencesPassed']=row['completeBeforeDeadline']
+-            public['execByNameNotAtomicExecByFd']=True
+         row['public']=public
+         return public,bytes(out),bytes(err)
+     def public(self):

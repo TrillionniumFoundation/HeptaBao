@@ -1,0 +1,181 @@
+{
+  "schema": "heptabao.root.officialPKI12-report-INFO.original.r1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "whole-GO",
+      "pass": true
+    },
+    {
+      "name": "original-ten-state",
+      "pass": true
+    },
+    {
+      "name": "ten-calls-three-observers",
+      "pass": true
+    },
+    {
+      "name": "closed-state",
+      "pass": true
+    },
+    {
+      "name": "old-call/off271-pki12-r1-start",
+      "pass": true
+    },
+    {
+      "name": "old-call/off271-pki12-r1-authority0",
+      "pass": true
+    },
+    {
+      "name": "old-call/off271-pki12-r1-authority0-status0",
+      "pass": true
+    },
+    {
+      "name": "old-call/off271-pki12-r1-authority0-page0",
+      "pass": true
+    },
+    {
+      "name": "old-call/off271-pki12-r1-streams0",
+      "pass": true
+    },
+    {
+      "name": "old-call/off271-pki12-r1-streams0-status0",
+      "pass": true
+    },
+    {
+      "name": "old-call/off271-pki12-r1-streams0-page0",
+      "pass": true
+    },
+    {
+      "name": "0/actual-call",
+      "pass": true
+    },
+    {
+      "name": "0/request",
+      "pass": true
+    },
+    {
+      "name": "0/arm-rootGO",
+      "pass": true
+    },
+    {
+      "name": "0/sdk-original",
+      "pass": true
+    },
+    {
+      "name": "0/native",
+      "pass": true
+    },
+    {
+      "name": "1/actual-call",
+      "pass": true
+    },
+    {
+      "name": "1/request",
+      "pass": true
+    },
+    {
+      "name": "1/arm-rootGO",
+      "pass": true
+    },
+    {
+      "name": "1/sdk-original",
+      "pass": true
+    },
+    {
+      "name": "1/native",
+      "pass": true
+    },
+    {
+      "name": "2/actual-call",
+      "pass": true
+    },
+    {
+      "name": "2/request",
+      "pass": true
+    },
+    {
+      "name": "2/arm-rootGO",
+      "pass": true
+    },
+    {
+      "name": "2/sdk-original",
+      "pass": true
+    },
+    {
+      "name": "2/native",
+      "pass": true
+    },
+    {
+      "name": "actual-request",
+      "pass": true
+    },
+    {
+      "name": "admit",
+      "pass": true
+    },
+    {
+      "name": "status",
+      "pass": true
+    },
+    {
+      "name": "page-one-whole",
+      "pass": true
+    },
+    {
+      "name": "payload-whole",
+      "pass": true
+    },
+    {
+      "name": "payload-native",
+      "pass": true
+    },
+    {
+      "name": "report-size-version-sha",
+      "pass": true
+    },
+    {
+      "name": "linux-metadata",
+      "pass": true
+    },
+    {
+      "name": "no-acl-xattrs",
+      "pass": true
+    },
+    {
+      "name": "actual-release",
+      "pass": true
+    }
+  ],
+  "checkCount": 36,
+  "wholeActual": {
+    "tree": "bdea975d796175699463c92196674d72528c39b3",
+    "files": 33,
+    "bytes": 300468,
+    "merkle": {
+      "root_sha": "bdea975d796175699463c92196674d72528c39b3",
+      "trees_verified": 1,
+      "leaf_count": 33
+    },
+    "whole": true
+  },
+  "metadata": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0",
+    "size": 41509,
+    "version": "2053:3321457:41509:1794009102635552960:1794009102635552960"
+  },
+  "NativeCallsAdded": 0,
+  "reportBodyQualified": false
+}

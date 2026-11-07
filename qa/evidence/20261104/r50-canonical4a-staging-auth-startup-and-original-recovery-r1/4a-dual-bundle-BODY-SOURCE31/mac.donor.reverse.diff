@@ -1,0 +1,23 @@
+--- a/mac.journal.js
++++ b/mac.journal.js
+@@ -5,14 +5,14 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "successor4a_mac_canonical_bundle_info_gitfirst_r1";
+-const GF_REQUEST = {"blob":"40a1a717a0f07c5e588977e7ddc941b75d92bce4","bytes":273,"sha256":"8fcced2a71700b581d7b8981c64e2e0e61944f763c954b23aa8a2a1565a6bcfb"};
+-const GF_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle","bytes":1253,"sha256":"0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851","full9":["66306","34603387","1000","1000","33152","1","1253","1794007675691817556","1794007675691817556"]};
++const GF_SLOT = "successor576_canonical_bundle_info_gitfirst_r1";
++const GF_REQUEST = {"blob":"f7aef4d88706b1cca3e66e6385a1776eafb1d914","bytes":279,"sha256":"5e0c4bc75fd3fb26f69248085142edbc9c95519a79720cd8a2610bf439bb5624"};
++const GF_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle","bytes":5766,"sha256":"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a","full9":["66306","31358148","1000","1000","33152","1","5766","1794000539740776688","1794000539740776688"]};
+ 
+ /* Separate BODY GO attaches to the one closed INFO scope. No new job or INFO. */
+-const GF_BUNDLE_BODY_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle","bytes":1253,"sha256":"0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851","full9":["66306","34603387","1000","1000","33152","1","1253","1794007675691817556","1794007675691817556"],"version":"66306:34603387:1253:1794007675691817556:1794007675691817556","infoOperation":"652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2","infoNative":{"blob":"f8629d29e51e1101386ea925bed8bcbb08750d3b","bytes":472,"sha256":"645ca6669054504d819ecfa338d2f33f81709e3a242e0164d2ebfca2f6c06073"}};
+-const GF_BUNDLE_BODY_RANGES = [{"offset":0,"limit":1253,"request":{"blob":"b6778404640bf6b307d7c43576ae374b76f1aabe","bytes":404,"sha256":"dd4ed331874d4ef93baa6af27aef4e44dab7211dd7f59e7976f150628fbe5d98"}}];
+-const GF_BUNDLE_INFO_STATE = {"blob":"27b3674947cd481b4f5c396739d5bbd1241f801a","bytes":18911,"sha256":"dd77a0938496f9bf5d3355674795615ddefa13de24bf2949d5eb9715cf8f9078"};
++const GF_BUNDLE_BODY_EXPECTED = {"host":"rog","path":"/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle","bytes":5766,"sha256":"0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a","full9":["66306","31358148","1000","1000","33152","1","5766","1794000539740776688","1794000539740776688"],"version":"66306:31358148:5766:1794000539740776688:1794000539740776688","infoOperation":"eeee0cf67211830b0feb4639151e51b8d740cd8127bd47794a03e0aab56f361b","infoNative":{"blob":"b40eebebed4155bff74279c2b1d06cb8e2dd181e","bytes":472,"sha256":"06bcc2d2542212c7f13e3227e63321d835176da632ef9413789b2fd04cd371f8"}};
++const GF_BUNDLE_BODY_RANGES = [{"offset":0,"limit":5766,"request":{"blob":"530ad6743ca62e2bac32dde64447080dd54f4d48","bytes":411,"sha256":"7b877028a74f181f2068e608883fa508c3fb8b173299246ba29f4ee8aa3e4066"}}];
++const GF_BUNDLE_INFO_STATE = {"blob":"a416295e4d2cfdc04472dce2de46e88f26b9afcb","bytes":13657,"sha256":"083198ac169456a6e52922257621154dfaf8dd5cc909f7956f3763d5a61e70ca"};
+ const GF_BUNDLE_BODY_PAGE_BYTES = 16384;
+ 
+ function gfAuthorizeCanonicalBundleBodyOnly({goRaw,goPin,goWholeReadback}) {

@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.combined4a.build-start-unknown.r1",
+  "host": "rog",
+  "slot": "combined_4a49405b_fresh_build_gitfirst_r1",
+  "callKey": "c4a-build-r1-start",
+  "candidate": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "originalGo": {
+    "blob": "bd6fb2fa682cd2b0ec966877dc988705c86ee022",
+    "bytes": 17701,
+    "sha256": "18807dca3378f8b7259bc11b518ed293cb09ed8be91d6a94bd3c5fcb45979d05"
+  },
+  "originalRequest": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "originalArm": "ffc0c804f2c3ed706e60116fdc3c97e05c833e92",
+  "originalSdk": {
+    "blob": "1ad99cfaaa0b26ad690b59654ef4783ef5771587",
+    "bytes": 245,
+    "sha256": "751f3029c04ea697688034b5038990b35c3b28d9c4c0b005d31570154f3b2f2e"
+  },
+  "sdkArchive": "370f8e68f7ce7c74e6fdf763efd65be1ff0a5a3c",
+  "operationKey": "heptabao-combined-4a49405b-fresh-build-20261106-r1-a4d59953",
+  "nativeTypedDigest": "33dcdfaa308ff7e6669737a1326ec90e9f6275038ee7f27d896aeb95981f2d50",
+  "nativeFingerprint": "3737107712862844902",
+  "observed": {
+    "uniqueNativeInvocation": 1,
+    "originalSdkWhole": true,
+    "ackReceived": false,
+    "jobId": null,
+    "errorCode": -32603,
+    "errorText": "MCP request timed out",
+    "called": true,
+    "startCalled": true,
+    "phase": "native_interpretation_refused",
+    "paused": true,
+    "pending": "c4a-build-r1-start",
+    "nativeCallInFlight": false,
+    "activeObserver": null,
+    "processStatusCalls": 0,
+    "processReadCalls": 0
+  },
+  "inferenceLimits": {
+    "controllerAdmission": "UNKNOWN",
+    "processStarted": "UNKNOWN",
+    "cargoStarted": "UNKNOWN",
+    "processAbsent": false,
+    "processTerminal": false,
+    "laneReleased": false,
+    "oldTimeoutRetained": true
+  },
+  "actionBoundary": {
+    "runtimeNewCallsAuthorizedByThisPacket": 0,
+    "replay": false,
+    "rekey": false,
+    "initialize": false,
+    "sameKeyStartRetryNotPerformed": true,
+    "readOnlyDiscoveryRequiresNewExactRootGo": true
+  },
+  "laneAccounting": {
+    "BPossibleOwnedJob": 1,
+    "AandC": "root coordinates",
+    "maximumGlobalLanes": 2
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.official271-pki12-report-body-source.v1",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "GO": null,
+  "existingSlot": "official271_x230_pki12_oracle_gitfirst_r1",
+  "attachAction": "authorize_oracle_report_body",
+  "originalJob": "1a1b3461a2c-fc05-81a9",
+  "originalInfo": "7c8264be8bf15411a57a136bc89128f35aeb91c0c259f8bf47583d2c4f593f58",
+  "infoActualMin": "a61948278a4f595109ae2226815cbc72201875fa",
+  "before": {
+    "blob": "0828f3293d3e3c4bf16b876af8514fd8d1705863",
+    "bytes": 22994,
+    "sha256": "21bd24a793db3401257523cee2b4f216601302605e94f0c3719fa5072903d77a"
+  },
+  "journal": {
+    "blob": "f83797d03a41092340ba39074b155594464d8bf2",
+    "bytes": 28846,
+    "sha256": "0b4f9cc8c62104d96cbc4c021c4e500074b45b8fad24609874f851bd19b7297c"
+  },
+  "state": {
+    "blob": "a0de8cc47447ea50fec72e04b16afe899b68dad9",
+    "bytes": 233096,
+    "sha256": "5f539b76f74e65818e0cae080aff1330d46643dee95e7047175005724370e253"
+  },
+  "target": {
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "bytes": 41509,
+    "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0",
+    "version": "2053:3321457:41509:1794009102635552960:1794009102635552960",
+    "infoOperation": "7c8264be8bf15411a57a136bc89128f35aeb91c0c259f8bf47583d2c4f593f58",
+    "infoNative": {
+      "blob": "45708d6a42e99dcbfc90191120104953a171550f",
+      "bytes": 461,
+      "sha256": "162a4757adf5aaea2d84bdb80129607d832fc8e53fee4093c2421448f4852ebc"
+    }
+  },
+  "exactRequest": {
+    "blob": "d358686f2a39455eda39a972043f71d8a3282f5d",
+    "bytes": 400,
+    "sha256": "4342a960ed2dfc4ff9b163f59b262647ad3dd6d4320f0a140a7ff6532eb6ba0d"
+  },
+  "request": {
+    "idempotency_key": "heptabao-official271-x230-pki12-report-body-20261106-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+        "offset": 0,
+        "limit": 41509,
+        "expected_version": "2053:3321457:41509:1794009102635552960:1794009102635552960"
+      }
+    }
+  },
+  "wholeExpectedBodyBytes": 41509,
+  "scope": "official271_oracle_result_binary_read_only",
+  "maximumBinaryReads": 1,
+  "maximumFileInfo": 0,
+  "maximumProcessStarts": 0,
+  "immutableBodyPageBytes": 16384,
+  "oldPageBytes": 8192,
+  "statusPerID": 8,
+  "pagesPerID": 128,
+  "payloadBytes": 1048576,
+  "maximumRangeBytes": 65536,
+  "actualRange": {
+    "offset": 0,
+    "limit": 41509
+  },
+  "archiveKeys": {
+    "arm": "gfa-<fresh caller callKey>",
+    "sdk": "gfs-<same fresh callKey>",
+    "exception": "gfx-<same fresh callKey>",
+    "payload": "gfc-<original returned operation_id>",
+    "decodedReport": "gfr-<same original returned operation_id>",
+    "fixedCandidateArchiveLiterals": [],
+    "futureOperationID": null,
+    "originalTenCallsUnchanged": true,
+    "requestNotInvoked": true
+  },
+  "failure": "Preserve original failure/SDK/arm/state; no replay/rekey or operation restart. No later admission after UNKNOWN.",
+  "sequence": [
+    "Whole new exact GO then attach the ten-call closed original context; no initialize.",
+    "Whole exact request/intent/arm before a model boundary and single original binary_read.",
+    "Follow only returned original ID; status<=8, contiguous immutable pages<=128 of16384 bytes, payload<=1MiB.",
+    "Whole original payload before interpretation; exact version/extent/base64/wholeSHA; decoded public UTF8 body archived at operation-derived gfr key before any report semantics.",
+    "Close original observer, release C0; actual PKI12/Owner semantics only from then-whole report."
+  ],
+  "caseStatusesQualified": false,
+  "MacOrCargoAuthorized": false
+}

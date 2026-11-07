@@ -1,0 +1,232 @@
+{
+  "schema": "heptabao.root.unknown-ROG4a-build-fixed-report-INFO.SOURCE39.r1",
+  "result": {
+    "schema": "heptabao.unknown-report-info-source-checks.r1",
+    "cases": [
+      {
+        "name": "strict_forward",
+        "pass": true
+      },
+      {
+        "name": "strict_inverse",
+        "pass": true
+      },
+      {
+        "name": "actual_original_unknown_state_pin",
+        "pass": true
+      },
+      {
+        "name": "one_exact_path_tool",
+        "pass": true
+      },
+      {
+        "name": "initialization_needs_no_job_and_infers_no_terminal",
+        "pass": true
+      },
+      {
+        "name": "second_initialize_refused",
+        "pass": true
+      },
+      {
+        "name": "wrong_go_scope_refused",
+        "pass": true
+      },
+      {
+        "name": "go_start_cap_not_expandable",
+        "pass": true
+      },
+      {
+        "name": "changed_original_unknown_state_refused",
+        "pass": true
+      },
+      {
+        "name": "exact_info_admission_accepted",
+        "pass": true
+      },
+      {
+        "name": "process_start_refused",
+        "pass": true
+      },
+      {
+        "name": "binary_read_admission_refused",
+        "pass": true
+      },
+      {
+        "name": "process_status_admission_refused",
+        "pass": true
+      },
+      {
+        "name": "process_read_admission_refused",
+        "pass": true
+      },
+      {
+        "name": "process_list_admission_refused",
+        "pass": true
+      },
+      {
+        "name": "rekey_refused",
+        "pass": true
+      },
+      {
+        "name": "second_info_admission_refused",
+        "pass": true
+      },
+      {
+        "name": "same_id_status_accepted",
+        "pass": true
+      },
+      {
+        "name": "ninth_status_refused",
+        "pass": true
+      },
+      {
+        "name": "closed_contiguous_8k_page_accepted",
+        "pass": true
+      },
+      {
+        "name": "wrong_operation_id_refused",
+        "pass": true
+      },
+      {
+        "name": "skipped_page_refused",
+        "pass": true
+      },
+      {
+        "name": "page_width_increase_refused",
+        "pass": true
+      },
+      {
+        "name": "129th_page_refused",
+        "pass": true
+      },
+      {
+        "name": "valid_metadata_never_proves_process_terminal",
+        "pass": true
+      },
+      {
+        "name": "actual_sha_learned_not_guessed",
+        "pass": true
+      },
+      {
+        "name": "bad_path_/other",
+        "pass": true
+      },
+      {
+        "name": "bad_size_0",
+        "pass": true
+      },
+      {
+        "name": "bad_size_4194305",
+        "pass": true
+      },
+      {
+        "name": "bad_mode_420",
+        "pass": true
+      },
+      {
+        "name": "bad_sha256_bad",
+        "pass": true
+      },
+      {
+        "name": "bad_version_66306:1234:1",
+        "pass": true
+      },
+      {
+        "name": "bad_metadata_uid",
+        "pass": true
+      },
+      {
+        "name": "bad_metadata_gid",
+        "pass": true
+      },
+      {
+        "name": "bad_metadata_link_count",
+        "pass": true
+      },
+      {
+        "name": "bad_metadata_mode",
+        "pass": true
+      },
+      {
+        "name": "bad_metadata_metadata_platform",
+        "pass": true
+      },
+      {
+        "name": "native_dispatch_only_three_original_observer_methods",
+        "pass": true
+      },
+      {
+        "name": "no_old_context_write_and_no_native_or_git_call",
+        "pass": true
+      }
+    ],
+    "passed": 39,
+    "NativeCalls": 0,
+    "GitCalls": 0,
+    "fixtureOnly": true,
+    "actualReportMetadata": null
+  },
+  "exact": true,
+  "audit": {
+    "tree": "e6d2003113830214b0f64ee9790469e3780417c5",
+    "files": 15,
+    "bytes": 92878,
+    "merkle": {
+      "root_sha": "e6d2003113830214b0f64ee9790469e3780417c5",
+      "trees_verified": 1,
+      "leaf_count": 15
+    },
+    "whole": true
+  },
+  "actualBindings": {
+    "originalJournal": true,
+    "originalState": true,
+    "requestFixed": true
+  },
+  "originalBuildFixedReportPathProof": {
+    "launcher": {
+      "blob": "4077f402625114c48cab2fd88b871cfeb877ab4d",
+      "bytes": 39650,
+      "sha256": "f39c03fd166ea30a466189446596506fd0f570c9949d4d9da7d497c85c0fd466"
+    },
+    "runner": {
+      "blob": "b3901c3ef34b4384c54e130637ea4ab8df0c6839",
+      "bytes": 38598,
+      "sha256": "3adf3aa07ec747e978f8484f670b41b2874d5f1d2b5a1a7afb45ea5989635a09"
+    },
+    "launcherControlsRootFixed": true,
+    "launcherOutputFixed": true,
+    "runnerWritesFixedReport": true
+  },
+  "registryDiscoveryLimitation": {
+    "schema": "heptabao.private-list-r2.row-schema-only.r1",
+    "nativeKeys": [
+      "has_more",
+      "inventory_complete",
+      "jobs",
+      "next_cursor",
+      "snapshot_semantics",
+      "snapshot_sha256",
+      "status_authoritative",
+      "total"
+    ],
+    "oneRow": true,
+    "rowFieldNames": [
+      "created_unix_ms",
+      "execution_mode",
+      "host",
+      "id",
+      "launch_state"
+    ],
+    "hasHost": true,
+    "hasIdempotencyKey": false,
+    "hasCreatedUnixMs": true,
+    "createdComparable": true,
+    "createdBeforeOriginalGo": true,
+    "identityOrArgumentsPublished": false,
+    "targetComparisonHasRequiredHostAndKey": false,
+    "interpretationCorrection": "The earlier match=null did not prove a completed key comparison because idempotency_key is absent. Original projection is preserved."
+  },
+  "scope": "One fixed file_info independent of unknown process identity. No SHA/size/version fabricated. Neither presence nor absence determines original process outcome.",
+  "NativeCalls": 0
+}

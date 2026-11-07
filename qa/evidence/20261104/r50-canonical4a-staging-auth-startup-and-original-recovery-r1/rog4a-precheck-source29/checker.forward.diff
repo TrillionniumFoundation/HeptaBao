@@ -1,0 +1,18 @@
+--- a/pure_verifier.js
++++ b/pure_verifier.js
+@@ -7,13 +7,13 @@
+  ok("forward-whole",snapshotApply(I.before,I.diff)===I.after);
+  ok("reverse-whole",snapshotApply(I.after,I.diff,true)===I.before);
+  ok("one-mechanism-hunk",(snapshotUnified(I.before,I.mechanismAfter,"runner.py").match(/^@@/gm)||[]).length===1);
+- ok("four-total-hunks",(I.diff.match(/^@@/gm)||[]).length===4);
++ ok("three-total-hunks",(I.diff.match(/^@@/gm)||[]).length===3);
+  ok("under-original40000",gitBlobMeta(I.after).bytes<=40000);
+  const c=JSON.parse(I.candidateRaw);
+  ok("actual-candidate-commit",I.after.includes("DIAGNOSTIC_COMMIT = '"+c.commit+"'"));
+  ok("actual-candidate-tree",I.after.includes("DIAGNOSTIC_TREE = '"+c.tree+"'"));
+  ok("fresh-target",I.after.includes("/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1"));
+- ok("old-target-no-execution-introduced",I.after.slice(I.after.indexOf("PRESERVED_FILES ="),I.after.indexOf("def git("))===I.before.slice(I.before.indexOf("PRESERVED_FILES ="),I.before.indexOf("def git(")));
++ ok("old-target-table-and-unused-function-whole",section(I.after,"PRIOR_DF026_FILES =","def write(")===section(I.before,"PRIOR_DF026_FILES =","def write("));
+  function section(raw,start,end){const a=raw.indexOf(start),b=raw.indexOf(end,a);if(a<0||b<a)throw Error("section");return raw.slice(a,b);}
+  ok("owned-lifecycle-byte-identical",section(I.after,"def owned(","assert os.uname()")===section(I.before,"def owned(","assert os.uname()"));
+  ok("signals-termination-byte-identical",section(I.after,"def group_members(","profile = {")===section(I.before,"def group_members(","profile = {"));

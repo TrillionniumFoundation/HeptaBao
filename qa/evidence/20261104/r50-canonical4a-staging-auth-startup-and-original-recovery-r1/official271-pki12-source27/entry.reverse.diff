@@ -1,0 +1,224 @@
+--- a/official_pki12_entry.py
++++ b/official_pki12_entry.py
+@@ -1,9 +1,9 @@
+ #!/usr/bin/env python3
+-"""SOURCE proposal: one fixed official2.7.1 X230 strict PKI12 fixture.
++"""SOURCE proposal: one fixed official2.7.1 X230 ACL23 fixture.
+ 
+-The existing official launcher, Linux Owner, current exact acceptance.pki_cases,
+-raw response observer and four-class component source are immutable inputs.
+-No candidate or old ACL23 fixture is started. This entry has no Runtime GO.
++The existing official launcher, Linux Owner, HTTP transport, 23-cell executor,
++matrix and four-class component source are immutable inputs. No candidate is
++started and no historical full34 wrapper is rerun. This entry has no Runtime GO.
+ """
+ from __future__ import annotations
+ 
+@@ -18,9 +18,9 @@
+ import sys
+ import time
+ 
+-ROOT = Path("/home/qian/heptabao-official271-pki12-oracle-20261106-r1")
+-PORT = 23627
+-RUN_ID = "official271-pki12-r1"
++ROOT = Path("/home/qian/heptabao-official271-acl23-oracle-20261106-r2")
++PORT = 23625
++RUN_ID = "official271-acl23-r2"
+ VERSION = "2.7.1"
+ BINARY = Path("/home/qian/heptabao-official-271-fresh-20261029-r1/bao")
+ ARCHIVE = Path("/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz")
+@@ -30,8 +30,8 @@
+     (ARCHIVE, 74865426, 0o600,
+      "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243"),
+ )
+-PAYLOAD_BYTES = 140624
+-PAYLOAD_SHA256 = "71fd26d3e4b1cb49b6017222ea65aa956a0a39585202a255bea58620e4111541"
++PAYLOAD_BYTES = 134677
++PAYLOAD_SHA256 = "8a8681e59c5572ed01fa6e824c4a2e03692baceb8d272bba857431c9c5c8e30f"
+ INPUTS = [
+   [
+     "source/qa/openbao-acceptance/owned_process.py",
+@@ -54,9 +54,9 @@
+     "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+   ],
+   [
+-    "source/qa/openbao-acceptance/acceptance.py",
+-    36333,
+-    "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
++    "source/qa/openbao-acceptance/acl23_executor.py",
++    15892,
++    "60a2864887218041e3a718d765dc00d261be49510372af95233e8ae89c64e922"
+   ],
+   [
+     "source/qa/openbao-acceptance/current_record_component.py",
+@@ -77,6 +77,16 @@
+     "source/clients/python/heptabao/consistency.py",
+     4836,
+     "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
++  ],
++  [
++    "MATRIX23.original.public.json",
++    14285,
++    "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
++  ],
++  [
++    "PUBLIC-KEY.pem",
++    451,
++    "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938"
+   ]
+ ]
+ DIRECTORIES = (
+@@ -85,10 +95,10 @@
+     "private", "private/oracle-work",
+ )
+ OWNER_SECONDS = 360
+-PKI_REQUEST_CAP = 12
++ACL_REQUEST_CAP = 853
+ REPORT_CAP = 1048576
+-SOURCE_BYTES = 133117
+-FD_LIMIT = 10  # Nine fixed source outputs plus the one public result.
++SOURCE_BYTES = 127412
++FD_LIMIT = 12  # Eleven fixed source outputs plus the one public result.
+ START_NS = time.monotonic_ns()
+ UNTIL_NS = START_NS + OWNER_SECONDS * 1_000_000_000
+ FD_ROWS = []
+@@ -208,9 +218,6 @@
+     old_handlers, old_mask = {}, os.umask(0o077)
+     source_rows, owner, oracle, executor = [], None, None, None
+     root_created = False
+-    calls = None
+-    cleanup = {"result": "not_run", "reason": "fixture_not_entered"}
+-    stop_reason = None
+     extra_live_health_attempted, extra_live_health_completed = 0, 0
+     component, identity, capture, original_owner_receipt = None, None, None, None
+     artifact_before, artifact_after, failure = None, None, None
+@@ -232,7 +239,7 @@
+              "exact_fixed_payload")
+         bundle = json.loads(payload)
+         need(set(bundle) == {"schema", "files"}
+-             and bundle["schema"] == "heptabao.X230-official271-pki12-fixed-inputs.v1"
++             and bundle["schema"] == "heptabao.X230-official271-acl23-fixed-inputs.v1"
+              and type(bundle["files"]) is dict
+              and list(bundle["files"]) == [row[0] for row in INPUTS],
+              "fixed_input_membership")
+@@ -259,7 +266,7 @@
+         for relative, size, digest in INPUTS:
+             source_rows.append(write_exact(relative, source_bytes[relative],
+                                            expected_sha256=digest))
+-        need(closed_fds() and len(FD_ROWS) == 9, "source_fds_closed_before_import")
++        need(closed_fds() and len(FD_ROWS) == 11, "source_fds_closed_before_import")
+         qa = ROOT / "source/qa/openbao-acceptance"
+         clients = ROOT / "source/clients/python"
+         sys.path[:0] = [str(qa), str(clients)]
+@@ -275,10 +282,10 @@
+         owned = importlib.import_module("owned_process")
+         launcher = importlib.import_module("official_openbao_launcher")
+         raw = importlib.import_module("raw_status_observer")
+-        acceptance = importlib.import_module("acceptance")
++        acl = importlib.import_module("acl23_executor")
+         components = importlib.import_module("current_record_component")
+         for module, name in ((owned, "owned_process"), (launcher, "official_openbao_launcher"),
+-                             (raw, "raw_status_observer"), (acceptance, "acceptance"),
++                             (raw, "raw_status_observer"), (acl, "acl23_executor"),
+                              (components, "current_record_component")):
+             need(Path(module.__file__) == qa / (name + ".py"), "fixed_import_origin")
+         need(owned._CURRENT is None, "no_ambient_process_owner")
+@@ -290,8 +297,8 @@
+         check_deadline()
+         artifact_before = snapshot_artifacts()
+         owner = owned.Owner(ROOT / "private", deadline_ns=UNTIL_NS,
+-                            profile="official271_pki12_oracle")
+-        stage = "original_launcher_and_strict_pki12"
++                            profile="official271_acl23_oracle")
++        stage = "original_launcher_and_acl23"
+         with owned.activated(owner):
+             try:
+                 oracle = launcher.start_oracle(PORT, version=VERSION,
+@@ -307,20 +314,14 @@
+                     oracle, health, version=VERSION, raft_storage=False)
+ 
+                 def remaining():
+-                    if calls is not None and len(calls.records) >= PKI_REQUEST_CAP:
+-                        raise raw.BaoError("fixed_original_pki_request_cap")
++                    if executor is not None and len(executor.calls.records) >= ACL_REQUEST_CAP:
++                        raise raw.BaoError("fixed_original_acl_request_cap")
+                     return owner.remaining()
+ 
+-                calls = raw.RawStatusCalls(client, remaining)
+-                executor = acceptance.Suite(client, RUN_ID, {"pki"}, True)
+-                try:
+-                    raw.run_original_pki12(executor, calls)
+-                except raw.BaoError as error:
+-                    stop_reason = error.code
+-                    raise
+-                finally:
+-                    cleanup = executor.cleanup()
+-                    capture = raw.pki_public_result(executor, calls, cleanup, stop_reason)
++                executor = acl.FixedAcl23(
++                    client, remaining, source_bytes["MATRIX23.original.public.json"],
++                    source_bytes["PUBLIC-KEY.pem"].decode("ascii"), RUN_ID)
++                capture = executor.run()
+             finally:
+                 if oracle is not None:
+                     launcher.stop_oracle(oracle)
+@@ -336,10 +337,9 @@
+         need(owned._CURRENT is None and owner.finished
+              and owner.receipt["same_originals_closed"]
+              and owner.receipt["passed_process_method"], "original_owner_not_qualified")
+-        need(capture["denominator"] == 12 and capture["pki12_passed"] is True
+-             and len(calls.records) == 12
+-             and all(row["complete"] for row in calls.records),
+-             "incomplete_original_strict_12_capture")
++        need(capture["actual_case_records"] == 23
++             and all(row["transition_checked"] and row["wire"]["complete"]
++                     for row in capture["cases"]), "incomplete_original_23_capture")
+         check_deadline()
+     except BaseException as error:
+         failure = {"stage": stage, "class": type(error).__name__}
+@@ -351,21 +351,19 @@
+         if owner is not None and hasattr(owner, "receipt"):
+             original_owner_receipt = owner.receipt
+         result = {
+-            "schema": "heptabao.official271.pki12.oracle-only.actual.v1",
++            "schema": "heptabao.official271.acl23.oracle-only.actual.v1",
+             "capture_complete": failure is None and capture is not None,
+             "failure": failure, "official_version_requested": VERSION,
+             "historical_artifact_presence_not_inherited": True,
+             "source_inputs": source_rows, "artifact_metadata_before": artifact_before,
+             "artifact_metadata_after": artifact_after, "live_identity": identity,
+             "components": component, "component_product_cases": 0,
+-            "pki_case_denominator": 12,
+-            "pki": capture,
+-            "pki_wire_records": calls.records if calls is not None else [],
+-            "pki_requests_observed": len(calls.records) if calls is not None else 0,
+-            "pki_request_cap": PKI_REQUEST_CAP,
+-            "unobserved_suite_admin_requests_source_upper_bound": 3,
+-            "strict_raw_status_required": True,
+-            "official_acl23_reexecuted": False,
++            "matrix_case_denominator": 23, "http12_product_cases_executed": 0,
++            "acl": capture if capture is not None else (
++                executor.public_partial() if executor is not None else None),
++            "admin_and_case_wire_records": executor.calls.records if executor is not None else [],
++            "acl_requests_observed": len(executor.calls.records) if executor is not None else 0,
++            "acl_request_cap": ACL_REQUEST_CAP,
+             "startup_source_upper_bound": 103,
+             "extra_live_health_requests": {"maximum": 1,
+                                            "attempted": extra_live_health_attempted,
+@@ -394,7 +392,7 @@
+             os.umask(old_mask)
+     passed = (failure is None and PENDING_SIGNAL is None and closed_fds()
+               and time.monotonic_ns() < UNTIL_NS and report_pin is not None)
+-    terminal = {"schema": "heptabao.official271.pki12.oracle-only.terminal.v1",
++    terminal = {"schema": "heptabao.official271.acl23.oracle-only.terminal.v1",
+                 "capture_complete": passed, "failure": failure,
+                 "report": report_pin, "all_entry_file_descriptors_closed": closed_fds(),
+                 "entry_fd_count": len(FD_ROWS),
+@@ -402,7 +400,7 @@
+                 "pending_signal": PENDING_SIGNAL,
+                 "original_owner_receipt_present": original_owner_receipt is not None,
+                 "parity_qualified": False, "candidate_started": False,
+-                "pki_case_denominator": 12, "component_product_cases": 0}
++                "matrix_case_denominator": 23, "component_product_cases": 0}
+     print(json.dumps(terminal, sort_keys=True), flush=True)
+     return 0 if passed else 1
+ 

@@ -1,0 +1,134 @@
+--- a/stage_source_combined4a.py
++++ b/stage_source_combined4a.py
+@@ -19,7 +19,7 @@
+ parser.add_argument('--carrier-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'rog'
+-ROOT = Path('/home/qian-qi/hb-4a49405b-src-20261106-r1')
++ROOT = Path('/home/qian-qi/hb-5767739c-src-20261106-r1')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+@@ -28,11 +28,10 @@
+ BASE = Path('/home/qian-qi/hb-02b90762-src-20261106-r1/source')
+ BASE_COMMIT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
+ BASE_TREE = '9781e9615ac5fb068d217241c74bb54bf87942cf'
+-COMMIT = '4a49405b93c45ab1c25ecba11cde63a7ede20dce'
+-TREE = 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'
+-PARENT = '5767739cd25e458ac052dc8d384019bab8688ae0'
++COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'
++TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'
++PARENT = '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'
+ ANCESTRY = (
+-    ('4a49405b93c45ab1c25ecba11cde63a7ede20dce', '5767739cd25e458ac052dc8d384019bab8688ae0'),
+     ('5767739cd25e458ac052dc8d384019bab8688ae0', '02b90762b3d6cc8699cc88bffb6f76cb1f07e270'),
+     ('02b90762b3d6cc8699cc88bffb6f76cb1f07e270', '025b05a340de841b8161c1120344e86eae30eb97'),
+     ('025b05a340de841b8161c1120344e86eae30eb97', '33b814c7034ec853151b1ff13e7529c83f65ea70'),
+@@ -404,7 +403,7 @@
+ 
+ 
+ 
+-def canonical_bundle_header(raw, prerequisite):
++def canonical_bundle_header(raw):
+     end = raw.find(b'\n\n', 0, 65536)
+     assert end > 0 and raw[end + 2:end + 6] == b'PACK'
+     lines = raw[:end].split(b'\n')
+@@ -419,7 +418,7 @@
+             object_id, separator, name = line.partition(b' ')
+             assert separator
+             heads.append([object_id.decode('ascii'), name.decode('ascii')])
+-    assert prerequisites == [prerequisite]
++    assert prerequisites == [BASE_COMMIT]
+     assert heads == [[COMMIT, 'HEAD']]
+     return {'version': 2, 'prerequisites': prerequisites, 'heads': heads,
+             'header_sha256': digest(raw[:end + 2])}
+@@ -458,7 +457,7 @@
+           'stage_purpose': 'combined_source_for_separate_build_admission',
+           'historical_controls_executed': False, 'candidate_build_qualification': False,
+           'formatter_executed': False, 'rust_tests_executed': False,
+-          'canonical_history_count': 3770, 'actual_build_qualification': False,
++          'canonical_history_count': 3769, 'actual_build_qualification': False,
+           'controls': {}, 'started_ns': time.time_ns()}
+ before = None
+ try:
+@@ -497,53 +496,43 @@
+     for child_commit, parent_commit in ANCESTRY:
+         assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit
+     added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()
+-    assert len(added) == 18 and set(added) == {row[0] for row in ANCESTRY}
++    assert len(added) == 17 and set(added) == {row[0] for row in ANCESTRY}
+     result['new_commits_since_actual_495'] = added
+     assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3752'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3770'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3769'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62553956
+-    assert result['full_worktree']['full_leaf_index_sha256'] == '7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d'
++    assert result['full_worktree']['tracked_bytes'] == 62553540
++    assert result['full_worktree']['full_leaf_index_sha256'] == '20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+ 
+-    canonical_total_bytes = 0
+-    for bundle_name, prerequisite, result_key in (
+-        ('canonical-hb-4a49405b-from576.bundle', PARENT, 'canonical_bundle'),
+-        ('canonical-hb-4a49405b-from02b.bundle', BASE_COMMIT, 'canonical_x230_bundle'),
+-    ):
+-        bundle_remaining = 4 * 1024 * 1024 - canonical_total_bytes
+-        assert bundle_remaining > 0
+-        canonical_path = CONTROL / bundle_name
+-        assert not os.path.lexists(canonical_path)
+-        git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + prerequisite)
+-        canonical_raw = stable_read(canonical_path, bundle_remaining)
+-        assert 0 < len(canonical_raw) <= bundle_remaining
+-        canonical_total_bytes += len(canonical_raw)
+-        canonical_identity = identity(canonical_path.lstat())
+-        assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600
+-        canonical_header = canonical_bundle_header(canonical_raw, prerequisite)
+-        fd = os.open(canonical_path, os.O_RDONLY | os.O_NOFOLLOW)
+-        try:
+-            assert identity(os.fstat(fd)) == canonical_identity
+-            os.fsync(fd)
+-        finally:
+-            os.close(fd)
+-        fsync_dir(CONTROL)
+-        git(SOURCE, 'bundle', 'verify', str(canonical_path))
+-        assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == COMMIT + ' HEAD'
+-        assert identity(canonical_path.lstat()) == canonical_identity
+-        assert stable_read(canonical_path, bundle_remaining) == canonical_raw
+-        result[result_key] = {'path': str(canonical_path), 'bytes': len(canonical_raw),
+-                                      'sha256': digest(canonical_raw), 'header': canonical_header,
+-                                      'identity': list(canonical_identity),
+-                                      'public_network_import_required_on_mac': False}
+-    result['canonical_bundle_total_bytes'] = canonical_total_bytes
+-    result['canonical_bundle_total_cap_bytes'] = 4 * 1024 * 1024
++    canonical_path = CONTROL / 'canonical-hb-5767739c-from02b.bundle'
++    assert not os.path.lexists(canonical_path)
++    git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + BASE_COMMIT)
++    canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024)
++    assert 0 < len(canonical_raw) <= 4 * 1024 * 1024
++    canonical_identity = identity(canonical_path.lstat())
++    assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600
++    canonical_header = canonical_bundle_header(canonical_raw)
++    fd = os.open(canonical_path, os.O_RDONLY | os.O_NOFOLLOW)
++    try:
++        assert identity(os.fstat(fd)) == canonical_identity
++        os.fsync(fd)
++    finally:
++        os.close(fd)
++    fsync_dir(CONTROL)
++    git(SOURCE, 'bundle', 'verify', str(canonical_path))
++    assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == COMMIT + ' HEAD'
++    assert identity(canonical_path.lstat()) == canonical_identity
++    assert stable_read(canonical_path, 4 * 1024 * 1024) == canonical_raw
++    result['canonical_bundle'] = {'path': str(canonical_path), 'bytes': len(canonical_raw),
++                                  'sha256': digest(canonical_raw), 'header': canonical_header,
++                                  'identity': list(canonical_identity),
++                                  'public_network_import_required_on_mac': False}
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     result['old_source_after'] = freeze(OLD)
+     assert result['old_source_after'] == before

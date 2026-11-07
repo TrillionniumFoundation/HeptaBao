@@ -1,0 +1,38 @@
+Create a text Page. To create at the top level of a Drive Space, pass space_id and omit parent_page_id. Use parent_page_id only for a real Page ID, never a Space ID; the child inherits its Space. Omit Space and parent IDs for a private Page. For a Plan, send namespace=plans, namespace_properties_schema_version=1, and namespace_properties with a status and optional assignee_account_user_id. Any Page can have a top-level coordinator_dot_id (a stable personal or shared Dot profile ID). Retain the same idempotency_key across retries. Read the selected Space root first when accessible; otherwise read the writable shared parent and pass parent_page_id. For a new Site in a Space, register the Site with Sites first, then create an empty child with its site_project_id, the selected parent_page_id and a retained idempotency_key. Complete attach_site_to_page using the returned metadata.page_id before building. If interrupted, retry with the same Site, Page and key, not replacements. Do not convert the Space root or a document. Use Markdown for inline formatting and links, even inside supported HTML wrappers. Reserve HTML for documented exceptions such as underline and rich table-cell structure. See the write-page catalog (`references/page-content.md#rich-table-cells`) for supported HTML. This tool is part of plugin `Pages`.
+
+Read, search, create, and edit pages and spaces in ChatGPT Space, within your current account.
+
+exec tool declaration:
+```ts
+declare const tools: { mcp__codex_apps__chatgpt_space_create_page(args: {
+  // Stable profile ID of your personal Dot or an available shared workspace Dot.
+  coordinator_dot_id?: string | null;
+  // Required for a Site or Plan Page. Retain one key for this creation across retries. Reuse the same key and creation arguments after an uncertain response. Retries return the same Page without overwriting edits.
+  idempotency_key?: string | null;
+  initial_blocks?: Array<string>;
+  namespace?: "meeting_notes" | "data_reports" | "plans" | null;
+  namespace_properties?: { assignee_account_user_id?: string | null; status: "draft" | "open" | "blocked" | "done"; } | null;
+  namespace_properties_schema_version?: 1 | null;
+  // ID of the existing Page to create under, not a Space ID. For the top level of a Space, pass space_id and omit parent_page_id.
+  parent_page_id?: string | null;
+  position?: number | null;
+  // The registered Site project ID. Creates an empty child of a Library-backed Space Page, not a Site grant.
+  site_project_id?: string | null;
+  // ID of the destination Space, not a Page ID. Use a known Space ID, e.g. from list_spaces or get_space. To create at the top level of the Space, pass space_id and omit parent_page_id; Pages selects its root Page.
+  space_id?: string | null;
+  title: string;
+}): Promise<CallToolResult<{ [key: string]: unknown; } | { error: {
+  cause?: "timeout";
+  code?: string;
+  commit_status?: string;
+  conflict_reason?: string;
+  // Optional upstream error details.
+  details?: unknown;
+  limit_actual?: number;
+  limit_dimension?: string;
+  limit_maximum?: number;
+  limit_reason?: string;
+  message: string;
+  retryable?: boolean;
+}; }>>; };
+```

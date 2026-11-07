@@ -1,0 +1,27 @@
+--- a/before-journal.js
++++ b/after-journal.js
+@@ -5,11 +5,11 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_authbus_public_node_live_denial_gitfirst_r1";
+-const GF_SLOT = "owner_authbus_public_log_stream_help_gitfirst_r1";
+ const GF_REQUEST = {
++ "blob": "16b34959371a5ecd81cd07486c6888d5125d3554",
++ "bytes": 115049,
++ "sha256": "11856d865410e591e4e125146926dc55c7e29a1568d93ebce59a78a42c4b33da"
+- "blob": "8a7c894d24f5066e645fbb4a180e525c634bc525",
+- "bytes": 45403,
+- "sha256": "fca6fb58992ee6b1e8ff00e7ffe886c831cfa2736ec2014543d78a7825e0ea9d"
+ };
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+@@ -49,7 +49,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-mac-public-node-live-denial-438c883a-/.test(q.idempotency_key),
+-    && /^heptabao-mac-public-log-stream-help-0753ca35-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

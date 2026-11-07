@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+  "action": "accept",
+  "name": "Error",
+  "message": "exact_original_page_extent",
+  "automaticRetry": false,
+  "newAdmissionAllowed": false,
+  "returnedNormally": true
+}

@@ -1,0 +1,596 @@
+{
+  "schema": "heptabao.root.4a-fresh-build-source-qualification.r1",
+  "sourceAudit": {
+    "tree": "2ea20aa7a25c59a4b0879d953d0f737e3cc2b016",
+    "files": 46,
+    "bytes": 789103,
+    "merkle": {
+      "root_sha": "2ea20aa7a25c59a4b0879d953d0f737e3cc2b016",
+      "trees_verified": 1,
+      "leaf_count": 46
+    },
+    "whole": true
+  },
+  "sourceResult": {
+    "schema": "heptabao.combined4a49405b.fast-gated-fresh-joint-source-verification.r1",
+    "ok": true,
+    "checks": 136,
+    "results": [
+      {
+        "name": "runner_before_pin",
+        "pass": true
+      },
+      {
+        "name": "runner_after_pin",
+        "pass": true
+      },
+      {
+        "name": "runner_forward_strict",
+        "pass": true
+      },
+      {
+        "name": "runner_reverse_strict",
+        "pass": true
+      },
+      {
+        "name": "runner_reverse_file_strict",
+        "pass": true
+      },
+      {
+        "name": "runner_declared_count_precheck-with-shared-release-clock",
+        "pass": true
+      },
+      {
+        "name": "runner_declared_count_release-remaining-clock",
+        "pass": true
+      },
+      {
+        "name": "runner_declared_count_current-commit",
+        "pass": true
+      },
+      {
+        "name": "runner_declared_count_current-tree",
+        "pass": true
+      },
+      {
+        "name": "runner_declared_count_fresh-exclusive-target",
+        "pass": true
+      },
+      {
+        "name": "runner_only_declared_edits",
+        "pass": true
+      },
+      {
+        "name": "runner_same_functions",
+        "pass": true
+      },
+      {
+        "name": "runner_function_signal_received",
+        "pass": true
+      },
+      {
+        "name": "runner_function_sha",
+        "pass": true
+      },
+      {
+        "name": "runner_function_fresh_identity",
+        "pass": true
+      },
+      {
+        "name": "runner_function_current_tool_whole",
+        "pass": true
+      },
+      {
+        "name": "runner_function_fresh_target_pin",
+        "pass": true
+      },
+      {
+        "name": "runner_function_preserve_prior_df026",
+        "pass": true
+      },
+      {
+        "name": "runner_function_write",
+        "pass": true
+      },
+      {
+        "name": "runner_function_git",
+        "pass": true
+      },
+      {
+        "name": "runner_function_freeze",
+        "pass": true
+      },
+      {
+        "name": "runner_function_group_members",
+        "pass": true
+      },
+      {
+        "name": "runner_function_terminate_owned",
+        "pass": true
+      },
+      {
+        "name": "runner_function_bounded_remaining",
+        "pass": true
+      },
+      {
+        "name": "runner_function_owned",
+        "pass": true
+      },
+      {
+        "name": "launcher_before_pin",
+        "pass": true
+      },
+      {
+        "name": "launcher_after_pin",
+        "pass": true
+      },
+      {
+        "name": "launcher_forward_strict",
+        "pass": true
+      },
+      {
+        "name": "launcher_reverse_strict",
+        "pass": true
+      },
+      {
+        "name": "launcher_reverse_file_strict",
+        "pass": true
+      },
+      {
+        "name": "launcher_declared_count_candidate commit",
+        "pass": true
+      },
+      {
+        "name": "launcher_declared_count_candidate tree",
+        "pass": true
+      },
+      {
+        "name": "launcher_declared_count_source root",
+        "pass": true
+      },
+      {
+        "name": "launcher_declared_count_controls root",
+        "pass": true
+      },
+      {
+        "name": "launcher_declared_count_leaf index",
+        "pass": true
+      },
+      {
+        "name": "launcher_declared_count_tracked bytes",
+        "pass": true
+      },
+      {
+        "name": "launcher_only_declared_edits",
+        "pass": true
+      },
+      {
+        "name": "launcher_same_functions",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_identity",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_read_bound",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_freeze",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_public",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_preserve_r9",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_preserve_r10",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_preserve_successful_observer",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_preserve_failed_observer",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_preserve_current_early_failure",
+        "pass": true
+      },
+      {
+        "name": "launcher_function_holders",
+        "pass": true
+      },
+      {
+        "name": "publisher_before_pin",
+        "pass": true
+      },
+      {
+        "name": "publisher_after_pin",
+        "pass": true
+      },
+      {
+        "name": "publisher_forward_strict",
+        "pass": true
+      },
+      {
+        "name": "publisher_reverse_strict",
+        "pass": true
+      },
+      {
+        "name": "publisher_reverse_file_strict",
+        "pass": true
+      },
+      {
+        "name": "publisher_declared_count_fresh-controls-root",
+        "pass": true
+      },
+      {
+        "name": "publisher_declared_count_runner-published-bytes",
+        "pass": true
+      },
+      {
+        "name": "publisher_declared_count_runner-published-sha",
+        "pass": true
+      },
+      {
+        "name": "publisher_declared_count_launcher-published-sha",
+        "pass": true
+      },
+      {
+        "name": "publisher_declared_count_candidate-commit",
+        "pass": true
+      },
+      {
+        "name": "publisher_declared_count_candidate-tree",
+        "pass": true
+      },
+      {
+        "name": "publisher_declared_count_actual-stage-sha",
+        "pass": true
+      },
+      {
+        "name": "publisher_only_declared_edits",
+        "pass": true
+      },
+      {
+        "name": "publisher_same_functions",
+        "pass": true
+      },
+      {
+        "name": "publisher_function_publication_timeout",
+        "pass": true
+      },
+      {
+        "name": "publisher_function_sha",
+        "pass": true
+      },
+      {
+        "name": "publisher_function_ident",
+        "pass": true
+      },
+      {
+        "name": "publisher_function_sync_dir",
+        "pass": true
+      },
+      {
+        "name": "publisher_function_exact",
+        "pass": true
+      },
+      {
+        "name": "publisher_function_publish",
+        "pass": true
+      },
+      {
+        "name": "journal_before_pin",
+        "pass": true
+      },
+      {
+        "name": "journal_after_pin",
+        "pass": true
+      },
+      {
+        "name": "journal_forward_strict",
+        "pass": true
+      },
+      {
+        "name": "journal_reverse_strict",
+        "pass": true
+      },
+      {
+        "name": "journal_reverse_file_strict",
+        "pass": true
+      },
+      {
+        "name": "journal_declared_count_slot",
+        "pass": true
+      },
+      {
+        "name": "journal_declared_count_request_pin",
+        "pass": true
+      },
+      {
+        "name": "journal_declared_count_observer_prefix",
+        "pass": true
+      },
+      {
+        "name": "journal_only_declared_edits",
+        "pass": true
+      },
+      {
+        "name": "control_caps_unchanged",
+        "pass": true
+      },
+      {
+        "name": "groups_specific_bound",
+        "pass": true
+      },
+      {
+        "name": "groups_whole",
+        "pass": true
+      },
+      {
+        "name": "family_native-jwt-pki-file28",
+        "pass": true
+      },
+      {
+        "name": "family_native-jwt-pki-default28",
+        "pass": true
+      },
+      {
+        "name": "family_legacy-jwt-default67",
+        "pass": true
+      },
+      {
+        "name": "family_native-auth-identity-default69",
+        "pass": true
+      },
+      {
+        "name": "family_snapshot-body10",
+        "pass": true
+      },
+      {
+        "name": "family_snapshot-peer7",
+        "pass": true
+      },
+      {
+        "name": "family_snapshot-actor2",
+        "pass": true
+      },
+      {
+        "name": "family_snapshot-wire4",
+        "pass": true
+      },
+      {
+        "name": "family_snapshot-service-audit4",
+        "pass": true
+      },
+      {
+        "name": "family_ssh25",
+        "pass": true
+      },
+      {
+        "name": "family_mount1",
+        "pass": true
+      },
+      {
+        "name": "family_redirect5",
+        "pass": true
+      },
+      {
+        "name": "family_actor2",
+        "pass": true
+      },
+      {
+        "name": "family_ordinary5",
+        "pass": true
+      },
+      {
+        "name": "family_no_forward6",
+        "pass": true
+      },
+      {
+        "name": "family_ingress_observer",
+        "pass": true
+      },
+      {
+        "name": "family_cold_h2",
+        "pass": true
+      },
+      {
+        "name": "family_same_root_publication",
+        "pass": true
+      },
+      {
+        "name": "exact_counts",
+        "pass": true
+      },
+      {
+        "name": "two_profiles_same_names",
+        "pass": true
+      },
+      {
+        "name": "rest16groups_byte_values_same",
+        "pass": true
+      },
+      {
+        "name": "all_normal61",
+        "pass": true
+      },
+      {
+        "name": "snapshot27_unchanged",
+        "pass": true
+      },
+      {
+        "name": "first4_164_192",
+        "pass": true
+      },
+      {
+        "name": "all_groups_whole_unchanged",
+        "pass": true
+      },
+      {
+        "name": "six_local_batch_cases_retained",
+        "pass": true
+      },
+      {
+        "name": "request_whole",
+        "pass": true
+      },
+      {
+        "name": "request_shape",
+        "pass": true
+      },
+      {
+        "name": "request_fresh_key",
+        "pass": true
+      },
+      {
+        "name": "stdin_exact",
+        "pass": true
+      },
+      {
+        "name": "payload_closed_names",
+        "pass": true
+      },
+      {
+        "name": "payload_native_jwt_build.py",
+        "pass": true
+      },
+      {
+        "name": "publisher_pin_native_jwt_build.py",
+        "pass": true
+      },
+      {
+        "name": "payload_launch_native_jwt_build.py",
+        "pass": true
+      },
+      {
+        "name": "publisher_pin_launch_native_jwt_build.py",
+        "pass": true
+      },
+      {
+        "name": "payload_jwt-test-groups.public.json",
+        "pass": true
+      },
+      {
+        "name": "publisher_pin_jwt-test-groups.public.json",
+        "pass": true
+      },
+      {
+        "name": "typed_digest",
+        "pass": true
+      },
+      {
+        "name": "candidate_exact",
+        "pass": true
+      },
+      {
+        "name": "stage_whole_actual",
+        "pass": true
+      },
+      {
+        "name": "stage_source_prepared",
+        "pass": true
+      },
+      {
+        "name": "stage_full_tree",
+        "pass": true
+      },
+      {
+        "name": "stage_clean_and_closed",
+        "pass": true
+      },
+      {
+        "name": "no_prior_compile_or_format_qualification",
+        "pass": true
+      },
+      {
+        "name": "publisher_stage_sha",
+        "pass": true
+      },
+      {
+        "name": "actual_stage_root_whole",
+        "pass": true
+      },
+      {
+        "name": "actual_stage_root_binding",
+        "pass": true
+      },
+      {
+        "name": "stage_only_qualification",
+        "pass": true
+      },
+      {
+        "name": "fresh_fixed_roots",
+        "pass": true
+      },
+      {
+        "name": "current_receipt_validation_preserved",
+        "pass": true
+      },
+      {
+        "name": "clock_budgets_unchanged",
+        "pass": true
+      },
+      {
+        "name": "no_redundant_independent_controls_reads",
+        "pass": true
+      },
+      {
+        "name": "exact_precheck_qualified_source",
+        "pass": true
+      },
+      {
+        "name": "release_single_absolute_deadline",
+        "pass": true
+      },
+      {
+        "name": "actual_json_gate_not_runtime_qualification",
+        "pass": true
+      },
+      {
+        "name": "separate_fresh_GO_required",
+        "pass": true
+      }
+    ],
+    "scope": "pure V8 strict source/data verification only; no Python, Native, compiler or candidate function invocation"
+  },
+  "resultExact": true,
+  "actualBindings": {
+    "actualStageReportExact": true,
+    "actualStageRootQualificationExact": true,
+    "actualCandidateManifestExact": true,
+    "actualGroupsExact": true,
+    "previousExecutedPublisherExact": true,
+    "previousExecutedLauncherExact": true,
+    "previousExecutedRunnerExact": true,
+    "previousExecutedJournalExact": true,
+    "previousFailedReportExact": true,
+    "alreadyRootAndCReviewedRunnerExact": true,
+    "currentInfoExact": true,
+    "currentBODYReleaseExact": true,
+    "correctTypedAndNativeBinding": true
+  },
+  "binding": {
+    "sha256": "33dcdfaa308ff7e6669737a1326ec90e9f6275038ee7f27d896aeb95981f2d50",
+    "native_fingerprint": "3737107712862844902"
+  },
+  "precheckRoot45": "d47fd022860b95f1b9c63eb6c5ba35afa0e45f25",
+  "precheckIndependentPeer": "1920c15e122570fedacc90d019a322251fdf8eef",
+  "currentStageQualification": {
+    "blob": "489681f4680763539866097e650073729c68dee7",
+    "bytes": 4276,
+    "sha256": "65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576"
+  },
+  "NativeCalls": 0,
+  "buildQualified": false,
+  "scope": "Only fresh current-candidate source/controls/target and original full matrix; no old pass inherited"
+}

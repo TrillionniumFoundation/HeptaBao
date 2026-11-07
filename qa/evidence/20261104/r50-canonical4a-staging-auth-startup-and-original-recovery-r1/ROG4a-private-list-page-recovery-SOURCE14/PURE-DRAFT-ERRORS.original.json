@@ -1,0 +1,25 @@
+{
+  "firstDraft": {
+    "schema": "heptabao.pure-source-draft-check-error.r1",
+    "error": "Error: source_preflight",
+    "phase": "before storing draft or archive call",
+    "originalInputInConversationToolHistory": true,
+    "NativeCalls": 0,
+    "GitMutations": 0,
+    "originalBuildStateChanged": false,
+    "reasonNotYetProven": "The failed check list was local to the failed cell and not printed.",
+    "draftNotAuthorized": true,
+    "privacyBoundaryPending": true
+  },
+  "privateDraft": {
+    "error": "SyntaxError: Invalid or unexpected token",
+    "phase": "exec source parse before evaluation",
+    "NativeCalls": 0,
+    "PagesCalls": 0,
+    "GitCalls": 0,
+    "reason": "Unescaped Markdown backticks in the JavaScript template source; next draft uses a constructed fence regex."
+  },
+  "NativeCalls": 0,
+  "PagesCalls": 0,
+  "originalStateUnchanged": true
+}

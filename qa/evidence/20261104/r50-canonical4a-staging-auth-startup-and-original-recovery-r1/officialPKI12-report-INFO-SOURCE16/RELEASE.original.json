@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.C.official271-strict-pki12-original-outer-release.r1",
+  "status": "ORIGINAL_OUTER_CLOSED_REPORT_CONTENT_PENDING",
+  "rootGO": {
+    "blob": "4b3d7263860f754d52b4e76a036300418fe8e046",
+    "bytes": 4840,
+    "sha256": "53bc00013668c88117e89b77402aaa44e975717c6fb1a5e686b533862884e95f"
+  },
+  "source_packet": "6952142f531c0bcf1ae59f7382b65cebec723703",
+  "host": "x230",
+  "slot": "official271_x230_pki12_oracle_gitfirst_r1",
+  "job": "1a1b3461a2c-fc05-81a9",
+  "original_calls": 7,
+  "original_observers": [
+    {
+      "id": "1e0799db5236a716e6e1bf59381b30b287e51667036432e3bccd5111c244fabe",
+      "tool": "process_status",
+      "payload": {
+        "blob": "e946d4012604666d783972c91a8666f4b4c86037",
+        "bytes": 908,
+        "sha256": "50be7235341cd422bf0499beaec09513f83dc20a7e8c90ca845141f339deca3f"
+      },
+      "payloadTree": "f882b6fa14c1f568e947f9a03b77e10d09378ca7",
+      "nativeText": {
+        "blob": "805b1f2e8605874b258537620e62c1fd48c99ddf",
+        "bytes": 729,
+        "sha256": "5ab4830fa9c2d39aab59c1c4a415a57319713259cfe20256d06fef2eaff8edd9"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "18717f3ecc9e7059268cf479f25266e24927e2538d76422b6fee9af6f857a108",
+      "tool": "process_read",
+      "payload": {
+        "blob": "e5afb496f34059217f98c99391859fb0142aa07f",
+        "bytes": 2677,
+        "sha256": "9b512f09d5eebaa8b572a455c46dd4fcb79839d38572c6f64ea1e75b4c5afc53"
+      },
+      "payloadTree": "72f0b7464d57b17d0c5396f5747dc11ce8c45097",
+      "nativeText": {
+        "blob": "cc90189ba3f6678fcb4c8ee2bf0dce4348014e66",
+        "bytes": 2412,
+        "sha256": "11af666575be304b6fa1c74cf83afa990123e57f4740e6edf38bcfc12192f854"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "authority": {
+    "blob": "805b1f2e8605874b258537620e62c1fd48c99ddf",
+    "bytes": 729,
+    "sha256": "5ab4830fa9c2d39aab59c1c4a415a57319713259cfe20256d06fef2eaff8edd9"
+  },
+  "terminal_stdout": {
+    "blob": "ea2c76305ee16677874cbfd6ec5cedc4c72bbc7f",
+    "bytes": 676,
+    "sha256": "83fff2ea0f207fa002a52ae2da23cd016780bba1fb928a1211563bfdc508146a"
+  },
+  "stdout_bytes": 676,
+  "stderr_bytes": 0,
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "observation_closed": {
+    "pending": null,
+    "activeObserver": null,
+    "nativeCallInFlight": false,
+    "paused": false,
+    "calls_in_flight": 0,
+    "futures_in_flight": 0
+  },
+  "reported_summary": {
+    "all_entry_file_descriptors_closed": true,
+    "candidate_started": false,
+    "capture_complete": true,
+    "component_product_cases": 0,
+    "entry_fd_count": 10,
+    "failure": null,
+    "original_owner_receipt_present": true,
+    "parity_qualified": false,
+    "pending_signal": null,
+    "pki_case_denominator": 12,
+    "report": {
+      "bytes": 41509,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321457",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "41509",
+        "1794009102635552960",
+        "1794009102635552960"
+      ],
+      "relative": "result.public.json",
+      "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0"
+    },
+    "report_cap": 1048576,
+    "schema": "heptabao.official271.pki12.oracle-only.terminal.v1",
+    "source_bytes": 133117
+  },
+  "report_expected_path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+  "report_independent_metadata": null,
+  "report_independent_body": null,
+  "pki12_actual_statuses": null,
+  "owner_receipt_semantically_verified": false,
+  "artifacts_after_verified": false,
+  "candidate_started": false,
+  "old_acl23_reexecuted": false,
+  "Native_replayed": false,
+  "newINFOBODY_authorized": false,
+  "C_lane_released": true
+}

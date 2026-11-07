@@ -1,0 +1,196 @@
+{
+  "schema": "heptabao.X230-official271-strict-pki12-source-only.r1",
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "authorization": false,
+  "purpose": "Obtain the original twelve numeric official2.7.1 PKI statuses because the historical69 report normalized two errors. Reuse the already actual officialACL23 separately.",
+  "root": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1",
+  "host": "x230",
+  "port": 23627,
+  "clusterPort": 23628,
+  "entry": {
+    "blob": "b12287d30fa924b12415106d129ff7f1c792e167",
+    "bytes": 18459,
+    "sha256": "b28bc92c8d9589f1b6dbbe12be7cce20fddea3ab75dacbcc5f158ad68c3dfe98"
+  },
+  "request": {
+    "blob": "ecc21302bb94a0b40b856577371cd11d826c6f57",
+    "bytes": 171446,
+    "sha256": "f8678baebc997e19b8770609b52a7ffad8248e7f9ff94dc947e83f60fd4f7377"
+  },
+  "journal": {
+    "blob": "cde02ae68396ec97d4f0bc7a33281331377aa09e",
+    "bytes": 19055,
+    "sha256": "bea509318ec725ba111d244921488ee746cc174bbfd603a29c081e7a8f7bd6a8"
+  },
+  "payload": {
+    "blob": "c0cb9c3c1270e332aef23dd95e23b38a81262637",
+    "bytes": 140624,
+    "sha256": "71fd26d3e4b1cb49b6017222ea65aa956a0a39585202a255bea58620e4111541"
+  },
+  "nativeBinding": {
+    "sha256": "f93cf56a688e5aa92c054b92bf9302b43f3796233576e52bd60e219a6510469b",
+    "native_fingerprint": "17959499251416193705",
+    "canonicalBytes": 171382
+  },
+  "donors": {
+    "entry": {
+      "blob": "446b3cff61ab8baf805d9868f57b150ff0a8ba4f",
+      "bytes": 18330,
+      "sha256": "300a2e20ac852d845f13905c21295bfda3221212688f2573cc4097714eb16855"
+    },
+    "journal": {
+      "blob": "bfda2944a31309daa516957ce6169e7dd73bb7db",
+      "bytes": 19055,
+      "sha256": "ef4694d6e91ff9fd4dddd12c05676a983fcb9a226c44810b4f7547b8b4c922d5"
+    },
+    "request": {
+      "blob": "e2a92c388ec7167f14b33cc9c2a03d82aae3bda4",
+      "bytes": 164759,
+      "sha256": "9ea5802b1ed39410eb2e83d5d7bebd6dfe44812271ac53da47863b884214f190"
+    },
+    "official23Source": "929090b26d52522694ae8d62f33ac5641e823e7c",
+    "official23Actual": "5ebf2743de2e5e96a68c042d80e37f0921cb021e",
+    "historical69Summary": "db965ea9374ddcb7b76c5d21a89036ba9a5d6125"
+  },
+  "originalCaseNames": [
+    "pki.mount",
+    "pki.root",
+    "pki.role",
+    "pki.role_read",
+    "pki.issue",
+    "pki.lease_lookup",
+    "pki.lease_expire_issue",
+    "pki.lease_expire_lookup",
+    "pki.cert_lookup",
+    "pki.lease_revoke",
+    "pki.revoked_lease_absent",
+    "pki.crl_json"
+  ],
+  "unchangedInputs": [
+    {
+      "path": "source/qa/openbao-acceptance/owned_process.py",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "path": "source/qa/openbao-acceptance/official_openbao_launcher.py",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    {
+      "path": "source/qa/openbao-acceptance/bao_http.py",
+      "bytes": 2349,
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f"
+    },
+    {
+      "path": "source/qa/openbao-acceptance/raw_status_observer.py",
+      "bytes": 13664,
+      "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+    },
+    {
+      "path": "source/qa/openbao-acceptance/current_record_component.py",
+      "bytes": 5355,
+      "sha256": "660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9"
+    },
+    {
+      "path": "source/clients/python/heptabao/__init__.py",
+      "bytes": 194,
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2"
+    },
+    {
+      "path": "source/clients/python/heptabao/transport.py",
+      "bytes": 21936,
+      "sha256": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f"
+    },
+    {
+      "path": "source/clients/python/heptabao/consistency.py",
+      "bytes": 4836,
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
+    }
+  ],
+  "acceptance": {
+    "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+    "bytes": 36333,
+    "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
+  },
+  "exactSourceChanges": {
+    "entryEdits": 22,
+    "entryHunks": 16,
+    "journalLiteralEdits": 3,
+    "journalHunks": 2,
+    "unchangedEntryFunctions": [
+      "EntryFailure",
+      "need",
+      "check_deadline",
+      "full9",
+      "snapshot_artifacts",
+      "write_exact",
+      "signal_pending",
+      "closed_fds"
+    ]
+  },
+  "budgets": {
+    "ownerAbsoluteSeconds": 360,
+    "outerSeconds": 390,
+    "deadlineAtEntry": true,
+    "reset": false,
+    "httpTimeoutMaximum": 15,
+    "rawPkiRequestsMaximum": 12,
+    "suiteUnobservedAdminRequestsSourceUpperBound": 3,
+    "launcherHealthPollMaximum": 100,
+    "launcherStartupSourceUpperBound": 103,
+    "extraHealthMaximum": 1,
+    "sourceInputBytes": 133117,
+    "stdinBytes": 140624,
+    "reportBytesMaximum": 1048576,
+    "entryFDsMaximum": 10,
+    "perReadWriteChunkMaximum": 65536,
+    "entryReadbackBytesMaximum": 1181693,
+    "components": {
+      "classes": 4,
+      "variants": 8,
+      "productCases": 0
+    }
+  },
+  "observations": {
+    "maxProcessStatusObservers": 32,
+    "maxProcessReadObservers": 129,
+    "maxStatusPerObserver": 8,
+    "maxPagesPerObserver": 128,
+    "pageBytes": 8192,
+    "payloadCap": 1048576,
+    "processReadStreamChunk": 16384,
+    "streamTotalMaximum": 2097152,
+    "oneCallFuture": true,
+    "wholeSDKBeforeInterpretation": true
+  },
+  "report": {
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "createOnly": true,
+    "mode": "0600",
+    "nativeINFOBODYAuthority": false,
+    "terminalAfterEntryClose": true
+  },
+  "invariants": {
+    "noCandidateStarted": true,
+    "noOldACL23Reexecution": true,
+    "originalOwnerAndLauncherWholeUnchanged": true,
+    "originalAcceptancePkiCasesWholeUnchanged": true,
+    "exactTwo400NoNormalization": true,
+    "unknownTransportStopsPreservingPartial": true,
+    "noWritesOutsideNewOwnedFixture": true,
+    "noOldFixtureMutation": true,
+    "privateCredentialsNeverExported": true,
+    "wholeOriginalArtifactHashByLauncherRequired": true
+  },
+  "qualification": {
+    "sourceChecks": 79,
+    "PythonCompiled": false,
+    "RuntimeCalls": 0,
+    "originalCaseActualResults": null,
+    "officialParity": false,
+    "fullReplacement": false
+  },
+  "executionBlockedUntil": "Root exact GO, free coordinated Native lane and original one-call arm; no slot has been initialized.",
+  "recompute": "Evaluate pure_helpers.js, strict_diff.js, correct_stdin_binding.js, verifier.js; call verifyOfficialPki12Source(makeOfficialPki12VerifierInput(texts)) from recompute.js."
+}

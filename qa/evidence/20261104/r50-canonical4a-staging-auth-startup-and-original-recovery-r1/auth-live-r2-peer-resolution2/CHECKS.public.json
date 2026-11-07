@@ -1,0 +1,66 @@
+{
+  "pass": true,
+  "count": 15,
+  "checks": [
+    {
+      "label": "forward exact whole",
+      "pass": true
+    },
+    {
+      "label": "inverse forward whole",
+      "pass": true
+    },
+    {
+      "label": "inverse exact whole",
+      "pass": true
+    },
+    {
+      "label": "inverse backward whole",
+      "pass": true
+    },
+    {
+      "label": "only two hunks",
+      "pass": true
+    },
+    {
+      "label": "completion only promotes incomplete rows",
+      "pass": true
+    },
+    {
+      "label": "late completion rejected",
+      "pass": true
+    },
+    {
+      "label": "incomplete deadline remains strict",
+      "pass": true
+    },
+    {
+      "label": "immediate close before projection",
+      "pass": true
+    },
+    {
+      "label": "FixedLivePair close unchanged",
+      "pass": true
+    },
+    {
+      "label": "original finally exact",
+      "pass": true
+    },
+    {
+      "label": "only original once guards control repeated close",
+      "pass": true
+    },
+    {
+      "label": "original work35-final45 and17 reserve retained",
+      "pass": true
+    },
+    {
+      "label": "5sec node and8sec log retained",
+      "pass": true
+    },
+    {
+      "label": "all predicate projection functions unchanged",
+      "pass": true
+    }
+  ]
+}

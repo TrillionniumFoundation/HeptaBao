@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.root.rog4a.fixed-INFO-original-failure.r1",
+  "audit": {
+    "tree": "7b2c0d3a6772b36de597e0b862854424c31e96d1",
+    "files": 9,
+    "bytes": 12635,
+    "merkle": {
+      "root_sha": "7b2c0d3a6772b36de597e0b862854424c31e96d1",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "originalPayload": {
+    "blob": "3d5881fdb2dc18b18b236a244b70d9bd716a1df7",
+    "bytes": 227,
+    "sha256": "074718d42cd97e98d8b602b8fad6b6264d800b785d13911763b0105da6ff81a8"
+  },
+  "exactOriginalSDKDecoded": true,
+  "rootGOMatches": true,
+  "requestMatches": true,
+  "actualOutcome": {
+    "schema": "heptabao.failed-info-original-payload-actual.r1",
+    "sourceTree": "237c6cbbf7f11b5ab7b9ba2385cbb023930efec7",
+    "originalBoundaryTree": "c5ad2e76d8275255b14889764af431a975429e8f",
+    "originalOperation": "0a3d2c5c158da55c07f9db9202ada37d9670254e650c70eff7cfa08bb8d6d7d2",
+    "nativeCallsInThisPageScope": 1,
+    "newInfoCalls": 0,
+    "newStatusCalls": 0,
+    "newStartCalls": 0,
+    "sdk": {
+      "blob": "47ef2e12dac379e5d0fa2afe7b3f2dd9a3eada0c",
+      "bytes": 1156,
+      "sha256": "dc50360d2e7582d1b13d20ee1e648f64b26e66399071630d20efae95ed667c75"
+    },
+    "sdkTree": "0b4288b010ca6411c70f4f6d3efcea27d8f5af74",
+    "payload": {
+      "blob": "3d5881fdb2dc18b18b236a244b70d9bd716a1df7",
+      "bytes": 227,
+      "sha256": "074718d42cd97e98d8b602b8fad6b6264d800b785d13911763b0105da6ff81a8"
+    },
+    "payloadTree": "db6003d7d6855727323144f8aa499632ae3a4e21",
+    "actualPayloadKind": "native_result",
+    "actualIsError": true,
+    "actualRemoteHelperExit": 1,
+    "errorType": "FileNotFoundError",
+    "errno": 2,
+    "missingNamedObject": "hb-4a49405b-controls-20261106-r1",
+    "conclusion": "The fixed controls directory was missing in this observation. This does not prove original START was never admitted or that BUILD reached a terminal state.",
+    "originalInfoState": {
+      "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+      "bytes": 11134,
+      "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+    },
+    "originalBuildState": {
+      "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+      "bytes": 181122,
+      "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+    },
+    "oldStatesUnchanged": true,
+    "pageScopeClosed": true,
+    "nativeCallInFlight": false,
+    "originalInfoFutureInactive": true,
+    "originalBuildOutcome": "UNKNOWN",
+    "originalBuildPossibleLaneStillHeld": true,
+    "metadataQualified": false
+  },
+  "originalBuildOutcome": "UNKNOWN",
+  "rootNativeCalls": 0
+}

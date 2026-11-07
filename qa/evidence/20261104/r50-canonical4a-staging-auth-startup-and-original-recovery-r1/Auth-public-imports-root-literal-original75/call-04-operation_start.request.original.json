@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-public-node-startup-root-read-2cce4cec-streams-0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b36956f4-fc05-82c1",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "source": {
+    "blob": "ec8b3b469d113bfa96c07f4021e52fa66d1abbad",
+    "bytes": 6848,
+    "sha256": "f0a10d05cff1f5244bdeb0cb6a6b9d94127709451815e525e1046251ffcd62c6"
+  },
+  "request": {
+    "blob": "46b765bdbbdaa51af1fa3891b78c478b4008b5aa",
+    "bytes": 121,
+    "sha256": "90e081d7d4fb16b6a1928ad526236e282416ee53f73ee2eec9209baf5870eace"
+  },
+  "infoState": {
+    "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+    "bytes": 11134,
+    "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+  },
+  "buildState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "status": {
+    "blob": "ba25cecb4430ece5aea933decbcea117c6894bd4",
+    "bytes": 797,
+    "sha256": "e630828b792467fd100b876cd63834d1aa75fb4acbd0e71d6b933db21d763ad7"
+  },
+  "pure": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  }
+}

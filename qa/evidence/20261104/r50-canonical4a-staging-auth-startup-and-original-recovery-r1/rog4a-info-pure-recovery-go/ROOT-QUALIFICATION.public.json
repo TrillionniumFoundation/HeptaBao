@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.root.4a-info-local-close-action-recovery-qualification.r1",
+  "sourceTree": "cd4dacfa68402b7ec7febd22c57fb7c85b87baca",
+  "checks": [
+    {
+      "name": "original INFO GO exact",
+      "pass": true
+    },
+    {
+      "name": "only paused changed",
+      "pass": true
+    },
+    {
+      "name": "same actual job",
+      "pass": true
+    },
+    {
+      "name": "no current Native dispatch or future",
+      "pass": true
+    },
+    {
+      "name": "original payload already complete",
+      "pass": true
+    },
+    {
+      "name": "all10 original calls accepted",
+      "pass": true
+    },
+    {
+      "name": "old7 calls preserved",
+      "pass": true
+    },
+    {
+      "name": "specific known local error retained",
+      "pass": true
+    },
+    {
+      "name": "actual completed inactive status",
+      "pass": true
+    },
+    {
+      "name": "original single full page",
+      "pass": true
+    },
+    {
+      "name": "only correct close action present",
+      "pass": true
+    },
+    {
+      "name": "private-model fixed after state",
+      "pass": true
+    },
+    {
+      "name": "second recovery rejected",
+      "pass": true
+    }
+  ],
+  "checkCount": 13,
+  "pass": true,
+  "NativeCalls": 0,
+  "actualBStateChanged": false,
+  "originalMetadataNotSemanticallyUsed": true
+}

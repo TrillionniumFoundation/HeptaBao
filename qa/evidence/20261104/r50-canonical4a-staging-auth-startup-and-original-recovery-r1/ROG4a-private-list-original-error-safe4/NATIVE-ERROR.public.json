@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.private-list-native-error-safe-classification.r1",
+  "sdk": {
+    "blob": "1c474f064defffead7cf385298dab342e895f4fd",
+    "bytes": 236,
+    "sha256": "07ecbfc6b5855f5ce6e9eedcac2707b424b17d7db376da1e7189632732da6b5c"
+  },
+  "privateDurabilityQualifiedBeforeInterpretation": true,
+  "isError": true,
+  "errorCode": "INVALID_ARGUMENT",
+  "diagnosticCategory": "time_budget_exceeded",
+  "namedRequestParameterFound": null,
+  "numericBoundFound": false,
+  "noJobRowsReceived": true,
+  "originalBuildAdmission": "UNKNOWN",
+  "originalBuildJobId": null,
+  "noBuildFailureConclusion": true,
+  "rawDiagnosticPublic": false,
+  "newNativeCalls": 0,
+  "noListOrPagesReplay": true,
+  "rootReadOnlyRecoveryDecisionPending": true
+}

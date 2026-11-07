@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.root.mac4a.stage-terminal-min-qualification.r1",
+  "audit": {
+    "tree": "b133226ae1840b401b3dc15f73343622ad2a1675",
+    "files": 8,
+    "bytes": 99665,
+    "merkle": {
+      "root_sha": "b133226ae1840b401b3dc15f73343622ad2a1675",
+      "trees_verified": 1,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "whole active R2 GO exact",
+      "pass": true
+    },
+    {
+      "name": "known original job",
+      "pass": true
+    },
+    {
+      "name": "7 original calls accepted and archived",
+      "pass": true
+    },
+    {
+      "name": "no pending call or observer",
+      "pass": true
+    },
+    {
+      "name": "two observers completed inactive",
+      "pass": true
+    },
+    {
+      "name": "authority native pin exact",
+      "pass": true
+    },
+    {
+      "name": "streams native pin exact",
+      "pass": true
+    },
+    {
+      "name": "actual successful durable terminal",
+      "pass": true
+    },
+    {
+      "name": "stream byte extents",
+      "pass": true
+    },
+    {
+      "name": "exact stdout and stderr pins",
+      "pass": true
+    },
+    {
+      "name": "actual candidate and tree",
+      "pass": true
+    },
+    {
+      "name": "prepared stopped within deadline",
+      "pass": true
+    },
+    {
+      "name": "no compiler or server started",
+      "pass": true
+    },
+    {
+      "name": "fixed actual report path",
+      "pass": true
+    },
+    {
+      "name": "release lanes zero",
+      "pass": true
+    },
+    {
+      "name": "detailed report still unqualified",
+      "pass": true
+    }
+  ],
+  "rootNativeCalls": 0,
+  "actualJob": "1a1b382714d-fc05-8350",
+  "sourceStageTerminal": true,
+  "detailedReportQualified": false,
+  "compileRuntimeQualified": false,
+  "priorRootCheckError": {
+    "error": "two observers completed inactive",
+    "cause": "Root check assumed completedObservers.pages was an array; inspect actual original schema before correction",
+    "nativeCalls": 0,
+    "gitMutations": 0,
+    "originalStateUnchanged": true
+  }
+}

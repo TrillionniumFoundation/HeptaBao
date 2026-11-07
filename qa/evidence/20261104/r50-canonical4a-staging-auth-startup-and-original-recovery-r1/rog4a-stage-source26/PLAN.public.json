@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.b.combined4a.source-stage-plan.r1",
+  "sourceOnly": true,
+  "rootGONeeded": true,
+  "lane": 0,
+  "sourceRoot": "/home/qian-qi/hb-4a49405b-src-20261106-r1",
+  "sourceCheckout": "/home/qian-qi/hb-4a49405b-src-20261106-r1/source",
+  "candidate": {
+    "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+    "bytes": 4223,
+    "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+  },
+  "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+  "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "leafCount": 3932,
+  "trackedBytes": 62553956,
+  "index": {
+    "blob": "4767ced1fa8bcb3d6efc1cf3d678ce6d75b2dd1c",
+    "bytes": 453838,
+    "sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d"
+  },
+  "history": 3770,
+  "ancestryLinks": 18,
+  "readOnlyBase": {
+    "path": "/home/qian-qi/hb-02b90762-src-20261106-r1/source",
+    "commit": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "tree": "9781e9615ac5fb068d217241c74bb54bf87942cf"
+  },
+  "original495AndFailedObserverFences": "unchanged whole",
+  "baseStageQualification": {
+    "blob": "85a51c6822278e590be623c323f19d86d0f82bb0",
+    "bytes": 2941,
+    "sha256": "809a5f365d76b69bc85c8c7f793e6cb106ae137b693768b566c1a10a090c9ac6"
+  },
+  "source": {
+    "blob": "384892ebb06ac6511318380e3383bbf99d5dee17",
+    "bytes": 30326,
+    "sha256": "60fd63decdf0e51a6154871a33d5e5da538b474817c330870d53013e4a708f1e"
+  },
+  "request": {
+    "blob": "0d7da3d10202045af2e06a2d598a82b2fa18194d",
+    "bytes": 113356,
+    "sha256": "43857487d44efaff0dbd5c2378474ed04211229aa73030784850f8ca415f4276"
+  },
+  "journal": {
+    "blob": "254e10fc6158f4952469a427d89b798c2c8873e4",
+    "bytes": 19047,
+    "sha256": "2bf44bc20fc91ed4b6092116b51952f4874484437221120c57ac3ec4334945be"
+  },
+  "slot": "combined_4a49405b_rog_source_gitfirst_r1",
+  "key": "heptabao-combined-4a49405b-rog-source-20261106-r1-60fd63de",
+  "native_binding": {
+    "sha256": "b2ca6b6145cd9cdf0d9221a54e285744e1f67f6c20a8679f7cd1147c0a1ca971",
+    "native_fingerprint": "12883227749573827807"
+  },
+  "budgets": {
+    "stage": 300,
+    "gitLeaf": 90,
+    "clone": 180,
+    "outer": 360,
+    "term": 5,
+    "kill": 5,
+    "stdin": 262144,
+    "bundle": 4194304,
+    "eachLeaf": 2097152,
+    "totalTracked": 134217728,
+    "processRead": 16384,
+    "immutablePage": 8192,
+    "payload": 1048576,
+    "processStarts": 1,
+    "processStatusObservers": 64,
+    "processReadObservers": 129,
+    "perObserverStatusCalls": 8,
+    "perObserverImmutablePages": 128,
+    "originalStdoutBytes": 2097152,
+    "originalStderrBytes": 2097152
+  },
+  "bundleTotalCapBytes": 4194304,
+  "expectedBundles": [
+    {
+      "resultKey": "canonical_bundle",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+      "prerequisites": [
+        "5767739cd25e458ac052dc8d384019bab8688ae0"
+      ],
+      "heads": [
+        [
+          "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+          "HEAD"
+        ]
+      ],
+      "version": 2,
+      "bytes": null,
+      "sha256": null,
+      "full9": null,
+      "consumer": "Mac actual576 base"
+    },
+    {
+      "resultKey": "canonical_x230_bundle",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+      "prerequisites": [
+        "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+      ],
+      "heads": [
+        [
+          "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+          "HEAD"
+        ]
+      ],
+      "version": 2,
+      "bytes": null,
+      "sha256": null,
+      "full9": null,
+      "consumer": "X230 reviewed 495->02b then 02b->target"
+    }
+  ],
+  "expectedDirectCommands": 72,
+  "expectedCommandCountIsSourceDerived": true,
+  "countsRequireActualReport": true,
+  "sourceEdits": 13,
+  "sourceHunks": 6,
+  "journalHunks": 2,
+  "unchangedDefinitionCount": 19,
+  "totalDefinitionCount": 20,
+  "originalHistoricalControls": {
+    "count": 4,
+    "stdinBytes": 79951,
+    "executed": false,
+    "compileOnly": true,
+    "doesNotQualify252or280": true
+  },
+  "stageActual": null,
+  "bundleTransferAuthorized": false,
+  "reportInfoBodyAuthorized": false,
+  "buildAuthorized": false,
+  "formatterAuthorized": false,
+  "qualificationInherited": false,
+  "oldFailuresPreserved": true
+}

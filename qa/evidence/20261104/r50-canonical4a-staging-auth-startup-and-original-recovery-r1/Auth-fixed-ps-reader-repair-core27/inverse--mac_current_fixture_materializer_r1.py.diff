@@ -1,0 +1,10 @@
+--- a/mac_current_fixture_materializer_r1.py
++++ b/mac_current_fixture_materializer_r1.py
+@@ -106,7 +106,6 @@
+         '(allow file-write* (subpath '+q(root)+'))',
+         '(allow file-write* (literal "/dev/null"))',
+         '(allow network-outbound (remote ip '+q('localhost:'+str(port))+'))'])
+-    lines.append('(allow file-read* (literal "/"))')
+     return ('\n'.join(lines)+'\n').encode()
+ 
+ class Materializer:

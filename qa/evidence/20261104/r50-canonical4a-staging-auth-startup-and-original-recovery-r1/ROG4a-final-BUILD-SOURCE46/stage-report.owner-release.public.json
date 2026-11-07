@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.4a.stage-report-body.owner-release.r1",
+  "originalJob": "1a1b3307dc2-fc05-80f8",
+  "report": {
+    "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+    "bytes": 31257,
+    "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+  },
+  "reportWholeTree": "2a786c309aec0e898ecc4d23635b40bb8681a172",
+  "originalBodyObserver": {
+    "id": "c577930dab615d3c97a41b0296313ca4d03805b614becfbe033a40fdb736edd3",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "ee19e20edcc44452e7fd8e92ed2007cc5138af27",
+      "bytes": 42091,
+      "sha256": "7d951bcfc5dfca36f01cc712a935e82126495dd9db1b79e2d996ccca78046c69"
+    },
+    "payloadTree": "1f87ea976d2d8167c39ed85b35b3625b763e95f0",
+    "nativeText": {
+      "blob": "42beadc87b536ec3935553b644b582b578165ab5",
+      "bytes": 41988,
+      "sha256": "cd64634f450a8ad11bd5f418e6c5f5565d5588a42d07435b422bf5ce9c9be130"
+    },
+    "pages": 6,
+    "completedInactive": true
+  },
+  "originalInfo": {
+    "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "size": 31257,
+    "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5",
+    "version": "66306:34603472:31257:1794007676686666010:1794007676686666010",
+    "nativeText": {
+      "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+      "bytes": 462,
+      "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+    },
+    "originalOperation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+    "full9Strings": [
+      "66306",
+      "34603472",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "31257",
+      "1794007676686666010",
+      "1794007676686666010"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "increment": {
+    "calls": 8,
+    "observers": 1,
+    "pages": 6
+  },
+  "cumulative": {
+    "calls": 18,
+    "observers": 4,
+    "pages": 9
+  },
+  "allOriginalCallsAccepted": true,
+  "allObserversCompletedInactive": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "NativeLaneReleased": true,
+  "NativeFutureCount": 0,
+  "stageSemanticQualifiedByRoot": false,
+  "bundleTransportAuthorized": false,
+  "buildAuthorized": false,
+  "localCloseActionError": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "close",
+    "name": "Error",
+    "message": "closed_gfRun_action",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "localRecovery": {
+    "goPin": {
+      "blob": "aa47dee0c6a6218e5870831661f69216847dca8d",
+      "bytes": 1625,
+      "sha256": "50cb85ec4614f13c2594dd7b4ac91d14825c2a3c2961ffe136d1ec83e898b6d7"
+    },
+    "beforePin": {
+      "blob": "bd06c489e911bf65d630ae8665e9ca5e00d96de2",
+      "bytes": 157674,
+      "sha256": "99343cb695f2bfda2c47111dd8b226d02479ad15f051179bc13b9bb60e605efe"
+    },
+    "afterPin": {
+      "blob": "22cb576c41caea26beb8f931dfa8a8a9e48a0262",
+      "bytes": 157675,
+      "sha256": "3808482edffd2a0fb68de8bf15ae42af22a52b5eff80c36ae521ef47ed7b1c0d"
+    },
+    "oldOuterFailure": {
+      "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+      "action": "close",
+      "name": "Error",
+      "message": "closed_gfRun_action",
+      "automaticRetry": false,
+      "newAdmissionAllowed": false,
+      "returnedNormally": true
+    },
+    "NativeCalls": 0,
+    "reason": "wrong local action close; correct close_observer not yet reached"
+  }
+}

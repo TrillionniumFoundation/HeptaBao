@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.4a.stage-report-body.source.r1",
+  "sourceOnly": true,
+  "authorization": null,
+  "original_job": "1a1b3307dc2-fc05-80f8",
+  "original_slot": "combined_4a49405b_rog_source_gitfirst_r1",
+  "attachExistingOnly": true,
+  "initializeAllowed": false,
+  "journal": {
+    "blob": "be146f7191451c264e374facd59611dc061d5ca4",
+    "bytes": 28216,
+    "sha256": "15110c94a8131d25bcdd18ce720595996307d8b0c87c0e7d02955e5451e1e3b2"
+  },
+  "beforeDonor": {
+    "blob": "5d74cdef5db802aa3accefdde721f2ea26c3906a",
+    "bytes": 28216,
+    "sha256": "fab8f8444248eccf346f5eee6b9726e42bd4a2be62ff5cee7ff8033dd2b05803"
+  },
+  "currentInfoJournal": {
+    "blob": "90ac83d6e48744399e1508f0b86ac4a8c62f33cb",
+    "bytes": 23858,
+    "sha256": "256effb6f6cd3906653c4d85e4cd465f83056bf4bece4725c2672f1d45064483"
+  },
+  "exact_request": {
+    "blob": "b6048e8adb57144a814f2935978114b136958396",
+    "bytes": 405,
+    "sha256": "ac599c2432aed05b11fb3178e7c62a384d8879c5a130eefbef24a96974c4fc0b"
+  },
+  "expected_report": {
+    "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 31257,
+    "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5",
+    "version": "66306:34603472:31257:1794007676686666010:1794007676686666010",
+    "infoOperation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+    "infoNative": {
+      "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+      "bytes": 462,
+      "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+    }
+  },
+  "info_operation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+  "maximum_binary_read_starts": 1,
+  "scope": "stage_result_binary_read_only",
+  "limits": {
+    "offset": 0,
+    "limit": 31257,
+    "maximumNativeChunkBytes": 65536,
+    "immutablePageBytes": 8192,
+    "originalPayloadBytes": 1048576,
+    "maximumOriginalStatusCalls": 8,
+    "maximumOriginalPages": 128
+  },
+  "actualInfoPacket": "345a9d16943b283a792a9e2c01f30a7b6ae4c1a8",
+  "actualInfoClosed": true,
+  "infoNative": {
+    "blob": "c99781d25798c2a3a299c51bfa43aa96ba2e0402",
+    "bytes": 462,
+    "sha256": "a4ba40eb2b7578c3f42abc1b6ec94d6526fd893eed68cfe30fdc7f311bd84de7"
+  },
+  "state": {
+    "blob": "5a72af70c8ab27178533d6f353fc43bc4cbbfe92",
+    "bytes": 157266,
+    "sha256": "37929b631fb8ea1d9849e318833837b423382c199e78890433b47a5395e8974b"
+  },
+  "localCloseActionErrorPreserved": true,
+  "pureRecoveryGO": {
+    "blob": "aa47dee0c6a6218e5870831661f69216847dca8d",
+    "bytes": 1625,
+    "sha256": "50cb85ec4614f13c2594dd7b4ac91d14825c2a3c2961ffe136d1ec83e898b6d7"
+  },
+  "sourceChanges": {
+    "namedSubstitutions": 12,
+    "donorHunks": 3,
+    "currentHunks": 6
+  },
+  "actualBody": null,
+  "semanticReportQualification": false,
+  "bundleTransfer": false,
+  "buildAuthorized": false,
+  "metadataRefreshAllowed": false,
+  "processStartAllowed": false,
+  "sequence": [
+    "Whole separate exact BODY GO.",
+    "Existing slot authorize_stage_result_body; never initialize.",
+    "Whole request/intent/arm, then model boundary and exactly one invoke.",
+    "Every SDK external whole before parse; only original op status and contiguous 8192-byte payload pages.",
+    "Exact path/version/size/offset0/next31257/eof and decoded whole SHA.",
+    "Externalize decoded original report whole before JSON semantic review; release original observer."
+  ],
+  "futureRootGOFields": {
+    "authorization": "GO",
+    "scope": "stage_result_binary_read_only",
+    "original_job": "1a1b3307dc2-fc05-80f8",
+    "info_operation": "578da6337fdfe69127df760cd01b59b0916e181914666ba5f1be3c97fa82bd00",
+    "maximum_binary_read_starts": 1,
+    "exact_request": {
+      "blob": "b6048e8adb57144a814f2935978114b136958396",
+      "bytes": 405,
+      "sha256": "ac599c2432aed05b11fb3178e7c62a384d8879c5a130eefbef24a96974c4fc0b"
+    }
+  },
+  "oldFailuresPreserved": true
+}

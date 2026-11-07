@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.small-source-peer-manifest.r1",
+  "entries": [
+    {
+      "path": "REVIEW.public.json",
+      "blob": "8e331757af57dffb9bb3e529527e4feb7388c3b2",
+      "bytes": 1703,
+      "sha256": "a8a92216f9d0cb74076c573640d0448559d13256257484aee3b738415ba70d07"
+    },
+    {
+      "path": "exact-outer-entry.source.js",
+      "blob": "e12139565dc54a2beaf955fc8d370706fb29fb62",
+      "bytes": 616,
+      "sha256": "ec8196b9d58eefdd65424f9837e0fe07bf0e51db81f85f5c32c1a28a583cdb19"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.c.independent.b4a-stage-dual-bundle-review.v1",
+  "verdict": "NO_NEW_SOURCE_BLOCKER_IN_REVIEWED_DELTA",
+  "source_only": true,
+  "candidate_execution": false,
+  "python_execution": false,
+  "native_calls": 0,
+  "root_task": "Independent narrow review: original 300s stage, cumulative 4MiB bundle cap, failure/finally preservation",
+  "source_tree": "eda0620d3bbf62f0add68918e2e948d540239e0e",
+  "inputs": {
+    "before": {
+      "blob": "6857eee5bc607f11417a88c1b9fece964f0261a5",
+      "bytes": 29601,
+      "sha256": "a1b67f5aeb968b173886217a26987c3ead111778158136bb036906faa488b35f"
+    },
+    "after": {
+      "blob": "384892ebb06ac6511318380e3383bbf99d5dee17",
+      "bytes": 30326,
+      "sha256": "60fd63decdf0e51a6154871a33d5e5da538b474817c330870d53013e4a708f1e"
+    },
+    "forward": {
+      "blob": "b79e6727b5d8bb6362cbef7c5255c33c6a5d7744",
+      "bytes": 7721,
+      "sha256": "51c90bcbb8ac870dd8e30add377a23ef4a61d8b59487f444d6111f09bbfb6597"
+    },
+    "reverse": {
+      "blob": "4872e6ae93c6571bf6eb521244b525d7e066e33d",
+      "bytes": 7721,
+      "sha256": "c950391d872e25390c9a05b780053f6450952f639170c8d7758fe86fb20dee44"
+    },
+    "plan": {
+      "blob": "2fcf434554f81c6b889896ce462a279d18597252",
+      "bytes": 4341,
+      "sha256": "ff7f4fd8d672ec8a47972cbce1d9c281dfdb9b7030cf85f6b2e5b276b6b72334"
+    }
+  },
+  "reviewed": {
+    "after_full_lines": 594,
+    "algorithm_hunks": "explicit prerequisite parameter plus two fixed bundle outputs; other delta is candidate data",
+    "author_checks_reexecuted": false,
+    "independent_checks": 14
+  },
+  "findings": [
+    {
+      "topic": "Two fixed outputs and identity",
+      "evidence": "AFTER.py 514-544; canonical_bundle_header 407-425",
+      "conclusion": "The loop has exactly PARENT576 and BASE02b rows. Every output verifies a v2 header with exactly its supplied prerequisite and only current4a HEAD, fsyncs the held matching file and control directory, runs bundle verify/list-heads, and repeats full stable read before adding its result."
+    },
+    {
+      "topic": "Shared byte budget",
+      "evidence": "AFTER.py 514,519-526,540,545-546",
+      "conclusion": "Remaining bytes are 4194304 minus accumulated successful full bundle lengths. Both stable reads of each output use this remaining cap; the second row cannot reset it. The successful total is bounded by the original4MiB.",
+      "qualification": "This is the qualified/readable output-size bound, not an OS disk quota on git bundle create. Oversize creation subsequently fails validation; this distinction existed for the original single bundle."
+    },
+    {
+      "topic": "Shared absolute deadline",
+      "evidence": "AFTER.py 15-16,261-271,523,537-538,554,582-594",
+      "conclusion": "All bundle Git commands use the unchanged owned wrapper, clamped to the same STARTED/300-second budget and original90-second leaf cap. No new stage deadline is initialized. Final cleanup elapsed time and final exit retain deadline checks."
+    },
+    {
+      "topic": "Failure and cleanup",
+      "evidence": "AFTER.py 541-594",
+      "conclusion": "The status begins failed and becomes prepared only after both bundle results and unchanged source/failure/base after-fences. A second-output exception preserves any first output and reaches unchanged direct-child cleanup. Pending signal, remaining child group, cleanup error or deadline failure rejects success. No automatic retry or deletion of earlier failure artifacts was added."
+    },
+    {
+      "topic": "Unchanged baseline",
+      "evidence": "Whole strict before/after comparison",
+      "conclusion": "The six hunks reconstruct exactly both directions. Nineteen of twenty complete definition blocks remain byte-identical; only canonical_bundle_header changes. The entire after-fences/failure/finally tail is identical."
+    }
+  ],
+  "limitations": [
+    "No Native, Python, Git commands on the host, Cargo or candidate execution performed.",
+    "No assertion of current input presence, actual command count, actual bundle bytes/hash/full9, transfer qualification or build success.",
+    "Request/journal/typed binding were root-reviewed; this peer specifically reviewed the stager delta and failure/budget flow."
+  ],
+  "checker_history": [
+    {
+      "phase": "independent pure text check",
+      "error": "SyntaxError: Unexpected token ')'",
+      "cause": "extra closing parenthesis in local definition extractor",
+      "candidate_changed": false,
+      "native_calls": 0
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.successor4a.mac-bundle-body-release.v1",
+  "currentState": {
+    "blob": "bb80ff31e9dae0cb6658fd37a00f525f99905c91",
+    "bytes": 35314,
+    "sha256": "c15a1533c8fee14a60105891553a73f943d1a9e665f3dc21963090a89a3acae6"
+  },
+  "originalOperation": "1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f",
+  "infoOperation": "652e6f755ef82208e0ea628ac6693cda7afab1244460c0f4062c0dacc6bac0e2",
+  "allSixOriginalCallsRetained": true,
+  "oldFailureRetained": true,
+  "oldHistoryRetained": true,
+  "bodyStarted": 1,
+  "bodyRanges": 1,
+  "wholeBodyBytes": 1253,
+  "wholeSHA": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+  "wholeTransportTree": "e41bec7a3d488589bb7212c57ff0d0ee1f93ac7b",
+  "completedObservers": 2,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "nativeCallInFlight": false,
+  "unresolvedFuture": 0,
+  "C_lane_released": true,
+  "x230BodyCalls": 0,
+  "MacStageQualified": false
+}

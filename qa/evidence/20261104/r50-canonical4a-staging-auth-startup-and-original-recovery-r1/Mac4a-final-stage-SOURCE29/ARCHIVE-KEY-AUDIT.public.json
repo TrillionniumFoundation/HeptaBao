@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.mac4a-stage-archive-key-audit.v1",
+  "source": {
+    "blob": "de11da67ee16e58248f939483b5f20fd09114a9d",
+    "bytes": 19049,
+    "sha256": "34efe4b61e146a99b9057d6ed1fddcdd92a46209328808fea79b2cda756b5211"
+  },
+  "allFunctionBodyArchiveSites": [
+    {
+      "function": "gfPrepareOne",
+      "key": "\"gfa-\"+callKey"
+    },
+    {
+      "function": "gfInvokePreparedOnce catch",
+      "key": "\"gfx-\"+callKey"
+    },
+    {
+      "function": "gfInvokePreparedOnce originalSDK",
+      "key": "\"gfs-\"+callKey"
+    },
+    {
+      "function": "gfCloseOriginalObserver",
+      "key": "\"gfc-\"+a.id"
+    }
+  ],
+  "fixedExecutionArchiveKeys": [],
+  "futureCallKeyPrefix": "4a-mac-stage-r1-",
+  "futureOperationIDs": null,
+  "slotAlreadyPresent": false,
+  "prospectiveStartArchiveKeys": [
+    {
+      "key": "gfa-4a-mac-stage-r1-start",
+      "absentInCurrentCache": true
+    },
+    {
+      "key": "gfs-4a-mac-stage-r1-start",
+      "absentInCurrentCache": true
+    },
+    {
+      "key": "gfx-4a-mac-stage-r1-start",
+      "absentInCurrentCache": true
+    }
+  ],
+  "actualNativeCalled": false,
+  "onceAdmissionGuardPreserved": true
+}

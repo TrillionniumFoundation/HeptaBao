@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.c.live-denial-r2-narrow-source-resolution.v1",
+  "verdict": "NO_REMAINING_SOURCE_BLOCKER_IN_REVIEWED_SCOPE",
+  "source_tree": "bdc59e4eb226e828f81a330247cf94d92e11963c",
+  "source": {
+    "blob": "b575735512bf008ae28f737c24d2352199397a2f",
+    "bytes": 113950,
+    "sha256": "19a394eead32c22d405d871133c111b03ed77c6750dbf45528f0e6836174e92c"
+  },
+  "before": {
+    "blob": "dee81d92d9e78cf0295bf7598a706a945e72732e",
+    "bytes": 113478,
+    "sha256": "438c883ab686899b36293bf67e53d7ae74b2a764c9b71bf8ca6bc3289e158460"
+  },
+  "forward": {
+    "blob": "7f8c1ca71e21d55bfcba788dbfa14cf55c5a17f6",
+    "bytes": 1931,
+    "sha256": "3e2060f16097dc915fbd017b4f6eca1926bce06c785042db4004b75c8e7663ae"
+  },
+  "inverse": {
+    "blob": "91f46b1a57e02761d303762a476c3a67fb91abf9",
+    "bytes": 1931,
+    "sha256": "0e37f22d212379cc55e71d63008fa6c226089b913d43535ad9bbe2a06ab9ab47"
+  },
+  "prior_findings": {
+    "tree": "adb6a227c6e604009cb97cf9c1f081292cb595c0",
+    "blob": "d94ff36a5c01a4e1fb154ac5a8f8e9ebfed4ee60"
+  },
+  "independent_source_checks": 15,
+  "author_mechanical_checks_reexecuted": false,
+  "resolved": [
+    {
+      "id": "C-LIVE-1",
+      "resolution": "Only incomplete rows evaluate their own deadline. A first exit+EOF completion at or before that deadline promotes completeBeforeDeadline to true and records its first monotonic/wall-clock time. Later pumps for the other child cannot demote it. Late completion and still-incomplete rows remain rejected by the original deadline."
+    },
+    {
+      "id": "C-LIVE-2",
+      "resolution": "Immediately after successful observe(), the original pair.close runs under critical protection before cached projection or held-input/HOME rechecks. This starts the two original9-second cleanups while the observe work deadline remains START+17. Exceptional observe paths still enter the original finally. The original final close repeats only guarded bookkeeping: stopAttempted and closeAttempted prevent new stops or repeated closes."
+    }
+  ],
+  "unchanged": [
+    "The complete FixedLivePair.close method is byte-identical to R1.",
+    "The final main finally/closure/final deadline/output code is byte-identical to R1.",
+    "All log predicate and projection code is byte-identical to R1.",
+    "The5-second post-gate node deadline,8-second log timeout literal,17-second work point,35-second shared phase and45-second final phase remain unchanged.",
+    "The original6909 profile,HomeControl andWNOWAIT helper remain as independently checked in the prior findings packet; Commands immediate-before module ancestry distinction remains explicitly recorded there."
+  ],
+  "execution": {
+    "Python": false,
+    "NativeCalls": 0,
+    "componentHarness": false,
+    "knownChildren": 0
+  },
+  "limits": [
+    "This is exact R2 two-hunk source review, not a live observation, Python syntax execution or proof that log will deliver any denial.",
+    "No startup subscription ACK, independently observed final Node image, zero-denial inference or business qualification is introduced.",
+    "R2 request/journal/outerNative60 binding are left to root's exact admission review; this peer did not reread them.",
+    "Root and author are preserving the original R1 source and failure findings; the resolution does not rewrite that history."
+  ]
+}

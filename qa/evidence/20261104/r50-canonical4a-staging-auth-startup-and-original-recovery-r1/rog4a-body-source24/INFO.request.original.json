@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json"
+    }
+  },
+  "idempotency_key": "heptabao-combined-4a49405b-rog-source-observe-r1-report-info"
+}

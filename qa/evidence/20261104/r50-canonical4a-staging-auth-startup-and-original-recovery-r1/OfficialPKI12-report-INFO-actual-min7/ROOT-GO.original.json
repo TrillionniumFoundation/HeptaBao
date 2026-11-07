@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.root.official271-pki12-report-INFO.GO.r1",
+  "authorization": "GO",
+  "scope": "official271_oracle_result_file_info_only",
+  "issuedAtUTC": "2026-11-07 00:16:43 UTC",
+  "original_job": "1a1b3461a2c-fc05-81a9",
+  "existing_slot": "official271_x230_pki12_oracle_gitfirst_r1",
+  "attach_action": "authorize_oracle_report_info",
+  "initialize_allowed": false,
+  "exact_request": {
+    "blob": "2f4e6117554a8818ece0d5e06692bc9ab84d43c6",
+    "bytes": 269,
+    "sha256": "fbd273d05f6bc3fb3062a4ea82fc3bd524ccd2b735374e4163c2faa3d10502d1"
+  },
+  "journal": {
+    "blob": "0828f3293d3e3c4bf16b876af8514fd8d1705863",
+    "bytes": 22994,
+    "sha256": "21bd24a793db3401257523cee2b4f216601302605e94f0c3719fa5072903d77a"
+  },
+  "maximum_file_info_operations": 1,
+  "maximum_process_start_calls": 0,
+  "maximum_binary_read_operations": 0,
+  "maximum_original_status_calls": 8,
+  "maximum_original_immutable_pages": 128,
+  "immutable_page_bytes": 8192,
+  "maximum_original_payload_bytes": 1048576,
+  "target": {
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "bytes": 41509,
+    "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0",
+    "full9Strings": [
+      "2053",
+      "3321457",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "41509",
+      "1794009102635552960",
+      "1794009102635552960"
+    ]
+  },
+  "original_state": {
+    "blob": "ba875d198144416dd4206e1a60e1c47a34b28232",
+    "bytes": 219686,
+    "sha256": "eafafc8bbea6eb7757f954587f5596c503c3fc54a6faad9c8745d6e80f609494"
+  },
+  "original_stdout": {
+    "blob": "ea2c76305ee16677874cbfd6ec5cedc4c72bbc7f",
+    "bytes": 676,
+    "sha256": "83fff2ea0f207fa002a52ae2da23cd016780bba1fb928a1211563bfdc508146a"
+  },
+  "sourceTree": "22e963cefbfb0adc9b8d7e2fbd98289867639197",
+  "sourceRootQualification": {
+    "blob": "8555470864f9e9c2554e0adf9db709e310160646",
+    "bytes": 2659,
+    "sha256": "fc9f549f81e73151a04ad52761b8fd4657ab3a8cbe9c78212df3e6a113227aec",
+    "tree": "e5c9d580dfa025b0051ce2cb698ba426e199767d",
+    "whole": true
+  },
+  "original_runtime_GO": {
+    "blob": "4b3d7263860f754d52b4e76a036300418fe8e046",
+    "bytes": 4840,
+    "sha256": "53bc00013668c88117e89b77402aaa44e975717c6fb1a5e686b533862884e95f"
+  },
+  "original_outer_actual_tree": "4b2b1ffb013276bbf7db2a051155458ae98ebf6d",
+  "original_outer_root_qualification": {
+    "tree": "4333317b60d0b354fc286f20331ab0aa37c46f75",
+    "blob": "d4fd31dbda6e51451391730eb1b2ef029ef47c2f",
+    "bytes": 6724,
+    "sha256": "18f116f57ca4e997c77506c9397292c1bc72f817f160a4127e26f94843285329"
+  },
+  "execute_only_after": "Both Mac and X230 dual-bundle INFO original operations have closed all returned futures/pages and C has released both. No overlap with either bundle INFO context.",
+  "lane_allocation": {
+    "A": 0,
+    "B": "1 UNKNOWN original BUILD",
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "sequence": [
+    "whole new exact GO",
+    "attach existing unchanged seven-call closed context with exact original state and stdout",
+    "whole request/intent/arm",
+    "independent model boundary",
+    "one file_info admission",
+    "whole original SDK before parse",
+    "only returned original ID/status/contiguous8192pages",
+    "whole payload before exact metadata/full9/version acceptance",
+    "hold for actual-version BODY SOURCE and separate GO"
+  ],
+  "actual_metadata": null,
+  "actual_body": null,
+  "actual_12_case_statuses_qualified": false,
+  "onError": "Preserve original state, call, SDK and UNKNOWN. No reinitialize/replay/rekey. Stop all later admissions. Same-ID recovery requires an exact separately reviewed plan.",
+  "full_replacement": false,
+  "client_cutovers": 0,
+  "old_cleanup_authorized": false
+}

@@ -1,0 +1,625 @@
+{
+  "schema": "heptabao.public-node-single-root-literal-comparison-source.r1",
+  "state": "SOURCE_ONLY_NOT_INITIALIZED_NOT_SUBMITTED",
+  "source": {
+    "blob": "c8e1f1b7d6aecc4c135df837194f24b6bd8abfec",
+    "bytes": 91973,
+    "sha256": "82025f4c03815690c72f1c389d74cb6d4e8f8eb157465ea99f92921bab6cd250"
+  },
+  "exactRequest": {
+    "blob": "136ba17947f49cf5cdf2a281dda46bcebaa124fd",
+    "bytes": 92994,
+    "sha256": "015b7ba1cb858f7eea8f49ce3b1b3fdef066147fe49746ffa9831778db232617"
+  },
+  "journal": {
+    "blob": "b70e242afd89fac850a4ecba06553e09c8465628",
+    "bytes": 19072,
+    "sha256": "8828c217d313cda268348ef7d88bd7d009e4bc4ae30f4311abc3eea30b8512bc"
+  },
+  "slot": "owner_authbus_public_node_root_read_version_compare_gitfirst_r1",
+  "rootGo": null,
+  "NativeSubmitted": 0,
+  "purpose": "Test one primary-implementation-backed hypothesis with public --version only: original 6909-byte profile plus literal-root file-read*, compared to the matched no-test-profile baseline. This is not a credential/SDK repair admission or a diagnosis of a prior failure.",
+  "originalFacts": {
+    "publicProbeInputs": {
+      "schema": "heptabao.fixed-public-node-inputs-provenance.r1",
+      "originalPublicProbeJob": "mac/1a1b25c3c54-fc05-7db1",
+      "source": {
+        "blob": "350a7511e91644fd8e6652f9b6c9cbfdaca1e3d4",
+        "bytes": 150406,
+        "sha256": "9f35cf7cc8f0c63cb678f5acbd0974f1c5127452af57b740f29908a77c783dba"
+      },
+      "request": {
+        "blob": "5f92076fa2198a6f473c11bed043a4a347ac1dbc",
+        "bytes": 151322,
+        "sha256": "3ce6082cfff09e0cadeb7494b7b4a7701fc68af063fb53b3c57f965e637c6f0b"
+      },
+      "actualStdout": {
+        "blob": "215ee5f9d647568a2a785c239fe8e0e90b1b9539",
+        "bytes": 9930,
+        "sha256": "14fe6172b38a4a036ebe5fff0ca7f616ea6fbe757d3abd2996b64fa602ac6cc0"
+      },
+      "actualAuthority": {
+        "blob": "b4032586eeca0965a7ab2decc811d47aa82b06d0",
+        "bytes": 731,
+        "sha256": "b14a2dc0cba4c2227ba0cb30339e60eb2ceb565d47084aa4c3f46337390faea4"
+      },
+      "actualWholeTree": "73e04ba4466bcdd042bff9c776c2c607c7150057",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+        "/opt/homebrew/bin/node",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial",
+      "explicitEnvironment": {
+        "HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home",
+        "OPENCLAW_CONFIG_PATH": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/openclaw.json",
+        "OPENCLAW_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/home",
+        "OPENCLAW_OAUTH_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state/oauth",
+        "OPENCLAW_STATE_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/state",
+        "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/tmp"
+      },
+      "environmentInheritance": false,
+      "environmentSourceLine": "child_env={...} passed as env=child_env to subprocess.Popen; only the seven public fixed path/environment values listed here.",
+      "markerSource": {
+        "blob": "416b89149f2331353c5468ca0020d8080a952ba1",
+        "bytes": 1052,
+        "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+      },
+      "publicModuleSources": {
+        "rows": {
+          "blob": "408959d22873855f79f28570c611d24db44005cd",
+          "bytes": 3108,
+          "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+        },
+        "cache": {
+          "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+          "bytes": 6846,
+          "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+        }
+      },
+      "actualCreatedPublicFiles": [
+        {
+          "bytes": 1052,
+          "identity": [
+            "16777244",
+            "72751133",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "1052",
+            "1793993752046025997",
+            "1793993752046034789"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/startup-imports.mjs",
+          "sha256": "227b6113c3076e870f8ebd4876d05c441175eb48eebe0aa529db139951a8ec5e"
+        },
+        {
+          "bytes": 3108,
+          "identity": [
+            "16777244",
+            "72751134",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "3108",
+            "1793993752046284547",
+            "1793993752046290588"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_auth_rows_cas_r1.mjs",
+          "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+        },
+        {
+          "bytes": 6846,
+          "identity": [
+            "16777244",
+            "72751135",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "6846",
+            "1793993752046969359",
+            "1793993752046976526"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/qa/mac_authbus_cache_cas_r1.mjs",
+          "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+        },
+        {
+          "bytes": 6909,
+          "identity": [
+            "16777244",
+            "72751136",
+            "501",
+            "20",
+            "33152",
+            "1",
+            "6909",
+            "1793993752047449790",
+            "1793993752047457623"
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-public-node-startup-20261106-r1/initial/consumer.sb",
+          "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+        }
+      ],
+      "profileSha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12",
+      "inputSourceExtraction": "The three public texts are decoded without execution from the exact source PUBLIC_FILES base64-JSON literal; each SHA/length equals the original actual held readback receipt.",
+      "sourceAuthorizationBasis": "Root expressly authorizes the fixed termination.namespace field and bounded public frames from this public-only Node child. No credential, private plan, database method, provider, CAS function, SDK or network call appears in the marker script; it dynamically imports only the eleven exact listed modules. An empty marker channel does not establish how far the child executed.",
+      "currentReadDoesNotExecuteTheseInputs": true,
+      "originalMarkerAbsenceDoesNotProveNoJs": true,
+      "actualNodeAbortDoesNotReclassifyOldRuntime": true
+    },
+    "latestLogFullTree": "c9483fb5f71a319871dfa78d36aa7ab21c4aedc0",
+    "latestLogStdout": {
+      "blob": "5966bedd4adce3e0dc12ac3d26c1280ab6c97c22",
+      "bytes": 5588,
+      "sha256": "71594fae5203a35c10c54de55e0ea04f821db4616935ae0db591fccc6b716f09"
+    },
+    "latestLogDidNotQualifyCause": true,
+    "versionComparison": {
+      "minimumTree": "f5e41e0250c59dee3d05f387879c8f0643470dcf",
+      "fullTree": "3504e0990166a307f38a749c0e868ee117287e2d",
+      "release": {
+        "blob": "dfe9d9aa685292f2ecbd31ccc1d7aa9cac894c72",
+        "bytes": 17143,
+        "sha256": "16b018d3aedc83ff368bcda0086dd0c06cb172ffb50bc3467e1e32d47a29c4e3"
+      },
+      "stdout": {
+        "blob": "78cd8bf07cd5ad277bed942eb61819ace932716e",
+        "bytes": 11541,
+        "sha256": "9b80b771febdca6c9434779056248639b49c2acc545e2a1df186c4529b7432c3"
+      },
+      "job": "mac/1a1b2feebf1-fc05-8067",
+      "restrictedKnownExit": -6,
+      "baselineKnownExit": 0,
+      "baselineVersion": "v25.9.0",
+      "closed": true,
+      "oldCauseQualified": false
+    },
+    "mappingExperiment": {
+      "minimumTree": "f47562311f3f827ca1332df83e03c38df4d5cecb",
+      "fullTree": "2e19fc679d12a540b53c5b89670b6379572167fd",
+      "stdout": {
+        "blob": "5e6f91998739d9e47f7403c0b3fbdf79032d3ce5",
+        "bytes": 11876,
+        "sha256": "da07042a1a1b7318975f198d6334da3910d23d029d404a99421a34ccb80b26cf"
+      },
+      "release": {
+        "blob": "74647b8e7c8ff9374f7c551ab2e16b9c2c9c40dc",
+        "bytes": 17477,
+        "sha256": "73f7c1658361f039f29fedd47f8f4da7e78f4893ef96eb8f5bb2ddc78135ce4d"
+      },
+      "job": "mac/1a1b3119721-fc05-8091",
+      "restrictedKnownExit": -6,
+      "baselineKnownExit": 0,
+      "baselineVersion": "v25.9.0",
+      "closed": true,
+      "mappingRuleRetainedInNewProfile": false
+    },
+    "liveDenialR2": {
+      "minimumTree": "4201f6f1ac0385167bdc4ad5864dd81f1c1f8245",
+      "fullTree": "350d437e16170e7dcf419c8d03cc9b19501ad036",
+      "stdout": {
+        "blob": "3e108153abca1f3951a457cbe6dde2e5aeaa492e",
+        "bytes": 16263,
+        "sha256": "36b7dd75bed14fa6047d722f50dbc73fae1218b19e93eda6533848dbc55d6186"
+      },
+      "release": {
+        "blob": "758af75ee7be3611e37a902a3a9f1c14c6051274",
+        "bytes": 5389,
+        "sha256": "e387afb4824ffcac63ca6c1d1df15d35642bea762f06568d11903f5216d247d3"
+      },
+      "job": "mac/1a1b33bc0d5-fc05-814d",
+      "knownNodeExit": -6,
+      "knownLogExit": 0,
+      "observedRows": 2,
+      "admittedEvents": 0,
+      "unknownRows": 2,
+      "causeQualified": false,
+      "subscriptionAcknowledged": false
+    },
+    "crashR5RootReview": {
+      "blob": "de29b917c40daccf50b156703666f1098e81ebc9",
+      "bytes": 2154,
+      "sha256": "5225945d684aaf984629176bba84206cfb53caffc1738ff5748574fc23027867",
+      "minimumTree": "c2893591836371f58d7cd1297844d14cc91fab2e",
+      "namespace": "<0x23>",
+      "terminationCode": 2,
+      "terminationFlags": 582,
+      "publicDyldFrames": 11,
+      "pathQualified": false,
+      "causeProved": false
+    }
+  },
+  "fixedProcessInputs": {
+    "inputPins": {
+      "/usr/bin/sandbox-exec": {
+        "identity": [
+          "16777233",
+          "1152921500312572700",
+          "0",
+          "0",
+          "33261",
+          "1",
+          "102368",
+          "1786589515000000000",
+          "1786589515000000000"
+        ],
+        "bytes": 102368,
+        "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+      },
+      "/bin/ps": {
+        "identity": [
+          "16777233",
+          "1152921500312571399",
+          "0",
+          "0",
+          "35309",
+          "1",
+          "170432",
+          "1786589515000000000",
+          "1786589515000000000"
+        ],
+        "bytes": 170432,
+        "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+      },
+      "/opt/homebrew/Cellar/node/25.9.0_1/bin/node": {
+        "identity": [
+          "16777233",
+          "42479374",
+          "501",
+          "80",
+          "33133",
+          "1",
+          "68384",
+          "1775693589374925413",
+          "1775693590180968789"
+        ],
+        "bytes": 68384,
+        "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+      },
+      "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+        "identity": [
+          "16777233",
+          "587518380",
+          "501",
+          "80",
+          "33261",
+          "1",
+          "34640",
+          "1793798038915516382",
+          "1793798038915695047"
+        ],
+        "bytes": 34640,
+        "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+      }
+    },
+    "argv": {
+      "restricted-version": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-control/consumer.sb",
+        "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+        "--version"
+      ],
+      "baseline-version": [
+        "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+        "--version"
+      ]
+    },
+    "orderedLabels": [
+      "restricted-version",
+      "baseline-version"
+    ],
+    "environment": {
+      "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "HOME": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-empty",
+      "TMPDIR": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-empty"
+    },
+    "sameEnvironmentAndCwdForBoth": true,
+    "environmentInherited": false,
+    "cwd": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-empty",
+    "profile": {
+      "blob": "23e64be32ae1c6fe90fdd61442b0ffc07575cde5",
+      "bytes": 6942,
+      "sha256": "33723469d1cbd03a04c6832b5d16ec55814103eeeb29ba6cb75014a83304d50e"
+    },
+    "profileCopy": "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-control/consumer.sb",
+    "noJSEntryPointOrEvalOrRequireImportFlags": true,
+    "originalProfile": {
+      "blob": "84ff31f119c8d0a46fe0f09b1f1ba2f2335f7cbf",
+      "bytes": 6909,
+      "sha256": "acfbd336488f774e3acb87392bf5305f62004a0f529cbcd876593407989e7a12"
+    },
+    "onlyProfileAddition": "(allow file-read* (literal \"/\"))\n",
+    "addedLiteralPath": "/",
+    "noNewRecursiveReadRule": true,
+    "onlyAdditionalReadPolicyForRootDirectoryItself": true,
+    "rootDirectoryEntryNamesMayBecomeReadable": true,
+    "noAddedWriteNetworkMachOrJitRule": true,
+    "failedMappingRuleNotIncluded": true
+  },
+  "newFilesystem": {
+    "roots": [
+      "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-control",
+      "/Users/qianqi/heptabao-public-node-root-read-version-20261106-r1-empty"
+    ],
+    "exclusiveCreate": true,
+    "rootMode": "0700",
+    "profileMode": "0600",
+    "rootOwner": 501,
+    "rootGid": 20,
+    "rootAlreadyExists": "refuse; no fallback or deletion",
+    "sharedEmptyHomeCwdTmp": true,
+    "emptyDirectoryEvidence": "new exclusive mkdir, zero admitted leaf writes, unchanged current held/name full9 before and after both arms; no claim to exhaustive directory inventory",
+    "oldDirectoriesOrProfilesWritten": false,
+    "oldProfileRead": false,
+    "controllerT5Io": false,
+    "unlinkOrRmdirOrChmod": false,
+    "originalProfilePrefixByteExact": true,
+    "onlyNewPublicProfileAdditionBytes": 33,
+    "newProfileWholeBound": true
+  },
+  "reusedSource": {
+    "homeControlWhole": {
+      "blob": "3e11b93844559bb9ae8bfe9a69314a42c5461149",
+      "bytes": 18346,
+      "sha256": "c05d932ede565390244199e8b3b6c613c93116db3b3471223d945f611f9d73c4"
+    },
+    "homeParentManagerWhole": {
+      "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+      "bytes": 58584,
+      "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+    },
+    "unreapedWhole": {
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    "commandsBefore": {
+      "blob": "030e1426825d3feb7b8c91cbb2a994629dc96a1c",
+      "bytes": 6853,
+      "sha256": "e212558d31c2aec3c704474903530bd2c0008d3b10b41d6fd394cb5b4a28b361"
+    },
+    "commandsAfter": {
+      "blob": "3bf6d4ec3624e2d20cad5d121dfd1f32ff4fb539",
+      "bytes": 6877,
+      "sha256": "f528a871d56f422c514a15d49c25db1bf607038cc7d8d1b7c9f16b436d114f7a"
+    },
+    "commandsStrictHunks": [
+      1,
+      1
+    ],
+    "commandsOnlyChanges": [
+      "exact new control/empty HOME strings in argv/env/cwd; all capture, wait, pipe, cleanup and projection code unchanged"
+    ],
+    "inputAuditChanges": [],
+    "journalStrictHunks": [
+      2,
+      2
+    ],
+    "journalOnlyChanges": [
+      "slot",
+      "request pin",
+      "observer key prefix"
+    ],
+    "inputAuditByteExact": true,
+    "beforeSource": {
+      "blob": "d5eb83cfa9d6508467b85bafd0e3ab8c251c7e45",
+      "bytes": 92066,
+      "sha256": "bc7e259228661eb470c4e6cf86a94953940796b8b03df746258a665488912552"
+    },
+    "sourceStrictHunks": [
+      6,
+      6
+    ],
+    "profileVsOriginalStrictHunks": [
+      1,
+      1
+    ],
+    "profileVsFailedMappingStrictHunks": [
+      1,
+      1
+    ]
+  },
+  "budgets": {
+    "sharedWorkSeconds": 35,
+    "postClosureDeadlineSeconds": 45,
+    "processStartSeconds": 60,
+    "maximumPrimaryNodeChildren": 2,
+    "perChildObservedSeconds": 10,
+    "unchangedCleanup": {
+      "termSeconds": 1,
+      "waitSeconds": 5,
+      "groupSeconds": 3,
+      "psMaximumSeconds": 4
+    },
+    "childAbsoluteDeadlineLatest": "START+26; unchanged cleanup 1+5+3 reserved before admission; second arm refused if <=9 seconds remain",
+    "inputFdAttempts": 4,
+    "homeFdAttempts": {
+      "control": 6,
+      "empty": 4
+    },
+    "totalApplicationReturnedFdAttempts": 14,
+    "inputMetadataCalls": 128,
+    "homeMetadataCallsEach": 256,
+    "inputWholeBytes": 375824,
+    "inputReturnedReadByteCap": 375828,
+    "inputReadCalls": 128,
+    "profileWriteBytes": 6942,
+    "profileReadBytes": 6942,
+    "profileReadRequestCapIncludingEof": 6943,
+    "profileReads": 2,
+    "profileWrites": 16,
+    "perChildPerStreamAcceptanceBytes": 4096,
+    "originalPerPipeReadBytes": 65536,
+    "maximumReturnedPerStreamBeforeOriginalOverflowRefusal": 69632,
+    "publicReportBytes": 65536,
+    "maxNativeStatusObservers": 8,
+    "maxNativeStreamObservers": 8,
+    "maxStatusPerObserver": 8,
+    "immutablePageBytes": 8192,
+    "maxImmutablePagesPerObserver": 128,
+    "maxImmutablePayloadBytes": 1048576,
+    "processReadBytes": 16384,
+    "synchronousSyscallsIndividuallyPreemptable": false,
+    "profileByteCapDeltaOnly": 33,
+    "allOtherBudgetsComparedToPreviousExact": true,
+    "profileByteCapDeltaRelativeToFailedMapping": -69
+  },
+  "observationProtocol": {
+    "sameOriginalPopenPidReservedWithWnowait": true,
+    "uidPpidPgidGuardsUnchanged": true,
+    "onlySameAdmittedGroupMayReceiveOriginalCleanupSignals": true,
+    "onceCleanupPerReturnedChild": true,
+    "secondArmOnlyAfterFirstKnownReapedAndGroupEmpty": true,
+    "knownNonzeroOrSigabrtAllowsSecondArm": true,
+    "unknownStopsNewChildAdmission": true,
+    "stdoutOnlyVersionGrammarMaximum128Bytes": true,
+    "stderrOnlyLengthAndEmptyFlag": true,
+    "unknownChildTextOrHashExported": false,
+    "baselineNeverSdkQualification": true,
+    "noCompatibilityFlagAdded": true,
+    "noRuntimeProfileModified": true,
+    "noCausalClaimAutomaticallyFromComparison": true,
+    "oldUnknownPreserved": true,
+    "rootLiteralProfileSuccessNeverSdkQualification": true,
+    "noProductSandboxAutomaticallyChanged": true
+  },
+  "references": [
+    {
+      "url": "https://nodejs.org/download/release/v25.9.0/docs/api/cli.html#-v---version",
+      "retrievedRef": "turn94view1",
+      "lineRange": "2225-2229",
+      "permittedShortQuote": "Print node's version.",
+      "meaning": "The sole Node CLI argument requests version reporting; the fixture supplies no program entry point or preload environment. Host outcome remains unobserved."
+    }
+  ],
+  "primaryReferences": [
+    {
+      "name": "macos-sandbox-utils.ts",
+      "path": "src/sandbox/macos-sandbox-utils.ts",
+      "url": "https://github.com/anthropics/sandbox-runtime/blob/27fce0dbd58925061c57eb8b38707b9a98349dad/src/sandbox/macos-sandbox-utils.ts",
+      "pin": {
+        "blob": "1eb0db73ff9116bc5fab0299eb3a002bbe5ffb31",
+        "bytes": 63952,
+        "sha256": "3d28f5271a8432faaba18d15c189ed832ea7dadf5a57d702f91bc16dbeee11da"
+      },
+      "lines": [
+        913,
+        920
+      ],
+      "meaning": "Maintainer implementation adds literal-root file-read after root-covering denies. Its comment identifies dyld abortion and distinguishes root entry names from subtree contents."
+    },
+    {
+      "name": "allow-read.test.ts",
+      "path": "test/sandbox/allow-read.test.ts",
+      "url": "https://github.com/anthropics/sandbox-runtime/blob/27fce0dbd58925061c57eb8b38707b9a98349dad/test/sandbox/allow-read.test.ts",
+      "pin": {
+        "blob": "b085f729adf1246aa055be91158069cf31cc6227",
+        "bytes": 38895,
+        "sha256": "fb017fc8720e7ff5a3ba2ee576ffc3555d9d4d156342addd7e7ffe909a207d19"
+      },
+      "lines": [
+        243,
+        338
+      ],
+      "meaning": "The conditional macOS regression checks allowed startup/read within a carve-out and rejection of a file outside it. These tests were not run here."
+    }
+  ],
+  "linuxIssuerInterfaceSeparate": {
+    "priorUnqualified576Declaration": {
+      "sourceInterface": {
+        "blob": "b305ab3d113d925794f2ec98c7913f2176022bbc",
+        "bytes": 7227,
+        "sha256": "2fee2c79f1282c316f51ad8d08673cacd674cbaf6ef117ad5beab454d9d2e16b"
+      },
+      "currentWholeBuildReportedFailedExit1": true,
+      "normalReleaseDeclarationPreserved": true,
+      "finalArtifactQualification": false,
+      "actualFinalReport": null,
+      "actualFull9": null,
+      "actualVersion": null,
+      "issuerQualified": false,
+      "issuedCredential": null
+    },
+    "inheritanceFromPublicMacVersionComparison": false,
+    "currentCandidateBinding": null,
+    "currentArtifactFull9": null,
+    "currentArtifactVersion": null,
+    "currentIssuerQualification": null,
+    "currentCredentialMaterial": null,
+    "meaning": "The parent tracks newer build/candidate state separately. No historical normal-release declaration or this public version test fills a current issuer slot."
+  },
+  "primaryEvidence": {
+    "schema": "heptabao.primary-root-inode-sandbox-regression.references.r1",
+    "repository": "anthropics/sandbox-runtime",
+    "fixedCommit": "27fce0dbd58925061c57eb8b38707b9a98349dad",
+    "commitResponse": {
+      "blob": "53a97ed65eec4cb74b17063222b2ea73edc1a528",
+      "bytes": 160373,
+      "sha256": "c67f5925ecdf1fc9a4c39ac1d397d4e08ee3cde0676ebff2fcd1a3d0e8b3a934"
+    },
+    "sources": [
+      {
+        "name": "macos-sandbox-utils.ts",
+        "path": "src/sandbox/macos-sandbox-utils.ts",
+        "url": "https://github.com/anthropics/sandbox-runtime/blob/27fce0dbd58925061c57eb8b38707b9a98349dad/src/sandbox/macos-sandbox-utils.ts",
+        "pin": {
+          "blob": "1eb0db73ff9116bc5fab0299eb3a002bbe5ffb31",
+          "bytes": 63952,
+          "sha256": "3d28f5271a8432faaba18d15c189ed832ea7dadf5a57d702f91bc16dbeee11da"
+        },
+        "lines": [
+          913,
+          920
+        ],
+        "meaning": "Maintainer implementation adds literal-root file-read after root-covering denies. Its comment identifies dyld abortion and distinguishes root entry names from subtree contents."
+      },
+      {
+        "name": "allow-read.test.ts",
+        "path": "test/sandbox/allow-read.test.ts",
+        "url": "https://github.com/anthropics/sandbox-runtime/blob/27fce0dbd58925061c57eb8b38707b9a98349dad/test/sandbox/allow-read.test.ts",
+        "pin": {
+          "blob": "b085f729adf1246aa055be91158069cf31cc6227",
+          "bytes": 38895,
+          "sha256": "fb017fc8720e7ff5a3ba2ee576ffc3555d9d4d156342addd7e7ffe909a207d19"
+        },
+        "lines": [
+          243,
+          338
+        ],
+        "meaning": "The conditional macOS regression checks allowed startup/read within a carve-out and rejection of a file outside it. These tests were not run here."
+      }
+    ],
+    "ownImplementationPrimaryEvidence": true,
+    "AppleImplementationOrCurrentHostDeniedOperationProof": false,
+    "hypothesisOnly": true,
+    "actualRootReadDeniedHereObserved": false,
+    "oldLibignitionCode2NotMappedToErrno": true,
+    "oldPathFalseNotUpgraded": true,
+    "publicVersionOnly": true,
+    "rootLiteralIsNotRootSubpath": true,
+    "newPolicyChangeBytes": 33,
+    "regressionExecutedByThisAgent": false,
+    "sourceWebRefs": [
+      "turn119view0",
+      "turn119view1",
+      "turn120view0",
+      "turn120view1"
+    ]
+  },
+  "newResultInterpretation": {
+    "restrictedZeroAndBaselineZero": "The single added root literal is sufficient for this fresh --version execution under this profile, binary, cwd and environment. It does not prove every prior abort had the same cause, or qualify SDK imports/credentials.",
+    "restrictedStillKnownNonzeroBaselineZero": "The one rule is insufficient here. Stop; no additional rule or automatic retry.",
+    "baselineKnownNonzero": "The comparison is not an affirmative isolated profile fix; retain both outcomes.",
+    "anyUnknown": "No new child admission beyond the existing first-arm known-close gate; preserve uncertainty and no replay."
+  }
+}

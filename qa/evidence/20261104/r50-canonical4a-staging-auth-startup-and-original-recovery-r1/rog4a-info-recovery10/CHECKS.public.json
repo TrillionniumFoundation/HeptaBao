@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "name": "before-pause",
+      "pass": true
+    },
+    {
+      "name": "no-current-call",
+      "pass": true
+    },
+    {
+      "name": "future-completed",
+      "pass": true
+    },
+    {
+      "name": "eof-full579",
+      "pass": true
+    },
+    {
+      "name": "original-page-accepted",
+      "pass": true
+    },
+    {
+      "name": "all10-calls-accepted",
+      "pass": true
+    },
+    {
+      "name": "two-closed-before-info",
+      "pass": true
+    },
+    {
+      "name": "single-info-page",
+      "pass": true
+    },
+    {
+      "name": "correct-action-exists",
+      "pass": true
+    },
+    {
+      "name": "wrong-action-no-branch",
+      "pass": true
+    },
+    {
+      "name": "exact-local-error",
+      "pass": true
+    },
+    {
+      "name": "only-paused-changed",
+      "pass": true
+    },
+    {
+      "name": "error-kept",
+      "pass": true
+    }
+  ],
+  "NativeCalls": 0
+}

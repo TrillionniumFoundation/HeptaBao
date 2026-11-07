@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.c.cargo-check-lib-profile-test-primary-source.r1",
+  "scope": "PUBLIC_PRIMARY_SOURCE_ONLY_NO_NATIVE",
+  "rust_observed_reference": {
+    "commit": "88d9e12ae178fab0fb5cc050a94da85685d449ea",
+    "release": "1.98.0",
+    "commit_date": "2026-08-18",
+    "source": "B supplied actual rustc -vV reference; this packet does not re-read the host"
+  },
+  "rust_gitlink": {
+    "url": "https://api.github.com/repos/rust-lang/rust/contents/src/tools/cargo?ref=88d9e12ae178fab0fb5cc050a94da85685d449ea",
+    "path": "src/tools/cargo",
+    "kind": "submodule",
+    "commit": "797e8a9bca276c1c9f9f738d2a20f484fa4eea9d",
+    "repository": "rust-lang/cargo",
+    "raw_pin": {
+      "blob": "c7e09f8ef9d7fc175cbb29b6f1ecf40b1e01a921",
+      "bytes": 851,
+      "sha256": "d69ed4443bbb271be537e1f7c24fb44c873a1ffc01cf68c86e729908275e1484"
+    }
+  },
+  "sources": [
+    {
+      "name": "check.rs",
+      "path": "src/bin/cargo/commands/check.rs",
+      "url": "https://raw.githubusercontent.com/rust-lang/cargo/797e8a9bca276c1c9f9f738d2a20f484fa4eea9d/src/bin/cargo/commands/check.rs",
+      "pin": {
+        "blob": "6bcc83b48f96e61fd48b9d31456957614231ffc2",
+        "bytes": 2121,
+        "sha256": "b4f0789e3a072c0fc294381f84ecd1733cf8ea380210139f941919b1628af423"
+      }
+    },
+    {
+      "name": "build_config.rs",
+      "path": "src/cargo/core/compiler/build_config.rs",
+      "url": "https://raw.githubusercontent.com/rust-lang/cargo/797e8a9bca276c1c9f9f738d2a20f484fa4eea9d/src/cargo/core/compiler/build_config.rs",
+      "pin": {
+        "blob": "dfe1a59a70aeb58f480baaf29046a53db3a6b095",
+        "bytes": 12319,
+        "sha256": "e5f4eeac36687832cd19bd958028bd3811b6757a4d39158b2a1e8bca03586a6f"
+      }
+    },
+    {
+      "name": "compiler_mod.rs",
+      "path": "src/cargo/core/compiler/mod.rs",
+      "url": "https://raw.githubusercontent.com/rust-lang/cargo/797e8a9bca276c1c9f9f738d2a20f484fa4eea9d/src/cargo/core/compiler/mod.rs",
+      "pin": {
+        "blob": "6153b2f1e4e8009ce2b8f5624f11b2ced651eee1",
+        "bytes": 102224,
+        "sha256": "a709d6f3acdb848c9c8b06747f1a048a3d3d8acd843a9bad72a4100e515899a9"
+      }
+    },
+    {
+      "name": "unit_generator.rs",
+      "path": "src/cargo/ops/cargo_compile/unit_generator.rs",
+      "url": "https://raw.githubusercontent.com/rust-lang/cargo/797e8a9bca276c1c9f9f738d2a20f484fa4eea9d/src/cargo/ops/cargo_compile/unit_generator.rs",
+      "pin": {
+        "blob": "c56b3b1012442be1800568208b069fa0615e0be6",
+        "bytes": 33523,
+        "sha256": "c126d6fc3b73579cf33e5aa0228d47eb52672034a6e2ac694e85999e0cbf3681"
+      }
+    },
+    {
+      "name": "compile_filter.rs",
+      "path": "src/cargo/ops/cargo_compile/compile_filter.rs",
+      "url": "https://raw.githubusercontent.com/rust-lang/cargo/797e8a9bca276c1c9f9f738d2a20f484fa4eea9d/src/cargo/ops/cargo_compile/compile_filter.rs",
+      "pin": {
+        "blob": "bbf13f9db76eea96c5fb1ed5fc96d8bf64eba406",
+        "bytes": 10044,
+        "sha256": "ef35a8e16e8a16f569f1a3b7f418988641f9b00d0ba296fad8231659ff8d0ba7"
+      }
+    }
+  ],
+  "conclusions": [
+    {
+      "id": "profile_test_selects_test_check",
+      "source": "check.rs",
+      "lines": [
+        46,
+        56
+      ],
+      "fact": "Exact profile string test sets UserIntent::Check { test: true }, with ProfileChecking::LegacyTestOnly. Ordinary check leaves test false."
+    },
+    {
+      "id": "lib_root_target_selection",
+      "source": "compile_filter.rs",
+      "lines": [
+        99,
+        150,
+        193,
+        202
+      ],
+      "fact": "The lib-only raw flag sets LibRule::True in CompileFilter::Only. With no bin/test/example/bench target flags, other explicit target name lists are empty."
+    },
+    {
+      "id": "check_mode_preserved_for_lib",
+      "source": "unit_generator.rs",
+      "lines": [
+        412,
+        460,
+        795,
+        803
+      ],
+      "fact": "Only-library selection calls filter_targets(Target::is_lib,false,to_compile_mode(intent)); Check{test} maps unchanged to CompileMode::Check{test}."
+    },
+    {
+      "id": "test_cfg_and_metadata_only",
+      "source": "compiler_mod.rs",
+      "lines": [
+        1248,
+        1282,
+        1283,
+        1388,
+        1402
+      ],
+      "fact": "Check mode emits dep-info,metadata. is_any_test true passes --test if the target uses a harness, otherwise --cfg test. This does not produce a linked runnable test executable."
+    },
+    {
+      "id": "actual_artifact_profile_test",
+      "source": "compiler_mod.rs",
+      "lines": [
+        683,
+        714
+      ],
+      "fact": "Compiler-artifact profile.test is unit_mode.is_any_test(), not a function named is_test. Package/target/profile/features are emitted in the same artifact message."
+    },
+    {
+      "id": "check_true_is_any_test",
+      "source": "build_config.rs",
+      "lines": [
+        258,
+        269
+      ],
+      "fact": "CompileMode::is_any_test explicitly includes Check{test:true}; is_rustc_test also includes Check{test:true}."
+    }
+  ],
+  "recommended_observation_contract": {
+    "original_argv": "cargo check --locked --offline -p heptabao-server --lib --profile test --message-format=json-render-diagnostics",
+    "matched_artifact": {
+      "package": "heptabao-server",
+      "target_kind": "lib",
+      "profile_test": true,
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ]
+    },
+    "candidate_manifest": {
+      "blob": "666dc6d056a8f653bb86ca5ba7ed89b229dfe228",
+      "bytes": 4796
+    },
+    "require_actual_successful_build_finished": true,
+    "reject_qualification_from_path_alone": true,
+    "no_link_or_runtime_qualification": true
+  },
+  "boundary": {
+    "actual_cargo_binary_sha256": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24",
+    "actual_cargo_version": null,
+    "deployed_cargo_binary_to_gitlink_proven": false,
+    "explanation": "The observed rustc commit determines Rust's pinned Cargo source. It does not by itself prove the separately observed cargo binary was built from that commit. The proposed actual JSON gates must still hold on the execution being qualified.",
+    "build_finished_emission_callsite_independently_located": false,
+    "product_or_tool_execution": false,
+    "native_calls": 0
+  }
+}

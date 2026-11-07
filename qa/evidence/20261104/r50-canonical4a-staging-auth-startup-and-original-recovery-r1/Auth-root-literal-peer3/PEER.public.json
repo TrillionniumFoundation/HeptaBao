@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.C.independent-root-literal-source-peer.r1",
+  "scope": "Only literal-root policy delta, unchanged two-arm owner/cleanup, and boundaries of primary implementation/regression evidence.",
+  "source_packet": "9681e01488d28e441e43a6d1c0c974df362d45f2",
+  "source": {
+    "blob": "c8e1f1b7d6aecc4c135df837194f24b6bd8abfec",
+    "bytes": 91973,
+    "sha256": "82025f4c03815690c72f1c389d74cb6d4e8f8eb157465ea99f92921bab6cd250"
+  },
+  "before": {
+    "blob": "d5eb83cfa9d6508467b85bafd0e3ab8c251c7e45",
+    "bytes": 92066,
+    "sha256": "bc7e259228661eb470c4e6cf86a94953940796b8b03df746258a665488912552"
+  },
+  "request": {
+    "blob": "136ba17947f49cf5cdf2a281dda46bcebaa124fd",
+    "bytes": 92994,
+    "sha256": "015b7ba1cb858f7eea8f49ce3b1b3fdef066147fe49746ffa9831778db232617"
+  },
+  "conclusion": "No new SOURCE blocker in this reviewed delta; no execution qualification.",
+  "findings": [
+    {
+      "subject": "Exact policy",
+      "facts": [
+        "Original profile 6909 bytes is retained as an exact prefix; only 33 bytes append a file-read* rule for literal root directory slash.",
+        "The resulting 6942-byte profile is exact both standalone and embedded. It does not retain the failed 102-byte mapping addition.",
+        "Literal root may permit reading root directory entry names. It does not grant recursive subtree reads."
+      ]
+    },
+    {
+      "subject": "Ownership and scope",
+      "facts": [
+        "HomeControl and WNOWAIT helper embedded whole bytes equal the immediate before source.",
+        "Commands module differs only in three fresh-root path constants; its entire owner class and cleanup remain byte-identical.",
+        "Restricted then baseline arm loop, post-arm fences, and final finally block are byte-identical; original 35/45 seconds, Native60, child10 and cleanup9 reserve remain.",
+        "Four fixed input FDs plus HomeControl6+4 remain the existing14 enumerated held FDs. Command pipes are separately closed by the unchanged owner; this is not a census of Popen internal descriptors.",
+        "Both arms use the same explicit environment/cwd and pinned Node --version, with no inherited Node or DYLD option changes."
+      ]
+    },
+    {
+      "subject": "Primary source boundary",
+      "facts": [
+        "The pinned anthropics/sandbox-runtime implementation and conditional tests support literal-root access as a startup diagnostic hypothesis and distinguish it from a subtree grant.",
+        "They do not establish the current host denied operation or map LIBIGNITION namespace code2 to an errno. Tests were only read, not run here.",
+        "A successful version would remain a version-probe result; current AuthBus/SDK/runtime qualification is not inferred."
+      ]
+    }
+  ],
+  "primary_sources": {
+    "commit": "27fce0dbd58925061c57eb8b38707b9a98349dad",
+    "implementation": {
+      "blob": "1eb0db73ff9116bc5fab0299eb3a002bbe5ffb31",
+      "bytes": 63952,
+      "sha256": "3d28f5271a8432faaba18d15c189ed832ea7dadf5a57d702f91bc16dbeee11da"
+    },
+    "regression": {
+      "blob": "b085f729adf1246aa055be91158069cf31cc6227",
+      "bytes": 38895,
+      "sha256": "fb017fc8720e7ff5a3ba2ee576ffc3555d9d4d156342addd7e7ffe909a207d19"
+    }
+  },
+  "verification": {
+    "checks": 17,
+    "passed": 17,
+    "Python": 0,
+    "Native": 0,
+    "authors_checker_run": false
+  },
+  "peer_checker_correction": {
+    "initial_failure": "exact_python_request assumed script in args[4]",
+    "actual": "-I -S -B - with exact stdin source",
+    "correction": "Only peer selector changed; original failed check/error retained. Candidate/source/request unchanged."
+  }
+}

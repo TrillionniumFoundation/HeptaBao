@@ -1,0 +1,70 @@
+[
+  {
+    "name": "original_profile_exact_6909",
+    "pass": true
+  },
+  {
+    "name": "only33bytes_literal_root",
+    "pass": true
+  },
+  {
+    "name": "embedded_profile_exact",
+    "pass": true
+  },
+  {
+    "name": "original_profile_suffix_runtime_guard",
+    "pass": true
+  },
+  {
+    "name": "no_mapping102_suffix",
+    "pass": true
+  },
+  {
+    "name": "whole_HomeControl_unchanged",
+    "pass": true
+  },
+  {
+    "name": "WNOWAIT_whole_unchanged",
+    "pass": true
+  },
+  {
+    "name": "command_inputs_exact",
+    "pass": true
+  },
+  {
+    "name": "command_owner_class_whole_unchanged",
+    "pass": true
+  },
+  {
+    "name": "commands_only_new_paths",
+    "pass": true
+  },
+  {
+    "name": "same_INPUT_PINS_and_alias",
+    "pass": true
+  },
+  {
+    "name": "original35_45_clock",
+    "pass": true
+  },
+  {
+    "name": "exact_python_request_stdin",
+    "pass": true
+  },
+  {
+    "name": "all_finally_byte_unchanged",
+    "pass": true
+  },
+  {
+    "name": "arm_execution_and_cleanup_exact",
+    "pass": true
+  },
+  {
+    "name": "same10sec_9sec_reserve",
+    "pass": true
+  },
+  {
+    "name": "same_scope_qualification_boundaries",
+    "pass": true
+  }
+]

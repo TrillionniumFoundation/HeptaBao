@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.C.pki12-report-INFO-source-verification.r1",
+  "pass": true,
+  "check_count": 21,
+  "checks": [
+    {
+      "name": "donor_exact",
+      "pass": true
+    },
+    {
+      "name": "after_pin",
+      "pass": true
+    },
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "two_hunks",
+      "pass": true
+    },
+    {
+      "name": "exact_request",
+      "pass": true
+    },
+    {
+      "name": "actual_seven_closed_calls",
+      "pass": true
+    },
+    {
+      "name": "original_state_pin",
+      "pass": true
+    },
+    {
+      "name": "actual_stdout_pin",
+      "pass": true
+    },
+    {
+      "name": "actual_terminal",
+      "pass": true
+    },
+    {
+      "name": "actual_report_whole_identity",
+      "pass": true
+    },
+    {
+      "name": "unchanged_dispatch_core",
+      "pass": true
+    },
+    {
+      "name": "unchanged_existing_context_core",
+      "pass": true
+    },
+    {
+      "name": "newGO_arm_selection_retained",
+      "pass": true
+    },
+    {
+      "name": "oldINFO_noBODY_scope",
+      "pass": true
+    },
+    {
+      "name": "private_fake_authorizes",
+      "pass": true
+    },
+    {
+      "name": "private_fake_preserves_seven_calls",
+      "pass": true
+    },
+    {
+      "name": "private_fake_rejects_process",
+      "pass": true
+    },
+    {
+      "name": "private_fake_archives_once",
+      "pass": true
+    },
+    {
+      "name": "private_fake_arm_uses_newGO",
+      "pass": true
+    },
+    {
+      "name": "private_fake_original_history_unchanged",
+      "pass": true
+    }
+  ],
+  "Native_calls": 0,
+  "real_slots_modified": false,
+  "fake_archive_only": true
+}

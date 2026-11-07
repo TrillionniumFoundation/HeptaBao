@@ -1,0 +1,350 @@
+{
+  "schema": "heptabao.fixed-live-denial-source-pure-checks.r1",
+  "passed": false,
+  "checkCount": 85,
+  "checks": [
+    {
+      "name": "source/pin",
+      "passed": true
+    },
+    {
+      "name": "request/pin",
+      "passed": true
+    },
+    {
+      "name": "journal/pin",
+      "passed": true
+    },
+    {
+      "name": "before/source-pin",
+      "passed": true
+    },
+    {
+      "name": "before/journal-pin",
+      "passed": true
+    },
+    {
+      "name": "diff/source-forward",
+      "passed": true
+    },
+    {
+      "name": "diff/source-inverse",
+      "passed": true
+    },
+    {
+      "name": "diff/source-hunks",
+      "passed": true
+    },
+    {
+      "name": "diff/journal-forward",
+      "passed": true
+    },
+    {
+      "name": "diff/journal-inverse",
+      "passed": true
+    },
+    {
+      "name": "diff/journal-hunks",
+      "passed": true
+    },
+    {
+      "name": "preserved/critical",
+      "passed": true
+    },
+    {
+      "name": "preserved/need",
+      "passed": true
+    },
+    {
+      "name": "preserved/interrupt",
+      "passed": true
+    },
+    {
+      "name": "preserved/remaining",
+      "passed": true
+    },
+    {
+      "name": "preserved/sha",
+      "passed": true
+    },
+    {
+      "name": "preserved/encoded",
+      "passed": true
+    },
+    {
+      "name": "preserved/identity",
+      "passed": true
+    },
+    {
+      "name": "preserved/error_projection",
+      "passed": true
+    },
+    {
+      "name": "preserved/SignalFacade",
+      "passed": true
+    },
+    {
+      "name": "preserved/public_command",
+      "passed": true
+    },
+    {
+      "name": "preserved/load_modules",
+      "passed": true
+    },
+    {
+      "name": "preserved/version_projection",
+      "passed": true
+    },
+    {
+      "name": "preserved/InputAudit-only-five-fixed-input-budget",
+      "passed": true
+    },
+    {
+      "name": "preserved/home_instance-only-public-context-name",
+      "passed": false
+    },
+    {
+      "name": "profile/literal-exact",
+      "passed": true
+    },
+    {
+      "name": "profile/whole",
+      "passed": true
+    },
+    {
+      "name": "home/class-literal-exact",
+      "passed": true
+    },
+    {
+      "name": "home/class-whole",
+      "passed": true
+    },
+    {
+      "name": "helpers/closed-two-module-list",
+      "passed": true
+    },
+    {
+      "name": "helpers/mac_owned_unreaped_r1/whole",
+      "passed": true
+    },
+    {
+      "name": "helpers/mac_owned_unreaped_r1/pin",
+      "passed": true
+    },
+    {
+      "name": "helpers/mac_owned_commands_r1/whole",
+      "passed": true
+    },
+    {
+      "name": "helpers/mac_owned_commands_r1/pin",
+      "passed": true
+    },
+    {
+      "name": "inputs/count",
+      "passed": true
+    },
+    {
+      "name": "inputs/original//usr/bin/sandbox-exec",
+      "passed": true
+    },
+    {
+      "name": "inputs/original//bin/ps",
+      "passed": true
+    },
+    {
+      "name": "inputs/original//opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+      "passed": true
+    },
+    {
+      "name": "inputs/original//opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "passed": true
+    },
+    {
+      "name": "inputs/log",
+      "passed": true
+    },
+    {
+      "name": "inputs/whole-byte-sum",
+      "passed": true
+    },
+    {
+      "name": "inputs/EOF-sentinel-cap",
+      "passed": true
+    },
+    {
+      "name": "gate/whole",
+      "passed": true
+    },
+    {
+      "name": "gate/embedded",
+      "passed": true
+    },
+    {
+      "name": "gate/argv",
+      "passed": true
+    },
+    {
+      "name": "gate/environment",
+      "passed": true
+    },
+    {
+      "name": "parent/environment",
+      "passed": true
+    },
+    {
+      "name": "parent/nodeargv",
+      "passed": true
+    },
+    {
+      "name": "gate/single-exec-call",
+      "passed": true
+    },
+    {
+      "name": "gate/only-version",
+      "passed": true
+    },
+    {
+      "name": "gate/one-byte-and-no-private-input",
+      "passed": true
+    },
+    {
+      "name": "request/source-exact",
+      "passed": true
+    },
+    {
+      "name": "request/typed-stdin",
+      "passed": true
+    },
+    {
+      "name": "request/executable-args",
+      "passed": true
+    },
+    {
+      "name": "journal/new-absent-slot-string",
+      "passed": true
+    },
+    {
+      "name": "journal/exact-request-pin",
+      "passed": true
+    },
+    {
+      "name": "journal/fixed-observer-prefix",
+      "passed": true
+    },
+    {
+      "name": "help/whole",
+      "passed": true
+    },
+    {
+      "name": "help/stdout-whole",
+      "passed": true
+    },
+    {
+      "name": "help/actual-text",
+      "passed": true
+    },
+    {
+      "name": "help/token/--level",
+      "passed": true
+    },
+    {
+      "name": "help/token/debug",
+      "passed": true
+    },
+    {
+      "name": "help/token/--style",
+      "passed": true
+    },
+    {
+      "name": "help/token/ndjson",
+      "passed": true
+    },
+    {
+      "name": "help/token/--predicate",
+      "passed": true
+    },
+    {
+      "name": "help/token/--timeout",
+      "passed": true
+    },
+    {
+      "name": "pair/one-fixed-Popen-site",
+      "passed": true
+    },
+    {
+      "name": "pair/two-fixed-launch-sites",
+      "passed": true
+    },
+    {
+      "name": "pair/pre-Popen-attempt-ledger",
+      "passed": true
+    },
+    {
+      "name": "pair/pending-blocks-known-closure",
+      "passed": true
+    },
+    {
+      "name": "pair/one-gate-attempt-before-write",
+      "passed": true
+    },
+    {
+      "name": "pair/birth-before-log",
+      "passed": true
+    },
+    {
+      "name": "pair/old-custody-functions-used",
+      "passed": true
+    },
+    {
+      "name": "pair/no-early-reap-api",
+      "passed": true
+    },
+    {
+      "name": "pair/once-stop-marker",
+      "passed": true
+    },
+    {
+      "name": "pair/once-pipe-marker",
+      "passed": true
+    },
+    {
+      "name": "budget/parent-fds",
+      "passed": true
+    },
+    {
+      "name": "budget/shared-ceilings",
+      "passed": true
+    },
+    {
+      "name": "budget/reserved-cleanup",
+      "passed": true
+    },
+    {
+      "name": "budget/caps-in-source",
+      "passed": true
+    },
+    {
+      "name": "scope/no-subscription-claim",
+      "passed": true
+    },
+    {
+      "name": "scope/no-absence-or-old-cause-claim",
+      "passed": true
+    },
+    {
+      "name": "scope/unknown-raw-not-exported",
+      "passed": true
+    },
+    {
+      "name": "scope/same-PID-exec-only-inference",
+      "passed": true
+    },
+    {
+      "name": "scope/QA-boundary-not-freshHOME-substitute",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "PythonOrModuleExecution": false,
+  "scope": "exact public source and binding comparisons only; not a running coordinator, log subscription, resource closure or business qualification"
+}

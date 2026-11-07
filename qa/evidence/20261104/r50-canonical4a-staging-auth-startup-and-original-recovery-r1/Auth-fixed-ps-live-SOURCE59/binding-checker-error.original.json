@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.local-source-binding-checker-error.r1",
+  "boundary": "Pure V8 source preparation before any Git mutation or Native call",
+  "code": "typed_helper_actual_fixture_mismatch",
+  "originalError": "Error: typed helper actual fixture mismatch\n    at exec_main.mjs:160:78",
+  "sourcePreserved": true,
+  "requestPreserved": true,
+  "journalPreserved": true,
+  "NativeCalls": 0,
+  "GitMutations": 0
+}

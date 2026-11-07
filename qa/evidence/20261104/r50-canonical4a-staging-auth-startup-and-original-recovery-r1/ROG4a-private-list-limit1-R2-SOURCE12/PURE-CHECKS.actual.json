@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.private-list-r2-source-boundary-checks.r1",
+  "base": {
+    "schema": "heptabao.private-list-pure-boundary-checks.r1",
+    "cases": [
+      {
+        "name": "codec_multiblock_unicode_whole",
+        "pass": true
+      },
+      {
+        "name": "page_create_omits_parent_space",
+        "pass": true
+      },
+      {
+        "name": "owner_false_stops",
+        "pass": true
+      },
+      {
+        "name": "owner_unknown_stops",
+        "pass": true
+      },
+      {
+        "name": "unknown_sharing_scope_stops",
+        "pass": true
+      },
+      {
+        "name": "partial_sharing_stops",
+        "pass": true
+      },
+      {
+        "name": "missing_chunk_stops",
+        "pass": true
+      },
+      {
+        "name": "duplicate_chunk_stops",
+        "pass": true
+      },
+      {
+        "name": "altered_chunk_stops",
+        "pass": true
+      },
+      {
+        "name": "wrong_original_bytes_stops",
+        "pass": true
+      },
+      {
+        "name": "safe_target_only_projection",
+        "pass": true
+      },
+      {
+        "name": "typed_digest_mismatch_stops",
+        "pass": true
+      },
+      {
+        "name": "duplicate_target_stops",
+        "pass": true
+      },
+      {
+        "name": "wrong_args_stops",
+        "pass": true
+      },
+      {
+        "name": "no_match_is_not_absence_or_binding",
+        "pass": true
+      },
+      {
+        "name": "pre_go_created_time_stops",
+        "pass": true
+      },
+      {
+        "name": "one_native_tool_only",
+        "pass": true
+      },
+      {
+        "name": "old_context_never_written",
+        "pass": true
+      },
+      {
+        "name": "raw_sdk_private_store_before_page",
+        "pass": true
+      },
+      {
+        "name": "native_parse_only_separate_post_whole_accept",
+        "pass": true
+      },
+      {
+        "name": "original_unknown_input_exact",
+        "pass": true
+      }
+    ],
+    "passed": 21,
+    "NativeCalls": 0,
+    "PagesCalls": 0,
+    "fixtureOnly": true,
+    "actualProviderSchemaNotClaimed": true
+  },
+  "delta": [
+    {
+      "name": "full_empty_roster_positive_whole",
+      "pass": true
+    },
+    {
+      "name": "different_canonical_owner_reject",
+      "pass": true
+    },
+    {
+      "name": "one_direct_share_reject",
+      "pass": true
+    },
+    {
+      "name": "inherited_incomplete_reject",
+      "pass": true
+    },
+    {
+      "name": "one_inherited_source_reject",
+      "pass": true
+    },
+    {
+      "name": "workspace_link_incomplete_reject",
+      "pass": true
+    },
+    {
+      "name": "roster_cursor_reject",
+      "pass": true
+    },
+    {
+      "name": "workspace_roster_reject",
+      "pass": true
+    },
+    {
+      "name": "space_roster_reject",
+      "pass": true
+    },
+    {
+      "name": "not_personal_read_reject",
+      "pass": true
+    },
+    {
+      "name": "owner_workspace_read_reject",
+      "pass": true
+    },
+    {
+      "name": "explicit_owner_unknown_reject",
+      "pass": true
+    },
+    {
+      "name": "request_exact_limit1",
+      "pass": true
+    },
+    {
+      "name": "old_start_key_and_state_retained",
+      "pass": true
+    }
+  ],
+  "fixedCatch": {
+    "publicFixedStopped": true,
+    "privateExceptionRetained": true
+  },
+  "passed": 37,
+  "NativeCalls": 0,
+  "PagesCalls": 0
+}

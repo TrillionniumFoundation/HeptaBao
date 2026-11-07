@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root.successor5767739.rog-stage-actual-qualification.r1",
+  "candidateCommit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+  "candidateTree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+  "originalJob": "1a1b2c397c4-fc05-7fa4",
+  "stageReport": {
+    "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+    "bytes": 29748,
+    "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+  },
+  "reportVersion": "66306:31358204:29748:1794000540708114035:1794000540708114035",
+  "stageGO": {
+    "blob": "a1e57addcddaa6f7162395096b3999aa7dfdc6c1",
+    "bytes": 4393,
+    "sha256": "a5fab9a4db704ed39033877cb834041f170e883a47d3a99aa8ade86950d5b00b"
+  },
+  "bodyGO": {
+    "blob": "0f95150edc6bfdefd09a18d4b9b95db023e9b02a",
+    "bytes": 3380,
+    "sha256": "426484140caf5e0e9711c32dbe0b26fbbb3709df27f5fb05f926bcbc74c3b3d8"
+  },
+  "checks": {
+    "reportWholeSHA": true,
+    "correctPreparedSource": true,
+    "actualCommitTree": true,
+    "soleParent": true,
+    "cleanIndependentGit": true,
+    "fullStrictFsck": true,
+    "wholeTrackedTree": true,
+    "wholeLeafCountBytesIndex": true,
+    "exactHistory": true,
+    "baseBeforeAfter": true,
+    "old495BeforeAfter": true,
+    "failedOriginalBeforeAfter": true,
+    "sourceExact": true,
+    "carrierExact": true,
+    "all68ChildrenClosed": true,
+    "deadlinePreserved": true,
+    "noRuntimeQualification": true,
+    "bundlePath": true,
+    "bundleBytesSHA": true,
+    "bundleHeader": true,
+    "bundleRegularOwnedSingleLink": true
+  },
+  "sourceStageQualified": true,
+  "fullTrackedLeaves": 3932,
+  "trackedBytes": 62553540,
+  "fullLeafIndexSHA256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+  "history": 3769,
+  "ancestryLinks": 17,
+  "childrenClosed": 68,
+  "elapsedSeconds": 14.573877246002667,
+  "bundleReported": {
+    "bytes": 5766,
+    "header": {
+      "header_sha256": "5599413cdc4c2e70cb471de0d407313f4d157a8bc6f0fba4c5e3ac1c458879c9",
+      "heads": [
+        [
+          "5767739cd25e458ac052dc8d384019bab8688ae0",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      31358148,
+      1000,
+      1000,
+      33152,
+      1,
+      5766,
+      {
+        "$exactInteger": "1794000539740776688"
+      },
+      {
+        "$exactInteger": "1794000539740776688"
+      }
+    ],
+    "path": "/home/qian-qi/hb-5767739c-src-20261106-r1/control/canonical-hb-5767739c-from02b.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "0683ebe3bcc1648387b5a891c958d1c855fef2aa6effa2c35910ffbfa3e6940a"
+  },
+  "bundleIndependentINFOQualified": false,
+  "bundleTransferred": false,
+  "currentControlsQualified": false,
+  "buildQualified": false,
+  "productTestsPassed": 0,
+  "formatted": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

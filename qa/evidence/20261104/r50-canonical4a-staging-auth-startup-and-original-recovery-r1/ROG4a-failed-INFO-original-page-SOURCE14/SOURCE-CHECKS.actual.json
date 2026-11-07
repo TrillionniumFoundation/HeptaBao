@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.failed-info-page0-pure-checks.r1",
+  "cases": [
+    {
+      "name": "exact_two_original_states_and_actual_failed_pointer",
+      "pass": true
+    },
+    {
+      "name": "exact_original_page0_request",
+      "pass": true
+    },
+    {
+      "name": "opaque_error_payload_whole_not_success_inference",
+      "pass": true
+    },
+    {
+      "name": "opaque_native_result_kind_also_byte_only",
+      "pass": true
+    },
+    {
+      "name": "reject_operation_id",
+      "pass": true
+    },
+    {
+      "name": "reject_offset",
+      "pass": true
+    },
+    {
+      "name": "reject_total_bytes",
+      "pass": true
+    },
+    {
+      "name": "reject_next_offset",
+      "pass": true
+    },
+    {
+      "name": "reject_eof",
+      "pass": true
+    },
+    {
+      "name": "reject_immutable_snapshot",
+      "pass": true
+    },
+    {
+      "name": "reject_result_sha256",
+      "pass": true
+    },
+    {
+      "name": "reject_payload_kind",
+      "pass": true
+    },
+    {
+      "name": "reject_format",
+      "pass": true
+    },
+    {
+      "name": "tool_error_rejected_after_archive",
+      "pass": true
+    },
+    {
+      "name": "missing_native_text_rejected",
+      "pass": true
+    },
+    {
+      "name": "changed_old_info_state_rejected",
+      "pass": true
+    },
+    {
+      "name": "only_one_fixed_page_native_method",
+      "pass": true
+    },
+    {
+      "name": "pure_checks_no_state_write_no_tool",
+      "pass": true
+    }
+  ],
+  "passed": 18,
+  "NativeCalls": 0,
+  "PagesCalls": 0,
+  "fixtureOnly": true
+}

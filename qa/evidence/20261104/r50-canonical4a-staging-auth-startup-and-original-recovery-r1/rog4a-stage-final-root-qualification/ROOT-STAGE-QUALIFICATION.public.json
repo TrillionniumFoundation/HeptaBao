@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.root.4a-rog-stage-actual-qualification.r1",
+  "candidateCommit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "candidateTree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+  "originalJob": "1a1b3307dc2-fc05-80f8",
+  "stageReport": {
+    "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+    "bytes": 31257,
+    "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+  },
+  "reportVersion": "66306:34603472:31257:1794007676686666010:1794007676686666010",
+  "stageGO": {
+    "blob": "b9d78174fd68b87b34f2c124adb14ff85662889f",
+    "bytes": 5350,
+    "sha256": "d51de5a6aa4e44c9e8e3bdb817232cdda70d658263079729432f346e15b9d195"
+  },
+  "bodyGO": {
+    "blob": "523ba92d12421caffcd2711e8f3a921f51c5de78",
+    "bytes": 3825,
+    "sha256": "590abea358a0e11a2354ef71f96eedf7f4f368723a3ffe032b43815dbbad80ab"
+  },
+  "originalStartAndTerminalChecks": 61,
+  "INFOChecks": 61,
+  "BODYChecks": 71,
+  "checks": {
+    "reportWholeAndNativeBODY": true,
+    "preparedCorrectSource": true,
+    "actualCommitTree": true,
+    "soleParent": true,
+    "cleanIndependentGit": true,
+    "strictFsck": true,
+    "fullTreeMatches": true,
+    "wholeLeavesBytesIndex": true,
+    "history": true,
+    "baseBeforeAfter": true,
+    "old495BeforeAfter": true,
+    "failedObserverBeforeAfter": true,
+    "exactStager": true,
+    "exactCarrier": true,
+    "all72ChildrenClosed": true,
+    "deadline": true,
+    "noBuildOrProductQualification": true,
+    "canonical_bundle-fixedPathBytesSHA": true,
+    "canonical_bundle-exactHeader": true,
+    "canonical_bundle-regularOwnedSingleLink": true,
+    "canonical_x230_bundle-fixedPathBytesSHA": true,
+    "canonical_x230_bundle-exactHeader": true,
+    "canonical_x230_bundle-regularOwnedSingleLink": true,
+    "totalBundle8068Of4MiB": true,
+    "candidateFullIndexIndependentlyRecomputed": true
+  },
+  "checkCount": 25,
+  "sourceStageQualified": true,
+  "fullTrackedLeaves": 3932,
+  "trackedBytes": 62553956,
+  "fullLeafIndexSHA256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+  "history": 3770,
+  "ancestryLinks": 18,
+  "childrenClosed": 72,
+  "elapsedSeconds": 13.821548096020706,
+  "bundlesReported": {
+    "canonical_bundle": {
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle",
+      "bytes": 1253,
+      "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+      "full9Strings": [
+        "66306",
+        "34603387",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1253",
+        "1794007675691817556",
+        "1794007675691817556"
+      ],
+      "header": {
+        "header_sha256": "ffa8977f7e4efa7ea246089229c566e9007efc3a8a64be8be1e3de5c4efe3626",
+        "heads": [
+          [
+            "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+            "HEAD"
+          ]
+        ],
+        "prerequisites": [
+          "5767739cd25e458ac052dc8d384019bab8688ae0"
+        ],
+        "version": 2
+      }
+    },
+    "canonical_x230_bundle": {
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+      "bytes": 6815,
+      "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+      "full9Strings": [
+        "66306",
+        "34603406",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "6815",
+        "1794007675734817691",
+        "1794007675734817691"
+      ],
+      "header": {
+        "header_sha256": "e1af68cc94dad436c795a3c1e7d809b73d8622bcd566b95a8c464b75ac50fa19",
+        "heads": [
+          [
+            "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+            "HEAD"
+          ]
+        ],
+        "prerequisites": [
+          "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+        ],
+        "version": 2
+      }
+    }
+  },
+  "bundleIndependentINFOQualified": false,
+  "bundleTransferred": false,
+  "currentControlsQualified": false,
+  "buildQualified": false,
+  "productTestsPassed": 0,
+  "formatted": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "fullLeafIndex": {
+    "blob": "4767ced1fa8bcb3d6efc1cf3d678ce6d75b2dd1c",
+    "bytes": 453838,
+    "sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d"
+  }
+}

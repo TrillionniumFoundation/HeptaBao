@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.root.go.pki12-cached-page0-recovery.r2",
+  "authorization": "GO",
+  "scope": "official271_pki12_cached_page0_acceptance_recovery_only",
+  "issuedUTC": "2026-11-07 01:06:21 UTC",
+  "sourceTree": "c590555ad253e69a4345032ff9ad804d862913db",
+  "original_operation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "original_state": {
+    "blob": "e48bb16c1d18b72506546378eac09aad7996cd63",
+    "bytes": 246355,
+    "sha256": "c5bc674d2f31e94aa018f97a0896db3e7382fb1cd19a50be06d29fa767ded5b4"
+  },
+  "corrected_journal": {
+    "blob": "86edcf2a0d2d5206025a6a702883e6b645e2cc87",
+    "bytes": 28904,
+    "sha256": "0940f9d7b0c206864962e77cf40106e7b4d3faf2ec0ad225b472840e214fc107"
+  },
+  "proposed_after_state": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "original_page_SDK": {
+    "blob": "5ceec5345171ff27f8bd0265c94f0f8e6a0cef7c",
+    "bytes": 22705,
+    "sha256": "d613452f7e603c59f49e059bbb987b53bc1aab73549cf7df464974f59912c309"
+  },
+  "original_body_GO": {
+    "blob": "f0328f282f20cb6b378ea53aaf039fa17f1bea57",
+    "bytes": 4038,
+    "sha256": "d80bac33e32e7b39eaa4ebab0e1b564942b8ab3ca7849feaedbf0567eb280536"
+  },
+  "recovery_source": {
+    "blob": "dbc81960fb8593f731c08449fa681d15f2029fab",
+    "bytes": 6251,
+    "sha256": "e89f083eae02572ce4a554ed770fd12eb0079d7202fd6bce7a006b03c4e4c58f"
+  },
+  "recovery_proposal": {
+    "blob": "ef30a7786f74b7a02da61ca7831f6934b2c264df",
+    "bytes": 1387,
+    "sha256": "c9d024ecb68a3993f9dee6ff9b09deaeda3f32530ef0e70984cdeb8e7fe82114"
+  },
+  "root_source_qualification": {
+    "blob": "54055085bcf2e0b373e901feeb962e32983314fc",
+    "bytes": 4159,
+    "sha256": "5a101f9c3cd4132c0a2a8d830be7bb39cf42d012528fae6eb2fdbd8bfb6be4f2"
+  },
+  "root_qualification_tree": "5e26b211eb19728b556d286bbdfe6e1f887666a0",
+  "allowed_real_state_changes": [
+    "paused",
+    "pending",
+    "activeObserver"
+  ],
+  "old_calls_failure_history_and_budgets_immutable": true,
+  "maximumNativeCalls": 0,
+  "maximumRemoteProcesses": 0,
+  "maximumGitMutationsDuringApply": 0,
+  "oneExactLocalApply": true,
+  "receiptWholeArchiveRequiredAfterApply": true,
+  "newPageCallsAuthorized": false,
+  "rootNativeCalls": 0,
+  "acceptance": {
+    "pkiParity": false,
+    "fullReplacement": false,
+    "clientCutover": false,
+    "cleanup": false
+  }
+}

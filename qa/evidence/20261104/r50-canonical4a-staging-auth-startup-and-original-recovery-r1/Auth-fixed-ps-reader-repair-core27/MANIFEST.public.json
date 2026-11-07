@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.immutable-public-manifest.r1",
+  "entries": [
+    {
+      "path": "before--mac_native_process_observer_r1.py",
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "path": "after--mac_native_process_observer_r1.py",
+      "blob": "8ccc79e3f776bfb42648bcd6ace6ab021574a949",
+      "bytes": 15269,
+      "sha256": "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5"
+    },
+    {
+      "path": "forward--mac_native_process_observer_r1.py.diff",
+      "blob": "b9f7c942f4f577ba6721e6232fe6a5d39826904f",
+      "bytes": 3423,
+      "sha256": "6fb20d70eccff06888a2353dbfd49cf054554528fa4ee582de2f79e46829df3f"
+    },
+    {
+      "path": "inverse--mac_native_process_observer_r1.py.diff",
+      "blob": "bec45f83a850a75d418b7254a7c5a959671d38f7",
+      "bytes": 3423,
+      "sha256": "b7814d000e47337834436381753badbc94db6e46d406df98de5a76bbbcd49985"
+    },
+    {
+      "path": "before--mac_owned_unreaped_r1.py",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "after--mac_owned_unreaped_r1.py",
+      "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",
+      "bytes": 13221,
+      "sha256": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501"
+    },
+    {
+      "path": "forward--mac_owned_unreaped_r1.py.diff",
+      "blob": "6faddab8622c08c2943ff705a102998da7f031dc",
+      "bytes": 4883,
+      "sha256": "c390becfdc2321ea0b1d128db7bebbf1787e62a23fdc77d17e7a24730703e9a1"
+    },
+    {
+      "path": "inverse--mac_owned_unreaped_r1.py.diff",
+      "blob": "d6f2c9d0fe565866ca3ae6a33bf4f63ff5129078",
+      "bytes": 4883,
+      "sha256": "36f1de350eb663a7afc1e150cbcab6b2a5695b38dd13122d5a39e41e14d6d454"
+    },
+    {
+      "path": "before--mac_owned_commands_r1.py",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "after--mac_owned_commands_r1.py",
+      "blob": "e5fe545bdd842ae3bf4d61e2576b407149d32a2d",
+      "bytes": 7675,
+      "sha256": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1"
+    },
+    {
+      "path": "forward--mac_owned_commands_r1.py.diff",
+      "blob": "31ae19b306319c7a800fb99551d7997c77e130f9",
+      "bytes": 5071,
+      "sha256": "262c95bfa3f69fc2dacb7672766d8cc68781c8d45d0f56696c73485cf60dc310"
+    },
+    {
+      "path": "inverse--mac_owned_commands_r1.py.diff",
+      "blob": "e64eea38679e5c1b5fd578cd99f8dd2cd00201bf",
+      "bytes": 5071,
+      "sha256": "eac263732208243e3991cf2afa8b3958db2f4451847edd6ab3f466c3023430b8"
+    },
+    {
+      "path": "before--mac_owned_launchd_r3.py",
+      "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+      "bytes": 58584,
+      "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+    },
+    {
+      "path": "after--mac_owned_launchd_r3.py",
+      "blob": "48f3e8394a15830953fb90e3470e8ba98e7df509",
+      "bytes": 60016,
+      "sha256": "edeb2b60dd102ea300887d3d2f23fc39682aa8700ce88d6273307f1b5d2ecbd4"
+    },
+    {
+      "path": "forward--mac_owned_launchd_r3.py.diff",
+      "blob": "508ff91d59f5a4ba510658b3e74b4c9ee810ab32",
+      "bytes": 11569,
+      "sha256": "c7d3725efbc945cb4e5d8d6399be31ae7a22941fbb3d62884faa22e357af9194"
+    },
+    {
+      "path": "inverse--mac_owned_launchd_r3.py.diff",
+      "blob": "c26f9ca1611a15ac0d5bfd3c8b3e580feac74f88",
+      "bytes": 11569,
+      "sha256": "99a8a99c37ed1e49a8076b17fce28b7f2f05cea666e79e2081fe1e397a9941b1"
+    },
+    {
+      "path": "before--mac_current_outer_wal_r1.py",
+      "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+      "bytes": 73918,
+      "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+    },
+    {
+      "path": "after--mac_current_outer_wal_r1.py",
+      "blob": "27b9e70f6c708690f3a8f86347137a744253efbb",
+      "bytes": 74137,
+      "sha256": "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529"
+    },
+    {
+      "path": "forward--mac_current_outer_wal_r1.py.diff",
+      "blob": "82aedee3fe921e9a8f151838f17a7fbe77bf95ce",
+      "bytes": 945,
+      "sha256": "f525fd6eb65791cfc537a6e677b595bc59806202fef4a95af4044ee5145cf636"
+    },
+    {
+      "path": "inverse--mac_current_outer_wal_r1.py.diff",
+      "blob": "f002c410d8cdf19a5a851aab0c9ae82b03d8da8d",
+      "bytes": 945,
+      "sha256": "921ccd31e83dc6404188ebc7af0e5a43158f30f4da53996bd4a8612aa312b6a2"
+    },
+    {
+      "path": "before--mac_current_fixture_materializer_r1.py",
+      "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+      "bytes": 25973,
+      "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+    },
+    {
+      "path": "after--mac_current_fixture_materializer_r1.py",
+      "blob": "6a3b8911ac391fea1884113625fde555cae132e8",
+      "bytes": 26026,
+      "sha256": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+    },
+    {
+      "path": "forward--mac_current_fixture_materializer_r1.py.diff",
+      "blob": "84d7055f61f2b3cd2066dc36284c48eeeac82382",
+      "bytes": 420,
+      "sha256": "2b7df30ee924873b5fe04ffa70d6f9726f452377eb400d57babb20537ee484bb"
+    },
+    {
+      "path": "inverse--mac_current_fixture_materializer_r1.py.diff",
+      "blob": "2bb1a260c9aba31380900bf6435b97cdbe0dae42",
+      "bytes": 420,
+      "sha256": "b6d8bfbd0ffab0ff09204535b080c5f8cf9887cecb88b5211689615fcaddaf37"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "blob": "8a1a452f1de984c9b383360fc33eb97b8b11b125",
+      "bytes": 6609,
+      "sha256": "00845d42fd279844e6e3a3bb9246fb3e56aa010011e4b6a0fcfe2f09b806c2e1"
+    },
+    {
+      "path": "NOTES.md",
+      "blob": "b0a47c7fac36b58d46280be7de52fa0afe224c9f",
+      "bytes": 1359,
+      "sha256": "b6d39f28dc8fe0bcedee998eed8243962358d2b7770ccda975ae8931cd2b6350"
+    }
+  ]
+}

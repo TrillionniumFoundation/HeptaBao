@@ -1,0 +1,22 @@
+{
+  "originalRequest": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "originalState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "pure": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "source": {
+    "blob": "f04143022a6d9dfe5e518898c5fd2129e21c8889",
+    "bytes": 12303,
+    "sha256": "1b95c4a6b616944d9a66dcdb9d73a5a0222357ef847b789c7b4efa00f3a189d7"
+  }
+}

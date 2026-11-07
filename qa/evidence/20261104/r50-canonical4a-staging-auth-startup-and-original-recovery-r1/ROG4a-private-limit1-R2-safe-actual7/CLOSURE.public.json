@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.private-list-r2.public-closure.r1",
+  "sourceTree": "155f70c392ae246dffabbf623c19ca3712bb0518",
+  "correctedPlanTree": "b059731fabcf73553bb03d06b11dd7d081a72392",
+  "rootGo": {
+    "blob": "55c731e8dd61de00840c3f5952ffd2e9a9a71f2a",
+    "bytes": 5661,
+    "sha256": "e956cf4e88ad2ef83d327ba13e2fbd6e340e677cb442b08c381a11f374fadfa7"
+  },
+  "armTree": "ec08aee35c39ddd9f9dfcb894b80a19f1e735e34",
+  "nativeCalls": 1,
+  "privatePageCreates": 1,
+  "privatePageFullReads": 1,
+  "privatePageSharingReads": 1,
+  "privateOriginalSdkWhole": true,
+  "privateOwnerOnly": true,
+  "nativeSdkDigest": {
+    "blob": "873f078704af94e3306106046ee0872e03f96be4",
+    "bytes": 626,
+    "sha256": "a450ddd2931561ab8d3bb52d645a39be27d0632ef323f486755e10e3075a8317"
+  },
+  "privatePageIdentifiersPublished": false,
+  "rawSdkOrRosterPublished": false,
+  "privatePagesSDKsPublished": false,
+  "discoveryCallInFlight": false,
+  "discoveryClosed": true,
+  "targetJobFound": false,
+  "inventoryComplete": false,
+  "hasNextCursor": true,
+  "cursorRequestCount": 0,
+  "statusRequestCount": 0,
+  "processStartRequestCount": 0,
+  "originalBuildUnknownState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "originalBuildUnknownPreserved": true,
+  "originalR1Preserved": true,
+  "originalBuildPossibleLaneStillHeld": true,
+  "buildOutcome": "UNKNOWN",
+  "noAbsenceInference": true
+}

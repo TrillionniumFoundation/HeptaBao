@@ -1,0 +1,178 @@
+{
+  "schema": "heptabao.public-node-live-denial-original-release.r2",
+  "job": {
+    "host": "mac",
+    "id": "1a1b33bc0d5-fc05-814d"
+  },
+  "originalGO": {
+    "blob": "d6ae07de2d1e8249267f38c452f9475624b7f285",
+    "bytes": 13290,
+    "sha256": "165ebeb49eaaa8a4abf2c0d922075ed60e45d51a9c24084e99d501b6cba8a83e"
+  },
+  "exactRequest": {
+    "blob": "4492f4530bac7655e5ff4cbdac4d5309df74435e",
+    "bytes": 115529,
+    "sha256": "76e997483c53874309679586ef8bb7ad38d4af5c0ae886d26785bcafe0557627"
+  },
+  "status": "COMPLETE_NEW_PUBLIC_OBSERVATION_NO_DENIAL_EVENT_ADMITTED",
+  "NativeCalls": 13,
+  "originalObservers": [
+    {
+      "id": "8aaf2e2aae91fc33bd39a152e673e46fa47ba69b2a1d5cd3be3f5a9ed976f538",
+      "tool": "process_status",
+      "payload": {
+        "blob": "6d14247f4019fe4d076a1d6ee081b48e87b4736b",
+        "bytes": 912,
+        "sha256": "1a1f1fec8417fc8ee79cafa5325cbb443d19a4a61f78c357943e01ab12dcb335"
+      },
+      "payloadTree": "348415701a2a799092144844a56f7a1eabb9006b",
+      "nativeText": {
+        "blob": "50911ecc476159a28b5a4dfe3444e32a5175cd38",
+        "bytes": 733,
+        "sha256": "7dad19bcead29a4be1c504bff333fca73b818823a0983ae97588e1fb6de78439"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "d4ebe059dc1c618a6ca149977645004b83e141747c289b32320cc808bca759d3",
+      "tool": "process_read",
+      "payload": {
+        "blob": "758abd11ad5add486820bf7ecfd82af489407b76",
+        "bytes": 54110,
+        "sha256": "7f13c6c685b30c8a0a67545dd2df5d456cc5883e1fbe6c9837b19c23b8a4129e"
+      },
+      "payloadTree": "8fdf06b6c50c50ccd0ee130fd4befc83a7905fa4",
+      "nativeText": {
+        "blob": "22ec9d078528afdf5f4df3b3ccaabea73e4a2ad3",
+        "bytes": 50733,
+        "sha256": "bb6c7db1be34e7ab7d8bc958a29533ea349ed4a8679c5851b697ff8fb6121fc4"
+      },
+      "pages": 7,
+      "completedInactive": true
+    }
+  ],
+  "immutablePages": 8,
+  "authority": {
+    "state": "succeeded",
+    "exit": 0,
+    "full": true,
+    "durable": true,
+    "terminalConfirmed": true,
+    "stdout": {
+      "seen": 16263,
+      "stored": 16263
+    },
+    "stderr": {
+      "seen": 0,
+      "stored": 0
+    }
+  },
+  "stdout": {
+    "blob": "3e108153abca1f3951a457cbe6dde2e5aeaa492e",
+    "bytes": 16263,
+    "sha256": "36b7dd75bed14fa6047d722f50dbc73fae1218b19e93eda6533848dbc55d6186"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "streamsEOF": {
+    "stdout": true,
+    "stderr": true,
+    "nextStdout": 16263,
+    "nextStderr": 0
+  },
+  "actual": {
+    "observationComplete": true,
+    "ok": true,
+    "outcomeUnknown": false,
+    "node": {
+      "pid": 29053,
+      "exit": -6,
+      "retained": {
+        "code": 2,
+        "pid": 29053,
+        "signo": 20,
+        "status": 6
+      },
+      "ready": true,
+      "released": true,
+      "versionBytes": 0,
+      "stderrBytes": 0,
+      "versionSucceeded": false,
+      "kernelImageIndependentlyObserved": false
+    },
+    "log": {
+      "pid": 29055,
+      "exit": 0,
+      "stdoutBytes": 167,
+      "stderrBytes": 0,
+      "observedRows": 2,
+      "admittedDenialEvents": 0,
+      "rejectedUnknownRows": 2
+    },
+    "elapsedSeconds": 8.701107333879918,
+    "queue": {
+      "allPipeEOFObservedMonotonic": 2894256.104965458,
+      "allPipeEOFObservedWallUs": 1794008408852362,
+      "gateReadyMonotonic": 2894247.572394791,
+      "gateReadyWallUs": 1794008400320098,
+      "gateWriteAfterMonotonic": 2894247.834604875,
+      "gateWriteAfterWallUs": 1794008400582298,
+      "gateWriteBeforeMonotonic": 2894247.834587208,
+      "gateWriteBeforeWallUs": 1794008400582277,
+      "lastLogLiveObservationMonotonic": 2894256.102942708,
+      "logCustodyCapturedWallUs": 1794008400322674,
+      "logExitObservedMonotonic": 2894256.10493275,
+      "logExitObservedWallUs": 1794008408852326,
+      "logFirstCompleteMonotonic": 2894256.104945208,
+      "logFirstCompleteWallUs": 1794008408852347,
+      "logLaunchBeforeMonotonic": 2894247.572396875,
+      "logLaunchBeforeWallUs": 1794008400320100,
+      "logLiveObservedAfterNodeExit": true,
+      "nodeExitObservedMonotonic": 2894247.859499625,
+      "nodeExitObservedWallUs": 1794008400607188,
+      "nodeFirstCompleteMonotonic": 2894247.859511083,
+      "nodeFirstCompleteWallUs": 1794008400607207
+    }
+  },
+  "closure": {
+    "parentEnumeratedFDs": 20,
+    "inputFDs": 5,
+    "homeFDs": 10,
+    "pipeFDs": 5,
+    "allOwnDescriptorsAndChildrenClosed": true,
+    "allOwnedCommandsStopped": true,
+    "unknownCommandCount": 0,
+    "allPipeFDsClosed": true,
+    "allFixedHeldNamedFencesPassed": true,
+    "handlersRestored": true,
+    "pendingSignalObserved": false,
+    "deadline45Met": true,
+    "bothPrimaryChildrenReaped": true,
+    "signals": [
+      [],
+      []
+    ]
+  },
+  "lane": {
+    "A": 0,
+    "activeRuntimeCall": false,
+    "knownFuture": false,
+    "activeObserver": null,
+    "pending": null,
+    "paused": false
+  },
+  "noReplay": true,
+  "noKnownGitOrSDKError": true,
+  "subscriptionAcknowledged": false,
+  "zeroAdmittedEventsDoesNotProveNoDenial": true,
+  "unknownRawOrHashesNotExported": true,
+  "startupCauseQualified": false,
+  "SDKOrCredentialWorkExecuted": false,
+  "historicalUnknownUpgraded": false,
+  "legacyManagedCleanup": false,
+  "additionalNativeAuthorized": false
+}

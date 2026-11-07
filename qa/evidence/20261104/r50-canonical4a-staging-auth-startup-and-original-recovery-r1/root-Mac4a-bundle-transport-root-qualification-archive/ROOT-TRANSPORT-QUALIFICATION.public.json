@@ -1,0 +1,251 @@
+{
+  "schema": "heptabao.root.Mac4a-canonical-bundle-transport.r1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "actual-apply",
+      "pass": true
+    },
+    {
+      "name": "root-pure-GO",
+      "pass": true
+    },
+    {
+      "name": "actual-after-proposed-exact",
+      "pass": true
+    },
+    {
+      "name": "actual-before-exact",
+      "pass": true
+    },
+    {
+      "name": "old-six-calls-preserved",
+      "pass": true
+    },
+    {
+      "name": "old-INFO-4a-mac-bundle-info-r1-admit",
+      "pass": true
+    },
+    {
+      "name": "old-INFO-4a-mac-bundle-info-r1-status0",
+      "pass": true
+    },
+    {
+      "name": "old-INFO-4a-mac-bundle-info-r1-page0",
+      "pass": true
+    },
+    {
+      "name": "old-failure-preserved",
+      "pass": true
+    },
+    {
+      "name": "only-five-fields",
+      "pass": true
+    },
+    {
+      "name": "closed-state",
+      "pass": true
+    },
+    {
+      "name": "budget-preserved",
+      "pass": true
+    },
+    {
+      "name": "runtime-release",
+      "pass": true
+    },
+    {
+      "name": "three-body-calls",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-admit/arm-request",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-admit/arm-go",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-admit/original-SDK",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-admit/native",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-admit/accepted",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-status0/arm-request",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-status0/arm-go",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-status0/original-SDK",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-status0/native",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-status0/accepted",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-page0/arm-request",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-page0/arm-go",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-page0/original-SDK",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-page0/native",
+      "pass": true
+    },
+    {
+      "name": "4a-mac-bundle-body-r1-page0/accepted",
+      "pass": true
+    },
+    {
+      "name": "one-base64-line",
+      "pass": true
+    },
+    {
+      "name": "whole-actual-bytes",
+      "pass": true
+    },
+    {
+      "name": "encoded-original-body",
+      "pass": true
+    },
+    {
+      "name": "transport-path-version",
+      "pass": true
+    },
+    {
+      "name": "transport-operations",
+      "pass": true
+    },
+    {
+      "name": "original-body-operation",
+      "pass": true
+    },
+    {
+      "name": "native-body-observed-only",
+      "pass": true
+    },
+    {
+      "name": "bundle-v2-header",
+      "pass": true
+    },
+    {
+      "name": "bundle-header-hash",
+      "pass": true
+    }
+  ],
+  "checkCount": 38,
+  "INFOOriginalQualification": {
+    "blob": "98108d53d0e192a53621217832f9b16a90429cb7",
+    "bytes": 12861,
+    "sha256": "85dc0379c0a5a733fb4722b9a5c4163ff62dd8437e08abf2ba6bf1cac6a024bf"
+  },
+  "BODYActualBoundary": {
+    "blob": "facfff1f4e8f7f9a893878a72f6ec86089fd6bb2",
+    "bytes": 1772,
+    "sha256": "49b601a49a867aca5e024c0726f02c18db90fc67e1a22da7980623cfcde1c1b7"
+  },
+  "originalFailureTree": {
+    "tree": "4679563152e933459a27ecd4c14ba5e4b29f7d77",
+    "files": 14,
+    "bytes": 89636,
+    "merkle": {
+      "root_sha": "4679563152e933459a27ecd4c14ba5e4b29f7d77",
+      "trees_verified": 1,
+      "leaf_count": 14
+    },
+    "whole": true
+  },
+  "recoverySourceTree": "ef81c4a3096be846268c635bfe15cff4b0679fd2",
+  "preparedProof": {
+    "tree": "6c130b5d6a59da0cf25576582973647753420746",
+    "files": 3,
+    "bytes": 73605,
+    "merkle": {
+      "root_sha": "6c130b5d6a59da0cf25576582973647753420746",
+      "trees_verified": 1,
+      "leaf_count": 3
+    },
+    "whole": true
+  },
+  "actualApplied": {
+    "tree": "c455c5a261a7854313133a7e37ec5ce3f35a7e03",
+    "files": 3,
+    "bytes": 39137,
+    "merkle": {
+      "root_sha": "c455c5a261a7854313133a7e37ec5ce3f35a7e03",
+      "trees_verified": 1,
+      "leaf_count": 3
+    },
+    "whole": true
+  },
+  "transport": {
+    "tree": "e41bec7a3d488589bb7212c57ff0d0ee1f93ac7b",
+    "files": 2,
+    "bytes": 2542,
+    "merkle": {
+      "root_sha": "e41bec7a3d488589bb7212c57ff0d0ee1f93ac7b",
+      "trees_verified": 1,
+      "leaf_count": 2
+    },
+    "whole": true
+  },
+  "transportManifest": {
+    "blob": "3650eb4dde4116eca631e82316aba08eb472fd5e",
+    "bytes": 869,
+    "sha256": "1386ebfb447740e7b393875be6df46ffff515104c69ee3e1cd1ac65ed64257ab"
+  },
+  "canonicalBase64": {
+    "blob": "0c484a368ed4477cb0be462292a17262adf621c9",
+    "bytes": 1673,
+    "sha256": "7424490267abd9c6f5aaf2cff5edc5a7894ddf10fa26ae622b9751fbf635c6f5"
+  },
+  "bundle": {
+    "bytes": 1253,
+    "sha256": "0bdbb69aed82e8cb5d5536ef8b782ac761ceca73d03e45af4d3073f890f18851",
+    "version": "66306:34603387:1253:1794007675691817556:1794007675691817556",
+    "full9": [
+      "66306",
+      "34603387",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "1253",
+      "1794007675691817556",
+      "1794007675691817556"
+    ],
+    "headerSha256": "ffa8977f7e4efa7ea246089229c566e9007efc3a8a64be8be1e3de5c4efe3626"
+  },
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0"
+  },
+  "originalFailurePreserved": true,
+  "NativeReplay": false,
+  "NativeCallsAdded": 0,
+  "MacStageQualified": false,
+  "productExecuted": false
+}

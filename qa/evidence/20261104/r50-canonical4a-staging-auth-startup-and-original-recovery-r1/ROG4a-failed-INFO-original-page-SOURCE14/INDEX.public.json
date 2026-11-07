@@ -1,0 +1,67 @@
+{
+  "SOURCE.js": {
+    "blob": "ec8b3b469d113bfa96c07f4021e52fa66d1abbad",
+    "bytes": 6848,
+    "sha256": "f0a10d05cff1f5244bdeb0cb6a6b9d94127709451815e525e1046251ffcd62c6"
+  },
+  "REQUEST.public.json": {
+    "blob": "46b765bdbbdaa51af1fa3891b78c478b4008b5aa",
+    "bytes": 121,
+    "sha256": "90e081d7d4fb16b6a1928ad526236e282416ee53f73ee2eec9209baf5870eace"
+  },
+  "PLAN.public.json": {
+    "blob": "fd6b5e9d6540965492cf531fddc312aa7d48d1a1",
+    "bytes": 3022,
+    "sha256": "4a3a2f42932712773f360fc742c66beb86117718f3ccadfcfc25c8d2e423998c"
+  },
+  "ORIGINAL-INFO-STATE.json": {
+    "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+    "bytes": 11134,
+    "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+  },
+  "ORIGINAL-STATUS.native.json": {
+    "blob": "ba25cecb4430ece5aea933decbcea117c6894bd4",
+    "bytes": 797,
+    "sha256": "e630828b792467fd100b876cd63834d1aa75fb4acbd0e71d6b933db21d763ad7"
+  },
+  "ORIGINAL-STATUS.sdk.json": {
+    "blob": "d3d82b97c990da904d25fbffbc804326f87906cc",
+    "bytes": 972,
+    "sha256": "73abdf948ebaaf5e84465b894dde54a458ff08bf53d30a67f74d99bbe12e6bca"
+  },
+  "SOURCE-VERIFIER.js": {
+    "blob": "26e7c0ce9ebcc67b5f5440da06dd82303572b182",
+    "bytes": 2878,
+    "sha256": "5842ea50ccc4a94e158fa4cd72af8f193c0458c3edb953d49cb769c01fb23d1d"
+  },
+  "SOURCE-CHECKS.actual.json": {
+    "blob": "0b963ee9d448cebadc7932792e6d756125b1c4bd",
+    "bytes": 1536,
+    "sha256": "9ea1e3f2a7c64a316e64be7f80eea8961b99d92035de94b32be670b69af3d393"
+  },
+  "INPUTS.public.json": {
+    "blob": "7ad19de51a3beebc982f113e9c4d71345f25a6dd",
+    "bytes": 1060,
+    "sha256": "1436e483abfac3295e60605a80de85bf3be8f3c37a93bfd523222065f013290b"
+  },
+  "pure_helpers.js": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "git_archive_once.js": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "TOOL-CONTRACT.public.json": {
+    "blob": "5790fa08201959221fbc31f01d1305926fb9456a",
+    "bytes": 1656,
+    "sha256": "c8289f48e4b94aaf532825acb0fe20a3f61fddda5008fda8a08dbe1d250c48ec"
+  },
+  "REPRODUCE.txt": {
+    "blob": "692968afdd9d62e1de7622c8c5e8f03cfe41449f",
+    "bytes": 366,
+    "sha256": "79e9f8c057a2255adfb0190a4db67384e0a596b3b4457a8d6eb5b2873ae1718c"
+  }
+}

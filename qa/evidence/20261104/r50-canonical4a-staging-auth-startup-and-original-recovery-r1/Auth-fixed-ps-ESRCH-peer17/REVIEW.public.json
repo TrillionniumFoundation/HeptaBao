@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.C.peer.A-fixed-ps-and-phase-absence.r1",
+  "scope": "Only eight exact before/after source leaves; fixed /bin/ps custody and phase-specific count0/ESRCH handling.",
+  "sourceCore": "199c18fcfff5a9fc9f5276ff5b47da42ebbdcf96",
+  "sourcePins": [
+    {
+      "path": "unreaped.before.py",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "unreaped.after.py",
+      "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",
+      "bytes": 13221,
+      "sha256": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501"
+    },
+    {
+      "path": "commands.before.py",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "commands.after.py",
+      "blob": "e5fe545bdd842ae3bf4d61e2576b407149d32a2d",
+      "bytes": 7675,
+      "sha256": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1"
+    },
+    {
+      "path": "reader.before.py",
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "path": "reader.after.py",
+      "blob": "8ccc79e3f776bfb42648bcd6ace6ab021574a949",
+      "bytes": 15269,
+      "sha256": "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5"
+    },
+    {
+      "path": "manager.before.py",
+      "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+      "bytes": 58584,
+      "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+    },
+    {
+      "path": "manager.after.py",
+      "blob": "48f3e8394a15830953fb90e3470e8ba98e7df509",
+      "bytes": 60016,
+      "sha256": "edeb2b60dd102ea300887d3d2f23fc39682aa8700ce88d6273307f1b5d2ecbd4"
+    }
+  ],
+  "pass": true,
+  "newSourceBlockers": [],
+  "substantiveFindings": [
+    "Commands opt-in is gated by the fixed label, exact /bin/ps argv,262144 per-stream cap and admitted whole/full9 descriptor. lstat checks occur before Popen and after normal EOF/exit before success.",
+    "Only the retained primary PID can be effective UID0, with exact stable pid/ppid/pgid/uid/start; every other selected group member remains the caller UID. Direct Popen parent/PGID/session and WNOWAIT capture/recheck remain, and unknown cleanup remains unknown.",
+    "The existing ps_rows implementation and verify_unreaped function are byte-identical. Default commands still expect the current effective UID and retain old stdout/cleanup bounds.",
+    "ProcessReader already uses use_errno=True. Each of the three numeric reads clears errno first. Only count0 plus ESRCH under explicit allow_absent can raise ProcessAbsent; nonzero incomplete reads and other errors keep refusal.",
+    "The only allow_absent=True call is the manager phase wait after exact wrapperPID comparison. The catch repeats _query with the same entry, whose existing checks bind plist/program/argv, and requires runs1/noPID.",
+    "The entire last-exit0 and subsequent result/stdout/T5/worker-lineage acceptance tail is unchanged. Absence alone grants no result qualification and reports historicalReapProved=false."
+  ],
+  "limitations": [
+    "Read-only source review, no Python compilation, component execution or Native call.",
+    "Fixed path/full9 fences are not atomic exec-by-FD; the source explicitly exposes that boundary.",
+    "No new assertion about actual setuid ps execution or manager success; fresh actual scope is still required.",
+    "No review of unrelated HomeControl/outer fixture changes or broad helper proofs."
+  ],
+  "checks": [
+    {
+      "name": "unreaped_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "unreaped_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "commands_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "commands_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "reader_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "reader_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "manager_exact_forward",
+      "pass": true
+    },
+    {
+      "name": "manager_exact_reverse",
+      "pass": true
+    },
+    {
+      "name": "ps_rows_original_whole",
+      "pass": true
+    },
+    {
+      "name": "verify_unreaped_original_whole",
+      "pass": true
+    },
+    {
+      "name": "fixed_ps_exact_argv_and_output",
+      "pass": true
+    },
+    {
+      "name": "root_exception_stable_primary_only",
+      "pass": true
+    },
+    {
+      "name": "default_uid_current_euid",
+      "pass": true
+    },
+    {
+      "name": "errno_swap_enabled",
+      "pass": true
+    },
+    {
+      "name": "three_optin_ESRCH_tests",
+      "pass": true
+    },
+    {
+      "name": "single_phase_allow_absent",
+      "pass": true
+    },
+    {
+      "name": "phase_post_exit_qualification_tail_exact",
+      "pass": true
+    }
+  ],
+  "checkCount": 17
+}

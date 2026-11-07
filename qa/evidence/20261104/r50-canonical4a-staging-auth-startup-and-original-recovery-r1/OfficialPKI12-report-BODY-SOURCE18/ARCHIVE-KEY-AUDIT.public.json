@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.pki12-report-body-archive-key-audit.v1",
+  "reason": "Observed prior Mac bundle R1 inherited two fixed successor576 keys; this source is checked across complete function bodies.",
+  "journalSourcePin": {
+    "blob": "f83797d03a41092340ba39074b155594464d8bf2",
+    "bytes": 28846,
+    "sha256": "0b4f9cc8c62104d96cbc4c021c4e500074b45b8fad24609874f851bd19b7297c"
+  },
+  "allArchiveSites": [
+    {
+      "owner": "gfPrepareOne",
+      "expression": "\"gfa-\"+callKey",
+      "meaning": "request/intent/arm"
+    },
+    {
+      "owner": "gfInvokePreparedOnce",
+      "expression": "\"gfx-\"+callKey",
+      "meaning": "original transport exception only"
+    },
+    {
+      "owner": "gfInvokePreparedOnce",
+      "expression": "\"gfs-\"+callKey",
+      "meaning": "whole original SDK"
+    },
+    {
+      "owner": "gfCloseOriginalObserver",
+      "expression": "\"gfc-\"+a.id",
+      "meaning": "whole original immutable payload"
+    },
+    {
+      "owner": "gfCloseOriginalObserver binary branch",
+      "expression": "\"gfr-\"+a.id",
+      "meaning": "whole decoded public JSON report"
+    }
+  ],
+  "fixedExecutionSpecificArchiveLiteralCount": 0,
+  "plannedCallKeyPrefix": "off271-pki12-r1-report-body-",
+  "finiteCallKeys": 137,
+  "finiteArmSdkExceptionKeysChecked": 411,
+  "allAbsentInCurrentCache": true,
+  "oldTenCallKeysHaveNoNewPrefix": true,
+  "futureBodyOperationId": null,
+  "payloadAndBodyKeyAbsence": "ID is not known yet; no claim of an observed future archive. Existing once-only helper rejects a duplicate and preserves error without retry.",
+  "bodyNativeCalled": false
+}

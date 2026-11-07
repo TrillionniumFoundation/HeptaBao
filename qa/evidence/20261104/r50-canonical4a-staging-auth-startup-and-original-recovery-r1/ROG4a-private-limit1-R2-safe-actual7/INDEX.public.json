@@ -1,0 +1,32 @@
+{
+  "ROOT-GO.public.json": {
+    "blob": "55c731e8dd61de00840c3f5952ffd2e9a9a71f2a",
+    "bytes": 5661,
+    "sha256": "e956cf4e88ad2ef83d327ba13e2fbd6e340e677cb442b08c381a11f374fadfa7"
+  },
+  "request.json": {
+    "blob": "828019befe1e6529fead23a24db811c15db7a462",
+    "bytes": 34,
+    "sha256": "e31531bed4ff4a89122bd1f8bb56fe4076390fd1f48352353597d46a096d481d"
+  },
+  "intent.json": {
+    "blob": "69aa12ef4e6740288d3a790874c687595d11fa82",
+    "bytes": 861,
+    "sha256": "0c22e214a6f30330233cbc1253fbddcc9ee590d332a228a52e5b657f0d12f75d"
+  },
+  "armed.json": {
+    "blob": "33c3a28c71853c84c375808998a0cef520835d8b",
+    "bytes": 904,
+    "sha256": "37dd90f7e945b4afbeed572a5eb6210de4aec238cfff154af4b21c827f75537b"
+  },
+  "SAFE-PROJECTION.public.json": {
+    "blob": "4cc7dbef6d9a17e016bcb4edc58b249a7cc79b5c",
+    "bytes": 496,
+    "sha256": "4ab019fd330e4b7e704847866ed294b13d5a0e8df971b87c1624b58a28e4e806"
+  },
+  "CLOSURE.public.json": {
+    "blob": "4a1a73159cd5744ceac8e5208f8088bb9f0b990b",
+    "bytes": 1495,
+    "sha256": "9c7e3f11a14273777851c772448d30addc92304fea4445829adc34491423f7bb"
+  }
+}

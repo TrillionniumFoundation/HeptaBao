@@ -1,0 +1,34 @@
+async function verifyPki12ReportInfoSource(t){
+ const checks=[];const need=(name,ok)=>{checks.push({name,pass:!!ok});if(!ok)throw Error(name);};
+ const before=t["journal.before.js"],after=t["journal.source.js"],plan=JSON.parse(t["PLAN.public.json"]),s=JSON.parse(t["original.state.closed.json"]),stdout=JSON.parse(t["stdout.original.json"]),q=JSON.parse(t["request.exact.json"]);
+ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ need("donor_exact",gitBlobMeta(before).blob==="ecd8f1dad7bf090ee8749c139bb0cfc2c972dfef");
+ need("after_pin",same(gitBlobMeta(after),plan.journal));
+ need("strict_forward",applyStrict(before,t["journal.forward.diff"])===after);
+ need("strict_reverse",applyStrict(after,t["journal.reverse.diff"])===before);
+ need("two_hunks",(t["journal.forward.diff"].match(/^@@ /gm)||[]).length===2);
+ need("exact_request",same(gitBlobMeta(t["request.exact.json"]),plan.exact_request)&&q.operation.tool==="file_info"&&q.operation.arguments.host==="x230"&&q.operation.arguments.path===plan.target.path);
+ need("actual_seven_closed_calls",Object.keys(s.calls).length===7&&s.completedObservers.length===2&&s.completedObservers.every(o=>o.completedInactive)&&s.pending===null&&s.activeObserver===null&&!s.nativeCallInFlight&&!s.paused);
+ need("original_state_pin",same(gitBlobMeta(t["original.state.closed.json"]),plan.prior_state));
+ need("actual_stdout_pin",same(gitBlobMeta(t["stdout.original.json"]),plan.terminal_stdout));
+ need("actual_terminal",stdout.capture_complete===true&&stdout.failure===null&&stdout.entry_fd_count===10&&stdout.all_entry_file_descriptors_closed===true&&stdout.pending_signal===null);
+ need("actual_report_whole_identity",stdout.report.bytes===plan.target.bytes&&stdout.report.sha256===plan.target.sha256&&same(stdout.report.full9_decimal,plan.target.full9Strings));
+ need("unchanged_dispatch_core",after.slice(after.indexOf("function gfValidateRequest"))===before.slice(before.indexOf("function gfValidateRequest")));
+ const beforePrefix=before.slice(before.indexOf("function gfNeed"),before.indexOf("function gfAuthorizeOracleReportInfo")),afterPrefix=after.slice(after.indexOf("function gfNeed"),after.indexOf("function gfAuthorizeOracleReportInfo"));
+ need("unchanged_existing_context_core",beforePrefix===afterPrefix);
+ need("newGO_arm_selection_retained",after.includes("rootGo:s.oracleReportInfoGO?.pin??s.goPin"));
+ need("oldINFO_noBODY_scope",plan.initialize===false&&plan.Native_calls===0&&plan.limits.file_info_starts===1&&plan.actual_version===null);
+ const local=new Map([[plan.slot,JSON.parse(t["original.state.closed.json"])]]),captured=[];
+ const fakeArchive=async x=>{captured.push(x);return{whole:true,tree:"0000000000000000000000000000000000000000",entries:[],count:3};};
+ const api=new Function("store","load","tools","archiveFlatPublicTextsOnce",t["pure_helpers.original.js"]+"\n"+after+"\nreturn {gfAuthorizeOracleReportInfo,gfPrepareOne,gfValidateRequest};")((k,v)=>local.set(k,v),k=>local.get(k),{},fakeArchive);
+ const fakeGO={authorization:"GO",scope:plan.scope,original_job:plan.original_job,maximum_file_info_operations:1,maximum_process_start_calls:0,maximum_binary_read_operations:0,exact_request:plan.exact_request},goRaw=JSON.stringify(fakeGO,null,2)+"\n",goPin=gitBlobMeta(goRaw),oldCalls=JSON.stringify(s.calls);
+ const authorized=api.gfAuthorizeOracleReportInfo({goRaw,goPin,goWholeReadback:true,priorStateRaw:t["original.state.closed.json"],stdoutRaw:t["stdout.original.json"]});
+ need("private_fake_authorizes",authorized.authorized===true&&authorized.processStartAllowed===false&&authorized.binaryReadAllowed===false);
+ need("private_fake_preserves_seven_calls",JSON.stringify(local.get(plan.slot).calls)===oldCalls);
+ let refused=false;try{api.gfValidateRequest(local.get(plan.slot),"process_start",{}, "{}");}catch(e){refused=true;}need("private_fake_rejects_process",refused);
+ await api.gfPrepareOne({callKey:"pure-pki12-report-info",kind:"operation_start",requestRaw:t["request.exact.json"]});
+ need("private_fake_archives_once",captured.length===1);
+ need("private_fake_arm_uses_newGO",same(JSON.parse(captured[0].texts["armed.json"]).rootGo,goPin)&&same(JSON.parse(captured[0].texts["intent.json"]).rootGo,goPin));
+ need("private_fake_original_history_unchanged",Object.keys(s.calls).every(k=>same(local.get(plan.slot).calls[k],s.calls[k])));
+ return{schema:"heptabao.C.pki12-report-INFO-source-verification.r1",pass:true,check_count:checks.length,checks,Native_calls:0,real_slots_modified:false,fake_archive_only:true};
+}

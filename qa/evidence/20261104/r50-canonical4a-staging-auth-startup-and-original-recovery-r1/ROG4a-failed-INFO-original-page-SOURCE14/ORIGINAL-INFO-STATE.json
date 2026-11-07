@@ -1,0 +1,186 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root.unknown-ROG4a-build-fixed-report-INFO.GO.r1\",\n  \"authorization\": \"GO\",\n  \"issuedAtUTC\": \"2026-11-07 00:57:24 UTC\",\n  \"scope\": \"combined4a_unknown_start_fixed_report_info_only\",\n  \"newSlot\": \"combined_4a49405b_unknown_report_info_gitfirst_r1\",\n  \"request\": {\n    \"blob\": \"66e9023bd935fe6a43829280994746d9d6e38f69\",\n    \"bytes\": 267,\n    \"sha256\": \"47a3d2d680bfc08926f7ef040a2c86d10105cf4304589642011dbbb216f144db\"\n  },\n  \"source\": {\n    \"blob\": \"9d80c8623c3725cf7d00e02abcc741f32d5cbef5\",\n    \"bytes\": 19169,\n    \"sha256\": \"88351e1b9c6dadb33a927c24845834b047a708322253267d1661cdffd829dc76\"\n  },\n  \"sourceTree\": \"e6d2003113830214b0f64ee9790469e3780417c5\",\n  \"sourceRootQualification\": {\n    \"blob\": \"56f8fb04acd36861eadc32d246a7335d40237562\",\n    \"bytes\": 5527,\n    \"sha256\": \"7e2c29268f22684b7861bc64a55806eeefa815113b93afd0c2e7e16a89276f6a\",\n    \"tree\": \"d19f79c384d9004d6de368be0d0524f7ae390663\",\n    \"whole\": true\n  },\n  \"originalUnknownState\": {\n    \"blob\": \"2d512764d26256fabaaaf7deb3eae41120d92d3e\",\n    \"bytes\": 181122,\n    \"sha256\": \"196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82\"\n  },\n  \"originalUnknownPacket\": \"8f31dd325169b68eb10bb3cc442d7571f73346ab\",\n  \"originalBuildRequest\": {\n    \"blob\": \"f2c05f2d50e494b1046b57e727f89ce49a4d5d5a\",\n    \"bytes\": 158691,\n    \"sha256\": \"0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e\"\n  },\n  \"originalBuildGo\": \"bd6fb2fa682cd2b0ec966877dc988705c86ee022\",\n  \"candidate\": \"4a49405b93c45ab1c25ecba11cde63a7ede20dce\",\n  \"maximumInfoAdmissions\": 1,\n  \"maximumStatusCalls\": 8,\n  \"maximumPageCalls\": 128,\n  \"pageBytes\": 8192,\n  \"payloadCap\": 1048576,\n  \"fileSizeCap\": 4194304,\n  \"metadataGuard\": {\n    \"host\": \"rog\",\n    \"path\": \"/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json\",\n    \"regularFile\": \"file_info tool rejects symlinks and special files\",\n    \"mode\": 384,\n    \"metadataMode\": 384,\n    \"uid\": 1000,\n    \"gid\": 1000,\n    \"linkCount\": 1,\n    \"platform\": \"linux\",\n    \"size\": \"actual integer 1..4194304\",\n    \"sha256\": \"actual lowercase 64 hex; no expected value assumed\",\n    \"version\": \"actual five decimal components; positive device/inode; third component equals actual size\"\n  },\n  \"actualExpectedSha256\": null,\n  \"actualExpectedSize\": null,\n  \"actualExpectedVersion\": null,\n  \"jobIdRequired\": false,\n  \"authority\": \"Only fixed report metadata. No process terminal inference, no original job binding, no BUILD outcome qualification.\",\n  \"sequence\": [\n    \"new exact INFO root GO whole -> initialize isolated INFO slot once\",\n    \"prepare exact operation_start request -> request/intent/armed Git whole\",\n    \"independent model boundary -> one invoke -> complete original SDK Git whole -> accept\",\n    \"same returned operation only: at most8 status and128 contiguous8KiB immutable pages; no busy loop\",\n    \"whole original payload Git archive before native file_info semantic validation\",\n    \"metadata result only; stop for separate root decision, no BODY/refresh/START/cursor\"\n  ],\n  \"unknownRules\": [\n    \"Any ACK, SDK, Git archive, original payload, identity or cap error stops without retry.\",\n    \"Any native file_info error is preserved; missing report is not proof the BUILD did not start.\",\n    \"File-size cap is a returned-metadata rejection cap, not an extra unsupported file_info argument.\",\n    \"No write to original BUILD or either private-list slot/Page; original failed START remains failed/UNKNOWN.\",\n    \"All native calls go through gfRun; original once markers and Git-before-parse order are retained.\"\n  ],\n  \"prohibited\": {\n    \"process_start\": 0,\n    \"binary_read\": 0,\n    \"process_status\": 0,\n    \"process_read\": 0,\n    \"process_list\": 0,\n    \"process_list_page\": 0,\n    \"cursorContinuation\": 0,\n    \"oldStateWrite\": 0\n  },\n  \"callKeyPrefix\": \"c4a-unknown-build-report-info-r1-\",\n  \"afterResult\": \"Return fixed actual metadata or original native error and explicit observer closure. Do not start BODY, refresh metadata, query more registry pages, or infer job outcome.\",\n  \"lane_allocation\": {\n    \"A\": 0,\n    \"B\": \"1 original BUILD UNKNOWN and its exact report metadata observer\",\n    \"C\": \"1 independent Mac stage\",\n    \"root\": 0,\n    \"maximum\": 2\n  },\n  \"originalSTARTReplayAuthorized\": false,\n  \"originalUnknownMayBeCleared\": false,\n  \"fullReplacement\": false,\n  \"productionCutover\": false,\n  \"legacyCleanup\": false\n}\n",
+  "goPin": {
+    "blob": "535c117271db7b4b985f3dec658298ed59b544a3",
+    "bytes": 4397,
+    "sha256": "4d25a916494e08477713a617ad648df388d2bc52b96408f0b7fac2103c0ead1f"
+  },
+  "job": null,
+  "infoCalled": true,
+  "infoStatusCalls": 1,
+  "infoPageCalls": 0,
+  "pending": "c4a-unknown-build-report-info-r1-s0",
+  "activeObserver": {
+    "id": "0a3d2c5c158da55c07f9db9202ada37d9670254e650c70eff7cfa08bb8d6d7d2",
+    "request": {
+      "idempotency_key": "heptabao-combined-4a49405b-unknown-report-info-r1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json"
+        }
+      }
+    },
+    "tool": "file_info",
+    "futureClosed": false,
+    "nextPageOffset": 0,
+    "eof": false,
+    "pages": [],
+    "total": null,
+    "digest": null
+  },
+  "nativeCallInFlight": false,
+  "paused": true,
+  "calls": {
+    "c4a-unknown-build-report-info-r1-info": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-combined-4a49405b-unknown-report-info-r1\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"rog\",\n      \"path\": \"/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "66e9023bd935fe6a43829280994746d9d6e38f69",
+        "bytes": 267,
+        "sha256": "47a3d2d680bfc08926f7ef040a2c86d10105cf4304589642011dbbb216f144db"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "ccdb6d116fa153bc80ca88e96088322648d85b99",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "8870fefcfb53cd9c38d2325eae877ca8bb61a4d6",
+            "bytes": 845,
+            "sha256": "1855a477ce7dbc164d5d8f5915b47bbd52ae8ba127b3fec0c5c8e6a2a734b92d",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "a73ae8fa148ad372a8f75d738c1ccc83e8ad951d",
+            "bytes": 708,
+            "sha256": "fa6306ef20d598819f217964ac273f02bb494066159fe5692d756154ed572c9b",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "66e9023bd935fe6a43829280994746d9d6e38f69",
+            "bytes": 267,
+            "sha256": "47a3d2d680bfc08926f7ef040a2c86d10105cf4304589642011dbbb216f144db",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1820,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "7dc4f0ada0f4432ef347300d57d7722199e4f375",
+        "bytes": 704,
+        "sha256": "6912f2bfc41c1ed5053bfb0ff02ed89292908a7990d78aaf277e578d615a5e54"
+      },
+      "sdkArchive": {
+        "tree": "4684c6e8e94c01cd0e455b1dd82b1e9b12a726fa",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "7dc4f0ada0f4432ef347300d57d7722199e4f375",
+            "bytes": 704,
+            "sha256": "6912f2bfc41c1ed5053bfb0ff02ed89292908a7990d78aaf277e578d615a5e54",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 704,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "9b00f36aebb30cd1ebb318f8a20649ff5ed3df8f",
+        "bytes": 543,
+        "sha256": "de75271c536db918040721ac6bce0520d5fef36d1b3b2a4059383b9efdbb314a"
+      }
+    },
+    "c4a-unknown-build-report-info-r1-s0": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"0a3d2c5c158da55c07f9db9202ada37d9670254e650c70eff7cfa08bb8d6d7d2\"\n}\n",
+      "requestPin": {
+        "blob": "51a8d6300530ca1a20619259b2123b1a5c68c3eb",
+        "bytes": 89,
+        "sha256": "3d86af9a620294f9b4796c74251a02395fa88e08e7268680a333d7f9aab97e72"
+      },
+      "phase": "native_interpretation_refused",
+      "called": true,
+      "armed": {
+        "tree": "e15887631d41f39cf741def96c853bd15aa5d45f",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "aef5403510d0aca448283053d8fd357a6944ffa0",
+            "bytes": 905,
+            "sha256": "b2ea96cffb929875514ba03f3d9d34d7efb3712ca361ac013fd9fbbf4b1d8677",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "218bf3e7c3ce5c06f2682ee6f4945dc82bd87378",
+            "bytes": 768,
+            "sha256": "ba530ba5dc992c18e57ac2a140f4f42c6a7ad63c759b88875f464d6ca4441700",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "51a8d6300530ca1a20619259b2123b1a5c68c3eb",
+            "bytes": 89,
+            "sha256": "3d86af9a620294f9b4796c74251a02395fa88e08e7268680a333d7f9aab97e72",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1762,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "d3d82b97c990da904d25fbffbc804326f87906cc",
+        "bytes": 972,
+        "sha256": "73abdf948ebaaf5e84465b894dde54a458ff08bf53d30a67f74d99bbe12e6bca"
+      },
+      "sdkArchive": {
+        "tree": "ed042b03605a28d5ea57fd2c839262c2ba2c49b2",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "d3d82b97c990da904d25fbffbc804326f87906cc",
+            "bytes": 972,
+            "sha256": "73abdf948ebaaf5e84465b894dde54a458ff08bf53d30a67f74d99bbe12e6bca",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 972,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "interpretationFailure": "Error: unexpected_original_status_stop"
+    }
+  },
+  "completedObservers": [],
+  "reportMetadata": null,
+  "originalBuildOutcome": "UNKNOWN",
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true,
+  "outerFailure": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "accept",
+    "name": "Error",
+    "message": "unexpected_original_status_stop",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  }
+}

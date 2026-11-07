@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.unknown-build-fixed-report-info-source.r1",
+  "authorization": "SOURCE_ONLY",
+  "scope": "combined4a_unknown_start_fixed_report_info_only",
+  "newSlot": "combined_4a49405b_unknown_report_info_gitfirst_r1",
+  "request": {
+    "blob": "66e9023bd935fe6a43829280994746d9d6e38f69",
+    "bytes": 267,
+    "sha256": "47a3d2d680bfc08926f7ef040a2c86d10105cf4304589642011dbbb216f144db"
+  },
+  "source": {
+    "blob": "9d80c8623c3725cf7d00e02abcc741f32d5cbef5",
+    "bytes": 19169,
+    "sha256": "88351e1b9c6dadb33a927c24845834b047a708322253267d1661cdffd829dc76"
+  },
+  "before": {
+    "blob": "391f2bef67b32e5ef4a3f1cd8ae660bbd096aa3e",
+    "bytes": 19043,
+    "sha256": "0ad2f2fad1e77767623dadb5cf0c5255ee7aac5331c772faa1c96a0399ecd645"
+  },
+  "diff": {
+    "blob": "2a65269a82c6f1e40c8aab28bd0e160d19a400a1",
+    "bytes": 11922,
+    "sha256": "4650675df6adb9b773aa0334fc6573f84d0a9c3f11cbbdbfdde21bfdf1a836fd"
+  },
+  "originalUnknownState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "originalUnknownPacket": "8f31dd325169b68eb10bb3cc442d7571f73346ab",
+  "originalBuildRequest": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "originalBuildGo": "bd6fb2fa682cd2b0ec966877dc988705c86ee022",
+  "candidate": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "maximumInfoAdmissions": 1,
+  "maximumStatusCalls": 8,
+  "maximumPageCalls": 128,
+  "pageBytes": 8192,
+  "payloadCap": 1048576,
+  "fileSizeCap": 4194304,
+  "metadataGuard": {
+    "host": "rog",
+    "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json",
+    "regularFile": "file_info tool rejects symlinks and special files",
+    "mode": 384,
+    "metadataMode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "linkCount": 1,
+    "platform": "linux",
+    "size": "actual integer 1..4194304",
+    "sha256": "actual lowercase 64 hex; no expected value assumed",
+    "version": "actual five decimal components; positive device/inode; third component equals actual size"
+  },
+  "actualExpectedSha256": null,
+  "actualExpectedSize": null,
+  "actualExpectedVersion": null,
+  "jobIdRequired": false,
+  "authority": "Only fixed report metadata. No process terminal inference, no original job binding, no BUILD outcome qualification.",
+  "previousDiscovery": {
+    "r1": "78621f29774d5d55be65b81cf80385fcaa27612e",
+    "r2": "7f4345c3e9f4e215613cd626e5566a11f5558ae4",
+    "limitation": "R2 row schema omits idempotency_key/digest/args. match=null did not evaluate target-key identity. Its creation time predates original GO; no job identity is published."
+  },
+  "sequence": [
+    "new exact INFO root GO whole -> initialize isolated INFO slot once",
+    "prepare exact operation_start request -> request/intent/armed Git whole",
+    "independent model boundary -> one invoke -> complete original SDK Git whole -> accept",
+    "same returned operation only: at most8 status and128 contiguous8KiB immutable pages; no busy loop",
+    "whole original payload Git archive before native file_info semantic validation",
+    "metadata result only; stop for separate root decision, no BODY/refresh/START/cursor"
+  ],
+  "unknownRules": [
+    "Any ACK, SDK, Git archive, original payload, identity or cap error stops without retry.",
+    "Any native file_info error is preserved; missing report is not proof the BUILD did not start.",
+    "File-size cap is a returned-metadata rejection cap, not an extra unsupported file_info argument.",
+    "No write to original BUILD or either private-list slot/Page; original failed START remains failed/UNKNOWN.",
+    "All native calls go through gfRun; original once markers and Git-before-parse order are retained."
+  ],
+  "prohibited": {
+    "process_start": 0,
+    "binary_read": 0,
+    "process_status": 0,
+    "process_read": 0,
+    "process_list": 0,
+    "process_list_page": 0,
+    "cursorContinuation": 0,
+    "oldStateWrite": 0
+  },
+  "declaredChanges": {
+    "mechanicalEdits": 10,
+    "strictHunks": 7,
+    "details": [
+      "fresh INFO-only slot and exact request",
+      "initializer binds one INFO and explicit original unknown state/caps",
+      "three Native operation observer methods only; process_start dispatch and acceptance removed",
+      "original job/stream semantics replaced with fixed file_info metadata guards",
+      "original Git once archival/reconciliation and gfRun catch preserved",
+      "status/page once counters hard-limit8/128 before each call"
+    ]
+  },
+  "checks": 39,
+  "NativeCalls": 0,
+  "PagesCalls": 0,
+  "actualReportMetadata": null,
+  "sourceReviewOnly": true
+}

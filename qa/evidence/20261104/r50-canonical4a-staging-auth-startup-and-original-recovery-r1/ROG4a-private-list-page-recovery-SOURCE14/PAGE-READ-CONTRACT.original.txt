@@ -1,0 +1,195 @@
+Read an accessible Page's current content. Choose one read shape: {page_id}, {page_id,view:'full'}, {page_id,search:['literal']}, {page_id,view:'excerpts',search:['literal']}, {page_id,block_ids:['observed ID']}, or {page_id,include_content:false}. Omit unused selectors and context fields; never send empty selector arrays. metadata.drive_scope identifies where the Page is stored: space means a Space; workspace_private means a user's drive within the workspace identified by owner_workspace_id; personal means a user's drive with no owning workspace. Locate evidence for every requested change before editing. Search each named target; returned matches and neighbors are candidate blocks, not instructions about what to change. If the requested target is missing, expand the read instead of substituting a related block. Batch exact case-sensitive literal search terms to retrieve matching evidence, or use observed block_ids for targeted editing-view refresh. Editing/full return complete blocks in structuredContent.content.blocks with exact id, kind, hash and markdown. Without selectors, editing returns all blocks without duplicated whole-document Markdown or attribution; full retains those fields. Unselected editing content is limited to 128 KiB compact UTF-8 structured JSON, including guidance and metadata. Larger reads return page_read_selection_required with no content: use search, observed block_ids, excerpts or full without selectors. Obtain a successful read including its guidance before editing. Excerpts requires search and returns matched ordinary Markdown in structuredContent.block_excerpts: exact LF-line windows with full-block hashes and explicit completeness. Complete context and instruction blocks remain in content.blocks. Incomplete windows are not replacement Markdown; native patches still require unique old literals across the entire block. Context is positional, not semantic ancestry. Selection coverage is explicit. Use returned block IDs and hashes for edits. When present, structuredContent.content.through_sequence is an optional read guard; when absent, omit sequence arguments and use patch_page with block_id/expected_hash, or edit_page. Retain returned data for subsequent edits and inspect relevant fields; displaying an entire large envelope can truncate it. Successful reads use structuredContent without a duplicate MCP text copy. Optional references includes known MIME type and byte size for up to 128 links in returned Markdown; references_truncated signals more. Use inspect_page_reference for unknown metadata or read_page_reference for contents. With include_content=false, structuredContent.content is null. For meeting_notes Pages, follow meeting_context and read_page_transcript whenever the request depends on meeting context, including implicit requests. Existing native documents remain accessible when new creation is unavailable. For existing executable native artifacts, read_page returns metadata. Use inspect_artifact with page_id to inspect content, or execute_artifact_code to edit it. Use create_presentation for new documents of that type. This tool is part of plugin `Pages`.
+
+Read, search, create, and edit pages and spaces in ChatGPT Space, within your current account.
+
+exec tool declaration:
+```ts
+declare const tools: { mcp__codex_apps__chatgpt_space_read_page(args: {
+  // Optional nonempty array of 1..64 exact observed block IDs; duplicates are deduplicated. Omit or use null when unused, never []. Returns complete blocks in canonical order plus every instruction block. Missing IDs are reported with selection_complete=false. Mutually exclusive with search; requires editing view and include_content=true.
+  block_ids?: Array<string> | null;
+  // Search only: preceding/following canonical blocks per match, 0..2; omitted means 1. Without search, omit this field even when its value would be 1. Positional context is not a semantic section. Selected results are limited to 128 blocks (complete or excerpted) and 256 KiB compact UTF-8 JSON including guidance; an explicit limit error replaces clipping. Use full view without selectors and filter locally when a complete block cannot fit.
+  context_blocks?: number;
+  // Excerpts only: complete LF lines before/after every literal occurrence, 0..2, default 1. Outside excerpts, omit this field even when its value would be 1. Also includes each matched Markdown block's first two lines as a positional prefix, not semantic ancestry. Windows merge; all occurrences including overlaps are counted across full blocks. Maximum 256 occurrences, 128 windows, 128 blocks and 256 KiB structured JSON including guidance; errors replace clipping. For an oversized line/guidance, use full view without selectors and filter locally.
+  context_lines?: number;
+  include_content?: boolean;
+  // ID of the Page to read, never a Space ID. Copy the full Page ID exactly as given, including the page_ prefix when present; a typical ID is page_0123456789abcdef0123456789abcdef. Do not drop the prefix or add UUID dashes. It may be supplied directly, already known from context, returned by a tool, or extracted from a Page URL. If you only have a Space ID and need its root Page, call get_space(space_id) and use its root_page_id.
+  page_id: string;
+  // Optional nonempty array of 1..16 exact case-sensitive literals, at most 4 KiB UTF-8 total. Omit or use null when unused, never []. Matches within each block only; no regex, Unicode folding or heading inference. Editing returns complete matched blocks; excerpts returns all matched-line evidence. Both include complete positional neighbors and every instruction block. Mutually exclusive with block_ids; requires editing/excerpts view and include_content=true.
+  search?: Array<string> | null;
+  // Use content (default) for normal Page reads and edits. Scratch is the optional shared Back of page document and may be disabled; use it only when the task requires Back of page or to continue a response with metadata.stream_kind=scratch. Do not probe it during normal content reads or use it as a fallback for content errors. Keep reads and edits on the selected stream.
+  stream_kind?: "content" | "scratch";
+  // Without selectors, editing returns every complete canonical block with IDs, hashes, metadata and available sequence guards; omits only duplicate whole-document Markdown and attribution. Unselected editing content over 128 KiB compact UTF-8 structured JSON returns page_read_selection_required with no content; use selectors, excerpts or full view. Full also returns those omitted fields. Editing/full never clip block text. Excerpts requires search: exact LF-line evidence in block_excerpts plus full block hashes. Incomplete excerpts are not replacement Markdown; use guarded literal patches, whose old strings must be unique in the entire block.
+  view?: "editing" | "full" | "excerpts";
+}): Promise<CallToolResult<{
+  content: {
+  blocks: Array<{
+  // Observed expected_hash for this block.
+  hash: string;
+  // Canonical block_id for edit operations.
+  id: string;
+  kind: "markdown" | "agent_instructions";
+  last_modified?: { [key: string]: unknown; } | null;
+  // Complete canonical block Markdown.
+  markdown: string;
+  metadata?: { [key: string]: unknown; } | null;
+}>;
+  // Checkpoint identifier, when supplied by the backend; not an edit guard.
+  checkpoint_id?: string | null;
+  // Whole-document Markdown; full view only.
+  markdown?: string;
+  page_id: string;
+  schema_version: 1 | 2;
+  // Optional exact read guard. When absent, edit by returned block IDs and hashes without base_sequence.
+  through_sequence?: number;
+  title: string;
+  // Observed expected_title_hash.
+  title_hash: string;
+} | null;
+  metadata: {
+  coordinator_dot_id?: string | null;
+  // Omitted for ordinary Pages. Native types are granola_workbook (Sheets), granola_whiteboard (Canvas), granola_presentation (Slides), and granola_document (Docs). New document types may be added.
+  document_type?: string;
+  // Where the Page is stored: space means a Space; workspace_private means a user's drive within the workspace identified by owner_workspace_id; personal means a user's drive with no owning workspace.
+  drive_scope?: "space" | "personal" | "workspace_private" | null;
+  namespace?: string | null;
+  // Plan v1 fields. Other versions may return different properties.
+  namespace_properties?: { assignee_account_user_id?: string | null; status?: string; } | { [key: string]: unknown; } | null;
+  namespace_properties_revision?: number;
+  namespace_properties_schema_version?: number | null;
+  owner_workspace_id?: string | null;
+  page_id: string;
+  stream_kind?: "content" | "scratch";
+  // Canonical HTTPS Page link. The app handles account selection and access.
+  url: string;
+};
+  // Complete blocks selected from one authorized snapshot; positional context is not heading ancestry or a complete semantic section. Counts refer to blocks, not occurrences.
+  selection?: {
+  // Coverage in the same canonical order as content.blocks. A block can have multiple roles.
+  blocks: Array<{
+  block_id: string;
+  // Zero-based index in the whole canonical page.
+  block_index: number;
+  query_indices: Array<number>;
+  roles: Array<"match" | "context" | "instruction">;
+}>;
+  context_blocks: number;
+  matched_block_count: number;
+  missing_block_ids: Array<string>;
+  mode: "search" | "block_ids";
+  page_block_count: number;
+  // One result per input search literal, including zero matches; empty for ID selection.
+  query_matches: Array<{
+  block_ids: Array<string>;
+  matched_block_count: number;
+  // Zero-based input query index.
+  query_index: number;
+}>;
+  returned_block_count: number;
+  // All matches/requested IDs returned; false exactly when requested IDs are missing.
+  selection_complete: boolean;
+  // Every canonical block is included, independent of selection completeness.
+  whole_page_complete: boolean;
+};
+  view?: "editing";
+} | {
+  block_excerpts: Array<{
+  block_index: number;
+  // Windows cover every character of this block.
+  complete: boolean;
+  // Observed hash of the entire block, not the excerpt.
+  hash: string;
+  // Canonical edit block_id.
+  id: string;
+  kind: "markdown";
+  metadata?: { [key: string]: unknown; } | null;
+  // LF count plus one, including a final empty line after trailing LF. Other separators are literal text.
+  total_lines: number;
+  windows: Array<{
+  end_line: number;
+  // Includes the first two lines (or shorter whole block), a positional prefix, not inferred ancestry.
+  includes_prefix: boolean;
+  query_indices: Array<number>;
+  start_line: number;
+  // Exact inclusive LF-line slice, including its trailing LF when present; never normalized or clipped.
+  text: string;
+}>;
+}>;
+  // Only complete context and instruction blocks; matching Markdown is in block_excerpts.
+  content: {
+  blocks: Array<{
+  // Observed expected_hash for this block.
+  hash: string;
+  // Canonical block_id for edit operations.
+  id: string;
+  kind: "markdown" | "agent_instructions";
+  last_modified?: { [key: string]: unknown; } | null;
+  // Complete canonical block Markdown.
+  markdown: string;
+  metadata?: { [key: string]: unknown; } | null;
+}>;
+  // Checkpoint identifier, when supplied by the backend; not an edit guard.
+  checkpoint_id?: string | null;
+  // Whole-document Markdown; full view only.
+  markdown?: string;
+  page_id: string;
+  schema_version: 1 | 2;
+  // Optional exact read guard. When absent, edit by returned block IDs and hashes without base_sequence.
+  through_sequence?: number;
+  title: string;
+  // Observed expected_title_hash.
+  title_hash: string;
+};
+  // Coverage for one authorized snapshot. All counts include overlapping exact query occurrences, not inferred patch uniqueness.
+  excerpt_selection: {
+  // Union of complete blocks and block_excerpts in canonical order; indices are zero-based whole-page positions.
+  blocks: Array<{
+  block_id: string;
+  block_index: number;
+  // Positive occurrence counts across this entire block; omitted query indices have zero matches.
+  query_matches: Array<{ occurrence_count: number; query_index: number; }>;
+  representation: "complete" | "excerpt";
+  roles: Array<"match" | "context" | "instruction">;
+}>;
+  context_blocks: number;
+  context_lines: number;
+  match_coverage_complete: true;
+  page_block_count: number;
+  prefix_lines: 2;
+  // One result per input query including zero matches, counted across the whole page's blocks.
+  query_matches: Array<{ matched_block_count: number; occurrence_count: number; query_index: number; }>;
+  returned_block_count: number;
+  whole_page_complete: boolean;
+};
+  metadata: {
+  coordinator_dot_id?: string | null;
+  // Omitted for ordinary Pages. Native types are granola_workbook (Sheets), granola_whiteboard (Canvas), granola_presentation (Slides), and granola_document (Docs). New document types may be added.
+  document_type?: string;
+  // Where the Page is stored: space means a Space; workspace_private means a user's drive within the workspace identified by owner_workspace_id; personal means a user's drive with no owning workspace.
+  drive_scope?: "space" | "personal" | "workspace_private" | null;
+  namespace?: string | null;
+  // Plan v1 fields. Other versions may return different properties.
+  namespace_properties?: { assignee_account_user_id?: string | null; status?: string; } | { [key: string]: unknown; } | null;
+  namespace_properties_revision?: number;
+  namespace_properties_schema_version?: number | null;
+  owner_workspace_id?: string | null;
+  page_id: string;
+  stream_kind?: "content" | "scratch";
+  // Canonical HTTPS Page link. The app handles account selection and access.
+  url: string;
+};
+  view: "excerpts";
+} | { error: {
+  cause?: "timeout";
+  code?: string;
+  commit_status?: string;
+  conflict_reason?: string;
+  // Optional upstream error details.
+  details?: unknown;
+  limit_actual?: number;
+  limit_dimension?: string;
+  limit_maximum?: number;
+  limit_reason?: string;
+  message: string;
+  retryable?: boolean;
+}; }>>; };
+```

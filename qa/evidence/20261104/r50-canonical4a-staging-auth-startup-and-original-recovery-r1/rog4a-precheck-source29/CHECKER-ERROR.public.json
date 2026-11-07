@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-source-checker-error.r1",
+  "error": "Error: four-total-hunks",
+  "expectedIncorrectly": 4,
+  "actualHunks": 3,
+  "reason": "adjacent commit/tree literal edits share one hunk",
+  "candidateChanged": false,
+  "NativeCalls": 0
+}

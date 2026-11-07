@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.local-source-verifier-wrapper-parse-error.r1",
+  "originalFunctionsError": "Script error:\nSyntaxError: missing ) after argument list",
+  "boundary": "Functions JS module parse before any tool, store, verifier execution or Native call in that failed cell.",
+  "cause": "An unescaped backtick used as quoted source content terminated the outer String.raw template while assembling the verifier.",
+  "correction": "Define the pure verifier as a JavaScript function and save Function.toString; source.py/request/journal/profile bytes are unchanged.",
+  "NativeCalls": 0,
+  "GitMutations": 0,
+  "candidateChanged": false,
+  "oldOutcomeChanged": false
+}

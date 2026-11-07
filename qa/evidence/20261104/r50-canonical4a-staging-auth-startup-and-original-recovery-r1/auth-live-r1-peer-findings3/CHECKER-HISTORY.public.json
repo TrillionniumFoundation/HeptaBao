@@ -1,0 +1,9 @@
+[
+  {
+    "phase": "pure helper comparison",
+    "error": "TypeError reading base64 of undefined",
+    "cause": "before source uses a different Commands module key; initial comparison incorrectly assumed identical module map keys",
+    "candidate_changed": false,
+    "native_calls": 0
+  }
+]

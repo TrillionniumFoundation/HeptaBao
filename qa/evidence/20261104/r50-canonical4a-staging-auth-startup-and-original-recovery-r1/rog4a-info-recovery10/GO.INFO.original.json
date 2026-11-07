@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.root.successor4a49405b.stage-report-info.GO.r1",
+  "authorization": "GO",
+  "scope": "stage_result_file_info_only",
+  "original_job": "1a1b3307dc2-fc05-80f8",
+  "existing_slot": "combined_4a49405b_rog_source_gitfirst_r1",
+  "attach_existing_context_only": true,
+  "initialize_allowed": false,
+  "exact_request": {
+    "blob": "e55cc1096e11c01c5fdfd4a520c4ecef0130017c",
+    "bytes": 272,
+    "sha256": "b3d8fde039965ca8f27544fb552c7fedcd08832923638406cd949e593930fa24"
+  },
+  "journal": {
+    "blob": "90ac83d6e48744399e1508f0b86ac4a8c62f33cb",
+    "bytes": 23858,
+    "sha256": "256effb6f6cd3906653c4d85e4cd465f83056bf4bece4725c2672f1d45064483"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "maximum_original_status_calls": 8,
+  "maximum_original_immutable_pages": 128,
+  "immutable_page_bytes": 8192,
+  "maximum_original_payload_bytes": 1048576,
+  "metadata_gate": {
+    "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "size_min": 1,
+    "size_max": 65536,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "metadata_platform": "linux",
+    "whole_sha256_required": true,
+    "version_five_decimal_fields": true,
+    "full9_lossless_decimal_strings": true,
+    "regular_file_from_native_file_info_contract": true
+  },
+  "original_prerequisites": [
+    {
+      "id": "d3b2bf702e5fd327fc074a76a0311b1710c88d695ccc3c420c94146a8c79d244",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "1e39f3d224e4a27f2b2cf0fd37a2085b1f43008b",
+        "bytes": 729,
+        "sha256": "2153318bf775fe756b43c8f70f928db0977d32e609b70f5d98c970f8ebf26ec0"
+      }
+    },
+    {
+      "id": "915416c05ed1b6a38263fe4bb4d931749b1948066a0658de5bb733ee9dc38595",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "784f4be7e98a228d7162039b25062d9b369fe5da",
+        "bytes": 1396,
+        "sha256": "071c20e311d4131598ed30df7cae4e18d753f1edf49004657fdd84a9bf012d16"
+      }
+    }
+  ],
+  "original_terminal_full_packet": {
+    "tree": "40b2c95927225b15833210c88b96c06422aed423",
+    "count": 47,
+    "bytes": 508681,
+    "whole": true
+  },
+  "root_terminal_qualification": {
+    "path": "ROG4A-STAGE-ORIGINAL-ROOT61.public.json",
+    "blob": "1e89e94d4a994c8966d93ee7179dfba8ae2bf188",
+    "bytes": 7332,
+    "sha256": "9434268206fbf26dd89a25b42a819703c3748003508eaba5be338c5b0da87875",
+    "whole": true
+  },
+  "root_detail_report_qualification": false,
+  "actual_metadata": null,
+  "actual_body": null,
+  "next": "Only after actual INFO whole closed and a separate exact root BODY GO may a version-bound report body be read.",
+  "historical_failures_preserved": true,
+  "source_formatted": false,
+  "product_qualification": false,
+  "execution_budgets_unchanged": {
+    "stage": 300,
+    "git": 90,
+    "clone": 180,
+    "outer": 360,
+    "cleanup_term": 5,
+    "cleanup_kill": 5
+  },
+  "sequence": [
+    "Read exact separate INFO GO whole.",
+    "Attach the existing closed slot; authorize_stage_result_info; never initialize.",
+    "Prepare one exact request with a whole external three-leaf arm.",
+    "Cross a model boundary; invoke once; archive returned SDK whole before parse.",
+    "Follow only that original operation with bounded status and 8192-byte immutable payload pages; each original request and SDK gets immutable archival.",
+    "Whole payload before semantic checks; require fixed path, SHA, version, size and Linux identity gates.",
+    "Close the original observer and release; no binary_read or build authorization."
+  ],
+  "sourceTree": "ed9348ffc698ee2b382fe845ffb40600203910e4",
+  "sourceRootQualification": {
+    "blob": "cb9e838802cf7489148f80ce612f7b2d5eb453c6",
+    "bytes": 6507,
+    "sha256": "242e49b31590db529f5a7dca7c5686521fc8c3125d4559445650e0d5ecdf4b30"
+  },
+  "issuedAtUTC": "2026-11-06 23:36:56 UTC",
+  "lane_allocation": {
+    "A": 0,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "onError": "Preserve original unknown/failure and immutable SDK. Do not reinitialize, replay, or replace original operation. No report body or build until its separately bound gate.",
+  "sourceRootChecks": 66,
+  "rootActualBindingChecks": 6
+}

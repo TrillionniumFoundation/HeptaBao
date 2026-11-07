@@ -1,0 +1,32 @@
+[
+  {
+    "name": "precheck-with-shared-release-clock",
+    "before": "    release = owned('normal-release-build', [str(Path(args.toolchain) / 'cargo'), 'build',\n",
+    "after": "    release_started = time.monotonic()\n    release_until = min(release_started + 1800.0, OUTER_UNTIL)\n    result['release_shared'] = {'started_monotonic': release_started, 'until_monotonic': release_until,\n                               'cap_seconds': 1800, 'precheck_max_seconds': 300, 'deadline_reset': False}\n    precheck = owned('default-libtest-precheck', [str(Path(args.toolchain) / 'cargo'), 'check',\n                     '--locked', '--offline', '-p', 'heptabao-server', '--lib', '--profile', 'test',\n                     '--message-format=json-render-diagnostics'],\n                     min(300.0, bounded_remaining(release_until)), deadline=release_until)\n    result['default_libtest_precheck'] = precheck\n    assert precheck['exit_code'] == 0 and not precheck['timed_out'], 'default libtest precheck failed'\n    precheck_events = []\n    for line in (output / 'default-libtest-precheck.stdout').read_text().splitlines():\n        try:\n            precheck_events.append(json.loads(line))\n        except json.JSONDecodeError:\n            continue\n    precheck_finished = [e for e in precheck_events if e.get('reason') == 'build-finished']\n    assert len(precheck_finished) == 1 and precheck_finished[0].get('success') is True\n    precheck_artifacts = [e for e in precheck_events if e.get('reason') == 'compiler-artifact'\n                         and e.get('target', {}).get('name') == 'heptabao_server'\n                         and e.get('profile', {}).get('test') is True]\n    assert len(precheck_artifacts) == 1\n    precheck_artifact = precheck_artifacts[0]\n    assert precheck_artifact['target']['kind'] == ['lib']\n    assert precheck_artifact['target']['src_path'] == str(source / 'crates/heptabao-server/src/lib.rs')\n    assert precheck_artifact['manifest_path'] == str(source / 'crates/heptabao-server/Cargo.toml')\n    assert sorted(precheck_artifact['features']) == ['default', 'native-v6-ha', 'native-v6-storage']\n    result['default_libtest_precheck_mode'] = {'actual_artifact': precheck_artifact,\n        'actual_build_finished': precheck_finished[0], 'linked_test_executable_qualified': False,\n        'runtime_tests_qualified': False, 'replaces_release_or_no_run': False}\n    assert freeze() == before\n    release = owned('normal-release-build', [str(Path(args.toolchain) / 'cargo'), 'build',\n",
+    "count": 1
+  },
+  {
+    "name": "release-remaining-clock",
+    "before": "'--message-format=json-render-diagnostics'], 1800, deadline=OUTER_UNTIL)",
+    "after": "'--message-format=json-render-diagnostics'], bounded_remaining(release_until), deadline=release_until)",
+    "count": 1
+  },
+  {
+    "name": "current-commit",
+    "before": "DIAGNOSTIC_COMMIT = '5767739cd25e458ac052dc8d384019bab8688ae0'",
+    "after": "DIAGNOSTIC_COMMIT = '4a49405b93c45ab1c25ecba11cde63a7ede20dce'",
+    "count": 1
+  },
+  {
+    "name": "current-tree",
+    "before": "DIAGNOSTIC_TREE = '42477d622dcf96e1e2b0929fe9ecc6b7ba484740'",
+    "after": "DIAGNOSTIC_TREE = 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'",
+    "count": 1
+  },
+  {
+    "name": "fresh-exclusive-target",
+    "before": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1",
+    "after": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1",
+    "count": 1
+  }
+]

@@ -1,0 +1,20 @@
+--- a/mac.journal.js
++++ b/mac.journal.js
+@@ -309,7 +309,7 @@
+    // never decode the PACK as UTF-8 or claim a text blob is the binary object.
+    const encodedRaw=v.data_base64+"\n",encodedPin=gitBlobMeta(encodedRaw);
+    const encodedArchive=await archiveFlatPublicTextsOnce({
+-    key:"successor576-canonical-bundle-chunk-"+index+"-r1",
++    key:"successor4a-mac-canonical-bundle-chunk-"+index+"-r1",
+     repository:"TrillionniumFoundation/HeptaBao",
+     texts:{"chunk.original.base64.txt":encodedRaw}});
+    const row={offset:range.offset,limit:range.limit,next:v.next_offset,
+@@ -332,7 +332,7 @@
+       original_operations:ranges.map(x=>x.originalOperation),info_operation:need.infoOperation,
+       native_binary_body_observed:true,mac_published:false,product_executed:false};
+     const wholeArchive=await archiveFlatPublicTextsOnce({
+-     key:"successor576-canonical-source-bundle-whole-r1",repository:"TrillionniumFoundation/HeptaBao",
++     key:"successor4a-mac-canonical-source-bundle-whole-r1",repository:"TrillionniumFoundation/HeptaBao",
+      texts:{"canonical.bundle.base64.txt":wholeBase64,
+        "BINARY-TRANSPORT.public.json":JSON.stringify(transport,null,2)+"\n"}});
+     store(GF_SLOT+":canonical_bundle_base64_original",wholeBase64);

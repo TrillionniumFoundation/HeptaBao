@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root.rog4a.fixed-report-info-failed-boundary.r1",
+  "audit": {
+    "tree": "c5ad2e76d8275255b14889764af431a975429e8f",
+    "files": 14,
+    "bytes": 25846,
+    "merkle": {
+      "root_sha": "c5ad2e76d8275255b14889764af431a975429e8f",
+      "trees_verified": 1,
+      "leaf_count": 14
+    },
+    "whole": true
+  },
+  "actualStatus": {
+    "blob": "ba25cecb4430ece5aea933decbcea117c6894bd4",
+    "bytes": 797,
+    "sha256": "e630828b792467fd100b876cd63834d1aa75fb4acbd0e71d6b933db21d763ad7"
+  },
+  "checks": {
+    "originalGO": true,
+    "failedInactiveStored": true,
+    "oldBuildUnresolved": true,
+    "noPayloadReadYet": true
+  },
+  "metadataQualified": false,
+  "originalBuildOutcome": "UNKNOWN",
+  "rootNativeCalls": 0
+}

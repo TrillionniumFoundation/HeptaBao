@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.root.successor4a.mac-original-payload-pure-closure.GO.r1",
+  "authorization": "GO",
+  "issuedAtUTC": "2026-11-07 00:33:06 UTC",
+  "scope": "successor4a_mac_bundle_pure_git_closure_only",
+  "original_operation": "1f9f5693f0f51caf6516ffb07e5fea9973bd1c58bbecb8bece998293da6b1a9f",
+  "paused_state": {
+    "blob": "20e0200a0b0ae7d2fe75bce2a890004912ab5869",
+    "bytes": 35435,
+    "sha256": "66631828cf47fdb31f5da3b29dc8b7f9dfa2bdabd5f730c7bc3f3ccb6ec01b1d"
+  },
+  "original_payload": {
+    "blob": "1d552dc540cd50d9142693e25ab7e57472fc8d30",
+    "bytes": 2096,
+    "sha256": "6a746ee482b96d481d2e76856e101d3e43c9beb3652cd5906376e6e725fe21d8"
+  },
+  "original_payload_tree": "1d5ddf9d4b62cb26fa62837dacaf8312ca08bf02",
+  "corrected_mac_journal": {
+    "blob": "45b18f060093f8dc06f2e2ab7ef7fc8f871469a1",
+    "bytes": 28437,
+    "sha256": "251fe8bf5a476d87b50ddef2a488c1c46c1cca48a42ceef0814ae1e90b570685"
+  },
+  "recovery_source": {
+    "blob": "4c81e36dd4483dbd5996db2c60b4cafe2dcb31b2",
+    "bytes": 9842,
+    "sha256": "3446d6895dac17434cefd50004bfadb25b7ecba684539fb77c2eaa495d4e65a6"
+  },
+  "maximum_native_calls": 0,
+  "maximum_new_git_archives": 3,
+  "new_output_archive_keys": [
+    "successor4a-mac-canonical-bundle-chunk-0-r1",
+    "successor4a-mac-canonical-source-bundle-whole-r1"
+  ],
+  "proof_archive_key": "successor4a-mac-bundle-closure-proof-r1",
+  "apply_only_after_whole_proof": true,
+  "sourceTree": "ef81c4a3096be846268c635bfe15cff4b0679fd2",
+  "sourceRootQualification": {
+    "blob": "3e87c43c876c1500a8e4bcaaffe5af07e47c049d",
+    "bytes": 3652,
+    "sha256": "3b49c9c34c1873cc2ea8e34a14f5a97fc885bc51d28b0ab684596d6112ee4776",
+    "tree": "a2e8e67a9612d635f54cbcddc60dd5eee6fe0b23",
+    "whole": true
+  },
+  "rootActualClosedBoundary": {
+    "blob": "facfff1f4e8f7f9a893878a72f6ec86089fd6bb2",
+    "bytes": 1772,
+    "sha256": "49b601a49a867aca5e024c0726f02c18db90fc67e1a22da7980623cfcde1c1b7",
+    "tree": "1fd06f407143b538d2edfe50ea1699dacbfb6ad5",
+    "whole": true
+  },
+  "originalBodyGO": {
+    "blob": "228206b2ce965c25681e2b48779c4cd389ff61f3",
+    "bytes": 3900,
+    "sha256": "f7421b8f27f74c6bd2c33f64ad15ddf63b5c04b5ddff8450ca332350c7bddd92"
+  },
+  "sequence": [
+    "Exact original paused state is cloned privately; only the clone's paused flag is cleared. The corrected original journal closes the original observer. Its first payload archive call reuses the exact known whole archive without Git. Only two new unique output archives are admitted. All six calls and the original failure/history remain unchanged.",
+    "Preserve every original call and outer failure. Reuse exactly the already whole payload archive; admit only the two specified fresh output archive keys.",
+    "After new output archives and before/after proof are external whole, cross a model boundary and invoke the pure apply function once. Five named state fields change; original error and budget counters stay.",
+    "Return output archives, exact before/after proof and C0; no Native or Mac/X230 stage authority."
+  ],
+  "oldArchiveKeysMayReset": false,
+  "oldErrorsMayBeDeleted": false,
+  "X230BodyAuthority": false,
+  "onError": "Preserve the original paused slot, error history, private recovery state and every Git result. No mutation replay; original Native operation remains completed and must not be read again.",
+  "lane_allocation": {
+    "A": 1,
+    "B": "1 original BUILD UNKNOWN/private read recovery",
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "fullReplacement": false
+}

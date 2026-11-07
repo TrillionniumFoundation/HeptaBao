@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root.officialPKI12-report-BODY.GO.r1",
+  "authorization": "GO",
+  "issuedAtUTC": "2026-11-07 00:42:01 UTC",
+  "scope": "official271_oracle_result_binary_read_only",
+  "original_job": "1a1b3461a2c-fc05-81a9",
+  "existing_slot": "official271_x230_pki12_oracle_gitfirst_r1",
+  "initialize_allowed": false,
+  "info_operation": "7c8264be8bf15411a57a136bc89128f35aeb91c0c259f8bf47583d2c4f593f58",
+  "maximum_binary_read_operations": 1,
+  "maximum_file_info_operations": 0,
+  "maximum_process_start_calls": 0,
+  "immutable_body_page_bytes": 16384,
+  "maximum_original_status_calls": 8,
+  "maximum_original_pages": 128,
+  "maximum_original_payload_bytes": 1048576,
+  "exact_request": {
+    "blob": "d358686f2a39455eda39a972043f71d8a3282f5d",
+    "bytes": 400,
+    "sha256": "4342a960ed2dfc4ff9b163f59b262647ad3dd6d4320f0a140a7ff6532eb6ba0d"
+  },
+  "journal": {
+    "blob": "f83797d03a41092340ba39074b155594464d8bf2",
+    "bytes": 28846,
+    "sha256": "0b4f9cc8c62104d96cbc4c021c4e500074b45b8fad24609874f851bd19b7297c"
+  },
+  "original_ten_call_state": {
+    "blob": "a0de8cc47447ea50fec72e04b16afe899b68dad9",
+    "bytes": 233096,
+    "sha256": "5f539b76f74e65818e0cae080aff1330d46643dee95e7047175005724370e253"
+  },
+  "fixed_report": {
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "bytes": 41509,
+    "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0",
+    "version": "2053:3321457:41509:1794009102635552960:1794009102635552960"
+  },
+  "fixed_range": {
+    "offset": 0,
+    "limit": 41509
+  },
+  "sourceTree": "af2005ebabbb8be00bf930ad4f48b893e0b7d5e9",
+  "sourceRootQualification": {
+    "blob": "f6159fa000811a3974bb5557a5e55a8449d3a016",
+    "bytes": 2735,
+    "sha256": "2506deb342e0a77cd601db8b684d7aa8321aa8efa61db36425600ed9e7c329ae",
+    "tree": "4cfa7bf82faa596bd2dcb7e12c3362c3d4d0ad6b",
+    "whole": true
+  },
+  "actualINFORootQualification": {
+    "blob": "6b1c35754827cc5e049c416e60070484406a962f",
+    "bytes": 3462,
+    "sha256": "d0a66cf080e5b283e2d8c5864c18776484722c810fdad12fc83e7dd42950a785",
+    "tree": "4cfa7bf82faa596bd2dcb7e12c3362c3d4d0ad6b",
+    "whole": true
+  },
+  "actualINFO": {
+    "blob": "45708d6a42e99dcbfc90191120104953a171550f",
+    "bytes": 461,
+    "sha256": "162a4757adf5aaea2d84bdb80129607d832fc8e53fee4093c2421448f4852ebc"
+  },
+  "archiveKeys": {
+    "arm": "gfa-<fresh caller callKey>",
+    "sdk": "gfs-<same fresh callKey>",
+    "exception": "gfx-<same fresh callKey>",
+    "payload": "gfc-<original returned operation_id>",
+    "decodedReport": "gfr-<same original returned operation_id>",
+    "fixedCandidateArchiveLiterals": [],
+    "futureOperationID": null,
+    "originalTenCallsUnchanged": true,
+    "requestNotInvoked": true
+  },
+  "sequence": [
+    "Whole new exact GO then attach the ten-call closed original context; no initialize.",
+    "Whole exact request/intent/arm before a model boundary and single original binary_read.",
+    "Follow only returned original ID; status<=8, contiguous immutable pages<=128 of16384 bytes, payload<=1MiB.",
+    "Whole original payload before interpretation; exact version/extent/base64/wholeSHA; decoded public UTF8 body archived at operation-derived gfr key before any report semantics.",
+    "Close original observer, release C0; actual PKI12/Owner semantics only from then-whole report."
+  ],
+  "execute_only_after": "The newly authorized X230 bundle BODY original operation is complete, all original pages and whole binary are closed, and C has explicitly released that context.",
+  "lane_allocation": {
+    "A": 0,
+    "B": "1 original BUILD UNKNOWN/read-only discovery",
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "onError": "Preserve original failure/SDK/arm/state; no replay/rekey or operation restart. No later admission after UNKNOWN.",
+  "actualBody": null,
+  "caseStatusesQualified": false,
+  "MacStageAuthorized": false,
+  "CargoAuthorized": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

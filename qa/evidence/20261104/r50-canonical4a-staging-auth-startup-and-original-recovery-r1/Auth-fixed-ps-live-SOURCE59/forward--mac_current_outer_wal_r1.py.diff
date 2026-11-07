@@ -1,0 +1,15 @@
+--- a/mac_current_outer_wal_r1.py
++++ b/mac_current_outer_wal_r1.py
+@@ -933,7 +933,11 @@
+             public_failure_code)
+         manager_failure_code=public_failure_code
+         ctx.signals=Signals();ctx.signals.install();commands=Commands(ctx.signals)
++        for path,value in FIXED_UTILITIES.items():
++            actual_identity=read_system_tool(ctx,Path(path),value)
++            if path=='/bin/ps':
++                commands.admit_fixed_setuid_ps({'path':path,'identity':actual_identity,
++                    'bytes':value['bytes'],'sha256':value['sha256']})
+-        for path,value in FIXED_UTILITIES.items():read_system_tool(ctx,Path(path),value)
+         anchor_raw=base64.b64decode(args.public_volume_anchor_base64,validate=True)
+         guard=HeldT5(anchor_raw,args.public_volume_anchor_sha256,ctx.remaining,ctx.critical)
+         row,out,err=commands.run('outer-t5-volume',['/usr/sbin/diskutil','info','-plist','/Volumes/T5'],

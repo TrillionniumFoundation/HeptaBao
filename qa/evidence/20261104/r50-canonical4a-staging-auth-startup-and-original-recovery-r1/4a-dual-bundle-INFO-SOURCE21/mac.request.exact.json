@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4a49405b-mac-bundle-info-rog-20261106-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from576.bundle"
+    }
+  }
+}

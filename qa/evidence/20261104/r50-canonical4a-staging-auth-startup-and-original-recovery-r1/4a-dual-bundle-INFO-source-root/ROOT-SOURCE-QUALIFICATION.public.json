@@ -1,0 +1,152 @@
+{
+  "schema": "heptabao.root.successor4a.dual-bundle-INFO.source-qualification.r1",
+  "source": {
+    "tree": "7bedb4342025787ea71c9c1a206fe5a9c8f8a025",
+    "files": 21,
+    "bytes": 147059,
+    "merkle": {
+      "root_sha": "7bedb4342025787ea71c9c1a206fe5a9c8f8a025",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "sourceChecks": {
+    "schema": "heptabao.C4a.dual-info-source-checks.r1",
+    "pass": true,
+    "check_count": 28,
+    "checks": [
+      {
+        "name": "donor_whole",
+        "pass": true
+      },
+      {
+        "name": "producer_report_whole",
+        "pass": true
+      },
+      {
+        "name": "producer_qualification_whole",
+        "pass": true
+      },
+      {
+        "name": "two_fixed_ordered_contexts",
+        "pass": true
+      },
+      {
+        "name": "no_execution_or_body_authority",
+        "pass": true
+      },
+      {
+        "name": "serial_budget",
+        "pass": true
+      },
+      {
+        "name": "mac_strict_forward",
+        "pass": true
+      },
+      {
+        "name": "mac_strict_reverse",
+        "pass": true
+      },
+      {
+        "name": "mac_one_hunk",
+        "pass": true
+      },
+      {
+        "name": "mac_only_three_constant_lines",
+        "pass": true
+      },
+      {
+        "name": "mac_all_thirteen_functions_unchanged",
+        "pass": true
+      },
+      {
+        "name": "mac_source_and_request_pins",
+        "pass": true
+      },
+      {
+        "name": "mac_closed_exact_request",
+        "pass": true
+      },
+      {
+        "name": "mac_actual_stage_identity_lossless",
+        "pass": true
+      },
+      {
+        "name": "mac_known_qual_reference",
+        "pass": true
+      },
+      {
+        "name": "mac_header_exact_candidate",
+        "pass": true
+      },
+      {
+        "name": "mac_actual_future_values_null",
+        "pass": true
+      },
+      {
+        "name": "x230_strict_forward",
+        "pass": true
+      },
+      {
+        "name": "x230_strict_reverse",
+        "pass": true
+      },
+      {
+        "name": "x230_one_hunk",
+        "pass": true
+      },
+      {
+        "name": "x230_only_three_constant_lines",
+        "pass": true
+      },
+      {
+        "name": "x230_all_thirteen_functions_unchanged",
+        "pass": true
+      },
+      {
+        "name": "x230_source_and_request_pins",
+        "pass": true
+      },
+      {
+        "name": "x230_closed_exact_request",
+        "pass": true
+      },
+      {
+        "name": "x230_actual_stage_identity_lossless",
+        "pass": true
+      },
+      {
+        "name": "x230_known_qual_reference",
+        "pass": true
+      },
+      {
+        "name": "x230_header_exact_candidate",
+        "pass": true
+      },
+      {
+        "name": "x230_actual_future_values_null",
+        "pass": true
+      }
+    ],
+    "Native_calls": 0,
+    "contexts_initialized": 0,
+    "Python_executed": false
+  },
+  "rootActualBindings": {
+    "producerReport": true,
+    "producerRootQualification": true
+  },
+  "producerReport": {
+    "blob": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+    "bytes": 31257,
+    "sha256": "5f7d5a19bd785dd3bd258a21de2452bf7029c5e5c91a2f69b8c0be19b2ae5be5"
+  },
+  "producerRootQualification": {
+    "blob": "489681f4680763539866097e650073729c68dee7",
+    "bytes": 4276,
+    "sha256": "65092f254dc134bb514a627d71634f811b6f0216ed41f5b6d95044aa5da6d576"
+  },
+  "NativeCalls": 0,
+  "qualification": "source-only; neither bundle INFO nor BODY executed"
+}

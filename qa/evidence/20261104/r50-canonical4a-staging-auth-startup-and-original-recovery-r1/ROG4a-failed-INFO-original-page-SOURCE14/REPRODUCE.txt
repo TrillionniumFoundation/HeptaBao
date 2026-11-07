@@ -1,0 +1,1 @@
+Load pure_helpers.js and SOURCE-VERIFIER.js. Call verifyFailedInfoPageSource({source,requestRaw,pure,infoStateRaw,buildStateRaw,statusRaw}) using exact SOURCE/REQUEST/ORIGINAL-INFO-STATE/ORIGINAL-STATUS plus original BUILD state pin from INPUTS. All18 checks are pure local-Map fixtures; no Native or Pages call. Do not initialize the real slot until exact root GO.

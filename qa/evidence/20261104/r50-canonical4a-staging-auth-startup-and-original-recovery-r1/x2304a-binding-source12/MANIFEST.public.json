@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.public.source-packet-manifest.v1",
+  "source_only": true,
+  "files": [
+    {
+      "path": "stage.template.py",
+      "blob": "d40b9565ddc74b93caf150fad29c612f7160c8c8",
+      "bytes": 27734,
+      "sha256": "431932d2bd1ea268887d9ce2f22a34a9a12dd3814b872efe1401df5d6c255cb7"
+    },
+    {
+      "path": "binder.original.js",
+      "blob": "5ee4b7696af740666382c8af80d31aba37343b4e",
+      "bytes": 3117,
+      "sha256": "75fd681504517961fe4d41628793f2b9f6d47b51e4daba91036a6d8babe6332f"
+    },
+    {
+      "path": "BINDING.before576.public.json",
+      "blob": "7665a5ec5c8d060d7bee430521fcc8355fce779f",
+      "bytes": 2487,
+      "sha256": "5eda922e2d3ba08cfe968e106265061aa18552994b3d8f95e1b55a7582ceae84"
+    },
+    {
+      "path": "BINDING.candidate4a.public.json",
+      "blob": "9ce4569cf77a74b75f42f0d334b5a675933a546b",
+      "bytes": 2077,
+      "sha256": "f72ee9193e4d956401304988cc8d1932e4a2d480f4d9469f3fdcb192323ce6ec"
+    },
+    {
+      "path": "binding.forward.diff",
+      "blob": "0ff030d1128103946ca9a2a7ee2813805d6e867a",
+      "bytes": 2855,
+      "sha256": "dadabfac1254d2d7a429efdbd81c1798b5442a008080bf2c96461898510cd2e2"
+    },
+    {
+      "path": "CANDIDATE.original.json",
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "2fa16f77c89c7efa08a658fabe606c8f5ebc92bc",
+      "bytes": 6247,
+      "sha256": "a2e95232d6b27e7a8dd185975c0122f8b09db807180577aa363621af8890e8fc"
+    },
+    {
+      "path": "verifier.source.js",
+      "blob": "88a38dcfced1b777a11ead55074413baf1420889",
+      "bytes": 3988,
+      "sha256": "659390eaa7382211127cafcbb23124082a715f8a012738eddd563959a2ac32ea"
+    },
+    {
+      "path": "pure_helpers.original.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "strict_diff.corrected.js",
+      "blob": "e3930af73f99eea2593423d548c77239556fc0e2",
+      "bytes": 2267,
+      "sha256": "cb6cb089fbc54e48d774cd7b9c7cee1e57fd94bd52412f9a66c3aab69170ebf6"
+    },
+    {
+      "path": "verification.actual.public.json",
+      "blob": "b362210e52f87490d2fac18a36213fb2198217ac",
+      "bytes": 2377,
+      "sha256": "3590480a2e1da3f93acc2cc9f0a7af68e840cb6aec57cd90b48f56e18e8e2af7"
+    }
+  ],
+  "NativeCalls": 0
+}

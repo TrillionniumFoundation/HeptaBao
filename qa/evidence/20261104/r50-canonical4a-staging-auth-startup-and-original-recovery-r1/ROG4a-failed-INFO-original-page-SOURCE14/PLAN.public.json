@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.failed-info-page0-source-plan.r1",
+  "authorization": "SOURCE_ONLY",
+  "scope": "combined4a_failed_info_payload_page0_once",
+  "maximumNativeCalls": 1,
+  "operationId": "0a3d2c5c158da55c07f9db9202ada37d9670254e650c70eff7cfa08bb8d6d7d2",
+  "request": {
+    "blob": "46b765bdbbdaa51af1fa3891b78c478b4008b5aa",
+    "bytes": 121,
+    "sha256": "90e081d7d4fb16b6a1928ad526236e282416ee53f73ee2eec9209baf5870eace"
+  },
+  "source": {
+    "blob": "ec8b3b469d113bfa96c07f4021e52fa66d1abbad",
+    "bytes": 6848,
+    "sha256": "f0a10d05cff1f5244bdeb0cb6a6b9d94127709451815e525e1046251ffcd62c6"
+  },
+  "originalInfoState": {
+    "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+    "bytes": 11134,
+    "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+  },
+  "originalBuildState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "originalStatus": {
+    "blob": "ba25cecb4430ece5aea933decbcea117c6894bd4",
+    "bytes": 797,
+    "sha256": "e630828b792467fd100b876cd63834d1aa75fb4acbd0e71d6b933db21d763ad7"
+  },
+  "originalFailedBoundaryTree": "c5ad2e76d8275255b14889764af431a975429e8f",
+  "newSlot": "combined_4a49405b_failed_info_payload_page0_r1",
+  "reason": "The original file_info operation is failed/inactive with stored payload. The INFO journal stopped at its completed-only predicate. Retrieve the original immutable payload without changing that failed row or either original context.",
+  "sourceShape": "A finite one-page archival entry using the same original pure/Git-once helpers; no new operation_start or status and no loop.",
+  "sequence": [
+    "exact GO whole -> fixed original states/status whole -> one public request/intent/arm archive",
+    "model boundary -> original operation_result offset0/8192 once -> whole original SDK archive before parse",
+    "accept only a complete <=8192 payload with exact offset/extent/eof/SHA and UTF-8 roundtrip",
+    "whole original payload archive before semantic inspection; result remains diagnostic-only"
+  ],
+  "nativeMethods": [
+    "operation_result"
+  ],
+  "offset": 0,
+  "limit": 8192,
+  "maxReturnedPages": 1,
+  "noRetry": true,
+  "noAdditionalPages": true,
+  "noNewInfo": true,
+  "noStatus": true,
+  "noProcessStart": true,
+  "noOldStateWrite": true,
+  "oldStatusFailedRowPreserved": true,
+  "originalBuildOutcome": "UNKNOWN",
+  "opaqueOriginalPayload": "payload_kind and format are retained as bounded metadata, never treated as a success claim; actual SDK/error semantics are read only after whole payload archival.",
+  "failure": "Any tool, archive, extent, non-EOF, hash or type error stops. If total exceeds8192, preserve original page SDK and request a separately reviewed continuation; no automatic follow-up.",
+  "initialPrivateSDKsReused": false,
+  "registryRowsOrPagesReferenced": false,
+  "knownFutureInactive": true,
+  "metadataQualified": false,
+  "checks": 18,
+  "NativeCalls": 0
+}
