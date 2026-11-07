@@ -117,7 +117,7 @@ class DestructiveFixtureGuards(unittest.TestCase):
 
             def start_without_wait(instance, *, wait=True):
                 self.assertFalse(wait)
-                (instance.root / "process.log").write_bytes((expected + "\\n").encode())
+                (instance.root / "process.log").write_bytes((expected + "\n").encode())
                 instance.log = (instance.root / "process.log").open("ab")
                 instance.process = process
 
@@ -142,7 +142,7 @@ class DestructiveFixtureGuards(unittest.TestCase):
 
             def start_without_wait(instance, *, wait=True):
                 self.assertFalse(wait)
-                (instance.root / "process.log").write_bytes((expected + "\\n").encode())
+                (instance.root / "process.log").write_bytes((expected + "\n").encode())
                 instance.log = (instance.root / "process.log").open("ab")
                 instance.process = process
 
