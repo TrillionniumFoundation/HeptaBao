@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.permanent-bootstrap-source.r2",
+  "actualExecuted": false,
+  "launcher": {
+    "bytes": 82341,
+    "sha256": "2780c5fcef1aebd7b7fffa406af39521dc9cab02c372321df9ef4322bab46422"
+  },
+  "sourcesUnchanged": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_production_t5_guard_r1.py": {
+      "bytes": 13379,
+      "sha256": "9f0b032264c4dd5db45478f08c1cdbc92354ac3153b2ed4d18ef2aab30b139f1"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "main3_http_complete.py": {
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    },
+    "permanent_bootstrap_api_r1.py": {
+      "bytes": 7213,
+      "sha256": "ce40d15a5b837e1f8fe12c8c925a16241c0bca8f3b751dc5c445bf36bec88b09"
+    }
+  },
+  "previousActualJob": "1a1b386a389-fc05-836f",
+  "previousOutcomeKnown": true,
+  "previousHttpRequests": 0,
+  "previousInitRequests": 0,
+  "previousOriginalServersAndResourcesClosed": true,
+  "correctionActualJob": "1a1b39336a2-fc05-83a7",
+  "correctionNativeStrictMemoryTls": "old-leaf-known-85-denied; corrected-leaf-TLSv1.3-success",
+  "existingPermanentStoreConfirmedEmpty": true,
+  "sameExistingStoreRetained": true,
+  "firstInitDispatchStillRequiresFreshEmptyDataDirectoryAndStrictTls501Uninitialized": true,
+  "parentSeconds": 300,
+  "eachApiPhaseSeconds": 120,
+  "supervisorSeconds": 330,
+  "noRelaxedTlsOrDeadline": true,
+  "noClientOrLegacyOrProviderOperation": true
+}

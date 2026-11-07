@@ -4,6 +4,55 @@ The current full-replacement gate remains **not qualified**. Product source is u
 
 No production traffic was switched. No legacy production Bao service, binary, data or backup was deleted. The retired Mac R2 registration below was an explicitly owned failed QA wrapper.
 
+## r15 — independent permanent-store lifecycle and remaining fleet gates
+
+**Full OpenBao 2.7.1 replacement is still not qualified.** This checkpoint follows evidence commit `b5c2bf1635cb5ff7d841d0910c8b6d905f2fc426`. Product code and normal binaries remain canonical `4bde9aee03fcd27c59e13607e529b1cee594b249`; these changes are evidence and prepared deployment sources.
+
+### Actual independent permanent store: passed, stopped, not cut over
+
+The independent CA, original server key, exact normal Mac binary and new permanent paths staged in r14 are now used by an **actually initialized, cold-restarted permanent store**. Runtime is `/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production`; private custody is `/Users/qianqi/heptabao-authbus-production-custody`. No J3160 request, existing production credential read, provider request, client configuration change or LaunchAgent installation occurred.
+
+The first bootstrap job `main/1a1b386a389-fc05-836f` is retained as **failed exit 1**, with complete 5,452-byte stdout and no stderr. Its first health attempt failed certificate verification before sending any HTTP bytes. Init requests were zero; there was no unknown HTTP outcome. Original Rust PID 68581 and diskutil PID 68572 were reaped with empty original groups, closed streams and all 22 explicit descriptors closed. A status RPC timeout is preserved separately from the later authoritative original terminal record.
+
+Complete public CA/leaf/config reads and offline verification identified missing leaf Authority Key Identifier (strict X.509 verification code 85). Create-only correction job `main/1a1b39336a2-fc05-83a7` then **passed exit 0**, full 5,334-byte stdout, no stderr. It independently read the original bootstrap's exact 14 filenames and four events to bind zero HTTP/init dispatch and original-server closure. Actual Mac Python 3.14 default strict SSL, using MemoryBIO and no network socket, rejected the original leaf with code 85 and accepted the corrected leaf with TLS 1.3 and hostname validation. Both used verify flags 557088. The same independent CA and same private server key were retained; the old leaf and configurations were not overwritten. A new leaf with explicit SKI/AKI and two new configurations were created. Data was still empty. Both original commands and all 17 explicit descriptors and held T5 anchors closed.
+
+Public CA DER SHA-256 remains `456ea07b02ead7ac3397507a4e41befeaad822dcdd74695f6a38239029aac01f`. Corrected leaf DER SHA-256 is `abaf8527105e19cbbe0da57a64c7a87d8e7f6e6ae15edc3636f5eee65eefd3bd`. Private key bytes and private digests were not published.
+
+The corrected bootstrap, **`main/1a1b396b21c-fc05-83b9`**, passed exit 0 with complete 28,061-byte stdout and no stderr. Launcher 82,341 bytes / SHA-256 `2780c5fcef1aebd7b7fffa406af39521dc9cab02c372321df9ef4322bab46422` differs from reviewed r1 only in the new certificate/config/operation slot, schema and two prior-job references; all six embedded modules remain byte-exact. The same store was retained, with fresh empty-directory and strict TLS 501/uninitialized gates before its **first** init dispatch. Original 300-second parent, 120-second API phases and 330-second supervisor remained unchanged.
+
+Actual results: **44/44 checks and 30 strict TLS HTTP requests** (18 initial, 12 in a fresh cold process). They prove initialization and unseal; KV v2 and AppRole mounts; native-v6 format 2 activation; scoped real KV CAS versions 1 and 2; unrelated-key and admin denials; renewable AppRole token; same-token renewal; sealed cold start with persisted version/value and old-token semantics; distinct fresh AppRole login; both token revocations with subsequent 403 denials; SecretID destruction with subsequent 400 login denial. All complete response bodies were fsynced in private custody before parsing. Unknown HTTP outcomes were zero; all response readers and sockets closed.
+
+Original Rust processes 73640 and 73667 were stopped once and reaped with empty groups, the original command closed, all 118 explicit descriptors closed, and T5 anchors verified and closed. Final deadline and cancellation gates passed. Final server running = false. This is a permanent-store synthetic qualification credential, **not** actual current-provider validity, production credential migration, full-gateway cold consumption, an installed permanent service, production backup/restore or cutover qualification. Root/unseal material and full response bodies remain solely in the private `bootstrap-r2` custody directory; never publish them or reinitialize this store.
+
+### Complete finite consumer inode observation
+
+The 42-entry contribution preserves both failures and the successful r3 observation. Original r1 `mac/1a1b376e3e0-fc05-8304` failed because this Mac lsof rejects `-D`; r2 `mac/1a1b37b35bf-fc05-8321` obtained a complete known-success lsof response but its parser rejected literal blank access fields. Offline original-byte parsing justified classifying blank/absent access as **unspecified**, never as write permission.
+
+R3 `mac/1a1b3804d06-fc05-8343` passed with full 10,299-byte stdout, no stderr, 253 finite lsof rows, nine exact original numeric births/executables reverified and 45 metadata paths or absences stable before/after. All 56 explicit descriptors and original lsof PID 65324/group/streams closed. Seven inode matches were gateway PID 18437's registry base/WAL/SHM; no match to the selected auth databases/cache/legacy paths appeared among these nine processes. This **does not prove** no cached credentials or complete consumer quiescence. Limited four-process source-selector observation and exact four-relay registration/rollback preparation remain active work; no independent Codex/ChatGPT process is authorized to be stopped merely by name or account similarity.
+
+### HA r3 cold structural evidence; failure remains open
+
+The 35-entry contribution retains the original X230 permission-model refusal, its exact metadata diagnosis and the minimally corrected readonly parser. X230 `1a1b37b35bf-fc05-8320`, ai395 `1a1b37e1539-fc05-832f` and Mac `1a1b37f2c8d-fc05-8338` all completed their original fixed-five-file structural observations with all 17/17/19 descriptors closed, no child/network/write/decryption/key read.
+
+X230 and ai395 were committed/applied 34, publication generation 11, ciphertext 21,026,335 bytes and 203 objects. Mac was committed/applied 33, with last publication 32, generation 10, ciphertext 18,924,751 bytes and 184 objects. These are CRC/framing/index/EOF observations, not HMAC authentication or proof of readable KV. They are consistent with original follower append failures but **do not establish the cause** of the failed historical GET.
+
+The original full HA r3 remains failed at 51/128, after ten known writes and before any eleventh write intent. Its original URLError lacks a retained underlying reason. A separate new synthetic diagnostic is being prepared to stop after the original tenth exact read and record TCP/TLS/send/headers/body phases without changing requests, TLS or 15/8/1.5/45-second inner budgets. It will retain the formal 128 denominator and missing 77 checks, and cannot qualify HA128. Its actual result is not part of this checkpoint. The two previously owned ai395 UFW peer-port rules remain temporarily held for this concrete diagnostic; exact sequential removal/readback is still required afterward.
+
+### Prepared production plugin correction; no installation
+
+Prepared `production-plugin-r2` keeps the actual Mac/ROG and Pocket4 variants distinct and binds the qualified four-module production transport. The r1 integration archived in r14 swallowed startup-cycle errors. R2 changes only initial cycle propagation: the first manifest-read or SDK-load failure now closes admission, drains/closes once and leaves no interval timer. Periodic policy remains unchanged. Complete-plugin local wiring qualification r4 passed **18/18** cases; these use substituted SDK/network boundaries and are not actual installed SDK/provider/TLS validation. Both prepared versions are `-heptabao.2`; neither is installed.
+
+### Concrete remaining gates and action boundaries
+
+- Final real-source provider maintenance remains unexecuted: zero actual refresh requests, zero production credential CAS, zero production service stop/restart. The three current selected owners were expired in the actual r4 SDK observation. Fresh per-owner five-database clones, actual parent/child once-only dispatch, complete private response durability, exact COMMITTED readback, fresh post-refresh epoch and six-database rollback baseline are being connected. Never restore an already rotated old token after an unknown or committed provider dispatch.
+- Four finite legacy relay registrations need complete source-bound reversible retirement before the gateway's maintenance consumer fence can pass. Neither a zero-descendant gateway nor inode absence grants whole-fleet quiescence. The currently held Linux restart helpers remain held.
+- The permanent transport still needs its actual fixed-slot coordinator/bootstrap/ack/report service. Existing `tools/authbus/authbus_coordinator.py` is the older inbox protocol and is not a substitute. Do not weaken operator grants, reset epochs or erase dispatched/unknown operation history to make integration pass.
+- Each of Mac, ROG and Pocket4 still needs current real credential I/O, full service cold restart, complete rollback proof and only then cutover. The r14 current-capacity synthetic whole-six recovery qualification is retained; production full rollback remains false.
+- The newly initialized permanent store needs installed service/unseal lifecycle, cross-client strict TLS enrollment and actual permanent backup/cold restore of migrated credentials. No recurring backup producer has been installed.
+- Full HA128 must actually pass. Legacy production OpenBao/obsolete HeptaBao files, binaries, data and backup paths are not deleted until registered client and backup closure is complete.
+
+All native `*.original.json` records preserve the original text, including large integer identities. Original read `bytes_hex` was checked losslessly before projection. Parsed public summaries do not replace those originals.
+
 ## r14 — current-size rollback qualification, independent trust staging, and remaining HA/production gates
 
 This is the latest evidence checkpoint, recorded on 2026-11-07. The product remains canonical `4bde9aee03fcd27c59e13607e529b1cee594b249`. Full replacement and legacy deletion remain **not qualified**. Real provider calls, production credential writes, production gateway restarts/cutover and held-helper releases remain zero. The independent permanent runtime and CA staging below did create new private files, without installing or starting its service.

@@ -1,0 +1,15 @@
+{
+  "allRequestedFieldsOnly": true,
+  "fileRecords": 252,
+  "newLsofCommands": 0,
+  "ok": true,
+  "oldAttemptReclassifiedAsSuccess": false,
+  "originalAfterFenceReached": false,
+  "originalBytes": 6702,
+  "originalJobId": "1a1b37b35bf-fc05-8321",
+  "originalSha256": "73f0cae8afb104859c3d6b3b89f4fca8b402571a056113585408651845f207ca",
+  "parsedProcesses": 9,
+  "parserSha256": "36b5adf2e0951b6296d73115c4d1045ad4373cd4173fac72409cd2166a5daa81",
+  "schema": "heptabao.original-complete-lsof-offline-parser.r1",
+  "unspecifiedAccessCount": 115
+}

@@ -1,0 +1,58 @@
+--- r3
++++ r4
+@@ -29,7 +29,7 @@
+   // The SDK is substituted; this marker only exercises the actual discovery predicate.
+   fs.writeFileSync(path.join(root, 'agents/main/agent/openclaw-agent.sqlite'), '', { mode: 0o600 });
+   const trace = [], constructed = [], intervals = [];
+-  const entry = path.join(here, 'production-plugin-r1', variant, 'index.js');
++  const entry = path.join(here, 'production-plugin-r2', variant, 'index.js');
+   let service, event;
+   const stamp = Date.now();
+   const credential = { provider: 'openai', type: 'oauth', access: 'synthetic-access-never-sent',
+@@ -46,6 +46,7 @@
+       trace.push('read:' + key);
+       if (key === 'manifest') {
+         options.manifestEntered?.resolve();
++        if (options.manifestError) throw options.manifestError;
+         if (options.manifestGate) await options.manifestGate.promise;
+         return { version: 1, data: { schemaVersion: 1, generation: 1, profiles: [] } };
+       }
+@@ -63,6 +64,7 @@
+     clearRuntimeAuthProfileStoreSnapshots() { trace.push('sdk:clear'); },
+     loadAuthProfileStoreWithoutExternalProfiles() {
+       trace.push('sdk:load');
++      if (options.sdkLoadError) throw options.sdkLoadError;
+       return { version: 1, profiles: { 'openai:synthetic': { ...credential } },
+         usageStats: { 'openai:synthetic': { lastFailureAt: stamp } }, order: {} };
+     },
+@@ -188,6 +190,21 @@
+       assert.ok(!f.trace.includes('read:manifest')); assert.equal(f.intervals.length, 0);
+     } finally { f.dispose(); }
+   });
++  for (const [name, option] of [['first_manifest_read_failure_closes_start', 'manifestError'],
++                               ['first_sdk_read_failure_closes_start', 'sdkLoadError']]) {
++    await check(variant, name, async () => {
++      const f = await fixture(variant, { [option]: new Error('original_initial_business_failure') });
++      try {
++        await assert.rejects(() => f.service.start(f.ctx), /original_initial_business_failure/);
++        await f.service.stop();
++        assert.equal(f.trace.filter(v => v === 'close:start').length, 1);
++        assert.equal(f.trace.filter(v => v === 'close:end').length, 1);
++        assert.equal(f.intervals.length, 0);
++        const end = f.trace.length; await f.event.handle(f.healthEvent);
++        assert.equal(f.trace.length, end);
++      } finally { f.dispose(); }
++    });
++  }
+   await check(variant, 'unknown_close_is_propagated_without_second_revoke', async () => {
+     const f = await fixture(variant, { closeError: new Error('original_revoke_outcome_unknown') });
+     try {
+@@ -200,7 +217,7 @@
+     } finally { f.dispose(); }
+   });
+ }
+-console.log(JSON.stringify({ schema: 'heptabao.production-plugin-wiring-fixture.r3', ok: true,
++console.log(JSON.stringify({ schema: 'heptabao.production-plugin-wiring-fixture.r4', ok: true,
+   checks, passed: checks.length, actualCompletePreparedPluginSourceLoaded: true,
+   sdkBoundarySubstituted: true, transportNetworkBoundarySubstituted: true,
+   originalLocalHelperSourcesLoaded: true, actualProviderCalls: 0, productionServiceActions: 0,

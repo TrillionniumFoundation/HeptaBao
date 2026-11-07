@@ -1,0 +1,123 @@
+{
+  "actualTlsOrSdkQualified": false,
+  "change": "Initial cycle failure propagates through original stop/close path.",
+  "installed": false,
+  "periodicCycleFailurePolicyUnchanged": true,
+  "schema": "heptabao.production-plugin-integration-source.r2",
+  "variants": {
+    "mac-rog": {
+      "parentIndexSha256": "31b2f098547880484e7c3b254540863f6c6488b7dff122276911874d04e40b54",
+      "preparedFiles": {
+        "bad-refresh-quarantine.js": {
+          "bytes": 5438,
+          "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286"
+        },
+        "codex-client-recycler.js": {
+          "bytes": 2120,
+          "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+        },
+        "index.js": {
+          "bytes": 53695,
+          "sha256": "ae3efea5c6412116942a9d18ebc5110150d18b16b06b3a25add4f5a626ad9bfb"
+        },
+        "lease-assignments.js": {
+          "bytes": 6932,
+          "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7"
+        },
+        "openclaw.plugin.json": {
+          "bytes": 3312,
+          "sha256": "e52d970e271e2ed0f8c7038d51f799acfabd710b2ec320f971597e4aec16e5a4"
+        },
+        "order-policy.js": {
+          "bytes": 7376,
+          "sha256": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301"
+        },
+        "package.json": {
+          "bytes": 1019,
+          "sha256": "b3beb5e08a9ff969c0081264f8539e4731ed12ba974a8d5099ead6f8415005c4"
+        },
+        "production-transport/bounded-outbox.js": {
+          "bytes": 18043,
+          "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+        },
+        "production-transport/private-outbox-store.js": {
+          "bytes": 8660,
+          "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+        },
+        "production-transport/production-client.js": {
+          "bytes": 3434,
+          "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+        },
+        "production-transport/strict-bao-client.js": {
+          "bytes": 26161,
+          "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+        },
+        "provider-error-classifier.js": {
+          "bytes": 4670,
+          "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77"
+        },
+        "runtime-refresh-policy.js": {
+          "bytes": 956,
+          "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+        }
+      }
+    },
+    "pocket4": {
+      "parentIndexSha256": "6326a8342634c8a61a4d57e1b862ae5bce4d24939a4a1f4f9095ba119b40e30f",
+      "preparedFiles": {
+        "bad-refresh-quarantine.js": {
+          "bytes": 5438,
+          "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286"
+        },
+        "codex-client-recycler.js": {
+          "bytes": 2120,
+          "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+        },
+        "index.js": {
+          "bytes": 53818,
+          "sha256": "655b74a413ae982112d5ab36e7ac1c82a34e994c8687feda18396a5ccf6a8393"
+        },
+        "lease-assignments.js": {
+          "bytes": 6932,
+          "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7"
+        },
+        "openclaw.plugin.json": {
+          "bytes": 3312,
+          "sha256": "e52d970e271e2ed0f8c7038d51f799acfabd710b2ec320f971597e4aec16e5a4"
+        },
+        "order-policy.js": {
+          "bytes": 8506,
+          "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82"
+        },
+        "package.json": {
+          "bytes": 1019,
+          "sha256": "02efa23ffe8a786078b16be04485a61d1ba0b3552c78e75c2b16762de2338fa5"
+        },
+        "production-transport/bounded-outbox.js": {
+          "bytes": 18043,
+          "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+        },
+        "production-transport/private-outbox-store.js": {
+          "bytes": 8660,
+          "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+        },
+        "production-transport/production-client.js": {
+          "bytes": 3434,
+          "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+        },
+        "production-transport/strict-bao-client.js": {
+          "bytes": 26161,
+          "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+        },
+        "provider-error-classifier.js": {
+          "bytes": 4670,
+          "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77"
+        },
+        "runtime-refresh-policy.js": {
+          "bytes": 956,
+          "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+        }
+      }
+    }
+  }
+}
