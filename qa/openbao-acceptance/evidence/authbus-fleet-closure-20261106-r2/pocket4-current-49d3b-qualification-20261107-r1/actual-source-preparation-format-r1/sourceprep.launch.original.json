@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/prepare_source.py"
+    ],
+    "created_unix_ms": 1794022320081,
+    "cwd": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1b41027d1-fc05-860f",
+    "idempotency_key": "pocket4-stream-hmac49d3b-source-preparation-20261107-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b41027d1-fc05-860f",
+    "request_digest": "4f492c68de8ba2cf340269e11e281b8ad6b06d92ecb9cb3abc24e686dc5a4abe",
+    "request_fingerprint": 5713146431218098895,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b41027d1-fc05-860f"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b41027d1-fc05-860f"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

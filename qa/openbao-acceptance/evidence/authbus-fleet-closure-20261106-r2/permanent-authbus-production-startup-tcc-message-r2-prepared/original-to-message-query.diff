@@ -1,0 +1,83 @@
+--- original-fixed-systemlog-r1.template.py
++++ exact-observed-message-r2.template.py
+@@ -6,20 +6,23 @@
+ START=time.monotonic(); END=START+45
+ HOME=Path('/Users/qianqi')
+ CUSTODY=HOME/'heptabao-authbus-production-custody'
+-ROOT=CUSTODY/'service-startup-systemlog-r1'
++ROOT=CUSTODY/'service-startup-tcc-message-r2'
+ PYTHON=Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+ BINARY='/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production/releases/4bde9aee03fcd27c59e13607e529b1cee594b249/heptabao-server'
+ LABEL='org.heptabao.authbus'
+-PREDICATE='(process == "tccd" OR process == "syspolicyd" OR process == "amfid" OR process == "launchd") AND (eventMessage CONTAINS[c] "19077" OR eventMessage CONTAINS[c] "org.heptabao.authbus" OR eventMessage CONTAINS[c] "heptabao-server")'
++PREDICATE='process == "tccd" AND eventMessage CONTAINS "9253.2991"'
+ ARGV=['/usr/bin/log','show','--style','json','--start','@1794021555','--end','@1794021590',
+       '--info','--debug','--no-pager','--predicate',PREDICATE]
+ ROWS=[]; PARENTS=[]; root=None; commands=None; signals=None
+-REPORT={'schema':'heptabao.permanent-startup-fixed-systemlog-observation.r1','ok':False,
++REPORT={'schema':'heptabao.permanent-startup-exact-tcc-message-observation.r2','ok':False,
+     'originalServiceJob':'1a1b4048166-fc05-85db','originalServicePid':19077,
+     'startEpoch':1794021555,'endEpoch':1794021590,'parentSeconds':45,'supervisorSeconds':70,
+     'serviceActions':0,'networkRequests':0,'keyOrCredentialFilesRead':0,
+     'rawSystemLogContentsOrHashesPublished':False,'permissionSettingsChanged':False,
+-    'causalityEstablishedByMarkerAlone':False,'automaticRetry':False}
++    'causalityEstablishedByMarkerAlone':False,'automaticRetry':False,
++    'exactMessageIdFromOriginalEvent24':'9253.2991',
++    'originalMessageIdProjectionJob':'1a1b41be710-fc05-864d',
++    'messagesHavePathsAndLongIdentifiersRedacted':True}
+ 
+ class Refused(Exception):pass
+ def need(value,code):
+@@ -114,26 +117,34 @@
+     REPORT['command']=safe_command(row)
+     need(row['exitCode']==0 and not row['outcomeUnknown'],'original_systemlog_command_known_zero')
+     events=json.loads(out)
+-    need(type(events)is list and len(events)<=4096,'bounded_complete_systemlog_array')
++    need(type(events)is list and 0<len(events)<=64,'bounded_exact_message_systemlog_array')
+     projected=[]
+-    marker_words={'removable_volume':'kTCCServiceSystemPolicyRemovableVolumes',
+-        'all_files':'kTCCServiceSystemPolicyAllFiles','network_volumes':'kTCCServiceSystemPolicyNetworkVolumes',
+-        'local_network':'kTCCServiceLocalNetwork','prompt':'prompt','denied':'denied',
+-        'deny':'deny','granted':'granted','auth_request':'AUTHREQ','exec':'exec',
+-        'assessment':'assessment','quarantine':'quarantine','signature':'signature',
+-        'not_permitted':'not permitted','waiting':'waiting'}
++    services={'all_files':'kTCCServiceSystemPolicyAllFiles',
++              'removable_volume':'kTCCServiceSystemPolicyRemovableVolumes'}
+     for ordinal,event in enumerate(events):
+-        need(type(event)is dict and type(event.get('eventMessage'))is str,
+-             'complete_typed_systemlog_event')
+-        message=event['eventMessage'];lower=message.lower()
+-        actor=Path(event.get('processImagePath','')).name
+-        item={'ordinal':ordinal,'actor':actor if actor in ('tccd','syspolicyd','amfid','launchd') else 'other',
+-            'originalPidTextPresent':'19077' in message,'exactLabelPresent':LABEL in message,
+-            'exactBinaryPathPresent':BINARY in message,'productBasenamePresent':'heptabao-server' in message,
+-            'markers':[key for key,value in marker_words.items() if value.lower() in lower]}
+-        matches=re.findall(r'\bauthValue[=: ]+(\d{1,2})\b',message)
+-        item['observedAuthValueFields']=[int(value) for value in matches]
+-        projected.append(item)
++        need(type(event)is dict and type(event.get('eventMessage'))is str
++             and Path(event.get('processImagePath','')).name=='tccd',
++             'selected_original_tccd_event')
++        message=event['eventMessage']
++        need(message.isascii() and 0<len(message)<=8192 and '9253.2991' in message,
++             'exact_original_message_id_and_bound')
++        need(not re.search(r'(?i)(access_token|refresh_token|root_token|keys_base64|bearer |password|authorization:)',message),
++             'unexpected_sensitive_message_refused')
++        redacted=message.replace(BINARY,'<original-binary>')
++        redacted=redacted.replace(services['all_files'],'<all-files>')
++        redacted=redacted.replace(services['removable_volume'],'<removable-volume>')
++        redacted=re.sub(r'(?:/[A-Za-z0-9._@%+=~:-]+)+','<redacted-path>',redacted)
++        redacted=re.sub(r'(?i)\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b','<redacted-id>',redacted)
++        redacted=re.sub(r'(?i)\b0x[0-9a-f]+\b','<redacted-address>',redacted)
++        redacted=re.sub(r'\b[A-Za-z0-9_+./=-]{24,}','<redacted-long-id>',redacted)
++        need('/Volumes/' not in redacted and '/Users/' not in redacted
++             and not re.search(r'(?i)\b[0-9a-f]{32,}\b',redacted),'redacted_message_only')
++        projected.append({'ordinal':ordinal,'actor':'tccd','exactOriginalMessageId':True,
++            'originalPidTextPresent':'19077' in message,'exactBinaryPathPresent':BINARY in message,
++            'servicesPresent':[key for key,value in services.items() if value in message],
++            'messageRedacted':redacted,
++            'observedAuthValueFields':[int(v) for v in re.findall(r'\bauthValue[=: ]+(\d{1,2})\b',message)],
++            'observedAuthReasonFields':[int(v) for v in re.findall(r'\bauthReason[=: ]+(\d{1,2})\b',message)]})
+     for path,pin in tools.items():
+         need(public_code_pin(path,remaining=remaining,critical=signals.critical)==pin,
+              'original_systemlog_runtime_unchanged')

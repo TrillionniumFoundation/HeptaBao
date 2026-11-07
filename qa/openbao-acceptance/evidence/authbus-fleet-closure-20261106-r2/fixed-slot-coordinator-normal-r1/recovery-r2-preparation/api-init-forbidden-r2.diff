@@ -1,0 +1,14 @@
+--- original-r1-api
++++ fixedslot_recovery_api_r2.py
+@@ -23,8 +23,10 @@
+     def call(self,case,method,route,body=None,*,expected=200,token=None,category,slot=0,readiness=False):
+         self.remaining(1)
+         self.guard.check()
++        need(isinstance(route,str) and route!='/v1/sys/init'
++             and not route.startswith('/v1/sys/init/') and category!='init','recovery_initialization_forbidden')
+         need(not self.unknown and len(self.rows)<MAX_HTTP,'no_http_after_unknown_and_finite_requests')
+-        need(re.fullmatch(r'[a-z0-9._-]{1,100}',case) and category in ('health','init','unseal','mount','activate','capacity','policy','role','role-id','secret-id','login','kv-read','kv-write','lookup','renew','revoke','secret-destroy','admin-denied'),
++        need(re.fullmatch(r'[a-z0-9._-]{1,100}',case) and category in ('health','unseal','mount','activate','capacity','policy','role','role-id','secret-id','login','kv-read','kv-write','lookup','renew','revoke','secret-destroy','admin-denied'),
+              'fixed_public_route_category')
+         need(method in ('GET','POST','PUT') and isinstance(route,str) and route.startswith('/v1/')
+              and re.fullmatch(r'/[A-Za-z0-9/._-]+',route) and 0<=slot<=3,'fixed_owned_api_route')
