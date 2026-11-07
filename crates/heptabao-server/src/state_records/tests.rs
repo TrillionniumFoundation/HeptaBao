@@ -124,6 +124,94 @@ fn address_hmac_shared_key_keeps_concurrent_contexts_independent() {
     });
 }
 
+#[test]
+fn address_value_stream_matches_previous_domain_encoding_and_block_boundaries() {
+    let raw = [0x73; 32];
+    let key = AddressKey::from_bytes(raw);
+    for domain in [
+        Vec::new(),
+        b"kv2-native-v6-paged-v2/payload".to_vec(),
+        vec![0xa5; 128],
+    ] {
+        for length in [
+            0,
+            1,
+            63,
+            64,
+            65,
+            BLOCK_BYTES - 1,
+            BLOCK_BYTES,
+            BLOCK_BYTES + 1,
+            2 * BLOCK_BYTES + 17,
+        ] {
+            let bytes: Vec<u8> = (0..length)
+                .map(|index| (index as u8).wrapping_mul(29).wrapping_add(17))
+                .collect();
+            let expected = previous_address_hmac(&raw, &domain, &bytes);
+            assert_eq!(key.digest(&domain, &bytes).unwrap(), expected);
+            for width in [1, 17, 63, BLOCK_BYTES - 1, BLOCK_BYTES, BLOCK_BYTES + 1] {
+                if width == 1 && length > 65 {
+                    continue;
+                }
+                let actual = key
+                    .digest_value_stream(&domain, length as u64, |update| {
+                        update(&[])?;
+                        for chunk in bytes.chunks(width) {
+                            update(chunk)?;
+                        }
+                        update(&[])
+                    })
+                    .unwrap();
+                assert_eq!(actual, expected);
+            }
+        }
+    }
+}
+
+#[test]
+fn address_value_stream_rejects_length_bounds_producer_failure_and_ignored_overrun() {
+    let key = AddressKey::from_bytes([0x74; 32]);
+    let bytes = b"complete payload";
+    for declared in [bytes.len() - 1, bytes.len() + 1] {
+        assert!(matches!(
+            key.digest_value_stream(b"payload", declared as u64, |update| update(bytes)),
+            Err(RecordError::Corrupt)
+        ));
+    }
+    let mut producer_called = false;
+    assert!(matches!(
+        key.digest_value_stream(b"payload", MAX_VALUE_BYTES as u64 + 1, |_| {
+            producer_called = true;
+            Ok(())
+        }),
+        Err(RecordError::TooLarge)
+    ));
+    assert!(!producer_called);
+    assert!(matches!(
+        key.digest_value_stream(&[0; 129], 0, |_| {
+            producer_called = true;
+            Ok(())
+        }),
+        Err(RecordError::Invalid)
+    ));
+    assert!(!producer_called);
+    assert!(matches!(
+        key.digest_value_stream(b"payload", bytes.len() as u64, |update| {
+            update(&bytes[..3])?;
+            Err(RecordError::Missing)
+        }),
+        Err(RecordError::Missing)
+    ));
+    assert!(matches!(
+        key.digest_value_stream(b"payload", bytes.len() as u64, |update| {
+            update(bytes)?;
+            assert!(update(b"overrun").is_err());
+            Ok(())
+        }),
+        Err(RecordError::Corrupt)
+    ));
+}
+
 #[derive(Default)]
 struct MemoryObjects(BTreeMap<ObjectId, Zeroizing<Vec<u8>>>);
 impl RecordReader for MemoryObjects {

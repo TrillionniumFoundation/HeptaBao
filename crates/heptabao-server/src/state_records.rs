@@ -100,6 +100,39 @@ impl AddressKey {
         mac.update(bytes);
         mac.finish()
     }
+    /// Hash one bounded value without exposing the keyed context or retaining
+    /// its chunks. This is only byte authentication, never source authority.
+    /// The domain encoding is identical to `digest`; chunk boundaries add no
+    /// bytes, and an incomplete or overlong producer cannot return a digest.
+    pub(crate) fn digest_value_stream(
+        &self,
+        domain: &[u8],
+        declared_bytes: u64,
+        read_chunks: impl FnOnce(&mut dyn FnMut(&[u8]) -> Result<()>) -> Result<()>,
+    ) -> Result<[u8; 32]> {
+        if declared_bytes > MAX_VALUE_BYTES as u64 {
+            return Err(RecordError::TooLarge);
+        }
+        let mut mac = self.mac(domain)?;
+        let mut consumed = 0_u64;
+        let mut exceeded = false;
+        read_chunks(&mut |chunk| {
+            let next = consumed.checked_add(chunk.len() as u64);
+            if exceeded || next.is_none_or(|n| n > declared_bytes) {
+                // A producer cannot ignore one failed update and then finish
+                // a digest for only the accepted prefix.
+                exceeded = true;
+                return Err(RecordError::Corrupt);
+            }
+            mac.update(chunk);
+            consumed = next.ok_or(RecordError::Corrupt)?;
+            Ok(())
+        })?;
+        if exceeded || consumed != declared_bytes {
+            return Err(RecordError::Corrupt);
+        }
+        mac.finish()
+    }
     fn mac(&self, domain: &[u8]) -> Result<AddressMac> {
         if domain.len() > 128 {
             return Err(RecordError::Invalid);

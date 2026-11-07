@@ -233,44 +233,45 @@ impl PayloadDescriptor {
             .fold(0_u8, |x, (a, b)| x | (a ^ b));
         Ok(bytes.len() as u64 == self.logical_bytes && difference == 0)
     }
-    fn read_authenticated_bytes(
+    fn authenticate_payload(
         &self,
         key: &AddressKey,
         path: &str,
         version: u64,
         reader: &impl RecordReader,
         check: &impl Fn() -> CodecResult<()>,
-    ) -> CodecResult<Zeroizing<Vec<u8>>> {
+        retain_bytes: bool,
+    ) -> CodecResult<Option<Zeroizing<Vec<u8>>>> {
         check()?;
         self.validate(key, path, version)?;
-        let mut value = Zeroizing::new(Vec::with_capacity(self.logical_bytes as usize));
-        for reference in &self.blocks {
-            check()?;
-            // Reader must retain actual source/owner/Actor/Clock custody. Syntax
-            // and this codec's keyed authentication cannot manufacture it.
-            let encoded = reader.read_object(reference)?;
-            reference.verify(key, &encoded)?;
-            if encoded.len() != reference.encoded_bytes as usize {
-                return Err(RecordError::Corrupt);
+        let mut value = retain_bytes
+            .then(|| Zeroizing::new(Vec::with_capacity(self.logical_bytes as usize)));
+        let digest = key.digest_value_stream(PAYLOAD_DOMAIN, self.logical_bytes, |update| {
+            for reference in &self.blocks {
+                check()?;
+                // Reader must retain actual source/owner/Actor/Clock custody.
+                // Neither this codec nor a memo can manufacture that custody.
+                let encoded = reader.read_object(reference)?;
+                reference.verify(key, &encoded)?;
+                if encoded.len() != reference.encoded_bytes as usize {
+                    return Err(RecordError::Corrupt);
+                }
+                let chunk = encoded
+                    .get(OBJECT_HEADER_BYTES..)
+                    .ok_or(RecordError::Corrupt)?;
+                if chunk.len() as u64 != reference.payload_bytes {
+                    return Err(RecordError::Corrupt);
+                }
+                // The stream bounds the accumulated length before hashing
+                // or copying, and requires the exact declared length at EOF.
+                update(chunk)?;
+                if let Some(value) = &mut value {
+                    value.extend_from_slice(chunk);
+                }
+                check()?;
             }
-            let chunk = encoded
-                .get(OBJECT_HEADER_BYTES..)
-                .ok_or(RecordError::Corrupt)?;
-            if chunk.len() as u64 != reference.payload_bytes
-                || value
-                    .len()
-                    .checked_add(chunk.len())
-                    .is_none_or(|n| n > self.logical_bytes as usize)
-            {
-                return Err(RecordError::Corrupt);
-            }
-            value.extend_from_slice(chunk);
-            check()?;
-        }
-        if value.len() as u64 != self.logical_bytes {
-            return Err(RecordError::Corrupt);
-        }
-        let digest = key.digest(PAYLOAD_DOMAIN, &value)?;
+            Ok(())
+        })?;
         if digest
             .iter()
             .zip(self.digest)
@@ -290,7 +291,9 @@ impl PayloadDescriptor {
         reader: &impl RecordReader,
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<SharedJson> {
-        let value = self.read_authenticated_bytes(key, path, version, reader, check)?;
+        let value = self
+            .authenticate_payload(key, path, version, reader, check, true)?
+            .ok_or(RecordError::Invalid)?;
         let data: SharedJson = canonical(&value, MAX_VALUE_BYTES)?;
         if !data.expose().is_object() {
             return Err(RecordError::Corrupt);
@@ -308,22 +311,36 @@ impl PayloadDescriptor {
         check: &impl Fn() -> CodecResult<()>,
         memo: &RefCell<PagedPayloadValidationMemo>,
     ) -> CodecResult<bool> {
-        // Do not consult the memo until the actual current source has supplied
-        // and authenticated every byte. A stale/missing/replaced block, Actor
-        // loss or deadline expiry therefore cannot become a memo hit.
-        let value = self.read_authenticated_bytes(key, path, version, reader, check)?;
+        check()?;
         let memo_key = (
             key.digest(PAYLOAD_VALIDATION_DOMAIN, self.path_token.as_bytes())?,
             self.version,
             self.digest,
             self.logical_bytes,
         );
+        // This lookup only decides whether to retain a contiguous JSON copy.
+        // It grants no hit: every current block and the complete payload MAC
+        // are freshly authenticated below under the original live gates.
+        let hint = memo
+            .try_borrow()
+            .map_err(|_| RecordError::Invalid)?
+            .needs_lossless
+            .get(&memo_key)
+            .copied();
+        let value =
+            self.authenticate_payload(key, path, version, reader, check, hint.is_none())?;
+        check()?;
         let known = memo
             .try_borrow()
             .map_err(|_| RecordError::Invalid)?
             .needs_lossless
             .get(&memo_key)
             .copied();
+        // Do not reuse an entry replaced during a source callback. The hint
+        // was only an allocation decision, not a retained semantic receipt.
+        if known != hint {
+            return Err(RecordError::Invalid);
+        }
         let needs_lossless = if let Some(known) = known {
             #[cfg(test)]
             {
@@ -333,6 +350,7 @@ impl PayloadDescriptor {
             }
             known
         } else {
+            let value = value.ok_or(RecordError::Invalid)?;
             let data: SharedJson = canonical(&value, MAX_VALUE_BYTES)?;
             if !data.expose().is_object() {
                 return Err(RecordError::Corrupt);
