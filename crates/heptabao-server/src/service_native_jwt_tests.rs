@@ -1012,13 +1012,36 @@ fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_re
 }
 
 #[test]
-fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes()
+fn native_jwt_token_api_orphan_survives_mount_retirement_while_attached_chain_revokes()
 -> TestResult {
     let mut f = Fixture::new()?;
     allow_delegation(&mut f)?;
     let assertion = f.assertion(f.now + 60);
     let (parent, _) = f.login(&assertion)?;
     let child = create_service_child(&mut f, &parent, 250)?;
+    // This independent role remains present until mount retirement, so the
+    // attached-chain control cannot fail because the client role was deleted.
+    status(
+        &f.admin(
+            "POST",
+            "auth/native-jwt/role/mount-control",
+            json!({"role_type":"jwt","user_claim":"sub",
+                "bound_audiences":["native"],"token_policies":["native-jwt"],
+                "token_ttl":300,"token_max_ttl":600,"token_type":"service"}),
+        )?,
+        204,
+    );
+    let mut attached_login = f.actor(
+        "",
+        "POST",
+        LOGIN,
+        json!({"role":"mount-control","jwt":assertion.as_str()}),
+    )?;
+    status(&attached_login, 200);
+    assert_eq!(attached_login.body["auth"]["token_type"], "service");
+    let attached_parent = secret(&mut attached_login, "/auth/client_token")?;
+    assert!(attached_parent.as_str() != parent.as_str());
+    let attached_child = create_service_child(&mut f, &attached_parent, 250)?;
     status(
         &f.admin(
             "POST",
@@ -1045,10 +1068,31 @@ fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_stil
     status(&renewed, 200);
     let echo = secret(&mut renewed, "/auth/client_token")?;
     assert!(echo.as_str() == child.as_str());
+    status(
+        &f.admin("GET", "auth/native-jwt/role/mount-control", json!({}))?,
+        200,
+    );
+    status(
+        &f.actor(&attached_parent, "GET", "auth/token/lookup-self", json!({}))?,
+        200,
+    );
+    let attached_lookup =
+        f.actor(&attached_child, "GET", "auth/token/lookup-self", json!({}))?;
+    status(&attached_lookup, 200);
+    assert_eq!(attached_lookup.body["data"]["orphan"], false);
     status(&f.admin("DELETE", "sys/auth/native-jwt", json!({}))?, 204);
     let mut f = f.restart()?;
+    // revoke-orphan detached this Token API issuer from the JWT login mount.
+    // It survives mount retirement; the independent attached chain does not.
+    let orphan_lookup = f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?;
+    status(&orphan_lookup, 200);
+    assert_eq!(orphan_lookup.body["data"]["orphan"], true);
     status(
-        &f.actor(&child, "GET", "auth/token/lookup-self", json!({}))?,
+        &f.actor(&attached_parent, "GET", "auth/token/lookup-self", json!({}))?,
+        403,
+    );
+    status(
+        &f.actor(&attached_child, "GET", "auth/token/lookup-self", json!({}))?,
         403,
     );
     Ok(())
