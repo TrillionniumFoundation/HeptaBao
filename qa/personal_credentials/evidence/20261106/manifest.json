@@ -1548,15 +1548,21 @@
     },
     {
       "file": "android-autofill-followup-public-evidence.tar.gz",
-      "sha256": "3b9acaecf79e586559d70285cbd77b9a4953a93d92fe910f0e21d769910481d2",
-      "bytes": 945810,
-      "transformation": "Byte-identical r3 follow-up aggregate preserving its previous r2 archive, QA17 candidates and failure reproductions, actual r15 terminal/report/release, and independent root readbacks. Original c9 profiles remain separate failures: r13 4/12, r14 1/12, r15 7/12. No cancelled-case pass is inferred from diagnostic logs."
+      "sha256": "488aa8f09ee61b2aff02b9a69cd5ddeb4d81d0c602fa32dd3f46a469202089a3",
+      "bytes": 1605205,
+      "transformation": "Byte-identical r6 follow-up aggregate preserving exact r5 history and adding c10/QA19 r17 original 12-case device/report/Runtime/release records plus independent root readbacks. r17 passed 12/12 on the fixed Android 16 native fixture. Its new prebinding-popup branch had zero device events; r16 exact failure subcondition remains unknown. All earlier failed profiles remain separate and unchanged; release is independently confirmed. Internal review is not external security qualification."
     },
     {
       "file": "validation-followup-public-evidence.tar.gz",
-      "bytes": 669637,
-      "sha256": "fc0f96952cd4dfe3bd6484a8c59030efec16a76413dc09bf5481ce7a900f5636",
-      "transformation": "Original separate Linux formatting and strict Clippy execution on the unchanged repaired broker source, plus exact older-3ada GitHub observations. The full head/merge workflow was still in progress after 35 successful steps per combination at the recorded time; no complete or inherited qualification is asserted."
+      "bytes": 12286590,
+      "sha256": "a4a3755a4bd63087c580b67f92e9193c3fc5a5e2bc81b9d3454858123b78f66e",
+      "transformation": "Exact prior aggregate retained; original failed 3ada CI, fixed-profile OpenAPI20/RADIUS258 and Kubernetes mismatch, rolling49/membership41, Rust r1-r3 failures plus actual r4 four-test red/green, original Runtime records, narrow reviews and integration bindings. Separate profile denominators; no full-CI, new server or production qualification. Private journals excluded."
+    },
+    {
+      "file": "passkey-r9-final-evidence.public.tar.gz",
+      "bytes": 1902637,
+      "sha256": "04f9cfe978c2df7b4040a4a00155106d74208276cea45a3994a5ceeacfb20aad",
+      "transformation": "Unchanged r9 original 18-case ledger (17 passed, G07 blocked), independent G07 attempt2 blocked, actual Runtime/source/cleanup records and separately scoped host/native/Chrome support. No merged denominator or P4 qualification."
     }
   ]
 }

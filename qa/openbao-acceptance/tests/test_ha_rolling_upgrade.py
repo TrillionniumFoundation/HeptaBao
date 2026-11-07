@@ -14,6 +14,11 @@ import ha_rolling_upgrade as upgrade
 
 
 class RollingUpgradeFixtureTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.node_root = Path(self.directory.name)
+
     def cluster(self):
         cluster = upgrade.RollingUpgradeCluster.__new__(upgrade.RollingUpgradeCluster)
         cluster.base_digest = "a" * 64
@@ -25,12 +30,13 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
         cluster = self.cluster()
         cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
         cluster.candidate_binary = Path("/candidate")
-        node = Mock(binary=Path("/base"))
+        node = Mock(binary=Path("/base"), root=self.node_root)
         node.call.side_effect = [(503, {"errors": ["HA configuration belongs to a different cluster"]}), (503, {"sealed": True})]
         with patch.object(upgrade, "checked_binary") as checked, patch.object(upgrade, "running_digest", return_value=cluster.base_digest):
             cluster.assert_misbound_rejection(node)
         checked.assert_called_once_with(node.binary, cluster.base_digest)
-        node.start.assert_called_once_with()
+        node.start.assert_called_once_with(wait=False)
+        node.wait_ready.assert_called_once_with()
         node.stop.assert_called_once_with()
         node.expect_startup_rejection.assert_not_called()
         self.assertEqual(len(cluster.scenarios), 2)
@@ -41,7 +47,7 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
                 cluster = self.cluster()
                 cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
                 cluster.candidate_binary = Path("/candidate")
-                node = Mock(binary=Path("/base"))
+                node = Mock(binary=Path("/base"), root=self.node_root)
                 node.call.side_effect = replies
                 with patch.object(upgrade, "checked_binary"), patch.object(upgrade, "running_digest", return_value=cluster.base_digest), self.assertRaises(upgrade.FixtureError):
                     cluster.assert_misbound_rejection(node)
@@ -61,7 +67,7 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
     def test_replaced_running_base_cannot_use_legacy_contract(self):
         cluster = self.cluster()
         cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
-        node = Mock(binary=Path("/base"))
+        node = Mock(binary=Path("/base"), root=self.node_root)
         with patch.object(upgrade, "checked_binary"), patch.object(upgrade, "running_digest", return_value=cluster.candidate_digest), self.assertRaisesRegex(upgrade.FixtureError, "base_binary_changed"):
             cluster.assert_misbound_rejection(node)
         node.call.assert_not_called()

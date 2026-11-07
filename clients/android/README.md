@@ -102,5 +102,15 @@ match booleans and closed codes. Passing the cancellation case also requires the
 explicit Cancel marker, `auth_pause`, an unlocked pending challenge becoming
 empty, the existing 18-second and 100-second bounds, a fresh rejected fill attempt,
 and actual empty fixture fields. The global `lastDecision` remains diagnostic and
-may still become `memory_locked`; it is not changed to make a test pass. Candidate
-c10 still requires its own build, interoperability, artifact, and device evidence.
+may still become `memory_locked`; it is not changed to make a test pass.
+
+Candidate c10 completed its separate SDK build, twelve Rust/Java format checks
+and twelve decoded-APK checks. The unchanged APK's fresh QA19 device run r17
+passed all twelve original cases, including the request-bound cancellation
+observation, fresh fill refusal and empty fields, within the original timing
+limits. Independent cleanup confirmed the restored setting and absence of the
+three owned test apps. This qualifies the fixed Motorola native fixture only.
+The earlier QA18/r16 failure remains 6/12; the new prebinding-popup branch did
+not occur in r17, so the exact earlier failure cause remains unknown. Full
+reports and independent readbacks are retained in the
+[status and evidence](../../docs/personal-credentials/STATUS.md).

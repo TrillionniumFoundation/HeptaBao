@@ -56,6 +56,13 @@ class AdminCluster(Cluster):
             if (number in self.voters(c)) is present:return c
             time.sleep(.2)
         raise FixtureError('autopilot_voter_transition_unobserved')
+    def capture_prejoin_snapshot(self,node):
+        # The HTTP endpoint returns gzip; reuse the bounded maintenance/native
+        # download helper inside the original 12-second request budget.
+        snapshot=node.snapshot_after_compaction(token=self.root_token,timeout=12)
+        self.check('snapshot_waits_durable_readback',
+                   snapshot['http_status']==200 and snapshot['gzip_framing_verified'] is True)
+        self.snapshot_downloads.append({'phase':'prejoin',**snapshot})
     def run(self):
         seed=self.nodes[0];seed.start(ha=False)
         status,body=seed.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
@@ -76,8 +83,7 @@ class AdminCluster(Cluster):
         status,_=leader.call('POST','sys/storage/raft/autopilot/configuration',{'server_stabilization_time':'3s','last_contact_threshold':'2s','min_quorum':3},token=self.root_token)
         self.check('persist_stabilization_policy',status==204)
         for i in range(5):self.write(leader,f'snapshot-before-join-{i}',f'synthetic-value-{i}')
-        status,snapshot=leader.call('GET','sys/storage/raft/snapshot',token=self.root_token,timeout=12)
-        self.check('snapshot_waits_durable_readback',status==200 and isinstance(snapshot.get('data'),dict))
+        self.capture_prejoin_snapshot(leader)
         self.observe_snapshot(leader,'leader')
         s=leader.call('GET','sys/storage/raft/snapshot-status',token=self.root_token)[1]['data']
         self.check('snapshot_committed_frontier_exists',isinstance(s.get('snapshot_index'),int) and s['snapshot_index']>0)
@@ -160,7 +166,7 @@ def main():
     before=source_identity(ROOT,binary)
     temp=Path(tempfile.mkdtemp(prefix='hb-raft-admin-'));c=None
     report={'schema':'heptabao.raft-administration-live.v1','binary_sha256':digest,'independent_qualification':False,'same_version_loopback_only':True,'native_membership':True,'dead_cleanup':a.dead_cleanup,'scenario_count':0,'scenarios':[]}
-    report.update(source_identity=before,build_source_commit=a.build_source_commit,build_source_binding_basis='caller-supplied commit and observed binary hash; not independent attestation',require_compact_snapshots=a.require_compact_snapshots,snapshot_artifacts={})
+    report.update(source_identity=before,build_source_commit=a.build_source_commit,build_source_binding_basis='caller-supplied commit and observed binary hash; not independent attestation',require_compact_snapshots=a.require_compact_snapshots,snapshot_artifacts={},snapshot_downloads=[])
     try:
         c=AdminCluster(binary,temp/'cluster');c.cleanup=a.dead_cleanup;c.require_compact_snapshots=a.require_compact_snapshots;c.snapshot_artifacts={};c.run();report['status']='passed';checked_binary(binary,digest)
         report['source_and_binary_unchanged']=source_identity(ROOT,binary)==before
@@ -168,7 +174,7 @@ def main():
     except Exception as error:report.update(status='failed',failure=str(error) if isinstance(error,FixtureError) else type(error).__name__)
     finally:
         if c is not None:
-            report['scenarios']=c.scenarios;report['fixture_mount_setup']=c.fixture_mount_setup;report['scenario_count']=len(c.scenarios);report['snapshot_artifacts']=c.snapshot_artifacts;c.close()
+            report['scenarios']=c.scenarios;report['fixture_mount_setup']=c.fixture_mount_setup;report['scenario_count']=len(c.scenarios);report['snapshot_artifacts']=c.snapshot_artifacts;report['snapshot_downloads']=c.snapshot_downloads;c.close()
         shutil.rmtree(temp);out.write_text(json.dumps(report,indent=2)+'\n');out.chmod(0o600)
     print(json.dumps({'status':report['status'],'scenarios':report['scenario_count'],'failure':report.get('failure')}))
     return 0 if report['status']=='passed' else 1

@@ -361,6 +361,27 @@ def _fixture_session(window, package):
     return window["window"], _activity_identity(window["activity"], package), window["owner"]
 
 
+def _return_identity_components(focus, window, package):
+    """Closed observations from already-read metadata; no extra system query."""
+    def title_kind(value):
+        if value == package + "/" + ACTIVITY: return "expected_fixture"
+        if value == "Autofill UI": return "autofill_popup_title"
+        if value == PROVIDER + "/org.heptabao.preview.AuthActivity": return "own_auth_activity"
+        return "other"
+    result = {"focused_app_field_count": focus["focused_app_field_count"],
+              "focused_app_shape": _activity_shape(focus["activity"], package),
+              "focus_title_category": title_kind(focus["title"]),
+              "window_details_parsed": window is not None}
+    if window is not None:
+        result.update(window_title_category=title_kind(window["title"]),
+                      window_package_category="expected_fixture" if window["package"] == package else
+                          "system_android" if window["package"] == "android" else
+                          "own_provider" if window["package"] == PROVIDER else "other",
+                      focus_and_window_id_match=focus["window"] == window["window"],
+                      focus_and_window_title_match=focus["title"] == window["title"])
+    return result
+
+
 def fixture_return_metadata(focus, window, activities, final_focus, package, expected_session=None):
     """Bind the resumed fixture window, including the original session on return."""
     identity = _activity_identity(focus["activity"], package) if focus["activity"] else None
@@ -689,25 +710,48 @@ class Device:
 
     def _return_snapshot(self, kind, expected_session=None):
         package = self.expected_fixture
-        if package not in {GOOD, DECOY} or kind not in {"fixture", "popup"}:
+        if package not in {GOOD, DECOY} or kind not in {"fixture", "popup", "fixture_or_popup"}:
             raise FocusUnavailable("fixture_return_scope")
+        diagnostic = {"scope": "existing_return_binding_metadata_only", "causal_case_proof": False,
+                      "requested_kind": kind, "selected_kind": "not_selected", "phase": "focus_snapshot",
+                      "bound": False}
+        self._return_binding_diagnostic = diagnostic
         focus = _focus_snapshot(self.shell("dumpsys", "window"))
+        diagnostic["identity_components"] = _return_identity_components(focus, None, package)
+        if kind == "fixture_or_popup":
+            # The earlier surface sample is only a hint. Select the validator
+            # from this snapshot, then require its complete unchanged identity
+            # chain before UI access or input. A title alone grants nothing.
+            if focus["title"] == package + "/" + ACTIVITY: kind = "fixture"
+            elif focus["title"] == "Autofill UI": kind = "popup"
+            else: raise FocusUnavailable("fixture_return_surface_not_supported")
+        diagnostic["selected_kind"] = kind
+        diagnostic["phase"] = "window_details"
         window = _window_details(self.shell("dumpsys", "window", "-a", focus["window"]), focus["window"])
+        diagnostic["identity_components"] = _return_identity_components(focus, window, package)
         if kind == "popup":
+            diagnostic["phase"] = "popup_parent_binding"
             parent_id, _ = _popup_parent(focus, window, package)
             parent = _window_details(self.shell("dumpsys", "window", "-a", parent_id), parent_id)
             _bound_parent(focus, window, parent, package)
         else:
             parent = window
+        diagnostic["phase"] = "server_top_resumed_query"
         activities = self.shell("dumpsys", "activity", "top-resumed")
+        diagnostic["phase"] = "final_focus_snapshot"
         final_focus = _focus_snapshot(self.shell("dumpsys", "window"))
+        diagnostic["final_focus_matches"] = final_focus == focus
+        diagnostic["phase"] = "complete_binding"
         if kind == "popup":
             metadata = autofill_popup_metadata(focus, window, parent, activities, final_focus, package)
         else:
             metadata = fixture_return_metadata(focus, window, activities, final_focus, package, expected_session)
         session = _fixture_session(parent, package)
+        diagnostic["original_session_checked"] = expected_session is not None
+        diagnostic["original_session_matches"] = expected_session is None or session == expected_session
         if expected_session is not None and session != expected_session:
             raise FocusUnavailable("fixture_return_session_changed")
+        diagnostic["bound"] = True
         return focus, session, metadata
 
     def _wait_return_surface(self, after_back=False):
@@ -756,6 +800,7 @@ class Device:
         event = {"origin": origin, "case": self.current_case, "back_command_count": 0,
                  "sampling_is_not_case_proof": True, "result": "pending"}
         self.return_diagnostics.append(event)
+        self._return_binding_diagnostic = None
         try:
             self.return_phase = "await_return_surface"
             if self._expected_fixture_session is None:
@@ -802,7 +847,18 @@ class Device:
                     event["same_parent_session_after_back"] = True
                 else:
                     self.return_phase = "bind_direct_fixture_return"
-                    _, _, metadata = self._return_snapshot("fixture", self._expected_fixture_session)
+                    binding_started = time.monotonic()
+                    _, _, metadata = self._return_snapshot("fixture_or_popup", self._expected_fixture_session)
+                    if metadata["classification"] == "bound_system_autofill_popup":
+                        # A popup can arrive between the surface hint and this
+                        # complete binding. Reuse the existing popup path, its
+                        # plaintext-first checks, and its single Back budget.
+                        # Start the same 25-second budget before this binding;
+                        # the additional validation can never reset/extend it.
+                        event["popup_observed_at_direct_binding"] = True
+                        if title_deadline is None: title_deadline = binding_started + 25
+                        surface = AUTOFILL_POPUP
+                        continue
                 event["focus_metadata_after_return"] = metadata
                 self.return_phase = "observe_returned_fixture_title"
                 if title_deadline is None:
@@ -823,6 +879,8 @@ class Device:
                 return event
         except FocusUnavailable as error:
             event["result"] = "refused"; event["reason"] = str(error)
+            if self._return_binding_diagnostic is not None:
+                event["last_binding_observation"] = dict(self._return_binding_diagnostic)
             raise Failed("fixture_return_identity_unavailable") from None
         except Failed as error:
             event["result"] = "refused"; event["reason"] = str(error)

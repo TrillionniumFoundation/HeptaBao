@@ -14,7 +14,7 @@ DRIVER = Path(__file__).with_name("android_live.py")
 EXTERNAL_EVENTS = []
 OBSERVATION = "observation-11111111-2222-4333-8444-555555555555"
 OTHER = "observation-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
-BASELINE_REMAINDER_AST = "7c6cd6610cb01198e7a9bf875397fdc5a305aba2c88e5408a5b1b08d68c5dc91"
+REVIEWED_QA19_REMAINDER_AST = "1554e655e519d989479d3b281995d57ec26ba123cd1d32a3679bfb721c1d9e50"
 BASELINE_CANCEL_HELPER_AST = "da7d68be1fb32d8d77c943f58ded1ca53397c8883df4c0f84b9848915db20e8b"
 
 
@@ -157,13 +157,13 @@ class CancellationObservationChecks(unittest.TestCase):
         method = next(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == "cancel_authentication")
         self.assertEqual(hashlib.sha256(ast.dump(method, include_attributes=False).encode()).hexdigest(), BASELINE_CANCEL_HELPER_AST)
 
-    def test_only_two_read_helpers_and_cancelled_case_change_remaining_driver_ast(self):
+    def test_reviewed_qa19_remainder_preserves_cancel_observation_scope(self):
         class RemoveChanged(ast.NodeTransformer):
             def visit_FunctionDef(self, node):
                 if node.name in {"authorization_observation", "cancellation_observation", "cancelled"}: return None
                 return self.generic_visit(node)
         tree = RemoveChanged().visit(ast.parse(DRIVER.read_text()))
-        self.assertEqual(hashlib.sha256(ast.dump(tree, include_attributes=False).encode()).hexdigest(), BASELINE_REMAINDER_AST)
+        self.assertEqual(hashlib.sha256(ast.dump(tree, include_attributes=False).encode()).hexdigest(), REVIEWED_QA19_REMAINDER_AST)
         self.assertEqual(len(driver.EXPECTED_CASES), 12)
         self.assertEqual(len(set(driver.EXPECTED_CASES)), 12)
 

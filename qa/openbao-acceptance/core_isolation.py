@@ -193,6 +193,35 @@ def successful_comparison(cases: dict, side_failures: dict) -> bool:
             seen.add(name)
     return True
 
+
+def last_case_observations(cases):
+    """Project only fixed fixture labels and typed HTTP/verdict observations."""
+    projected = {}
+    if type(cases) is not dict:
+        return projected
+    for side in ("candidate", "oracle"):
+        observations = cases.get(side)
+        if type(observations) is not list or not observations or len(observations) > 4096:
+            continue
+        row = observations[-1]
+        if type(row) is not dict:
+            continue
+        case = row.get("case")
+        if (type(case) is not str or not 0 < len(case) <= 256
+                or not all(character.isascii() and (character.isalnum() or character in "._-")
+                           for character in case)):
+            continue
+        observation = {"case": case}
+        status = row.get("status")
+        if type(status) is int and 100 <= status <= 599:
+            observation["status"] = status
+        passed = row.get("passed")
+        if type(passed) is bool:
+            observation["passed"] = passed
+        projected[side] = observation
+    return projected
+
+
 def select_scenario_runner(default_runner, version, versioned_runners=None):
     """Select one exact release contract; never union status codes across minors."""
     if version not in SUPPORTED_VERSIONS or not callable(default_runner):
@@ -378,15 +407,12 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         ])
     # These are fixed synthetic scenario labels already retained in the safe
     # report, never a request body, HTTP parser line, or server error text.
-    last_cases = {}
-    for side, observations in result["cases"].items():
-        case = observations[-1].get("case") if observations else None
-        if (isinstance(case, str) and 0 < len(case) <= 256
-                and all(character.isascii() and (character.isalnum() or character in "._-") for character in case)):
-            last_cases[side] = case
+    last_observations = last_case_observations(result["cases"])
+    last_cases = {side: row["case"] for side, row in last_observations.items()}
     print(json.dumps({"status": result["status"], "cases_per_side": result.get("case_count_per_side", 0),
                       "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}),
                       "last_completed_case": last_cases,
+                      "last_observation": last_observations,
                       "candidate_response_write_observations": result.get("candidate_response_write_observations"),
                       "transport_failures": result.get("transport_failures", {}),
                       "full_openbao_compatibility": False}))

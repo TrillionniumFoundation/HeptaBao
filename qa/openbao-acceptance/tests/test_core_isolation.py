@@ -50,6 +50,37 @@ class CoreIsolationHarnessTests(unittest.TestCase):
         self.assertEqual(len(observations), 2)
         self.assertFalse(observations[-1]["passed"])
 
+    def test_last_http_observation_retains_failure_without_response_or_identity_data(self):
+        cases = {
+            "candidate": [{"case": "acl_templates.injected_star_denied", "status": 403,
+                           "passed": False, "body": "sentinel-private-response",
+                           "token": "do-not-log", "identity": "private-identity"}],
+            "oracle": [{"case": "acl_templates.pre_restart_complete", "passed": True}],
+            "private-context": [{"case": "private-label", "status": 200, "passed": True}],
+        }
+        before = json.dumps(cases, sort_keys=True)
+        projected = core_isolation.last_case_observations(cases)
+        self.assertEqual(projected, {
+            "candidate": {"case": "acl_templates.injected_star_denied", "status": 403, "passed": False},
+            "oracle": {"case": "acl_templates.pre_restart_complete", "passed": True},
+        })
+        self.assertEqual(json.dumps(cases, sort_keys=True), before)
+        for private in ("private", "do-not-log", "body", "identity", "token"):
+            self.assertNotIn(private, json.dumps(projected))
+
+    def test_last_observation_does_not_coerce_untrusted_http_or_verdict_values(self):
+        for status in (True, False, "403", 403.0, 99, 600, None, {"private": 403}):
+            with self.subTest(status=status):
+                row = {"case": "fixed.case", "status": status, "passed": "false"}
+                self.assertEqual(core_isolation.last_case_observations({"candidate": [row]}),
+                                 {"candidate": {"case": "fixed.case"}})
+        for case in ("private value", "private\nvalue", "private/url", "private:token", "非固定", "", "x" * 257):
+            with self.subTest(case=case):
+                self.assertEqual(core_isolation.last_case_observations({"candidate": [{"case": case}]}), {})
+        for cases in (None, [], {"candidate": []}, {"candidate": [None]},
+                      {"candidate": [{"case": "fixed.case"}] * 4097}):
+            self.assertEqual(core_isolation.last_case_observations(cases), {})
+
     def test_nonprivate_output_parent_is_rejected_before_allocating_a_fixture(self):
         with tempfile.TemporaryDirectory() as directory:
             parent = Path(directory)
@@ -251,7 +282,7 @@ class TransportDiagnosticReportTests(unittest.TestCase):
                     if failure_phase == "oracle_restart_startup":
                         raise urllib.error.URLError(ConnectionResetError(104, sentinel))
                 def scenarios(client, rows):
-                    rows.append({"case": "fixed.initial.completed", "passed": True})
+                    rows.append({"case": "fixed.initial.completed", "status": 200, "passed": True})
                 def restart_scenarios(client, rows):
                     rows.append({"case": "fixed.restart.completed", "passed": True})
                     # Deliberately leave a known previous-side capsule to prove
@@ -289,6 +320,11 @@ class TransportDiagnosticReportTests(unittest.TestCase):
                                 "synthetic-private-unseal-key", "synthetic-private-oracle-token"):
                     self.assertNotIn(private, output.read_text() + stdout.getvalue())
                 self.assertEqual(report["status"], "mismatch")
+                summary = json.loads(stdout.getvalue())
+                self.assertEqual(summary["last_observation"][side], {
+                    "case": "fixed.initial.completed", "status": 200, "passed": True,
+                })
+                self.assertEqual(summary["last_completed_case"][side], "fixed.initial.completed")
 
 
     def test_projection_rejects_dynamic_context_and_nontransport_exception(self):

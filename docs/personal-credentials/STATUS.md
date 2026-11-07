@@ -17,12 +17,12 @@ creation, authentication, transfer and recovery combinations.
 
 | Phase | Implemented and observed | Remaining boundary |
 | --- | --- | --- |
-| P0: selected credential service | Normal Linux server entry point, loopback TLS/private CA, Shamir, root-namespace KV2, userpass and scoped tokens: **57/57**, including real expiry/revocation, ACL denials, SIGKILL and cold recovery. The separately frozen r3 QA revision passed all three complete destructive, network-partition and replay-epoch profiles against that original server binary. | This is the fixed single-node/three-node synthetic scope. Older r1/r2 failures remain recorded; full compatibility, other snapshot regressions and broad replacement remain HOLD. |
+| P0: selected credential service | Normal Linux server entry point, loopback TLS/private CA, Shamir, root-namespace KV2, userpass and scoped tokens: **57/57**, including real expiry/revocation, ACL denials, SIGKILL and cold recovery. Frozen r3 destructive/partition/replay profiles passed against the original server. Separate fresh exact-base/candidate rolling validation passed **49 scenarios**; same-version membership with dead-voter cleanup passed **41**. | These are separately bound synthetic loopback profiles. Snapshot downloads do not qualify archive authenticity or backup restore; compact-snapshot qualification, other topologies and full compatibility require separate evidence. Historical failures remain recorded. |
 | P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`. The bounded-read repair passed **19/19 on Linux and separately 19/19 on macOS**: the original thirteen tests plus six real socket regressions. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
 | P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. The separate frozen macOS vault passed **14/14**. | The observed Linux and macOS CLI/filesystem combinations trust the owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
-| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. Android c9/QA17 run r15 passed seven original cases, including actual system fill/login, the cached-dataset attempt, explicit lock and actual expiry refusal: **7/12**. | r15 remains a failed profile at the cancellation-cause observation. r13's 4/12 and r14's 1/12 remain separate failures, with no combined passing denominator. The remaining device cases have not passed. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
-| P4: extended vault | The fixed Android native fixture completed real CredentialManager create/get, ordinary encrypted SAF backup, same-device app-data reset/new-process restore, and independent RP stale-backup rejection. The r8 original ledger remains **16 passed, 2 failed**; three separately declared supplements passed **3/3**. | Original G07/G10 failures and G08's causal limit remain recorded; M05 has a launch-audit gap. This is one synthetic native fixture and same-device recovery, not physical two-device Passkey migration. Credential exchange, sharing, device revocation and additional platforms remain unsupported. **P4 remains unqualified.** |
-| P5: production adoption | The fixed old/new broker binaries completed **27/27** real same-format upgrade/rollback checks. A separate **30-minute, 60-cycle** trial on the bounded-read Linux broker completed 491 protocol requests, 60 distinct effects each exactly once, and recovery through seven sequential broker processes. Published `3ada83a` passed its own synthetic-core CI and both workflow-trust combinations. The clean `c447536` Python preflight passed 1988 tests with five explicit platform skips. | The short trial does not establish long-term reliability or load capacity. The `2280c36` full workflow retained three HA failures before cancellation; `7e77aa3` was cancelled and `3ada83a` has not passed the full gate. Independent security review, measured long-term stability, signed releases, arbitrary-version/data-format migration and operational support remain incomplete. |
+| P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. Android c10/QA19 run r17 passed **all 12/12 in one run**, including real fill/login, cached-dataset refusal, explicit lock, expiry, cancellation, background refusal, process restart/recovery and wrong-package/certificate refusal; independent cleanup was verified. | Android evidence covers the fixed Motorola native fixture and exact c10 APK. Browser/WebView filling and arbitrary Android apps are unsupported. Earlier r16 6/12, r15 7/12, r13 4/12 and r14 1/12 remain failed; r16's exact subcondition is still unknown. Browser observation covers the fixed Chrome 157 Linux combination. Sync is explicit CLI transfer. |
+| P4: extended vault | The new r9 original eighteen-case native-device ledger completed **17 passed, 1 blocked, 0 missing** on the unchanged provider APK. It includes real CredentialManager create/get, ordinary encrypted SAF backup, audited app-data reset/new-process restore, wrong-target denials and independent RP stale-backup rejection. | Original r9 G07 and its separately declared second attempt are both blocked before the cancellation negative executes. Earlier r8 remains 16 passed/2 failed plus separate 3/3 supplements, with its original causal/audit limits. Recovery is on one physical device. Exchange, sharing, device revocation and additional platforms remain unsupported. **P4 remains unqualified.** |
+| P5: production adoption | The fixed old/new broker binaries completed **27/27** real same-format upgrade/rollback checks. A separate **30-minute, 60-cycle** trial on the bounded-read Linux broker completed 491 protocol requests, 60 distinct effects each exactly once, and recovery through seven sequential broker processes. Published `3ada83a` passed its own synthetic-core CI and both workflow-trust combinations. The clean `c447536` Python preflight passed 1988 tests with five explicit platform skips. | The short trial does not establish long-term reliability or load capacity. The `2280c36` full workflow retained three HA failures before cancellation; `7e77aa3` was cancelled. The `3ada83a` full workflow completed with **six failed steps in each of head and merge**, and a failed final verdict. Independent security review, measured long-term stability, signed releases, arbitrary-version/data-format migration and operational support remain incomplete. |
 
 These are separate acceptance boundaries. For example, a real local Git signing
 test does not establish a malicious same-account agent cannot read owner files;
@@ -491,7 +491,7 @@ The new return-observation correction must keep the original title deadline,
 original fixture identity and at-most-one Back rule. Neither the earlier r13
 login nor the QA16 host controls are inherited by this failed run.
 
-The [c9/r13-r15 follow-up evidence](../../qa/personal_credentials/evidence/20261106/android-autofill-followup-public-evidence.tar.gz)
+The [c9/c10 Android follow-up evidence](../../qa/personal_credentials/evidence/20261106/android-autofill-followup-public-evidence.tar.gz)
 retains the exact SDK/host packets, source manifests, original launch and
 terminal responses, the separate failed reports and independent release checks.
 The r14 release restored the original setting and confirmed all three owned
@@ -541,6 +541,74 @@ is SHA-256
 The original setting was restored and all three owned installed/retained-package
 queries confirmed absence before the phone was assigned to the separate r9
 Passkey profile. That new profile does not inherit any old Passkey result.
+
+The later c10/QA18 run r16 used the separately frozen c10 APK and the exact
+published QA18 driver. It failed after **6/12** at
+`expired_authorization_refused`, with `fixture_return_identity_unavailable`.
+The observed boundary is `after_auth_cancel` / `bind_direct_fixture_return` /
+`fixture_return_window_identity`. The original report does not distinguish
+which component of that identity gate failed, so the exact cause remains
+unknown. The expiry case is incomplete, and the new request-bound cancellation
+case did not execute. r15's expiry pass is not transferred to r16.
+
+Runtime job `1a1b2bb3926-fc05-7f82` failed with exit one, no timeout, recorded
+launch audit and complete durable output. The 64,323-byte report is SHA-256
+`3b4d2ace81746e2eb45be65d31f7c06a415278d516f092281ce818836da73d27`.
+The independent read-only release job `1a1b2c1bc5f-fc05-7f9c` succeeded with
+exit zero and confirmed the original setting and absence of all three owned
+packages in both installed and retained-package queries. Root independently
+read its full 1,201-byte receipt, SHA-256
+`86fb9d5c803add602a05c1a3170ed0e3f468add4703599a9c9e02b249663c1ba`,
+and both jobs' terminal records without issuing ADB operations. Aggregate r5
+preserves the exact r4 archive and all fifty indexed r16 source, Runtime,
+stream, report and release originals. Integrity verification does not change
+the failed device outcome.
+
+QA19 adds a narrow first-return binding correction and closed component
+diagnostics. The earlier foreground sample remains a hint; the next complete
+snapshot selects either the original fixture or its fully bound system popup.
+Both still require the original WMS/Activity/owner/session chain. Subsequent
+checks retain the requested kind, the existing at-most-one Back rule and the
+original deadlines. Twenty-one identity/input/cancellation helpers and all
+twelve case bodies are unchanged. An actual host counterexample fails on QA18
+and passes on QA19, but it does not establish r16's unobserved cause. The final
+driver has 122 selected host controls across two recorded rounds. The first
+round's stale golden-AST failure is retained; only the reviewed golden value
+and test name were updated. Root separately ran the same new fifteen controls
+on the integrated source, without device activity or additional case coverage.
+
+The unchanged c10 APK's actual QA19 run r17 then passed **12/12** in one complete
+profile. Runtime job `1a1b2d25e4a-fc05-7fe6` succeeded with exit zero, recorded
+launch audit, no timeout and complete durable output. The exact 124,929-byte
+report is SHA-256
+`66da2de16963620e6e824b36f1c3327cc722cc5b3bac533094eb6abec347e4e8`;
+the driver is
+`78a7bb1fa5c59f2d50de53b07995e407adf5f22690d84004cc9e3cf3d7bfa571`.
+All APK/input and ADB digests were unchanged, and no earlier case pass was
+transferred into this result.
+
+The cancellation case matched the current authorization's observation and
+explicit Cancel marker, observed `auth_pause` clearing `p1l1h0` to `p0l0h0`,
+and returned within 17,326 ms of the pre-unlock boundary and 31,703 ms of the
+original request. These retain the original 18/100-second limits. It then
+observed a fresh refused authorization and empty fixture fields. The global
+diagnostic still read `memory_locked`; it was not used to replace the specific
+cancellation evidence. Expiry refusal occurred after 25,454 ms from observed
+unlock. Restart retained ciphertext, initially remained locked, then required
+fresh unlock for actual successful fill. Both target-identity negative cases
+observed empty fields.
+
+Independent release job `1a1b2dc9fc7-fc05-800a` also succeeded with exit zero,
+recorded audit and complete durable output. Its 1,201-byte receipt is
+`b804afab9ab2b95fcb138cf1afcbff237a5d356a568358c5c43f335e84cce7f0`.
+Root independently read the complete report, execution receipt, release and
+both terminal records: the setting was restored and all three owned apps were
+absent in installed and retained-package queries. Root issued zero ADB calls.
+The newly added prebinding-popup branch was observed **zero times** on this
+device run. The passing run therefore does not prove that branch occurred on
+the phone or resolve r16's cause. It qualifies only the named synthetic native
+fixture, device, API level and artifacts; browser/WebView filling, arbitrary
+applications and production credential use remain outside this evidence.
 
 Passkey candidate r4 has 28 source files matching its original build inventory.
 It implements a separate Android credential provider for one pinned native
@@ -812,6 +880,61 @@ the RP's original SPKI digest all matched. This closes that reader's source and
 artifact binding without retroactively establishing the seed producer's build
 provenance. It does not claim a password-path read in that later observation.
 
+### Passkey r9 original ledger and independent cancellation attempt
+
+The new [r9 final aggregate](../../qa/personal_credentials/evidence/20261106/passkey-r9-final-evidence.public.tar.gz)
+retains a fresh execution of the frozen original eighteen-case profile:
+**17 passed, 1 blocked, 0 failed, 0 missing**. The unchanged `b16e8291`
+provider and permissioned r8 fixture APKs retain their existing build
+identities. Thirty-three newly frozen QA/source-control files are published
+under `qa/personal_credentials/passkey_r9/`; four separate root host commands
+passed 20, 55, 13 and 14 checks. Those 102 host checks are not phone cases.
+
+The actual create/get flow registered a public key with the independent RP.
+Ordinary SAF backup, the single declared M05 app-data reset, a new-process
+ordinary SAF restore and subsequent authentication preserved that credential
+and advanced its counter. Both actual M05 reset and restore launches recorded
+`audit_recorded=true`. G11's separate declared reset restored an older backup;
+the RP rejected the real assertion as `counter_rollback_or_replay`, retaining
+its accepted counter and public key. G02 through G06 each retained a fresh
+positive control before the respective wrong-password, locked, wrong-RP,
+wrong-certificate or wrong-package denial. These are same-device observations;
+the profile has no expiry negative and does not establish physical second-device
+Passkey migration.
+
+The four original SAF guard cases also completed. G08 held a fresh, unconsumed
+destination selection before opening and cancelling a new picker. The subsequent
+write required choosing a destination again and left the old 615-byte target
+unchanged. G10 used a valid newly selected destination, rejected the wrong
+password and preserved its nonempty bytes. These two target baselines are
+explicitly QA ciphertext, not an earlier product export. G01 rejected the wrong
+import password while preserving the active store; G09 rejected reuse of the
+old staged import after cancelling a new picker. These fresh results do not
+rewrite r8's G08 causal limit or original G10 failure.
+
+Original G07 stopped at its foreground precondition after G06; it performed no
+cancellation negative. A separately declared attempt retained the original
+UI functions, time budgets and one-Back limits. After an independently guarded
+home preparation it reached a real positive-control chooser, but its fixed
+Continue action was refused by the foreground guard. That positive control did
+not complete and the negative did not start. Its separate one-case assessment
+is **1 blocked / 0 executed**. No Back was injected, no third attempt ran, and
+the original ledger was not reset or merged with this attempt. The later
+hash-bound fixture force-stop was cleanup, not a passing cancellation test.
+
+M07 restored the original three settings and removed the three owned packages,
+including retained state, the owned reverse mapping, eight files, four
+directories and their MediaStore rows. The RP emitted its stopped record and
+was terminal before document cleanup. Independent release
+`51d1d95ba90c416487d38d504291421b6e319df0e8a4251b56a220ae193368c4`
+retains twenty original stage terminations. The four extra preparation,
+attempt, observation and cleanup jobs have separate terminal records. Root
+independently read back the full release bytes, release/RP status and output,
+and all four additional job statuses before handing the device to Autofill.
+This readback executed no ADB action or product case. The original r9 profile
+still has `fixed_profile_all_passed=false`, `p4_qualified=false` and
+`production_qualified=false`; all older ledgers and their limits remain intact.
+
 | Frozen mobile artifact | SHA-256 | Current evidence boundary |
 | --- | --- | --- |
 | Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; its r6 and r7 phone profiles each failed after 1/12 checks. |
@@ -819,10 +942,11 @@ provenance. It does not claim a password-path read in that later observation.
 | Autofill candidate 7 provider APK | `164c10fbc97b6db8e6f3dbe1e435f37dae64ec25aae319d0ecda8f10bf5b7c20` | Diagnostic-only candidate: actual SDK build, 12 Rust/Java format checks and 12 decoded-APK checks passed; QA14/r11 failed after 2/12 with an empty filtered log result and an undetermined authorization-rejection cause. |
 | Autofill candidate 8 provider APK | `169024553982fb538347ff2a10537a33cdbe94635ac4991fa55b4cc163e9f2c3` | Diagnostic-only follow-up: actual SDK build and separate 12/12 format and 12/12 decoded-APK checks passed. QA15/r12 failed after 2/12; the new diagnostic exposed a pre-unlock missing challenge after an unrelated service rejection. |
 | Autofill candidate 9 provider APK | `45bc67b20fe7dbadc61710681feaf12d65f619befe85fde801d4cb7f6ffcde9f` | Request-ownership repair: separate SDK, 12/12 format and 12/12 decoded-APK checks passed. Its three original profiles remain separate failures: QA15/r13 4/12, QA16/r14 1/12 and QA17/r15 7/12. r15 includes actual login, cached-dataset, explicit-lock and expiry observations, then stops at the cancellation-cause check. |
+| Autofill candidate 10 provider APK | `4ea01ee1fa73ba8080e07ab55988930ed1ba4c78f82729c9389c21f4f51b6e9d` | Separate 50-command SDK build, 12/12 Rust/Java format and 12/12 decoded-APK checks. QA19/r17 passed the complete original 12/12 with independent cleanup. Earlier QA18/r16 remains failed 6/12, with its exact return-window failure subcondition unknown. |
 | Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; phone import failed before any credential creation, with all eighteen cases retained. |
 | Passkey r5b provider APK | `9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a` | Separately fixed source/build and 10 host checks; its first ordinary-SAF phone import returned `operation_failed` before password entry. |
 | Passkey r6 provider APK | `0240a545d9ed9518201cfda945a26c5f7dc8742534d1ab21d5e84f23bf9c4ac7` | Separate diagnostic build and 10 host checks; phone M01 failed PUBLISH_LINK/EACCES, cleanup passed, sixteen blocked. |
-| Passkey r7/r8 provider APK | `b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459` | The unchanged r7 provider retains its separate storage build, 10 host checks and DEX evidence. Original r7 phone: 8 passed, 1 failed, 9 blocked. With the newly permissioned r8 fixtures: original 18-case ledger 16 passed/2 failed, plus three independent supplements 3/3; original G08's causal limit, M05 audit gap and unqualified P4 scope remain explicit. |
+| Passkey r7/r8/r9 provider APK | `b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459` | Unchanged provider with its original storage build, 10 host checks and DEX evidence. r7 remains 8 passed/1 failed/9 blocked; r8 remains 16 passed/2 failed plus separate supplements 3/3. Fresh r9 is 17 passed/1 blocked, with a separate blocked cancellation attempt. Original histories are not combined; P4 remains unqualified. |
 
 ### Case-bound synthetic reset helper
 
@@ -953,12 +1077,288 @@ At 20:11 UTC, both combinations had fifty successful steps. The head job also
 reported failure in the strict OpenBao 2.7.0 runtime/ACL error-contract step;
 that step was still running in the merge job. The complete workflow remained
 in progress, with the earlier rolling-upgrade failure retained in both jobs.
-No timeout change, test removal or passing reclassification follows from this
-observation. The [later validation observations](../../qa/personal_credentials/evidence/20261106/validation-followup-public-evidence.tar.gz)
-retain the original API responses and returned log text; those returned logs
-are not asserted to be complete or current live logs. The
-later bounded-read source overlay does not inherit that older source's CI
-results. This draft remains unmerged.
+The head job completed with failure at 20:21:19 UTC, the merge job at
+20:23:50 UTC, and the final verdict at 20:24:06 UTC. Each job has six failed
+steps: rolling upgrade, strict OpenBao 2.7.0 runtime/ACL comparison, RADIUS
+renewal, the online-authentication group at Kubernetes renewal, OpenAPI, and
+membership snapshot catch-up. The terminal log response now includes all six
+failure outputs and final cleanup. The API's seventy-two successful steps per
+job include setup and cleanup and are not a functional-test denominator.
+
+Rolling upgrade stopped after eight scenarios with
+`node_exited_during_startup`; it had not reached the snapshot stage. The
+strict-2.7.0 step recorded `missing_retry_after` for candidate HA,
+`future_rejected` for proxy HA, and `acl_templates.injected_star_denied` for
+the candidate. Head additionally recorded a Transit request with unknown
+transport outcome; the merge Transit profile passed separately. Both remain
+their actual outcomes. The RADIUS and Kubernetes tracebacks arose in
+`stop_oracle` cleanup before the final business report, so those logs cannot
+establish that the business assertions passed. OpenAPI reported
+`openapi_live_non_root_visibility_fails_closed`; membership reported
+`UnicodeDecodeError` after eleven scenarios. Static diagnoses and any new
+executions are separate evidence, not changes to these failed records.
+
+The [later validation observations](../../qa/personal_credentials/evidence/20261106/validation-followup-public-evidence.tar.gz)
+preserve the previous aggregate byte-for-byte, preterminal API/log responses,
+both terminal original tool log responses, and twenty-two exact excerpts
+bound by source byte ranges, lengths and SHA-256. The terminal decoded logs
+are UTF-8 encodings of the connector's returned content, not HTTP wire
+captures. Head checked out `3ada83a`; merge checked out
+`59832bde715841b9db6f69d7116e5b6687d6ca10`, despite both job API records naming
+the event head. No timeout extension, removed test or passing reclassification
+follows from these observations. Later source overlays do not inherit the
+older source's CI results. This draft remains unmerged.
+
+### Follow-up repairs and their separate execution boundaries
+
+The rolling-upgrade QA now distinguishes the exact historical base's observed
+startup rejection from the candidate's required live admission. It still
+requires genuinely distinct base/candidate binaries and the original
+480-second profile budget. Thirty host controls exercise that narrow
+admission/cleanup boundary; a root repetition covers the same thirty, not sixty
+unique cases. Native snapshot collection uses the already bounded download
+helper. The separate membership change retains its original twelve-second
+request budget and subsequent five-second purge check; two actual helper
+controls use substituted HTTP/clock inputs and are not live cluster evidence.
+
+The subsequent exact-pair build retained the original failed r1 controller
+record. Its base Cargo command had succeeded; only the artifact collector had
+rejected Cargo's normal two-link executable. The new collector admits that
+specific owned output through one stable descriptor and writes a separately
+hashed, fsynced, mode-0500, single-link qualified copy. It does not weaken the
+general file guard. Eight real filesystem controls and a real exited-leader /
+live-descendant cleanup control passed. New candidate compilation used an
+independent source, target and private offline Cargo cache with the original
+flags and 1,200-second budget. It completed in 445.112 seconds; all eight
+controller children and their owned groups were reaped without rescue.
+
+The resulting build receipt is SHA-256
+`34ec1ccfcde7365764de5558219502aa5122dfc77bc5d0930c769fb315fa9307`.
+The original `8f3dd835` base binary is
+`afbcaf45674b833fd3cd648563a089e25a08a844041edb9e19341c872f43220c`;
+the newly built exact `3ada83a` candidate is
+`7882a09030d6a088beb8c894f713d1fbd23d27c95e5287c0c134081d45ddbd45`.
+Both full source inventories, the original failed receipt and the earlier
+`c27a0c22` artifact remained unchanged. Distinct artifact hashes do not imply
+an independently attested build or arbitrary version-upgrade compatibility.
+
+Actual rolling job `1a1b2dfd017-fc05-8013` passed all **49 original scenarios**
+in 74.436 seconds within the original 480-second budget. It exercised the exact
+base's `startup_rejected` admission branch, followed by real mixed-artifact
+rolling writes, snapshot download, current-wire transition and failover. All
+26 original child processes were reaped, with no rescue cleanup; source and
+binary bindings were unchanged. Its full 21,930-byte controller result is
+`fd33195b5a4a56a8f57bfd730309a886da6482e902b2e013105c389481307c82`.
+The original report still sets compatibility and production authority false,
+including no mixed-version replay-epoch transition or multi-host claim.
+
+Separate membership job `1a1b2e1b0d1-fc05-801a` passed all **41 original scenarios**
+in 80.478 seconds within the original 360-second budget, including real prejoin
+purge, learner catch-up/promotion, demotion/removal, the original dead-voter
+grace interval, failover and restart. All 26 original child processes and owned
+session groups were reaped without rescue. Its 22,820-byte result is
+`b9ff04cc2039ec1a3ad3427f46d2bcc0a0f95002850b70ae88d5ff3eb59fcd34`.
+The QA tree is genuine shallow `3ada83a` with exactly the two declared membership
+overlays. The original report's optional `build_source_commit` remains null;
+the wrapper separately binds the actual build receipt and binary. No original
+field was fabricated. Root independently read both complete results and their
+audited, complete, durable, non-timeout success records.
+
+These are separate 49- and 41-scenario runs. Snapshot receipts report valid
+gzip framing but retain `archive_authenticity_verified=false`,
+`restore_verified=false` and the helper's `purge_completion_verified=false`.
+Membership's separate prejoin purge scenario passed; that does not change the
+helper's narrower receipt. `require_compact_snapshots` remained false, as in
+the original membership CI command.
+
+The oracle launcher now has a distinct intentional-crash operation that checks
+the owned child's exact SIGKILL exit before restart. Ordinary graceful-stop
+expectations are unchanged. RADIUS and Kubernetes renewal use that operation
+and preserve cleanup failures in their final report instead of allowing them
+to erase the business result. Nine new process/cleanup controls and the
+existing sixteen launcher, fifteen RADIUS and seven Kubernetes host tests
+passed. The OpenAPI change uses the marker already emitted by the product and
+its Rust test; it retains the actual non-root visibility, revocation and restart
+requirements.
+
+The subsequent complete three-profile execution used the original `c27a0c22`
+server built from `a1b6ff45`, pinned official OpenBao 2.6.2, and a genuine
+single-commit shallow checkout of `3ada83a` with exactly those five QA files
+overlaid (`dirty=true`). It retained the original 240/180/240-second budgets
+and completion gates. OpenAPI passed all twenty checks; RADIUS renewal passed
+all 258 checks on each side with matching results. Kubernetes renewal retained
+a real mismatch: the candidate passed sixteen observations, then returned 403
+at `kubernetes_renewal.self.renew_after_assertion_expiry`, with
+`no_provider_request=false`. The official reference passed all 101 observations;
+that same renewal returned 200 without another provider request.
+
+All three commands were reaped, with no timeout or rescue cleanup, and their
+full original reports and streams were preserved. The controller correctly
+failed overall. Runtime job `1a1b2ce27e5-fc05-7fd4` has an independently read
+failed/exit-one terminal record, recorded launch audit and complete durable
+output. Its 10,585-byte result is SHA-256
+`ce29f37df305eef6b740f8ec58b65402b5cc76073af2811d30834f293a0f007a`;
+the full 11,740-byte Kubernetes report is
+`1acc5adfa986efc5f2f29b467087f7d27c7426566b7bb391cd0139580c8af9ba`.
+The full harness inventory and all four read-only artifact bindings
+were unchanged. These runs validate the repaired reporting/cleanup path and
+the named historical binary combination, not a new server build or full CI.
+
+The Kubernetes observation is consistent with the current implementation's
+mandatory fresh TokenReview on renewal, described in
+[`auth_kubernetes.rs`](../../crates/heptabao-server/src/auth_kubernetes.rs) and
+the [server guide](../modules/heptabao-server.md). This is a source-based
+interpretation of the historical 2.6.2 mismatch, not a passing 2.7.1 result or
+permission to weaken the newer renewal contract. The old fixture remains an
+explicit incompatibility and is not changed to accept both outcomes.
+
+The comparison summary additionally retains each side's last fixed scenario
+label, a typed HTTP status and a boolean verdict. It never projects response
+bodies, tokens or Identity values. Thirteen core host controls passed, with one
+explicit Linux platform skip; the existing twelve policy/template controls
+also passed. This diagnostic changes neither `successful_comparison`, exit
+status nor the strict 2.7.0 status requirement. It does not recover an HTTP
+status omitted from the earlier CI log.
+
+Static source review identifies a separate contract conflict: fresh policies
+carry schema-141 security metadata, whose forbidden-wildcard rejection uses
+the newer contract, while the existing strict 2.7.0 fixture requires 400.
+The original mismatch remains open. No 400/403 union or rollback of the safety
+check is used to obtain a passing result. The consistency-header product
+repair and any fresh version-specific comparison require separately bound
+builds and execution evidence.
+
+The first actual four-test consistency regression attempt did not complete.
+After successful real Rustfmt and format checks, Runtime job
+`1a1b2d3fbb5-fc05-7ff1` reached a cancelled/exit-one terminal state after
+400.034 seconds, without a Runtime or original 1,200-second phase timeout.
+Its original result is SHA-256
+`902d687c701ba13a7691689c4d834d9f82e0127b07894487c2931b3ca5789bfe`.
+No completed test-discovery or test result was produced; the green phase was
+not entered. The red process record retained exit -15, rescue cleanup and
+`descendant_group_absent=false`. The exact systemd unit was subsequently
+not found/inactive, which does not retroactively prove the earlier cleanup.
+The later bounded journal read for that exact unit and time window recorded
+the kernel OOM killer, unit result `oom-kill`, and an 8G memory peak. Its original
+2,898-byte output is SHA-256
+`e2ff5cbad65a96d4f14f65e5f225b3eb3317fe4426be55d60f85245102261144`.
+This establishes the unit's resource failure while preserving Runtime's
+original cancelled state. The exact victim PID and whether the OOM originated
+at a cgroup or whole-host boundary remain unknown. The original run already
+used one Cargo build job, disabled incremental compilation and debug info,
+and an 8 GiB Runtime limit. This is not an expected failing test or red/green
+regression evidence, and the proposed product change remains unverified by
+this attempt. No API effect was retried.
+
+The separate second attempt used a new private source, cache and target with
+16 GiB of memory, CPU quota 100% and one Cargo build job. Runtime job
+`1a1b303c622-fc05-8075` ended failed/exit one with durable output; Runtime itself
+did not time out or record cancellation. The red phase reached its original
+1,200-second deadline while compiling test discovery, before any test was
+discovered or executed. Green was not entered. The complete 598,103-byte
+compiler stderr was retained with SHA-256
+`4fb66e52d39a7ef3b3a0f1615c6f38715da1f9658ba11647a30047204426bae5`.
+
+The outer result, SHA-256
+`ec6ab22e637c2df8369b8c59336da9022ee1ede1e9c474ae6c12a25e21ce288c`,
+also reports `owned_adopted_zombie_not_reaped`: the cleanup helper treated an
+observed zombie as immediately waitable, but `waitpid(WNOHANG)` had not yet
+returned that child. The original outer receipt retains `reaped=false` and
+`descendant_group_absent=false`. The inner Cargo child was reaped; that does
+not prove outer-group cleanup. Four earlier tiny-process controls had passed,
+but did not cover this compiler-exit boundary. This second failure remains
+separate from the first OOM, and neither is an expected product regression.
+
+The third attempt kept the same one-job compiler and 16 GiB memory limit,
+with an actually observed 400% CPU quota. Runtime job
+`1a1b3290ce3-fc05-80db` again ended failed/exit one with complete durable output,
+without Runtime timeout or cancellation. Its original result, SHA-256
+`a8494b73f488348805cd74e1f75ef461c799cd318e712bd6d57ed7e6b04e99a3`,
+records 1,202.495 seconds and no completed phases. The red discovery command
+reached its original 1,200-second deadline before any tests were discovered or
+executed; green was not entered. This remains a failed build/discovery attempt,
+not an observed failing regression test.
+
+The separately controlled cleanup correction deferred a non-waitable adopted
+child instead of treating it as already reaped. In this real third attempt it
+deferred sixteen times, subsequently reaped the child, and retained the original
+leader until the owned-group absence check completed. The original command
+receipt records timeout cleanup with one SIGTERM, `reaped=true` and
+`descendant_group_absent=true`. This closes that attempt's recorded owned-group
+cleanup; it does not qualify a general escaped-process-tree collector or the
+unexecuted product tests. The first OOM and second timeout/cleanup failure remain
+unchanged in the evidence history.
+
+The fourth attempt explicitly separated no-run compilation from the original
+four-test discovery/execution phases. It used a new private source, Cargo home
+and target with CPU quota 400%, two Cargo build jobs and a 24 GiB memory cap.
+Each compile had its own 3,600-second budget; each test retained the original
+1,200-second budget. The original combined 2,700-second controller budget is
+not claimed for this new four-stage pipeline. The formatted product source,
+four assertions, optimization level, debug assertions and overflow checks were
+unchanged. An available-memory observation before each build is a precondition,
+not a reservation. Every transition required an independently read successful,
+audited Runtime terminal with complete durable output and the preceding actual
+accepted receipt SHA. The earlier failed targets were not reused.
+
+The actual red compile, Runtime job `1a1b34d4259-fc05-81dd`, completed in
+715.070 seconds with no timeout or rescue cleanup. Its full source inventory
+was unchanged. The 216,222,392-byte lib-test artifact has SHA-256
+`c634f31a6ff2f6c403694471b457f3582bacad4aa7abbd429c0812cf1c92c258`.
+The 5,434-byte compile-stage receipt is
+`532ef3ef50432ded243207c23c3531126624d34c89f071b6e95f61b100c91742`.
+This compile was not counted as a product-test result.
+
+The subsequent actual red test, job `1a1b35a961d-fc05-825b`, discovered exactly
+four unique tests and executed all four. The normal audited consistency-429
+case failed at `GET hint count`, with zero headers observed and one expected;
+the request-audit failure, response-audit failure and generic-429 controls all
+passed. The targeted Cargo command exited 101, while the expectation-checking
+runner correctly exited zero in 0.862 seconds. Full source and test-artifact
+bindings were identical before and after the run; the owned group was closed
+without rescue cleanup. The 9,483-byte test-stage receipt is
+`1fdec05b0ab601249df80067ec3d5870bba25f1cdece22ab8eecc61334da6cb6`.
+Root independently read the terminal, complete stage/inner/command records and
+all four original stdout/stderr streams. The red normal case stopped at its
+first GET assertion; it does not establish execution of its later HEAD or POST
+subcases. This result reproduces the defect and precedes the separate green
+compilation and actual four-test result below.
+
+The fixed-source compilation then completed in 573.963 seconds, within its
+separate 3,600-second budget. Runtime job `1a1b35eb63c-fc05-8276` succeeded,
+with recorded audit, complete durable output and no timeout or rescue cleanup.
+Its 4,920-byte stage receipt is
+`820b7a2b17c5b78cda73a50ccefb055632cad08d88fc395d553e0bf18086e6fa`.
+The resulting 216,222,888-byte unit-test executable is SHA-256
+`14551e73d2dfa446a0cb1347f995a84ed837b80c121fcb90a4b5fdfbfd94b5cd`.
+Compilation itself is not a test pass.
+
+The final green job `1a1b3694d7d-fc05-82be` discovered the same four unique
+tests and actually passed **4/4**, with targeted Cargo exit zero. Its runner
+completed in 1.015 seconds within the original 1,200-second test budget.
+The normal case reached GET, HEAD and POST: each kept exactly one original
+`Retry-After: 1`, performed both audits and left application state and durable
+generation unchanged. Request- and response-audit failures retained 503 with
+no retry hint; a generic 429 acquired no hint. Source and unit-test executable
+bindings were identical before and after. Runtime recorded success, audit and
+complete durable output, with no timeout or rescue cleanup; the original
+leader and owned group were closed. Root independently read the full terminal,
+stage/inner/command records and all four original stdout/stderr streams.
+The 9,454-byte test-stage receipt is
+`f879b818704ca7e32fc27335f57c2ada8e359a350aabba2eb6e522422e9addc9`.
+The 3,731 filtered tests were not executed and are not counted.
+
+Only after those actual red and green observations, the exact formatted
+three-file green delta was integrated. The final r4 public packet is 884,251
+bytes, SHA-256
+`f15392f24dbf4b860a2cb72df95dca11fe4ed183ecc9ddc1c488ce8dcd98f8b0`,
+retained inside the existing validation aggregate. Its 207 regular members
+include 206 indexed originals and derived records. The earlier three failed
+attempts remain in their separate immutable history packet. This qualifies
+these four server library regression tests on the bound source overlay and
+resource combination; it is not a full CI rerun, a new API/client/proxy live
+profile or a new server-executable qualification. The existing same-status
+503 body-repackaging limitation remains unchanged.
 
 ### Real same-format broker upgrade and rollback
 

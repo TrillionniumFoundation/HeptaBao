@@ -18,8 +18,12 @@ import secrets
 import subprocess
 import time
 import urllib.error
+import owned_process
 
-from ha_destructive import Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node, checked_binary
+from ha_destructive import (
+    Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node, checked_binary,
+    exact_startup_rejection,
+)
 
 
 def executable_identity(metadata: os.stat_result) -> tuple[int, ...]:
@@ -93,29 +97,65 @@ class RollingUpgradeCluster(Cluster):
         if wrong.binary == self.candidate_binary:
             checked_binary(wrong.binary, self.candidate_digest)
             return super().assert_misbound_rejection(wrong)
-        # The pinned PR base predates startup marker admission. Prove the actual
-        # running executable, then require its exact unseal refusal and sealed
-        # health. A candidate or unknown executable never receives this exception.
+        # Only the exact base may use either historical rejection contract.
+        # Observe this one launch: modern bases reject their durable marker at
+        # startup, while older bases expose the exact unseal refusal below.
+        # Never infer a binary's behavior from its role as the PR base.
         checked_binary(wrong.binary, self.base_digest)
+        log_path = wrong.root / "process.log"
+        before = log_path.stat().st_size if log_path.exists() else 0
+        startup_rejected = False
         try:
-            wrong.start()
-            if running_digest(wrong) != self.base_digest:
-                raise FixtureError("rolling_upgrade_base_binary_changed")
-            status, denied = wrong.call(
-                "POST", "sys/unseal", {"key": self.unseal_key}
-            )
-            self.check(
-                "rolling_upgrade_base_misbound_unseal_denied",
-                status == 503 and denied.get("errors")
-                == ["HA configuration belongs to a different cluster"],
-            )
-            status, health = wrong.call("GET", "sys/health")
-            self.check(
-                "rolling_upgrade_base_misbound_remains_sealed",
-                status == 503 and health.get("sealed") is True,
-            )
-        finally:
-            wrong.stop()
+            wrong.start(wait=False)
+            try:
+                wrong.wait_ready()
+            except FixtureError as error:
+                if str(error) != "node_exited_during_startup":
+                    raise
+                returncode = owned_process.wait(wrong.process, timeout=0)
+                if wrong.log is None:
+                    raise FixtureError("startup_rejection_log_unavailable")
+                wrong.log.flush()
+                with log_path.open("rb") as stream:
+                    stream.seek(before)
+                    delta = stream.read(64 * 1024 + 1)
+                if len(delta) > 64 * 1024 or not exact_startup_rejection(
+                        returncode, delta, MISBOUND_BOOTSTRAP_ERROR):
+                    raise FixtureError("unexpected_startup_rejection") from error
+                startup_rejected = True
+                self.check("rolling_upgrade_base_misbound_startup_rejected", True)
+            else:
+                if running_digest(wrong) != self.base_digest:
+                    raise FixtureError("rolling_upgrade_base_binary_changed")
+                status, denied = wrong.call(
+                    "POST", "sys/unseal", {"key": self.unseal_key}
+                )
+                self.check(
+                    "rolling_upgrade_base_misbound_unseal_denied",
+                    status == 503 and denied.get("errors")
+                    == ["HA configuration belongs to a different cluster"],
+                )
+                status, health = wrong.call("GET", "sys/health")
+                self.check(
+                    "rolling_upgrade_base_misbound_remains_sealed",
+                    status == 503 and health.get("sealed") is True,
+                )
+        except BaseException as error:
+            owned_process.abort(error, [wrong.stop])
+        else:
+            if startup_rejected:
+                wrong.stop(expected_codes=(1,))
+            else:
+                wrong.stop()
+
+    def capture_mixed_snapshot(self, leader: Node) -> None:
+        # This endpoint returns a gzip archive. The shared helper keeps the
+        # status/compact/download sequence inside this original 20-second budget.
+        record = leader.snapshot_after_compaction(token=self.root_token, timeout=20)
+        self.check("rolling_upgrade_snapshot_with_one_candidate_voter",
+                   record["http_status"] == 200)
+        self.snapshot_downloads.append({"phase": "rolling_upgrade_one_candidate_voter",
+                                        **record})
 
     def leader(self) -> Node:
         """Resolve one stable leader across the exact base/candidate health schema.
@@ -282,11 +322,7 @@ class RollingUpgradeCluster(Cluster):
                 self.read(running, f"rolling-upgrade-after-follower-{ordinal}", value)
             self.check(f"rolling_upgrade_mixed_version_write_{ordinal}", True)
             if ordinal == 1:
-                status, _ = leader.call(
-                    "GET", "sys/storage/raft/snapshot",
-                    token=self.root_token, timeout=20,
-                )
-                self.check("rolling_upgrade_snapshot_with_one_candidate_voter", status == 200)
+                self.capture_mixed_snapshot(leader)
 
         old = next(node for node in self.nodes if node.node_id not in upgraded)
         old.stop()
@@ -435,6 +471,7 @@ def main() -> int:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
             report["fixture_mount_setup"] = cluster.fixture_mount_setup
+            report["snapshot_downloads"] = cluster.snapshot_downloads
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):
