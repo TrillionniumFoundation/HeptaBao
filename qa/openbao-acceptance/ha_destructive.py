@@ -193,6 +193,7 @@ class Node:
         log_path = self.root / "process.log"
         before = log_path.stat().st_size if log_path.exists() else 0
         self.start(wait=False)
+        verified_returncode = None
         try:
             try:
                 returncode = owned_process.wait(self.process, timeout=10)
@@ -207,14 +208,21 @@ class Node:
             if len(delta) > 64 * 1024 or not exact_startup_rejection(
                     returncode, delta, expected_line):
                 raise FixtureError("unexpected_startup_rejection")
+            # The rejection has already been observed and matched exactly.
+            # Reap/verify that same exit code; do not demand a second SIGKILL.
+            verified_returncode = returncode
         finally:
-            self.stop()
+            if verified_returncode is None:
+                self.stop()
+            else:
+                self.stop(expected_codes=(verified_returncode,))
 
-    def stop(self) -> None:
+    def stop(self, *, expected_codes: tuple[int, ...] = (-9,)) -> None:
         process, log = self.process, self.log
         try:
             owned_process.close_all([
-                lambda: owned_process.stop(process, action="KILL", timeout=10, expected_codes=(-9,)),
+                lambda: owned_process.stop(
+                    process, action="KILL", timeout=10, expected_codes=expected_codes),
                 lambda: log.close() if log is not None and not log.closed else None,
             ])
         finally:

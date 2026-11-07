@@ -106,6 +106,63 @@ class DestructiveFixtureGuards(unittest.TestCase):
             cluster.check("unobserved", False)
         self.assertEqual([], cluster.scenarios)
 
+    def test_verified_startup_rejection_reaps_exact_observed_exit_code(self):
+        with tempfile.TemporaryDirectory() as directory:
+            node = HA.Node.__new__(HA.Node)
+            node.root = Path(directory)
+            node.process = None
+            node.log = None
+            expected = HA.MISBOUND_BOOTSTRAP_ERROR
+            process = Mock()
+
+            def start_without_wait(instance, *, wait=True):
+                self.assertFalse(wait)
+                (instance.root / "process.log").write_bytes((expected + "\\n").encode())
+                instance.log = (instance.root / "process.log").open("ab")
+                instance.process = process
+
+            with patch.object(HA.Node, "start", new=start_without_wait), \\
+                    patch.object(HA.owned_process, "wait", return_value=1), \\
+                    patch.object(HA.owned_process, "stop", return_value=1) as stop:
+                node.expect_startup_rejection(expected)
+
+            stop.assert_called_once_with(
+                process, action="KILL", timeout=10, expected_codes=(1,))
+            self.assertIsNone(node.process)
+            self.assertIsNone(node.log)
+
+    def test_unverified_startup_exit_keeps_strict_sigkill_cleanup_code(self):
+        with tempfile.TemporaryDirectory() as directory:
+            node = HA.Node.__new__(HA.Node)
+            node.root = Path(directory)
+            node.process = None
+            node.log = None
+            expected = HA.MISBOUND_BOOTSTRAP_ERROR
+            process = Mock()
+
+            def start_without_wait(instance, *, wait=True):
+                self.assertFalse(wait)
+                (instance.root / "process.log").write_bytes((expected + "\\n").encode())
+                instance.log = (instance.root / "process.log").open("ab")
+                instance.process = process
+
+            def reject_wrong_cleanup_code(child, *, action=None, timeout=None, expected_codes=None):
+                self.assertIs(child, process)
+                self.assertEqual(expected_codes, (-9,))
+                raise HA.owned_process.OwnedFailure("owned_standalone_shutdown_code")
+
+            with patch.object(HA.Node, "start", new=start_without_wait), \\
+                    patch.object(HA.owned_process, "wait", return_value=2), \\
+                    patch.object(HA.owned_process, "stop", side_effect=reject_wrong_cleanup_code) as stop:
+                with self.assertRaisesRegex(
+                        HA.owned_process.OwnedFailure, "^owned_standalone_shutdown_code$"):
+                    node.expect_startup_rejection(expected)
+
+            stop.assert_called_once_with(
+                process, action="KILL", timeout=10, expected_codes=(-9,))
+            self.assertIsNone(node.process)
+            self.assertIsNone(node.log)
+
 
 if __name__ == "__main__":
     unittest.main()
