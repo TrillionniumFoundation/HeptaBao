@@ -1,0 +1,701 @@
+{
+  "schema": "heptabao.history10-observation-analysis.v1",
+  "jobId": "1a1b3a7eb2a-fc05-8421",
+  "sourceBeforeAfterExact": true,
+  "all613OriginalPinsUnchanged": true,
+  "originalPrefixChecks": 51,
+  "originalFormalRequired": 128,
+  "formalMissingChecks": 77,
+  "mutationsKnown": 23,
+  "mutationUnknown": 0,
+  "diagnosticPrefixCompleted": true,
+  "fullHaQualified": false,
+  "rootCauseEstablished": false,
+  "observerExtraRequests": 0,
+  "transportRows": 136,
+  "traceErrors": [
+    {
+      "ordinal": 15,
+      "node": 1,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "errno": 61,
+        "reasonClass": "ConnectionRefusedError"
+      },
+      "elapsedMs": 95.876042,
+      "originalTimeoutSeconds": 1.5
+    },
+    {
+      "ordinal": 16,
+      "node": 1,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "errno": 61,
+        "reasonClass": "ConnectionRefusedError"
+      },
+      "elapsedMs": 96.433917,
+      "originalTimeoutSeconds": 1.5
+    },
+    {
+      "ordinal": 17,
+      "node": 1,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "errno": 61,
+        "reasonClass": "ConnectionRefusedError"
+      },
+      "elapsedMs": 96.241084,
+      "originalTimeoutSeconds": 1.5
+    },
+    {
+      "ordinal": 18,
+      "node": 1,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "errno": 61,
+        "reasonClass": "ConnectionRefusedError"
+      },
+      "elapsedMs": 96.534083,
+      "originalTimeoutSeconds": 1.5
+    },
+    {
+      "ordinal": 19,
+      "node": 1,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "errno": 61,
+        "reasonClass": "ConnectionRefusedError"
+      },
+      "elapsedMs": 96.082666,
+      "originalTimeoutSeconds": 1.5
+    },
+    {
+      "ordinal": 20,
+      "node": 1,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "errno": 61,
+        "reasonClass": "ConnectionRefusedError"
+      },
+      "elapsedMs": 94.578667,
+      "originalTimeoutSeconds": 1.5
+    },
+    {
+      "ordinal": 28,
+      "node": 2,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "reasonClass": "TimeoutError"
+      },
+      "elapsedMs": 2002.606417,
+      "originalTimeoutSeconds": 2
+    },
+    {
+      "ordinal": 31,
+      "node": 2,
+      "method": "GET",
+      "phase": "tcp_connect",
+      "error": {
+        "class": "URLError",
+        "reasonClass": "TimeoutError"
+      },
+      "elapsedMs": 2001.505625,
+      "originalTimeoutSeconds": 2
+    }
+  ],
+  "historyRows": [
+    {
+      "historyWrite": 1,
+      "version": 3,
+      "originalWriteCheckElapsedMs": 820.086,
+      "post": {
+        "ordinal": 117,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 790.148709,
+        "tcpMs": 2.639666,
+        "tlsMs": 5.502584,
+        "sendSpanMs": 33.688333,
+        "headersMs": 744.107708,
+        "bodyReadMs": 0.1695,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 118,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 199.681417,
+        "tcpMs": 2.711083,
+        "tlsMs": 6.0855,
+        "sendSpanMs": 0.052792,
+        "headersMs": 121.187875,
+        "bodyReadMs": 64.912458,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 2,
+      "version": 4,
+      "originalWriteCheckElapsedMs": 1221.718,
+      "post": {
+        "ordinal": 119,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 1193.120917,
+        "tcpMs": 2.861208,
+        "tlsMs": 5.709208,
+        "sendSpanMs": 35.982292,
+        "headersMs": 1144.679333,
+        "bodyReadMs": 0.176625,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 120,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 239.614917,
+        "tcpMs": 3.038,
+        "tlsMs": 5.965791,
+        "sendSpanMs": 0.048625,
+        "headersMs": 158.435125,
+        "bodyReadMs": 65.145792,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 3,
+      "version": 5,
+      "originalWriteCheckElapsedMs": 1775.766,
+      "post": {
+        "ordinal": 121,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 1744.287458,
+        "tcpMs": 2.712917,
+        "tlsMs": 7.822833,
+        "sendSpanMs": 37.268542,
+        "headersMs": 1692.257292,
+        "bodyReadMs": 0.200625,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 122,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 237.760417,
+        "tcpMs": 3.067333,
+        "tlsMs": 5.984709,
+        "sendSpanMs": 0.0615,
+        "headersMs": 176.477791,
+        "bodyReadMs": 45.9575,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 4,
+      "version": 6,
+      "originalWriteCheckElapsedMs": 1996.416,
+      "post": {
+        "ordinal": 123,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 1962.54225,
+        "tcpMs": 3.033458,
+        "tlsMs": 5.834,
+        "sendSpanMs": 36.640167,
+        "headersMs": 1912.881708,
+        "bodyReadMs": 0.232917,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 124,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 276.126875,
+        "tcpMs": 2.600084,
+        "tlsMs": 6.714166,
+        "sendSpanMs": 0.042375,
+        "headersMs": 215.962084,
+        "bodyReadMs": 44.261667,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 5,
+      "version": 7,
+      "originalWriteCheckElapsedMs": 2387.023,
+      "post": {
+        "ordinal": 125,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 2355.867125,
+        "tcpMs": 3.250792,
+        "tlsMs": 5.881875,
+        "sendSpanMs": 36.702375,
+        "headersMs": 2305.884875,
+        "bodyReadMs": 0.191042,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 126,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 335.9765,
+        "tcpMs": 3.116042,
+        "tlsMs": 5.702458,
+        "sendSpanMs": 0.040042,
+        "headersMs": 242.791,
+        "bodyReadMs": 76.825125,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 6,
+      "version": 8,
+      "originalWriteCheckElapsedMs": 2760.112,
+      "post": {
+        "ordinal": 127,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 2724.329042,
+        "tcpMs": 3.004916,
+        "tlsMs": 5.756875,
+        "sendSpanMs": 39.996209,
+        "headersMs": 2671.316291,
+        "bodyReadMs": 0.205459,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 128,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 437.523166,
+        "tcpMs": 4.42075,
+        "tlsMs": 6.085584,
+        "sendSpanMs": 0.049125,
+        "headersMs": 361.840041,
+        "bodyReadMs": 58.316667,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 7,
+      "version": 9,
+      "originalWriteCheckElapsedMs": 3474.228,
+      "post": {
+        "ordinal": 129,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 3439.846666,
+        "tcpMs": 2.647791,
+        "tlsMs": 5.443375,
+        "sendSpanMs": 32.166542,
+        "headersMs": 3395.202,
+        "bodyReadMs": 0.22,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 130,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 500.520958,
+        "tcpMs": 2.99875,
+        "tlsMs": 6.5525,
+        "sendSpanMs": 0.046416,
+        "headersMs": 420.391375,
+        "bodyReadMs": 64.065666,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 8,
+      "version": 10,
+      "originalWriteCheckElapsedMs": 3498.79,
+      "post": {
+        "ordinal": 131,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 3464.282417,
+        "tcpMs": 2.477834,
+        "tlsMs": 5.608333,
+        "sendSpanMs": 39.135833,
+        "headersMs": 3413.044084,
+        "bodyReadMs": 0.233333,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 132,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 450.632334,
+        "tcpMs": 2.719792,
+        "tlsMs": 5.781416,
+        "sendSpanMs": 0.035542,
+        "headersMs": 334.252333,
+        "bodyReadMs": 101.181416,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 9,
+      "version": 11,
+      "originalWriteCheckElapsedMs": 3985.912,
+      "post": {
+        "ordinal": 133,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 3947.042292,
+        "tcpMs": 2.446917,
+        "tlsMs": 5.724166,
+        "sendSpanMs": 35.049209,
+        "headersMs": 3899.724416,
+        "bodyReadMs": 0.207667,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 134,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 437.486292,
+        "tcpMs": 2.802125,
+        "tlsMs": 6.034625,
+        "sendSpanMs": 0.039916,
+        "headersMs": 359.51375,
+        "bodyReadMs": 62.655667,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    },
+    {
+      "historyWrite": 10,
+      "version": 12,
+      "originalWriteCheckElapsedMs": 4918.746,
+      "post": {
+        "ordinal": 135,
+        "method": "POST",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 4881.684,
+        "tcpMs": 2.646625,
+        "tlsMs": 5.66475,
+        "sendSpanMs": 34.093875,
+        "headersMs": 4835.356125,
+        "bodyReadMs": 0.199125,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 2,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      },
+      "get": {
+        "ordinal": 136,
+        "method": "GET",
+        "node": 1,
+        "status": 200,
+        "apiElapsedMs": 470.015833,
+        "tcpMs": 2.976292,
+        "tlsMs": 5.219083,
+        "sendSpanMs": 0.033042,
+        "headersMs": 388.958958,
+        "bodyReadMs": 67.037167,
+        "tcpConnectCalls": 1,
+        "httpsConnectCalls": 1,
+        "sendCalls": 1,
+        "apiReturned": true,
+        "bodyReadReturned": true
+      }
+    }
+  ],
+  "maxAllApiElapsedMs": 4881.684,
+  "maxHistoryPostApiMs": 4881.684,
+  "maxHistoryGetApiMs": 500.520958,
+  "ownedProcessEvents": [
+    {
+      "at": 1794015527.348021,
+      "event": "owned_server_started",
+      "native": false,
+      "node": 1,
+      "pid": 494606
+    },
+    {
+      "at": 1794015528.552268,
+      "event": "owned_server_stopped",
+      "node": 1,
+      "pid": 494606
+    },
+    {
+      "at": 1794015533.891491,
+      "event": "owned_server_started",
+      "native": true,
+      "node": 2,
+      "pid": 2428468
+    },
+    {
+      "at": 1794015534.472127,
+      "event": "owned_server_started",
+      "native": true,
+      "node": 3,
+      "pid": 80523
+    },
+    {
+      "at": 1794015535.246888,
+      "event": "owned_server_started",
+      "native": true,
+      "node": 1,
+      "pid": 495196
+    },
+    {
+      "at": 1794015579.98378,
+      "event": "final_owned_server_stopped",
+      "node": 3,
+      "pid": 80523
+    },
+    {
+      "at": 1794015580.38606,
+      "event": "final_owned_server_stopped",
+      "node": 2,
+      "pid": 2428468
+    },
+    {
+      "at": 1794015581.151795,
+      "event": "final_owned_server_stopped",
+      "node": 1,
+      "pid": 495196
+    }
+  ],
+  "foregroundSessions": [
+    {
+      "alias": "hepta-mac-local",
+      "automatic_restart": false,
+      "binary_sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+      "helper_sha256": "74925449ae1141848c2dcbbe798ed0030fbbf9b1f599187c211d02ec03d34d61",
+      "launch_id": "b7756a97999321c0008b24d0c25c0f6b",
+      "local_ssh_cleanup": {
+        "leader_exit_code": 0,
+        "leader_pid": 80518,
+        "leader_reaped": true,
+        "live_group_before": [],
+        "live_group_before_leader_reap": [],
+        "owned_live_group_empty": true,
+        "ownership_verified": true,
+        "pgid": 80518,
+        "retained_exit": {
+          "code": 1,
+          "pid": 80518,
+          "signo": 20,
+          "status": 0
+        },
+        "signals": [],
+        "within_original_deadline": true
+      },
+      "local_ssh_identity": {
+        "captured_exit": null,
+        "ps": {
+          "pgid": 80518,
+          "pid": 80518,
+          "ppid": 79900,
+          "start": "Sat Nov  7 09:38:53 2026    ",
+          "uid": 501
+        },
+        "sid_observed_while_live": 80518
+      },
+      "native_pid": 80523,
+      "node": 3,
+      "original_start_seconds": 60,
+      "original_stop_deadline_satisfied": true,
+      "original_stop_seconds": 5,
+      "parent_chain_at_ready": [
+        {
+          "pgid": 80523,
+          "pid": 80523,
+          "ppid": 80520,
+          "start": "Sat Nov  7 09:38:54 2026    ",
+          "uid": 501
+        },
+        {
+          "pgid": 80520,
+          "pid": 80520,
+          "ppid": 18725,
+          "start": "Sat Nov  7 09:38:53 2026    ",
+          "uid": 501
+        },
+        {
+          "pgid": 18711,
+          "pid": 18725,
+          "ppid": 18711,
+          "start": "Sat Nov  7 07:08:19 2026    ",
+          "uid": 501
+        },
+        {
+          "pgid": 18711,
+          "pid": 18711,
+          "ppid": 1,
+          "start": "Sat Nov  7 07:08:19 2026    ",
+          "uid": 0
+        },
+        {
+          "pgid": 1,
+          "pid": 1,
+          "ppid": 0,
+          "start": "Sun Oct  4 19:42:36 2026    ",
+          "uid": 0
+        }
+      ],
+      "production_authority": false,
+      "python_identity": {
+        "bytes": 34640,
+        "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "invoked": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+        "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+        "scope": "interpreter-binary-only-not-recursive-stdlib",
+        "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+        "version": "3.14.3"
+      },
+      "ready": true,
+      "remote_cleanup": {
+        "leader_exit_code": -9,
+        "leader_pid": 80523,
+        "leader_reaped": true,
+        "live_group_before": [
+          {
+            "pgid": 80523,
+            "pid": 80523,
+            "ppid": 80520,
+            "start": "Sat Nov  7 09:38:54 2026    ",
+            "uid": 501
+          }
+        ],
+        "live_group_before_leader_reap": [],
+        "owned_live_group_empty": true,
+        "ownership_verified": true,
+        "pgid": 80523,
+        "retained_exit": {
+          "code": 2,
+          "pid": 80523,
+          "signo": 20,
+          "status": 9
+        },
+        "signals": [
+          "SIGKILL"
+        ],
+        "within_original_deadline": true
+      },
+      "run_id": "db73c5f961dbb52e9fb587c3505afd68",
+      "schema": "heptabao.native-ha-foreground-owner.v1",
+      "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+      "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+      "start_elapsed_seconds": 0.574132,
+      "stop_elapsed_seconds": 0.089073,
+      "stopped": true,
+      "submission_count": 1
+    }
+  ],
+  "allOriginalOwnedCleanupChecksPassed": true,
+  "node3EvidenceScope": "original six-direction Raft mTLS, leaf, initial unseal and two V5-version reads; original process stopped and foreground child/stream closure. No final node3 applied-index or version12 read is present in this prefix.",
+  "snapshotAttempted": false,
+  "elapsedSeconds": 78.218713,
+  "metricMethod": "Last 20 original observations are validated as alternating POST/GET on node1, 15-second timeout, status200/apiReturned. Native write checks bind versions3..12. Phase durations are differences of the original monotonic observer milestones; bodyReadReturned is not a separate EOF proof, original exact read provides result validation."
+}

@@ -1,0 +1,13 @@
+{
+  "actualHeptaBao": false,
+  "actualTlsAndSqlite": true,
+  "elapsedSeconds": 1.019762363001064,
+  "exitCode": 1,
+  "macExecuted": false,
+  "productionActions": 0,
+  "schema": "heptabao.coordinator-real-local-tls-result.r1",
+  "stderrBytes": 0,
+  "stdoutBytes": 3342,
+  "stdoutSha256": "97820e212e98ad818b7cdbca8cd4f0415321c136db999e421d6afd7db65a58e4",
+  "syntheticHttpsPeer": true
+}

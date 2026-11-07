@@ -1,0 +1,22 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-transport-diagnostic.plan.public.json": "09030ef85dd9137e119f472b33d25a16fdf518de",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/ha_history10_transport_diagnostic_r1.py": "154d2d8ce329cbe4e7cc5ebc6fd6dce155e7198d",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/ha_http_transport_observer_r1.py": "d9bff76638615e5fc2d41ec553b064479cfc0b19",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/observe_history10_owned_x230_pid_r1.py": "1d0a9fbcb9a4cd65e3ad863cd3c9cad18cc6fd0a",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/assemble_history10_transport_diagnostic_r1.py": "bf182d48798af235eb61e178263d12f1e2f9bb17",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/launch_history10_transport_diagnostic_r1.body.py": "bdec6ea4bfe345d69a6b29119593d6b97e570789",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-launcher-vs-formal-r3.diff": "cf76237dbb071080733facb4b779cee9c050cb7c",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-source-integrity.public.json": "12f451694d8dde826a0e59cdf5c4bce8dda574c4",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/test_ha_http_transport_observer_r1.py": "2230d2ae5ec67ab4d1c9e5b4d30c7aa84665da39",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/test_ha_history10_transport_diagnostic_r1.py": "0709da4a2e8f371c76209529e638c740842a05fc",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-prefix.local-tests.original.json": "e7fe19792a91b512dbf290de5984e80990b2e8ed",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-observer.local-tests.original.json": "fc9466c554c953f5f13ff867cad9359e6a070e2a",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/observer-body-returned-review-fix.diff": "20904887b3205cb4527f5ca73c861309b3ef3671",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/capture_ai395_ufw_phase_history10_r1.py": "f82b9c90c66067bbe8614a50a4ca0fa236f679b4",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/verify_ai395_ufw_phase_history10_r1.py": "e77a9ead38f440dda4f337eb68619b3eed88ca10",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/observe_linux_fixed_ports_roots_history10_r1.py": "4c15246d482a6d0139fe949d3f053834788757ae",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/observe_mac_fixed_ports_roots_history10_r1.py": "a32c01661ad78a02cd52627a595dee95ee641657",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-preflight-phase-root-only.diff": "65694884907ccb4c146d38c234f54f137a61edd2",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-preflight-preparation.public.json": "66e9f6dee51088a2cc27832f44950da5f0af08d5",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/launch_history10_transport_diagnostic_r1.py": "2caf3f4a8d23fe3145d7996f41a12072a02fe973"
+}

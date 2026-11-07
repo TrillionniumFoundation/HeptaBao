@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.actual-poststop-registry-composition-immutable-map.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "originalJobId": "1a1b39b9df8-fc05-83d0",
+  "actualMacCases": {
+    "passed": 11,
+    "expected": 11
+  },
+  "originalStdoutBytes": 5770,
+  "productionSourceReads": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "scope": "synthetic fixed registry row and namespace modes; production quiescence remains separate",
+  "priorLinuxResult": "known failed 5 of 11; Mac VFS and held-FD URI semantics unavailable; preserved",
+  "entries": [
+    {
+      "path": "poststop-registry-mac-r1/mac_poststop_registry_read_r1.py",
+      "bytes": 6081,
+      "sha256": "bf4bb346839ba7065d13d08f179711946ded050982a004a75e815ec26bba3477",
+      "blob": "90f6b5279e9cef9bf89fccae0fc62c2e4c355cfa"
+    },
+    {
+      "path": "poststop-registry-mac-r1/qualify_poststop_registry_mac_r1.py",
+      "bytes": 12393,
+      "sha256": "be14eedf1f431217f5734075692b895ffa670b71a40f986c16f173a169adf4e9",
+      "blob": "e9a7141ccbbc9c41179398896eeedd06870bb624"
+    },
+    {
+      "path": "poststop-registry-mac-r1/launch_poststop_registry_qualification_r1.template.py",
+      "bytes": 9877,
+      "sha256": "4040d0915f18401209c264b8b5efda7677918785b054028fd6c0d2897375804a",
+      "blob": "0db7964b744a529a4c834026c34906f6c3abc1ee"
+    },
+    {
+      "path": "poststop-registry-mac-r1/launch_poststop_registry_qualification_r1.py",
+      "bytes": 30567,
+      "sha256": "345750b3fb8909245b692472b646f71d6fdfa5615df5499db9b01c9d0d216707",
+      "blob": "7c536915fc73886756153760bb72a67b564a80bc"
+    },
+    {
+      "path": "poststop-registry-mac-r1/assemble_poststop_registry_qualification_r1.py",
+      "bytes": 12197,
+      "sha256": "c0f89615a8b5fc2672cd4f11ad0c1e1c9d9b2b44912848a5bcf0d97217610727",
+      "blob": "81729b4adfe2a45db785b55b082a397084ba7bdb"
+    },
+    {
+      "path": "poststop-registry-mac-r1/qualify_poststop_registry_local_r1.py",
+      "bytes": 14326,
+      "sha256": "8c42c5d5015ee6420a3e2a3098e75dbb1b834441b01500edf0a35f6cd5f29c4a",
+      "blob": "c91dfc55ad3e6f02ed0298e20a93109be4ab21c9"
+    },
+    {
+      "path": "poststop-registry-mac-r1/poststop-registry-local-r1.original.json",
+      "bytes": 2532,
+      "sha256": "d926d9ae67dd333739eb6129a45019cbcac5f1d55a86081e85fee43eba6fb41a",
+      "blob": "dffecaacd9e4c3e7583233beb5ec8fe0d0a70a7a"
+    },
+    {
+      "path": "poststop-registry-mac-r1/poststop-registry-prepared-r1.manifest.public.json",
+      "bytes": 1387,
+      "sha256": "b2b20aa0f24a73013ae7aeae889dee22266e4c66d6445fe417b6b15b0bf461c8",
+      "blob": "c7f0e48c56a3c110bd8c381fce4e0aa677677632"
+    },
+    {
+      "path": "poststop-registry-mac-r1/poststop-registry-original-custody-authority.public.json",
+      "bytes": 614,
+      "sha256": "6c95fd216bfd4e69a7c64a4dd9d71ef190dc386fa50cdc1fe3655552577f2eb0",
+      "blob": "cca65fdd53bc40c424182d6b7ecf6aa633023284"
+    },
+    {
+      "path": "poststop-registry-mac-r1/poststop-registry-mac-r1-evidence/start.original.json",
+      "bytes": 35293,
+      "sha256": "094968211a8bd2e3de38f19897a860cdc85b688e385a5d84966e8bedda2a9ff9",
+      "blob": "64b8d47fb1fbe591760723f77ec5feb6a4fce642"
+    },
+    {
+      "path": "poststop-registry-mac-r1/poststop-registry-mac-r1-evidence/terminal.original.json",
+      "bytes": 954,
+      "sha256": "87c6955e625f5c5b9fa44b26146d9ae2666ad9c141ee9ecc187a30a2490a923a",
+      "blob": "5cea98938e298bc3b70acfaaa6848795f1f2c155"
+    },
+    {
+      "path": "poststop-registry-mac-r1/poststop-registry-mac-r1-evidence/read.original.json",
+      "bytes": 19523,
+      "sha256": "5614b1fd099a439b02ad016121f2e0ca80a8c7efcdedc65676d20b5bd5c70434",
+      "blob": "df9f6a2ecb0a595f76fe2c41cdc422e3b3d3f8d9"
+    },
+    {
+      "path": "poststop-registry-mac-r1/poststop-registry-mac-r1-evidence/stdout.original.json",
+      "bytes": 5770,
+      "sha256": "c29a0a9dd3a151428599cdfbdc3305807deaa4a5dd031f6f8783bf7873c3b2e7",
+      "blob": "ae717f1e475de6fc37afdd996859e01d1c34cd24"
+    }
+  ]
+}

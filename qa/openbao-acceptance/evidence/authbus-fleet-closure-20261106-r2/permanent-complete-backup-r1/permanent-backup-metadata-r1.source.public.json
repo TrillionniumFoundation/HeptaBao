@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.permanent-backup-metadata-source.r1",
+  "actualExecuted": false,
+  "launcherBytes": 70665,
+  "launcherSha256": "7d906dbb645072f7eadc1591d9ddb9513840896816812636cebffa58f6f240aa",
+  "sources": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_production_t5_guard_r1.py": {
+      "bytes": 13379,
+      "sha256": "9f0b032264c4dd5db45478f08c1cdbc92354ac3153b2ed4d18ef2aab30b139f1"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "complete_cold_tree_backup_r1.py": {
+      "bytes": 17361,
+      "sha256": "18c3e53d8bc1e0c068dd5ad0a1f0438f89abca705c54af20e61152d985916a38"
+    }
+  },
+  "scope": "exact newly initialized permanent data subtree metadata under held nofollow directory descriptors and a nonblocking directory lock",
+  "fileContentsRead": 0,
+  "commands": [
+    "fixed diskutil info"
+  ],
+  "serverStarts": 0,
+  "parentSeconds": 30,
+  "supervisorSeconds": 45,
+  "doesNotClaimRustWriterLockInteroperability": true
+}

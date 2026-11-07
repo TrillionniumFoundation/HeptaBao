@@ -1,0 +1,246 @@
+--- qualified-sdk-r4/main3_capture_launcher.py
++++ prepared-clone-r1/main3_capture_launcher.py
+@@ -3,7 +3,7 @@
+ import contextlib,hashlib,json,os,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic();PARENT_COMMAND_UNTIL=float(sys.argv[1]);UNTIL=min(PARENT_COMMAND_UNTIL,START+45.0)
+-ROOT=Path("/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4")
++ROOT=Path("/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/captures/owner-01")
+ LIVE=Path("/Users/qianqi/.openclaw")
+ QUAL=Path("/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2")
+ SDK=Path("/opt/homebrew/lib/node_modules/openclaw")
+@@ -16,8 +16,8 @@
+ INPUT_PATHS={BINDING,ORDER_ROOT/"output/owner-mapping.private.json",*[CREDENTIAL_ROOT/"output"/("credentials-"+agent+".private.json") for agent in AGENTS]}
+ 
+ import ast,base64
+-CAPTURE_QA=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4/qa')
+-PAYLOAD_PART_PINS={'main3_capture_payload_0.py': {'bytes': 60008, 'sha256': '220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8'}, 'main3_capture_payload_1.py': {'bytes': 60008, 'sha256': 'e2779f389949c85493974d633815becef08dc32209e47a8bd98d4a9b9a3383ac'}, 'main3_capture_payload_2.py': {'bytes': 60008, 'sha256': '423fc9d17111b90bc1f16f008dacd383cf55d92d3a53c5883ec5ea50b363c9de'}, 'main3_capture_payload_3.py': {'bytes': 36668, 'sha256': '742338b1acbc9ca240eab49d34f4ae586628c68773f48bb13c2ed15f51d9ef1e'}}
++CAPTURE_QA=Path('/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/code/owner-01')
++PAYLOAD_PART_PINS={'main3_capture_payload_0.py': {'bytes': 60008, 'sha256': '220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8'}, 'main3_capture_payload_1.py': {'bytes': 60008, 'sha256': '23a288fc74bf4b62da115b996f66fc3ee6683b5f88bf0051949fbbc8b6032f01'}, 'main3_capture_payload_2.py': {'bytes': 60008, 'sha256': '742288f3653714d74d6bf303f7a8e6202eae0550c08fe14193fd915918be1734'}, 'main3_capture_payload_3.py': {'bytes': 60008, 'sha256': '3540f4f85003fdd5d1a9a05c03dddb7b15006e432c76382f35137edb2edfc7b8'}, 'main3_capture_payload_4.py': {'bytes': 54256, 'sha256': '18a98e178b1b5f7158ddbbbf1d280eb2e58331685ea316116cb395827744b975'}}
+ def read_payload():
+     need_deadline=lambda: time.monotonic()<UNTIL
+     values=[]
+@@ -39,7 +39,7 @@
+         value=ast.literal_eval(node.body[0].value);assert isinstance(value,str)
+         values.append(value)
+     raw=base64.b64decode(''.join(values),validate=True)
+-    assert len(raw)<=262144 and hashlib.sha256(raw).hexdigest()=='39d3b111e31a96f6c8bede7940cb853c55c93732e778605bdabb59a059cdf6d4' and need_deadline()
++    assert len(raw)<=262144 and hashlib.sha256(raw).hexdigest()=='95b17a02d596ac231573faa8a2ba8d771bc33db651b3e78214d6d081174b93f6' and need_deadline()
+     return json.loads(raw)
+ PAYLOAD=read_payload()
+ 
+@@ -50,7 +50,7 @@
+ "mac_registry_readonly_wal_r1.py":"60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+ "kv2_dr_process_custody.py":"669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+ "owned_process.py":"0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"}
+-report={"schema":"heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r4","ok":False,
++report={"schema":"heptabao.current-sdk-selected-capsule-inline-owned-observation.clone-r1","ok":False,
+ "credentialValuesOrDigestsIncluded":False,"rawClientConfigHashIncluded":False,"profileIdsPublished":False,
+ "providerCalled":False,"refreshDispatched":False,"j3160Contacted":False,
+ "productionConfigurationChanged":False,"productionDatabaseChanged":False,"serviceActions":0,
+@@ -59,7 +59,7 @@
+ "candidateCommit":"4bde9aee03fcd27c59e13607e529b1cee594b249",
+ "candidateTree":"f08493a23f8ea0637073651231865ea9607b790e"}
+ owner=None;child=None;source=None;created=False;bundles=[];node_pin=None
+-registry_guard=None;registry_bundle=None;metadata_files=[]
++registry_guard=None;registry_bundle=None;metadata_files=[];whole_store=None;registry_bridge=None
+ def need(value,code):
+     if not value:raise RuntimeError(code)
+ def sha(data):return hashlib.sha256(data).hexdigest()
+@@ -145,7 +145,7 @@
+     source.verify()
+     for bundle in bundles:auth.verify_auth_bundle(source,bundle,until=UNTIL)
+     if registry_guard is not None:
+-        registry_guard.verify();auth.wal.verify_bundle(registry_guard,registry_bundle,until=UNTIL)
++        registry_guard.verify();registry_bridge.verify(auth,registry_guard,registry_bundle,until=UNTIL)
+ try:
+     os.umask(0o077)
+     need(len(sys.argv)==2 and 0<PARENT_COMMAND_UNTIL-START<=45.0,"same_parent_original_capture_allocation")
+@@ -189,6 +189,15 @@
+     private(ROOT/"code/owner_read.mjs",PAYLOAD["worker"]);private(ROOT/"code/authbus_sdk_read_guard.mjs",PAYLOAD["guard"])
+     private(ROOT/"write-fence","owned kernel write refusal probe\n")
+     private(ROOT/"code/registry_read.py",PAYLOAD["registryChild"])
++    private(ROOT/"code/mac_sdk_private_clone_reader_r1.mjs",PAYLOAD["cloneReader"])
++    private(ROOT/"code/whole_sqlite_streaming_r1.py",PAYLOAD["wholeStore"])
++    private(ROOT/"code/mac_poststop_registry_read_r1.py",PAYLOAD["registryBridge"])
++    import types
++    registry_bridge=types.ModuleType("main3_poststop_registry")
++    registry_bridge.__file__=str(ROOT/"code/mac_poststop_registry_read_r1.py")
++    bridge_raw=public_read(Path(registry_bridge.__file__),16384)
++    need(sha(bridge_raw)=='bf4bb346839ba7065d13d08f179711946ded050982a004a75e815ec26bba3477',"same_poststop_registry_bridge")
++    exec(compile(bridge_raw,registry_bridge.__file__,"exec"),registry_bridge.__dict__)
+     private(ROOT/"code/registry-proof.stdout.public.json",registry_proof)
+     private(ROOT/"code/registry-proof.authority.public.json",registry_authority_raw)
+     binding=auth.strict_json(read_private(BINDING))
+@@ -228,7 +237,7 @@
+         source_generations.append(current)
+     report.update(freshSourceGenerationCapture=True,authGenerationsChangedSinceOriginalCapture=changed_auth_generations,
+                   previousSourceObservationUsedOnlyForScope=True,full9GenerationComparisonWeakened=False,
+-                  sourceCaptureReason="prior_capsule_registry_full9_changed")
++                  sourceCaptureReason="fresh_registered_owner_source_after_actual_writer_quiescence")
+     source_fence()
+     validate_authority(PAYLOAD["orderAuthority"],"1a1b197fa0e-fc05-79c0")
+     need(public_read(ORDER_ROOT/"result.public.json",65536)==PAYLOAD["orderStdout"].encode(),
+@@ -267,10 +276,8 @@
+             for suffix in ("","-wal","-shm","-journal"):
+                 candidate=Path(str(database)+suffix);paths.add(candidate);paths.update(candidate.parents)
+         else:
+-            for agent in AGENTS:
+-                database=LIVE/"agents"/agent/"agent/openclaw-agent.sqlite"
+-                for suffix in ("","-wal","-shm","-journal"):
+-                    candidate=Path(str(database)+suffix);paths.add(candidate);paths.update(candidate.parents)
++            # Actual SDK SQLite reads are redirected only to private whole clones.
++            # No file-read-data grant covers an original agent database.
+             for value in metadata_paths:
+                 candidate=Path(value);paths.add(candidate);paths.update(candidate.parents)
+         lines=["(version 1)","(deny default)","(allow process*)","(allow signal (target children))",
+@@ -314,7 +321,7 @@
+              and registry_packet["configurationIdentity"]==binding["configurationIdentity"],
+              "registry_and_auth_config_same_generation")
+         registry_guard=auth.wal.WalInputs(until=UNTIL,critical=contextlib.nullcontext,cancelled=lambda:False)
+-        registry_bundle=auth.wal.registry_wal_database(registry_guard)
++        registry_bundle=registry_bridge.registry_database(auth,registry_guard)
+         need({key:list(item["expected"]) for key,item in registry_guard.files.items()}==registry_packet["sourceIdentities"]
+              and set(registry_guard.absent)==set(registry_packet["sourceAbsences"]),
+              "actual_registry_generation_still_exact")
+@@ -348,9 +355,109 @@
+                     "identity":list(auth.base.identity(si)),"sha256":sha(raw_metadata)})
+                 metadata_paths.update((str(nominal),str(real)))
+         private_input.update(registry=registry_packet["registry"],registryPluginCount=len(plugins),
++            registryRoute=registry_observation["registryRoute"],
+             registryGeneration={"sourceIdentities":registry_packet["sourceIdentities"],
+                                 "sourceAbsences":registry_packet["sourceAbsences"]},
+             registeredMetadataFileBindings=metadata_files)
++        # Independent fresh source transaction for each registered agent DB.
++        # This is source cloning, never a post-refresh production rollback.
++        import types
++        whole_module=types.ModuleType("main3_whole_clone_store")
++        whole_module.__file__=str(ROOT/"code/whole_sqlite_streaming_r1.py")
++        whole_raw=public_read(ROOT/"code/whole_sqlite_streaming_r1.py",65536)
++        need(sha(whole_raw)=="6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a","same_qualified_whole_backup_source")
++        exec(compile(whole_raw,whole_module.__file__,"exec"),whole_module.__dict__)
++        clone_root=ROOT/"output/source-clones"
++        clone_root.mkdir(mode=0o700,exist_ok=False)
++        clone_parent_rows=[]
++        def clone_identity(value):
++            return tuple(str(getattr(value,key)) for key in
++                ("st_dev","st_ino","st_uid","st_gid","st_mode","st_nlink","st_size","st_mtime_ns","st_ctime_ns"))
++        def verify_clone_parents():
++            for position,row in enumerate(clone_parent_rows):
++                remaining()
++                held=os.fstat(row["fd"])
++                named=os.lstat("/") if position==0 else os.stat(row["path"].name,
++                    dir_fd=clone_parent_rows[position-1]["fd"],follow_symlinks=False)
++                width=5 if row["path"]==clone_root else 9
++                need(clone_identity(held)[:width]==row["identity"][:width]
++                     ==clone_identity(named)[:width],"fresh_clone_original_parent_held_and_named")
++        def close_clone_parents():
++            for row in reversed(clone_parent_rows):
++                if row["closeAttempts"]:continue
++                row["closeAttempts"]=1
++                try:os.close(row["fd"]);row["closed"]=True
++                except BaseException:row["closeError"]=True
++            report["wholeCloneParentDescriptors"]={"opened":len(clone_parent_rows),
++                "allOriginalClosedOnce":all(row["closed"] and row["closeAttempts"]==1 for row in clone_parent_rows),
++                "mutableDirectoryCount":1,"mutableScope":"only_this_new_source_clones_directory"}
++        whole_store=None
++        clone_entries=[]
++        try:
++            for current in [*reversed(clone_root.parents),clone_root]:
++                remaining()
++                parent_fd=clone_parent_rows[-1]["fd"] if clone_parent_rows else None
++                fd=os.open("/" if parent_fd is None else current.name,
++                    os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,
++                    **({} if parent_fd is None else {"dir_fd":parent_fd}))
++                row={"path":current,"fd":fd,"closeAttempts":0,"closed":False}
++                clone_parent_rows.append(row)
++                info=os.fstat(fd);row["identity"]=clone_identity(info)
++                need(stat.S_ISDIR(info.st_mode) and info.st_uid in (0,501)
++                     and not stat.S_IMODE(info.st_mode)&0o022,"fresh_clone_parent_custody")
++                if current==ROOT or current.is_relative_to(ROOT):
++                    need(info.st_uid==501 and stat.S_IMODE(info.st_mode)==0o700,
++                         "fresh_clone_owned_directory_custody")
++                verify_clone_parents()
++            whole_store=whole_module.WholeStore(root=clone_root,source_root=LIVE,until=UNTIL,
++                                              maximum=4294967296,source_vfs="unix-posix")
++            expected_namespaces=[]
++            total_maximum=0
++            for agent in AGENTS:
++                database=LIVE/"agents"/agent/"agent/openclaw-agent.sqlite"
++                expected=whole_store.namespace(database)
++                expected_namespaces.append(expected)
++                total_maximum+=int(expected[""][6])+(0 if expected["-wal"] is None else int(expected["-wal"][6]))
++            available=os.statvfs(clone_root)
++            need(available.f_bavail*available.f_frsize>=2*total_maximum+256*1048576,
++                 "fresh_five_double_clone_capacity_before_copy")
++            for ordinal,agent in enumerate(AGENTS):
++                remaining();source_fence();verify_clone_parents()
++                database=LIVE/"agents"/agent/"agent/openclaw-agent.sqlite"
++                snapshot=whole_store.capture(database,expected_namespaces[ordinal],slot=ordinal,phase="candidate")
++                source_fence();verify_clone_parents()
++                clone_entries.append({"ordinal":ordinal,"logicalPath":str(database),
++                    "physicalPath":snapshot["archivePath"],"physicalFull9":snapshot["archiveFull9"],
++                    "twoCompleteBackupOutputsEqual":snapshot["twoCompleteBackupOutputsEqual"],
++                    "freshIndependentTransaction":snapshot["freshIndependentTransaction"],
++                    "keeperUsedAsLatestSource":snapshot["keeperUsedAsLatestSource"],
++                    "sourceContentCopyAuthority":snapshot["sourceContentCopyAuthority"]})
++            for ordinal,agent in enumerate(AGENTS):
++                need(whole_store.namespace(LIVE/"agents"/agent/"agent/openclaw-agent.sqlite")
++                     ==expected_namespaces[ordinal],"all_five_sources_exact_after_double_clone")
++        finally:
++            try:
++                if whole_store is not None:
++                    whole_store.close()
++                    report["wholeCloneResources"]=whole_store.public()
++                verify_clone_parents()
++            finally:close_clone_parents()
++        need(report["wholeCloneParentDescriptors"]["allOriginalClosedOnce"],
++             "fresh_clone_original_parent_descriptors_closed")
++        clone_resources=report["wholeCloneResources"]
++        need(all(clone_resources[name] for name in ("allFileDescriptorsClosedOnce","allSqliteHandlesClosedOnce",
++                 "allExplicitCursorsClosed","allOriginalBackupsCompleted","allStreamOperationsCompleteAndClosed"))
++             and clone_resources["backupCalls"]==10 and not clone_resources["restoreStarted"],
++             "all_five_fresh_double_backup_original_handles_closed")
++        private_input["cloneReadBinding"]={"schema":"heptabao.fresh-whole-clone-read.private.r1",
++            "backupSourceSha256":"6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a","sourcePhase":"after_writer_quiescence","entries":clone_entries}
++        report["freshDoubleWholeCloneSourceCount"]=5
++        report["allFiveAgentDatabasePagesCopiedPrivatelyOnHost"]=True
++        report["privateWholeClonesMayContainUnselectedApplicationData"]=True
++        report["sourceGuardClosureProjectionScope"]="descriptor_closure_only"
++        report["wholeCloneBackupSourceSha256"]="6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a"
++        report["cloneReaderSourceSha256"]=sha(PAYLOAD["cloneReader"].encode())
++        report["preRefreshCloneClaimedAsRollback"]=False
+         private(ROOT/"input.private.json",json.dumps(private_input,sort_keys=True).encode()+b"\n")
+         policy=make_policy(metadata_paths=metadata_paths);private(ROOT/"node-reader.sb",policy)
+         source_fence()
+@@ -402,7 +509,11 @@
+     for name,pin in PINS.items():need(sha(public_read(QUAL/"qa"/name))==pin,"qualified_sources_unchanged_after")
+     need(public_pin(node_pin["path"],256*1024*1024)==node_pin,"same_node_runtime_after")
+     need(public_read(ROOT/"code/owner_read.mjs")==PAYLOAD["worker"].encode()
+-         and public_read(ROOT/"code/authbus_sdk_read_guard.mjs")==PAYLOAD["guard"].encode(),"same_sdk_read_guard_sources_after")
++         and public_read(ROOT/"code/authbus_sdk_read_guard.mjs")==PAYLOAD["guard"].encode()
++         and public_read(ROOT/"code/mac_sdk_private_clone_reader_r1.mjs")==PAYLOAD["cloneReader"].encode()
++         and public_read(ROOT/"code/mac_poststop_registry_read_r1.py")==PAYLOAD["registryBridge"].encode()
++         and sha(public_read(ROOT/"code/whole_sqlite_streaming_r1.py",65536))=="6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a",
++         "same_sdk_read_guard_sources_after")
+     remaining()
+     report.update(ok=True,currentConfigAndAllFiveSourceGenerationsStillExact=True,
+         originalDeadlineAfterClosure=True,sourcePins=PINS,sdkPins=PAYLOAD["sdkPins"],
+@@ -420,8 +531,16 @@
+         for pipe in (child.stdout,child.stderr):
+             if pipe is not None and not pipe.closed:pipe.close()
+     if owner is not None:report["custody"]=owner.receipt()
++    if whole_store is not None:
++        try:whole_store.close()
++        except BaseException:report["ok"]=False;report["wholeCloneCloseUnknown"]=True
++        report["wholeCloneResources"]=whole_store.public()
+     if source is not None:
+-        source.close();report["sourceGuardClosure"]=source.public()
++        source.close()
++        sp=source.public()
++        report["sourceGuardClosure"]={key:sp[key] for key in
++            ("allOwnedDescriptorsClosed","allHeldDescriptorsClosed","allReturnedConnectionsClosed",
++             "allExplicitCursorsClosed","allPublicCodeDescriptorsClosed","closeErrors")}
+     if registry_guard is not None:
+         registry_guard.close()
+         rp=registry_guard.public()

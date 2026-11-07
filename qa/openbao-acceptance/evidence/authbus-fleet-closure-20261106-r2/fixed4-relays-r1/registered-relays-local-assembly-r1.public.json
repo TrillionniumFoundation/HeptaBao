@@ -1,0 +1,9 @@
+{
+  "allEmbeddedBytesAndPureDefinitionsExact": true,
+  "assembledBytes": 168537,
+  "assembledSha256": "d563c146436dbd51b81a02ea50cffbefca40705434f8a841733481f391008be3",
+  "checks": 12,
+  "macRuntimeExecuted": false,
+  "ok": true,
+  "schema": "heptabao.fixed-four-relay-byte-assembly-local.r1"
+}

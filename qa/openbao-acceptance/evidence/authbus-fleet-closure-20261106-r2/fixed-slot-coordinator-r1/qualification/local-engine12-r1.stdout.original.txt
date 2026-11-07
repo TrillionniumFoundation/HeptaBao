@@ -1,0 +1,20 @@
+✔ unchanged producer validates enrollment, two exact authorized rotations and slot reuse (73.280111ms)
+✔ no grant and revoked grant stay pending; full single slot preserves backpressure (44.715822ms)
+✔ health ack and fixed report make zero scheduler/provider actions (37.684958ms)
+✔ profile unknown before remote commit retains original intent across cold process state (35.319591ms)
+✔ profile unknown after remote commit retains original intent across cold process state (37.266688ms)
+✔ manifest unknown before remote commit retains original intent across cold process state (33.168956ms)
+✔ manifest unknown after remote commit retains original intent across cold process state (36.976562ms)
+✔ ack unknown before remote commit retains original intent across cold process state (34.737645ms)
+✔ ack unknown after remote commit retains original intent across cold process state (36.907459ms)
+✔ exact retained manifest history resolves an original committed postimage without rewrite (35.347061ms)
+✔ changed slot and immutable profile collision refuse before canonical mutation (26.23712ms)
+✔ missing private enrollment history cannot adopt a used remote control (20.800484ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 542.930144

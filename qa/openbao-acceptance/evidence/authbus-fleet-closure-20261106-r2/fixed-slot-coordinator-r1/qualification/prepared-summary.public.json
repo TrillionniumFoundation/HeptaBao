@@ -1,0 +1,59 @@
+{
+  "actualRemoteHeptaBao": false,
+  "completeLocalCases": 19,
+  "completeLocalPassed": 19,
+  "completeOriginalStdout": "qualification/local-complete19-r1.stdout.original.txt",
+  "completeOriginalTerminal": "qualification/local-complete19-r1.terminal.public.json",
+  "earlierFailuresPreserved": [
+    "qualification/draft-initial-failure.public.json",
+    "qualification/local-real-tls3-r1.terminal.public.json",
+    "qualification/local-real-tls3-r1.stdout.original.txt"
+  ],
+  "implementationSha256": "a9de47653ad09469c6a8b651063495261835852364a7b35c42208331c7dbf933",
+  "macExecuted": false,
+  "originalOwnedCrashChildren": 2,
+  "originalPythonOracleChildren": 1,
+  "productionActions": 0,
+  "providerActions": 0,
+  "realLocalTlsAndSqlite": true,
+  "schema": "heptabao.fixed-slot-coordinator-prepared-qualification.r1",
+  "scope": "Prepared concrete service and local qualification; actual normal HeptaBao, host custody, policy, deployment and production source qualification remain separate gates.",
+  "syntheticHttpsPeerAndRemoteKV": true,
+  "testSourcePins": [
+    {
+      "bytes": 8439,
+      "path": "tests/coordinator.test.mjs",
+      "sha256": "85c612527274c7b132fe65afb8caff1928c74994167f59bb611f88803132011d"
+    },
+    {
+      "bytes": 602,
+      "path": "tests/crash-child.mjs",
+      "sha256": "fa623ae14f5da639860d8845b28e500654ac95cbbb66e89f5bc82d9286057b7e"
+    },
+    {
+      "bytes": 3112,
+      "path": "tests/crash.test.mjs",
+      "sha256": "3ee7a77b2f9726d7049a6b1688e7ef39d0ea1968c8ce9ff6c72189e7a7a822ab"
+    },
+    {
+      "bytes": 4747,
+      "path": "tests/fixture.mjs",
+      "sha256": "394a63b30ab8ba11a402fb9584d1d1a1c55612748584c54cde476e725e529fa4"
+    },
+    {
+      "bytes": 2103,
+      "path": "tests/legacy-oracle.py",
+      "sha256": "9497cb6f8ae091565701f25d784a13e10846378adc413f8a3c6a0ddc38d8677d"
+    },
+    {
+      "bytes": 1805,
+      "path": "tests/protocol-oracle.test.mjs",
+      "sha256": "f2cace6341afce555ace53fb884d9703df79fbecb805b8d5a82cc2ca89d99aae"
+    },
+    {
+      "bytes": 9555,
+      "path": "tests/strict-integration.test.mjs",
+      "sha256": "96cc88675187a7729e292bbbaf662e4356165953c1a7838225aa7cfbc82723e8"
+    }
+  ]
+}

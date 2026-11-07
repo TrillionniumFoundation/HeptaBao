@@ -1,0 +1,32 @@
+{
+  "actualExecuted": false,
+  "files": {
+    "launch_poststop_registry_qualification_r1.py": {
+      "bytes": 30567,
+      "sha256": "345750b3fb8909245b692472b646f71d6fdfa5615df5499db9b01c9d0d216707"
+    },
+    "launch_poststop_registry_qualification_r1.template.py": {
+      "bytes": 9877,
+      "sha256": "4040d0915f18401209c264b8b5efda7677918785b054028fd6c0d2897375804a"
+    },
+    "mac_poststop_registry_read_r1.py": {
+      "bytes": 6081,
+      "sha256": "bf4bb346839ba7065d13d08f179711946ded050982a004a75e815ec26bba3477"
+    },
+    "qualify_poststop_registry_mac_r1.py": {
+      "bytes": 12393,
+      "sha256": "be14eedf1f431217f5734075692b895ffa670b71a40f986c16f173a169adf4e9"
+    }
+  },
+  "localLinuxCompositionResult": "known_failed_5_of_11_Mac_VFS_and_fd_path_semantics_not_available",
+  "originalReaderSourcePins": {
+    "authbus_current_auth_wal.py": "ad443869e259da06de2be71131e5d1854680477d1cf77248e05a3c1704160f8c",
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_registry_readonly_wal_r1.py": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+  },
+  "originalSmallParentSourceSha256": "57a08f590975d91d11f7a22fc7d915685e6b9a5b488096ccad187033e34e123b",
+  "productionSourceReads": 0,
+  "providerCalls": 0,
+  "schema": "heptabao.poststop-registry-prepared.r1",
+  "serviceActions": 0
+}

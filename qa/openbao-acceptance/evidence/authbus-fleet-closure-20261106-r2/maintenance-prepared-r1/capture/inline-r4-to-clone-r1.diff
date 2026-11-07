@@ -1,0 +1,144 @@
+--- qualified-sdk-r4/main3_inline_capture.py
++++ prepared-clone-r1/main3_inline_capture.py
+@@ -15,22 +15,26 @@
+ import time
+ from main3_source_authority import SDK_SOURCE_PINS
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r4')
+-QA=ROOT/'qa'
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r4')
+-CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4')
++ROOT=Path('/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1')
++QA=Path('/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/code/owner-01')
++PREP=ROOT/'output'
++CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/captures/owner-01')
+ CAPSULE=CAPSULE_ROOT/'output/selected-owner-credentials.private.json'
+-AUTHORITY=PREP/'inline-capture-authority.public.json'
+-RESULT=PREP/'inline-capture-result.public.json'
+-OPERATION_KEY='heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r4'
++AUTHORITY=PREP/'owner-01.inline-capture-authority.public.json'
++RESULT=PREP/'owner-01.inline-capture-result.public.json'
++OPERATION_KEY='heptabao-mac-authbus-writer-maintenance-owner-01-capture-20261106-r1'
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+-CAPTURE_WORKER_SHA='130de20e8d76f68889ecd28925809b96667c5b7756cc34b1b23f934f4dc6b030'
+-CAPTURE_LAUNCHER_SHA='6fe72ce9fe547d1d1f2167a2231752959529358ed11bd3f81369527a489214ea'
++CAPTURE_WORKER_SHA='ab6a4cb792cf5e352b67d9eaa09af9dd06226e843a0ab21925767f30ffee1f50'
++CAPTURE_LAUNCHER_SHA='7e98cb03a89c2bf6226454034728f43315dc55bd1a588da07721d3377966a593'
+ CAPTURE_GUARD_SHA='f5fb13e04b394320a44b6687b474f06c0bb49b2ef1e194b956f528e454453d1f'
+-CAPTURE_REGISTRY_SHA='bbf04b5a60edd4e4213d9df60aee3cf6338683f553b534cdea449da350b95c3b'
+-CAPTURE_PAYLOAD_SHA='39d3b111e31a96f6c8bede7940cb853c55c93732e778605bdabb59a059cdf6d4'
+-CAPTURE_PRIOR_LAUNCHER_SHA='06bef1e6d68c2f9aa401639396c055f6c4d9694a2a14498193a5cad5e6b6cb88'
++CAPTURE_REGISTRY_SHA='d34090dbfb5be60f57a36ca8081b72d945d13ad21ca489025069fea3674ff6dd'
++CAPTURE_PAYLOAD_SHA='95b17a02d596ac231573faa8a2ba8d771bc33db651b3e78214d6d081174b93f6'
++CAPTURE_PRIOR_LAUNCHER_SHA='6fe72ce9fe547d1d1f2167a2231752959529358ed11bd3f81369527a489214ea'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
++WHOLE_BACKUP_SHA='6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a'
++CLONE_READER_SHA='73236033b5b5e780d0b4bff382b9296657643c49faad27e334466ec3b5b5eba8'
++REGISTRY_BRIDGE_SHA='bf4bb346839ba7065d13d08f179711946ded050982a004a75e815ec26bba3477'
++CAPTURE_SOURCE_PINS={'main3_capture_payload_0.py': {'bytes': 60008, 'sha256': '220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8'}, 'main3_capture_payload_1.py': {'bytes': 60008, 'sha256': '23a288fc74bf4b62da115b996f66fc3ee6683b5f88bf0051949fbbc8b6032f01'}, 'main3_capture_payload_2.py': {'bytes': 60008, 'sha256': '742288f3653714d74d6bf303f7a8e6202eae0550c08fe14193fd915918be1734'}, 'main3_capture_payload_3.py': {'bytes': 60008, 'sha256': '3540f4f85003fdd5d1a9a05c03dddb7b15006e432c76382f35137edb2edfc7b8'}, 'main3_capture_payload_4.py': {'bytes': 54256, 'sha256': '18a98e178b1b5f7158ddbbbf1d280eb2e58331685ea316116cb395827744b975'}, 'main3_capture_launcher.py': {'bytes': 39089, 'sha256': '7e98cb03a89c2bf6226454034728f43315dc55bd1a588da07721d3377966a593'}}
+ 
+ class CaptureRefused(RuntimeError):pass
+ def need(value,code):
+@@ -70,7 +74,7 @@
+     return pid
+ 
+ def validate_report(value,capture_pid):
+-    need(isinstance(value,dict) and value.get('schema')=='heptabao.current-sdk-selected-capsule-inline-owned-observation.sdk-r4'
++    need(isinstance(value,dict) and value.get('schema')=='heptabao.current-sdk-selected-capsule-inline-owned-observation.clone-r1'
+          and value.get('ok') is True and value.get('childExitCode')==0 and value.get('stderrBytes')==0
+          and value.get('sharedSeconds')==45 and value.get('parentCommandSeconds')==45
+          and value.get('applicationRetries')==0 and value.get('serviceActions')==0,
+@@ -133,6 +137,54 @@
+          and sql['returnedHandleCount']>0 and sql.get('memoryOpenCount')==1
+          and type(sql.get('readOnlyFileOpenCount')) is int
+          and sql['returnedHandleCount']==sql['readOnlyFileOpenCount']+1,'capture_all_sqlite_handles_closed')
++    need(value.get('freshDoubleWholeCloneSourceCount')==5
++         and value.get('allFiveAgentDatabasePagesCopiedPrivatelyOnHost') is True
++         and value.get('privateWholeClonesMayContainUnselectedApplicationData') is True
++         and value.get('sourceGuardClosureProjectionScope')=='descriptor_closure_only'
++         and value.get('wholeCloneBackupSourceSha256')==WHOLE_BACKUP_SHA
++         and value.get('cloneReaderSourceSha256')==CLONE_READER_SHA
++         and value.get('preRefreshCloneClaimedAsRollback') is False,
++         'capture_five_fresh_whole_clones_not_rollback')
++    backup=value.get('wholeCloneResources',{})
++    need(backup.get('backupCalls')==10 and backup.get('restoreStarted') is False
++         and backup.get('databaseSerializeCalls')==0 and backup.get('closeErrors')==[]
++         and all(backup.get(name) is True for name in
++             ('allFileDescriptorsClosedOnce','allSqliteHandlesClosedOnce','allExplicitCursorsClosed',
++              'allOriginalBackupsCompleted','allStreamOperationsCompleteAndClosed')),
++         'capture_all_ten_original_backup_calls_known_and_closed')
++    clone_parents=value.get('wholeCloneParentDescriptors',{})
++    need(type(clone_parents.get('opened')) is int and clone_parents['opened']>=8
++         and clone_parents.get('allOriginalClosedOnce') is True
++         and clone_parents.get('mutableDirectoryCount')==1
++         and clone_parents.get('mutableScope')=='only_this_new_source_clones_directory',
++         'capture_original_clone_output_parent_custody_closed')
++    clone=observed.get('privateCloneReader',{})
++    need(observed.get('originalFiveDatabaseKernelReadRefusalsObserved') is True
++         and observed.get('actualSdkLogicalPathsReadThroughFreshPrivateClone') is True
++         and observed.get('productionGatewayConsumptionQualified') is False
++         and clone.get('schema')=='heptabao.actual-sdk-private-clone-reader.public.r1'
++         and clone.get('fixedLogicalSourceCount')==clone.get('physicalWholeCloneCount')==5
++         and clone.get('originalSdkLogicalPathsPreserved') is True
++         and clone.get('originalSdkReadonlyOptionPreserved') is True
++         and clone.get('sourceDatabaseConstructorsDispatched')==0
++         and clone.get('cloneDatabaseConstructorsRouted')==sql['readOnlyFileOpenCount']
++         and clone.get('physicalReadBoundByOriginalFull9') is True
++         and clone.get('productionGatewayConsumptionProven') is False
++         and clone.get('credentialOrPrivateConfigurationDigestsPublished') is False
++         and type(clone.get('descriptorsOpened')) is int and clone['descriptorsOpened']>5
++         and clone.get('closeAttempts')==clone.get('descriptorsClosed')==clone['descriptorsOpened']
++         and clone.get('allOriginalDescriptorsClosedOnce') is True,
++         'capture_actual_sdk_only_exact_five_physical_clones_all_descriptors_closed')
++    registry=value.get('registryObservation',{})
++    need(registry.get('ok') is True and registry.get('registryTransactionCount')==1
++         and registry.get('registryDataRowCount')==1 and registry.get('queryBudgetSeconds')==3
++         and type(registry.get('registryWalWasNonempty')) is bool
++         and registry.get('registryRoute')==('qualified_named_readonly_wal_transaction'
++             if registry['registryWalWasNonempty'] else 'tracked_held_fd_immutable_registry_transaction')
++         and registry.get('originalRegistrySidecarsCreated') is False
++         and registry.get('registryBridgeSourceSha256')==REGISTRY_BRIDGE_SHA
++         and observed.get('registryMetadata',{}).get('sourceRoute')==registry['registryRoute'],
++         'capture_exact_poststop_registry_route_fixed_one_row')
+     agents=observed.get('agents')
+     need(isinstance(agents,list) and tuple(x.get('agent') for x in agents)==AGENTS
+          and all(x.get('allEffectiveOwnersMatch') is True and x.get('effectiveProfileCount')==3
+@@ -183,10 +235,12 @@
+         try:path.lstat()
+         except FileNotFoundError:continue
+         raise CaptureRefused('capture_new_operation_paths_must_be_absent')
+-    return {'inlineCaptureRequiredBeforeAnyService':True,'captureMaximumSeconds':45,
++    return {'freshCaptureRequiredAfterWriterQuiescence':True,'captureMaximumSeconds':45,
+             'sameParentOuterMaximumSeconds':600,'sourceGenerationAdmitted':False}
+ 
+-def run_capture(commands,plan,journal,until,remaining,read):
++def run_capture(commands,plan,journal,until,remaining,read,quiescence_fence):
++    need(callable(quiescence_fence) and quiescence_fence('before-fresh-owner-capture') is True,
++         'capture_parent_actual_writer_quiescence_before')
+     preflight_inputs(plan,read);remaining();capture_until=min(until,time.monotonic()+45.0)
+     argv=[PYTHON,'-I','-S','-B',str(QA/'main3_capture_launcher.py'),repr(capture_until)]
+     journal.append('inline-capture-intent',{'operationKey':OPERATION_KEY,'argv':argv,
+@@ -204,17 +258,21 @@
+     # retired, before its report can authorize the capsule. The caller's plan
+     # already binds the same inventory before dispatch.
+     capture_names=[name for name in plan['sourcePins'] if name.startswith('main3_capture_')]
+-    need(len(capture_names)==5,'capture_exact_launcher_and_four_payload_parts')
++    need({name:plan['sourcePins'][name] for name in capture_names}==CAPTURE_SOURCE_PINS,
++         'capture_exact_launcher_and_all_derived_payload_parts')
+     for name in capture_names:
+         remaining();source=read(QA/name)
+         need(len(source)==plan['sourcePins'][name]['bytes']
+              and sha(source)==plan['sourcePins'][name]['sha256'],'capture_public_sources_still_exact_after_original_wait')
++    need(quiescence_fence('after-fresh-owner-capture') is True,
++         'capture_parent_actual_writer_quiescence_after')
+     need(not err,'capture_no_stderr');value=json.loads(out);validate_report(value,pid)
+     need(read(CAPSULE_ROOT/'result.public.json',65536)==out,'capture_original_result_exact_readback')
+     authority={'schema':'heptabao.main3-inline-capture-authority.public.r5','ok':True,
+         'operationKey':OPERATION_KEY,'parentPid':os.getpid(),
+         'authorityKind':'original_direct_child_wait_and_closed_owned_inner_children',
+-        'runtimeJobTerminalAssumed':False,'captureLauncherSourceSha256':CAPTURE_LAUNCHER_SHA,
++        'runtimeJobTerminalAssumed':False,'parentObservedWriterQuiescenceBeforeAndAfterCapture':True,
++        'captureLauncherSourceSha256':CAPTURE_LAUNCHER_SHA,
+         'capturePayloadSha256':CAPTURE_PAYLOAD_SHA,'capturePriorLauncherSourceSha256':CAPTURE_PRIOR_LAUNCHER_SHA,
+         'command':row,'result':value}
+     validate_authority(authority,parent_pid=os.getpid());remaining()

@@ -1,0 +1,90 @@
+--- qualified-sdk-r4/owner_read.mjs
++++ prepared-clone-r1/owner_read.mjs
+@@ -9,7 +9,8 @@
+ import {pathToFileURL} from "node:url";
+ import {isDeepStrictEqual} from "node:util";
+ import {protectReadPhase} from "./authbus_sdk_read_guard.mjs";
+-const ROOT="/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4";
++import {bindFreshCloneReader} from "./mac_sdk_private_clone_reader_r1.mjs";
++const ROOT="/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/captures/owner-01";
+ const LIVE="/Users/qianqi/.openclaw";
+ const SDK="/opt/homebrew/lib/node_modules/openclaw";
+ const AGENTS=["main","trnm","hepta-ui","hepta","hepta-backend"];
+@@ -84,7 +85,8 @@
+     }
+     ledger.opens++;
+     if(memory)ledger.memoryOpens++;else ledger.readOnlyFileOpens++;
+-    const db=Reflect.construct(target,args,target),record={memory,closeAttempts:0,closed:false};
++    const physicalArgs=memory?args:[cloneReader.route(filename,options),options];
++    const db=Reflect.construct(target,physicalArgs,target),record={memory,closeAttempts:0,closed:false};
+     ledger.connections.push(record);
+     const close=db.close.bind(db);
+     Object.defineProperty(db,"close",{value:(...closeArgs)=>{record.closeAttempts++;const value=close(...closeArgs);record.closed=true;return value;}});
+@@ -92,7 +94,9 @@
+   }});
+   return {ledger,restore(){sqlite.DatabaseSync=Original;}};
+ }
+-let restore=null,sqlGuard=null,privateMapping=null,privateCapsule=null,input=null;
++let restore=null,sqlGuard=null,cloneReader=null,privateMapping=null,privateCapsule=null,input=null;
++report.actualSdkLogicalPathsReadThroughFreshPrivateClone=false;
++report.productionGatewayConsumptionQualified=false;
+ try{
+   need(process.platform==="darwin"&&process.getuid()===501&&Number.isFinite(budgetMs)&&budgetMs>0&&budgetMs<=45000,"exact_actual_mac_sdk_owner");
+   for(const [name,target,flags]of[
+@@ -135,6 +139,15 @@
+   need(pkg.version==="2026.7.1-2","actual_installed_sdk_version");
+   const allowedDirs=new Map(input.agents.map(x=>[path.resolve(x.agentDir),x.agent]));
+   need(allowedDirs.size===5,"exact_five_owner_directories");
++  report.privateCloneReader={};
++  cloneReader=bindFreshCloneReader({root:ROOT,binding:input.cloneReadBinding,until},report.privateCloneReader);
++  for(const item of input.agents){
++    let denied=false;
++    try{const fd=fs.openSync(path.join(item.agentDir,"openclaw-agent.sqlite"),fs.constants.O_RDONLY);fs.closeSync(fd);}
++    catch(error){denied=["EPERM","EACCES"].includes(error.code);}
++    need(denied,"kernel_original_database_read_denied_for_clone_sdk");
++  }
++  report.originalFiveDatabaseKernelReadRefusalsObserved=true;
+   sqlGuard=installSqliteGuard(new Set(input.agents.map(x=>path.join(x.agentDir,"openclaw-agent.sqlite"))));
+   restore=protectReadPhase(diagnostics);
+   const expectDenied=action=>{let blocked=false;try{action();}catch{blocked=true;}need(blocked,"js_read_guard_negative_case");};
+@@ -180,7 +193,8 @@
+   need(currentMetadata.r({config:cfg,env:process.env})===metadata,"actual_sdk_current_config_metadata_match");
+   const providerOwners=metadata.owners?.providers?.get("openai");
+   need(Array.isArray(providerOwners)&&providerOwners.length>0,"actual_openai_provider_metadata_present");
+-  report.registryMetadata={mode:"actual_sdk_provided_index_from_current_readonly_wal",
++  report.registryMetadata={mode:"actual_sdk_provided_index_from_current_source_transaction",
++    sourceRoute:input.registryRoute,
+     indexPluginCount:index.plugins.length,manifestPluginCount:metadata.plugins.length,
+     openaiProviderOwnerCount:providerOwners.length,
+     diagnosticsCount:metadata.diagnostics.length,registryDiagnosticsCount:metadata.registryDiagnostics.length,
+@@ -307,6 +321,9 @@
+     configurationIdentity:input.configurationIdentity,sourceGenerations:input.sourceGenerations,
+     registryGeneration:input.registryGeneration,registeredMetadataFileBindings:input.registeredMetadataFileBindings,
+     sdkSourcePins:sourcePins,sourceSelectionAuthority:input.sourceSelectionAuthority,
++    sdkPhysicalReadProvenance:{schema:"heptabao.actual-sdk-fresh-clone-provenance.private.r1",
++      logicalAgentPathsUnchanged:true,directProductionDatabaseRead:false,
++      physicalSource:"fresh_double_sqlite_backup",binding:input.cloneReadBinding},
+     ownerEntries:capturedEntries,consumerBindings:rows,
+     freshness:{currentGenerationReadThroughActualSdk:true,previousGenerationPromoted:false,
+       scopeFromPriorObservedOwnerSelection:true},
+@@ -321,6 +338,11 @@
+   report.currentGenerationRecapturedAndSdkSelectionRevalidated=true;
+   report.previousFrozenGenerationPromotedToLatest=false;
+   sdk.t();
++  cloneReader.verify();
++  need(report.privateCloneReader.cloneDatabaseConstructorsRouted>0
++    &&report.agents.length===5,"actual_five_sdk_scope_reads_used_fresh_clones");
++  report.actualSdkLogicalPathsReadThroughFreshPrivateClone=true;
++  cloneReader.close();
+   need(diagnostics.blockedAttempts===baseDenials&&sqlGuard.ledger.denials===baseSqlDenials,"sdk_attempted_no_guarded_writes_network_children_or_other_database");
+   need(sqlGuard.ledger.connections.every(x=>x.closed&&x.closeAttempts===1),"actual_sdk_all_sqlite_handles_closed_once");
+   report.unexpectedJsMutationNetworkChildAttempts=diagnostics.blockedAttempts-baseDenials;
+@@ -375,6 +397,8 @@
+       totalGuardDeniedOpenCount:ledger.denials,returnedHandleCount:ledger.connections.length,
+       allReturnedHandlesClosedOnce:ledger.connections.every(x=>x.closed&&x.closeAttempts===1)};
+   }
++  if(cloneReader){try{cloneReader.close();}catch{report.ok=false;report.cloneReaderCloseUnknown=true;}}
++  if(report.privateCloneReader?.allOriginalDescriptorsClosedOnce!==true)report.ok=false;
+   report.jsGuardBlockedAttemptCount=diagnostics.blockedAttempts;
+   report.capturedSdkDiagnosticBytes=diagnostics.bytes;
+   diagnostics.stdout.length=0;diagnostics.stderr.length=0;
