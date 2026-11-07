@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.root.current576-failed-build-file-info.GO.r1",
+  "authorization": "GO",
+  "issuedAtUTC": "2026-11-06 22:35:41 UTC",
+  "scope": "build_result_file_info_only",
+  "original_job": "1a1b2d90976-fc05-7fff",
+  "slot": "combined_5767739c_fresh_build_gitfirst_r1",
+  "sourceTree": "d9898924910f628338eedc5e9b262a0af6cc7568",
+  "sourceRootReview": {
+    "blob": "40a2493b6eba5984670091727e79f523c1f748ad",
+    "bytes": 988,
+    "sha256": "2da1562fe2b96c095e40bf4f253117c9e0ad9ff9fa3bdbc5a73c25ace864cd87"
+  },
+  "journal": {
+    "blob": "7e2f29ccc85f9c111e2886d129ea5c4560c43a37",
+    "bytes": 26173,
+    "sha256": "ef550736faceaf12138a4ecba98874667e4653eb9b7a10815a7e5a922374934d"
+  },
+  "exact_request": {
+    "blob": "8069ed61b56112eb670d41aff81066c4554152d5",
+    "bytes": 227,
+    "sha256": "48dc80cd6e5ae5da31df7bac0915542ba27f026f835772544ed93a50f2aa516e"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "reportPath": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+  "expectedSHA256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639",
+  "metadata": {
+    "maximumBytes": 4194304,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "links": 1,
+    "platform": "linux",
+    "versionFromActualINFOOnly": true
+  },
+  "observations": {
+    "maximumStatusCalls": 8,
+    "maximumImmutablePages": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576,
+    "oneCallOrFuture": true
+  },
+  "actualClosedState": {
+    "blob": "2716c76bf67767ce53d3bf681db1b0bde61fadbb",
+    "bytes": 282946,
+    "sha256": "125f484b5747bd68cdd4a267c581268eb6e36167b20ff6ba0536d550d1c79b33"
+  },
+  "originalFailurePreserved": {
+    "exit1": true,
+    "product280ResultKnown": false,
+    "releaseSuccessRetained": true,
+    "oldGitArchiveUnknown": true,
+    "originalRecoveryGO": "564aeca0f8f4d6d12a0334f2341d6c5dd9e0b006"
+  },
+  "durableProtocol": {
+    "existingSlotAttachOnly": true,
+    "initializeForbidden": true,
+    "old43Calls14Observers14PagesRemainExact": true,
+    "newGOReferencedByEachInfoStatusPageIntent": true,
+    "wholeArmBeforeDispatch": true,
+    "modelBoundaryBeforeDispatch": true,
+    "originalSDKWholeBeforeParse": true,
+    "oneOriginalOperationOnly": true,
+    "originalFullPayloadThenInactiveClosure": true
+  },
+  "onFailure": "Preserve original failure or UNKNOWN. No operation replay, rekey, replacement job, binary_read, other file, or wider host query.",
+  "lane_allocation": {
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "root": 0,
+    "maximum": 2
+  },
+  "final280Qualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

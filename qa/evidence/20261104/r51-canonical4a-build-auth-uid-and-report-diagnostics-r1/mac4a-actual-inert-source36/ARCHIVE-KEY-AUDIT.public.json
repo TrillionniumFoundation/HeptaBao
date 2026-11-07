@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.mac4a.normal117.inert.archive-callsite-audit.r1",
+  "source": {
+    "blob": "2288c1b8d4dcf103e80c27831c975351b99aeba5",
+    "bytes": 19058,
+    "sha256": "11b30b5a111f81d1a254d3ae627207dcabae6dc66c22698841f50a4d6aaf9508"
+  },
+  "all_callsites": [
+    {
+      "expression": "\"gfa-\"+callKey",
+      "purpose": "exact request, intent, armed three-leaf archive",
+      "line": 92
+    },
+    {
+      "expression": "\"gfx-\"+callKey",
+      "purpose": "original exception only",
+      "line": 124
+    },
+    {
+      "expression": "\"gfs-\"+callKey",
+      "purpose": "original returned SDK before parse",
+      "line": 137
+    },
+    {
+      "expression": "\"gfc-\"+originalObserverId",
+      "purpose": "original immutable whole payload before decode",
+      "line": 222
+    }
+  ],
+  "fixed_legacy_keys": [],
+  "fresh_slot": "successor4a_mac_normal117_controls_inert_gitfirst_r1",
+  "proposed_call_key_prefix": "mac4a-normal117-inert-r1-",
+  "process_observer_idempotency_prefix": "heptabao-4a49405b-mac-normal117-controls-r1-",
+  "actual_runtime_state_present": false,
+  "body_helpers_added": false,
+  "Native_calls": 0
+}

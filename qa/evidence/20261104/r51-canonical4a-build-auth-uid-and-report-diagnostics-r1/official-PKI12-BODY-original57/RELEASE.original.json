@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.official271.PKI12.BODY.closed-release.r2",
+  "laneReleased": true,
+  "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "originalJob": "1a1b3461a2c-fc05-81a9",
+  "body": {
+    "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+    "version": "2053:3321457:41509:1794009102635552960:1794009102635552960",
+    "bytes": 41509,
+    "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0",
+    "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+    "bodyPin": {
+      "blob": "0cb0f23e1a4484cca6ac65c5597afe3f2ed502bd",
+      "bytes": 41509,
+      "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0"
+    },
+    "bodyTree": "15bc791365fc88df6688a6cd6b797edcf1f6749a",
+    "whole": true
+  },
+  "originalWholePayload": {
+    "id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "083c0bb44c55127403e69baaad64e7bc82975c73",
+      "bytes": 55762,
+      "sha256": "dfad7e61e08ada43dc512c7a5014db31584d41babd5839b6271ab59516f06502"
+    },
+    "payloadTree": "b8d5eb933d1e4cdf77d15166a3e51a267e75cf12",
+    "nativeText": {
+      "blob": "d5f491e19162034e9c17843141b1ba3a7875c250",
+      "bytes": 55659,
+      "sha256": "214e8a644069e0f3f4b7d017fc333de6602c9feb0279c0ef9dee816fff7462d7"
+    },
+    "pages": 4,
+    "completedInactive": true
+  },
+  "state": {
+    "blob": "16871e809d48be4fd44a5f3d348d83b7946d7497",
+    "bytes": 254324,
+    "sha256": "ac885a9649b4b25754b0de6841c5e1dfd2e40babda65fe3946d13a20ce796259"
+  },
+  "originalCalls": 16,
+  "originalObservers": 4,
+  "originalBodyCalls": 6,
+  "originalBodyPages": 4,
+  "newContinuationCalls": 3,
+  "originalRejectedPage0ReusedWithoutRPC": true,
+  "old13CallsAndFailureUnchanged": true,
+  "oldPage0Phase": "native_interpretation_refused",
+  "paused": false,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "actualPKI12": {
+    "denominator": 12,
+    "passed": true,
+    "caseStatuses": {
+      "pki.cert_lookup": 200,
+      "pki.crl_json": 200,
+      "pki.issue": 200,
+      "pki.lease_expire_issue": 200,
+      "pki.lease_expire_lookup": 400,
+      "pki.lease_lookup": 200,
+      "pki.lease_revoke": 204,
+      "pki.mount": 204,
+      "pki.revoked_lease_absent": 400,
+      "pki.role": 200,
+      "pki.role_read": 200,
+      "pki.root": 200
+    },
+    "rawStatusNormalization": false,
+    "ownerMethodPassed": true,
+    "sameOriginalsClosed": true,
+    "children": 4,
+    "allChildWaitsExactlyOnce": true,
+    "parityQualified": false
+  },
+  "newNativeAuthorization": false
+}

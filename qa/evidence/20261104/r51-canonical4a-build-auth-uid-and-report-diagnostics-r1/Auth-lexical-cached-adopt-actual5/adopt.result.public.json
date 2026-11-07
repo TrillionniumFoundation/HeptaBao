@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "action": "cached_receipt_adopt_only",
+  "before": {
+    "blob": "db7b1ebc3c4c76b039f6cefb2dbe4a7071167438",
+    "bytes": 82671,
+    "sha256": "37772b46962bbe0758fe0d960f7fa19ad441ecaf8b377a539d8495dd52365a97"
+  },
+  "after": {
+    "blob": "9035e51420729ec22aa0ce43df93dc6ab73f8ee7",
+    "bytes": 87299,
+    "sha256": "b04c49c49e99008617d3423cd49c73418038b40656e3839b92b2729433111180"
+  },
+  "originalCallKey": "fixed-ps-lexical-r2-authority-page-0",
+  "originalSDKStillUninterpreted": true,
+  "NativeCalls": 0,
+  "nextAllowedActionNotExecuted": "separate root-authorized unchanged gfRun accept of original page"
+}

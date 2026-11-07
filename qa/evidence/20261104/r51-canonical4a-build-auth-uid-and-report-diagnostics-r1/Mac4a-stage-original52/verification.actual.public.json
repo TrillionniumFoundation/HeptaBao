@@ -1,0 +1,316 @@
+{
+  "schema": "heptabao.mac4a-stage-original-transport-verification.r1",
+  "pass": true,
+  "checkCount": 75,
+  "checks": [
+    {
+      "name": "root_GO_exact",
+      "pass": true
+    },
+    {
+      "name": "seven_original_calls",
+      "pass": true
+    },
+    {
+      "name": "two_original_closed_observers",
+      "pass": true
+    },
+    {
+      "name": "actual_closed_no_future",
+      "pass": true
+    },
+    {
+      "name": "call0_exact_original_record",
+      "pass": true
+    },
+    {
+      "name": "call0_request_whole",
+      "pass": true
+    },
+    {
+      "name": "call0_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "call0_native_original",
+      "pass": true
+    },
+    {
+      "name": "call0_arm_GO_and_request",
+      "pass": true
+    },
+    {
+      "name": "call0_arm_leaf_armed.json",
+      "pass": true
+    },
+    {
+      "name": "call0_arm_leaf_intent.json",
+      "pass": true
+    },
+    {
+      "name": "call0_arm_leaf_request.json",
+      "pass": true
+    },
+    {
+      "name": "call1_exact_original_record",
+      "pass": true
+    },
+    {
+      "name": "call1_request_whole",
+      "pass": true
+    },
+    {
+      "name": "call1_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "call1_native_original",
+      "pass": true
+    },
+    {
+      "name": "call1_arm_GO_and_request",
+      "pass": true
+    },
+    {
+      "name": "call1_arm_leaf_armed.json",
+      "pass": true
+    },
+    {
+      "name": "call1_arm_leaf_intent.json",
+      "pass": true
+    },
+    {
+      "name": "call1_arm_leaf_request.json",
+      "pass": true
+    },
+    {
+      "name": "call2_exact_original_record",
+      "pass": true
+    },
+    {
+      "name": "call2_request_whole",
+      "pass": true
+    },
+    {
+      "name": "call2_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "call2_native_original",
+      "pass": true
+    },
+    {
+      "name": "call2_arm_GO_and_request",
+      "pass": true
+    },
+    {
+      "name": "call2_arm_leaf_armed.json",
+      "pass": true
+    },
+    {
+      "name": "call2_arm_leaf_intent.json",
+      "pass": true
+    },
+    {
+      "name": "call2_arm_leaf_request.json",
+      "pass": true
+    },
+    {
+      "name": "call3_exact_original_record",
+      "pass": true
+    },
+    {
+      "name": "call3_request_whole",
+      "pass": true
+    },
+    {
+      "name": "call3_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "call3_native_original",
+      "pass": true
+    },
+    {
+      "name": "call3_arm_GO_and_request",
+      "pass": true
+    },
+    {
+      "name": "call3_arm_leaf_armed.json",
+      "pass": true
+    },
+    {
+      "name": "call3_arm_leaf_intent.json",
+      "pass": true
+    },
+    {
+      "name": "call3_arm_leaf_request.json",
+      "pass": true
+    },
+    {
+      "name": "call4_exact_original_record",
+      "pass": true
+    },
+    {
+      "name": "call4_request_whole",
+      "pass": true
+    },
+    {
+      "name": "call4_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "call4_native_original",
+      "pass": true
+    },
+    {
+      "name": "call4_arm_GO_and_request",
+      "pass": true
+    },
+    {
+      "name": "call4_arm_leaf_armed.json",
+      "pass": true
+    },
+    {
+      "name": "call4_arm_leaf_intent.json",
+      "pass": true
+    },
+    {
+      "name": "call4_arm_leaf_request.json",
+      "pass": true
+    },
+    {
+      "name": "call5_exact_original_record",
+      "pass": true
+    },
+    {
+      "name": "call5_request_whole",
+      "pass": true
+    },
+    {
+      "name": "call5_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "call5_native_original",
+      "pass": true
+    },
+    {
+      "name": "call5_arm_GO_and_request",
+      "pass": true
+    },
+    {
+      "name": "call5_arm_leaf_armed.json",
+      "pass": true
+    },
+    {
+      "name": "call5_arm_leaf_intent.json",
+      "pass": true
+    },
+    {
+      "name": "call5_arm_leaf_request.json",
+      "pass": true
+    },
+    {
+      "name": "call6_exact_original_record",
+      "pass": true
+    },
+    {
+      "name": "call6_request_whole",
+      "pass": true
+    },
+    {
+      "name": "call6_SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "call6_native_original",
+      "pass": true
+    },
+    {
+      "name": "call6_arm_GO_and_request",
+      "pass": true
+    },
+    {
+      "name": "call6_arm_leaf_armed.json",
+      "pass": true
+    },
+    {
+      "name": "call6_arm_leaf_intent.json",
+      "pass": true
+    },
+    {
+      "name": "call6_arm_leaf_request.json",
+      "pass": true
+    },
+    {
+      "name": "exact_typed_start_binding",
+      "pass": true
+    },
+    {
+      "name": "actual_START_ack",
+      "pass": true
+    },
+    {
+      "name": "actual_START_argv",
+      "pass": true
+    },
+    {
+      "name": "observer0_same_ID",
+      "pass": true
+    },
+    {
+      "name": "observer0_inactive_stored",
+      "pass": true
+    },
+    {
+      "name": "observer0_whole_one_page",
+      "pass": true
+    },
+    {
+      "name": "observer0_original_inner_native",
+      "pass": true
+    },
+    {
+      "name": "observer1_same_ID",
+      "pass": true
+    },
+    {
+      "name": "observer1_inactive_stored",
+      "pass": true
+    },
+    {
+      "name": "observer1_whole_one_page",
+      "pass": true
+    },
+    {
+      "name": "observer1_original_inner_native",
+      "pass": true
+    },
+    {
+      "name": "terminal_exit0_full_durable",
+      "pass": true
+    },
+    {
+      "name": "stdout_continuous_whole_text",
+      "pass": true
+    },
+    {
+      "name": "stderr_continuous_whole_text",
+      "pass": true
+    },
+    {
+      "name": "exact378_summary_no_Cargo",
+      "pass": true
+    }
+  ],
+  "merkleTrees": 16,
+  "actualOriginalCalls": 7,
+  "actualOriginalObservers": 2,
+  "actualPages": 2,
+  "actualExitCode": 0,
+  "NativeCallsByVerifier": 0,
+  "detailedStageReportQualified": false,
+  "MacNormal117Qualified": false,
+  "formal34Qualified": false
+}

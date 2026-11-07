@@ -1,0 +1,9 @@
+# Mac 4a stage report: original independent BODY actual chain
+
+Three original calls admitted one binary_read operation, confirmed that same operation completed/stored/inactive, and retrieved its one immutable page. The actual page is 10,691 bytes, above the old8KiB acceptance limit and within the explicitly approved16KiB binary limit. The full payload and exact7,685-byte UTF8 report were separately externally whole before body/report interpretation. There was no transport or local acceptance failure on this independent BODY chain.
+
+The original stage/INFO paused state remains exactc430ef8d263c59dfced528e9a6b35a19004b162f, and the completed INFO retrieval remains exact670606feaab7a5947d02374ddf8773c7a4928d73. Neither predecessor is modified or handed back. The old INFO timeout remains in its original state/history. All new request/intent/armed leaves and original SDK/native text are included, together with the new closed state, whole payload/report, external archive receipts, original BODY GO and explicit scheduling allocation.
+
+To reproduce49 pure checks, concatenate pure_helpers.original.js and verifier.source.js, then call verifyMac4aIndependentBodyActual(files). The verifier recomputes all3 arm trees, all3 SDK trees, payload/body archive trees, raw SDK/native consistency, exact version/path/SHA/full9, the actual16KiB acceptance case, both frozen predecessor pins, and the detailed stage report. It performs no Git, Python or Native action.
+
+The report witnesses prepared4a/f02dd113,3932 leaves/62,553,956 bytes/index7e7acf5b,clean independent Git/fsck/no alternates/no shared object links,unchanged readonlyMac576,history3770,sole576→4a1253-byte bundle,exactT5UUID,and31 original child exits0/reaped/remaining[]. Stage300/git90/clone180/outer360 remain unchanged. Controls,compiler,server,production changes and network fetch are all false. This qualifies source staging only; actual Macnormal117,full34,AuthBus and LAN remain subsequent scopes.

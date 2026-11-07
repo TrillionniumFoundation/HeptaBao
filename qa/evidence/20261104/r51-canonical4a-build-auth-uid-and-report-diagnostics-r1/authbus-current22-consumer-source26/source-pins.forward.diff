@@ -1,0 +1,65 @@
+--- a/source-pins.before
++++ b/source-pins.source-template
+@@ -30,9 +30,9 @@
+     "sha256": "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b"
+   },
+   "mac_current_fixture_materializer_r1.py": {
++    "blob": "6a3b8911ac391fea1884113625fde555cae132e8",
++    "bytes": 26026,
++    "sha256": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+-    "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+-    "bytes": 25973,
+-    "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+   },
+   "mac_current_outer_inputs_r2.py": {
+     "blob": "c59271a6852e4ccba17aaa2cb8357704092d3a11",
+@@ -40,9 +40,9 @@
+     "sha256": "54a5a023b4f3af34e14c6617ee97c5bb2e38fd4bf843398e437c5c95fd45f673"
+   },
+   "mac_current_outer_wal_r1.py": {
++    "blob": "27b9e70f6c708690f3a8f86347137a744253efbb",
++    "bytes": 74137,
++    "sha256": "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529"
+-    "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+-    "bytes": 73918,
+-    "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+   },
+   "mac_current_phase_owner_r2.py": {
+     "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+@@ -75,24 +75,24 @@
+     "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+   },
+   "mac_native_process_observer_r1.py": {
++    "blob": "8ccc79e3f776bfb42648bcd6ace6ab021574a949",
++    "bytes": 15269,
++    "sha256": "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5"
+-    "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+-    "bytes": 13423,
+-    "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+   },
+   "mac_owned_commands_r1.py": {
++    "blob": "e5fe545bdd842ae3bf4d61e2576b407149d32a2d",
++    "bytes": 7675,
++    "sha256": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1"
+-    "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+-    "bytes": 5965,
+-    "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+   },
+   "mac_owned_launchd_r3.py": {
++    "blob": "92a1293db9792644b378da07eb9650951979358a",
++    "bytes": 60153,
++    "sha256": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+-    "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+-    "bytes": 58584,
+-    "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+   },
+   "mac_owned_unreaped_r1.py": {
++    "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",
++    "bytes": 13221,
++    "sha256": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501"
+-    "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+-    "bytes": 10990,
+-    "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+   },
+   "mac_registry_readonly_wal_r1.py": {
+     "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",

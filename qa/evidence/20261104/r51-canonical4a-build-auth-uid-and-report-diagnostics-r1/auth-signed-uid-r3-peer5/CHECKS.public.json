@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.B.narrow-UID-r3-source-checks.r1",
+  "checks": [
+    {
+      "name": "manager_forward",
+      "pass": true
+    },
+    {
+      "name": "manager_reverse",
+      "pass": true
+    },
+    {
+      "name": "manager_inverse",
+      "pass": true
+    },
+    {
+      "name": "controller_forward",
+      "pass": true
+    },
+    {
+      "name": "controller_reverse",
+      "pass": true
+    },
+    {
+      "name": "controller_inverse",
+      "pass": true
+    },
+    {
+      "name": "manager_one_hunk",
+      "pass": true
+    },
+    {
+      "name": "controller_two_hunks",
+      "pass": true
+    },
+    {
+      "name": "embedded_modules_unchanged",
+      "pass": true
+    },
+    {
+      "name": "lexical_projection_unchanged",
+      "pass": true
+    },
+    {
+      "name": "same_UID_guard",
+      "pass": true
+    },
+    {
+      "name": "first_three_and_width_unchanged",
+      "pass": true
+    },
+    {
+      "name": "actual_signed_value_preserved",
+      "pass": true
+    },
+    {
+      "name": "group_filter_after_type_and_range",
+      "pass": true
+    }
+  ],
+  "passed": true,
+  "count": 14,
+  "Native_calls": 0,
+  "Python_calls": 0,
+  "author78_or_18_run": false
+}

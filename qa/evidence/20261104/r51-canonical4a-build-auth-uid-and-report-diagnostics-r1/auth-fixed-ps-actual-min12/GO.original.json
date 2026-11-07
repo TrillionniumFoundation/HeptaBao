@@ -1,0 +1,233 @@
+{
+  "schema": "heptabao.root.go.Auth-fixed-setuid-ps-custody.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-07 01:12:23 UTC",
+  "agent": "A",
+  "scope": "one_fresh_fixed_public_ps_custody_validation",
+  "source_packet": {
+    "tree": "eee0363103afb513ebc602eb37cec78405320caf",
+    "files": 59,
+    "bytes": 788188,
+    "merkle": {
+      "root_sha": "eee0363103afb513ebc602eb37cec78405320caf",
+      "trees_verified": 1,
+      "leaf_count": 59
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "d37f6efd90d07890b6031d164ec8980e38639ef0",
+    "bytes": 56248,
+    "sha256": "c0c5f6716f8701efbf57d2a5eae87bf5cfa311eeea2da28c988d02aac66dd484"
+  },
+  "exact_request": {
+    "blob": "6b3c7b367fab9ef768f2ba145770a3ab3e713f0c",
+    "bytes": 57139,
+    "sha256": "74e700b9cfbfde31ddb5821ff231c9965a339d3581f8b114a1a13ce902c152c1"
+  },
+  "journal": {
+    "blob": "225aea4ff2abb64763eee631108d61a9b6a26fb2",
+    "bytes": 19056,
+    "sha256": "3a35571434326df1ca37b4470a73405040b7c39d70c5ddf6bf0b9b7ab89b9ea1"
+  },
+  "slot": "owner_authbus_fixed_setuid_ps_custody_gitfirst_r1",
+  "digest": "4c0158e049e5e0ca6ef168f880dab7e88c740db927321c0f88e517f454bb96f2",
+  "fingerprint": "5476756342194954442",
+  "requestBindingUses": "actual stdin field; independently reproduced canonical bytes",
+  "root_review": {
+    "blob": "147beb6fb01f5632e22df47ebf699ed926374936",
+    "bytes": 11228,
+    "sha256": "3df9de58fe334ba8eb683cca9d922da538239747d5f40c070ad8f416af7aff13",
+    "tree": "9222722596e8d7d8870d8c1718dc238023af4b8e",
+    "whole": true
+  },
+  "rootSourceChecks": 73,
+  "rootActualBindingChecks": 27,
+  "additionalInputPinsMatchActuallyExecutedPredecessor": true,
+  "peerReviewTree": "fe2c73f5803335db4d15c69824ddd116bb2e0c1d",
+  "start": {
+    "maximumCalls": 1,
+    "idempotencyKey": "heptabao-mac-fixed-setuid-ps-custody-c0c5f671-20261107-r1",
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "stdin": {
+      "blob": "d37f6efd90d07890b6031d164ec8980e38639ef0",
+      "bytes": 56248,
+      "sha256": "c0c5f6716f8701efbf57d2a5eae87bf5cfa311eeea2da28c988d02aac66dd484"
+    }
+  },
+  "execution": {
+    "argv": [
+      "/bin/ps",
+      "-axo",
+      "pid=,ppid=,pgid=,uid=,stat="
+    ],
+    "label": "owned-launchd-group-observation",
+    "count": 1,
+    "expectedEffectiveUid": 0,
+    "onlyAfterCurrentWholeFull9OfPinnedPs": true,
+    "operatorUid": 501,
+    "otherCommandsExpectedEffectiveUid": 501,
+    "PPIDPGIDBirthWNOWAITUnchanged": true
+  },
+  "exact_input_pins": {
+    "/bin/ps": {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "budgets": {
+    "sharedWorkSeconds": 35,
+    "afterClosureSeconds": 45,
+    "nativeTimeoutSeconds": 60,
+    "primaryCommandSeconds": 4,
+    "cleanupReserveSeconds": 9,
+    "cleanupCaps": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "streamingStdoutBytes": 262144,
+    "streamingStderrBytes": 262144,
+    "primaryPipeObjects": 2,
+    "applicationHeldInputFds": 2,
+    "publicInputBodyBytes": 205072,
+    "publicInputReadByteCeilingIncludingEofSlack": 205074,
+    "inputReadCalls": 128,
+    "inputMetadataCalls": 128,
+    "additionalFixedPsLstatCallsMaximum": 2,
+    "publicTypedTableRows": 8192,
+    "publicFinalStdoutBytes": 65536,
+    "stderrExpectedBytes": 0
+  },
+  "accounting": {
+    "newPrimaryChildren": 1,
+    "allOsChildCountNotClaimedOne": true,
+    "internalPsSamplers": "Existing unchanged WNOWAIT helper uses bounded ps subprocess.run; not counted as the primary streaming group-projection. Its original post-communicate 2 MiB/65536 bound is retained, not substituted for the primary 262144 streaming contract.",
+    "additionalCurrentWholeReadByComponentChange": 0,
+    "newConsumerCReads": 0,
+    "consumerOriginalCReadsMaximum": 3,
+    "consumerTypedEsrchRequeryMaximumPerAbsence": 1,
+    "consumerQueryStillUsesOriginalManagerCounterAndDeadline": true,
+    "newInfiniteRetries": 0,
+    "signalAndReapOnlyNewDirectPopenCustody": true
+  },
+  "outputs": {
+    "allowed": "Own direct-child Popen PID/PPID/PGID/euid/birth/retained exit and cleanup evidence; exact admitted public pins; input counters; table row count and own primary PID row only.",
+    "forbidden": [
+      "other process table rows",
+      "raw process table",
+      "process table hash",
+      "stderr text/hash",
+      "private plans",
+      "credentials",
+      "SDK configuration",
+      "historical pid actions"
+    ],
+    "diagnosticExpectedActual": false
+  },
+  "predicates": {
+    "fixedPsRequiresWholeFull9BeforePinAdmission": true,
+    "fixedPsNameFull9BeforeSpawnAndAfterExitEof": true,
+    "descriptorDoesNotEliminateExecByNameRace": true,
+    "liveRootUidExceptionOnlyExactPrimaryStableIdentity": true,
+    "rootUidDescendantsNotAllowed": true,
+    "commandsDefaultUidUnchanged": true,
+    "esrchOnlyOptinCountZeroErrnoEsrch": true,
+    "esrchIsNotReapOrSuccess": true,
+    "managerStillNeedsSameRegistrationRunsOneNoPidAndExitZeroAndOriginalResultClosure": true
+  },
+  "bounded_observation_for_this_new_job": {
+    "process_statusMaximum": 8,
+    "process_readMaximum": 8,
+    "process_readBytes": 16384,
+    "operation_statusMaximumPerObserver": 8,
+    "immutablePageBytes": 8192,
+    "immutablePageMaximumPerObserver": 128,
+    "payloadBytesMaximumPerObserver": 1048576,
+    "stdoutTotalMaximum": 65536,
+    "stderrTotalMaximum": 0,
+    "sequentialOriginalIdsOnly": true,
+    "wholeSdkBeforeParse": true,
+    "noReplayRekey": true
+  },
+  "excluded": [
+    "SDK execution",
+    "new AuthBus runtime",
+    "launchd registration or cleanup",
+    "T5 reads/writes",
+    "directory scan",
+    "fixed file writes",
+    "old ps 84947/85012 control",
+    "old failures promoted",
+    "new binary/issuer qualification"
+  ],
+  "componentBusinessDispatchAllowed": false,
+  "execByNameRaceNotClaimedEliminated": true,
+  "signalAndReapOnlyNewDirectPopenCustody": true,
+  "oldPidActionsAuthorized": false,
+  "lane_allocation": {
+    "conditional": true,
+    "root": 0,
+    "A": 1,
+    "B": "1 original BUILD UNKNOWN or separately exact same-key reconciliation",
+    "C": 0,
+    "maximum": 2,
+    "condition": "C must finish original PKI BODY and Mac stage INFO with all Native calls/futures closed; root must send the actual closure-bound A launch allocation before this slot is initialized or armed."
+  },
+  "sequence": [
+    "Whole read exact GO, SOURCE59, root qualification and peer17; wait for explicit C-closure-bound A launch allocation.",
+    "Initialize absent exact slot once; original request/intent/arm whole before a model boundary and exactly one START.",
+    "Archive whole original SDK before interpretation; observe only returned original job with bounded status and streams.",
+    "Keep public output restricted to fixed admitted pins, own direct-child custody/closure and table count; no raw unrelated rows or process table hash.",
+    "Preserve every refusal and uncertainty; any unknown START or custody failure stops without rekey or broader UID rule."
+  ],
+  "gitFirstExplicitlyRequired": true,
+  "localDurableJournalClaimed": false,
+  "result_interpretation": {
+    "positive": "Actual fixed ps expected effective UID0, same direct Popen parent/group/birth/retained WNOWAIT custody, real exit0, empty stderr, exact fences, descriptor/group closure and original deadline all hold.",
+    "historicalFailureCauseQualified": false,
+    "historicalManagedClosureQualified": false,
+    "SDKQualified": false,
+    "actualAuthBusQualified": false
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "legacy_cleanup": false
+}

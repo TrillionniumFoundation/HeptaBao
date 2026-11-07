@@ -1,0 +1,7 @@
+{
+  "stage": "pure MODULES literal selector",
+  "type": "TypeError",
+  "message": "Cannot read properties of null (reading '1')",
+  "cause": "Reader regexp expected an extra closing parenthesis; candidate and Runtime unchanged",
+  "NativeCallsAdded": 0
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.root.Auth-fixed-ps-actual-lane-allocation.r1",
+  "authorization": "GO",
+  "scope": "activate_existing_exact_fixed_ps_GO_after_C_physical_lane_release",
+  "issuedAtUtc": "2026-11-07 01:21:59 UTC",
+  "originalExecutionGO": {
+    "blob": "d53a5d17fa64bfde10a642a3527f4360e7d444af",
+    "bytes": 8491,
+    "sha256": "fc660396b4c50330af20a1a61f2092cddc7006ded40002ab3a1c57a8db83be31"
+  },
+  "originalExecutionGOTree": "830e8d449d4bdafac42c4c6003b409143559e6f5",
+  "sourceAndRequestAndKeyUnchanged": true,
+  "supersedesOnlySchedulingCondition": true,
+  "physicalReleaseQualification": {
+    "blob": "e1555cafb02b4df14318571a613ef2ca77d177bc",
+    "bytes": 1851,
+    "sha256": "67777f2dcb9fb863197d48efb4242eef429d8eea6ba83cc18bbf61fb064b4119",
+    "tree": "80681a562018c8ddb6184f17884355e3a9a15cc1",
+    "whole": true
+  },
+  "PKIOriginalBODYClosed": true,
+  "MacOriginalINFOCompletedStoredInactive": true,
+  "MacINFOPage0DeliveryTimedOut": true,
+  "MacINFOLogicalObserverStillPending": true,
+  "MacMetadataStillUnqualified": true,
+  "logicalPageDeliveryPendingDoesNotReserveANativeFuture": true,
+  "CNativeCallsInFlight": 0,
+  "CNativeFuturesActive": 0,
+  "CNewNativeActionsHeld": true,
+  "AInitializeAndArmNowAuthorized": true,
+  "maximumAStarts": 1,
+  "originalSlot": "owner_authbus_fixed_setuid_ps_custody_gitfirst_r1",
+  "originalKey": "heptabao-mac-fixed-setuid-ps-custody-c0c5f671-20261107-r1",
+  "laneAllocation": {
+    "root": 0,
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "maximum": 2
+  },
+  "BActualJobReported": "rog/1a1b3978da9-fc05-83bd",
+  "rootBActualACKQualificationPending": true,
+  "noNewPublicOrPrivateScope": true,
+  "noDeadlineOrByteBoundChange": true,
+  "allOriginalFailuresPreserved": true,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

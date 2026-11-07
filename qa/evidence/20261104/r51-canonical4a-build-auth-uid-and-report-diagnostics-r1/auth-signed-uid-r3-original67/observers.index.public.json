@@ -1,0 +1,44 @@
+[
+  {
+    "id": "85b4836e88e67f76189636d3f1539ec1b35fa38e516657d6a80dfec35dcc0aa6",
+    "tool": "process_status",
+    "payload": {
+      "blob": "ba8defa6bed597176ac5ad9684edab2dfdf1475f",
+      "bytes": 910,
+      "sha256": "3f58adf49483edee04ec6fc614deead985d5c05cb4190acb78912ef5fa79eba1"
+    },
+    "payloadTree": "04e8773f7382c23927b3ccd726ac52009321bcc0",
+    "nativeText": {
+      "blob": "e46b827bbe24fbf5a662af6dcdfba18566598f2d",
+      "bytes": 731,
+      "sha256": "2ef35567f08e1c0840b9b11fb855159c63a51d6cceed2a678aeaff580d6352ad"
+    },
+    "pages": 1,
+    "completedInactive": true,
+    "paths": {
+      "payload": "observer-00-process_status.payload.original.json",
+      "native": "observer-00-process_status.native.original.json"
+    }
+  },
+  {
+    "id": "b56b0ff6d0772b60d69883b6ec138a47fbb91bf4f4f36bcb90239677d291e28b",
+    "tool": "process_read",
+    "payload": {
+      "blob": "059048e5923ac172e406a9a5879165e7fc05515e",
+      "bytes": 20337,
+      "sha256": "0ab7314eaa35fb7f1131201c04aeaef87673fa8117a5dcffd1bdcf5c585618fc"
+    },
+    "payloadTree": "b0dfe2c04c7ffff31b43ebd32acde8f713d075f9",
+    "nativeText": {
+      "blob": "3a8349c41c7a4ba9ac0b98f4a4e481fa299e5ace",
+      "bytes": 18964,
+      "sha256": "4b6fc0c61a97fc3adc4c18cdfce4cbe11eaf54cba2c73f30211ee93533884c85"
+    },
+    "pages": 3,
+    "completedInactive": true,
+    "paths": {
+      "payload": "observer-01-process_read.payload.original.json",
+      "native": "observer-01-process_read.native.original.json"
+    }
+  }
+]

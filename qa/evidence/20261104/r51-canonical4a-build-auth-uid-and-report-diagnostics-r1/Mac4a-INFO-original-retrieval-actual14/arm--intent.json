@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.mac-stage-info-payload-page0-intent.r1",
+  "request": {
+    "blob": "2e67f1baabc04575aa277fcb2d270271500e68e3",
+    "bytes": 121,
+    "sha256": "177140e2743e89076257a772e458a8b784ed91e32f0bba3a96ef77083eb2dea9"
+  },
+  "originalInfoState": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "originalStatus": {
+    "blob": "be8f407df5b4e27260b8bb67170e8130e73e0eda",
+    "bytes": 800,
+    "sha256": "db1881cb30ef27e3e46c5248efb9c8f75bc63555cb23eb8e3cca6724b7210f8a"
+  },
+  "originalFailedPageSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "rootGo": {
+    "blob": "b55a44c0d8933bd85dce598b0344dc294df6ea20",
+    "bytes": 2751,
+    "sha256": "29bdb779f4463d0fde7d6436934daece09bba60bf5182d811dac462b2351fb6a"
+  },
+  "maximumNativeCalls": 1,
+  "noNewInfo": true,
+  "noStatus": true,
+  "noStart": true,
+  "noOldStateWrite": true,
+  "nativeNotYetCalled": true
+}

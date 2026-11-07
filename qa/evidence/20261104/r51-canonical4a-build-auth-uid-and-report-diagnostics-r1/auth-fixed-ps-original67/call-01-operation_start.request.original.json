@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b39a2fb0-fc05-83ca"
+    }
+  },
+  "idempotency_key": "heptabao-mac-fixed-setuid-ps-custody-c0c5f671-authority-0"
+}

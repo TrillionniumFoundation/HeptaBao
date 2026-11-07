@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "fixed-ps-lexical-r2-streams-page-0",
+  "kind": "operation_result",
+  "request": {
+    "blob": "6c9ce29194fa4fc328ec852d9f5abcf2431e5904",
+    "bytes": 121,
+    "sha256": "d34c64ad84506db0a648cdbbe2d606ab4eed682810a3e1e0024a503f52d7cc8a"
+  },
+  "rootGo": {
+    "blob": "8d0244e688e9a928ff3772b7f4f7d62038507077",
+    "bytes": 11144,
+    "sha256": "ec64c36d88de0f78dfd08a6e532dd6b833930e973cf9ec6250c55b604711bea1"
+  },
+  "originalJob": "1a1b3af5466-fc05-844c",
+  "originalOperation": "3983e3458c1e7ec00d316590883bcf2f3ba3e41e3a44c99bf8e79fa1af331b48",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

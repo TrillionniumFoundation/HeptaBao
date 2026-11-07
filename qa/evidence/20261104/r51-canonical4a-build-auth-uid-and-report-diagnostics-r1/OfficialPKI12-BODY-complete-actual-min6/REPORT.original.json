@@ -1,0 +1,1472 @@
+{
+  "artifact_metadata_after": [
+    {
+      "expected_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "full9_decimal": [
+        "2053",
+        "4484525",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "181760103",
+        "1793293201917498566",
+        "1793293202538497931"
+      ],
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "whole_hash_checked_by_original_launcher": false
+    },
+    {
+      "expected_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "full9_decimal": [
+        "2053",
+        "4484524",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "74865426",
+        "1793293199950500560",
+        "1793293199950500560"
+      ],
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "whole_hash_checked_by_original_launcher": false
+    }
+  ],
+  "artifact_metadata_before": [
+    {
+      "expected_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "full9_decimal": [
+        "2053",
+        "4484525",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "181760103",
+        "1793293201917498566",
+        "1793293202538497931"
+      ],
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "whole_hash_checked_by_original_launcher": false
+    },
+    {
+      "expected_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "full9_decimal": [
+        "2053",
+        "4484524",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "74865426",
+        "1793293199950500560",
+        "1793293199950500560"
+      ],
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "whole_hash_checked_by_original_launcher": false
+    }
+  ],
+  "candidate_started": false,
+  "capture_complete": true,
+  "component_product_cases": 0,
+  "components": {
+    "HTTP_requests": 0,
+    "classes": 4,
+    "component": "raw_observer_current_record_failures",
+    "fixture_or_subprocess_launches": 0,
+    "product_cases": 0,
+    "results": [
+      {
+        "http_status": null,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "precheck_without_append"
+      },
+      {
+        "http_status": null,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "wrong_case_only"
+      },
+      {
+        "http_status": null,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "one_matching_null"
+      },
+      {
+        "http_status": 400,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "one_matching_400"
+      },
+      {
+        "http_status": 403,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "one_matching_403"
+      },
+      {
+        "http_status": 404,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "one_matching_404"
+      },
+      {
+        "http_status": 405,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "one_matching_405"
+      },
+      {
+        "http_status": null,
+        "passed": true,
+        "suite_call_restored": true,
+        "variant": "multiple_matching"
+      }
+    ],
+    "source_sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9",
+    "variants": 8
+  },
+  "deadline_reset": false,
+  "extra_live_health_requests": {
+    "attempted": 1,
+    "completed": 1,
+    "maximum": 1
+  },
+  "failure": null,
+  "fixtures_started_at_most": 1,
+  "historical_artifact_presence_not_inherited": true,
+  "live_identity": {
+    "archive_member_matches_executable": true,
+    "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "cluster_id": "0f1d7209-b237-de59-12bd-6d28fd8c5259",
+    "endpoint": "https://127.0.0.1:23627",
+    "launcher_source_sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+    "product": "OpenBao",
+    "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
+    "server_mode": "server_not_dev",
+    "storage": "pebbledb",
+    "synthetic_only": true,
+    "tls_verified": true,
+    "version": "2.7.1"
+  },
+  "official_acl23_reexecuted": false,
+  "official_version_requested": "2.7.1",
+  "original_deadline_ns": 2711514742503589,
+  "original_owner": {
+    "business_finished_ns": 2711164354177056,
+    "business_scenarios_not_qualified_by_this_receipt": true,
+    "children": [
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 2711158786390736,
+        "argv_SHA256": "950151a26a32d5b0b86d2abe0125cf52fecb16237ee361074b46b3c670a762ad",
+        "birth": {
+          "PGID": 367132,
+          "PID": 367132,
+          "PPID": 366497,
+          "SID": 367132,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789078373638846547,
+              "dev": 2053,
+              "ino": 656453,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 271115870
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "official_openbao_launcher.158",
+        "original_PID": 367132,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 2711158792165794,
+            "returncode": 0,
+            "returned_ns": 2711159006084656,
+            "timeout": 355.950342141
+          }
+        ],
+        "registered_ns": 2711158709627014,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790722773260403770,
+            "dev": 2053,
+            "ino": 658034,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 2711159097961957,
+        "argv_SHA256": "9aaec85671b4521234f3a6e4557e590760fa3b98d3e86e8c0cce0f699dada7de",
+        "birth": {
+          "PGID": 367159,
+          "PID": 367159,
+          "PPID": 366497,
+          "SID": 367159,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789078373638846547,
+              "dev": 2053,
+              "ino": 656453,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 271115901
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "official_openbao_launcher.158",
+        "original_PID": 367159,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 2711159103984689,
+            "returncode": 0,
+            "returned_ns": 2711159418099369,
+            "timeout": 355.638524787
+          }
+        ],
+        "registered_ns": 2711159011600126,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790722773260403770,
+            "dev": 2053,
+            "ino": 658034,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 2711159500216600,
+        "argv_SHA256": "4c829a9f14dce3018a2467209ed95d65082f1049ebc5bc808906e46ecb5ea148",
+        "birth": {
+          "PGID": 367250,
+          "PID": 367250,
+          "PPID": 366497,
+          "SID": 367250,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789078373638846547,
+              "dev": 2053,
+              "ino": 656453,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 271115942
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "KILL",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "utility",
+        "label": "official_openbao_launcher.158",
+        "original_PID": 367250,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 2711159527427853,
+            "returncode": 0,
+            "returned_ns": 2711159591102321,
+            "timeout": 355.215078915
+          }
+        ],
+        "registered_ns": 2711159428221391,
+        "same_original_Popen_wait": true,
+        "signals": [],
+        "target_exec_input": {
+          "SHA256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "path": "/usr/bin/openssl",
+          "stat8": {
+            "ctime_ns": 1790722773260403770,
+            "dev": 2053,
+            "ino": 658034,
+            "mode": 33261,
+            "mtime_ns": 1789584422000000000,
+            "nlink": 1,
+            "size": 1005368,
+            "uid": 0
+          }
+        }
+      },
+      {
+        "SID_observation_gaps": [],
+        "SID_survivors": [],
+        "admission_released": true,
+        "admitted_ns": 2711160411871228,
+        "argv_SHA256": "4e3db2fb3d1b3412c517b7d20f04bd49deac6a0e444dac1e96562fb18b53b3d0",
+        "birth": {
+          "PGID": 367375,
+          "PID": 367375,
+          "PPID": 366497,
+          "SID": 367375,
+          "UIDs": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "boot_id": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+          "image": {
+            "SHA256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+            "path": "/usr/bin/python3.12",
+            "stat8": {
+              "ctime_ns": 1789078373638846547,
+              "dev": 2053,
+              "ino": 656453,
+              "mode": 33261,
+              "mtime_ns": 1788171506000000000,
+              "nlink": 1,
+              "size": 8020928,
+              "uid": 0
+            }
+          },
+          "starttick": 271116031
+        },
+        "completed_original_wait_count": 1,
+        "declared_stop_action": "TERM",
+        "declared_stop_timeout": 5,
+        "exec_input_guard_acknowledged": true,
+        "exit_code": 0,
+        "fallback": false,
+        "gaps": [],
+        "kind": "server",
+        "label": "official_openbao_launcher.328",
+        "original_PID": 367375,
+        "original_SID_retired_observed": true,
+        "original_wait_attempts": [
+          {
+            "entered_ns": 2711163838915763,
+            "returncode": 0,
+            "returned_ns": 2711164353980504,
+            "timeout": 5
+          }
+        ],
+        "registered_ns": 2711160318462075,
+        "same_original_Popen_wait": true,
+        "signals": [
+          {
+            "authority": "original_kernel_pidfd",
+            "fallback": false,
+            "requested_ns": 2711163838896773,
+            "sent": true,
+            "signal": 15
+          }
+        ],
+        "target_exec_input": {
+          "SHA256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+          "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+          "stat8": {
+            "ctime_ns": 1793293202538497931,
+            "dev": 2053,
+            "ino": 4484525,
+            "mode": 33216,
+            "mtime_ns": 1793293201917498566,
+            "nlink": 1,
+            "size": 181760103,
+            "uid": 1000
+          }
+        }
+      }
+    ],
+    "controls": [],
+    "external_original_deadline": true,
+    "finished_ns": 2711164480179605,
+    "original_deadline_ns": 2711514742503589,
+    "passed_process_method": true,
+    "profile": "official271_pki12_oracle",
+    "profile_seconds": 360,
+    "same_originals_closed": true,
+    "schema": "heptabao.qa.original-process.v1",
+    "started_ns": 2711154891797958
+  },
+  "parity_qualified": false,
+  "pki": {
+    "cases": {
+      "pki.cert_lookup": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "GET",
+          "path_template": "/v1/{pki}/cert/{serial}",
+          "result": "passed",
+          "semantics": {
+            "certificate": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 849,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.cert_lookup",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "GET",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/hbqa-{run_id}-pki/cert/3e:9b:a2:8d:97:ce:8a:8d:5a:bc:59:fa:39:9b:8a:23:f7:d1:06:8c",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      },
+      "pki.crl_json": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "GET",
+          "path_template": "/v1/hbqa-{run_id}-pki/cert/crl",
+          "result": "passed",
+          "semantics": {
+            "crl": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 603,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.crl_json",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "GET",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/hbqa-{run_id}-pki/cert/crl",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      },
+      "pki.issue": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "POST",
+          "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+          "result": "passed",
+          "semantics": {
+            "certificate": true,
+            "issuing_ca": true,
+            "lease_duration": true,
+            "lease_id": true,
+            "private_key": true,
+            "private_key_type": true,
+            "renewable": true,
+            "serial": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 2339,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.issue",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      },
+      "pki.lease_expire_issue": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "POST",
+          "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+          "result": "passed",
+          "semantics": {
+            "bounded_ttl": true,
+            "lease_issued": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 2316,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.lease_expire_issue",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      },
+      "pki.lease_expire_lookup": {
+        "original_result": {
+          "expected_http_status": [
+            400
+          ],
+          "http_status": 400,
+          "method": "POST",
+          "path_template": "/v1/sys/leases/lookup",
+          "result": "passed",
+          "semantics": {
+            "errors_present": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 29,
+            "body_sha256": "f1daf803e17141b3c01196248e33bcc61147c22bf93a7c0777a007f05e0f1b1d",
+            "body_within_cap": true,
+            "case_id": "pki.lease_expire_lookup",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/sys/leases/lookup",
+            "public_body": true,
+            "read_calls": 1,
+            "retried": false,
+            "status": 400
+          }
+        ]
+      },
+      "pki.lease_lookup": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "POST",
+          "path_template": "/v1/sys/leases/lookup",
+          "result": "passed",
+          "semantics": {
+            "exact_id": true,
+            "renewable": true,
+            "ttl": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 422,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.lease_lookup",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/sys/leases/lookup",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      },
+      "pki.lease_revoke": {
+        "original_result": {
+          "expected_http_status": [
+            204
+          ],
+          "http_status": 204,
+          "method": "POST",
+          "path_template": "/v1/sys/leases/revoke",
+          "result": "passed",
+          "semantics": {}
+        },
+        "wire": [
+          {
+            "body_bytes": 0,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.lease_revoke",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/sys/leases/revoke",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 204
+          }
+        ]
+      },
+      "pki.mount": {
+        "original_result": {
+          "expected_http_status": [
+            204
+          ],
+          "http_status": 204,
+          "method": "POST",
+          "path_template": "/v1/sys/mounts/hbqa-{run_id}-pki",
+          "result": "passed",
+          "semantics": {}
+        },
+        "wire": [
+          {
+            "body_bytes": 0,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.mount",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/sys/mounts/hbqa-{run_id}-pki",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 204
+          }
+        ]
+      },
+      "pki.revoked_lease_absent": {
+        "original_result": {
+          "expected_http_status": [
+            400
+          ],
+          "http_status": 400,
+          "method": "POST",
+          "path_template": "/v1/sys/leases/lookup",
+          "result": "passed",
+          "semantics": {
+            "errors_present": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 29,
+            "body_sha256": "f1daf803e17141b3c01196248e33bcc61147c22bf93a7c0777a007f05e0f1b1d",
+            "body_within_cap": true,
+            "case_id": "pki.revoked_lease_absent",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/sys/leases/lookup",
+            "public_body": true,
+            "read_calls": 1,
+            "retried": false,
+            "status": 400
+          }
+        ]
+      },
+      "pki.role": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "POST",
+          "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+          "result": "passed",
+          "semantics": {
+            "domains": true,
+            "generate_lease": true,
+            "key_type": true,
+            "max_ttl": true,
+            "subdomains": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 1584,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.role",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      },
+      "pki.role_read": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "GET",
+          "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+          "result": "passed",
+          "semantics": {
+            "domains": true,
+            "generate_lease": true,
+            "key_type": true,
+            "max_ttl": true,
+            "subdomains": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 1404,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.role_read",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "GET",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      },
+      "pki.root": {
+        "original_result": {
+          "expected_http_status": [
+            200
+          ],
+          "http_status": 200,
+          "method": "POST",
+          "path_template": "/v1/hbqa-{run_id}-pki/root/generate/internal",
+          "result": "passed",
+          "semantics": {
+            "certificate": true,
+            "expiration": true,
+            "issuing_ca": true,
+            "serial": true
+          }
+        },
+        "wire": [
+          {
+            "body_bytes": 1859,
+            "body_sha256": null,
+            "body_within_cap": true,
+            "case_id": "pki.root",
+            "complete": true,
+            "context_closed": true,
+            "context_entered": true,
+            "failure_code": null,
+            "method": "POST",
+            "normalized_status": false,
+            "open_calls": 1,
+            "path_template": "/v1/hbqa-{run_id}-pki/root/generate/internal",
+            "public_body": false,
+            "read_calls": 1,
+            "retried": false,
+            "status": 200
+          }
+        ]
+      }
+    },
+    "denominator": 12,
+    "independent_fixture_qualification": false,
+    "original_cleanup": {
+      "failure_count": 0,
+      "result": "passed",
+      "run_id": "official271-pki12-r1",
+      "scope": "only_newly_created_synthetic_resources"
+    },
+    "pki12_passed": true,
+    "raw_status_normalization": false
+  },
+  "pki_case_denominator": 12,
+  "pki_request_cap": 12,
+  "pki_requests_observed": 12,
+  "pki_wire_records": [
+    {
+      "body_bytes": 0,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.mount",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/sys/mounts/hbqa-{run_id}-pki",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 204
+    },
+    {
+      "body_bytes": 1859,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.root",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/hbqa-{run_id}-pki/root/generate/internal",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    },
+    {
+      "body_bytes": 1584,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.role",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    },
+    {
+      "body_bytes": 1404,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.role_read",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "GET",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    },
+    {
+      "body_bytes": 2339,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.issue",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    },
+    {
+      "body_bytes": 422,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.lease_lookup",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/sys/leases/lookup",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    },
+    {
+      "body_bytes": 2316,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.lease_expire_issue",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    },
+    {
+      "body_bytes": 29,
+      "body_sha256": "f1daf803e17141b3c01196248e33bcc61147c22bf93a7c0777a007f05e0f1b1d",
+      "body_within_cap": true,
+      "case_id": "pki.lease_expire_lookup",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/sys/leases/lookup",
+      "public_body": true,
+      "read_calls": 1,
+      "retried": false,
+      "status": 400
+    },
+    {
+      "body_bytes": 849,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.cert_lookup",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "GET",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/hbqa-{run_id}-pki/cert/3e:9b:a2:8d:97:ce:8a:8d:5a:bc:59:fa:39:9b:8a:23:f7:d1:06:8c",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    },
+    {
+      "body_bytes": 0,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.lease_revoke",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/sys/leases/revoke",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 204
+    },
+    {
+      "body_bytes": 29,
+      "body_sha256": "f1daf803e17141b3c01196248e33bcc61147c22bf93a7c0777a007f05e0f1b1d",
+      "body_within_cap": true,
+      "case_id": "pki.revoked_lease_absent",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "POST",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/sys/leases/lookup",
+      "public_body": true,
+      "read_calls": 1,
+      "retried": false,
+      "status": 400
+    },
+    {
+      "body_bytes": 603,
+      "body_sha256": null,
+      "body_within_cap": true,
+      "case_id": "pki.crl_json",
+      "complete": true,
+      "context_closed": true,
+      "context_entered": true,
+      "failure_code": null,
+      "method": "GET",
+      "normalized_status": false,
+      "open_calls": 1,
+      "path_template": "/v1/hbqa-{run_id}-pki/cert/crl",
+      "public_body": false,
+      "read_calls": 1,
+      "retried": false,
+      "status": 200
+    }
+  ],
+  "publication_close_verdict_is_in_terminal_stdout": true,
+  "schema": "heptabao.official271.pki12.oracle-only.actual.v1",
+  "source_fd_rows_before_publication": [
+    {
+      "bytes": 28442,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321353",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "28442",
+        "1794009092895862053",
+        "1794009092895862053"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/qa/openbao-acceptance/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "bytes": 20008,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321354",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "20008",
+        "1794009092899862340",
+        "1794009092899862340"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/qa/openbao-acceptance/official_openbao_launcher.py",
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    {
+      "bytes": 2349,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321355",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "2349",
+        "1794009092900862411",
+        "1794009092900862411"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/qa/openbao-acceptance/bao_http.py",
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f"
+    },
+    {
+      "bytes": 13664,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321356",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "13664",
+        "1794009092901862483",
+        "1794009092901862483"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/qa/openbao-acceptance/raw_status_observer.py",
+      "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+    },
+    {
+      "bytes": 36333,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321357",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "36333",
+        "1794009092902862555",
+        "1794009092902862555"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/qa/openbao-acceptance/acceptance.py",
+      "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
+    },
+    {
+      "bytes": 5355,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321358",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "5355",
+        "1794009092903862626",
+        "1794009092903862626"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/qa/openbao-acceptance/current_record_component.py",
+      "sha256": "660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9"
+    },
+    {
+      "bytes": 194,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321359",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "194",
+        "1794009092903862626",
+        "1794009092903862626"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/clients/python/heptabao/__init__.py",
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2"
+    },
+    {
+      "bytes": 21936,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321360",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21936",
+        "1794009092904862698",
+        "1794009092904862698"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/clients/python/heptabao/transport.py",
+      "sha256": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f"
+    },
+    {
+      "bytes": 4836,
+      "close_attempts": 1,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321361",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "4836",
+        "1794009092905862770",
+        "1794009092905862770"
+      ],
+      "open_started": true,
+      "opened": true,
+      "relative": "source/clients/python/heptabao/consistency.py",
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
+    }
+  ],
+  "source_inputs": [
+    {
+      "bytes": 28442,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321353",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "28442",
+        "1794009092895862053",
+        "1794009092895862053"
+      ],
+      "relative": "source/qa/openbao-acceptance/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "bytes": 20008,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321354",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "20008",
+        "1794009092899862340",
+        "1794009092899862340"
+      ],
+      "relative": "source/qa/openbao-acceptance/official_openbao_launcher.py",
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6"
+    },
+    {
+      "bytes": 2349,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321355",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "2349",
+        "1794009092900862411",
+        "1794009092900862411"
+      ],
+      "relative": "source/qa/openbao-acceptance/bao_http.py",
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f"
+    },
+    {
+      "bytes": 13664,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321356",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "13664",
+        "1794009092901862483",
+        "1794009092901862483"
+      ],
+      "relative": "source/qa/openbao-acceptance/raw_status_observer.py",
+      "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+    },
+    {
+      "bytes": 36333,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321357",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "36333",
+        "1794009092902862555",
+        "1794009092902862555"
+      ],
+      "relative": "source/qa/openbao-acceptance/acceptance.py",
+      "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
+    },
+    {
+      "bytes": 5355,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321358",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "5355",
+        "1794009092903862626",
+        "1794009092903862626"
+      ],
+      "relative": "source/qa/openbao-acceptance/current_record_component.py",
+      "sha256": "660c8f55649861a3765b7b320d4c1abf2e7eba4ebac2f2290bee29eabeaff3f9"
+    },
+    {
+      "bytes": 194,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321359",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "194",
+        "1794009092903862626",
+        "1794009092903862626"
+      ],
+      "relative": "source/clients/python/heptabao/__init__.py",
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2"
+    },
+    {
+      "bytes": 21936,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321360",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21936",
+        "1794009092904862698",
+        "1794009092904862698"
+      ],
+      "relative": "source/clients/python/heptabao/transport.py",
+      "sha256": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f"
+    },
+    {
+      "bytes": 4836,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3321361",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "4836",
+        "1794009092905862770",
+        "1794009092905862770"
+      ],
+      "relative": "source/clients/python/heptabao/consistency.py",
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
+    }
+  ],
+  "startup_requests_actual_count": null,
+  "startup_source_upper_bound": 103,
+  "status_normalization": false,
+  "strict_raw_status_required": true,
+  "unobserved_suite_admin_requests_source_upper_bound": 3
+}

@@ -1,0 +1,47 @@
+{
+  "before": {
+    "blob": "391f2bef67b32e5ef4a3f1cd8ae660bbd096aa3e",
+    "bytes": 19043,
+    "sha256": "0ad2f2fad1e77767623dadb5cf0c5255ee7aac5331c772faa1c96a0399ecd645"
+  },
+  "after": {
+    "blob": "71215f78807891d4477eb0993f149a17ff8c56d2",
+    "bytes": 21167,
+    "sha256": "30ecb6bf11ce3842284c11d9ad8829ef5eb21dfb3e533eb3357f0a9a7315948b"
+  },
+  "diff": {
+    "blob": "b053896be25ac986cb93f59f531b8fba6c97df57",
+    "bytes": 5978,
+    "sha256": "52aa8cc3d011173bc5e1ea9dc878568b3d0afdf9300acff67584ab56783bc89f"
+  },
+  "request": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "buildState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "infoState": {
+    "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+    "bytes": 11134,
+    "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+  },
+  "pure": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "strictDiff": {
+    "blob": "f595a6490497f54ea2b533fcbb98cdb306583286",
+    "bytes": 3497,
+    "sha256": "c872292668150c3b22396b4d23f315a709ef5b35eb9a286ded9cf7bbe7fd51f5"
+  },
+  "correctStdin": {
+    "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+    "bytes": 659,
+    "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+  }
+}

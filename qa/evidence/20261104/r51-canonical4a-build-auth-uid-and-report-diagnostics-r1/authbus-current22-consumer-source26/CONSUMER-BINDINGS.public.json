@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.AuthBus.r3.consumer-source-binding-closure.SOURCE",
+  "sourceBasis": {
+    "historicalSource112": "1b9f6f07249d0757ac0efa0227827e834a750260",
+    "repairedSource44": "9ae05113a73e1232094dd7844940aeb8a8792498",
+    "currentManager": {
+      "blob": "92a1293db9792644b378da07eb9650951979358a",
+      "bytes": 60153,
+      "sha256": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+    }
+  },
+  "fixedInventory": {
+    "sources": 22,
+    "bytes": 510106,
+    "compiledPythonExpected": 18,
+    "compiledByThisReview": false,
+    "publicDocuments": 8,
+    "oldProofsByteIdentical": 7,
+    "changedSourceNames": [
+      "mac_current_fixture_materializer_r1.py",
+      "mac_current_outer_wal_r1.py",
+      "mac_native_process_observer_r1.py",
+      "mac_owned_commands_r1.py",
+      "mac_owned_launchd_r3.py",
+      "mac_owned_unreaped_r1.py"
+    ]
+  },
+  "routes": [
+    {
+      "consumer": "inert publisher",
+      "binding": "PAYLOAD_BYTES/PAYLOAD_SHA -> payload.files + PINS -> 22 exact source bytes -> ast.parse/compile 18 Python",
+      "executedDefinitions": [
+        "mac_owned_unreaped_r1.py",
+        "mac_owned_commands_r1.py",
+        "mac_t5_volume_guard_r1.py"
+      ],
+      "managerExecutesDuringStage": false,
+      "compiledManagerStoredOrDispatched": false
+    },
+    {
+      "consumer": "outer",
+      "binding": "public_source_pins_base64 + SHA -> all 22 held public source checks -> sys.path QA -> import OwnedLaunchd",
+      "managerFilename": "mac_owned_launchd_r3.py",
+      "managerSha256": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+    },
+    {
+      "consumer": "server HOME wrapper",
+      "binding": "manager._args builds four helper pins from self.qa_pins; wrapper validates public bytes before importing them",
+      "helpers": [
+        "mac_owned_unreaped_r1.py",
+        "mac_owned_commands_r1.py",
+        "mac_t5_volume_guard_r1.py",
+        "mac_native_process_observer_r1.py"
+      ],
+      "wrapperCopySourceIdentical": true
+    },
+    {
+      "consumer": "consumer HOME wrapper",
+      "binding": "materializer receives outer qa_pins; each private plan receives dict(qa_pins); phase owner verifies eight fixed leaves then imports current Reader/Unreaped",
+      "helpers": [
+        "mac_native_process_observer_r1.py",
+        "mac_owned_unreaped_r1.py",
+        "mac_current_phase_owner_r2.py",
+        "mac_t5_volume_guard_r1.py",
+        "mac_current_cycle_r2.mjs",
+        "mac_single_native_r2.mjs",
+        "mac_auth_rows_cas_r1.mjs",
+        "mac_authbus_cache_cas_r1.mjs"
+      ]
+    },
+    {
+      "consumer": "five-agent JS cycle and workers",
+      "binding": "unchanged materializer phase_pins -> plan.sourcePins -> before/after whole-hash checks; unchanged config/selected owner assertions",
+      "directPythonManagerImport": false,
+      "needsPrivateGenerationActual": true
+    },
+    {
+      "consumer": "public historical proofs",
+      "binding": "seven existing exact JSON documents remain historical evidence; their bytes and qualification scope are not rewritten",
+      "newExecutionQualifiedByProofs": false
+    }
+  ],
+  "mechanicalPropagation": [
+    "new source bytes and Git/SHA pins",
+    "candidate.sourcePins",
+    "payload.files and candidate document",
+    "publisher PINS and DOCUMENT_PINS plus payload length/SHA",
+    "source-only runtime input pin fields"
+  ],
+  "sourceFacts": {
+    "managerImportsFrom22OnlyInOuter": true,
+    "managerBytesEmbeddedElsewhereIn22": false,
+    "historicalManagerBlobOrShaLiteralInCurrent22": false,
+    "oldManagerSourcesOnlyInExplicitBeforeEvidence": true,
+    "noLiteralCompiledMODULESDictionaryIn22": true,
+    "publisherCompilesDecodedCurrentPayloadNotSeparateStaleModule": true,
+    "publisherHomeControlClassUnchangedByRowsFix": true,
+    "noAdditionalOuterMaterializerOrWrapperCodeChangesRequiredForThisUidDelta": true
+  },
+  "sourceOnlyBarrier": {
+    "inertExactRequest": null,
+    "runtimeExactRequest": null,
+    "originalRuntimeRequestRaw": null,
+    "newRoot": null,
+    "newHome": null,
+    "actualMacBinary": null,
+    "actualBinaryFull9": null,
+    "actualBinaryVersion": null,
+    "actualBuildQualification": null,
+    "trustedIssuer": null,
+    "privateCredentialGeneration": null,
+    "actualSelectedOwner": null,
+    "oldNamespaceDispatchAuthorized": false,
+    "publisherTemplateDispatchable": false,
+    "existing4e808ProductConstants": "Historical reference literals remain in source templates. A fresh scope and actual new product binding are required before creating any dispatch request; their retained presence is not current product qualification."
+  },
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "SDKExecuted": false,
+  "newPrivateInputRead": false,
+  "historicalUnknownPreserved": true
+}

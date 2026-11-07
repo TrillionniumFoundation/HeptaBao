@@ -1,0 +1,35 @@
+{
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+  "bytes": 7685,
+  "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+  "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+  "platform": "darwin",
+  "uid": 501,
+  "gid": 20,
+  "mode": 384,
+  "nlink": 1,
+  "full9Strings": [
+    "16777244",
+    "72771947",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "7685",
+    "1794013039551370413",
+    "1794013039551379746"
+  ],
+  "nativePin": {
+    "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+    "bytes": 489,
+    "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+  },
+  "originalInfoOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "retrievalPayload": {
+    "blob": "abe5bfbf7fe74a688651876df7e2d05e46f94459",
+    "bytes": 606,
+    "sha256": "cc0144f9aba8b7c97b0cdea0233ba674e76803777ed263a37a1b14359dd5350f"
+  },
+  "metadataQualified": true,
+  "bodyRead": false
+}

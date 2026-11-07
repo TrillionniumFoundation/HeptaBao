@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.root.go.rog4a.actual-job-observers.r1",
+  "authorization": "GO",
+  "scope": "combined4a_actual_job_observations_only",
+  "issuedAtUtc": "2026-11-07 01:28:14 UTC",
+  "sourceTree": "b7f8aceed0009c76dd7e60df726818b1998e5b69",
+  "journal": {
+    "blob": "f5654e24460c5dc41df6f61e7b1d43b1203f9342",
+    "bytes": 23797,
+    "sha256": "ee3cc9b05c12901caa1ec7f591681e809c98f3679084545cfedbb1868ef5ceff"
+  },
+  "slot": "combined_4a49405b_exact_key_conditional_admission_r1",
+  "attachOnly": true,
+  "initializeForbidden": true,
+  "jobId": "1a1b3978da9-fc05-83bd",
+  "host": "rog",
+  "actualAck": {
+    "blob": "cb1009bdcaf5706e9f3f1578baf49ee171f23ee5",
+    "bytes": 8279,
+    "sha256": "d94d84a0016cc16eb1e560fea3f57a320d6d7a1ba3d72115b176ec3dbc22ed1a"
+  },
+  "beforeState": {
+    "blob": "a4fea6d283d0fb3d58d8045a8f4c7df637ecd578",
+    "bytes": 168445,
+    "sha256": "535d5821d952b3a0d4558523bee33388e2256a1f8a66093f00da82afa5a7e270"
+  },
+  "maximumStatusObservers": 256,
+  "maximumReadObservers": 129,
+  "statusCallsPerObserver": 8,
+  "pagesPerObserver": 128,
+  "pageBytes": 8192,
+  "payloadCap": 1048576,
+  "streamReadLimit": 16384,
+  "streamByteCap": 2097152,
+  "processStartAuthorized": false,
+  "rootSourceQualification": {
+    "blob": "38f719516fc363940f3bc18fda102469e3818661",
+    "bytes": 3306,
+    "sha256": "a40678d9506c7cbf8f1f0408122a51167c714ebf749031a2eb2355b6170fa1a9"
+  },
+  "rootQualificationTree": "0f1fcc7282a2e4cf145f23e0302e960f345dc5d4",
+  "rootActualACKQualification": {
+    "blob": "bda8b492add53a8a0918e8249bc3d1ff79b687f7",
+    "bytes": 2283,
+    "sha256": "57ebcc95c4b1056b92e20a594ae6fe943708683d39535ae7eba81aec39534437"
+  },
+  "rootSourceChecks": 27,
+  "rootActualBindings": 4,
+  "underlyingBudgetUnchanged": {
+    "total": 12000,
+    "publication": 60,
+    "releaseIncludingPrecheck": 1800,
+    "precheck": 300,
+    "sharedCompile": 3600,
+    "families": 18,
+    "uniqueTests": 252,
+    "profileInstances": 280,
+    "cleanup": [
+      5,
+      5
+    ]
+  },
+  "noClockReset": true,
+  "noNewCandidate": true,
+  "noFileInfoOrBody": true,
+  "noExtraParallelObserver": true,
+  "noOldSlotOrFailureRewrite": true,
+  "sequence": [
+    "whole exact root GO -> gfRun authorize_actual_job_observers attach only",
+    "each request/intent/armed Git whole -> model boundary -> one original native invoke",
+    "full original SDK Git whole before accept; only same operation status/continuous immutable pages",
+    "whole original operation payload Git archive before semantic parsing and cursor advancement",
+    "finish each observer before next; preserve all failures and stop unknown; retain authoritative terminal and full streams within caps"
+  ],
+  "observationCadence": "Observe initial actual status then bounded phase/progress checks while the original job runs. Do not busy-poll or exhaust caps; each observer closes before the next.",
+  "laneAllocation": {
+    "root": 0,
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "maximumOwnerLanes": 2
+  },
+  "fullBuildTestsQualified": false,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "path": "Apple-ps-print.original.c",
+      "blob": "a6f02a86eb29dec5dc39e54ff3692f191c203879",
+      "bytes": 26111,
+      "sha256": "9f3b9e89bd6e58b9db68919189e34136cb903ed60dd6f06650d77e50a47aa40f"
+    },
+    {
+      "path": "Apple-ps-print.fetch.original.sdk.json",
+      "blob": "3f0c8f4ee3209a7d6256ae19fdc9ab2191b71064",
+      "bytes": 58639,
+      "sha256": "f5caec2413984a29a54097a8e75fba0a8c3f8f29995dd7a0384f9da2211f2fb5"
+    },
+    {
+      "path": "SOURCE-NOTE.md",
+      "blob": "10ccff88b9dfa10660887e975015e07259c14834",
+      "bytes": 3004,
+      "sha256": "3d9ea5cbc61ddcffed570d0494717e19db198b9a841e94e44a425940c512e0e0"
+    },
+    {
+      "path": "PRIMARY.public.json",
+      "blob": "2fdd78aebf0f220dd24443e7217cd3cb809328ba",
+      "bytes": 630,
+      "sha256": "76ae0bcd301fdc9c99420cf18461d73b151d388cfdf5f2b7a66a6f91882f332e"
+    }
+  ]
+}

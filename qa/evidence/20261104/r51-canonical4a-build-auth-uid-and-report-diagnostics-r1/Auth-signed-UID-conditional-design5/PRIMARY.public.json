@@ -1,0 +1,17 @@
+{
+  "commit": "6bed8737a34dbb54782a18f47dccf933a9967a12",
+  "url": "https://github.com/apple-oss-distributions/adv_cmds/blob/6bed8737a34dbb54782a18f47dccf933a9967a12/ps/print.c",
+  "pin": {
+    "blob": "a6f02a86eb29dec5dc39e54ff3692f191c203879",
+    "bytes": 26111,
+    "sha256": "9f3b9e89bd6e58b9db68919189e34136cb903ed60dd6f06650d77e50a47aa40f"
+  },
+  "keyword": {
+    "blob": "aad756d34520c213286959a12615592376f919d7",
+    "bytes": 12615,
+    "sha256": "0af8cc559f9e7e830e5568eb61769df806be8b80a22f3745beeab6431ffa6444"
+  },
+  "NativeCalls": 0,
+  "installedBuildQualified": false,
+  "historicalRejectedFieldObserved": false
+}

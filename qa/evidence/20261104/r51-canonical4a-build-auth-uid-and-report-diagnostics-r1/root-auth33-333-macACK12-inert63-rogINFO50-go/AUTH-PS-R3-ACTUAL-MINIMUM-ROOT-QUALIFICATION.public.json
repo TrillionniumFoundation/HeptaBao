@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.root.qualification.auth-ps-R3-actual-minimum.r1",
+  "checkedAtUtc": "2026-11-07 02:39:53 UTC",
+  "checks": [
+    "original exact R3 conditional GO",
+    "original exact actual lane GO",
+    "same original R3 job",
+    "original durable nonreused START ACK",
+    "exact original typed stdin and uint64 ACK",
+    "original successful terminal",
+    "original terminal no stream loss",
+    "final context closed",
+    "nine original calls accepted",
+    "two original observers four pages closed",
+    "complete original stream totals",
+    "original complete stream bounds",
+    "exact stdout from original bytes and empty stderr",
+    "R3 observed and executed successfully",
+    "actual fixed input and own child closure",
+    "fresh negative UID branch actual witnessed",
+    "actual723 complete five-field rows",
+    "first three numeric columns remain decimal",
+    "fresh UID lexical aggregate exact",
+    "old lexical predicate failure preserved within fresh report",
+    "only exact fixed primary ps argv",
+    "current ps full9 exact",
+    "current ps whole bytes hash exact",
+    "actual fixed ps custody exact",
+    "actual ps closed successful bounded streams",
+    "WNOWAIT retained exit and own reaping without survivors or signals",
+    "one primary own command fully stopped",
+    "fixed two-input read budgets",
+    "all returned input descriptors closed",
+    "original signal handlers deadline and caps",
+    "no unrelated process values exported",
+    "scope not promoted",
+    "A0 release"
+  ],
+  "checkCount": 33,
+  "audit": {
+    "tree": "b8a9d318624a9fb560bf712472c2672cbe8bfda0",
+    "files": 12,
+    "bytes": 143789,
+    "merkle": {
+      "root_sha": "b8a9d318624a9fb560bf712472c2672cbe8bfda0",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "reportPin": {
+    "path": "stdout.original.json",
+    "blob": "1dadfabb024aab0e027b35efeac95f1ff85adb17",
+    "bytes": 6008,
+    "sha256": "1752eb114107a5b67591d1a356b95f3b49343e6e43a31993337e03f052c2f959"
+  },
+  "actual": {
+    "job": "1a1b3d5d9cb-fc05-84fb",
+    "typedRows": 723,
+    "signedUidRowsAccepted": 1,
+    "ok": true,
+    "allOwnClosed": true,
+    "allFinalFences": true
+  },
+  "actualSDKQualified": false,
+  "actualSignedUIDRepairQualified": true,
+  "fullReplacement": false
+}

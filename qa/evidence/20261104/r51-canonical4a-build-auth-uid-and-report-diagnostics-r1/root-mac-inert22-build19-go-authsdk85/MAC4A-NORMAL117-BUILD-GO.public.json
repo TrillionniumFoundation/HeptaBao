@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.root.go.mac4a-normal117-actual-build.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-07 02:32:09 UTC",
+  "scope": "fresh_mac_normal_production_release_and_exact_normal117_tests",
+  "sourceTree": "468d7feb774ef524d66ac9efbbc89152b6ae54f1",
+  "rootSourceQualification": {
+    "blob": "1c921718009c7ab6b360012bfde81d0b38b6fc4b",
+    "bytes": 3815,
+    "sha256": "c62c82aba25f4d30afa16a406267c1d8b14c2c44a7573ac907b46d5fabbfb230"
+  },
+  "rootSourceChecks": 19,
+  "rootIndependentAnchors": 13,
+  "actualInertQualification": {
+    "blob": "bd4e14e244a8ecdd8a04259199d9ef89178840f7",
+    "bytes": 2096,
+    "sha256": "b8f5a0b43adff8f05adbc1440029bd1aa8d60a3378a7d2028c222f0c433e1205"
+  },
+  "actualPublisherJob": "1a1b3d20950-fc05-84e7",
+  "actualReceipt": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json",
+    "bytes": 3321,
+    "sha256": "6368b3d5723a04290b3f9356b0802f417ac0e633ee5bf2a0e5dfd69056da7b47",
+    "full9": [
+      "16777244",
+      "72776310",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "3321",
+      "1794018256934258676",
+      "1794018256934622037"
+    ]
+  },
+  "actualStageQualification": {
+    "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+    "bytes": 6285,
+    "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+  },
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "manifest": {
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    }
+  },
+  "exact_request": {
+    "blob": "a000e617b0ccb8890024e8d6e3812c1ca4820030",
+    "bytes": 1204,
+    "sha256": "6f99addf7edd0a982424b29f80ed567b2f95d5a162178e67ed3c962bd7d5b6e2"
+  },
+  "journal": {
+    "blob": "2e02eb61e2d2a69fb8aca4d6cb3e782c5847128a",
+    "bytes": 19044,
+    "sha256": "0ee14629cb15d2ec0e8340a54f4025ffced530436861d95a7771fb64a9e146e2"
+  },
+  "slot": "successor4a_mac_normal117_build_gitfirst_r1",
+  "process_start_key": "heptabao-4a49405b-mac-normal61-native28-fresh-20261106-r1-ba55afb5",
+  "typed_binding": {
+    "sha256": "f093234feecb5498326cc0f07f096acdc0b23582df08f4fb33b7c648b7c53f78",
+    "native_fingerprint": "17335238216894862488",
+    "canonical_bytes": 1061
+  },
+  "maximum_process_start_calls": 1,
+  "controlPins": {
+    "mac_normal_same_root_publication_build.py": {
+      "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+      "bytes": 42977,
+      "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+    },
+    "launch_normal_same_root_publication.py": {
+      "blob": "db0b97d08b96cee8478174d22fac2bc25e9808d6",
+      "bytes": 25925,
+      "sha256": "ba55afb554abc657012e8972e2984888786f056e751f7f8aecbff4166c9980a2"
+    },
+    "normal-test-groups.public.json": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    }
+  },
+  "paths": {
+    "base": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "stageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/source",
+    "stageReport": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "runRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1",
+    "control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control",
+    "admission": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/build-control-r1",
+    "output": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+    "target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/target-normal-r1",
+    "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json"
+  },
+  "budgets": {
+    "outer_seconds": 8280,
+    "release_build_seconds": 1800,
+    "default_libtest_seconds": 1800,
+    "file_libtest_seconds": 1800,
+    "each_family_seconds": 600,
+    "each_listing_seconds": 30,
+    "term_cleanup_seconds": 5,
+    "kill_cleanup_seconds": 5,
+    "runner_read_cap": 49152,
+    "other_control_read_cap": 40000
+  },
+  "selectedTests": {
+    "normal61": 61,
+    "normal_groups_selected": 44,
+    "normal_other": 17,
+    "native_jwt_pki_unique": 28,
+    "file_executions": 28,
+    "default_executions": 28,
+    "total_unique": 89,
+    "total_instances": 117,
+    "actualResults": null
+  },
+  "originalJobObservationLimits": {
+    "process_status_observers": 256,
+    "process_read_observers": 129,
+    "status_per_operation": 8,
+    "pages_per_operation": 128,
+    "immutable_page_bytes": 8192,
+    "immutable_payload_bytes": 1048576,
+    "process_stream_read_each_bytes": 16384,
+    "stdout_total_bytes": 2097152,
+    "stderr_total_bytes": 2097152,
+    "only_returned_job": true,
+    "one_call_or_future": true,
+    "countFromOriginalPersistentCallsBeforeEveryAdmission": true,
+    "noCounterReset": true
+  },
+  "wholeOriginalSDKBeforeInterpretation": true,
+  "wholeOriginalPayloadBeforeInterpretation": true,
+  "localFirstExplicitlyReplacedByGitFirst": true,
+  "noReplayRekey": true,
+  "unknownOutcomeMustPause": true,
+  "noOriginalClockReset": true,
+  "noBudgetExtension": true,
+  "preserveAllHistoricalFailures": true,
+  "sourceMutationAuthorized": false,
+  "artifactTransferAuthorized": false,
+  "productionTrafficSwitchAuthorized": false,
+  "legacyDeletionAuthorized": false,
+  "scheduling": {
+    "conditional": false,
+    "root": 0,
+    "A": 1,
+    "B": 0,
+    "C": 1,
+    "maximum": 2,
+    "grant": "C active for exact Mac build and same original job observations."
+  },
+  "resultScope": "An actual release/test result remains pending. Selected89/117 is not formal34MiB, LAN HA, real AuthBus SDK, per-client cutover, or full OpenBao2.7.1 parity.",
+  "normal117Qualified": false,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

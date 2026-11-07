@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.root.Mac4a-stage-BODY-actual-lane-allocation.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-07 02:01:22 UTC",
+  "scope": "activate_existing_exact_Mac_stage_BODY_GO_after_A_lexical_actual_closure",
+  "originalExecutionGO": {
+    "blob": "9aa02b299ba175fd944477c18b1272083187237a",
+    "bytes": 3428,
+    "sha256": "f9f43a59ba894a5d00299fc3653f35459d0d2fb9aeace32f0d55dabee1ccd8be"
+  },
+  "originalExecutionGOTree": "95080ccf2a5d223a6b7ca2e2a69385b5d6abfe40",
+  "originalSourceRequestAndStateGuardsUnchanged": true,
+  "supersedesOnlySchedulingCondition": true,
+  "actualALexicalClosureQualification": {
+    "blob": "c0ca7e38d5ead5a7782c1c752062e0df4be6ed5c",
+    "bytes": 5657,
+    "sha256": "818ce3f02d78ffe43a6acc49baf34959554640590cc005f5c8073417bba02603"
+  },
+  "actualALexicalClosureSourceTree": "e05e6b823be943bb6fdca42dfac656f3cd8d1cd2",
+  "AActualJob": "mac/1a1b3af5466-fc05-844c",
+  "ANativeCallsInFlight": 0,
+  "ANativeFuturesActive": 0,
+  "ANewNativeActionsHeld": true,
+  "CInitializeAndArmNowAuthorized": true,
+  "slot": "successor4a_mac_stage_report_body_gitfirst_r1",
+  "maximumBinaryReadOperations": 1,
+  "maximumReportBytes": 7685,
+  "originalStatusAndPageBoundsUnchanged": true,
+  "noNewInfo": true,
+  "noStart": true,
+  "noBuild": true,
+  "noOldSlotHandback": true,
+  "noReplayRekey": true,
+  "laneAllocation": {
+    "root": 0,
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "maximum": 2
+  },
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

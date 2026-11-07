@@ -1,0 +1,147 @@
+--- a/BINDING.actual.json
++++ b/BINDING.actual.json
+@@ -1,6 +1,6 @@
+ {
+   "schema": "heptabao.mac.4a49405b.normal117.candidate-bound-unobserved.v1",
+-  "status": "SOURCE_ONLY_AWAITING_ACTUAL_STAGE_INFO_AND_BODY",
++  "status": "SOURCE_ONLY_ACTUAL_STAGE_BOUND_INERT_PUBLICATION_READY",
+   "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+   "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+   "paths": {
+@@ -15,16 +15,57 @@
+     "target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/target-normal-r1",
+     "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json"
+   },
+-  "actual_stage_report": null,
+-  "actual_stage_report_full9": null,
+-  "root_stage_qualification": null,
+-  "ready": false,
+-  "publisher_exact_request": null,
+-  "publisher_typed_binding": null,
+-  "publisher_runtime_slot": null,
+-  "final_bound_publisher_pin": null,
+-  "final_bound_launcher_pin": null,
+-  "final_carrier_pin": null,
++  "actual_stage_report": {
++    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
++    "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
++    "bytes": 7685,
++    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
++    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
++    "bodyActualPacket": "ea7bcdcbec588f2c8aa59b8d559fe1908447506c"
++  },
++  "actual_stage_report_full9": [
++    "16777244",
++    "72771947",
++    "501",
++    "20",
++    "33152",
++    "1",
++    "7685",
++    "1794013039551370413",
++    "1794013039551379746"
++  ],
++  "root_stage_qualification": {
++    "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
++    "bytes": 6285,
++    "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
++  },
++  "ready": true,
++  "publisher_exact_request": {
++    "blob": "e159810aa46391f2934bfe48517c4da7bd0f0635",
++    "bytes": 130241,
++    "sha256": "de03e153ae7a3951600d9a29049069a06a49fbda33976ae9589faaf9ea5a33de"
++  },
++  "publisher_typed_binding": {
++    "sha256": "729392d378c02b9c292c894e0dd10b1b81da052963686cde76e6ba49aef6a46d",
++    "native_fingerprint": "8256103978861865884",
++    "canonical_bytes": 130161
++  },
++  "publisher_runtime_slot": "successor4a_mac_normal117_controls_inert_gitfirst_r1",
++  "final_bound_publisher_pin": {
++    "blob": "5977f13bfff455999eafe219dbdb154ba1108141",
++    "bytes": 9000,
++    "sha256": "18b8b35e9298f6cb9cdbcdf81b1ef962e999d461cb163a2aaf14e1f2e247ddb7"
++  },
++  "final_bound_launcher_pin": {
++    "blob": "db0b97d08b96cee8478174d22fac2bc25e9808d6",
++    "bytes": 25925,
++    "sha256": "ba55afb554abc657012e8972e2984888786f056e751f7f8aecbff4166c9980a2"
++  },
++  "final_carrier_pin": {
++    "blob": "30b4d99a0f48219fe33818ac26df8880b4ea6acf",
++    "bytes": 120653,
++    "sha256": "28c030ebaeec2c762890e44a6270d6cfd14da6ffb8532127d9f5d6beebf5d801"
++  },
+   "actual_controls_receipt": null,
+   "actual_publisher_job": null,
+   "build_exact_request": null,
+@@ -95,7 +136,51 @@
+     "observers": 2,
+     "pages": 2
+   },
+-  "actual_stage_metadata": null,
++  "actual_stage_metadata": {
++    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
++    "bytes": 7685,
++    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
++    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
++    "platform": "darwin",
++    "uid": 501,
++    "gid": 20,
++    "mode": 384,
++    "nlink": 1,
++    "full9Strings": [
++      "16777244",
++      "72771947",
++      "501",
++      "20",
++      "33152",
++      "1",
++      "7685",
++      "1794013039551370413",
++      "1794013039551379746"
++    ],
++    "nativePin": {
++      "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
++      "bytes": 489,
++      "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
++    },
++    "originalInfoOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
++    "retrievalPayload": {
++      "blob": "abe5bfbf7fe74a688651876df7e2d05e46f94459",
++      "bytes": 606,
++      "sha256": "cc0144f9aba8b7c97b0cdea0233ba674e76803777ed263a37a1b14359dd5350f"
++    },
++    "metadataQualified": true,
++    "bodyRead": true,
++    "rootQualification": {
++      "blob": "9ee780ed3a2acfbc6d8c38952baf428906bc3c29",
++      "bytes": 4142,
++      "sha256": "e6642bed992ff76c0624260b41d5930c7cb58246bf4151950733eb5362876511"
++    },
++    "bodyPin": {
++      "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
++      "bytes": 7685,
++      "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2"
++    }
++  },
+   "stage_metadata_delivery": {
+     "originalOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+     "futureCompletedInactive": true,
+@@ -103,7 +188,13 @@
+     "errorRetained": true,
+     "failurePacket": "4375e2ec3136517b2e54b8afb6a41ab883b76ae0",
+     "retrievalSourcePacket": "9444c4143c9b6cdfff58a7bde85e1211c22da346",
+-    "retrievalExecuted": false
++    "retrievalExecuted": true,
++    "retrievalOriginalCallCount": 1,
++    "retrievalClosed": true,
++    "retrievalActualPacket": "e49aad7ee8801ae1e70d42d936099755fd8eb9a1",
++    "originalPausedSlotUnchanged": true
+   },
+-  "actual_stage_ready": false
++  "actual_stage_ready": true,
++  "publisher_runtime_initialized": false,
++  "ready_scope": "exact inert controls publication SOURCE; publisher and normal build have not run"
+ }

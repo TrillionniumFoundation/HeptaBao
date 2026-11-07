@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"719ea25b9e734a18a80a9459904cea10ad116091\",\"node_id\":\"C_kwDOUGncwNoAKDcxOWVhMjViOWU3MzRhMThhODBhOTQ1OTkwNGNlYTEwYWQxMTYwOTE\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/719ea25b9e734a18a80a9459904cea10ad116091\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/719ea25b9e734a18a80a9459904cea10ad116091\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-07T01:19:48Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-07T01:19:48Z\"},\"tree\":{\"sha\":\"e6942cd04cc59453fb68c27e767305af849a6e1b\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/e6942cd04cc59453fb68c27e767305af849a6e1b\"},\"message\":\"docs(evidence): checkpoint 4a source staging, startup recovery, and unresolved build admission (R50)\",\"parents\":[{\"sha\":\"0449368aa49e196d5ca16073c00acc00b620e884\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0449368aa49e196d5ca16073c00acc00b620e884\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/0449368aa49e196d5ca16073c00acc00b620e884\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "719ea25b9e734a18a80a9459904cea10ad116091",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/719ea25b9e734a18a80a9459904cea10ad116091",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/719ea25b9e734a18a80a9459904cea10ad116091",
+    "display_title": "719ea25b9e734a18a80a9459904cea10ad116091",
+    "structuredContent": {
+      "title": "719ea25b9e734a18a80a9459904cea10ad116091",
+      "content": "{\"sha\":\"719ea25b9e734a18a80a9459904cea10ad116091\",\"node_id\":\"C_kwDOUGncwNoAKDcxOWVhMjViOWU3MzRhMThhODBhOTQ1OTkwNGNlYTEwYWQxMTYwOTE\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/719ea25b9e734a18a80a9459904cea10ad116091\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/719ea25b9e734a18a80a9459904cea10ad116091\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-07T01:19:48Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-07T01:19:48Z\"},\"tree\":{\"sha\":\"e6942cd04cc59453fb68c27e767305af849a6e1b\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/e6942cd04cc59453fb68c27e767305af849a6e1b\"},\"message\":\"docs(evidence): checkpoint 4a source staging, startup recovery, and unresolved build admission (R50)\",\"parents\":[{\"sha\":\"0449368aa49e196d5ca16073c00acc00b620e884\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0449368aa49e196d5ca16073c00acc00b620e884\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/0449368aa49e196d5ca16073c00acc00b620e884\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/719ea25b9e734a18a80a9459904cea10ad116091"
+    }
+  },
+  "isError": false
+}

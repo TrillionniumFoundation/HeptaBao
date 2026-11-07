@@ -1,0 +1,22 @@
+--- a/journal.before.js
++++ b/journal.js
+@@ -5,8 +5,8 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_authbus_fixed_setuid_ps_lexical_gitfirst_r3";
++const GF_REQUEST = {"blob":"cc6a8a0615576d50b1e2add3388314f10c53aac8","bytes":59279,"sha256":"4c88fc542a3a7c5a1ea237dc8846f3aa1a19cceb758004b5e473b486c1d0864b"};
+-const GF_SLOT = "owner_authbus_fixed_setuid_ps_lexical_gitfirst_r2";
+-const GF_REQUEST = {"blob":"c476d9c59017b7da5b63a015968d18cddd7017b4","bytes":59007,"sha256":"f5a2b45c6e3739a59a0a738bef0212ffaf36be278b255c15721c73ac705ebf62"};
+ 
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+@@ -45,7 +45,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-mac-fixed-setuid-ps-lexical-35fa0630-/.test(q.idempotency_key),
+-    && /^heptabao-mac-fixed-setuid-ps-lexical-0ad20876-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

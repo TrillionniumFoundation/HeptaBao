@@ -1,0 +1,99 @@
+{
+  "authorization": "GO",
+  "scope": "mac4a_stage_result_binary_read_only",
+  "info_operation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "maximum_binary_read_operations": 1,
+  "maximum_file_info_operations": 0,
+  "maximum_process_start_calls": 0,
+  "immutable_body_page_bytes": 16384,
+  "exact_request": {
+    "blob": "a24a188ed159093a3f60ab439deb7dc53ba6ef61",
+    "bytes": 428,
+    "sha256": "9966fa785adda9eb2b855277fab800e71a59ebfe5810a7a3247bea70f089f142"
+  },
+  "original_paused_state": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "completed_retrieval_state": {
+    "blob": "670606feaab7a5947d02374ddf8773c7a4928d73",
+    "bytes": 2815,
+    "sha256": "25be8ac2e6f5c72a684401865aff56958f8dc3906245580038cad3e650d5d5c9"
+  },
+  "no_old_slot_handback": true,
+  "fixed_report": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7685,
+    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+    "full9Strings": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ]
+  },
+  "schema": "heptabao.root.go.Mac4a-standalone-exact-stage-BODY.r1",
+  "issuedAtUtc": "2026-11-07 01:51:33 UTC",
+  "sourceTree": "8bedcaa6d046471e548550f5f1dd2596c4dce30b",
+  "journal": {
+    "blob": "ad0236e89649670cee3da3b3cb12374e846d89ad",
+    "bytes": 24143,
+    "sha256": "b041adb7793cfe8d8f5cde1d4208136c2d5396ceed65cd6c280ffbaad38e4a18"
+  },
+  "slot": "successor4a_mac_stage_report_body_gitfirst_r1",
+  "rootSourceQualification": {
+    "blob": "b661e0778dda25e7681d65d19dea81919dcfe331",
+    "bytes": 5605,
+    "sha256": "6f02ae9a731d35fb7b15657dc7ddb69bf7cd5015aec93ab196bb93e67ad75bf1"
+  },
+  "rootSourceChecks": 38,
+  "rootActualBindingChecks": 8,
+  "metadataRootQualification": {
+    "blob": "9ee780ed3a2acfbc6d8c38952baf428906bc3c29",
+    "bytes": 4142,
+    "sha256": "e6642bed992ff76c0624260b41d5930c7cb58246bf4151950733eb5362876511"
+  },
+  "maximum_status_per_original_id": 8,
+  "maximum_pages_per_original_id": 128,
+  "maximum_payload_bytes": 1048576,
+  "maximum_report_body_bytes": 7685,
+  "exact_version_required": true,
+  "wholeOriginalSDKBeforeInterpretation": true,
+  "wholeOriginalPayloadBeforeBodyInterpretation": true,
+  "wholeDecodedReportBeforeSemantics": true,
+  "archiveKeys": {
+    "arm": "gfa-<fresh callKey>",
+    "exception": "gfx-<same callKey>",
+    "sdk": "gfs-<same callKey>",
+    "payload": "gfc-<returned original operation_id>",
+    "report": "gfr-<same original operation_id>",
+    "fixedArchiveKeyLiterals": [],
+    "plannedCallPrefix": "mac4a-stage-body-r1-",
+    "operationID": null
+  },
+  "scheduling": {
+    "conditional": true,
+    "root": 0,
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "maximum": 2,
+    "condition": "Wait for root explicit actual lexical R2 job and original observer closure-bound C allocation before initialize or arm."
+  },
+  "noNewInfo": true,
+  "noNewProcess": true,
+  "noOldSlotHandback": true,
+  "noReplayRekey": true,
+  "noClockReset": true,
+  "noBuild": true,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

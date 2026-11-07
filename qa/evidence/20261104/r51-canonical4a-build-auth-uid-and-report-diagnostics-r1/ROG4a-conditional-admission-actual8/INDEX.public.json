@@ -1,0 +1,37 @@
+{
+  "ROOT-GO.public.json": {
+    "blob": "123b5b2bd96eb5c88944a08dceec864745a1cc7a",
+    "bytes": 5240,
+    "sha256": "4adacf068d423ef72f8051874a0cfe0a58b63fb36da14a6f4502f5bd3e384776"
+  },
+  "intent.json": {
+    "blob": "42fdd843f9ae985b75656da51f7c9eb10a46905c",
+    "bytes": 704,
+    "sha256": "e3e4dd0cf3960e978cfa8741e39beeab26464c3234f632fca66c0a8bf04639e5"
+  },
+  "armed.json": {
+    "blob": "30802daddd470f8d952b010710bacdb72795da3b",
+    "bytes": 841,
+    "sha256": "408171c537e123dc32d989953de54713124ef58fbe43df63d510778c4e2f68d4"
+  },
+  "ACK.sdk.original.json": {
+    "blob": "cb1009bdcaf5706e9f3f1578baf49ee171f23ee5",
+    "bytes": 8279,
+    "sha256": "d94d84a0016cc16eb1e560fea3f57a320d6d7a1ba3d72115b176ec3dbc22ed1a"
+  },
+  "ACK.native.original.json": {
+    "blob": "4268ac606715bdbddf3287943420ccc3e3359b1c",
+    "bytes": 7840,
+    "sha256": "15c88f47150e038c4e59566514fa3149622452fa41203ec64817942e1e9aefdc"
+  },
+  "STATE.original.json": {
+    "blob": "a4fea6d283d0fb3d58d8045a8f4c7df637ecd578",
+    "bytes": 168445,
+    "sha256": "535d5821d952b3a0d4558523bee33388e2256a1f8a66093f00da82afa5a7e270"
+  },
+  "BINDING.public.json": {
+    "blob": "ec53e2cce3126ec9544fdd8203731910153b63cb",
+    "bytes": 2543,
+    "sha256": "b24a87b64eb43c007a018a4242184536ea67857e2ee7cdf8246ce3531b93195b"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.mac4a.stage-INFO.page0-delivery-timeout.release.r1",
+  "nativeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "observerLogicallyClosed": false,
+  "originalOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "originalTool": "file_info",
+  "originalOperationCompletedInactive": true,
+  "statusNative": {
+    "blob": "be8f407df5b4e27260b8bb67170e8130e73e0eda",
+    "bytes": 800,
+    "sha256": "db1881cb30ef27e3e46c5248efb9c8f75bc63555cb23eb8e3cca6724b7210f8a"
+  },
+  "failedPageSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "failedCallKey": "4a-mac-stage-r1-result-info-page0",
+  "failedCallCalled": true,
+  "failedCallPhase": "native_interpretation_refused",
+  "paused": true,
+  "pending": "4a-mac-stage-r1-result-info-page0",
+  "acceptedPages": 0,
+  "nextPageOffset": 0,
+  "state": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "originalStageCallsPreserved": true,
+  "actualMetadata": null,
+  "newINFOOrReplay": false,
+  "exactError": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "accept",
+    "name": "Error",
+    "message": "native_tool_error_preserved_stop",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "laneReleased": true,
+  "proposedNextSourceOnly": "One exact immutable result retrieval from the original completed operation in a separate context; old paused slot unchanged; requires new root GO."
+}

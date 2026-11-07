@@ -1,0 +1,917 @@
+{
+  "schema": "heptabao.root.r51.checkpoint",
+  "updatedUTC": "2026-11-07 02:46:35 UTC",
+  "previousCheckpoint": {
+    "schema": "heptabao.root.r50-publication-proof.r1",
+    "commit": "719ea25b9e734a18a80a9459904cea10ad116091",
+    "branch": "codex/heptabao-validation-20261104",
+    "parent": "0449368aa49e196d5ca16073c00acc00b620e884",
+    "tree": "e6942cd04cc59453fb68c27e767305af849a6e1b",
+    "prefix": "qa/evidence/20261104/r50-canonical4a-staging-auth-startup-and-original-recovery-r1",
+    "prefixTree": "a34eeeff59fcc127c5c8c7be0def97cf9a3578b2",
+    "rootCurrent": "423e67f0bd3a1566856418a9c54e00a814535f46",
+    "cutoffUTC": "2026-11-07 01:15:46 UTC",
+    "sourceMountedPackets": 112,
+    "files": 1399,
+    "bytes": 20522688,
+    "treeVerification": {
+      "schema": "heptabao.root.r50-prefix-tree-verification.r1",
+      "audit": {
+        "root_sha": "a34eeeff59fcc127c5c8c7be0def97cf9a3578b2",
+        "trees_verified": 114,
+        "leaf_count": 1399
+      },
+      "allExpectedLeavesExact": true,
+      "leafCount": 1399,
+      "bytes": 20522688,
+      "fourAncestorReplacementsExact": true,
+      "priorWholeContentChecked": true
+    },
+    "exactFourAncestorReplacementReadbacks": true,
+    "commitReadbackExact": true,
+    "branchCASAndReadbackExact": true,
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false,
+    "taskContinues": true,
+    "url": "https://github.com/TrillionniumFoundation/HeptaBao/tree/719ea25b9e734a18a80a9459904cea10ad116091/qa/evidence/20261104/r50-canonical4a-staging-auth-startup-and-original-recovery-r1/root-current"
+  },
+  "candidate": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "ROG": {
+    "currentKnownJob": "rog/1a1b3978da9-fc05-83bd",
+    "actualConditionalAdmissionTree": "d1dae7fe5f88e48b544a4edf96b4430dfd57a15f",
+    "rootActualACKQualification": {
+      "blob": "bda8b492add53a8a0918e8249bc3d1ff79b687f7",
+      "bytes": 2283,
+      "sha256": "57ebcc95c4b1056b92e20a594ae6fe943708683d39535ae7eba81aec39534437"
+    },
+    "reused": false,
+    "launchOk": true,
+    "currentAuthoritativeStatus": {
+      "at_unix_ms": 1794017942813,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1b3978da9-fc05-83bd",
+      "launch_nonce": "81246af54e319fcd4b98287fa0a85762",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 3708,
+          "stored": 3708
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "normalReleaseQualified": false,
+    "runtime252_280Qualified": false,
+    "originalTimeoutHistoryRemainsUNKNOWN": true,
+    "sameJobObservationSourcePending": false,
+    "rootActualACKChecks": 14,
+    "normalProductionReleaseStageObserved": true,
+    "releaseStageSourceCommit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "releaseStageArtifacts": {
+      "heptabao-server": {
+        "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/artifacts/heptabao-server",
+        "sha256": "af595a9b31537d6421f3069ad3d2657dfc88ebea2a2ba564f9cc009992bbef8d",
+        "bytes": 110492992,
+        "compiler_executable": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1/release/heptabao-server",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false
+      },
+      "heptabao-seed": {
+        "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/artifacts/heptabao-seed",
+        "sha256": "64984b1ecc6d80a0599ae6bb7b93e51399f6b679244af55a163124a099790c84",
+        "bytes": 101923848,
+        "compiler_executable": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/cargo-target-r1/release/heptabao-seed",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false
+      }
+    },
+    "releaseStageReceiptSha256": "6e404aa852211b8e66f2d199f27b18e2a87beebd6c9229ed989cc9ebc65626c3",
+    "finalArtifactsAndFullTestsStillUnqualified": true,
+    "currentJobTerminalFailure": true,
+    "failurePhasePendingReport": true,
+    "finalReportExpectedSha256": "7be18adad000805344acf09d01b91fbd1ed99e561bfbc97c9faf0fd56a07b250",
+    "terminalRootChecks": 20,
+    "terminalRootQualification": {
+      "blob": "22a898626a12601d2c6fa2fd5d8bd8e9238d7f9b",
+      "bytes": 2467,
+      "sha256": "0886069199c5709bb9e3f91322deedd15a99f921d46699c687f3eb1e590a168c"
+    },
+    "currentJobClosed": true,
+    "currentOriginalCalls": 46,
+    "currentOriginalObservers": 15,
+    "currentOriginalPages": 15,
+    "resultINFOAuthorized": true,
+    "resultINFOSourceRootChecks": 50,
+    "resultINFOSourceRootAnchors": 8,
+    "resultINFOGO": {
+      "blob": "729aa09e57ce7ff35f6c29569ef80279ca457716",
+      "bytes": 2847,
+      "sha256": "e0a3bbef1082e2ffd81ca0cbe6f843a9256381864e5d78c59fa2d003f9157b9a"
+    },
+    "resultINFOOwnerReportedInFlight": false,
+    "resultINFOActualMetadata": {
+      "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json",
+      "bytes": 91252,
+      "sha256": "7be18adad000805344acf09d01b91fbd1ed99e561bfbc97c9faf0fd56a07b250",
+      "version": "66306:39758456:91252:1794017942783960768:1794017942783960768",
+      "full9Strings": [
+        "66306",
+        "39758456",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "91252",
+        "1794017942783960768",
+        "1794017942783960768"
+      ],
+      "nativePin": {
+        "blob": "73fe322b48d820078a9ab4a70193c31025077968",
+        "bytes": 468,
+        "sha256": "464ea5341538c7e6ce749b92412ceffb946f86e33aa722e8bcfd6df3dda4429d"
+      },
+      "originalOperation": "6075a63a3cace7cff463771d0c5b36a7925c84838dc56eb0ef24d97a9cd9b092",
+      "bodyRead": false
+    },
+    "resultBodyRead": false,
+    "resultINFOActualRootChecks": 28,
+    "resultINFOActualMerkleTrees": 6,
+    "resultINFOActualQualification": {
+      "blob": "0cfdbd0b20a471c1b3ca4188c245ba16f645274c",
+      "bytes": 2804,
+      "sha256": "7cb4a448ade460fdee0f4538fc867768f73d71a51eab9192aa8c54341f8b161b"
+    },
+    "resultINFOClosed": true
+  },
+  "AuthBus": {
+    "fixedPsJobReported": "mac/1a1b39a2fb0-fc05-83ca",
+    "actualPsTerminalRootQualified": true,
+    "executionGO": {
+      "blob": "d53a5d17fa64bfde10a642a3527f4360e7d444af",
+      "bytes": 8491,
+      "sha256": "fc660396b4c50330af20a1a61f2092cddc7006ded40002ab3a1c57a8db83be31"
+    },
+    "actualLaneGO": {
+      "blob": "8f1f8fc77c0af587085b31cfc12c8119136a0a69",
+      "bytes": 1804,
+      "sha256": "acc345b99b1186aa3c451107204ef40f1e64d0e720122ab537e4e0fa57525711"
+    },
+    "publicImport24MarkersQualified": true,
+    "actualSDKQualified": false,
+    "actualPsRootClosureChecks": 24,
+    "fixedPsActualFailure": "typed_process_row",
+    "fixedPsClosureQualified": true,
+    "fixedPsFullOriginalRootChecks": 290,
+    "lexicalSourceRootChecks": 46,
+    "fixedPsFullOriginalQualified": true,
+    "lexicalDiagnosticAuthorized": true,
+    "lexicalActualJob": "mac/1a1b3af5466-fc05-844c",
+    "lexicalActualRootChecks": 24,
+    "lexicalActualRecoveryRootChecks": 8,
+    "lexicalFreshSignedUIDColumnObserved": true,
+    "lexicalRowCount": 719,
+    "lexicalUIDNegativeDecimalCount": 1,
+    "lexicalParentDiagnosticPassed": false,
+    "lexicalAllOwnWorkClosed": true,
+    "signedUIDRepairActualQualified": true,
+    "lexicalFullOriginalRootChecks": 326,
+    "lexicalFullChainPending": false,
+    "signedUIDRepairSourceRootChecks": 78,
+    "signedUIDRepairPureBoundaryCases": 18,
+    "signedUIDRepairIndependentRootAnchors": 10,
+    "signedUIDRepairConditionalGO": {
+      "blob": "5b902c20f35e7928b0be0dcfcbbff69b99cc49c7",
+      "bytes": 8652,
+      "sha256": "3982ec361fa4aeb3cd7493849b2482aa1581c42b4edf1c124ead8e41197dbf13"
+    },
+    "signedUIDRepairActualJob": "mac/1a1b3d5d9cb-fc05-84fb",
+    "signedUIDRepairTypedRows": 723,
+    "signedUIDRepairNegativeRows": 1,
+    "signedUIDRepairFinalFixedFences": true,
+    "signedUIDRepairOwnWorkClosed": true,
+    "signedUIDRepairRootMinimumChecks": 33,
+    "signedUIDRepairFullOriginalChecks": 333,
+    "signedUIDRepairFullOriginalAnchors": 10,
+    "signedUIDRepairFullQualification": {
+      "blob": "a4cd3fe85dbddc335ea37a13ce7f2091eac6ff45",
+      "bytes": 30708,
+      "sha256": "0a44be9e07a9678f6d54dd400a42f568c9e1c57690e1cba481535509dc856f0e"
+    },
+    "current22SourcePinClosureRootChecks": 85,
+    "current22SourcePinClosureRootAnchors": 9,
+    "current22SourcePinClosureQualification": {
+      "blob": "9c0f52276d1e1fe40a4c4166b82b609ac06e519e",
+      "bytes": 10021,
+      "sha256": "859914cf9c22669cc887db962baf768cc2feae6853201bb9c3792fc8c6baeacb"
+    },
+    "currentManagerFullSDKRuntimeQualified": false,
+    "currentMacBinary": null,
+    "trustedIssuer": null,
+    "privateCredentialGeneration": null
+  },
+  "Mac": {
+    "sourceStageOuterActualQualified": true,
+    "fullOriginalRootChecks": 75,
+    "detailedReportQualified": true,
+    "INFOOriginalOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+    "INFOCompletedInactive": true,
+    "page0DeliveryTimedOut": true,
+    "logicalObserverStillPending": true,
+    "originalFailedPageTree": "4375e2ec3136517b2e54b8afb6a41ab883b76ae0",
+    "originalImmutablePageRecoverySourcePending": false,
+    "fullOriginalRootQualification": {
+      "blob": "22400272676393d6e8014c46031d84e5b18c9810",
+      "bytes": 7139,
+      "sha256": "7c9ce98263396e0dd4ffc1190fd79e37be0add8e53e518512c48752b95fc2981"
+    },
+    "originalImmutablePageRecoveryAuthorized": true,
+    "INFOActualMetadataQualified": true,
+    "INFOOriginalPageRetrieved": true,
+    "actualStageMetadata": {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+      "bytes": 7685,
+      "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+      "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+      "platform": "darwin",
+      "uid": 501,
+      "gid": 20,
+      "mode": 384,
+      "nlink": 1,
+      "full9Strings": [
+        "16777244",
+        "72771947",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7685",
+        "1794013039551370413",
+        "1794013039551379746"
+      ],
+      "nativePin": {
+        "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+        "bytes": 489,
+        "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+      },
+      "originalInfoOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+      "retrievalPayload": {
+        "blob": "abe5bfbf7fe74a688651876df7e2d05e46f94459",
+        "bytes": 606,
+        "sha256": "cc0144f9aba8b7c97b0cdea0233ba674e76803777ed263a37a1b14359dd5350f"
+      },
+      "metadataQualified": true,
+      "bodyRead": false
+    },
+    "INFORecoveryRootChecks": 23,
+    "exactBodyAuthorized": true,
+    "exactBodyOriginalOperationReported": "48b1267e59a55b6a640a0425e9011e5a5d65a2f8a9faf3817a86356ca631254b",
+    "exactBodyOperationRootACKQualified": true,
+    "exactBodyOriginalReportedState": "closed_complete_root49",
+    "detailedStageRootChecks": 33,
+    "detailedStageRootQualification": {
+      "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+      "bytes": 6285,
+      "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+    },
+    "exactBodyOriginalClosed": true,
+    "exactBodyFullOriginalSDKRootQualified": true,
+    "bodyFullOriginalRootChecks": 49,
+    "detailedStageBodyRead": true,
+    "inertControlsSourceQualified": true,
+    "inertControlsSourceRootChecks": 22,
+    "inertControlsSourceRootAnchors": 8,
+    "inertControlsGO": {
+      "blob": "a7f6d0404fb9aa5b62e8848aea6a1a696e3cbe09",
+      "bytes": 6155,
+      "sha256": "5a4cce4197b9006d53c93982b77e12e2272dfdcf997dd95779247bc8794226bb"
+    },
+    "inertControlsReportedJob": "mac/1a1b3d20950-fc05-84e7",
+    "inertControlsActualRootQualified": true,
+    "inertControlsActualRootChecks": 22,
+    "inertControlsFullOriginalRootChecks": 63,
+    "inertControlsFullOriginalRootAnchors": 7,
+    "inertControlsActualQualification": {
+      "blob": "2c9ef90e44e8214b50a336ff7d5114be822778c8",
+      "bytes": 6054,
+      "sha256": "cf918942fce3433b761e7dbeae7489aafa2e7d4361fc78a279d14d152640488f"
+    },
+    "inertControlsJob": "mac/1a1b3d20950-fc05-84e7",
+    "inertControlsClosed": true,
+    "actualControlsReceipt": {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json",
+      "bytes": 3321,
+      "sha256": "6368b3d5723a04290b3f9356b0802f417ac0e633ee5bf2a0e5dfd69056da7b47",
+      "full9": [
+        "16777244",
+        "72776310",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3321",
+        "1794018256934258676",
+        "1794018256934622037"
+      ]
+    },
+    "normal117BUILDSourceRootChecks": 19,
+    "normal117BUILDSourceRootAnchors": 13,
+    "normal117BUILDGO": {
+      "blob": "8bb1f3cb4a8ee2cd23372b61edd2eb23269f0ae5",
+      "bytes": 6329,
+      "sha256": "805a32c6a104976ec6bfafac3ba9568cacdf554d6ff41855e37bb877a2d2658e"
+    },
+    "currentBuildJob": "mac/1a1b3da94dd-fc05-851a",
+    "currentBuildACKRootChecks": 12,
+    "currentBuildACKQualification": {
+      "blob": "4f15a6fb97cba0361037f5f95df6224c0e7ddcbb",
+      "bytes": 1638,
+      "sha256": "b6230fcd1f220e6c0df035dbd7ea8165af4fb6f76c5edace9af8933d2882e584"
+    },
+    "currentBuildReused": false,
+    "currentBuildLaunchOK": true,
+    "lastRootObservedAuthority": {
+      "audit_recorded": true,
+      "backend": "detached",
+      "identity": {
+        "kind": "ps_lstart",
+        "value": "Sat Nov  7 10:33:37 2026"
+      },
+      "job_id": "1a1b3da94dd-fc05-851a",
+      "pid": 99492,
+      "state": "running"
+    },
+    "currentBuildPreflightAdmitted": true,
+    "currentBuildFreshTarget": true,
+    "currentBuildHistoricalRuntimeInherited": false,
+    "currentBuildNormalReleaseQualified": false,
+    "currentBuildNormal117Qualified": false,
+    "currentBuildFormal34Qualified": false
+  },
+  "X230": {
+    "actualCanonical6815BundleQualified": true,
+    "actual4aStage": false,
+    "finalSourceRootChecks": 29,
+    "finalSourceActualBindings": 6,
+    "finalSourceQualification": {
+      "blob": "633686d8b87488ece61637c57854724b14b756bb",
+      "bytes": 4601,
+      "sha256": "74cfbdfc263c915dedd891baf5c5f13bbdca1c5a9961708077272ed711b7acc9"
+    },
+    "currentStageExecuted": false
+  },
+  "OfficialPKI12": {
+    "actualWholeReport": {
+      "blob": "0cb0f23e1a4484cca6ac65c5597afe3f2ed502bd",
+      "bytes": 41509,
+      "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0"
+    },
+    "rootSemanticChecks": 19,
+    "caseCount": 12,
+    "passed": 12,
+    "rawExpiredAndRevokedLookup400": true,
+    "candidateParity": false,
+    "originalBodyClosed": true,
+    "fullContinuationSDKRootChainPending": false,
+    "fullOriginalRootChecks": 90
+  },
+  "ownerLanes": {
+    "root": 0,
+    "A": 0,
+    "B": 0,
+    "C": 1,
+    "maximum": 2,
+    "scope": "B INFO complete and inactive; C current Mac build under original bounded observation. These are allocations and last known state, not a new simultaneous host observation."
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "clientCutovers": 0,
+  "allMigrated": false,
+  "legacyCleanup": false,
+  "taskContinues": true,
+  "fiveRequiredGates": {
+    "KV2": {
+      "currentCandidateFormal34MiBMigrationRestoreQualified": false,
+      "historicalEvidenceNotInherited": true
+    },
+    "HA": {
+      "currentCandidateMacROGPocket4RealLeaderFaultReadIndexRestartQualified": false,
+      "historicalEvidenceNotInherited": true
+    },
+    "AuthBus": {
+      "noJ3160Dependency": true,
+      "currentActualSDKQualified": false,
+      "publicStartupQualified": true,
+      "psSignedUIDCauseObserved": true,
+      "psRepairRuntimeQualified": true,
+      "fullManagedSDKRuntimeQualified": false
+    },
+    "perClientCutover": {
+      "registeredFiniteScopePreserved": true,
+      "completedClientCutovers": 0,
+      "currentActualCredentialReadWriteRestartRollbackQualified": false
+    },
+    "legacyCleanup": {
+      "allClientsAndBackupPathsMigrated": false,
+      "executed": false
+    }
+  },
+  "finiteMigrationScope": {
+    "registeredHosts": [
+      "mac",
+      "rog",
+      "pocket4",
+      "x230"
+    ],
+    "closedForPlanning": true,
+    "unregisteredManualPathsAreNotAnAddedGate": true,
+    "reopenOnlyNewObservedRelevantClientConfigOrRestore": true,
+    "currentClientCutovers": 0,
+    "backupRestorationCompleted": false
+  },
+  "historicalBaseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "MacFormal34MiB": 31,
+    "X230Formal34MiB": 31,
+    "MacNormal": 61,
+    "ROGNormal": 61,
+    "LANHA": 98,
+    "independentColdRestart": 12,
+    "oldX230Comparison": {
+      "profiles": 69,
+      "exact": 67,
+      "normalizedPKI": 2
+    },
+    "notInheritedByCandidate": true
+  },
+  "previousCandidate576": {
+    "schema": "heptabao.root.snapshot-lock-native-jwt-batch.candidate.r1",
+    "commit": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "tree": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "parent": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "branch": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+    "leafCount": 3932,
+    "trackedBytes": 62553540,
+    "fullLeafIndexSha256": "20ff64f463eb63a45a6dda92a17f23e814503b77ca5325d1b2c4a0ee4f4a5423",
+    "changedFiles": [
+      {
+        "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+        "before": {
+          "blob": "7a318b86ebdd47872fde86fbcce732f885571868",
+          "bytes": 19107,
+          "sha256": "59eb89dbd69dde8cd8d70c8cd340a47e5e3855e6e19f127914986ec228a8a87f"
+        },
+        "after": {
+          "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+          "bytes": 21936,
+          "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_auth.rs",
+        "before": {
+          "blob": "449f263ff0a911842f9e69ad18a92de6a8d4638c",
+          "bytes": 143153,
+          "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165"
+        },
+        "after": {
+          "blob": "2b344d01edbe52e0fc4241b79461c50db2cf7fd5",
+          "bytes": 143838,
+          "sha256": "7a7b5a2aaa4bd185b4499ce31927a145a6a014a401e95031f26e7212c453a882"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+        "before": {
+          "blob": "e26bb55f3a6c167104581ac0e5450f98aed1cc0d",
+          "bytes": 49655,
+          "sha256": "d909c5fa2fe1044e49372b9168619feed28968d48d34fa9af111e39fc31f056a"
+        },
+        "after": {
+          "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+          "bytes": 61884,
+          "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+        "before": {
+          "blob": "a8a00094d2c4efb26a9be5c1af9b7b5f0c8e04cf",
+          "bytes": 20232,
+          "sha256": "f76bdf9fc65fcf99b0a214c00df7660436509036c107f5486b3226981635004f"
+        },
+        "after": {
+          "blob": "ab70d9abc8abda8d605f055ba0eaeda74d369803",
+          "bytes": 20359,
+          "sha256": "e53ba84411f23c8c822d8a4f546dbead8bc643097de419a7e70c5eac99015d58"
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+        "before": {
+          "blob": "7178177f6156cce780c7044721ed53120c86a563",
+          "bytes": 19516,
+          "sha256": "2644931919fdafdc2d68d8e9927ebca77647e7ce8839cec1abef3e7563635c73"
+        },
+        "after": {
+          "blob": "a360aa111114da8aa16827de528839ca8eb90eec",
+          "bytes": 19632,
+          "sha256": "bc7e833e0faced417249756c78e546e955271b6ed25da1d3dbfbdff2bf56ef76"
+        }
+      }
+    ],
+    "baseFullLeafIndexReproduced": true,
+    "wholeRecursiveTree": true,
+    "rootAndAllSubtreesMerkleVerified": true,
+    "baseHistoryCount": 3768,
+    "expectedHistoryCount": 3769,
+    "sourceProposals": {
+      "jwtBatchR2": "8234672429914b80e03f7c1f0c3f70cd325cd5cb",
+      "serviceLocks": "3e506b922c214561c9dd22678354b55dcff38fc1"
+    },
+    "independentReview": {
+      "productionTree": "a33e59aa868b10282b5d4e28404d80a67b1a6704",
+      "testCorrectionConfirmedByC": true,
+      "testCorrectionTree": "cc078b497102e43d8c7bca3e6fa085566df29c8f"
+    },
+    "testPlan": {
+      "pin": {
+        "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+        "bytes": 35287,
+        "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+      },
+      "uniqueTests": 252,
+      "instances": 280,
+      "profiles": {
+        "file": 28,
+        "default": 235,
+        "ha-native-v6-peer-ingress": 17
+      },
+      "groups": 18
+    },
+    "runtimeTestsExecuted": 0,
+    "RustCompiled": false,
+    "formatted": false,
+    "platformsQualified": [],
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false,
+    "RustCompiledMeaning": "Whole candidate profile compilation remains failed; normal production release separately passed.",
+    "normalReleaseCompiled": true,
+    "ordinaryNoDefaultCheckPassed": true,
+    "fileLibtestCompiled": true,
+    "defaultLibtestCompiled": false,
+    "HALibtestCompilationReached": false,
+    "normalReleaseArtifacts": {
+      "heptabao-seed": {
+        "bytes": 101923848,
+        "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-seed",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "fresh": false,
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-seed",
+        "profile": {
+          "debug_assertions": true,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": true,
+          "test": false
+        },
+        "sha256": "64984b1ecc6d80a0599ae6bb7b93e51399f6b679244af55a163124a099790c84"
+      },
+      "heptabao-server": {
+        "bytes": 110492992,
+        "compiler_executable": "/home/qian-qi/hb-5767739c-controls-20261106-r1/cargo-target-r1/release/heptabao-server",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "fresh": false,
+        "path": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/artifacts/heptabao-server",
+        "profile": {
+          "debug_assertions": true,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": true,
+          "test": false
+        },
+        "sha256": "af595a9b31537d6421f3069ad3d2657dfc88ebea2a2ba564f9cc009992bbef8d"
+      }
+    },
+    "currentBuild": {
+      "job": "rog/1a1b2d90976-fc05-7fff",
+      "wholeBuildStatus": "failed",
+      "failedPhase": "default-libtest-build",
+      "failedExitCode": 101,
+      "timedOut": false,
+      "rustErrorCauseQualified": true,
+      "report": {
+        "path": "REPORT.original.json",
+        "blob": "5e0ef6debd1f5e502646a8e74f9b7129389a9403",
+        "bytes": 46828,
+        "sha256": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639"
+      },
+      "releasePhase": {
+        "argv": [
+          "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "build",
+          "--release",
+          "--locked",
+          "--offline",
+          "-p",
+          "heptabao-server",
+          "--bin",
+          "heptabao-server",
+          "--bin",
+          "heptabao-seed",
+          "--message-format=json-render-diagnostics"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 957.4755637519993,
+        "exit_code": 0,
+        "label": "normal-release-build",
+        "outer_cap_seconds": 1800,
+        "owned_pgid": 1587099,
+        "remaining": [],
+        "stderr_sha256": "ea0e297e1e71f795fdf43bf50fe9bdeb50f64245df84b2f8d520fb22a4411777",
+        "stdout_sha256": "ae578fec1091dd5164215f099b17fa14c822a9af87b5fddfc1457cc1dfca6c96",
+        "timed_out": false
+      },
+      "compileShared": {
+        "cap_seconds": 3600,
+        "commands": [
+          {
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "check",
+              "--release",
+              "--locked",
+              "--offline",
+              "-p",
+              "heptabao-server",
+              "--lib",
+              "--no-default-features",
+              "--message-format=json-render-diagnostics"
+            ],
+            "direct_child_reaped": true,
+            "elapsed_seconds": 63.47266892303014,
+            "exit_code": 0,
+            "label": "ordinary-no-default-check",
+            "outer_cap_seconds": 3599.999990110984,
+            "owned_pgid": 1612281,
+            "remaining": [],
+            "stderr_sha256": "12d7a87e1c882cc8ae55161abd811359cc2eecb5500b15ecbdc0dc929904b13d",
+            "stdout_sha256": "b384a8690006a8bd543c1bed8acc9804feccee0e26e375f430495cb9573d20f8",
+            "timed_out": false
+          },
+          {
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "test",
+              "--release",
+              "--locked",
+              "--offline",
+              "-p",
+              "heptabao-server",
+              "--lib",
+              "--no-run",
+              "--no-default-features",
+              "--features",
+              "native-v6-storage",
+              "--message-format=json-render-diagnostics"
+            ],
+            "direct_child_reaped": true,
+            "elapsed_seconds": 945.6726679090061,
+            "exit_code": 0,
+            "label": "file-libtest-build",
+            "outer_cap_seconds": 3536.514262106968,
+            "owned_pgid": 1614133,
+            "remaining": [],
+            "stderr_sha256": "62a76a3c75a762f2b64d41c2f4a2befc81419a46525419213db0784e8a5bc1a7",
+            "stdout_sha256": "ffca3c6b755c704656cb70c0129aa9e684c9067bc953ae30a0ef9f26c13d0ac5",
+            "timed_out": false
+          },
+          {
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "test",
+              "--release",
+              "--locked",
+              "--offline",
+              "-p",
+              "heptabao-server",
+              "--lib",
+              "--no-run",
+              "--message-format=json-render-diagnostics"
+            ],
+            "direct_child_reaped": true,
+            "elapsed_seconds": 51.4362011369667,
+            "exit_code": 101,
+            "label": "default-libtest-build",
+            "outer_cap_seconds": 2590.387622413982,
+            "owned_pgid": 1618977,
+            "remaining": [],
+            "stderr_sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8",
+            "stdout_sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97",
+            "timed_out": false
+          }
+        ],
+        "deadline_reset": false,
+        "started_monotonic": 333099.325813828,
+        "until_monotonic": 336699.325813828
+      },
+      "cleanup": [
+        {
+          "direct_child_reaped": true,
+          "exit_code": 101,
+          "label": "default-libtest-build",
+          "pid": 1618977,
+          "remaining": []
+        },
+        {
+          "direct_child_reaped": true,
+          "exit_code": 0,
+          "label": "file-libtest-build",
+          "pid": 1614133,
+          "remaining": []
+        },
+        {
+          "direct_child_reaped": true,
+          "exit_code": 0,
+          "label": "ordinary-no-default-check",
+          "pid": 1612281,
+          "remaining": []
+        },
+        {
+          "direct_child_reaped": true,
+          "exit_code": 0,
+          "label": "normal-release-build",
+          "pid": 1587099,
+          "remaining": []
+        }
+      ],
+      "rootReportChecks": 24,
+      "rootBodyOriginalChecks": 86,
+      "fullOriginalBuildTree": "58aab3b55ce2da0af097b6e1f7194ffca40fcb83",
+      "fullOriginalBuildWholeAtRoot": true,
+      "rustErrors": {
+        "E0063": 2,
+        "E0658": 2
+      },
+      "originalStderr": {
+        "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+        "bytes": 2146,
+        "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+      },
+      "defaultLibtestLogs": {
+        "infoTree": "63d99149227a85c052f26d6bd1d3cea9f452646c",
+        "rootInfoChecks": 42,
+        "stderr": {
+          "blob": "6958fa1f8e4c0d8d7801d2ff4ebafad3e08b5676",
+          "bytes": 2146,
+          "sha256": "db753e324201fae4d3051618ee354b864b59a46117e2ade25f9ba661030f1cd8"
+        },
+        "stdoutWholePending": false,
+        "bodySource": "47d81137b67b6363b5b71f35a7071252eaeba7e0",
+        "bodyGO": {
+          "blob": "cf782b9fb7f21d1b0794fc081568e0331d45f713",
+          "bytes": 11069,
+          "sha256": "75f53554ed67a05f723b1c2dd834a429a2f431942732119e48b019305f415938"
+        },
+        "stdout": {
+          "path": "stdout.original.txt",
+          "blob": "9af7a5c589aa5c86077082afdd0145291f7515e1",
+          "bytes": 383786,
+          "sha256": "b4417b102f5537a8aa0af50268a36dde0044219ca50b984beb420db44ae98a97"
+        },
+        "bodyActualTree": "4a1b220f07f74f20991c2c03ad35f8bbd16fc096",
+        "rootBodyChecks": 100,
+        "closure": {
+          "originalCalls": 112,
+          "originalObservers": 25,
+          "originalPages": 61,
+          "newCalls": 50,
+          "newObservers": 7,
+          "newPages": 36,
+          "currentNativeCall": 0,
+          "currentOwnedFuture": 0,
+          "pending": null,
+          "activeObserver": null,
+          "noReplay": true,
+          "oldGitUnknownPreserved": true
+        },
+        "stdoutSemantic": {
+          "lines": 442,
+          "compilerArtifacts": 396,
+          "buildScriptExecuted": 45,
+          "buildFinishedSuccess": false,
+          "compilerMessages": 0
+        }
+      }
+    },
+    "currentStage": {
+      "ROG": {
+        "qualified": true,
+        "report": {
+          "blob": "f2b99e2c118f4066e99f6f926427ca67cd61d1b2",
+          "bytes": 29748,
+          "sha256": "ebff30386305001fd58ac147bfe18469d11b0a534c81a04f708d4da462641662"
+        }
+      },
+      "Mac": {
+        "qualified": true,
+        "report": {
+          "blob": "f0855203bf885620f0c5deea089cc9a9e7b86460",
+          "bytes": 7665,
+          "sha256": "c6051605fb282ed5e696e594a47f43ea501eb1484e5171adef6010d00e4865bb"
+        },
+        "root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-5767739c-src-20261106-r1",
+        "volumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+        "sourceClean": true,
+        "children": 31,
+        "allChildrenReaped": true,
+        "compilerStarted": false
+      }
+    },
+    "sourceFixProposal": {
+      "tree": "2abb0dfb23270a94e882c2b0a4d7a6efe61cd039",
+      "changes": 3,
+      "productionCodeChanged": false,
+      "independentReview": "0960ed97f7e411c99aeb59c56cfc95ab0cf1ec81",
+      "compiled": false,
+      "rootChecks": 30,
+      "successorCommit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce"
+    }
+  },
+  "knownProductGaps": [
+    "Current4a production release was observed on ROG, but the enclosing build/tests job ended failed1; the exact phase remains pending the bound public report. Mac current4a normal89 unique/117 executions is running and unqualified.",
+    "Current4a formal34MiB migration/recovery and actual Mac/ROG/Pocket4 failover/ReadIndex/persistence/restarts remain pending; historical4e808 results do not qualify current4a.",
+    "Local JWT batching is implemented. Current native JWT owner/capability code rejects remote configuration, while HTTPS/JWKS/discovery implementation and remote tests exist elsewhere; native remote integration and actual compatibility remain a concrete unclosed boundary.",
+    "Remote JWKS/OIDC/Kubernetes auth/MFA/nonroot SDK, Database/Kubernetes/RabbitMQ formal-native behavior, ACME/EAB/KMS/HSM/admin/seal/root/rekey/rotate/plugins/protectedKV2/control groups/nondefaultRaft remain unqualified for a full-product replacement claim; existing engine implementations are not assumed absent.",
+    "Official OpenBao2.7.1 ACL23 and PKI12 baselines are evidence of the official artifact only; current candidate HTTP parity is pending. PKI expired/revoked lookup raw400s are retained without normalization.",
+    "Current fixed ps signed UID parser passed the fresh original probe; this does not qualify full AuthBus SDK, current product binary, new trusted issuer, actual credential read/write, renewal/revocation, or old managed cleanup.",
+    "Registered clients and backup/restore paths retain their finite scope. Zero client cutovers and zero legacy cleanup are complete; actual credential read/write, restart and inverse rollback are required before each switch."
+  ],
+  "cutoff_UTC": "2026-11-07 02:46:35 UTC",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "productionClientCutovers": 0,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "publication": {
+    "prefix": "qa/evidence/20261104/r51-canonical4a-build-auth-uid-and-report-diagnostics-r1",
+    "evidenceOnly": true,
+    "candidateSourceNotMutated": true,
+    "continuationNotCompletion": true
+  }
+}

@@ -1,0 +1,156 @@
+--- a/journal.js
++++ b/journal.js
+@@ -21,75 +21,6 @@
+   "original_unknown_and_failed_info_states_frozen");
+ }
+ 
+-/* One separately approved observation of the newly owned public stage report.
+- * This does not authorize binary_read or any new process. Existing state is kept.
+- */
+-const GF_STAGE_RESULT_PATH = "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json";
+-const GF_STAGE_RESULT_MAX_BYTES = 4194304;
+-const GF_STAGE_INFO_BEFORE = {"blob":"ffd08542730b5033fdc564c1b38a000f6515c6c8","bytes":286087,"sha256":"f55033d773c001c3e058c4d359f790f76ca9dd7402f9d1756fa29bff7ccda6a0"};
+-const GF_STAGE_INFO_REQUEST = {"blob":"28b3d72790e25a1058351341bf2c32d0f2e63eff","bytes":234,"sha256":"932bb58bd27f555bd0986bbb3ba7129c493e64113a30ab6ce3c1e275cc8e76bb"};
+-const GF_STAGE_INFO_PREREQUISITES = [{"id":"5acdbb39ce24831a5585a34a563642c22f3b68308d4362510c0b367402179a13","tool":"process_status","nativeText":{"blob":"f81998dab23b195fa1fb79b89c69ba50d4ac61a4","bytes":728,"sha256":"1118cc928b4f22ff7c78a2d0b9829b767b17cc0e8cf18e93babb65c254bb20c4"}},{"id":"48d722e432fec62b561ae4353214e13a9420873c0f2dd96fee23296175ea5242","tool":"process_read","nativeText":{"blob":"976c1c097669aeb0ec6eb9145dc0760e19a68466","bytes":6443,"sha256":"a60b4841ea0cf03bf8eb3a3ca4d520e18ebe84abd49fff4549cbc9efd5d61461"}},{"id":"ed44c34ac2f6f5d1e88e0b342694429c0ceb2671092a6262c9a7e2dc3ef9d283","tool":"process_read","nativeText":{"blob":"996e92717645f9d160756aa3d37281e367aa2483","bytes":326,"sha256":"8b48c450775d816b4bee4eadb732e74851f52d6d3d9e853079ccd16d9b6a5440"}},{"id":"e9033788bd03b7265dc888b1e8a421c6d6dc8e7806ae10d957c2328a1fc63cdf","tool":"process_read","nativeText":{"blob":"b85718627b2f3678699037e6bfdcb98fdd8bebfd","bytes":4376,"sha256":"d9dea77fd31170d047433385379c367f4fe73ad70e0ab5e4a9f2db38c5b97efd"}},{"id":"e97d26590aa21f0af8dde21d5be5f7cf94b3ac29fef37a614c69cc9ef6591800","tool":"process_read","nativeText":{"blob":"afd0fcdd466a9ce89913b968ed458307b5f0b040","bytes":326,"sha256":"ee572a7252709aecf4b661559ff1c5cc20b587f93e18f088561987a4164f4bd2"}},{"id":"f9e5fef704a65ab3561e2bf8469734c42f973103325a8e4914bc5c12147cfa45","tool":"process_read","nativeText":{"blob":"afd0fcdd466a9ce89913b968ed458307b5f0b040","bytes":326,"sha256":"ee572a7252709aecf4b661559ff1c5cc20b587f93e18f088561987a4164f4bd2"}},{"id":"68153da9ef547ad897b66e4776c882fb4d04994a69181f64b03ae44620f5503d","tool":"process_read","nativeText":{"blob":"afd0fcdd466a9ce89913b968ed458307b5f0b040","bytes":326,"sha256":"ee572a7252709aecf4b661559ff1c5cc20b587f93e18f088561987a4164f4bd2"}},{"id":"ecb2f1c0a9840f7aebdd397ddb97275a68c79b0c04a296ffae90cee1c0393dc2","tool":"process_read","nativeText":{"blob":"0f72064027e0dbd6d3e3a6548182a8392abefbc0","bytes":1536,"sha256":"09fad07fae2aaecf4d3b75d319ecba70f7e6c65b4bf14299dbe76b646312a545"}}];
+-
+-function gfAuthorizeStageResultInfoOnly({goRaw,goPin,goWholeReadback}) {
+- const s=gfState();
+- gfNeed(gfMetaEquals(JSON.stringify(s,null,2)+"\n",GF_STAGE_INFO_BEFORE),"exact_current_terminal_state_before_info");
+- gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
+-   && s.activeObserver===null && s.startCalled===true
+-   && s.job==="1a1b3978da9-fc05-83bd" && s.stageResultInfoGO===undefined
+-   && s.stageResultInfoStarted!==true,"closed_existing_stage_before_info_only_GO");
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
+-   && goPin.blob!==s.goPin.blob,"separate_whole_info_only_GO");
+- const g=JSON.parse(goRaw);
+- gfNeed(g.authorization==="GO" && g.scope==="build_result_file_info_only"
+-   && g.original_job===s.job && g.maximum_file_info_starts===1
+-   && g.binary_read_authorized===false
+-   && g.actualClosedState?.blob===GF_STAGE_INFO_BEFORE.blob
+-   && g.actualClosedState?.bytes===GF_STAGE_INFO_BEFORE.bytes
+-   && g.actualClosedState?.sha256===GF_STAGE_INFO_BEFORE.sha256
+-   && g.exact_request?.blob===GF_STAGE_INFO_REQUEST.blob
+-   && g.exact_request?.bytes===GF_STAGE_INFO_REQUEST.bytes
+-   && g.exact_request?.sha256===GF_STAGE_INFO_REQUEST.sha256,
+-   "exact_new_root_file_info_scope");
+- for(const need of GF_STAGE_INFO_PREREQUISITES) {
+-  const prior=s.completedObservers.find(o=>o.id===need.id);
+-  const priorRaw=load(GF_SLOT+":closed_native:"+need.id);
+-  gfNeed(prior?.completedInactive===true && prior.tool===need.tool
+-    && gfMetaEquals(priorRaw,need.nativeText)
+-    && prior.nativeText.blob===need.nativeText.blob,"original_stage_closure_pin");
+- }
+- const authority=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+GF_STAGE_INFO_PREREQUISITES[0].id));
+- let stdout="",stderr="",so=0,se=0,last=null;
+- for(const need of GF_STAGE_INFO_PREREQUISITES.slice(1)) {
+-  const v=parseLosslessIntegers(load(GF_SLOT+":closed_native:"+need.id));
+-  gfNeed(v.job_id===s.job && v.stdout.offset===so && v.stderr.offset===se,
+-         "original_stream_sequence");
+-  stdout+=v.stdout.text;stderr+=v.stderr.text;
+-  so=v.stdout.next_offset;se=v.stderr.next_offset;last=v;
+- }
+- gfNeed(last.stdout.eof===true && last.stderr.eof===true
+-   && so===3708 && se===0 && s.nextStdout===so && s.nextStderr===se
+-   && gitBlobMeta(stdout).sha256==="0e0729d57e5a44f68632174c68cd535c5341004a00c9bd0df8b9a24f689be9f1"
+-   && gitBlobMeta(stdout).bytes===3708 && stderr==="","whole_current_streams");
+- const lines=stdout.trimEnd().split("\n");
+- gfNeed(lines.length===4,"four_original_public_output_lines");
+- const terminal=JSON.parse(lines[3]);
+- gfNeed(authority.job_id===s.job && authority.exit_code===1
+-   && authority.output_complete===true && authority.output_durable===true
+-   && authority.terminal_publication_confirmed===true
+-   && authority.log_bytes.stdout.stored===3708 && authority.log_bytes.stderr.stored===0
+-   && !authority.timed_out && !authority.cancelled
+-   && terminal.all_owned_stopped===true && terminal.status==="failed"
+-   && terminal.publication_within_original_outer===true
+-   && terminal.source_commit==="4a49405b93c45ab1c25ecba11cde63a7ede20dce"
+-   && terminal.source_tree==="f02dd113d208d79f5275005dc65a5e8aecd0e9d3"
+-   && terminal.result_sha256==="7be18adad000805344acf09d01b91fbd1ed99e561bfbc97c9faf0fd56a07b250"
+-   && terminal.result_path===GF_STAGE_RESULT_PATH,"known_failed_build_safe_public_result");
+- s.stageResultInfoGO={pin:goPin,raw:goRaw,whole:true};
+- gfSave(s);
+- return {originalJob:s.job,exactRequest:GF_STAGE_INFO_REQUEST,
+-   maximumFileInfoStarts:1,binaryReadAuthorized:false};
+-}
+-
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -171,20 +102,13 @@
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+-    && a && a.host==="rog","same_original_host_only");
+-  gfNeed(!s.stageResultInfoGO || op.tool==="file_info","new_info_GO_does_not_extend_job_observations");
+-  if(op.tool==="file_info") {
+-   gfNeed(s.stageResultInfoGO?.whole===true && s.stageResultInfoStarted!==true
+-     && gfMetaEquals(raw,GF_STAGE_INFO_REQUEST)
+-     && Object.keys(a).sort().join(",")==="host,path"
+-     && a.path===GF_STAGE_RESULT_PATH,"one_exact_newly_owned_stage_result_info");
+-  } else if(op.tool==="process_status") {
+-   gfNeed(a.job_id===s.job,"same_original_job_only");
++    && a && a.host==="rog" && a.job_id===s.job,"same_original_job_only");
++  if(op.tool==="process_status") {
+    gfNeed(s.statusObserversCalled<256,"status_observer_cap");
+    gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+   } else {
+    gfNeed(s.readObserversCalled<129&&s.nextStdout<=2097152&&s.nextStderr<=2097152,"read_observer_and_stream_caps");
+-   gfNeed(op.tool==="process_read" && a.job_id===s.job
++   gfNeed(op.tool==="process_read"
+      && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+      && a.limit===16384 && a.stdout_offset===s.nextStdout
+      && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+@@ -208,10 +132,7 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,
+-  rootGo:(kind==="operation_start" && q.operation.tool==="file_info")
+-    || s.activeObserver?.tool==="file_info" ? s.stageResultInfoGO.pin : s.observationGo.pin,
+-  originalJob:s.job,
++  callKey,kind,request:requestPin,rootGo:s.observationGo.pin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -241,8 +162,7 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="operation_start"){
+-  if(q.operation.tool==="file_info")s.stageResultInfoStarted=true;
+-  else if(q.operation.tool==="process_status")s.statusObserversCalled++;
++  if(q.operation.tool==="process_status")s.statusObserversCalled++;
+   else s.readObserversCalled++;
+  }else if(c.kind==="operation_status")s.activeObserver.statusCalls++;
+  else if(c.kind==="operation_result")s.activeObserver.pageCalls++;
+@@ -378,22 +298,7 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  if(a.tool==="file_info") {
+-   const md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
+-   gfNeed(v.path===GF_STAGE_RESULT_PATH && Number.isSafeInteger(v.size)
+-     && v.size>0 && v.size<=GF_STAGE_RESULT_MAX_BYTES
+-     && v.sha256==="7be18adad000805344acf09d01b91fbd1ed99e561bfbc97c9faf0fd56a07b250" && v.mode===384
+-     && md?.metadata_platform==="linux" && md.mode===384
+-     && md.uid===1000 && md.gid===1000 && md.link_count===1
+-     && parts.length===5 && parts.every(x=>/^[0-9]+$/.test(x))
+-     && parts[2]===String(v.size),"fixed_report_content_metadata_and_version");
+-   s.stageResultInfo={path:v.path,size:v.size,sha256:v.sha256,version:v.version,
+-     nativeText:gitBlobMeta(nativeRaw),originalOperation:a.id,
+-     full9Strings:[parts[0],parts[1],"1000","1000",String(32768|v.mode),
+-       "1",String(v.size),parts[3],parts[4]],
+-     regularFileFromNativeFileInfoContract:true,
+-     binaryReadAuthorized:false};
+-  } else gfNeed(v.job_id===s.job,"original_job_native_result_binding");
++  gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+   if(a.tool==="process_read") {
+    for(const stream of ["stdout","stderr"]) {
+     const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];
+@@ -478,7 +383,6 @@
+  try {
+   let value;
+   if(action==="authorize_actual_job_observers")value=gfAuthorizeActualJobObservers(args);
+-  else if(action==="authorize_stage_result_info")value=gfAuthorizeStageResultInfoOnly(args);
+   else if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);

@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.root.go.rog4a.exact-key-conditional-admission.r1",
+  "authorization": "GO",
+  "scope": "combined4a_exact_key_conditional_admission_once",
+  "issuedAtUtc": "2026-11-07 01:19:25 UTC",
+  "agent": "B",
+  "sourceTree": "9a539cf2a300566fca767055d955225c0489a3c7",
+  "journal": {
+    "blob": "71215f78807891d4477eb0993f149a17ff8c56d2",
+    "bytes": 21167,
+    "sha256": "30ecb6bf11ce3842284c11d9ad8829ef5eb21dfb3e533eb3357f0a9a7315948b"
+  },
+  "request": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "newSlot": "combined_4a49405b_exact_key_conditional_admission_r1",
+  "originalBuildState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "originalInfoState": {
+    "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+    "bytes": 11134,
+    "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+  },
+  "digest": "33dcdfaa308ff7e6669737a1326ec90e9f6275038ee7f27d896aeb95981f2d50",
+  "fingerprint": "3737107712862844902",
+  "maximumProcessStartCalls": 1,
+  "allowFirstAdmission": true,
+  "lookupOnly": false,
+  "sameJobObservationsAuthorized": false,
+  "exactOriginalNativeKey": "heptabao-combined-4a49405b-fresh-build-20261106-r1-a4d59953",
+  "exactOriginalNativeRequestAllBytes": true,
+  "originalBuildGO": {
+    "blob": "bd6fb2fa682cd2b0ec966877dc988705c86ee022",
+    "bytes": 17701,
+    "sha256": "18807dca3378f8b7259bc11b518ed293cb09ed8be91d6a94bd3c5fcb45979d05"
+  },
+  "originalSourceTree": "2ea20aa7a25c59a4b0879d953d0f737e3cc2b016",
+  "originalFailureTree": "8f31dd325169b68eb10bb3cc442d7571f73346ab",
+  "currentProcessStartContract": {
+    "path": "PROCESS-START-IDEMPOTENCY-CONTRACT.public.json",
+    "blob": "9868205fd61f93d860b9e220fdd9f289677debb4",
+    "bytes": 1780,
+    "sha256": "deddb189506f28db489c2e6a2b7b0345a70dcf6ac2ac9ef014551743ea8a2057",
+    "whole": true
+  },
+  "rootQualification": {
+    "blob": "939038c078e4c64123de05be7cbc0aae2df7c9fe",
+    "bytes": 5063,
+    "sha256": "b75d917d66cc5598c30150eb23b1801674123279c2bf5178e406b9fabd8f2912",
+    "tree": "33c88b43b17c6abdf6c2184d4bcce5b735cfb44b",
+    "whole": true
+  },
+  "rootSourceChecks": 42,
+  "rootActualBindingChecks": 6,
+  "semantics": {
+    "reusedTrue": "Bind the existing durable job returned by this actual ACK; do not infer authoritative current status or successful execution.",
+    "reusedFalse": "This explicit GO permits first admission under the unchanged stable key if no durable binding exists. Do not infer that the original timeout was never received.",
+    "launchFalse": "Retain bound identity and actual launch result; do not declare successful execution.",
+    "originalTimeoutUnchanged": true,
+    "originalStartHistoryRemainsUNKNOWN": true
+  },
+  "exactBudgetsAndPayloadUnchanged": {
+    "bytes": 158691,
+    "idempotencyKey": "heptabao-combined-4a49405b-fresh-build-20261106-r1-a4d59953",
+    "host": "rog",
+    "totalTimeoutSeconds": 12000,
+    "publicationSeconds": 60,
+    "releaseDeadlineSeconds": 1800,
+    "precheckWithinReleaseMaximumSeconds": 300,
+    "sharedCompileSeconds": 3600,
+    "families": 18,
+    "uniqueTests": 252,
+    "profileInstances": 280,
+    "cleanupSeconds": [
+      5,
+      5
+    ],
+    "statement": "All source, stdin, argv, env and resource fields are the exact original request bytes. No additional command or budget is introduced."
+  },
+  "actualSDKWholeBeforeParse": true,
+  "actualACKBindings": [
+    "complete original SDK Git whole before isError/native parse",
+    "audit_recorded=true and local_record_pending=false",
+    "reused must be boolean",
+    "exact host/operator mode/key/executable/argv/cwd/request_digest/lossless fingerprint and valid actual job ID",
+    "launch.ok must be boolean; false is a retained identity/launch result, never successful execution",
+    "old original BUILD and failed INFO states remain exact; no guessed job and no old failed-row acceptance"
+  ],
+  "sequence": [
+    "whole exact new conditional-admission GO -> initialize fresh reconciliation context once",
+    "prepare original158691B process_start request -> external request/intent/armed whole",
+    "independent model boundary -> same original process_start request once",
+    "complete original SDK whole -> validate actual binding -> classify reused without rewriting history",
+    "stop after ACK or error; no process/status/read/observer admission under this SOURCE"
+  ],
+  "noThirdAutomaticStart": true,
+  "noRekey": true,
+  "noRequestChange": true,
+  "noOldSlotOrPrivatePageWrite": true,
+  "onSecondUnknown": "Preserve the second original arm and original SDK; stop with the existing unknown owner lane held, no third automatic request.",
+  "lane_allocation": {
+    "root": 0,
+    "B": 1,
+    "A": "0 until C closure and separate A allocation",
+    "C": "at most1 while PKI/Mac INFO completes",
+    "maximumOwnerLanes": 2,
+    "sameKeyContractReconcilesOriginalDurableJob": true
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "legacy_cleanup": false
+}

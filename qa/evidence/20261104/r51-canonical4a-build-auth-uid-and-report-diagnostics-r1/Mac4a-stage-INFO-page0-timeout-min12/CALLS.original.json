@@ -1,0 +1,208 @@
+[
+  {
+    "callKey": "4a-mac-stage-r1-result-info",
+    "kind": "operation_start",
+    "requestRaw": "{\n  \"idempotency_key\": \"heptabao-4a49405b-mac-source-only-a88b3787-result-info\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json\"\n    }\n  }\n}\n",
+    "requestPin": {
+      "blob": "9bf9f5bb8504545d573111946df821cb696858c6",
+      "bytes": 294,
+      "sha256": "67404bcf86c695010f43575c6b4eaad28790b81262da673d11632e4e6955bfff"
+    },
+    "phase": "accepted",
+    "called": true,
+    "armed": {
+      "tree": "6ba9b7c40cd9a81543443c1434695ca0fe4398a3",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "6ac545482fd2d3ecd11fd3667dd84a005ad6cb34",
+          "bytes": 854,
+          "sha256": "cbc6c3eff0e7cf52999c6052ceaaf62aa504607ca76100df00b9b9a1e7addc90",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "332639dde85c61e7f0b57c43b26b75e4254c05eb",
+          "bytes": 717,
+          "sha256": "a87f8a0ec46bab6e47ba9112f74b816b70f7286c68216df9a2ebe64da0aa3b18",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "9bf9f5bb8504545d573111946df821cb696858c6",
+          "bytes": 294,
+          "sha256": "67404bcf86c695010f43575c6b4eaad28790b81262da673d11632e4e6955bfff",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1865,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdkPin": {
+      "blob": "b52dd42cedfef8533a7bf14fa65f482d8de79fc3",
+      "bytes": 704,
+      "sha256": "fe7c9e20a2f8518f2ab0dda9bf4ce816cc3e8f356e1d41bd78708f8d5d374823"
+    },
+    "sdkArchive": {
+      "tree": "fa585e3e8763785976048475f2150c72e6bbba6e",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "b52dd42cedfef8533a7bf14fa65f482d8de79fc3",
+          "bytes": 704,
+          "sha256": "fe7c9e20a2f8518f2ab0dda9bf4ce816cc3e8f356e1d41bd78708f8d5d374823",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 704,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "nativePin": {
+      "blob": "3e4cea9f10841fce76da6f93113ccb9155f5d6a7",
+      "bytes": 543,
+      "sha256": "194c7343c4c2a9a93b125e921dac96223f74b9b5642b19f94add13c668ca9d86"
+    }
+  },
+  {
+    "callKey": "4a-mac-stage-r1-result-info-status0",
+    "kind": "operation_status",
+    "requestRaw": "{\n  \"operation_id\": \"de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39\"\n}\n",
+    "requestPin": {
+      "blob": "62dce212537f22ad1307d729a2544c985cd200ed",
+      "bytes": 89,
+      "sha256": "ecd384c590d9d061b14b6bf431eb5c5ee81fd50aa1f8944f5af81f3dc5101363"
+    },
+    "phase": "accepted",
+    "called": true,
+    "armed": {
+      "tree": "e5fbe039c7a37ee76a8e1f3f55626e059b08b01d",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "bab40d346296a8118185a2ca4efb101bd7f94899",
+          "bytes": 924,
+          "sha256": "e0282bd09dc5c7d4b52b292a666e0bf7e9ecd1ff53a59534d6fd03ec0dd052e2",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "b59b2807b9fee381cb0e7f3e72de0d7b01619d34",
+          "bytes": 787,
+          "sha256": "509179640f7407f2dbd9069fc267f6f47035fa47291e4e50088e1a19c79cdf89",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "62dce212537f22ad1307d729a2544c985cd200ed",
+          "bytes": 89,
+          "sha256": "ecd384c590d9d061b14b6bf431eb5c5ee81fd50aa1f8944f5af81f3dc5101363",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1800,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdkPin": {
+      "blob": "1c916744531c2e640b020c6f3ffe9f002b9f79ca",
+      "bytes": 975,
+      "sha256": "8824ebf8247de6f4dc4f320e2c0e9747d0ea302d3a10c8a20073da0cc978211d"
+    },
+    "sdkArchive": {
+      "tree": "fc74dee1f512b721588b1613142f1102dff40474",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "1c916744531c2e640b020c6f3ffe9f002b9f79ca",
+          "bytes": 975,
+          "sha256": "8824ebf8247de6f4dc4f320e2c0e9747d0ea302d3a10c8a20073da0cc978211d",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 975,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "nativePin": {
+      "blob": "be8f407df5b4e27260b8bb67170e8130e73e0eda",
+      "bytes": 800,
+      "sha256": "db1881cb30ef27e3e46c5248efb9c8f75bc63555cb23eb8e3cca6724b7210f8a"
+    }
+  },
+  {
+    "callKey": "4a-mac-stage-r1-result-info-page0",
+    "kind": "operation_result",
+    "requestRaw": "{\n  \"operation_id\": \"de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+    "requestPin": {
+      "blob": "2e67f1baabc04575aa277fcb2d270271500e68e3",
+      "bytes": 121,
+      "sha256": "177140e2743e89076257a772e458a8b784ed91e32f0bba3a96ef77083eb2dea9"
+    },
+    "phase": "native_interpretation_refused",
+    "called": true,
+    "armed": {
+      "tree": "47039c9a9f76aaec92fd90a6b80e9fd8468738ff",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "488b3cf8c2706393425ef1b64febd5659808f006",
+          "bytes": 923,
+          "sha256": "81b8b50b06a193d99700c3fdc78083eb8edcb5d623c2237ac31fc410ca97036f",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "b8675418fd2ef21dc17af9ba720fda676c09346a",
+          "bytes": 786,
+          "sha256": "6f04c779dc45b3e03f38216477d196717d4b6ef2755d42c5e67d2a478a789194",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "2e67f1baabc04575aa277fcb2d270271500e68e3",
+          "bytes": 121,
+          "sha256": "177140e2743e89076257a772e458a8b784ed91e32f0bba3a96ef77083eb2dea9",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1830,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "sdkPin": {
+      "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "bytes": 248,
+      "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+    },
+    "sdkArchive": {
+      "tree": "e675db61e07e6dfbb6d7f12b44e0f33c3fc4d6bc",
+      "entries": [
+        {
+          "path": "original.sdk.json",
+          "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+          "bytes": 248,
+          "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173",
+          "whole": true
+        }
+      ],
+      "count": 1,
+      "bytes": 248,
+      "whole": true,
+      "localDurableJournal": false,
+      "runtimeAuthorized": false
+    },
+    "interpretationFailure": "Error: native_tool_error_preserved_stop"
+  }
+]

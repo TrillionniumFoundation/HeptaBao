@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.root.canonical-bundle-transport-qualification.r1",
+  "passed": true,
+  "checkCount": 9,
+  "checks": [
+    {
+      "name": "whole8",
+      "passed": true
+    },
+    {
+      "name": "canonical_base64_one_LF",
+      "passed": true
+    },
+    {
+      "name": "exact_encoded_blob",
+      "passed": true
+    },
+    {
+      "name": "whole_binary_size",
+      "passed": true
+    },
+    {
+      "name": "whole_binary_SHA",
+      "passed": true
+    },
+    {
+      "name": "same_original_INFO_version",
+      "passed": true
+    },
+    {
+      "name": "three_body_operations",
+      "passed": true
+    },
+    {
+      "name": "closed_lane",
+      "passed": true
+    },
+    {
+      "name": "no_Mac_start_or_product_claim",
+      "passed": true
+    }
+  ],
+  "actualPacket": "bd8fbe6219bc531032c0cfc25274c143d76927e4",
+  "release": {
+    "blob": "600860637c91f4e165079cd2efa2e5a3231e8cbb",
+    "bytes": 6178,
+    "sha256": "9baf6115e65edde601ea59601a298dd48ce7daba80dde4c7d09e1863e6e64e3f"
+  },
+  "encoded": {
+    "blob": "aa2b5e2c231b7784603f8ccf621c405dacdeae08",
+    "bytes": 228025,
+    "sha256": "9d19b19a083ac1bbdfa3255dc2c2d140f146e1d2a463a677ba135169c11a529d"
+  },
+  "bytes": 171016,
+  "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800",
+  "fullOriginalCallChainIndependentlyReplayedHere": false,
+  "MacStageAuthorizedByThisQualification": false,
+  "productQualified": false
+}

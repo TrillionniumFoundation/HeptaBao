@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-official271-x230-pki12-report-body-20261106-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-official271-pki12-oracle-20261106-r1/result.public.json",
+      "offset": 0,
+      "limit": 41509,
+      "expected_version": "2053:3321457:41509:1794009102635552960:1794009102635552960"
+    }
+  }
+}

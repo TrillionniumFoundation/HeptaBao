@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.root.go.mac4a-normal117-inert-controls.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-07 02:22:41 UTC",
+  "scope": "one_exact_fresh_inert_control_publisher",
+  "sourceTree": "9948cee7d0d7bc1624633117c1c934896bafd791",
+  "rootSourceQualification": {
+    "blob": "61594822caa029b58ed91924942e4d3ee91fd2f0",
+    "bytes": 3774,
+    "sha256": "cb02b2a454280e96b3b676900f1174b806a62543523602db930fb7b7848e7dbe"
+  },
+  "sourceChecks": 22,
+  "independentRootAnchors": 8,
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "manifest": {
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    }
+  },
+  "exact_request": {
+    "blob": "e159810aa46391f2934bfe48517c4da7bd0f0635",
+    "bytes": 130241,
+    "sha256": "de03e153ae7a3951600d9a29049069a06a49fbda33976ae9589faaf9ea5a33de"
+  },
+  "journal": {
+    "blob": "2288c1b8d4dcf103e80c27831c975351b99aeba5",
+    "bytes": 19058,
+    "sha256": "11b30b5a111f81d1a254d3ae627207dcabae6dc66c22698841f50a4d6aaf9508"
+  },
+  "slot": "successor4a_mac_normal117_controls_inert_gitfirst_r1",
+  "typed_binding": {
+    "sha256": "729392d378c02b9c292c894e0dd10b1b81da052963686cde76e6ba49aef6a46d",
+    "native_fingerprint": "8256103978861865884",
+    "canonical_bytes": 130161
+  },
+  "publisher": {
+    "blob": "5977f13bfff455999eafe219dbdb154ba1108141",
+    "bytes": 9000,
+    "sha256": "18b8b35e9298f6cb9cdbcdf81b1ef962e999d461cb163a2aaf14e1f2e247ddb7"
+  },
+  "launcher": {
+    "blob": "db0b97d08b96cee8478174d22fac2bc25e9808d6",
+    "bytes": 25925,
+    "sha256": "ba55afb554abc657012e8972e2984888786f056e751f7f8aecbff4166c9980a2"
+  },
+  "runner": {
+    "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+    "bytes": 42977,
+    "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+  },
+  "groups": {
+    "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+    "bytes": 13725,
+    "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+  },
+  "carrier": {
+    "blob": "30b4d99a0f48219fe33818ac26df8880b4ea6acf",
+    "bytes": 120653,
+    "sha256": "28c030ebaeec2c762890e44a6270d6cfd14da6ffb8532127d9f5d6beebf5d801"
+  },
+  "actual_stage": {
+    "infoPin": {
+      "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+      "bytes": 489,
+      "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+    },
+    "bodyPin": {
+      "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
+      "bytes": 7685,
+      "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2"
+    },
+    "rootQualificationPin": {
+      "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+      "bytes": 6285,
+      "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+    },
+    "full9": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ],
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746"
+  },
+  "paths": {
+    "base": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "stageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/source",
+    "stageReport": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "runRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1",
+    "control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control",
+    "admission": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/build-control-r1",
+    "output": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+    "target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/target-normal-r1",
+    "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json"
+  },
+  "maximum_process_start_calls": 1,
+  "process_start_key": "heptabao-4a49405b-mac-normal117-controls-inert-r1-18b8b35e",
+  "maximum_process_status_observers": 8,
+  "maximum_process_read_observers": 8,
+  "maximum_status_per_original_id": 8,
+  "maximum_pages_per_original_id": 128,
+  "immutable_page_bytes": 8192,
+  "maximum_payload_bytes": 1048576,
+  "process_stream_read_each_bytes": 16384,
+  "stdout_total_cap_bytes": 65536,
+  "stderr_total_cap_bytes": 65536,
+  "publisher_timeout_seconds": 60,
+  "complete_stdin_bytes": 120653,
+  "complete_stdin_cap": 262144,
+  "publisher_actions": "Create fresh normal-build-r1 and control directories, compile-only three public controls, write those controls and exact receipt; no execution of launcher or runner.",
+  "actual_build_authorized": false,
+  "cargo_authorized": false,
+  "original_job_and_original_observer_only": true,
+  "wholeOriginalSDKBeforeInterpretation": true,
+  "wholeOriginalPayloadBeforeInterpretation": true,
+  "localFirstExplicitlyReplacedByGitFirst": true,
+  "archiveKeys": {
+    "arm": "gfa-<fresh callKey>",
+    "exception": "gfx-<same callKey>",
+    "sdk": "gfs-<same callKey>",
+    "payload": "gfc-<original operation id>"
+  },
+  "noReplayRekey": true,
+  "noBudgetReset": true,
+  "unknownOutcomeMustPause": true,
+  "preserveAllPriorPausedStates": true,
+  "scheduling": {
+    "conditional": false,
+    "root": 0,
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "maximum": 2,
+    "grant": "C lane active for this exact publisher and original observers only; release after terminal complete streams and closure."
+  },
+  "nextStep": "Bind the actual original terminal authority and complete stdout through already reviewed build-binder5ad7; return exact BUILD SOURCE. No fresh file read needed if existing binder accepts actual evidence.",
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

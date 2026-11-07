@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.mac.4a49405b.normal117.candidate-bound-unobserved.v1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+  "paths": {
+    "base": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "stageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/source",
+    "stageReport": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "runRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1",
+    "control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control",
+    "admission": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/build-control-r1",
+    "output": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+    "target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/target-normal-r1",
+    "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json"
+  },
+  "actual_stage_report": null,
+  "actual_stage_report_full9": null,
+  "root_stage_qualification": null,
+  "ready": false,
+  "publisher_exact_request": null,
+  "publisher_typed_binding": null,
+  "publisher_runtime_slot": null,
+  "final_bound_publisher_pin": null,
+  "final_bound_launcher_pin": null,
+  "final_carrier_pin": null,
+  "actual_controls_receipt": null,
+  "actual_publisher_job": null,
+  "build_exact_request": null,
+  "build_typed_binding": null,
+  "build_runtime_slot": null,
+  "actual_server": null,
+  "actual_seed": null,
+  "actual_default_libtest": null,
+  "actual_file_libtest": null,
+  "actual_normal61": null,
+  "actual_native_file28": null,
+  "actual_native_default28": null,
+  "actual_combined_result": null,
+  "root_build_qualification": null,
+  "full34_prepare_request": null,
+  "full34_live_request": null,
+  "full34_actual_result": null,
+  "Cargo": 0,
+  "Native_calls": 0,
+  "candidate_manifest": {
+    "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+    "bytes": 4223,
+    "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+  },
+  "candidate_bound_templates": {
+    "runner": {
+      "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+      "bytes": 42977,
+      "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+    },
+    "launcher": {
+      "blob": "b9554a1a6852cbfb965ba766e73865a5af5eebbf",
+      "bytes": 25832,
+      "sha256": "16b5b0fec596e59f8d4369f2597487e25282aae206f3030b0839038acb7d9b68"
+    },
+    "publisher": {
+      "blob": "dbf6dc6bc0d1611ad7c6f7f63d10bfeb6e8fe19a",
+      "bytes": 8769,
+      "sha256": "e0c76667ecc0c4985edac39e9cd86e5f4430f325465b35744f7e461254c7a347"
+    },
+    "build_binder": {
+      "blob": "5ad7e169fbe237b26b410c6230cc3bbdcbffc815",
+      "bytes": 4706,
+      "sha256": "bbcd65ec381f1368e7070c73d33822d8800793bfd18981c9f303ca572f214b59"
+    },
+    "groups": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    }
+  },
+  "final_bound_runner_pin": {
+    "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+    "bytes": 42977,
+    "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+  }
+}

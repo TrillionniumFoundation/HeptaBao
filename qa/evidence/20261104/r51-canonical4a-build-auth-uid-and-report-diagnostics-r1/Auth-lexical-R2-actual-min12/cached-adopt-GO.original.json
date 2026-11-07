@@ -1,0 +1,73 @@
+{
+  "authorization": "GO",
+  "scope": "cached_adopt_one_retained_original_page_SDK_no_Native",
+  "originalCallKey": "fixed-ps-lexical-r2-authority-page-0",
+  "originalExpectedTree": "4665892c2127b6a7665571e4690363098818e914",
+  "beforeState": {
+    "blob": "db7b1ebc3c4c76b039f6cefb2dbe4a7071167438",
+    "bytes": 82671,
+    "sha256": "37772b46962bbe0758fe0d960f7fa19ad441ecaf8b377a539d8495dd52365a97"
+  },
+  "originalSDK": {
+    "blob": "5c67fb5e3a2f72a47e84ae80ee0ab2e8a1a9e4e7",
+    "bytes": 2064,
+    "sha256": "996dd982476eeb22b4aa7377a207b8ede9bac6f67bbc9ded62f73e99bb3cfc1a"
+  },
+  "NativeCalls": 0,
+  "recoveryEvidenceTree": "3fc8c6cb3efb50997c9c2618bf5982bff749f692",
+  "schema": "heptabao.root.go.Auth-lexical-cached-original-SDK-adopt-and-accept.r1",
+  "issuedAtUtc": "2026-11-07 01:55:48 UTC",
+  "source": {
+    "blob": "752f708bb899d2fa75ddaf6a9e4d6e36c5c4217b",
+    "bytes": 5249,
+    "sha256": "03eb6aa8d6a312f81d4d5ee26e2e7df860d36cbf1a365349c64f29e572f3efa9"
+  },
+  "rootQualification": {
+    "blob": "4f2f8a2f55edee037a6762466ff6373feaa0772d",
+    "bytes": 1991,
+    "sha256": "28560fee1201d94e906ad331718e6b2b493a2b258b6b6b1a1a7179eab70ce111"
+  },
+  "rootChecks": 13,
+  "exactRecoveryReceipt": {
+    "blob": "3141ca1485cb5e6979070cfa1b0b4d70fad0b2a4",
+    "bytes": 3070,
+    "sha256": "81a143f0711fa8e9376cb2b3a684e657a27ea0d003778585e824cc335cb6226c"
+  },
+  "maximumCachedApply": 1,
+  "maximumOriginalCachedAccept": 1,
+  "originalExecutionGO": {
+    "blob": "8d0244e688e9a928ff3772b7f4f7d62038507077",
+    "bytes": 11144,
+    "sha256": "ec64c36d88de0f78dfd08a6e532dd6b833930e973cf9ec6250c55b604711bea1"
+  },
+  "originalJob": "mac/1a1b3af5466-fc05-844c",
+  "originalOperation": "935c018fc993a7d076532e6a9aab2818da3a18516d24507feb404867f30480df",
+  "allowedSequence": [
+    "Whole this GO and exact recovery receipt; call reviewed cached apply once against exact frozen state and original SDK.",
+    "Preserve and whole-archive actual apply result and after-state before the unchanged original gfRun accept.",
+    "One unchanged gfRun accept of fixed-ps-lexical-r2-authority-page-0 uses only already called, retained, now externally whole original SDK.",
+    "Close the existing original authority observer with whole payload before semantics; no page replay.",
+    "After successful exact recovery and observer closure, return to the original execution GO for the same job's remaining bounded status and stream observations; original counts and limits do not reset."
+  ],
+  "applyNativeCalls": 0,
+  "acceptNativeCalls": 0,
+  "noOriginalNativeReplay": true,
+  "noOldCreateTreeReplay": true,
+  "noNewStart": true,
+  "noRekey": true,
+  "oldGitCreateOutcomeRemainsUNKNOWN": true,
+  "originalErrorsAndPausedSnapshotPreserved": true,
+  "recoveryDoesNotQualifyProductOrDiagnostic": true,
+  "remainingSameJobObservationAuthorityIsOriginalGO": true,
+  "unknownOrRefusalStops": true,
+  "laneAllocation": {
+    "root": 0,
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "maximum": 2
+  },
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

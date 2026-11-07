@@ -1,0 +1,328 @@
+{
+  "schema": "heptabao.root.go.Auth-fixed-ps-lexical-diagnostic.r2",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-07 01:44:59 UTC",
+  "agent": "A",
+  "scope": "one_fresh_fixed_public_ps_with_closed_lexical_projection",
+  "source_packet": {
+    "tree": "b4fcfb45f14951671c37b6ac5190bbb51de5165b",
+    "files": 25,
+    "bytes": 410851,
+    "merkle": {
+      "root_sha": "b4fcfb45f14951671c37b6ac5190bbb51de5165b",
+      "trees_verified": 1,
+      "leaf_count": 25
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "a219542403173eac624081b938d846d60cab6795",
+    "bytes": 58079,
+    "sha256": "0ad2087613cce1e4cd6a543695689761421ff81b612263460a575ccbba583a3e"
+  },
+  "exact_request": {
+    "blob": "c476d9c59017b7da5b63a015968d18cddd7017b4",
+    "bytes": 59007,
+    "sha256": "f5a2b45c6e3739a59a0a738bef0212ffaf36be278b255c15721c73ac705ebf62"
+  },
+  "journal": {
+    "blob": "be81a15c4a832b47e08c02bfc2df653b40c53bf6",
+    "bytes": 19056,
+    "sha256": "9051db0cb379f4cfcf9f3ebd1be88fef9c73d92fb2ac123e29dfa695ce602f5a"
+  },
+  "slot": "owner_authbus_fixed_setuid_ps_lexical_gitfirst_r2",
+  "digest": "d0a5d84bc0ccee94d824f79bb1bceae532370c7e9b81bde62cd75aac4ee09e88",
+  "fingerprint": "15034660750915071636",
+  "requestBindingUses": "actual stdin field; independently reproduced canonical bytes",
+  "root_review": {
+    "blob": "87a3b8f9703bee42c8b0883c35009be2c90ad4f8",
+    "bytes": 5534,
+    "sha256": "8faf0abb0b461d746616308ef6e01baa0145b4746b05584ca338125fe6507bb4",
+    "tree": "b4bce1b8962d96bae5417ee41788d616431a2159",
+    "whole": true
+  },
+  "rootSourceChecks": 46,
+  "rootActualBindingChecks": 5,
+  "additionalInputPinsMatchActuallyExecutedPredecessor": true,
+  "start": {
+    "maximumCalls": 1,
+    "idempotencyKey": "heptabao-mac-fixed-setuid-ps-lexical-0ad20876-20261107-r2",
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "stdin": {
+      "blob": "a219542403173eac624081b938d846d60cab6795",
+      "bytes": 58079,
+      "sha256": "0ad2087613cce1e4cd6a543695689761421ff81b612263460a575ccbba583a3e"
+    }
+  },
+  "execution": {
+    "argv": [
+      "/bin/ps",
+      "-axo",
+      "pid=,ppid=,pgid=,uid=,stat="
+    ],
+    "label": "owned-launchd-group-observation",
+    "count": 1,
+    "expectedEffectiveUid": 0,
+    "onlyAfterCurrentWholeFull9OfPinnedPs": true,
+    "operatorUid": 501,
+    "otherCommandsExpectedEffectiveUid": 501,
+    "PPIDPGIDBirthWNOWAITUnchanged": true
+  },
+  "exact_input_pins": {
+    "/bin/ps": {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "budgets": {
+    "sharedWorkSeconds": 35,
+    "afterClosureSeconds": 45,
+    "nativeTimeoutSeconds": 60,
+    "primaryCommandSeconds": 4,
+    "cleanupReserveSeconds": 9,
+    "cleanupCaps": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "streamingStdoutBytes": 262144,
+    "streamingStderrBytes": 262144,
+    "primaryPipeObjects": 2,
+    "applicationHeldInputFds": 2,
+    "publicInputBodyBytes": 205072,
+    "publicInputReadByteCeilingIncludingEofSlack": 205074,
+    "inputReadCalls": 128,
+    "inputMetadataCalls": 128,
+    "additionalFixedPsLstatCallsMaximum": 2,
+    "publicTypedTableRows": 8192,
+    "publicFinalStdoutBytes": 65536,
+    "stderrExpectedBytes": 0
+  },
+  "accounting": {
+    "newPrimaryChildren": 1,
+    "allOsChildCountNotClaimedOne": true,
+    "internalPsSamplers": "Existing unchanged WNOWAIT helper uses bounded ps subprocess.run; not counted as the primary streaming group-projection. Its original post-communicate 2 MiB/65536 bound is retained, not substituted for the primary 262144 streaming contract.",
+    "additionalCurrentWholeReadByComponentChange": 0,
+    "newConsumerCReads": 0,
+    "consumerOriginalCReadsMaximum": 3,
+    "consumerTypedEsrchRequeryMaximumPerAbsence": 1,
+    "consumerQueryStillUsesOriginalManagerCounterAndDeadline": true,
+    "newInfiniteRetries": 0,
+    "signalAndReapOnlyNewDirectPopenCustody": true,
+    "additionalNativeCommands": 0,
+    "additionalHostReadsWrites": 0,
+    "newDiagnosticPrimaryCount": 1,
+    "additionalTablePassesOverAlreadyCapturedMemory": 1,
+    "additionalBoundedRowsMaximum": 8192
+  },
+  "outputs": {
+    "allowed": [
+      "aggregate row count",
+      "number of rows rejected by original predicate",
+      "original predicate all-passed boolean",
+      "fixed field-count histogram",
+      "four columns times five closed lexical-class counts",
+      "four failed-column counts",
+      "first rejected row field count and one-based failed numeric-column indexes",
+      "rawRowsOrTokensOrHashExported=false"
+    ],
+    "forbidden": [
+      "unrelated PID/PPID/PGID/UID values",
+      "raw row",
+      "raw process table",
+      "state text",
+      "token",
+      "process-table or row/token hash",
+      "stderr text/hash",
+      "private paths or credentials"
+    ],
+    "existingOwnDirectChildEvidenceUnchanged": true,
+    "actualOnly": true
+  },
+  "predicates": {
+    "fixedPsRequiresWholeFull9BeforePinAdmission": true,
+    "fixedPsNameFull9BeforeSpawnAndAfterExitEof": true,
+    "descriptorDoesNotEliminateExecByNameRace": true,
+    "liveRootUidExceptionOnlyExactPrimaryStableIdentity": true,
+    "rootUidDescendantsNotAllowed": true,
+    "commandsDefaultUidUnchanged": true,
+    "esrchOnlyOptinCountZeroErrnoEsrch": true,
+    "esrchIsNotReapOrSuccess": true,
+    "managerStillNeedsSameRegistrationRunsOneNoPidAndExitZeroAndOriginalResultClosure": true
+  },
+  "bounded_observation_for_this_new_job": {
+    "process_statusMaximum": 8,
+    "process_readMaximum": 8,
+    "process_readBytes": 16384,
+    "operation_statusMaximumPerObserver": 8,
+    "immutablePageBytes": 8192,
+    "immutablePageMaximumPerObserver": 128,
+    "payloadBytesMaximumPerObserver": 1048576,
+    "stdoutTotalMaximum": 65536,
+    "stderrTotalMaximum": 0,
+    "sequentialOriginalIdsOnly": true,
+    "wholeSdkBeforeParse": true,
+    "noReplayRekey": true
+  },
+  "excluded": [
+    "SDK execution",
+    "new AuthBus runtime",
+    "launchd registration or cleanup",
+    "T5 reads/writes",
+    "directory scan",
+    "fixed file writes",
+    "old ps 84947/85012 control",
+    "old failures promoted",
+    "new binary/issuer qualification"
+  ],
+  "componentBusinessDispatchAllowed": false,
+  "execByNameRaceNotClaimedEliminated": true,
+  "signalAndReapOnlyNewDirectPopenCustody": true,
+  "oldPidActionsAuthorized": false,
+  "lane_allocation": {
+    "conditional": false,
+    "root": 0,
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "maximum": 2,
+    "actualCClosureQualification": {
+      "blob": "9ee780ed3a2acfbc6d8c38952baf428906bc3c29",
+      "bytes": 4142,
+      "sha256": "e6642bed992ff76c0624260b41d5930c7cb58246bf4151950733eb5362876511"
+    },
+    "actualCClosureTree": "e49aad7ee8801ae1e70d42d936099755fd8eb9a1",
+    "actualPreviousAClosure": {
+      "blob": "17e24ea98a0f11996528290da736fa87f48fd806",
+      "bytes": 3858,
+      "sha256": "77c34b891188a95c034cf9e65a7e358763b5e8bc1757ed62ef7fbb9aa42f2d99"
+    },
+    "CNewNativeActionsHeld": true,
+    "AInitializeAndArmNowAuthorized": true
+  },
+  "sequence": [
+    "Whole read exact GO, SOURCE25, root46+5 and actual C closure qualification.",
+    "Initialize absent exact R2 slot once; request/intent/armed whole before model boundary and one START.",
+    "Archive whole original SDK before interpretation; only returned original job bounded status/streams; each observer closed before another.",
+    "Export only same fixed pins, own child custody and closed lexical aggregate categories; original numeric guard still applies.",
+    "Preserve all failures and stop unknown without replay/rekey or broadened owner UID acceptance."
+  ],
+  "gitFirstExplicitlyRequired": true,
+  "localDurableJournalClaimed": false,
+  "result_interpretation": {
+    "freshDiagnosticOnly": true,
+    "originalTypedProcessRowGuardUnchanged": true,
+    "rejectedTableStillFailsParent": true,
+    "finalInputFenceNotClaimedIfGuardFails": true,
+    "oldFailureActualBadFieldKnown": false,
+    "newProjectionCannotReconstructOldTable": true,
+    "actualBusinessQualified": false,
+    "SDKQualified": false,
+    "actualAuthBusQualified": false
+  },
+  "full_replacement": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "legacy_cleanup": false,
+  "inheritedCustodyPeerReviewTree": "fe2c73f5803335db4d15c69824ddd116bb2e0c1d",
+  "lexicalPeerReviewNotUsedAsRuntimeEvidence": true,
+  "lexicalProjection": {
+    "field": "tableLexicalProjection",
+    "numericColumns": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "classes": [
+      "ascii_decimal",
+      "negative_decimal",
+      "positive_decimal",
+      "other_ascii",
+      "missing"
+    ],
+    "fieldCountHistogramKeys": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "more_than_5"
+    ],
+    "permitted": [
+      "aggregate row count",
+      "number of rows rejected by original predicate",
+      "original predicate all-passed boolean",
+      "fixed field-count histogram",
+      "four columns times five closed lexical-class counts",
+      "four failed-column counts",
+      "first rejected row field count and one-based failed numeric-column indexes",
+      "rawRowsOrTokensOrHashExported=false"
+    ],
+    "firstRejectedShapeContainsNoOrdinalOrValue": true,
+    "forbidden": [
+      "unrelated PID/PPID/PGID/UID values",
+      "raw row",
+      "raw process table",
+      "state text",
+      "token",
+      "process-table or row/token hash",
+      "stderr text/hash",
+      "private paths or credentials"
+    ],
+    "existingOwnDirectChildEvidenceUnchanged": true,
+    "allFieldsComputedFromThisFreshCommandOnly": true,
+    "historicalValuesReconstructed": false,
+    "singlePassRowsBound": 8192,
+    "totalCapturedBytesBound": 262144,
+    "eachRowChecksOriginalSharedRemaining": true,
+    "noManagerGuardRelaxation": true,
+    "noUidExceptionBroadening": true,
+    "originalGuardStillRunsAfterProjection": true,
+    "knownRejectedTableStillProducesOriginalParentFailure": true,
+    "finalInputFenceStillNotClaimedOnOriginalTableRefusal": true
+  },
+  "priorActualJob": "mac/1a1b39a2fb0-fc05-83ca",
+  "priorOriginalFullChain": {
+    "blob": "36a37a394ee0508379f52ce4dcb7f3a1cfc7a2b9",
+    "bytes": 26899,
+    "sha256": "01f1941068245815b19557787c6f5c8b3ac84937c1bb1592cb538516e8291883"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.mac4a.normal117.pending-binding-source-checks.r1",
+  "pass": true,
+  "checkCount": 18,
+  "checks": [
+    {
+      "name": "accepted_runner_exact",
+      "pass": true
+    },
+    {
+      "name": "accepted_launcher_exact",
+      "pass": true
+    },
+    {
+      "name": "accepted_publisher_exact",
+      "pass": true
+    },
+    {
+      "name": "accepted_groups_exact",
+      "pass": true
+    },
+    {
+      "name": "accepted_buildBinder_exact",
+      "pass": true
+    },
+    {
+      "name": "accepted_journal_exact",
+      "pass": true
+    },
+    {
+      "name": "single_launcher_full9_marker",
+      "pass": true
+    },
+    {
+      "name": "single_publisher_ready_marker",
+      "pass": true
+    },
+    {
+      "name": "single_publisher_stage_marker",
+      "pass": true
+    },
+    {
+      "name": "single_journal_slot_marker",
+      "pass": true
+    },
+    {
+      "name": "single_journal_observer_prefix_marker",
+      "pass": true
+    },
+    {
+      "name": "actual_unknowns_retained",
+      "pass": true
+    },
+    {
+      "name": "exact_new_root_paths",
+      "pass": true
+    },
+    {
+      "name": "runner_and_groups_no_changes",
+      "pass": true
+    },
+    {
+      "name": "original44_plus17_and_28two_profiles",
+      "pass": true
+    },
+    {
+      "name": "budgets_unchanged",
+      "pass": true
+    },
+    {
+      "name": "binding_source_has_no_side_effect_calls",
+      "pass": true
+    },
+    {
+      "name": "null_actual_stage_fails_before_ready_output",
+      "pass": true
+    }
+  ],
+  "Native": 0,
+  "Cargo": 0,
+  "generatedActualRequest": false,
+  "actualUnknownsRetained": true
+}

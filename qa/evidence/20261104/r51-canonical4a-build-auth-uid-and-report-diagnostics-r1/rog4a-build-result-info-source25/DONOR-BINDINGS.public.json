@@ -1,0 +1,56 @@
+[
+  {
+    "label": "path",
+    "before": "/home/qian-qi/hb-5767739c-controls-20261106-r1/build-tests-r1/result.public.json",
+    "after": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json",
+    "count": 1
+  },
+  {
+    "label": "job",
+    "before": "1a1b2d90976-fc05-7fff",
+    "after": "1a1b3978da9-fc05-83bd",
+    "count": 1
+  },
+  {
+    "label": "commit",
+    "before": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "after": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "count": 1
+  },
+  {
+    "label": "tree",
+    "before": "42477d622dcf96e1e2b0929fe9ecc6b7ba484740",
+    "after": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "count": 1
+  },
+  {
+    "label": "stdout_bytes",
+    "before": "3707",
+    "after": "3708",
+    "count": 3
+  },
+  {
+    "label": "stdout_sha",
+    "before": "1303094bd399ea2bec2ea148fb147da4777255fc5116e9fe9a3faafb44fb5172",
+    "after": "0e0729d57e5a44f68632174c68cd535c5341004a00c9bd0df8b9a24f689be9f1",
+    "count": 1
+  },
+  {
+    "label": "report_sha",
+    "before": "95743757382a6828e622ce3f39ec1eaddb9da1db20df70a1b1ad3f87ec78d639",
+    "after": "7be18adad000805344acf09d01b91fbd1ed99e561bfbc97c9faf0fd56a07b250",
+    "count": 1
+  },
+  {
+    "label": "request_constant",
+    "before": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"8069ed61b56112eb670d41aff81066c4554152d5\",\"bytes\":227,\"sha256\":\"48dc80cd6e5ae5da31df7bac0915542ba27f026f835772544ed93a50f2aa516e\"};",
+    "after": "const GF_STAGE_INFO_REQUEST = {\"blob\":\"28b3d72790e25a1058351341bf2c32d0f2e63eff\",\"bytes\":234,\"sha256\":\"932bb58bd27f555bd0986bbb3ba7129c493e64113a30ab6ce3c1e275cc8e76bb\"};",
+    "count": 1
+  },
+  {
+    "label": "prerequisites",
+    "before": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"772814f1351e54d5797a44c3a56add38a8378dbc3944023c757fad82bf011527\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"bb8c059a1f8d53774b616a508a6217fc2699359f\",\"bytes\":728,\"sha256\":\"8bc3ab47193437a3a61b4b8df3ccc546ef8753511d0cb4e4b5f86df9fc30627d\"}},{\"id\":\"72f32b784463daa3d31a7e3ca1f34e0a85d71740779bb54cad2b5d537ea8db88\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"0fcf42fb3d7208e2c20be6e9d0db12e0134a008b\",\"bytes\":6440,\"sha256\":\"18a789cadab12aa52b3c2714bbd184ab954f83a524c681ef63d065163d2906ee\"}},{\"id\":\"461b3092964e7cb149905a79143bbc626890fc6c980b7b0e9dd442aa13feefa8\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"c5042a86ec32bb02bb44e98c46c080b0e5d8376c\",\"bytes\":326,\"sha256\":\"8faa717c4775c8787c6671f9918fb7fea2d54bf6fb8a2a6554a36a0b77289a5d\"}},{\"id\":\"89aa336fc6ced09db40c932af2999042f14edf59b26962fb25008f5bf30056b3\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"5850bf4c3d57b6ecab857925c1f80baebdb7de0b\",\"bytes\":4376,\"sha256\":\"9286b820e1789c6a5978e4f909323483ebe95ce671f53c4604b465e23e1d9844\"}},{\"id\":\"473b9bbece624dd1a45dc00e9ba2fb96075f4b8ffd6608670e12bf314bc8efaf\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"711d46431fe77b9469f5eb1495ef87e17ece61bf\",\"bytes\":326,\"sha256\":\"1491f1fd3e84507c03545b02b0c8dee06c31115ff0386bb95b960d1f442c8a19\"}},{\"id\":\"001b3b129f9386dc04fd6998d647734b40944e265cd34decb71495f2fc1520ba\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"711d46431fe77b9469f5eb1495ef87e17ece61bf\",\"bytes\":326,\"sha256\":\"1491f1fd3e84507c03545b02b0c8dee06c31115ff0386bb95b960d1f442c8a19\"}},{\"id\":\"9b54607739383b9a4729c17120002fd5cc26505fa9d3bbcb5c21a57e4e39a64c\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"fa574837c1ad55354d6606796595d220f57f2107\",\"bytes\":1536,\"sha256\":\"d58103ffc76691abd4c1fb9d0809d09fed926488f450b4e646756f20a178c612\"}}];",
+    "after": "const GF_STAGE_INFO_PREREQUISITES = [{\"id\":\"5acdbb39ce24831a5585a34a563642c22f3b68308d4362510c0b367402179a13\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"f81998dab23b195fa1fb79b89c69ba50d4ac61a4\",\"bytes\":728,\"sha256\":\"1118cc928b4f22ff7c78a2d0b9829b767b17cc0e8cf18e93babb65c254bb20c4\"}},{\"id\":\"48d722e432fec62b561ae4353214e13a9420873c0f2dd96fee23296175ea5242\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"976c1c097669aeb0ec6eb9145dc0760e19a68466\",\"bytes\":6443,\"sha256\":\"a60b4841ea0cf03bf8eb3a3ca4d520e18ebe84abd49fff4549cbc9efd5d61461\"}},{\"id\":\"ed44c34ac2f6f5d1e88e0b342694429c0ceb2671092a6262c9a7e2dc3ef9d283\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"996e92717645f9d160756aa3d37281e367aa2483\",\"bytes\":326,\"sha256\":\"8b48c450775d816b4bee4eadb732e74851f52d6d3d9e853079ccd16d9b6a5440\"}},{\"id\":\"e9033788bd03b7265dc888b1e8a421c6d6dc8e7806ae10d957c2328a1fc63cdf\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"b85718627b2f3678699037e6bfdcb98fdd8bebfd\",\"bytes\":4376,\"sha256\":\"d9dea77fd31170d047433385379c367f4fe73ad70e0ab5e4a9f2db38c5b97efd\"}},{\"id\":\"e97d26590aa21f0af8dde21d5be5f7cf94b3ac29fef37a614c69cc9ef6591800\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"afd0fcdd466a9ce89913b968ed458307b5f0b040\",\"bytes\":326,\"sha256\":\"ee572a7252709aecf4b661559ff1c5cc20b587f93e18f088561987a4164f4bd2\"}},{\"id\":\"f9e5fef704a65ab3561e2bf8469734c42f973103325a8e4914bc5c12147cfa45\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"afd0fcdd466a9ce89913b968ed458307b5f0b040\",\"bytes\":326,\"sha256\":\"ee572a7252709aecf4b661559ff1c5cc20b587f93e18f088561987a4164f4bd2\"}},{\"id\":\"68153da9ef547ad897b66e4776c882fb4d04994a69181f64b03ae44620f5503d\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"afd0fcdd466a9ce89913b968ed458307b5f0b040\",\"bytes\":326,\"sha256\":\"ee572a7252709aecf4b661559ff1c5cc20b587f93e18f088561987a4164f4bd2\"}},{\"id\":\"ecb2f1c0a9840f7aebdd397ddb97275a68c79b0c04a296ffae90cee1c0393dc2\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"0f72064027e0dbd6d3e3a6548182a8392abefbc0\",\"bytes\":1536,\"sha256\":\"09fad07fae2aaecf4d3b75d319ecba70f7e6c65b4bf14299dbe76b646312a545\"}}];",
+    "count": 1
+  }
+]

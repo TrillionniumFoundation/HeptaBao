@@ -1,0 +1,1 @@
+{"resultType":"complete","content":[{"type":"text","text":"{\n  \"audit_recorded\": true,\n  \"backend\": \"detached\",\n  \"identity\": {\n    \"kind\": \"ps_lstart\",\n    \"value\": \"Sat Nov  7 10:33:37 2026\"\n  },\n  \"job_id\": \"1a1b3da94dd-fc05-851a\",\n  \"pid\": 99492,\n  \"state\": \"running\"\n}"}],"isError":false}

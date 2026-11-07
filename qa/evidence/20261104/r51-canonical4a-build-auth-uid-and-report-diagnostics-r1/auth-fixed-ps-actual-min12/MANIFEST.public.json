@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.public-flat-manifest.r1",
+  "files": [
+    {
+      "path": "GO.original.json",
+      "blob": "d53a5d17fa64bfde10a642a3527f4360e7d444af",
+      "bytes": 8491,
+      "sha256": "fc660396b4c50330af20a1a61f2092cddc7006ded40002ab3a1c57a8db83be31"
+    },
+    {
+      "path": "lane-GO.original.json",
+      "blob": "8f1f8fc77c0af587085b31cfc12c8119136a0a69",
+      "bytes": 1804,
+      "sha256": "acc345b99b1186aa3c451107204ef40f1e64d0e720122ab537e4e0fa57525711"
+    },
+    {
+      "path": "start.sdk.original.json",
+      "blob": "4187afccbd3c781ca2bbe90ddae2faaefc1aaa45",
+      "bytes": 1423,
+      "sha256": "33358e814bcabf832329ebcd9a1d670d6e676b383c280137fa5d34ce1167638b"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "d65a5d09e86aca102a1d298963abdc094985a6dd",
+      "bytes": 728,
+      "sha256": "fb10633654d08010497d2223e3a7b232a1bffc1499eba782edb187cd773a4f29"
+    },
+    {
+      "path": "streams.native.original.json",
+      "blob": "3c46a83c9530743a2e497d01648518d967a073db",
+      "bytes": 16482,
+      "sha256": "9e0988885d93827ca4db56fa55afd5afd9cfefc8231b4a7951d2c46669f85af5"
+    },
+    {
+      "path": "stdout.original.json",
+      "blob": "57c9ac037053bc2163db3f12083529c02244c9df",
+      "bytes": 5208,
+      "sha256": "27b72de7619e9579fbcfeac27757087877a287429cda0e8e70d750fc503bb8fc"
+    },
+    {
+      "path": "stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authority-status.sdk.original.json",
+      "blob": "5e3e695aaa262b8a34b7bcba2cf91a5ea27c2d02",
+      "bytes": 980,
+      "sha256": "61b4f5132da9fa9f07239e695a6ccc7040dfac5c0a37d75f3472b0d453b251fe"
+    },
+    {
+      "path": "streams-status.sdk.original.json",
+      "blob": "b07aaae72e2ae8f92466377196377852519207a3",
+      "bytes": 978,
+      "sha256": "40cc55dec9c011e63a0d6a39432bbf65ae7801a87638cd55b78ca4c862246338"
+    },
+    {
+      "path": "final-state.public.json",
+      "blob": "da275ecb3984552da544e75f7008dc1a7c3dd95d",
+      "bytes": 91392,
+      "sha256": "679863b40914263e2eea14f502243bf11d2f65f42cce71b2d5d10cdbf9c08563"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "d71378cde6065986f23f238c34311b1fbd0fa7d4",
+      "bytes": 5686,
+      "sha256": "45331588e385c07e6447c0fc627ac2c276722485205babc5854e3f021d607fb5"
+    }
+  ]
+}

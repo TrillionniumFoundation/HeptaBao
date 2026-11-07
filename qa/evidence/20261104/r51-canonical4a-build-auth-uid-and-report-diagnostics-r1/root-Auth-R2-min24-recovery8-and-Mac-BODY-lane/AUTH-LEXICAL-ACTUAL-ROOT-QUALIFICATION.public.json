@@ -1,0 +1,245 @@
+{
+  "schema": "heptabao.root.Auth-lexical-R2-actual-min24-and-recovery8-qualification.r1",
+  "qualifiedAtUtc": "2026-11-07 02:01:22 UTC",
+  "whole": {
+    "tree": "e05e6b823be943bb6fdca42dfac656f3cd8d1cd2",
+    "files": 12,
+    "bytes": 154357,
+    "merkle": {
+      "root_sha": "e05e6b823be943bb6fdca42dfac656f3cd8d1cd2",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "all12_whole_blobs",
+      "passed": true
+    },
+    {
+      "name": "execution_GO_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_fresh_start_job",
+      "passed": true
+    },
+    {
+      "name": "actual_start_binding",
+      "passed": true
+    },
+    {
+      "name": "authoritative_terminal_failed1",
+      "passed": true
+    },
+    {
+      "name": "authoritative_output_complete_durable",
+      "passed": true
+    },
+    {
+      "name": "nine_original_calls_accepted",
+      "passed": true
+    },
+    {
+      "name": "two_original_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "both_original_statuses_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "no_pending_native_or_observer",
+      "passed": true
+    },
+    {
+      "name": "whole_original_stream_bytes",
+      "passed": true
+    },
+    {
+      "name": "parent_original_refusal_preserved",
+      "passed": true
+    },
+    {
+      "name": "one_exact_fixed_ps_custody",
+      "passed": true
+    },
+    {
+      "name": "command_exit_zero_and_fixed_name_fences",
+      "passed": true
+    },
+    {
+      "name": "same_child_reaped_and_group_empty",
+      "passed": true
+    },
+    {
+      "name": "all_own_fd_child_cleanup_complete",
+      "passed": true
+    },
+    {
+      "name": "original_deadline_and_handlers",
+      "passed": true
+    },
+    {
+      "name": "all_719_rows_width_five",
+      "passed": true
+    },
+    {
+      "name": "first_three_columns_all_ascii_decimal",
+      "passed": true
+    },
+    {
+      "name": "only_UID_column_one_negative_decimal",
+      "passed": true
+    },
+    {
+      "name": "no_foreign_values_rows_hash_export",
+      "passed": true
+    },
+    {
+      "name": "release_binding_exact",
+      "passed": true
+    },
+    {
+      "name": "A_lane_released",
+      "passed": true
+    },
+    {
+      "name": "zero_recovery_native_and_original_UNKNOWN_preserved",
+      "passed": true
+    }
+  ],
+  "checksPassed": 24,
+  "actualCachedApplyWhole": {
+    "tree": "6c16fdc2af0af96b12b57a152b513f4b3100fdaf",
+    "files": 5,
+    "bytes": 94963,
+    "merkle": {
+      "root_sha": "6c16fdc2af0af96b12b57a152b513f4b3100fdaf",
+      "trees_verified": 1,
+      "leaf_count": 5
+    },
+    "whole": true
+  },
+  "actualCachedApplyChecks": [
+    {
+      "name": "actual_apply_GO_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_apply_receipt_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_apply_result_and_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_only_reviewed_fields_changed",
+      "passed": true
+    },
+    {
+      "name": "actual_cached_recovery_links_root_GO",
+      "passed": true
+    },
+    {
+      "name": "original_errors_retained_through_final",
+      "passed": true
+    },
+    {
+      "name": "original_page_still_one_called_request",
+      "passed": true
+    },
+    {
+      "name": "recovery_record_unchanged_through_final",
+      "passed": true
+    }
+  ],
+  "actualCachedApplyChecksPassed": 8,
+  "job": "mac/1a1b3af5466-fc05-844c",
+  "authority": {
+    "blob": "256825e764a371e6b5b52331a5f47fda5eea45fa",
+    "bytes": 728,
+    "sha256": "82c0f71edf6b8d4b45fae08b310689ddf180c4240cba822885f083223576219e"
+  },
+  "actualReport": {
+    "blob": "c3d203ed45894650efb2e35dcc37fa848459572d",
+    "bytes": 5942,
+    "sha256": "92f78f946fb9f059faa1fe414d6df48c1fe89eecb103a4c62418299220cdc05a"
+  },
+  "finalState": {
+    "blob": "773bfe7ab8c5f580164a6dfde30054a55004b3c7",
+    "bytes": 100728,
+    "sha256": "fd845b2a75255fdf85a22a8230c264d516fe246d7e02025b62656f4da6caa05b"
+  },
+  "actualFreshLexicalProjection": {
+    "failedNumericColumnCounts": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "fieldCountHistogram": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 719,
+      "more_than_5": 0
+    },
+    "firstRejectedShape": {
+      "failedNumericColumns": [
+        4
+      ],
+      "fieldCount": 5
+    },
+    "numericColumnLexicalCounts": [
+      {
+        "ascii_decimal": 719,
+        "missing": 0,
+        "negative_decimal": 0,
+        "other_ascii": 0,
+        "positive_decimal": 0
+      },
+      {
+        "ascii_decimal": 719,
+        "missing": 0,
+        "negative_decimal": 0,
+        "other_ascii": 0,
+        "positive_decimal": 0
+      },
+      {
+        "ascii_decimal": 719,
+        "missing": 0,
+        "negative_decimal": 0,
+        "other_ascii": 0,
+        "positive_decimal": 0
+      },
+      {
+        "ascii_decimal": 718,
+        "missing": 0,
+        "negative_decimal": 1,
+        "other_ascii": 0,
+        "positive_decimal": 0
+      }
+    ],
+    "originalPredicateAllPassed": false,
+    "rawRowsOrTokensOrHashExported": false,
+    "rowCount": 719,
+    "rowsRejectedByOriginalPredicate": 1
+  },
+  "actualGuardFailureCause": "one fresh negative-decimal token in UID column; token value not exported",
+  "oldR1FailureRowReconstructed": false,
+  "parentDiagnosticPassed": false,
+  "finalInputFencesQualified": false,
+  "ownCustodyExitAndClosurePassed": true,
+  "allNativeAndLogicalWorkClosed": true,
+  "ALaneReleased": true,
+  "fullOriginalChainRootPending": true,
+  "SDKQualified": false,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

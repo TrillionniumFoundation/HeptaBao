@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.actual-job-observation-source-checks.r1",
+  "cases": [
+    {
+      "name": "strict_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_reverse",
+      "pass": true
+    },
+    {
+      "name": "actual_ack_state_exact",
+      "pass": true
+    },
+    {
+      "name": "attach_no_initialize_no_deadline_or_old_go_reset",
+      "pass": true
+    },
+    {
+      "name": "second_authorization_refused",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_jobId",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_maximumStatusObservers",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_maximumReadObservers",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_statusCallsPerObserver",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_pagesPerObserver",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_pageBytes",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_streamByteCap",
+      "pass": true
+    },
+    {
+      "name": "wrong_go_processStartAuthorized",
+      "pass": true
+    },
+    {
+      "name": "same_job_status_and_stream_only",
+      "pass": true
+    },
+    {
+      "name": "different_job_refused",
+      "pass": true
+    },
+    {
+      "name": "extra_file_or_body_tool_refused",
+      "pass": true
+    },
+    {
+      "name": "process_start_always_refused",
+      "pass": true
+    },
+    {
+      "name": "status_observer257_refused",
+      "pass": true
+    },
+    {
+      "name": "read_observer130_refused",
+      "pass": true
+    },
+    {
+      "name": "parallel_observer_refused",
+      "pass": true
+    },
+    {
+      "name": "same_active_operation_status",
+      "pass": true
+    },
+    {
+      "name": "status9_refused",
+      "pass": true
+    },
+    {
+      "name": "same_closed_contiguous_page",
+      "pass": true
+    },
+    {
+      "name": "page129_refused",
+      "pass": true
+    },
+    {
+      "name": "page_cursor_drift_refused",
+      "pass": true
+    },
+    {
+      "name": "original_unknown_state_drift_refused",
+      "pass": true
+    },
+    {
+      "name": "no_old_state_write_or_native",
+      "pass": true
+    }
+  ],
+  "passed": 27,
+  "NativeCalls": 0,
+  "PagesCalls": 0,
+  "fixtureOnly": true,
+  "actualObserverResults": null
+}

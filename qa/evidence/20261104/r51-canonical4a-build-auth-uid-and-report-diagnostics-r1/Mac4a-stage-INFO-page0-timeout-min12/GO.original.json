@@ -1,0 +1,82 @@
+{
+  "authorization": "GO",
+  "scope": "stage_result_file_info_only",
+  "original_job": "1a1b382714d-fc05-8350",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "9bf9f5bb8504545d573111946df821cb696858c6",
+    "bytes": 294,
+    "sha256": "67404bcf86c695010f43575c6b4eaad28790b81262da673d11632e4e6955bfff"
+  },
+  "metadata_guard": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "max_bytes": 65536,
+    "mode": 384,
+    "uid": 501,
+    "link_count": 1,
+    "gid": null,
+    "metadata_platform": null
+  },
+  "observation": {
+    "status_per_observer": 8,
+    "pages_per_observer": 128,
+    "immutable_page_bytes": 8192,
+    "payload_bytes": 1048576,
+    "simultaneous_call_or_future": 1
+  },
+  "not_authorized": [
+    "process_start",
+    "initialize_existing_slot",
+    "binary_read",
+    "another_path",
+    "controls_publication",
+    "Cargo"
+  ],
+  "schema": "heptabao.root.go.mac4a-stage-fixed-INFO.r1",
+  "issuedUTC": "2026-11-07 01:09:03 UTC",
+  "sourceTree": "cbad6efdea5c91da69475b256ac0c319eaef2c72",
+  "journal": {
+    "blob": "e55d186e6e4d403fd4902efc5eb02df828d74bd4",
+    "bytes": 24086,
+    "sha256": "e9f557b35c9595a10ddd5facd8a35f8baf7bb79c390d603d901454f5e21b20a5"
+  },
+  "slot": "successor4a_mac_source_only_stage_gitfirst_r1",
+  "original_state_pin": {
+    "blob": "7b769732c467e5aaa0c4a703075a3683ac241034",
+    "bytes": 57558,
+    "sha256": "8a82eae87c6833f0cba696217c0074d3efc3ecb05bb9341b08bd0e6dd6248813"
+  },
+  "original_stage_GO": {
+    "blob": "38e5b91ff8873eb94ba434b581d3543deee0b3a6",
+    "bytes": 10208,
+    "sha256": "095d270661275a310c149a5218f6b5ba0cc4d06c36adba1b9848d11ebf0b1560"
+  },
+  "rootQualification": {
+    "blob": "ce96b4704daa3a369bfc5c98c3c8f2f66b76bb62",
+    "bytes": 3106,
+    "sha256": "957f0883b671ebdf1b43731d75b7cbeb82437769ef52601aca4239fa09258c21"
+  },
+  "rootQualificationTree": "e17d3f744026e8866d5658c7c8ffe366e0c2d60e",
+  "actualValuesUnobserved": true,
+  "scheduling": {
+    "conditional": true,
+    "root": 0,
+    "A": 0,
+    "B": "original unknown BUILD lane remains held",
+    "C": 1,
+    "maximumOwnerLanes": 2,
+    "requiredBeforeInitializeOrAttach": "PKI original BODY remaining pages and original logical observer completely closed; no A lane active; root currently permits C to proceed immediately after this exact closure."
+  },
+  "noProcessStartOrStageReplay": true,
+  "noMetadataRefresh": true,
+  "allOriginalCallsAndObserversUnchanged": true,
+  "acceptance": {
+    "sourceDetailedReportQualified": false,
+    "compileRuntimeQualified": false,
+    "fullReplacement": false,
+    "clientCutover": false,
+    "cleanup": false
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.mac4a.normal117.binding-source.manifest.r1",
+  "entries": [
+    {
+      "path": "candidate-binding.before.public.json",
+      "blob": "77eb9ab418c1bc265d3587a119892ea1aeedc1ec",
+      "bytes": 3588,
+      "sha256": "fab2a32a5fd1fbf8aba16f3cd103c9e110dbc5f8db0044dd7d4fbcb909d6de0d"
+    },
+    {
+      "path": "candidate-binding.pending.public.json",
+      "blob": "2cbc441064f81d9d878203406ed5ee58356c1cfa",
+      "bytes": 4496,
+      "sha256": "284650d8805f5573d1cc1ed5b44615e488388cb1e16a88b105912204e1b1c187"
+    },
+    {
+      "path": "bind-controls-after-stage.source.js",
+      "blob": "fa10ad8f39e0890044eed6ee8dab38b8e8642977",
+      "bytes": 8519,
+      "sha256": "18b24d8ae6234123e1c140d3653d44198b6f790eea9ca9de5be4f286a2312c7e"
+    },
+    {
+      "path": "accepted-source-refs.public.json",
+      "blob": "a8ccd33ec4ceb77990015ff79622b6e4f6faf0d5",
+      "bytes": 2238,
+      "sha256": "ccac6611ea7e7647dabd006afe8f552cf2b8f0d15981f0c24c5fd87caa4a5d35"
+    },
+    {
+      "path": "pure_helpers.original.js",
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    },
+    {
+      "path": "process_start_binding.correct.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    {
+      "path": "verification.actual.public.json",
+      "blob": "240c3a984dc66c58dc6eb1fb414fbd2c8ed9a1c3",
+      "bytes": 1621,
+      "sha256": "eba9ecd674ded5185d3896942c1be8fcb97037b26285b88b9f88f6c553145573"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "1b6b9977e0b83e5039f9e6fb498ea8835fc6e89d",
+      "bytes": 4281,
+      "sha256": "95f2ef793453860bf56c6d847f6caccfded6d62678eeaa1e5ea020ca21f2409c"
+    },
+    {
+      "path": "README.md",
+      "blob": "5e007db92b8f03c0f96d17f57f440549ca0a2933",
+      "bytes": 1251,
+      "sha256": "fb257c4ee2526e521bb1ee34658f3e031cd91c0b020b6de503a77ec6e4443209"
+    }
+  ],
+  "actualStageUnknown": true,
+  "Native": 0
+}

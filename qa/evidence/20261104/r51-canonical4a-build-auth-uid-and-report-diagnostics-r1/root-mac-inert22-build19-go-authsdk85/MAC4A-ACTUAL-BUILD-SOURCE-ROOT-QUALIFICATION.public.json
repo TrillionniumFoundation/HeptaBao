@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.root.qualification.mac4a-actual-build-source.r1",
+  "checkedAtUtc": "2026-11-07 02:32:09 UTC",
+  "result": {
+    "schema": "heptabao.mac4a.actual-build-binding-check.r1",
+    "pass": true,
+    "check_count": 19,
+    "checks": [
+      "whole actual original authority and streams",
+      "unchanged binder exact request",
+      "exact absent-stdin typed digest and full uint64 fingerprint",
+      "actual receipt full9 and original publisher job",
+      "original fixed Mac executable and outer request",
+      "same original launcher argv entry",
+      "actual receipt exact launch arguments",
+      "strict journal forward and reverse",
+      "unique literal const GF_SLOT = \"successor4a_m",
+      "unique literal const GF_REQUEST = {\"blob\":\"e1",
+      "unique literal heptabao-4a49405b-mac-normal11",
+      "only three journal binding literals",
+      "actual published source exact mac_normal_same_root_publication_build.py",
+      "actual published source exact launch_normal_same_root_publication.py",
+      "actual published source exact normal-test-groups.public.json",
+      "whole original publisher stdout",
+      "unchanged normal117 selection and budgets",
+      "all archive callsite keys dynamic",
+      "no invented build execution or artifact identities"
+    ],
+    "request": {
+      "blob": "a000e617b0ccb8890024e8d6e3812c1ca4820030",
+      "bytes": 1204,
+      "sha256": "6f99addf7edd0a982424b29f80ed567b2f95d5a162178e67ed3c962bd7d5b6e2"
+    },
+    "typed": {
+      "sha256": "f093234feecb5498326cc0f07f096acdc0b23582df08f4fb33b7c648b7c53f78",
+      "native_fingerprint": "17335238216894862488",
+      "canonical_bytes": 1061
+    },
+    "journal": {
+      "blob": "2e02eb61e2d2a69fb8aca4d6cb3e782c5847128a",
+      "bytes": 19044,
+      "sha256": "0ee14629cb15d2ec0e8340a54f4025ffced530436861d95a7771fb64a9e146e2"
+    },
+    "actualPublisherJob": "1a1b3d20950-fc05-84e7",
+    "actualReceipt": {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json",
+      "bytes": 3321,
+      "sha256": "6368b3d5723a04290b3f9356b0802f417ac0e633ee5bf2a0e5dfd69056da7b47",
+      "full9": [
+        "16777244",
+        "72776310",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3321",
+        "1794018256934258676",
+        "1794018256934622037"
+      ]
+    },
+    "NativeCalls": 0
+  },
+  "anchors": [
+    "prior root actual build request",
+    "root previously bound runner.original.py",
+    "root previously bound launcher.actual-published.py",
+    "root previously bound groups.original.json",
+    "root previously bound publisher.original.py",
+    "root previously bound journal.before.js",
+    "root previously bound build-binder.original.js",
+    "actual publisher original authority.original.json",
+    "actual publisher original streams.original.json",
+    "actual publisher original stdout.original.json",
+    "actual publisher original INERT-RELEASE.public.json",
+    "original exact inert GO",
+    "current root actual stage qualification"
+  ],
+  "audit": {
+    "tree": "468d7feb774ef524d66ac9efbbc89152b6ae54f1",
+    "files": 28,
+    "bytes": 214359,
+    "merkle": {
+      "root_sha": "468d7feb774ef524d66ac9efbbc89152b6ae54f1",
+      "trees_verified": 1,
+      "leaf_count": 28
+    },
+    "whole": true
+  },
+  "actualInertQualification": {
+    "blob": "bd4e14e244a8ecdd8a04259199d9ef89178840f7",
+    "bytes": 2096,
+    "sha256": "b8f5a0b43adff8f05adbc1440029bd1aa8d60a3378a7d2028c222f0c433e1205"
+  },
+  "stageQualification": {
+    "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+    "bytes": 6285,
+    "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+  },
+  "rootAnchorCount": 13,
+  "NativeCalls": 0,
+  "actualBuildQualified": false
+}

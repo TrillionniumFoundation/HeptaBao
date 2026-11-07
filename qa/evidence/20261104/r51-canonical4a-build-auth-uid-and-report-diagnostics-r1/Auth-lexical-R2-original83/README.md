@@ -1,0 +1,9 @@
+# Fixed ps lexical R2: original failure, closed current observation
+
+This packet preserves the original 9 Native calls, 2 observers and 4 immutable pages for mac/1a1b3af5466-fc05-844c. The parent exited 1 with typed_process_row. Complete stdout is 5942 bytes; stderr is empty. The fixed ps primary independently had matching PPID/PGID and effective UID 0, exited 0, and was retained by WNOWAIT then reaped, with its group and owned descriptors closed. The final held/name fence was not reached and is false.
+
+The fresh closed projection counts 719 five-field rows. Columns 1-3 each contain 719 ASCII decimal tokens. Column 4 (UID) contains 718 ASCII decimal tokens and one negative decimal token; no original row, unrelated PID/UID, token, or table hash is exported. This identifies the fresh lexical refusal without reconstructing R1 or the historical ps errors.
+
+An original authority page returned once before its Git archival mutation became UNKNOWN. The old expected tree, original error, paused snapshot and exact read-only reconciliation errors are retained. A distinct root-authorized recovery packet externally preserved the same original SDK. Root then authorized one pure cached receipt restoration, externally archived before unchanged accept. No original Native page, admission or START was replayed, and the old Git mutation remains UNKNOWN. The verifier checks the explicit recovery mapping rather than treating the old expected tree as externally whole.
+
+The pure verifier reports 326 checks. This verifies original evidence and the authorized receipt restoration, not successful execution of the diagnostic or any SDK/business qualification. All current Native calls and observers are closed, with 0 active calls and 0 futures. Historical managed and custody UNKNOWN remain unchanged.

@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.root.qualification.mac4a-build-original-ACK.r1",
+  "checkedAtUtc": "2026-11-07 02:39:53 UTC",
+  "checks": [
+    "armed exact root source request",
+    "original exact BUILD GO bound",
+    "one START armed",
+    "fresh original job no replay grant",
+    "actual nonreused durable ACK",
+    "actual launch success",
+    "actual Mac job id",
+    "actual typed digest and lossless uint64",
+    "original fixed idempotency key",
+    "exact executable cwd argv",
+    "no additional environment keys",
+    "operator launch mode"
+  ],
+  "checkCount": 12,
+  "ackPacket": {
+    "tree": "587de57ab226ee0c2ae882b56a740a8743d749f2",
+    "files": 1,
+    "bytes": 2426,
+    "merkle": {
+      "root_sha": "587de57ab226ee0c2ae882b56a740a8743d749f2",
+      "trees_verified": 1,
+      "leaf_count": 1
+    },
+    "whole": true
+  },
+  "armPacket": {
+    "tree": "87242ca0cca38f56e7c4dc12d7d710b08385dbda",
+    "files": 3,
+    "bytes": 2741,
+    "merkle": {
+      "root_sha": "87242ca0cca38f56e7c4dc12d7d710b08385dbda",
+      "trees_verified": 1,
+      "leaf_count": 3
+    },
+    "whole": true
+  },
+  "actualJob": "1a1b3da94dd-fc05-851a",
+  "reused": false,
+  "launchOk": true,
+  "request": {
+    "blob": "a000e617b0ccb8890024e8d6e3812c1ca4820030",
+    "bytes": 1204,
+    "sha256": "6f99addf7edd0a982424b29f80ed567b2f95d5a162178e67ed3c962bd7d5b6e2"
+  },
+  "typedBinding": {
+    "sha256": "f093234feecb5498326cc0f07f096acdc0b23582df08f4fb33b7c648b7c53f78",
+    "native_fingerprint": "17335238216894862488",
+    "canonical_bytes": 1061
+  },
+  "normal117Qualified": false,
+  "actualBuildQualification": false,
+  "fullReplacement": false
+}

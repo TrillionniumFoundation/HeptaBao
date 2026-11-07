@@ -1,0 +1,352 @@
+{
+  "schema": "heptabao.AuthBus.r3.consumer-pin-closure-pure-result",
+  "passed": true,
+  "checkCount": 85,
+  "checks": [
+    {
+      "name": "before/fixed-carrier",
+      "passed": true
+    },
+    {
+      "name": "before/fixed-publisher",
+      "passed": true
+    },
+    {
+      "name": "carrier/exact-top-level-fields",
+      "passed": true
+    },
+    {
+      "name": "carrier/exact-source-names",
+      "passed": true
+    },
+    {
+      "name": "carrier/exact-document-names",
+      "passed": true
+    },
+    {
+      "name": "carrier/same-schema-anchor",
+      "passed": true
+    },
+    {
+      "name": "source/mac_auth_rows_cas_r1.mjs/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_auth_rows_cas_r1.mjs/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_authbus_cache_cas_r1.mjs/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_authbus_cache_cas_r1.mjs/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_capture_sqlite_synthetic_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_capture_sqlite_synthetic_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_capture_sqlite_synthetic_r2.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_capture_sqlite_synthetic_r2.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_capture_entry_wal_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_capture_entry_wal_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_cycle_r2.mjs/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_cycle_r2.mjs/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_fixture_materializer_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_fixture_materializer_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_outer_inputs_r2.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_outer_inputs_r2.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_outer_wal_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_outer_wal_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_phase_owner_r2.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_phase_owner_r2.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_server_owner_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_current_server_owner_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_darwin_owned_projection_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_darwin_owned_projection_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_guarded_current_capture_r3.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_guarded_current_capture_r3.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_native_owned_commands_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_native_owned_commands_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_native_owned_unreaped_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_native_owned_unreaped_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_native_process_observer_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_native_process_observer_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_owned_commands_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_owned_commands_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_owned_launchd_r3.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_owned_launchd_r3.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_owned_unreaped_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_owned_unreaped_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_registry_readonly_wal_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_registry_readonly_wal_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_single_native_r2.mjs/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_single_native_r2.mjs/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_t5_volume_guard_r1.py/before-whole",
+      "passed": true
+    },
+    {
+      "name": "source/mac_t5_volume_guard_r1.py/after-whole",
+      "passed": true
+    },
+    {
+      "name": "source/counts",
+      "passed": true
+    },
+    {
+      "name": "source/exact-six-repair-leaves",
+      "passed": true
+    },
+    {
+      "name": "source/exact-current-manager",
+      "passed": true
+    },
+    {
+      "name": "source/no-stale-manager-literal-in-current-executable-leaves",
+      "passed": true
+    },
+    {
+      "name": "source/no-separate-MODULES-literal",
+      "passed": true
+    },
+    {
+      "name": "candidate/current-sha-pins",
+      "passed": true
+    },
+    {
+      "name": "candidate/only-pin-map-changed",
+      "passed": true
+    },
+    {
+      "name": "candidate/carrier-exact",
+      "passed": true
+    },
+    {
+      "name": "proof/seven-whole-original-documents",
+      "passed": true
+    },
+    {
+      "name": "rebuild/carrier-byte-exact",
+      "passed": true
+    },
+    {
+      "name": "rebuild/publisher-byte-exact",
+      "passed": true
+    },
+    {
+      "name": "rebuild/candidate-byte-exact",
+      "passed": true
+    },
+    {
+      "name": "rebuild/unbound-input-byte-value-exact",
+      "passed": true
+    },
+    {
+      "name": "diff/publisher/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "diff/publisher/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "diff/candidate/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "diff/candidate/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "diff/source-pins/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "diff/source-pins/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "publisher/HomeControl-class-current-identical",
+      "passed": true
+    },
+    {
+      "name": "publisher/definition-loader-unchanged",
+      "passed": true
+    },
+    {
+      "name": "publisher/main-and-finally-unchanged",
+      "passed": true
+    },
+    {
+      "name": "publisher/only-three-import-safe-definition-loads",
+      "passed": true
+    },
+    {
+      "name": "publisher/compiled-current-decoded-source",
+      "passed": true
+    },
+    {
+      "name": "outer/one-direct-manager-import",
+      "passed": true
+    },
+    {
+      "name": "outer/verify-all-pins-before-import",
+      "passed": true
+    },
+    {
+      "name": "outer/shared-pins-to-manager-materializer",
+      "passed": true
+    },
+    {
+      "name": "materializer/consumer-plan-current-map",
+      "passed": true
+    },
+    {
+      "name": "server/current-helper-map-before-import",
+      "passed": true
+    },
+    {
+      "name": "consumer/current-helper-map-before-import",
+      "passed": true
+    },
+    {
+      "name": "barrier/no-ready-runtime",
+      "passed": true
+    },
+    {
+      "name": "barrier/no-old-namespace-dispatch",
+      "passed": true
+    },
+    {
+      "name": "barrier/no-current-binary-issuer-private-binding",
+      "passed": true
+    },
+    {
+      "name": "barrier/source-only-claims",
+      "passed": true
+    },
+    {
+      "name": "barrier/historical-product-fields-not-qualified",
+      "passed": true
+    }
+  ],
+  "execution": "pure V8 decoding/reconstruction/strict diffs of fixed public SOURCE only",
+  "NativeCallsAdded": 0,
+  "PythonModulesCompiledOrExecuted": false,
+  "privateInputsRead": false,
+  "readyForRuntime": false
+}

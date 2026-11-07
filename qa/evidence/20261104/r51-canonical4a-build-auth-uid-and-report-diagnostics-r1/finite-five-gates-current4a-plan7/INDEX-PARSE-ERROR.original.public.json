@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.pure-source-shape-error-preserved.r1",
+  "action": "read_current_canonical_leaf_index_for_inventory",
+  "errorName": "SyntaxError",
+  "errorMessage": "Unexpected token '.', \".github/CO\"... is not valid JSON",
+  "phase": "JSON.parse after exact whole blob/hash verification",
+  "nativeCalls": 0,
+  "mutations": 0,
+  "originalWholeIndexUnchanged": true,
+  "correction": "Inspect actual line format and parse its fixed fields; do not change the index or candidate."
+}

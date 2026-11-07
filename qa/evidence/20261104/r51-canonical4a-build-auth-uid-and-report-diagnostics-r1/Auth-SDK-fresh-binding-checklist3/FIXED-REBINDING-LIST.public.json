@@ -1,0 +1,431 @@
+{
+  "schema": "heptabao.authbus-next-fixture-fixed-rebinding-list.r1",
+  "scope": "Pure SOURCE planning checklist from already public fixed inputs; no candidate generation or actual binding is asserted.",
+  "status": "AWAIT_FIXED_PS_ACTUAL_AND_NEW_PRODUCT_BINDINGS",
+  "inputs": {
+    "source112Tree": "1b9f6f07249d0757ac0efa0227827e834a750260",
+    "candidate": {
+      "blob": "c5a520313563ec821c1b80d49249a8cef1573709",
+      "bytes": 7499,
+      "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81"
+    },
+    "runtimeInputs": {
+      "blob": "0e212e5102247b6e289e873a718eb271f115a651",
+      "bytes": 15274,
+      "sha256": "ae310e9777aa18ec702f9330b6b499af7f5b88d8cb9db42f039042a497732952"
+    },
+    "sourcePins": {
+      "blob": "3fb7441f4cc70ce938492b14f302709cdb5ab8b4",
+      "bytes": 4384,
+      "sha256": "dad5ae8f3dd971eb5e949b1989db9cb203529cf9a77a27cec573914a43c1bf11"
+    },
+    "source112Contract": {
+      "blob": "b51ff967b9847b97bd071800929c10c55d6798dd",
+      "bytes": 10626,
+      "sha256": "44cb0e55464bcd8c1ed7af4b0bde49791d6dca7e9dc7ec39f7267316bbb6b313"
+    },
+    "repairCore27": "199c18fcfff5a9fc9f5276ff5b47da42ebbdcf96",
+    "onePsSource59": "eee0363103afb513ebc602eb37cec78405320caf"
+  },
+  "sourceInventory": [
+    {
+      "filename": "mac_auth_rows_cas_r1.mjs",
+      "baseline": {
+        "blob": "408959d22873855f79f28570c611d24db44005cd",
+        "bytes": 3108,
+        "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_authbus_cache_cas_r1.mjs",
+      "baseline": {
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_capture_sqlite_synthetic_r1.py",
+      "baseline": {
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_capture_sqlite_synthetic_r2.py",
+      "baseline": {
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_current_capture_entry_wal_r1.py",
+      "baseline": {
+        "blob": "e9c9d0c30a06681ba8e97c10f27a098ca6fbd6b6",
+        "bytes": 42083,
+        "sha256": "783573e6c4dce62132baffb31c8abf49d45e4b00c901c5faa093719e1020c935"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_current_cycle_r2.mjs",
+      "baseline": {
+        "blob": "9bbc3d403a4fb65176e9398cc71ef2464f94dc5a",
+        "bytes": 24012,
+        "sha256": "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_current_fixture_materializer_r1.py",
+      "baseline": {
+        "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+        "bytes": 25973,
+        "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+      },
+      "semanticRepair": {
+        "blob": "6a3b8911ac391fea1884113625fde555cae132e8",
+        "bytes": 26026,
+        "sha256": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+      },
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_current_outer_inputs_r2.py",
+      "baseline": {
+        "blob": "c59271a6852e4ccba17aaa2cb8357704092d3a11",
+        "bytes": 33001,
+        "sha256": "54a5a023b4f3af34e14c6617ee97c5bb2e38fd4bf843398e437c5c95fd45f673"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_current_outer_wal_r1.py",
+      "baseline": {
+        "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+        "bytes": 73918,
+        "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+      },
+      "semanticRepair": {
+        "blob": "27b9e70f6c708690f3a8f86347137a744253efbb",
+        "bytes": 74137,
+        "sha256": "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529"
+      },
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_current_phase_owner_r2.py",
+      "baseline": {
+        "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+        "bytes": 25647,
+        "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_current_server_owner_r1.py",
+      "baseline": {
+        "blob": "75653caa4a98e77ae62750bf9557083c1abb9d82",
+        "bytes": 14052,
+        "sha256": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_darwin_owned_projection_r1.py",
+      "baseline": {
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_guarded_current_capture_r3.py",
+      "baseline": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_native_owned_commands_r1.py",
+      "baseline": {
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_native_owned_unreaped_r1.py",
+      "baseline": {
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_native_process_observer_r1.py",
+      "baseline": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "semanticRepair": {
+        "blob": "8ccc79e3f776bfb42648bcd6ace6ab021574a949",
+        "bytes": 15269,
+        "sha256": "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5"
+      },
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_owned_commands_r1.py",
+      "baseline": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "semanticRepair": {
+        "blob": "e5fe545bdd842ae3bf4d61e2576b407149d32a2d",
+        "bytes": 7675,
+        "sha256": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1"
+      },
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_owned_launchd_r3.py",
+      "baseline": {
+        "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+        "bytes": 58584,
+        "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+      },
+      "semanticRepair": {
+        "blob": "48f3e8394a15830953fb90e3470e8ba98e7df509",
+        "bytes": 60016,
+        "sha256": "edeb2b60dd102ea300887d3d2f23fc39682aa8700ce88d6273307f1b5d2ecbd4"
+      },
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_owned_unreaped_r1.py",
+      "baseline": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "semanticRepair": {
+        "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",
+        "bytes": 13221,
+        "sha256": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501"
+      },
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_registry_readonly_wal_r1.py",
+      "baseline": {
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_single_native_r2.mjs",
+      "baseline": {
+        "blob": "2b7aee5224a9129441396ae88664b4670af1fd50",
+        "bytes": 33148,
+        "sha256": "e1b85fd42d637a2cdccb4e8ab958d4c8a99898725b3bca4558cdc2ff984da630"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    },
+    {
+      "filename": "mac_t5_volume_guard_r1.py",
+      "baseline": {
+        "blob": "8bc381b89b599e0cab9e2eed5fc1e9f331920225",
+        "bytes": 13392,
+        "sha256": "28bba28ee22a70002f47ab6cbb75a4af30d56806a85307dc585d533ce3a9f4d7"
+      },
+      "semanticRepair": null,
+      "otherSemanticChangeAllowed": false,
+      "namespaceRebindingStillRequired": true
+    }
+  ],
+  "namespace": {
+    "old": {
+      "oldT5": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2",
+      "newT5": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3",
+      "oldHome": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+      "newHome": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3",
+      "serverLabel": "org.heptabao.qa.mac-authbus-4e808-home-r3.server",
+      "consumerPrefix": "org.heptabao.qa.mac-authbus-4e808-home-r3.consumer"
+    },
+    "newT5Root": null,
+    "newHomeRoot": null,
+    "newServerLabel": null,
+    "newConsumerPrefix": null,
+    "freshExclusiveCreateRequired": true,
+    "noFallbackRename": true,
+    "noOldNamespaceDispatch": true,
+    "oldScopesNotTouched": true
+  },
+  "product": {
+    "sourceCommit": null,
+    "sourceTree": null,
+    "platform": "Mac fixture requires an actually qualified Darwin artifact; Linux release stage statements are not transferable.",
+    "binaryPath": null,
+    "binaryBytes": null,
+    "binarySha256": null,
+    "binaryFull9": null,
+    "binaryVersion": null,
+    "finalBuildReport": null,
+    "finalQualification": null
+  },
+  "fixedAssembly": [
+    "Mechanically merge these exact six source repairs into the original 22-source table; change no business test or credential guard.",
+    "Bind one fresh T5 root, one fresh HOME root, and the two launchd label namespaces across all exact occurrences. Recompute complete 22 source pins and candidate JSON.",
+    "Replace the product commit/tree and executable fields only when an actual same-platform artifact and source qualification is supplied. Retain no old 4e808 product-success claim for the new candidate.",
+    "Rebind original create-only publisher/payload and new request key/journal slot. Retain 30 T5 public files and two HOME public copies; no private input is read by the publisher.",
+    "After authorized actual inert success, derive HOME full9/two-copy binding and exact receipt from that original result. Preserve receipt pre-finally ok:false separately from full post-finally closure.",
+    "Reuse the fixed three-target readback: exact outer, candidate, actual receipt; three metadata closed before current-version finite bodies. Recalculate actual sizes/chunks and independent new budget, rather than inheriting old read consumption.",
+    "Use the original pure actual-result deriver to generate the exact runtime request from current candidate/source pins/anchor/HOME binding; old runtime request/key and fake actual values are excluded.",
+    "At authorized runtime only, create fresh owned TLS/AppRole issuer state and capture fixed current inputs on T5; continue the original complete validation and inverse/restart sequence."
+  ],
+  "actualOnlySlots": {
+    "inertJob": null,
+    "inertAuthority": null,
+    "inertFinalStdout": null,
+    "inertReceipt": null,
+    "inertReceiptFull9": null,
+    "homeRootFull9": null,
+    "homeWrapperCopies": null,
+    "outerCurrentVersion": null,
+    "candidateCurrentVersion": null,
+    "receiptCurrentVersion": null,
+    "actualEphemeralPort": null,
+    "freshTlsCa": null,
+    "freshPeerCertificateSha256": null,
+    "freshAppRoleIssuance": null,
+    "privateCaptureBefore": null,
+    "privateGeneration": null,
+    "actualSelectedOwner": null
+  },
+  "fixedPrivateInputTreatment": {
+    "source": "mac_current_outer_inputs_r2.py:PRIVATE_INPUTS/project_frozen and mac_current_outer_wal_r1.py:capture_once",
+    "bodiesReadByThisPlanningTask": 0,
+    "existingFourFixedTrustInputsReferencedOnly": true,
+    "noOldPrivateCapsuleAsNodeInput": true,
+    "newCaptureUnderNewRootOnly": true,
+    "freshProviderCredentialProvenanceNotInvented": true,
+    "secretsRemainOnT5": true
+  },
+  "runtimePreserved": {
+    "agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "fullConfigAndAllProviderModels": true,
+    "pluginConnectionFieldsOnly": [
+      "address",
+      "caFile",
+      "roleIdFile",
+      "secretIdFile"
+    ],
+    "sameActualRegistryInstance": "Original loader/selector calls once; selected harness equals the global registered harness. Owner uses record.ownerPluginId/entry.pluginId; harness pluginId only matches its cloned local/global relation.",
+    "initialAndColdPhases": [
+      "initial",
+      "cold-new-process"
+    ],
+    "inversePhases": [
+      "initial-inverse",
+      "cold-new-process-inverse"
+    ],
+    "nativeLineages": 10,
+    "originalBudgets": {
+      "outer": 900,
+      "manager": 600,
+      "managerFailureCleanup": 60,
+      "phase": 120,
+      "native": [
+        15,
+        8,
+        3
+      ],
+      "http": 10,
+      "capture": 45,
+      "listenerReady": 30,
+      "tlsCommand": 30
+    },
+    "NativeTimeoutSeconds": 1080,
+    "roleTtlSeconds": 180,
+    "roleMaxTtlSeconds": 600,
+    "renewBody": {},
+    "renewal": "Actual same token/accessor pre-lookup, original operation sequence, renew response validated, post-lookup expiry increase, revoke204 and denied403; no added sleep/deadline or relying only on HTTP200.",
+    "currentObservation": "Original finite primary Auth rows/config/native selected inputs before and after; no whole production database backup claim.",
+    "port": "Original reserve_port socket bind 127.0.0.1:0 then getsockname and once-close. Port remains null before runtime and is not claimed held through exec.",
+    "materializer": "Fresh auth-only stores preserve every agent's full captured model/provider selection; no production native auth.json copy, no credentials exported.",
+    "sandbox": "Only the proven root-directory literal append; original exact file allowlist and default-deny body remain. Public imports success does not itself qualify SDK business."
+  },
+  "acceptedPreflightFacts": {
+    "publicImports24": true,
+    "publicImportsFullTree": "c0b9835e380999cd1ef3da29aebadaf0af8e8eff",
+    "fixedPsActual": null,
+    "readerEsrchActualInBusiness": null
+  },
+  "oldUnknownsRemain": [
+    "ps 84947/85012 custody",
+    "historical managed registration/lineages and private progress",
+    "old failed/source-only roots",
+    "unrelated Git/Native ACK UNKNOWN"
+  ],
+  "NativeCalls": 0,
+  "privateBodiesRead": 0,
+  "newSourceControlsGenerated": false
+}

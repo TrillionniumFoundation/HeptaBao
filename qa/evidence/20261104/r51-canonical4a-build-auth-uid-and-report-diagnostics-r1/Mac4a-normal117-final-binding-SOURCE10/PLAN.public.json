@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.mac4a.normal117.after-stage-binding-SOURCE.v1",
+  "status": "SOURCE_ONLY_AWAITING_ORIGINAL_METADATA_AND_BODY",
+  "acceptedSource29": "f7942d13d97acc6e66733ed1ff424876c0b2b097",
+  "binder": {
+    "blob": "fa10ad8f39e0890044eed6ee8dab38b8e8642977",
+    "bytes": 8519,
+    "sha256": "18b24d8ae6234123e1c140d3653d44198b6f790eea9ca9de5be4f286a2312c7e"
+  },
+  "acceptedInputs": {
+    "source29": "f7942d13d97acc6e66733ed1ff424876c0b2b097",
+    "runner": {
+      "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+      "bytes": 42977,
+      "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+    },
+    "launcher": {
+      "blob": "b9554a1a6852cbfb965ba766e73865a5af5eebbf",
+      "bytes": 25832,
+      "sha256": "16b5b0fec596e59f8d4369f2597487e25282aae206f3030b0839038acb7d9b68"
+    },
+    "publisher": {
+      "blob": "dbf6dc6bc0d1611ad7c6f7f63d10bfeb6e8fe19a",
+      "bytes": 8769,
+      "sha256": "e0c76667ecc0c4985edac39e9cd86e5f4430f325465b35744f7e461254c7a347"
+    },
+    "groups": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    },
+    "buildBinder": {
+      "blob": "5ad7e169fbe237b26b410c6230cc3bbdcbffc815",
+      "bytes": 4706,
+      "sha256": "bbcd65ec381f1368e7070c73d33822d8800793bfd18981c9f303ca572f214b59"
+    },
+    "journal": {
+      "blob": "de11da67ee16e58248f939483b5f20fd09114a9d",
+      "bytes": 19049,
+      "sha256": "34efe4b61e146a99b9057d6ed1fddcdd92a46209328808fea79b2cda756b5211"
+    },
+    "paths": {
+      "base": "/Volumes/T5/hepta-vnext-recovery-20261013",
+      "stageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/source",
+      "stageReport": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+      "runRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1",
+      "control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control",
+      "admission": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/build-control-r1",
+      "output": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+      "target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/target-normal-r1",
+      "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json"
+    }
+  },
+  "onlyPermittedBindingChanges": [
+    "launcher STAGE_EXPECTED_FULL9",
+    "publisher BINDING_READY/STAGE_EXPECTED/three PINS",
+    "journal slot/exact request pin/observer prefix"
+  ],
+  "actualInputsRequired": [
+    "original INFO native text whole pin",
+    "original report body whole pin matched to actual INFO",
+    "root detailed stage qualification whole pin"
+  ],
+  "actualStageValues": null,
+  "runnerChanged": false,
+  "groupsChanged": false,
+  "normalUniqueTests": 89,
+  "normalProfileExecutions": 117,
+  "budgets": {
+    "outer_seconds": 8280,
+    "release_seconds": 1800,
+    "default_libtest_seconds": 1800,
+    "file_libtest_seconds": 1800,
+    "listing_seconds": 30,
+    "family_seconds": 600,
+    "TERM_seconds": 5,
+    "KILL_seconds": 5,
+    "runner_read_cap": 49152
+  },
+  "publication": {
+    "timeoutSeconds": 60,
+    "stdinMaximum": 262144,
+    "createOnlyThreeControlsAndReceipt": true,
+    "PythonCompileOnly": true,
+    "Cargo": false
+  },
+  "laterBuild": {
+    "binder": {
+      "blob": "5ad7e169fbe237b26b410c6230cc3bbdcbffc815",
+      "bytes": 4706,
+      "sha256": "bbcd65ec381f1368e7070c73d33822d8800793bfd18981c9f303ca572f214b59"
+    },
+    "requiresActualPublisherTerminalAndReceipt": true,
+    "request": null,
+    "GO": null
+  },
+  "full34": {
+    "source": {
+      "blob": "51ef5a5cf49282405265760713f9639678b8240e",
+      "bytes": 13740,
+      "sha256": "1654f32a1eb610c3c9bf8c1f20da4599fd5cd3204a0f88b51988b5683868b2af"
+    },
+    "needsActualNormal117AndNewBinary": true,
+    "actualBinary": null
+  },
+  "Native": 0
+}

@@ -1,0 +1,349 @@
+{
+  "schema": "heptabao.current-4a-five-mainlines-finite-order.r1",
+  "purpose": "Existing facts and next acceptance order; no new Native/cutover/cleanup authorization.",
+  "progress": {
+    "candidate": {
+      "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+      "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+      "leaves": 3932,
+      "tracked_bytes": 62553956,
+      "index": {
+        "blob": "4767ced1fa8bcb3d6efc1cf3d678ce6d75b2dd1c",
+        "bytes": 453838,
+        "sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d"
+      }
+    },
+    "cutoff_utc": "2026-11-07 02:05:49 UTC",
+    "job": {
+      "host": "rog",
+      "id": "1a1b3978da9-fc05-83bd",
+      "latest_authority": "running",
+      "authority": {
+        "id": "3f290fa1cf139624acb61ccfadf9152b7150ed53f4d51a9b914d8da4db2c63e7",
+        "tool": "process_status",
+        "payload": {
+          "blob": "5c3f4e455d606cb36129ff73eda8aadc701a686c",
+          "bytes": 618,
+          "sha256": "f624f3352adae2cdbbe7c969a18e366b6d3e582b43ca90e667d9e653e3f72e73"
+        },
+        "payloadTree": "2e47c6beb2573d91d379ee4f38c9723ad35286bb",
+        "nativeText": {
+          "blob": "b75a4187730eb91a844da87d57f08a1e9d6d75aa",
+          "bytes": 471,
+          "sha256": "fdcde497a8ed23b03029a39731b51894292d816a26d5bb7aef90398ff7f0d5c4"
+        },
+        "pages": 1,
+        "completedInactive": true
+      },
+      "streams": {
+        "id": "f9e5fef704a65ab3561e2bf8469734c42f973103325a8e4914bc5c12147cfa45",
+        "tool": "process_read",
+        "payload": {
+          "blob": "9f4955c9d437332a9fbf1b8e849f39a3e9cb2083",
+          "bytes": 466,
+          "sha256": "234bf30824b2f5e134fe873de11de58240c799571af30d4a18894b7ef0aed029"
+        },
+        "payloadTree": "2ce71cab080342a36cb121b8c373c88b8222596f",
+        "nativeText": {
+          "blob": "afd0fcdd466a9ce89913b968ed458307b5f0b040",
+          "bytes": 326,
+          "sha256": "ee572a7252709aecf4b661559ff1c5cc20b587f93e18f088561987a4164f4bd2"
+        },
+        "pages": 1,
+        "completedInactive": true
+      },
+      "stdout_offset": 3313,
+      "stderr_offset": 0,
+      "call_inflight": false,
+      "observer_active": false,
+      "build_lane": 1,
+      "old_timeout_preserved": true
+    },
+    "release": {
+      "phase_observed": true,
+      "original": {
+        "id": "e9033788bd03b7265dc888b1e8a421c6d6dc8e7806ae10d957c2328a1fc63cdf",
+        "tool": "process_read",
+        "payload": {
+          "blob": "57880eaffb9b616428647dda0b305dfd266a1f0e",
+          "bytes": 4713,
+          "sha256": "aef5e0f1d99fdf460979ef3e595edd525c9d8efd57743a369cddfef978a8eaf6"
+        },
+        "payloadTree": "b4fce9d4e6f37f65423134dc01dcaa473e9552c8",
+        "nativeText": {
+          "blob": "b85718627b2f3678699037e6bfdcb98fdd8bebfd",
+          "bytes": 4376,
+          "sha256": "d9dea77fd31170d047433385379c367f4fe73ad70e0ab5e4a9f2db38c5b97efd"
+        },
+        "pages": 1,
+        "completedInactive": true
+      },
+      "server": {
+        "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/artifacts/heptabao-server",
+        "bytes": 110492992,
+        "sha256": "af595a9b31537d6421f3069ad3d2657dfc88ebea2a2ba564f9cc009992bbef8d",
+        "full9": null,
+        "version": null
+      },
+      "seed": {
+        "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/artifacts/heptabao-seed",
+        "bytes": 101923848,
+        "sha256": "64984b1ecc6d80a0599ae6bb7b93e51399f6b679244af55a163124a099790c84",
+        "full9": null,
+        "version": null
+      }
+    },
+    "independent_precheck_json_qualified": false,
+    "final_report": null,
+    "final_build_252_280_qualified": false,
+    "fullReplacement": false,
+    "productionCutover": false,
+    "legacyCleanup": false
+  },
+  "mainlines": [
+    {
+      "ordinal": 1,
+      "name": "正式KV2迁移与恢复",
+      "existing": "4a snapshot/Service源码和本轮测试计划已固定；旧CLI B04/B05失败保留。",
+      "next": [
+        "完成同一4a BUILD全部结果、末围栏、owned cleanup和retained产物metadata。",
+        "以当前产物跑候选ACL23+strict PKI12，对照现成官方实测。",
+        "沿既有full34/共享31及真实CLI方案验有效档案、baseline、restore、冷重启、audit；不改flags。"
+      ],
+      "complete": "同一候选的实际原档恢复及数据/权限/owner/fence/audit/冷重启验收完成。",
+      "handoff": {
+        "owner": "C",
+        "source_only_tree": "922a44832cfbf630086d7e092f6455a7eb287dfb",
+        "fresh_root": "/home/qian/hb-4a49405b-src-20261106-r1",
+        "actual_source_stage": false,
+        "actual_full34": false
+      }
+    },
+    {
+      "ordinal": 2,
+      "name": "当前三机HA",
+      "existing": "6路Native/SSH身份已有root1048和独立exact-model审批，不是产品HA成功。",
+      "next": [
+        "分别闭合当前Linux与Mac产物资格，Mac normal89 unique/117 profile另列。",
+        "按本次身份和固定LAN方案完成当前三机读写、failover、恢复与原98+12检查。"
+      ],
+      "complete": "同一current候选在三机的实际HA验收、原进程和观察闭合；不继承旧binary或仅IP对应。"
+    },
+    {
+      "ordinal": 3,
+      "name": "实际AuthBus",
+      "existing": "A负责真实consumer和平台前置；公开Node/import/ps诊断不等于实际业务通过。",
+      "next": [
+        "绑定current qualified产物、真实信任源/端点与consumer接口。",
+        "沿原owned期限完成实际SDK/consumer业务、迁移恢复和owned cleanup，保留历史UNKNOWN。"
+      ],
+      "complete": "实际业务和owner关闭同时成立；版本或无凭证probe不替代。"
+    },
+    {
+      "ordinal": 4,
+      "name": "逐台切换与回滚",
+      "existing": "需要当前consumer/service/备份依赖和rollback基线；有限搜索/单容器覆盖不能当全机迁移。",
+      "next": [
+        "固定每台当前依赖/备份/rollback身份，具体未迁移consumer或Native API缺口先独立处理。",
+        "每台切换后实际consumer与恢复演练通过再推进下一台。"
+      ],
+      "complete": "逐台真实切换及可复核回滚/恢复完成，所有实际依赖覆盖。"
+    },
+    {
+      "ordinal": 5,
+      "name": "旧版清理",
+      "existing": "当前未执行旧版删除，fullReplacement=false。",
+      "next": [
+        "活跃消费者全部迁移且rollback保留要求满足后，固定可处置旧资产身份。",
+        "仅处理明确旧资产，不抹证据/UNKNOWN、不以未绑定PID或宽泛路径操作。"
+      ],
+      "complete": "逐项处置和剩余消费者/回滚资产验证闭合，历史证据保留。"
+    }
+  ],
+  "protocol": {
+    "official_baselines": {
+      "acl23": {
+        "summary": {
+          "blob": "5ebf2743de2e5e96a68c042d80e37f0921cb021e",
+          "bytes": 38300,
+          "sha256": "6ed54426f3b40166279dc45809f895db3223c1128afc6322ae0a9b9cf5ae158a",
+          "path": null
+        },
+        "count": 23,
+        "status_counts": {
+          "200": 2,
+          "204": 8,
+          "403": 12,
+          "405": 1
+        },
+        "capture_complete": true,
+        "owner_closed": true,
+        "input_role_fields": [
+          "role_type",
+          "user_claim",
+          "bound_audiences"
+        ],
+        "observed_policy_readback": [
+          {
+            "token_policies_present": true,
+            "token_policies": []
+          }
+        ],
+        "explicit_empty_input_tested": false,
+        "root_policy_tested": false,
+        "role_no_default_issuance_tested": false
+      },
+      "strict_pki12": {
+        "report": {
+          "blob": "0cb0f23e1a4484cca6ac65c5597afe3f2ed502bd",
+          "bytes": 41509,
+          "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0"
+        },
+        "count": 12,
+        "statuses": {
+          "pki.cert_lookup": 200,
+          "pki.crl_json": 200,
+          "pki.issue": 200,
+          "pki.lease_expire_issue": 200,
+          "pki.lease_expire_lookup": 400,
+          "pki.lease_lookup": 200,
+          "pki.lease_revoke": 204,
+          "pki.mount": 204,
+          "pki.revoked_lease_absent": 400,
+          "pki.role": 200,
+          "pki.role_read": 200,
+          "pki.root": 200
+        },
+        "normalization": false,
+        "owner_closed": true
+      }
+    },
+    "candidate35": {
+      "counts": {
+        "acl23": 23,
+        "pki12": 12,
+        "total": 35
+      },
+      "actual_results": null,
+      "artifact_full9": null,
+      "oracle_rerun_needed": false,
+      "separate_from_252_280": true,
+      "authorized_here": false
+    }
+  },
+  "api_obligations": [
+    {
+      "id": "local-native-jwt-service-batch",
+      "current": "Implemented in current4a source; actual execution pending.",
+      "source": {
+        "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+        "bytes": 21936,
+        "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6",
+        "path": "crates/heptabao-server/src/auth_native_jwt.rs"
+      },
+      "tests_source": {
+        "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+        "bytes": 61884,
+        "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9",
+        "path": "crates/heptabao-server/src/service_native_jwt_tests.rs"
+      },
+      "exact_six_batch_tests": [
+        "service::native_auth::jwt_tests::native_jwt_batch_type_matrix_keeps_identity_and_stateless_grants_across_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_bad_signature_and_expiry_before_publication_keep_old_issuance_state",
+        "service::native_auth::jwt_tests::native_jwt_batch_identity_disable_veto_and_reenable_use_the_real_entity",
+        "service::native_auth::jwt_tests::native_jwt_batch_forced_mount_retains_domain_ttl_and_discards_service_use_limits",
+        "service::native_auth::jwt_tests::native_jwt_batch_no_default_policy_and_root_rejection_survive_cold_reopen",
+        "service::native_auth::jwt_tests::native_jwt_batch_post_commit_audit_response_and_assertion_guards_keep_the_committed_root"
+      ],
+      "profiles": [
+        "file",
+        "default"
+      ],
+      "instances": 12,
+      "old_batch_501_description_valid": false,
+      "actual_this_run": null
+    },
+    {
+      "id": "remote-jwks-and-discovery",
+      "official": {
+        "repo": "openbao/openbao",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "config": {
+          "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+          "bytes": 24654,
+          "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80",
+          "path": null
+        },
+        "backend": {
+          "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+          "bytes": 4189,
+          "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a",
+          "path": null
+        },
+        "mount_relative_route": "auth/<jwt-mount>/config",
+        "operations": [
+          "ReadOperation",
+          "UpdateOperation"
+        ],
+        "fields": [
+          "jwks_url",
+          "jwks_ca_pem",
+          "oidc_discovery_url",
+          "oidc_discovery_ca_pem",
+          "jwt_validation_pubkeys",
+          "skip_jwks_validation"
+        ],
+        "code_primary": [
+          "path_config.go:45-142 source/CA fields and read/update handlers",
+          "path_config.go:364-382 one counted trust-source method",
+          "path_config.go:388-430 discovery/JWKS validation, configured skip-validation warnings",
+          "backend.go:75-88 login/config and distinct OIDC path registration"
+        ],
+        "limits": "This narrow reading does not cover the complete login/OIDC handlers; jwks_pairs wording alone does not prove a supported field."
+      },
+      "current": {
+        "native": {
+          "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+          "bytes": 21936,
+          "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6",
+          "path": "crates/heptabao-server/src/auth_native_jwt.rs"
+        },
+        "legacy_remote": {
+          "blob": "14033657f85dde0c40b545c416e3cd8c591874dc",
+          "bytes": 36595,
+          "sha256": "e6b0ce5a7ae2e04d60bcb028a46ebe3234f9eaac23cb2c010d2d07fc3b663af6",
+          "path": "crates/heptabao-server/src/auth_remote.rs"
+        },
+        "legacy_tests": {
+          "blob": "715b551f595cc1f98e9d780b19abfac8fc5669d2",
+          "bytes": 27222,
+          "sha256": "25add3ac40b5d3e9b52d99a030c8df3438edcc97b83fdead10a4571e01d47fd0",
+          "path": "crates/heptabao-server/src/service_remote_jwt_tests.rs"
+        },
+        "finding": "Formal Native requires root namespace/config.remote=None and rejects unsupported candidate. HTTPS/JWKS/discovery prepare-execute-finish already exists in auth_remote; no global missing-implementation claim.",
+        "coverage": "Current252/280 includes remote rejection negative, not service_remote_jwt_tests or formal Native remote live parity."
+      },
+      "future_minimal_boundary": [
+        "Capture original Auth/Namespace/Identity/Actor, mount/config/role and clock; perform network outside writer/lock under original deadline.",
+        "Re-enter with bounded existing lock and revalidate captured source; preserve paired native publication, issuer/batch owner, Identity, audit and delivery.",
+        "Post-commit veto remains UNKNOWN/no replay; deleting remote.is_none alone is insufficient.",
+        "Separate exact candidate/oracle fixtures; do not edit running4a or expand current35/252-280."
+      ]
+    },
+    {
+      "id": "other-native-profile-state-domains",
+      "source": {
+        "blob": "6bb16ad15f43d0ca908438b4fb26d44d625f476b",
+        "bytes": 21959,
+        "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+        "path": "crates/heptabao-server/src/auth_native_v6_routes.rs"
+      },
+      "observed": "native_v6_storage_profile requires MFA/SDK state absent and kubernetes/oidc/ldap/radius/kerberos/plugin maps empty.",
+      "interpretation": "Current formal Native admission restriction only. Does not prove no implementation elsewhere; discovery key fetch is not complete OIDC authorization/callback.",
+      "complete_official_api_mapping": false,
+      "live_oracle_coverage": false
+    }
+  ],
+  "Native_calls_by_packet": 0,
+  "product_changes": 0
+}

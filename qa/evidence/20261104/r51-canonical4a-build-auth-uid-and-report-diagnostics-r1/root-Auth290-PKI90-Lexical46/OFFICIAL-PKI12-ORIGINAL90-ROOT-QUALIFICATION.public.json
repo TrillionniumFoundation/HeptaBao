@@ -1,0 +1,425 @@
+{
+  "schema": "heptabao.root.PKI90-qualification.r1",
+  "sourceTree": "f47139b578e27e1f8fa4bbf289e413754183e3cc",
+  "whole": {
+    "tree": "f47139b578e27e1f8fa4bbf289e413754183e3cc",
+    "files": 57,
+    "bytes": 1440705,
+    "merkle": {
+      "root_sha": "f47139b578e27e1f8fa4bbf289e413754183e3cc",
+      "trees_verified": 1,
+      "leaf_count": 57
+    },
+    "whole": true
+  },
+  "rootReproduced": {
+    "schema": "heptabao.official271-pki12.body-original-chain-verification.r1",
+    "passed": true,
+    "check_count": 90,
+    "checks": [
+      {
+        "name": "exact actual INFO identity",
+        "passed": true
+      },
+      {
+        "name": "old ten calls and three closed observers",
+        "passed": true
+      },
+      {
+        "name": "all old calls unchanged",
+        "passed": true
+      },
+      {
+        "name": "all old closed observers unchanged",
+        "passed": true
+      },
+      {
+        "name": "one exact whole body request",
+        "passed": true
+      },
+      {
+        "name": "six new calls only",
+        "passed": true
+      },
+      {
+        "name": "actual call exact 0",
+        "passed": true
+      },
+      {
+        "name": "arm request GO and once 0",
+        "passed": true
+      },
+      {
+        "name": "Merkle 5888ff9fd733dc2cb4c45e5976389f3658ac14c8",
+        "passed": true
+      },
+      {
+        "name": "whole pin call00--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle f625516f7898479376a9832f19e8c2467f32177c",
+        "passed": true
+      },
+      {
+        "name": "whole SDK native exact 0",
+        "passed": true
+      },
+      {
+        "name": "whole pin call00--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "original binary admission",
+        "passed": true
+      },
+      {
+        "name": "actual call exact 1",
+        "passed": true
+      },
+      {
+        "name": "arm request GO and once 1",
+        "passed": true
+      },
+      {
+        "name": "Merkle 9a61a39a6a0124e771896d2eab41e71a50bc0c9d",
+        "passed": true
+      },
+      {
+        "name": "whole pin call01--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle ffe6ff4cfac06931aa0d45fe3b489a3797d15669",
+        "passed": true
+      },
+      {
+        "name": "whole SDK native exact 1",
+        "passed": true
+      },
+      {
+        "name": "whole pin call01--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "original completed stored inactive status",
+        "passed": true
+      },
+      {
+        "name": "actual call exact 2",
+        "passed": true
+      },
+      {
+        "name": "arm request GO and once 2",
+        "passed": true
+      },
+      {
+        "name": "Merkle 54c6607b41fd32ac746c002f23b1148e9c799a2a",
+        "passed": true
+      },
+      {
+        "name": "whole pin call02--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 6c3d5795ec3168a200b91f2f423e9c5202a4ae06",
+        "passed": true
+      },
+      {
+        "name": "whole SDK native exact 2",
+        "passed": true
+      },
+      {
+        "name": "only original ordered page request 2",
+        "passed": true
+      },
+      {
+        "name": "actual call exact 3",
+        "passed": true
+      },
+      {
+        "name": "arm request GO and once 3",
+        "passed": true
+      },
+      {
+        "name": "Merkle 532c185f75afd4842f97f0503cab4775ae6cd4f8",
+        "passed": true
+      },
+      {
+        "name": "whole pin call03--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 858453be73e66a6bfb662223ec28692f78608ee2",
+        "passed": true
+      },
+      {
+        "name": "whole SDK native exact 3",
+        "passed": true
+      },
+      {
+        "name": "whole pin call03--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "only original ordered page request 3",
+        "passed": true
+      },
+      {
+        "name": "actual call exact 4",
+        "passed": true
+      },
+      {
+        "name": "arm request GO and once 4",
+        "passed": true
+      },
+      {
+        "name": "Merkle a493d3c17ad250567034606c166ffafc7f154a7a",
+        "passed": true
+      },
+      {
+        "name": "whole pin call04--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 1f390f5cedd9c1ba1d744fff4b40acff2a205c98",
+        "passed": true
+      },
+      {
+        "name": "whole SDK native exact 4",
+        "passed": true
+      },
+      {
+        "name": "whole pin call04--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "only original ordered page request 4",
+        "passed": true
+      },
+      {
+        "name": "actual call exact 5",
+        "passed": true
+      },
+      {
+        "name": "arm request GO and once 5",
+        "passed": true
+      },
+      {
+        "name": "Merkle 798381c36d4aa7203cbe592166020ceb3564e257",
+        "passed": true
+      },
+      {
+        "name": "whole pin call05--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle e770afdee0d030e64569b544f413d66df997a4d2",
+        "passed": true
+      },
+      {
+        "name": "whole SDK native exact 5",
+        "passed": true
+      },
+      {
+        "name": "whole pin call05--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "only original ordered page request 5",
+        "passed": true
+      },
+      {
+        "name": "page0 original rejection remains",
+        "passed": true
+      },
+      {
+        "name": "all thirteen pre-continuation calls unchanged",
+        "passed": true
+      },
+      {
+        "name": "original outer failure preserved",
+        "passed": true
+      },
+      {
+        "name": "actual zero-Native cached apply",
+        "passed": true
+      },
+      {
+        "name": "pure recovery exactly three fields",
+        "passed": true
+      },
+      {
+        "name": "external whole continuation preserves original body GO",
+        "passed": true
+      },
+      {
+        "name": "immutable original page 0",
+        "passed": true
+      },
+      {
+        "name": "immutable original page 1",
+        "passed": true
+      },
+      {
+        "name": "immutable original page 2",
+        "passed": true
+      },
+      {
+        "name": "immutable original page 3",
+        "passed": true
+      },
+      {
+        "name": "all four pages reconstruct exact payload",
+        "passed": true
+      },
+      {
+        "name": "whole payload original native",
+        "passed": true
+      },
+      {
+        "name": "actual exact-version whole decoded report",
+        "passed": true
+      },
+      {
+        "name": "external whole PAYLOAD-ARCHIVE-WHOLE.original.json",
+        "passed": true
+      },
+      {
+        "name": "whole exact entry PAYLOAD-ARCHIVE-WHOLE.original.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle b8d5eb933d1e4cdf77d15166a3e51a267e75cf12",
+        "passed": true
+      },
+      {
+        "name": "external whole BODY-ARCHIVE-WHOLE.original.json",
+        "passed": true
+      },
+      {
+        "name": "whole exact entry BODY-ARCHIVE-WHOLE.original.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 15bc791365fc88df6688a6cd6b797edcf1f6749a",
+        "passed": true
+      },
+      {
+        "name": "final physical and logical closure",
+        "passed": true
+      },
+      {
+        "name": "raw twelve-case denominator no candidate or ACL rerun",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.mount",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.root",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.role",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.role_read",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.issue",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.cert_lookup",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.crl_json",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.lease_lookup",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.lease_revoke",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.revoked_lease_absent",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.lease_expire_issue",
+        "passed": true
+      },
+      {
+        "name": "raw PKI pki.lease_expire_lookup",
+        "passed": true
+      },
+      {
+        "name": "source input nine once closed",
+        "passed": true
+      },
+      {
+        "name": "four actual original children closed",
+        "passed": true
+      },
+      {
+        "name": "meaningful fake component eight and zero HTTP",
+        "passed": true
+      },
+      {
+        "name": "original synthetic cleanup and final publication boundary",
+        "passed": true
+      }
+    ],
+    "scope": {
+      "newOriginalCalls": 6,
+      "immutablePages": 4,
+      "payloadBytes": 55762,
+      "reportBytes": 41509,
+      "originalTotalCalls": 16,
+      "closedObservers": 4,
+      "cachedPage0NativeCalls": 0,
+      "originalFailureRetained": true,
+      "officialPkiCases": 12,
+      "candidateParityQualified": false
+    }
+  },
+  "exactPublishedResult": true,
+  "independentActualBindings": [
+    {
+      "name": "actual_report_previously_semantic_qualified",
+      "passed": true
+    },
+    {
+      "name": "actual_closed_state_previously_whole",
+      "passed": true
+    },
+    {
+      "name": "actual_cached_recovery_go",
+      "passed": true
+    },
+    {
+      "name": "actual_three_page_continuation_go",
+      "passed": true
+    }
+  ],
+  "officialPkiCases": 12,
+  "officialPkiPassed": 12,
+  "rawExpiredAndRevokedLookupStatus": [
+    400,
+    400
+  ],
+  "candidateParity": false,
+  "allContinuationOriginalSDKsIndependentlyRead": true,
+  "originalPage0FailurePreserved": true,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.mac4a-stage-body.all-archive-callsite-audit.r1",
+  "journal": {
+    "blob": "ad0236e89649670cee3da3b3cb12374e846d89ad",
+    "bytes": 24143,
+    "sha256": "b041adb7793cfe8d8f5cde1d4208136c2d5396ceed65cd6c280ffbaad38e4a18"
+  },
+  "archiveCallSites": [
+    {
+      "function": "gfPrepareOne",
+      "keyExpression": "\"gfa-\"+callKey",
+      "origin": "this exact newly prepared call key"
+    },
+    {
+      "function": "gfInvokePreparedOnce",
+      "keyExpression": "\"gfx-\"+callKey",
+      "origin": "this original call transport exception"
+    },
+    {
+      "function": "gfInvokePreparedOnce",
+      "keyExpression": "\"gfs-\"+callKey",
+      "origin": "this original call returned SDK"
+    },
+    {
+      "function": "gfCloseOriginalObserver",
+      "keyExpression": "\"gfc-\"+a.id",
+      "origin": "the returned original completed operation ID"
+    },
+    {
+      "function": "gfCloseOriginalObserver",
+      "keyExpression": "\"gfr-\"+a.id",
+      "origin": "the same returned original operation ID"
+    }
+  ],
+  "fixedArchiveKeyLiterals": [],
+  "newOperationId": null,
+  "newSlotNeverInitialized": true,
+  "anticipatedAdmissionCallKey": "mac4a-stage-body-r1-admit",
+  "anticipatedAdmissionArmKeyAbsent": true,
+  "anticipatedAdmissionSDKKeyAbsent": true,
+  "priorOldInfoSlot": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "priorCompletedRetrievalSlot": {
+    "blob": "670606feaab7a5947d02374ddf8773c7a4928d73",
+    "bytes": 2815,
+    "sha256": "25be8ac2e6f5c72a684401865aff56958f8dc3906245580038cad3e650d5d5c9"
+  },
+  "NativeCalls": 0,
+  "allActualReadValuesFromOriginalINFO": true
+}

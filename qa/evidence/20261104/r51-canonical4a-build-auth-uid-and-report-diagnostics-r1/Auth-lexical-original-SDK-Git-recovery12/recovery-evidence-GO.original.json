@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.root.go.Auth-lexical-original-SDK-Git-archive-recovery.r1",
+  "authorization": "GO",
+  "scope": "one_new_distinct_Git_evidence_packet_from_retained_original_bytes_only",
+  "issuedAtUtc": "2026-11-07 01:50:00 UTC",
+  "agent": "A",
+  "originalNativeJob": "mac/1a1b3af5466-fc05-844c",
+  "originalAuthorityOperation": "935c018fc993a7d076532e6a9aab2818da3a18516d24507feb404867f30480df",
+  "originalUnparsedSDK": {
+    "blob": "5c67fb5e3a2f72a47e84ae80ee0ab2e8a1a9e4e7",
+    "bytes": 2064,
+    "sha256Prefix": "996dd982"
+  },
+  "originalGitError": {
+    "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+    "bytes": 304,
+    "sha256Prefix": "5710b903"
+  },
+  "originalPausedState": {
+    "blob": "db7b1ebc3c4c76b039f6cefb2dbe4a7071167438",
+    "bytes": 82671,
+    "sha256Prefix": "37772b46"
+  },
+  "oldExpectedTree": "4665892c2127b6a7665571e4690363098818e914",
+  "rootExactReadObservations": {
+    "treeRequestError": {
+      "httpStatus": 422,
+      "originalSDK": {
+        "blob": "738250ce2f4ed06b398bcc6884a32c31e5c7b288",
+        "bytes": 786,
+        "sha256": "38e2155511441400086c4eeea86ff4ba61623c5050c5b38231936dfeefa047ea"
+      }
+    },
+    "blobRequestError": {
+      "httpStatus": 404,
+      "originalSDK": {
+        "blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+        "bytes": 617,
+        "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0"
+      }
+    },
+    "absenceDoesNotProveOriginalCreateNeverAdmitted": true
+  },
+  "newArchiveRequirements": {
+    "maximumCreateTreeCalls": 1,
+    "freshKeyAndDifferentTree": true,
+    "includeOriginalNativeSDKBytesUnchanged": true,
+    "includeOriginalGitErrorSDKUnchanged": true,
+    "includeOriginalPausedStateUnchanged": true,
+    "includeBothAgentReadReconciliationSDKsUnchanged": true,
+    "includeOriginalArmRequestIntentCheckpointUnchanged": true,
+    "includeThisGOUnchanged": true,
+    "wholeReadbackAndAllBlobSHA256AndMerkleRequired": true,
+    "originalNativeSDKInterpretationForbidden": true,
+    "originalStateMutationForbidden": true,
+    "adoptOrAcceptRequiresSeparateRootReview": true
+  },
+  "noRepeatOldCreateTree": true,
+  "maximumNativeCalls": 0,
+  "noOperationResultReplay": true,
+  "noNewProcessStart": true,
+  "noOldFailureRewrite": true,
+  "noReplacementArtifactOrScopeChange": true,
+  "unknownNewGitResultStopsWithoutReplay": true,
+  "ownerLanes": {
+    "root": 0,
+    "A": 1,
+    "B": 1,
+    "C": 0,
+    "maximum": 2
+  },
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

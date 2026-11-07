@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-fixed-setuid-ps-lexical-35fa0630-authority-0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b3d5d9cb-fc05-84fb"
+    }
+  }
+}

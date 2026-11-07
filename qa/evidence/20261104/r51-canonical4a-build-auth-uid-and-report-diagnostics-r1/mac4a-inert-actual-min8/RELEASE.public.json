@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.mac4a.inert.actual-release.r1",
+  "job": "1a1b3d20950-fc05-84e7",
+  "host": "mac",
+  "originalGO": {
+    "blob": "a7f6d0404fb9aa5b62e8848aea6a1a696e3cbe09",
+    "bytes": 6155,
+    "sha256": "5a4cce4197b9006d53c93982b77e12e2272dfdcf997dd95779247bc8794226bb"
+  },
+  "sourceTree": "9948cee7d0d7bc1624633117c1c934896bafd791",
+  "exactRequest": {
+    "blob": "e159810aa46391f2934bfe48517c4da7bd0f0635",
+    "bytes": 130241,
+    "sha256": "de03e153ae7a3951600d9a29049069a06a49fbda33976ae9589faaf9ea5a33de"
+  },
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "timed_out": false,
+  "cancelled": false,
+  "authority": {
+    "blob": "234255cec0eec3213e8619f20c81d8c2b4bae358",
+    "bytes": 731,
+    "sha256": "2ace47183f0c8ac5b360b859f45c91a3301401e07d9cfa299fe92f07712a6887"
+  },
+  "streams": {
+    "blob": "1ea8dfcfa44eeb645bacc78a843bee3367ae5557",
+    "bytes": 9472,
+    "sha256": "dec52f1d3d0bbe6c1c9febf027c055cf18d5c4ef48d3c79f3c85f1d9a9495b1e"
+  },
+  "stdout": {
+    "blob": "a3bac1e0c11d73e615e8c0e5f21acebecba67e95",
+    "bytes": 2988,
+    "sha256": "efaafc07557758ead03fbfd2cfaa61438841beffb2869c8490e6466a07c6cddb"
+  },
+  "stderrBytes": 0,
+  "stdout_eof": true,
+  "stderr_eof": true,
+  "calls": 8,
+  "observers": [
+    {
+      "id": "ead5a9ac189a255ce4f72ac047688adbf93c01f4f5a869327cd9621e89962a66",
+      "tool": "process_status",
+      "payload": {
+        "blob": "12870e92432e310c9c0d22280ec3b2af9ad0799f",
+        "bytes": 910,
+        "sha256": "8f0c27e4940529218549366f9ec6262c083613733add6d455d465cf882a4fff1"
+      },
+      "payloadTree": "a84c22e72cd98ecaed1e9e8da8dc73c78dd3062f",
+      "nativeText": {
+        "blob": "234255cec0eec3213e8619f20c81d8c2b4bae358",
+        "bytes": 731,
+        "sha256": "2ace47183f0c8ac5b360b859f45c91a3301401e07d9cfa299fe92f07712a6887"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "0d5b7f49a6ce2b7beb452bce44167e17960dfebbf9cc4dd0afde334d7d0c8a6f",
+      "tool": "process_read",
+      "payload": {
+        "blob": "1a635df8a3ff1f9cd2e6d8a40fcde84ad3a3b5af",
+        "bytes": 9981,
+        "sha256": "b7a041bc56dbcc77a312c8e5f960b828040873d0c79c178551722425e46aadb2"
+      },
+      "payloadTree": "fd8eb9c2ebe142b1ff10808824ec733c4b0169f4",
+      "nativeText": {
+        "blob": "1ea8dfcfa44eeb645bacc78a843bee3367ae5557",
+        "bytes": 9472,
+        "sha256": "dec52f1d3d0bbe6c1c9febf027c055cf18d5c4ef48d3c79f3c85f1d9a9495b1e"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "closedState": {
+    "blob": "ad54ded7fb41bc6a677dc863da5f72d63c041e73",
+    "bytes": 159150,
+    "sha256": "4d30328330e79e8a5b7039d0937d111bf93a868bf59e7c1313eed884ed22e6a7"
+  },
+  "paused": false,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "CNativeCallsInFlight": 0,
+  "CNativeFuturesInFlight": 0,
+  "laneReleased": true,
+  "actualReceipt": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json",
+    "bytes": 3321,
+    "sha256": "6368b3d5723a04290b3f9356b0802f417ac0e633ee5bf2a0e5dfd69056da7b47",
+    "full9": [
+      "16777244",
+      "72776310",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "3321",
+      "1794018256934258676",
+      "1794018256934622037"
+    ]
+  },
+  "controls": {
+    "mac_normal_same_root_publication_build.py": {
+      "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+      "bytes": 42977,
+      "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+    },
+    "launch_normal_same_root_publication.py": {
+      "blob": "db0b97d08b96cee8478174d22fac2bc25e9808d6",
+      "bytes": 25925,
+      "sha256": "ba55afb554abc657012e8972e2984888786f056e751f7f8aecbff4166c9980a2"
+    },
+    "normal-test-groups.public.json": {
+      "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+      "bytes": 13725,
+      "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+    }
+  },
+  "stageActual": {
+    "infoPin": {
+      "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+      "bytes": 489,
+      "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+    },
+    "bodyPin": {
+      "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
+      "bytes": 7685,
+      "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2"
+    },
+    "rootQualificationPin": {
+      "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+      "bytes": 6285,
+      "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+    },
+    "full9": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ],
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746"
+  },
+  "oldPausedStageStateUnchanged": true,
+  "normalBuildNotStarted": true,
+  "normal117Qualified": false,
+  "full34Qualified": false
+}

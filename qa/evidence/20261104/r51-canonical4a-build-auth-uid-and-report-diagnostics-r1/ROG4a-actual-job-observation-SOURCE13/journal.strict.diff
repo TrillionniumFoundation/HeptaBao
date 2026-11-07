@@ -1,0 +1,114 @@
+--- a/journal.js
++++ b/journal.js
+@@ -60,8 +60,36 @@
+   conditionalAdmission:null,originalStartOutcome:"UNKNOWN",sameJobObservationsAuthorized:false,
+   localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
+ }
++
++const GF_OBSERVE_BEFORE={"blob":"a4fea6d283d0fb3d58d8045a8f4c7df637ecd578","bytes":168445,"sha256":"535d5821d952b3a0d4558523bee33388e2256a1f8a66093f00da82afa5a7e270"};
++const GF_OBSERVE_JOB="1a1b3978da9-fc05-83bd";
++const GF_OBSERVE_ACK={"blob":"cb1009bdcaf5706e9f3f1578baf49ee171f23ee5","bytes":8279,"sha256":"d94d84a0016cc16eb1e560fea3f57a320d6d7a1ba3d72115b176ec3dbc22ed1a"};
++function gfAuthorizeActualJobObservers({goRaw,goPin,goWholeReadback}){
++ const s=gfState();
++ gfNeed(gfMetaEquals(JSON.stringify(s,null,2)+"\n",GF_OBSERVE_BEFORE)
++  &&s.job===GF_OBSERVE_JOB&&s.startCalled===true&&!s.paused
++  &&s.pending===null&&!s.nativeCallInFlight&&s.activeObserver===null
++  &&s.sameJobObservationsAuthorized===false,"exact_actual_ack_state_before_observation");
++ gfNeed(goWholeReadback===true&&gfMetaEquals(goRaw,goPin),"whole_actual_job_observation_go");
++ const g=JSON.parse(goRaw),c=s.calls["c4a-exact-key-reconcile-r1-start"];
++ gfNeed(g.authorization==="GO"&&g.scope==="combined4a_actual_job_observations_only"
++  &&g.jobId===GF_OBSERVE_JOB&&g.host==="rog"
++  &&JSON.stringify(g.actualAck)===JSON.stringify(GF_OBSERVE_ACK)
++  &&JSON.stringify(g.beforeState)===JSON.stringify(GF_OBSERVE_BEFORE)
++  &&g.maximumStatusObservers===256&&g.maximumReadObservers===129
++  &&g.statusCallsPerObserver===8&&g.pagesPerObserver===128&&g.pageBytes===8192
++  &&g.payloadCap===1048576&&g.streamReadLimit===16384&&g.streamByteCap===2097152
++  &&g.processStartAuthorized===false
++  &&c.phase==="accepted"&&c.sdkArchive.whole===true
++  &&JSON.stringify(c.sdkPin)===JSON.stringify(GF_OBSERVE_ACK),"actual_job_scope_and_original_caps");
++ s.observationGo={pin:goPin,raw:goRaw,actualBeforeState:GF_OBSERVE_BEFORE,actualAck:GF_OBSERVE_ACK};
++ s.sameJobObservationsAuthorized=true;s.statusObserversCalled=0;s.readObserversCalled=0;
++ gfSave(s);return {job:s.job,authorized:true,processStartAuthorized:false,underlyingBuildDeadlineUnchanged:true};
++}
++
+ function gfValidateRequest(s,kind,q,raw) {
+- gfNeed(kind==="process_start","conditional_admission_only_no_observers");
++ gfNeed(s.sameJobObservationsAuthorized===true&&["operation_start","operation_status","operation_result"].includes(kind),
++  "actual_bound_job_observations_only_no_start");
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null,"single_call_boundary");
+  if(kind==="process_start") {
+   gfNeed(!s.startCalled && s.job===null && s.activeObserver===null
+@@ -76,19 +104,21 @@
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+     && a && a.host==="rog" && a.job_id===s.job,"same_original_job_only");
+   if(op.tool==="process_status") {
++   gfNeed(s.statusObserversCalled<256,"status_observer_cap");
+    gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+   } else {
++   gfNeed(s.readObserversCalled<129&&s.nextStdout<=2097152&&s.nextStderr<=2097152,"read_observer_and_stream_caps");
+    gfNeed(op.tool==="process_read"
+      && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+      && a.limit===16384 && a.stdout_offset===s.nextStdout
+      && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+   }
+  } else if(kind==="operation_status") {
+-  gfNeed(s.activeObserver && !s.activeObserver.futureClosed
++  gfNeed(s.activeObserver && !s.activeObserver.futureClosed && s.activeObserver.statusCalls<8
+    && Object.keys(q).join(",")==="operation_id"
+    && q.operation_id===s.activeObserver.id,"same_live_original_operation_status");
+  } else if(kind==="operation_result") {
+-  gfNeed(s.activeObserver?.futureClosed===true
++  gfNeed(s.activeObserver?.futureClosed===true && s.activeObserver.pageCalls<128
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
+    && q.operation_id===s.activeObserver.id && q.limit===8192
+    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+@@ -102,7 +132,7 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
++  callKey,kind,request:requestPin,rootGo:s.observationGo.pin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -131,7 +161,11 @@
+  const q=JSON.parse(c.requestRaw);
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+- if(c.kind==="process_start")s.startCalled=true;
++ if(c.kind==="operation_start"){
++  if(q.operation.tool==="process_status")s.statusObserversCalled++;
++  else s.readObserversCalled++;
++ }else if(c.kind==="operation_status")s.activeObserver.statusCalls++;
++ else if(c.kind==="operation_result")s.activeObserver.pageCalls++;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -203,7 +237,7 @@
+    gfNeed(/^[a-f0-9]{64}$/.test(v.operation_id) && v.tool_name===q.operation.tool
+      && v.reused===false && v.automatic_retry===false,"original_observer_admission");
+    s.activeObserver={id:v.operation_id,request:q,tool:v.tool_name,futureClosed:false,
+-    nextPageOffset:0,eof:false,pages:[],total:null,digest:null};
++    statusCalls:0,pageCalls:0,nextPageOffset:0,eof:false,pages:[],total:null,digest:null};
+   } else if(c.kind==="operation_status") {
+    const a=s.activeObserver;
+    gfNeed(v.operation_id===a.id && v.tool_name===a.tool && v.automatic_retry===false,
+@@ -274,7 +308,7 @@
+     const b=[];for(let i=0;i<row.bytes_hex.length;i+=2)b.push(parseInt(row.bytes_hex.slice(i,i+2),16));
+     gfNeed(row.bytes_hex.length%2===0 && b.length<=16384 && row.next_offset===asked+b.length
+       && utf8Text(b)===row.text && Number.isSafeInteger(row.size)
+-      && row.size>=row.next_offset && typeof row.eof==="boolean"
++      && row.size<=2097152 && row.size>=row.next_offset && typeof row.eof==="boolean"
+       && (!row.eof||row.next_offset===row.size),
+       "lossless_original_stream_text_hex_extent");
+     s[stream==="stdout"?"nextStdout":"nextStderr"]=row.next_offset;
+@@ -348,7 +382,8 @@
+ async function gfRun(action,args) {
+  try {
+   let value;
+-  if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
++  if(action==="authorize_actual_job_observers")value=gfAuthorizeActualJobObservers(args);
++  else if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

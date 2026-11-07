@@ -1,0 +1,178 @@
+{
+  "schema": "heptabao.root.r51.qualification-index",
+  "cutoff_UTC": "2026-11-07 02:46:35 UTC",
+  "entries": [
+    {
+      "name": "Mac_source_stage",
+      "pin": {
+        "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+        "bytes": 6285,
+        "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+      },
+      "checks": 33
+    },
+    {
+      "name": "Mac_source_BODY_full",
+      "pin": {
+        "blob": "d9ee8431e0b949d63b8e8e9632f693323c13b3e9",
+        "bytes": 6329,
+        "sha256": "88ff333c42d5b111c7bba39a8ab2b2239b5181a7bda8b9d9dadb1bd3c6fd79be"
+      },
+      "checks": 49
+    },
+    {
+      "name": "Mac_inert_controls_source",
+      "pin": {
+        "blob": "61594822caa029b58ed91924942e4d3ee91fd2f0",
+        "bytes": 3774,
+        "sha256": "cb02b2a454280e96b3b676900f1174b806a62543523602db930fb7b7848e7dbe"
+      },
+      "checks": 22
+    },
+    {
+      "name": "Mac_inert_controls_actual",
+      "pin": {
+        "blob": "bd4e14e244a8ecdd8a04259199d9ef89178840f7",
+        "bytes": 2096,
+        "sha256": "b8f5a0b43adff8f05adbc1440029bd1aa8d60a3378a7d2028c222f0c433e1205"
+      },
+      "checks": 22
+    },
+    {
+      "name": "Mac_inert_controls_original_full",
+      "pin": {
+        "blob": "2c9ef90e44e8214b50a336ff7d5114be822778c8",
+        "bytes": 6054,
+        "sha256": "cf918942fce3433b761e7dbeae7489aafa2e7d4361fc78a279d14d152640488f"
+      },
+      "checks": 63
+    },
+    {
+      "name": "Mac_BUILD_source",
+      "pin": {
+        "blob": "1c921718009c7ab6b360012bfde81d0b38b6fc4b",
+        "bytes": 3815,
+        "sha256": "c62c82aba25f4d30afa16a406267c1d8b14c2c44a7573ac907b46d5fabbfb230"
+      },
+      "checks": 19
+    },
+    {
+      "name": "Mac_BUILD_original_ACK",
+      "pin": {
+        "blob": "4f15a6fb97cba0361037f5f95df6224c0e7ddcbb",
+        "bytes": 1638,
+        "sha256": "b6230fcd1f220e6c0df035dbd7ea8165af4fb6f76c5edace9af8933d2882e584"
+      },
+      "checks": 12
+    },
+    {
+      "name": "Auth_ps_R1_original",
+      "pin": {
+        "blob": "36a37a394ee0508379f52ce4dcb7f3a1cfc7a2b9",
+        "bytes": 26899,
+        "sha256": "01f1941068245815b19557787c6f5c8b3ac84937c1bb1592cb538516e8291883"
+      },
+      "checks": 290
+    },
+    {
+      "name": "Auth_ps_R2_original",
+      "pin": {
+        "blob": "8bb7580de21c3120f7f8514d79bbce266cb8f648",
+        "bytes": 30543,
+        "sha256": "a8a969ac7d3b9c846f4e3ea9699b44ef57590c988982671bad8e95272749e9cd"
+      },
+      "checks": 326
+    },
+    {
+      "name": "Auth_ps_R3_source",
+      "pin": {
+        "blob": "f6f78792a32704be79252d1c35cab867c8754a29",
+        "bytes": 13967,
+        "sha256": "316e44172afcb2f660fc43d3245390a52176cfe282dd78402a6781060642e812"
+      },
+      "checks": 78
+    },
+    {
+      "name": "Auth_ps_R3_actual_minimum",
+      "pin": {
+        "blob": "b2eaef3d4a0aa3d14d50a617750fb400497faca0",
+        "bytes": 2317,
+        "sha256": "453ffc77b0775cff1b7449ca3fbb8dc4d72cfc5e3fa187b40df94123012456da"
+      },
+      "checks": 33
+    },
+    {
+      "name": "Auth_ps_R3_original_full",
+      "pin": {
+        "blob": "a4cd3fe85dbddc335ea37a13ce7f2091eac6ff45",
+        "bytes": 30708,
+        "sha256": "0a44be9e07a9678f6d54dd400a42f568c9e1c57690e1cba481535509dc856f0e"
+      },
+      "checks": 333
+    },
+    {
+      "name": "Auth_SDK_current22_source_only",
+      "pin": {
+        "blob": "9c0f52276d1e1fe40a4c4166b82b609ac06e519e",
+        "bytes": 10021,
+        "sha256": "859914cf9c22669cc887db962baf768cc2feae6853201bb9c3792fc8c6baeacb"
+      },
+      "checks": 85
+    },
+    {
+      "name": "Official_PKI12_original_BODY",
+      "pin": {
+        "blob": "483d2b22057620c2fb31e25d00478a2049077b81",
+        "bytes": 10027,
+        "sha256": "965161c723d8d7b2eba3deb34b710881171782fdb4f41a6dd1032cacfcc56d35"
+      },
+      "checks": 90
+    },
+    {
+      "name": "ROG_release_stage",
+      "pin": {
+        "blob": "aabf4656b6d060976aaf8e81eb37828e5ebeec17",
+        "bytes": 3264,
+        "sha256": "f09502fe046d799f1f3691e557d18b6448b4df0ed7fbaee8cf9f9690e045ecc6"
+      },
+      "checks": 10
+    },
+    {
+      "name": "ROG_terminal_minimum",
+      "pin": {
+        "blob": "22a898626a12601d2c6fa2fd5d8bd8e9238d7f9b",
+        "bytes": 2467,
+        "sha256": "0886069199c5709bb9e3f91322deedd15a99f921d46699c687f3eb1e590a168c"
+      },
+      "checks": 20
+    },
+    {
+      "name": "ROG_result_INFO_source",
+      "pin": {
+        "blob": "99258f16c3e63e1d03b82f15e08ac38f1e540162",
+        "bytes": 5528,
+        "sha256": "b0c227cae55345c0b2764e565626eaf6830ece8ff404ae80c83bdca41261ce9e"
+      },
+      "checks": 50
+    },
+    {
+      "name": "ROG_result_INFO_actual",
+      "pin": {
+        "blob": "0cfdbd0b20a471c1b3ca4188c245ba16f645274c",
+        "bytes": 2804,
+        "sha256": "7cb4a448ade460fdee0f4538fc867768f73d71a51eab9192aa8c54341f8b161b"
+      },
+      "checks": 28
+    },
+    {
+      "name": "X230_two_bundle_stage_source_only",
+      "pin": {
+        "blob": "633686d8b87488ece61637c57854724b14b756bb",
+        "bytes": 4601,
+        "sha256": "74cfbdfc263c915dedd891baf5c5f13bbdca1c5a9961708077272ed711b7acc9"
+      },
+      "checks": 29
+    }
+  ],
+  "scope": "Check counts describe the named exact verification scope, not independent product compatibility cases."
+}

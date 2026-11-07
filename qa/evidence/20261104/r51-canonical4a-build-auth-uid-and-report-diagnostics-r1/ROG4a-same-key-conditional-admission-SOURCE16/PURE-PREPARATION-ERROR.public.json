@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.pure-source-preparation-error.r1",
+  "code": "unique_ack_binding_label",
+  "stage": "mechanical string replacement before candidate storage or any Git/Native call",
+  "NativeCalls": 0,
+  "GitMutations": 0,
+  "originalCandidateUnchanged": true
+}

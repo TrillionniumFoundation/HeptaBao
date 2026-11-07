@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.pure-source-error-preserved.r1",
+  "action": "construct_finite_main5_packet_in_memory",
+  "errorName": "SyntaxError",
+  "errorMessage": "Unexpected identifier 'auth_remote'",
+  "phase": "JavaScript parse before any evaluation",
+  "Native_calls": 0,
+  "Git_mutations": 0,
+  "state_changes": 0,
+  "correction": "Use plain string arrays for Markdown; retain original failure."
+}

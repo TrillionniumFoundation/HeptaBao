@@ -1,0 +1,11 @@
+# Fixed ps lexical R3 — actual original chain
+
+This packet preserves the single fresh diagnostic authorized by conditional GO 5b902c20f35e7928b0be0dcfcbbff69b99cc49c7 and lane GO f83f321ca3197f9d72f7a7dc260cf96f7e75f998. Original job: mac/1a1b3d5d9cb-fc05-84fb.
+
+The parent completed with exit 0, complete durable publication, 6008 bytes of stdout and no stderr. All nine original Native calls, two observers and four immutable 8192-byte-limit pages are closed. The packet contains every exact request/intent/armed record, original SDK and original native text, both whole immutable payloads, authority, final state and explicit A0 release. Each arm tree and SDK archive tree is reconstructed by the verifier; the payload and hex streams are reassembled from the original returned pages.
+
+The fresh table contained 723 rows. The corrected parser accepted one negative-decimal UID token, while the unchanged lexical projection still reports that the old predicate would reject one row in column four. Its token value, raw row, unrelated identities and table/hash were not exported. The fixed primary's PPID, PGID, effective UID zero, birth and WNOWAIT custody were observed; exit 0, retained exit, direct-child reap, empty group checks, both input FD closures and final held/name input fences passed. No signal was sent. Execution by name remains non-atomic relative to earlier metadata; internal helper FDs are not claimed to be enumerated.
+
+The 333-check verifier runs only pure V8 over these exact public original bytes. It executes no Python, Native call, SDK, service, credential path or source component. This is actual qualification of the fresh fixed-ps diagnostic, not qualification of the manager running in a future AuthBus job. The historical R1/R2 failures, their unavailable raw rows, two earlier custody-null ps helpers, historical managed scopes and earlier Git UNKNOWN are unchanged.
+
+The revised manager and other consumer dependency bindings remain SOURCE-only in separate packet 67806d38a4366f8964fb3664cc5dea926af5ed92. A fresh current Mac artifact, issuer and private credential generation are still required before any SDK runtime binding. There is no new Native authorization in this packet.

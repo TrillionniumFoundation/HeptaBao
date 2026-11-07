@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.mac4a-stage-result-standalone-body.SOURCE.r1",
+  "sourceOnly": true,
+  "NativeCalls": 0,
+  "newSlot": "successor4a_mac_stage_report_body_gitfirst_r1",
+  "currentSlotInitialized": false,
+  "originalStageJob": "mac/1a1b382714d-fc05-8350",
+  "originalPausedSlot": "successor4a_mac_source_only_stage_gitfirst_r1",
+  "originalPausedState": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "completedRetrievalSlot": "successor4a_mac_stage_info_page0_retrieval_r1",
+  "completedRetrievalState": {
+    "blob": "670606feaab7a5947d02374ddf8773c7a4928d73",
+    "bytes": 2815,
+    "sha256": "25be8ac2e6f5c72a684401865aff56958f8dc3906245580038cad3e650d5d5c9"
+  },
+  "metadataRootQualification": {
+    "blob": "9ee780ed3a2acfbc6d8c38952baf428906bc3c29",
+    "bytes": 4142,
+    "sha256": "e6642bed992ff76c0624260b41d5930c7cb58246bf4151950733eb5362876511"
+  },
+  "metadataActualPacket": "e49aad7ee8801ae1e70d42d936099755fd8eb9a1",
+  "donor": {
+    "blob": "86edcf2a0d2d5206025a6a702883e6b645e2cc87",
+    "bytes": 28904,
+    "sha256": "0940f9d7b0c206864962e77cf40106e7b4d3faf2ec0ad225b472840e214fc107"
+  },
+  "journal": {
+    "blob": "ad0236e89649670cee3da3b3cb12374e846d89ad",
+    "bytes": 24143,
+    "sha256": "b041adb7793cfe8d8f5cde1d4208136c2d5396ceed65cd6c280ffbaad38e4a18"
+  },
+  "exactRequest": {
+    "blob": "a24a188ed159093a3f60ab439deb7dc53ba6ef61",
+    "bytes": 428,
+    "sha256": "9966fa785adda9eb2b855277fab800e71a59ebfe5810a7a3247bea70f089f142"
+  },
+  "fixedReport": {
+    "host": "mac",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7685,
+    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+    "full9Strings": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ],
+    "platform": "darwin",
+    "infoOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+    "infoNative": {
+      "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+      "bytes": 489,
+      "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+    }
+  },
+  "initAction": "initialize",
+  "GO": null,
+  "maximumBinaryReadOperations": 1,
+  "maximumFileInfo": 0,
+  "maximumProcessStarts": 0,
+  "statusPerOriginalID": 8,
+  "pagesPerOriginalID": 128,
+  "binaryImmutablePageBytes": 16384,
+  "oldInfoAndProcessPageBytes": 8192,
+  "payloadBytes": 1048576,
+  "maximumRangeBytes": 65536,
+  "range": {
+    "offset": 0,
+    "limit": 7685
+  },
+  "newJob": null,
+  "originalPausedStateNeverWritten": true,
+  "retrievalStateNeverWritten": true,
+  "handback": false,
+  "archiveKeys": {
+    "arm": "gfa-<fresh callKey>",
+    "exception": "gfx-<same callKey>",
+    "sdk": "gfs-<same callKey>",
+    "payload": "gfc-<returned original operation_id>",
+    "report": "gfr-<same original operation_id>",
+    "fixedArchiveKeyLiterals": [],
+    "plannedCallPrefix": "mac4a-stage-body-r1-",
+    "operationID": null
+  },
+  "failure": "Preserve original request, armed checkpoint, SDK and failure; stop on UNKNOWN, no replay/rekey/reset.",
+  "sequence": [
+    "Whole exact separate BODY GO; initialize only a new independent context with two frozen predecessor guards.",
+    "Whole exact request/intent/arm then model boundary then one binary_read.",
+    "Only returned original ID; SDK external whole before parse; contiguous16KiB immutable pages and full payload SHA.",
+    "Whole payload then exact path/version/size/chunkSHA and whole UTF8 body archived under gfr-originalID before report semantics.",
+    "Close new observer, release C0. Old stage/INFO timeout/paused context remains byte-identical."
+  ],
+  "buildAuthorized": false,
+  "stageReportSemanticQualification": false
+}

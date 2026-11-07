@@ -1,0 +1,7 @@
+[
+  {
+    "error": "SyntaxError: Invalid regular expression in unused local replaceFn variable",
+    "scope": "pure unpublished source assembly only; no candidate or Native execution; removed unused RegExp",
+    "sourceWasFrozen": false
+  }
+]

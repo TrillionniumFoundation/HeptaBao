@@ -1,0 +1,112 @@
+[
+  {
+    "file": "mac_current_outer_wal_r1.py",
+    "pin": {
+      "blob": "27b9e70f6c708690f3a8f86347137a744253efbb",
+      "bytes": 74137,
+      "sha256": "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529"
+    },
+    "ranges": [
+      {
+        "firstLine": 918,
+        "lastLine": 940,
+        "text": "        pins_raw=base64.b64decode(args.public_source_pins_base64,validate=True)\n        need(len(pins_raw)<=8192 and sha(pins_raw)==args.public_source_pins_sha256,'exact_public_qa_pin_input')\n        pins=exact_json(pins_raw)\n        need(isinstance(pins,dict) and set(pins)==set(NAMES) and all(valid_pin(v) for v in pins.values()),\n             'complete_exact_qa_source_inventory')\n        for name,pin in pins.items():qa_identities[name]=read_public_source(ctx,QA/name,pin)\n        sys.path.insert(0,str(QA))\n        from mac_owned_commands_r1 import Signals,Commands\n        from mac_t5_volume_guard_r1 import HeldT5\n        from mac_registry_readonly_wal_r1 import WalInputs,validate_original_immutable_proof\n        from mac_current_capture_entry_wal_r1 import (\n            admitted_synthetic,admitted_native,admitted_wal,library_resources_closed)\n        from mac_current_outer_inputs_r2 import Inputs,PLUGIN_FILES\n        from mac_current_fixture_materializer_r1 import Materializer\n        from mac_owned_launchd_r3 import (OwnedLaunchd,HomeControl,HOME_CONTROL,HOME_COPY_NAMES,\n            public_failure_code)\n        manager_failure_code=public_failure_code\n        ctx.signals=Signals();ctx.signals.install();commands=Commands(ctx.signals)\n        for path,value in FIXED_UTILITIES.items():\n            actual_identity=read_system_tool(ctx,Path(path),value)\n            if path=='/bin/ps':\n                commands.admit_fixed_setuid_ps({'path':path,'identity':actual_identity,\n                    'bytes':value['bytes'],'sha256':value['sha256']})\n"
+      },
+      {
+        "firstLine": 1044,
+        "lastLine": 1067,
+        "text": "        for generation in ('server-initial','server-cold-new-process'):\n            guard.write_new(ROOT/'launchd'/(generation+'.private.json'),encoded({\n                'schema':'heptabao.mac-owned-launchd-server-plan.private.r1','generation':generation,\n                'binaryPath':str(BINARY),'binarySha256':BINARY_SHA,'binaryBytes':BINARY_BYTES,\n                'configPath':str(ROOT/'server/server.json'),'configSha256':sha(config_raw),\n                'port':port,'workRoot':str(ROOT)}))\n        manager=OwnedLaunchd(guard=guard,commands=commands,signals=ctx.signals,\n            until=min(ctx.until,time.monotonic()+600),anchor_raw=anchor_raw,\n            anchor_sha256=args.public_volume_anchor_sha256,qa_pins=pins,\n            python_runtime=proof['runtime']['pythonExecutable'],home_control=home_control)\n        manager.start_server('server-initial')\n        client=LoopbackHTTP(ctx,port,ca,peer_sha);client.ready(501)\n        docs,managed=seed_documents(packet)\n        unseal=bootstrap_api(client,guard,docs,secrets)\n        original_cfg=exact_json(base64.b64decode(capsule_before['configBase64'],validate=True))\n        original_plugin=original_cfg['plugins']['entries']['openclaw-authbus']['config']\n        plugin=copy.deepcopy(original_plugin)\n        plugin.update(address='https://127.0.0.1:'+str(port),\n            caFile=str(ROOT/'credentials-consumer/ca.crt'),roleIdFile=str(ROOT/'credentials-consumer/role_id'),\n            secretIdFile=str(ROOT/'credentials-consumer/secret_id'))\n        materializer=Materializer(guard,ctx.signals,ctx.until)\n        report['materialization']=materializer.materialize(capsule_before,plugin_config=plugin,\n            managed_profiles=managed,runtime=runtime,source_pins=source_pins,qa_pins=pins,\n            port=port,server_certificate_sha256=peer_sha)\n"
+      }
+    ]
+  },
+  {
+    "file": "mac_owned_launchd_r3.py",
+    "pin": {
+      "blob": "92a1293db9792644b378da07eb9650951979358a",
+      "bytes": 60153,
+      "sha256": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+    },
+    "ranges": [
+      {
+        "firstLine": 532,
+        "lastLine": 550,
+        "text": "    def _args(self,kind,path,plan_sha):\n        common=['--plan',str(path),'--plan-sha256',plan_sha,\n            '--public-volume-anchor-base64',base64.b64encode(self.anchor_raw).decode('ascii'),\n            '--public-volume-anchor-sha256',self.anchor_sha]\n        if kind=='consumer':\n            wrapper=QA/'mac_current_phase_owner_r2.py'\n            common+=['--volume-guard-source-sha256',self.qa_pins['mac_t5_volume_guard_r1.py']]\n        else:\n            wrapper=QA/'mac_current_server_owner_r1.py'\n            names=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',\n                   'mac_t5_volume_guard_r1.py','mac_native_process_observer_r1.py')\n            raw=encoded({n:self.qa_pins[n] for n in names})\n            common+=['--public-source-pins-base64',base64.b64encode(raw).decode('ascii'),\n                     '--public-source-pins-sha256',sha(raw)]\n        raw=self.guard.read(wrapper,1024*1024)\n        need(sha(raw)==self.qa_pins[wrapper.name],'exact_wrapper_before_registration')\n        home_wrapper=HOME_CONTROL/wrapper.name\n        need(self.home.read(home_wrapper,1048576)==raw,'exact_staged_wrapper_copy_before_registration')\n        return [PYTHON_LAUNCHER,'-I','-S','-B',str(home_wrapper),*common]\n"
+      },
+      {
+        "firstLine": 652,
+        "lastLine": 667,
+        "text": "    def _rows(self,groups,*,until=None,cleanup=False):\n        row,out,err=self._call('owned-launchd-group-observation',\n            ['/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat='],until=until,cleanup=cleanup,ps=True)\n        need(row['exitCode']==0 and not err,'complete_group_observation')\n        values=[]\n        for line in out.decode('ascii','strict').splitlines():\n            fields=line.split()\n            need(len(fields)==5 and all(x.isdecimal() for x in fields[:3])\n                 and re.fullmatch(r'-?[0-9]{1,10}',fields[3]) is not None,'typed_process_row')\n            pid,ppid,pgid,uid=map(int,fields[:4])\n            need(-(1<<31)<=uid<=(1<<32)-1,'typed_process_row')\n            if pgid in groups:values.append({'pid':pid,'ppid':ppid,'pgid':pgid,'uid':uid,'state':fields[4]})\n        return values\n\n    def _check_registration_files(self,entry):\n        # Read-only metadata used in cleanup also: no expired private read,\n"
+      }
+    ]
+  },
+  {
+    "file": "mac_current_fixture_materializer_r1.py",
+    "pin": {
+      "blob": "6a3b8911ac391fea1884113625fde555cae132e8",
+      "bytes": 26026,
+      "sha256": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+    },
+    "ranges": [
+      {
+        "firstLine": 348,
+        "lastLine": 377,
+        "text": "            scoped['plugins']['entries']['openclaw-authbus']['config']=copy.deepcopy(plugin_config)\n            self.write(state/'openclaw.json',encoded(scoped))\n            self.registry_database(state/'state/openclaw.sqlite',document['registry'])\n            if document['authbusCaches']['directoryPresent']:\n                self.mkdir(state/'authbus')\n                for name,value in document['authbusCaches']['files'].items():\n                    if value['present']:self.write(state/'authbus'/name,base64.b64decode(value['base64'],validate=True))\n            sandbox=work/'consumer.sb'\n            policy=consumer_profile(phase,port,phase_pins,plugin_config['caFile'],\n                runtime['harnessCodeRoots'],runtime['harnessOwnerBindings'])\n            self.write(sandbox,policy);phase_pins[str(sandbox)]=sha(policy)\n            common={**runtime,'workRoot':str(ROOT),'phaseRoot':str(work),'stateRoot':str(state),\n                'pluginConfig':copy.deepcopy(plugin_config),'originalPluginConfig':copy.deepcopy(original_plugin),\n                'serverCertificateSha256':server_certificate_sha256,'managedProfiles':copy.deepcopy(managed_profiles),\n                'model':native_workers['main']['model'],'sourcePins':phase_pins,\n                'originalAuthRowsDigestByAgent':{agent:digest(documents[agent]['rows']) for agent in AGENTS},\n                'originalCacheContentSha256':digest(document['authbusCaches']),\n                'baselineOutput':str(work/'baseline.private.json'),\n                'candidateOutput':str(work/'candidate.private.json'),\n                'rollbackCheckpointOutput':str(work/'candidate.private.json'),\n                'rollbackOnce':str(work/'inverse/rollback-once.private.json'),\n                'parentSandbox':str(sandbox)}\n            for mode,generation in (('consume',phase),('inverse',phase+'-inverse')):\n                plan={'schema':'heptabao.mac-five-agent-phase-plan.private.r1','generation':generation,\n                    'phase':phase,'mode':mode,'agentIds':list(AGENTS),'phaseSeconds':120,\n                    'phaseRoot':str(work),'stateRoot':str(state),\n                    'expectedVolumeDevice':self.guard.expected['expectedVolumeDevice'],\n                    'qaPins':dict(qa_pins),'workerCommon':copy.deepcopy(common),\n                    'nativeWorkers':copy.deepcopy(native_workers)}\n                binding=self.write(ROOT/'launchd'/(generation+'.private.json'),encoded(plan))\n"
+      }
+    ]
+  },
+  {
+    "file": "mac_current_phase_owner_r2.py",
+    "pin": {
+      "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+      "bytes": 25647,
+      "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+    },
+    "ranges": [
+      {
+        "firstLine": 271,
+        "lastLine": 312,
+        "text": "        need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_owner')\n        q=ROOT/'qa'\n        # Only public, exact source bytes are opened here. No private plan,\n        # credential, owned output or ready file precedes the held volume gate.\n        guard_module=q/'mac_t5_volume_guard_r1.py'\n        need(file_sha(guard_module,1024*1024)==args.volume_guard_source_sha256,\n             'exact_public_volume_guard_source')\n        sys.path.insert(0,str(q))\n        from mac_t5_volume_guard_r1 import HeldT5\n        volume_guard=HeldT5(base64.b64decode(args.public_volume_anchor_base64,validate=True),\n            args.public_volume_anchor_sha256,remaining,critical)\n        report['volumeGuard']=volume_before_private_state()\n        with volume_guard.parent(ROOT/'launchd') as (work_fd,_name):\n            with critical():os.fchdir(work_fd)\n            need(identity(os.stat('.'))==identity(os.fstat(work_fd))\n                 and os.getcwd()==str(ROOT),'held_t5_business_working_directory')\n        volume_guard.check();report['ownedBusinessWorkingDirectoryHeldT5']=True\n        raw=private_read(args.plan);need(sha(raw)==args.plan_sha256,'exact_phase_plan_pin')\n        plan=json.loads(raw)\n        need(plan['schema']=='heptabao.mac-five-agent-phase-plan.private.r1'\n          and plan['phase'] in ('initial','cold-new-process') and plan['mode'] in ('consume','inverse')\n          and plan['agentIds']==list(AGENTS) and plan['phaseSeconds']==120,'fixed_phase_contract')\n        phase=ROOT/plan['phase'];generation=plan['generation'];report['generation']=generation\n        need(generation in ('initial','cold-new-process','initial-inverse','cold-new-process-inverse')\n          and generation==plan['phase']+('-inverse' if plan['mode']=='inverse' else ''),\n          'unique_phase_generation')\n        need(Path(plan['phaseRoot'])==phase and Path(plan['stateRoot'])==phase/'state',\n             'independent_initial_cold_state')\n        need(str(plan['expectedVolumeDevice'])==volume_guard.expected['expectedVolumeDevice'],\n             'phase_device_matches_public_startup_anchor')\n        volume_guard.check()\n        need(args.plan==ROOT/'launchd'/(generation+'.private.json'),'immutable_manager_phase_plan')\n        for name in ('mac_native_process_observer_r1.py',\n                     'mac_owned_unreaped_r1.py',\n                     'mac_current_phase_owner_r2.py','mac_t5_volume_guard_r1.py',\n                     'mac_current_cycle_r2.mjs','mac_single_native_r2.mjs',\n                     'mac_auth_rows_cas_r1.mjs','mac_authbus_cache_cas_r1.mjs'):\n            need(file_sha(q/name)==plan['qaPins'][name],'reviewed_qa_source.'+name)\n        sys.path.insert(0,str(q))\n        from mac_native_process_observer_r1 import ProcessReader\n        self_identity=ProcessReader().read(os.getpid())\n        need(self_identity['uid']==501 and self_identity['executable']==PYTHON_KERNEL_IMAGE\n"
+      }
+    ]
+  },
+  {
+    "file": "mac_current_server_owner_r1.py",
+    "pin": {
+      "blob": "75653caa4a98e77ae62750bf9557083c1abb9d82",
+      "bytes": 14052,
+      "sha256": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277"
+    },
+    "ranges": [
+      {
+        "firstLine": 114,
+        "lastLine": 130,
+        "text": "        need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_owner')\n        raw_pins=base64.b64decode(args.public_source_pins_base64,validate=True)\n        need(len(raw_pins)<=8192 and sha(raw_pins)==args.public_source_pins_sha256,\n             'exact_public_source_pins')\n        pins=json.loads(raw_pins)\n        need(isinstance(pins,dict) and set(pins)==set(PUBLIC_MODULES)\n             and all(isinstance(v,str) and len(v)==64\n                     and all(c in '0123456789abcdef' for c in v) for v in pins.values()),\n             'fixed_public_source_set')\n        source_identities={}\n        for name in PUBLIC_MODULES:\n            raw,source_identities[name]=stable_public(QA/name,1024*1024)\n            need(sha(raw)==pins[name],'reviewed_public_source')\n        sys.path.insert(0,str(QA))\n        from mac_t5_volume_guard_r1 import HeldT5\n        from mac_owned_commands_r1 import Signals,Commands\n        from mac_native_process_observer_r1 import ProcessReader\n"
+      },
+      {
+        "firstLine": 196,
+        "lastLine": 207,
+        "text": "        need(binary_pin()==before_binary,'binary_name_identity_before_exec')\n        need(sha(guard.read(Path(plan['configPath'])))==plan['configSha256'],\n             'config_after_manager_admission')\n        for name in PUBLIC_MODULES:\n            raw,observed=stable_public(QA/name,1024*1024)\n            need(observed==source_identities[name] and sha(raw)==pins[name],\n                 'public_sources_before_exec')\n        report.update(generation=generation,wrapperIdentity=self_identity,\n            binaryPath=str(BINARY),binarySha256=BINARY_SHA,binaryBytes=BINARY_BYTES,\n            binaryIdentity=before_binary,configSha256=plan['configSha256'],\n            sourcePins=pins,commands=commands.public())\n        need(report['commands']['allOwnedCommandsStopped']\n"
+      }
+    ]
+  },
+  {
+    "file": "mac_current_cycle_r2.mjs",
+    "pin": {
+      "blob": "9bbc3d403a4fb65176e9398cc71ef2464f94dc5a",
+      "bytes": 24012,
+      "sha256": "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b"
+    },
+    "ranges": [
+      {
+        "firstLine": 108,
+        "lastLine": 121,
+        "text": "  check('complete_original_authbus_flags_preserved',digest(withoutConnection(plan.pluginConfig))\n    ===digest(withoutConnection(plan.originalPluginConfig)));\n  check('actual_mac_publish_and_order_flags',plan.pluginConfig.hostId==='mac'\n    && plan.pluginConfig.leader===false && plan.pluginConfig.publishNew===true\n    && plan.pluginConfig.manageOrder===true);\n  check('owned_config_only_connection_difference',digest(cfg.plugins.entries['openclaw-authbus'].config)\n    ===digest(plan.pluginConfig));\n  for(const [file,pin]of Object.entries(plan.sourcePins))\n    check('source.'+path.basename(file),hash(fs.readFileSync(file))===pin);\n  const originalHttpsRequest=https.request;\n  const originalExecFileSync=childProcess.execFileSync;\n  for(const method of ['log','warn','error','info','debug'])console[method]=()=>{};\n  globalThis.fetch=deny;http.request=deny;http.get=deny;https.get=deny;\n  for(const method of ['spawn','spawnSync','exec','execSync','execFile','execFileSync','fork'])\n"
+      },
+      {
+        "firstLine": 332,
+        "lastLine": 337,
+        "text": "  }\n  check('no_unexpected_network_or_process_operations',blockedOperations===0);\n  check('all_dispatched_http_responses_complete',report.wire.every(x=>x.complete&&!x.aborted&&!x.responseError&&!x.requestError));\n  check('source_pins_unchanged',Object.entries(plan.sourcePins).every(([file,pin])=>hash(fs.readFileSync(file))===pin));\n  check('no_public_credential_values',sensitive.every(value=>!JSON.stringify(report).includes(value)));\n  remainingMs(1);report.ok=true;\n"
+      }
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "candidate": {
+    "blob": "c5a520313563ec821c1b80d49249a8cef1573709",
+    "bytes": 7499,
+    "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81"
+  },
+  "runtimeInputs": {
+    "blob": "0e212e5102247b6e289e873a718eb271f115a651",
+    "bytes": 15274,
+    "sha256": "ae310e9777aa18ec702f9330b6b499af7f5b88d8cb9db42f039042a497732952"
+  },
+  "sourcePins": {
+    "blob": "3fb7441f4cc70ce938492b14f302709cdb5ab8b4",
+    "bytes": 4384,
+    "sha256": "dad5ae8f3dd971eb5e949b1989db9cb203529cf9a77a27cec573914a43c1bf11"
+  },
+  "source112Contract": {
+    "blob": "b51ff967b9847b97bd071800929c10c55d6798dd",
+    "bytes": 10626,
+    "sha256": "44cb0e55464bcd8c1ed7af4b0bde49791d6dca7e9dc7ec39f7267316bbb6b313"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.root.official271.PKI12-report-semantic-qualification.r1",
+  "report": {
+    "blob": "0cb0f23e1a4484cca6ac65c5597afe3f2ed502bd",
+    "bytes": 41509,
+    "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0"
+  },
+  "audit": {
+    "tree": "934a373be06bad00aecd1b1e9ce515d154269519",
+    "files": 6,
+    "bytes": 302954,
+    "merkle": {
+      "root_sha": "934a373be06bad00aecd1b1e9ce515d154269519",
+      "trees_verified": 1,
+      "leaf_count": 6
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "official exact version requested",
+      "pass": true
+    },
+    {
+      "name": "complete isolated oracle without candidate",
+      "pass": true
+    },
+    {
+      "name": "exact12 denominator and requests",
+      "pass": true
+    },
+    {
+      "name": "no status normalization or deadline reset",
+      "pass": true
+    },
+    {
+      "name": "pki.cert_lookup",
+      "pass": true
+    },
+    {
+      "name": "pki.crl_json",
+      "pass": true
+    },
+    {
+      "name": "pki.issue",
+      "pass": true
+    },
+    {
+      "name": "pki.lease_expire_issue",
+      "pass": true
+    },
+    {
+      "name": "pki.lease_expire_lookup",
+      "pass": true
+    },
+    {
+      "name": "pki.lease_lookup",
+      "pass": true
+    },
+    {
+      "name": "pki.lease_revoke",
+      "pass": true
+    },
+    {
+      "name": "pki.mount",
+      "pass": true
+    },
+    {
+      "name": "pki.revoked_lease_absent",
+      "pass": true
+    },
+    {
+      "name": "pki.role",
+      "pass": true
+    },
+    {
+      "name": "pki.role_read",
+      "pass": true
+    },
+    {
+      "name": "pki.root",
+      "pass": true
+    },
+    {
+      "name": "expired and revoked lookup raw400",
+      "pass": true
+    },
+    {
+      "name": "synthetic resource cleanup actual",
+      "pass": true
+    },
+    {
+      "name": "same original four children closed",
+      "pass": true
+    }
+  ],
+  "actualCaseStatuses": {
+    "pki.cert_lookup": 200,
+    "pki.crl_json": 200,
+    "pki.issue": 200,
+    "pki.lease_expire_issue": 200,
+    "pki.lease_expire_lookup": 400,
+    "pki.lease_lookup": 200,
+    "pki.lease_revoke": 204,
+    "pki.mount": 204,
+    "pki.revoked_lease_absent": 400,
+    "pki.role": 200,
+    "pki.role_read": 200,
+    "pki.root": 200
+  },
+  "officialOracleOnly": true,
+  "currentCandidateParityQualified": false,
+  "allContinuationOriginalSDKsIndependentlyRead": false,
+  "rootNativeCalls": 0
+}

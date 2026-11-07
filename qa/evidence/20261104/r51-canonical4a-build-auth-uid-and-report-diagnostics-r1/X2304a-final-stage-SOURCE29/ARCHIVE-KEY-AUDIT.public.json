@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.x2304a.stage.archive-key-audit.r1",
+  "journal": {
+    "blob": "4f732711a09ca8835677aec0c9564bc9dfeb6191",
+    "bytes": 19072,
+    "sha256": "b187616b2ddb9964b05b13d30bc040a5b0b296647494d48bdc5ba9a000653eec"
+  },
+  "allArchiveCallSites": [
+    {
+      "function": "gfPrepareOne",
+      "key": "\"gfa-\"+callKey"
+    },
+    {
+      "function": "gfInvokePreparedOnce",
+      "key": "\"gfx-\"+callKey"
+    },
+    {
+      "function": "gfInvokePreparedOnce",
+      "key": "\"gfs-\"+callKey"
+    },
+    {
+      "function": "gfCloseOriginalObserver",
+      "key": "\"gfc-\"+a.id"
+    }
+  ],
+  "fixedArchiveKeys": [],
+  "newSlotAbsent": true,
+  "plannedCallPrefix": "x2304a-stage-r1-",
+  "plannedFirstArmAbsent": true,
+  "NativeCalls": 0
+}

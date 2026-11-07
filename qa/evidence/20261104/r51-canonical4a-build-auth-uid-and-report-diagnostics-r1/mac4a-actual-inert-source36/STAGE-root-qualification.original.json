@@ -1,0 +1,254 @@
+{
+  "schema": "heptabao.root.Mac4a-detailed-source-stage-and-BODY-qualification.r1",
+  "qualifiedAtUtc": "2026-11-07 02:08:56 UTC",
+  "actualOuterJob": "mac/1a1b382714d-fc05-8350",
+  "originalOuterQualification": {
+    "ROG4A-ACTUAL-ACK14-ROOT.public.json": {
+      "blob": "bda8b492add53a8a0918e8249bc3d1ff79b687f7",
+      "bytes": 2283,
+      "sha256": "57ebcc95c4b1056b92e20a594ae6fe943708683d39535ae7eba81aec39534437"
+    },
+    "MAC4A-STAGE-ORIGINAL75-ROOT.public.json": {
+      "blob": "22400272676393d6e8014c46031d84e5b18c9810",
+      "bytes": 7139,
+      "sha256": "7c9ce98263396e0dd4ffc1190fd79e37be0add8e53e518512c48752b95fc2981"
+    }
+  },
+  "bodySourceTree": "053fa7219537f8973a2afc1776faf8168a4ae3ed",
+  "reportTree": "b3377be78c8487e9820ad9738cbcb0b5d4ea2497",
+  "originalReport": {
+    "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
+    "bytes": 7685,
+    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2"
+  },
+  "originalInfo": {
+    "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+    "bytes": 489,
+    "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+  },
+  "actualInfoVersion": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+  "actualInfoFull9": [
+    "16777244",
+    "72771947",
+    "501",
+    "20",
+    "33152",
+    "1",
+    "7685",
+    "1794013039551370413",
+    "1794013039551379746"
+  ],
+  "originalBODYOperation": "48b1267e59a55b6a640a0425e9011e5a5d65a2f8a9faf3817a86356ca631254b",
+  "originalArmAndSDKTrees": [
+    {
+      "tree": "25981714e20fc0c029b22543026c554ebca53029",
+      "files": 3,
+      "bytes": 1957,
+      "merkle": {
+        "root_sha": "25981714e20fc0c029b22543026c554ebca53029",
+        "trees_verified": 1,
+        "leaf_count": 3
+      },
+      "whole": true
+    },
+    {
+      "tree": "20d792fcd07b6328dfc7ba8c02567e809fa39c3c",
+      "files": 1,
+      "bytes": 706,
+      "merkle": {
+        "root_sha": "20d792fcd07b6328dfc7ba8c02567e809fa39c3c",
+        "trees_verified": 1,
+        "leaf_count": 1
+      },
+      "whole": true
+    },
+    {
+      "tree": "b723d0e4b298e04ff202b133aa786c0653614d61",
+      "files": 3,
+      "bytes": 1746,
+      "merkle": {
+        "root_sha": "b723d0e4b298e04ff202b133aa786c0653614d61",
+        "trees_verified": 1,
+        "leaf_count": 3
+      },
+      "whole": true
+    },
+    {
+      "tree": "8162d086c3201fb9cc11436a2bb5ba939a6af10b",
+      "files": 1,
+      "bytes": 977,
+      "merkle": {
+        "root_sha": "8162d086c3201fb9cc11436a2bb5ba939a6af10b",
+        "trees_verified": 1,
+        "leaf_count": 1
+      },
+      "whole": true
+    },
+    {
+      "tree": "8a4280009a6b87480550f00cfeec6f001e8cf36f",
+      "files": 3,
+      "bytes": 1777,
+      "merkle": {
+        "root_sha": "8a4280009a6b87480550f00cfeec6f001e8cf36f",
+        "trees_verified": 1,
+        "leaf_count": 3
+      },
+      "whole": true
+    },
+    {
+      "tree": "7d85444fe1c4e53839fa406c27e6219c602f0b60",
+      "files": 1,
+      "bytes": 15112,
+      "merkle": {
+        "root_sha": "7d85444fe1c4e53839fa406c27e6219c602f0b60",
+        "trees_verified": 1,
+        "leaf_count": 1
+      },
+      "whole": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "whole_minimum_and_report_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_original_BODY_and_lane_GO",
+      "passed": true
+    },
+    {
+      "name": "call0_whole_original_arm_SDK_and_state",
+      "passed": true
+    },
+    {
+      "name": "call0_exact_GO_once_binding",
+      "passed": true
+    },
+    {
+      "name": "call0_original_native_success",
+      "passed": true
+    },
+    {
+      "name": "call1_whole_original_arm_SDK_and_state",
+      "passed": true
+    },
+    {
+      "name": "call1_exact_GO_once_binding",
+      "passed": true
+    },
+    {
+      "name": "call1_original_native_success",
+      "passed": true
+    },
+    {
+      "name": "call2_whole_original_arm_SDK_and_state",
+      "passed": true
+    },
+    {
+      "name": "call2_exact_GO_once_binding",
+      "passed": true
+    },
+    {
+      "name": "call2_original_native_success",
+      "passed": true
+    },
+    {
+      "name": "original_BODY_admission_exact",
+      "passed": true
+    },
+    {
+      "name": "same_original_status_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "one_original_immutable_page_exact",
+      "passed": true
+    },
+    {
+      "name": "original_page_to_whole_payload_exact",
+      "passed": true
+    },
+    {
+      "name": "whole_payload_to_original_binary_result",
+      "passed": true
+    },
+    {
+      "name": "same_actual_report_path_and_version",
+      "passed": true
+    },
+    {
+      "name": "whole_binary_bytes_equal_original_report",
+      "passed": true
+    },
+    {
+      "name": "three_calls_one_observer_complete",
+      "passed": true
+    },
+    {
+      "name": "exact_report_receipt_state",
+      "passed": true
+    },
+    {
+      "name": "C_physical_and_logical_closure",
+      "passed": true
+    },
+    {
+      "name": "stage_schema_host_and_prepared",
+      "passed": true
+    },
+    {
+      "name": "exact_frozen_candidate_and_parent",
+      "passed": true
+    },
+    {
+      "name": "exact_T5_root_and_volume",
+      "passed": true
+    },
+    {
+      "name": "full_history_and_only_fixture_successor",
+      "passed": true
+    },
+    {
+      "name": "actual_previous_source_unchanged",
+      "passed": true
+    },
+    {
+      "name": "independent_clean_strict_git",
+      "passed": true
+    },
+    {
+      "name": "all_3932_leaves_62553956_bytes_exact_index",
+      "passed": true
+    },
+    {
+      "name": "actual_1253_bundle_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_runtime_source_and_carrier_binding",
+      "passed": true
+    },
+    {
+      "name": "original_stage_budgets_preserved",
+      "passed": true
+    },
+    {
+      "name": "all_31_original_children_reaped_empty_exit0",
+      "passed": true
+    },
+    {
+      "name": "source_only_build_server_not_claimed",
+      "passed": true
+    }
+  ],
+  "checkCount": 33,
+  "sourceStageQualified": true,
+  "bodyOriginalSDKsAllIndependentlyWhole": true,
+  "CAllWorkClosed": true,
+  "currentBuildQualified": false,
+  "normal117Qualified": false,
+  "formal34Qualified": false,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

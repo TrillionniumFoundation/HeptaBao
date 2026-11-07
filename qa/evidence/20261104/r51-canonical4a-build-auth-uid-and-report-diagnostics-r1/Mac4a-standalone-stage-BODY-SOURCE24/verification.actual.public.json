@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.mac4a.standalone-body-source-checks.r1",
+  "passed": true,
+  "check_count": 38,
+  "checks": [
+    {
+      "name": "exact executed corrected donor",
+      "passed": true
+    },
+    {
+      "name": "strict whole forward and reverse",
+      "passed": true
+    },
+    {
+      "name": "exact seven strict hunks",
+      "passed": true
+    },
+    {
+      "name": "journal and request whole pins",
+      "passed": true
+    },
+    {
+      "name": "retained complete function gfNeed",
+      "passed": true
+    },
+    {
+      "name": "retained complete function gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "retained complete function gfSave",
+      "passed": true
+    },
+    {
+      "name": "retained complete function gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "retained complete function gfPrepareOne",
+      "passed": true
+    },
+    {
+      "name": "retained complete function gfAcceptArchivedSDK",
+      "passed": true
+    },
+    {
+      "name": "retained complete function gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "one exact actual range",
+      "passed": true
+    },
+    {
+      "name": "actual metadata whole input",
+      "passed": true
+    },
+    {
+      "name": "payload exact metadata",
+      "passed": true
+    },
+    {
+      "name": "full9 lossless actual darwin uid gid mode",
+      "passed": true
+    },
+    {
+      "name": "no new job and old slots immutable",
+      "passed": true
+    },
+    {
+      "name": "binary16K both prepare and accept, old8K preserved",
+      "passed": true
+    },
+    {
+      "name": "finite original observer limits",
+      "passed": true
+    },
+    {
+      "name": "all five archive calls enumerated",
+      "passed": true
+    },
+    {
+      "name": "all keys dynamic call or original operation",
+      "passed": true
+    },
+    {
+      "name": "whole payload before body and no semantics",
+      "passed": true
+    },
+    {
+      "name": "fresh BODY state without manufactured old job",
+      "passed": true
+    },
+    {
+      "name": "second initialize rejected",
+      "passed": true
+    },
+    {
+      "name": "real new arm binds BODY GO",
+      "passed": true
+    },
+    {
+      "name": "old two contexts unchanged after prepare",
+      "passed": true
+    },
+    {
+      "name": "process start denied",
+      "passed": true
+    },
+    {
+      "name": "file_info denied",
+      "passed": true
+    },
+    {
+      "name": "wrong version denied",
+      "passed": true
+    },
+    {
+      "name": "second body admission denied",
+      "passed": true
+    },
+    {
+      "name": "changed original paused state denied",
+      "passed": true
+    },
+    {
+      "name": "changed completed retrieval denied",
+      "passed": true
+    },
+    {
+      "name": "new operation_status arm exact BODY GO",
+      "passed": true
+    },
+    {
+      "name": "new operation_result arm exact BODY GO",
+      "passed": true
+    },
+    {
+      "name": "known original16384 page source",
+      "passed": true
+    },
+    {
+      "name": "actual original16K binary page accepted",
+      "passed": true
+    },
+    {
+      "name": "same actual16K still rejected by INFO8K guard",
+      "passed": true
+    },
+    {
+      "name": "same original16K rejected by retained pre-fix8192 expression",
+      "passed": true
+    },
+    {
+      "name": "private harness no Native and only three fake archive preparations",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "realContextsModified": false,
+  "fakeArchiveCalls": 3,
+  "actualMetadataOnly": true,
+  "reportBodyRead": false,
+  "GOIssued": false
+}

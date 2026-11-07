@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.fixed-rebinding-manifest.r1",
+  "entries": [
+    {
+      "path": "FIXED-REBINDING-LIST.public.json",
+      "blob": "c26c6bfe6ae62bfc055c80940d821a9aeaecd9c7",
+      "bytes": 16975,
+      "sha256": "ffe529b70f9ff0b08675bf204ebaa5b5f2976696811041e03fddf6b9b4ac7006"
+    },
+    {
+      "path": "ORIGINAL-PUBLIC-PINS.public.json",
+      "blob": "bb5583baafba992171572440e3654e0701a42ec7",
+      "bytes": 730,
+      "sha256": "fa82bf4239cd6988bf8a5ccc54ebd9ce5cd58eed3c4d614643d1175a6d814e10"
+    }
+  ]
+}

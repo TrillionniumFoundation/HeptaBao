@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b3af5466-fc05-844c"
+    }
+  },
+  "idempotency_key": "heptabao-mac-fixed-setuid-ps-lexical-0ad20876-authority"
+}

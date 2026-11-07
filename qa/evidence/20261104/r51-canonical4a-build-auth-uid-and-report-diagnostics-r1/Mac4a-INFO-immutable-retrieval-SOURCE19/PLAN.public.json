@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.mac4a.stage-INFO.single-immutable-page.SOURCE.r1",
+  "status": "SOURCE_ONLY_NO_NATIVE",
+  "source": {
+    "blob": "0f049d847c7f1cd39f1b391e083bd3fe428dbe7a",
+    "bytes": 7301,
+    "sha256": "513b22b5cb098959a2954b602146aa764e62b1f046c27493eaf4c0cd6642358a"
+  },
+  "referenceSource": {
+    "blob": "ec8b3b469d113bfa96c07f4021e52fa66d1abbad",
+    "bytes": 6848,
+    "sha256": "f0a10d05cff1f5244bdeb0cb6a6b9d94127709451815e525e1046251ffcd62c6"
+  },
+  "referenceSourceTree": "237c6cbbf7f11b5ab7b9ba2385cbb023930efec7",
+  "originalSlot": "successor4a_mac_source_only_stage_gitfirst_r1",
+  "retrievalSlot": "successor4a_mac_stage_info_page0_retrieval_r1",
+  "originalState": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "originalOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "originalOperationAlreadyCompletedInactive": true,
+  "originalStatus": {
+    "blob": "be8f407df5b4e27260b8bb67170e8130e73e0eda",
+    "bytes": 800,
+    "sha256": "db1881cb30ef27e3e46c5248efb9c8f75bc63555cb23eb8e3cca6724b7210f8a"
+  },
+  "originalFailedPageSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "originalFailedCallKey": "4a-mac-stage-r1-result-info-page0",
+  "failedSDKAloneNotOperationIdentity": true,
+  "originalFailurePacket": "4375e2ec3136517b2e54b8afb6a41ab883b76ae0",
+  "request": {
+    "blob": "2e67f1baabc04575aa277fcb2d270271500e68e3",
+    "bytes": 121,
+    "sha256": "177140e2743e89076257a772e458a8b784ed91e32f0bba3a96ef77083eb2dea9"
+  },
+  "budgets": {
+    "maximumNativeCalls": 1,
+    "operationResultOnly": true,
+    "offset": 0,
+    "limit": 8192,
+    "totalPayloadMaximum": 8192,
+    "additionalStatus": 0,
+    "additionalOperationStart": 0,
+    "additionalProcessStart": 0
+  },
+  "originalPayloadTotal": null,
+  "originalPayloadSHA256": null,
+  "actualMetadata": null,
+  "opaquePayloadOnly": true,
+  "parseNativeMetadataOnlyAfterWholePayload": true,
+  "metadataGuardFromAcceptedSource": {
+    "sourceTree": "cbad6efdea5c91da69475b256ac0c319eaef2c72",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "maximumBytes": 65536,
+    "mode": 384,
+    "uid": 501,
+    "gid": null,
+    "metadataPlatform": null,
+    "nlink": 1
+  },
+  "allOldCallsAndTimeoutAndPausedStateImmutable": true,
+  "noHandbackOrBODYAuthorized": true,
+  "archiveKeys": [
+    "mac4a-stage-info-original-page0-arm-r1",
+    "mac4a-stage-info-original-page0-sdk-r1",
+    "mac4a-stage-info-original-page0-payload-r1"
+  ],
+  "freshContext": true,
+  "keysNeverAdmitted": true,
+  "NativeGO": null,
+  "NativeCalls": 0
+}

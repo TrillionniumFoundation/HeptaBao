@@ -1,0 +1,14 @@
+--- a/manager.py
++++ b/manager.before.py
+@@ -656,10 +656,8 @@
+         values=[]
+         for line in out.decode('ascii','strict').splitlines():
+             fields=line.split()
++            need(len(fields)==5 and all(x.isdecimal() for x in fields[:4]),'typed_process_row')
+-            need(len(fields)==5 and all(x.isdecimal() for x in fields[:3])
+-                 and re.fullmatch(r'-?[0-9]{1,10}',fields[3]) is not None,'typed_process_row')
+             pid,ppid,pgid,uid=map(int,fields[:4])
+-            need(-(1<<31)<=uid<=(1<<32)-1,'typed_process_row')
+             if pgid in groups:values.append({'pid':pid,'ppid':ppid,'pgid':pgid,'uid':uid,'state':fields[4]})
+         return values
+ 

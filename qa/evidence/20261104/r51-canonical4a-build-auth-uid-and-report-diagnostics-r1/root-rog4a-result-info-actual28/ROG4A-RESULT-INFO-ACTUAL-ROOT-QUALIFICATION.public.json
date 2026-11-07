@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.root.qualification.rog4a-result-info-actual.r1",
+  "checkedAtUtc": "2026-11-07 02:44:40 UTC",
+  "packet": {
+    "tree": "b1bce0aa933e947e9020eec1268c2a3305333699",
+    "files": 21,
+    "bytes": 328839,
+    "merkle": {
+      "root_sha": "b1bce0aa933e947e9020eec1268c2a3305333699",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "checks": [
+    "exact INFO GO original",
+    "independent original payload same",
+    "same context idle closed",
+    "46 calls15 observers total",
+    "all original43 calls byte-value unchanged",
+    "all original14 observers unchanged",
+    "all other original state fields unchanged",
+    "three new once accepted calls",
+    "original call whole pins 0",
+    "original SDK exact native 0",
+    "original arms exact scope 0",
+    "original call whole pins 1",
+    "original SDK exact native 1",
+    "original arms exact scope 1",
+    "original call whole pins 2",
+    "original SDK exact native 2",
+    "original arms exact scope 2",
+    "one exact fixed INFO request",
+    "one fresh INFO operation ACK",
+    "original INFO future completed inactive stored",
+    "one complete immutable original page",
+    "original page complete payload bytes hash",
+    "original complete metadata result",
+    "actual fixed report length and known terminal hash",
+    "actual version owner mode link",
+    "actual metadata state and release same",
+    "once INFO bound no BODY authority",
+    "B0 original scope released"
+  ],
+  "checkCount": 28,
+  "additionalOriginalMerkleTrees": 6,
+  "metadata": {
+    "path": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json",
+    "bytes": 91252,
+    "sha256": "7be18adad000805344acf09d01b91fbd1ed99e561bfbc97c9faf0fd56a07b250",
+    "version": "66306:39758456:91252:1794017942783960768:1794017942783960768",
+    "full9Strings": [
+      "66306",
+      "39758456",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "91252",
+      "1794017942783960768",
+      "1794017942783960768"
+    ],
+    "nativePin": {
+      "blob": "73fe322b48d820078a9ab4a70193c31025077968",
+      "bytes": 468,
+      "sha256": "464ea5341538c7e6ce749b92412ceffb946f86e33aa722e8bcfd6df3dda4429d"
+    },
+    "originalOperation": "6075a63a3cace7cff463771d0c5b36a7925c84838dc56eb0ef24d97a9cd9b092",
+    "bodyRead": false
+  },
+  "actualState": {
+    "path": "STATE.original.json",
+    "blob": "3e52a813e9a9078b69275dccf18496617b3eb522",
+    "bytes": 298416,
+    "sha256": "998d6855c746170eeb000c0c8b4039b2517917da32e357ab99dcc354afa36566"
+  },
+  "original43CallsAnd14ObserversUnchanged": true,
+  "current46Calls15ObserversClosed": true,
+  "BActiveNativeLane": 0,
+  "failurePhaseStillUnknown": true,
+  "bodyRead": false,
+  "fullBuildQualified": false,
+  "fullReplacement": false
+}

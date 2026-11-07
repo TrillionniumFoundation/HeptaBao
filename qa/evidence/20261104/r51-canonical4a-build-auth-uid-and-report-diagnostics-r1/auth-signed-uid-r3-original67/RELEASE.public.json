@@ -1,0 +1,241 @@
+{
+  "schema": "heptabao.fixed-setuid-ps-lexical-original-release.r3",
+  "host": "mac",
+  "jobId": "1a1b3d5d9cb-fc05-84fb",
+  "go": {
+    "blob": "5b902c20f35e7928b0be0dcfcbbff69b99cc49c7",
+    "bytes": 8652,
+    "sha256": "3982ec361fa4aeb3cd7493849b2482aa1581c42b4edf1c124ead8e41197dbf13"
+  },
+  "laneGO": {
+    "blob": "f83f321ca3197f9d72f7a7dc260cf96f7e75f998",
+    "bytes": 2135,
+    "sha256": "84c939dc477301d3b7f3944fcf8d0afd27a2c4bc08c3f4ec160a8ee10f4d63ab"
+  },
+  "source": {
+    "blob": "111b392deb1a1f0b02aa27fd4c91ea8f2505b064",
+    "bytes": 58347,
+    "sha256": "35fa06300c0c2c1d66c5eca8fee7a434d04831fe5dfd5329388674175269efd7"
+  },
+  "request": {
+    "blob": "cc6a8a0615576d50b1e2add3388314f10c53aac8",
+    "bytes": 59279,
+    "sha256": "4c88fc542a3a7c5a1ea237dc8846f3aa1a19cceb758004b5e473b486c1d0864b"
+  },
+  "journal": {
+    "blob": "d76c9f956aad6d7bca2a48d75ce06dddc6c70ced",
+    "bytes": 19056,
+    "sha256": "6f882241d655f54b6e2b6a2d00da3eee2570478ca1b1f3f87054cf5e74c8cd38"
+  },
+  "originalNativeCalls": 9,
+  "originalObservers": 2,
+  "immutablePages": 4,
+  "activeNativeCalls": 0,
+  "knownActiveNativeFutures": 0,
+  "pendingCall": null,
+  "activeObserver": null,
+  "allOriginalCallsAccepted": true,
+  "allOriginalObserversCompletedStoredInactive": true,
+  "allImmutablePagesClosed": true,
+  "authority": {
+    "blob": "e46b827bbe24fbf5a662af6dcdfba18566598f2d",
+    "bytes": 731,
+    "sha256": "2ef35567f08e1c0840b9b11fb855159c63a51d6cceed2a678aeaff580d6352ad"
+  },
+  "stdout": {
+    "blob": "1dadfabb024aab0e027b35efeac95f1ff85adb17",
+    "bytes": 6008,
+    "sha256": "1752eb114107a5b67591d1a356b95f3b49343e6e43a31993337e03f052c2f959"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalState": {
+    "blob": "fb8c565438c198a3244bc81bc9a199b3adcc6025",
+    "bytes": 93838,
+    "sha256": "4f7cd3f6526049e0c2b3954691ebd082e272c1377994ce2eee2906732b2ea9cc"
+  },
+  "observers": [
+    {
+      "id": "85b4836e88e67f76189636d3f1539ec1b35fa38e516657d6a80dfec35dcc0aa6",
+      "tool": "process_status",
+      "payload": {
+        "blob": "ba8defa6bed597176ac5ad9684edab2dfdf1475f",
+        "bytes": 910,
+        "sha256": "3f58adf49483edee04ec6fc614deead985d5c05cb4190acb78912ef5fa79eba1"
+      },
+      "payloadTree": "04e8773f7382c23927b3ccd726ac52009321bcc0",
+      "nativeText": {
+        "blob": "e46b827bbe24fbf5a662af6dcdfba18566598f2d",
+        "bytes": 731,
+        "sha256": "2ef35567f08e1c0840b9b11fb855159c63a51d6cceed2a678aeaff580d6352ad"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "b56b0ff6d0772b60d69883b6ec138a47fbb91bf4f4f36bcb90239677d291e28b",
+      "tool": "process_read",
+      "payload": {
+        "blob": "059048e5923ac172e406a9a5879165e7fc05515e",
+        "bytes": 20337,
+        "sha256": "0ab7314eaa35fb7f1131201c04aeaef87673fa8117a5dcffd1bdcf5c585618fc"
+      },
+      "payloadTree": "b0dfe2c04c7ffff31b43ebd32acde8f713d075f9",
+      "nativeText": {
+        "blob": "3a8349c41c7a4ba9ac0b98f4a4e481fa299e5ace",
+        "bytes": 18964,
+        "sha256": "4b6fc0c61a97fc3adc4c18cdfce4cbe11eaf54cba2c73f30211ee93533884c85"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "terminal": {
+    "state": "succeeded",
+    "exitCode": 0,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "stdoutBytes": 6008,
+    "stderrBytes": 0
+  },
+  "actual": {
+    "ok": true,
+    "observationComplete": true,
+    "executionSucceeded": true,
+    "outcomeUnknown": false,
+    "allOwnDescriptorsAndChildrenClosed": true,
+    "allFixedHeldNamedFencesPassed": true,
+    "table": {
+      "otherRowsOrStateTextExported": false,
+      "selfRow": {
+        "pgid": 97119,
+        "pid": 97119,
+        "ppid": 97117,
+        "uid": 0
+      },
+      "selfRowObserved": true,
+      "signedUidRowsAccepted": 1,
+      "typedRows": 723
+    },
+    "lexicalProjection": {
+      "failedNumericColumnCounts": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "fieldCountHistogram": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 723,
+        "more_than_5": 0
+      },
+      "firstRejectedShape": {
+        "failedNumericColumns": [
+          4
+        ],
+        "fieldCount": 5
+      },
+      "numericColumnLexicalCounts": [
+        {
+          "ascii_decimal": 723,
+          "missing": 0,
+          "negative_decimal": 0,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        },
+        {
+          "ascii_decimal": 723,
+          "missing": 0,
+          "negative_decimal": 0,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        },
+        {
+          "ascii_decimal": 723,
+          "missing": 0,
+          "negative_decimal": 0,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        },
+        {
+          "ascii_decimal": 722,
+          "missing": 0,
+          "negative_decimal": 1,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        }
+      ],
+      "originalPredicateAllPassed": false,
+      "rawRowsOrTokensOrHashExported": false,
+      "rowCount": 723,
+      "rowsRejectedByOriginalPredicate": 1
+    },
+    "psAdmission": {
+      "effectiveUidMatches": true,
+      "expectedEffectiveUid": 0,
+      "expectedGroup": 97119,
+      "expectedParent": 97117,
+      "groupMatches": true,
+      "observedEffectiveUid": 0,
+      "observedGroup": 97119,
+      "observedParent": 97117,
+      "parentMatches": true,
+      "pid": 97119
+    },
+    "psNameFull9FencesPassed": true,
+    "psExitCode": 0,
+    "psStdoutBytes": 20967,
+    "psStderrBytes": 0,
+    "directChildReaped": true,
+    "retainedExit": {
+      "code": 1,
+      "pid": 97119,
+      "signo": 20,
+      "status": 0
+    },
+    "allGroupRowsEmptyAfterReap": true,
+    "signals": [],
+    "returnedInputFdLedger": {
+      "attempts": 2,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 2,
+      "registrationUnknown": false
+    },
+    "allReturnedInputFdsClosed": true,
+    "handlersRestored": true,
+    "original45SecondDeadlineMetAfterClosure": true
+  },
+  "limitsPreserved": {
+    "scriptWorkSeconds": 35,
+    "scriptDeadlineSeconds": 45,
+    "nativeTimeoutSeconds": 60,
+    "primaryCommandSeconds": 4,
+    "cleanupSeconds": 9,
+    "streamingCapEach": 262144
+  },
+  "scope": {
+    "newSdkBusiness": false,
+    "credentials": false,
+    "T5": false,
+    "launchd": false,
+    "oldPs84947And85012Reclassified": false,
+    "oldManagedCleanupClaimed": false,
+    "oldTableValuesReconstructed": false,
+    "priorGitUnknownReclassified": false,
+    "execByNameNotAtomicExecByFd": true,
+    "childInternalFdsNotEnumerated": true
+  },
+  "interpretation": "This fresh R3 command accepted all 723 five-column rows, including one negative-decimal UID token, without exporting that token or mapping it to another value. The byte-preserved lexical projection still records one original-predicate rejection. Current fixed primary custody, exit, retained-child cleanup, input FD closure and final held/name fences all passed. This neither reconstructs earlier process tables nor qualifies SDK, credentials, product behavior or historical managed cleanup.",
+  "laneReleased": true,
+  "noNewNativeAuthorized": true,
+  "followup": "Pure original-chain archival and fresh SOURCE-only SDK binder preparation; current Mac artifact, issuer and private generation remain unbound."
+}

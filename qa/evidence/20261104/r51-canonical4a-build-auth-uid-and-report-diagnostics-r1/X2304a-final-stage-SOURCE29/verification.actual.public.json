@@ -1,0 +1,128 @@
+{
+  "schema": "heptabao.x2304a.two-qualified-bundle-final-binding.checks.r1",
+  "passed": true,
+  "check_count": 29,
+  "checks": [
+    {
+      "name": "accepted unchanged controller",
+      "passed": true
+    },
+    {
+      "name": "accepted unchanged binder",
+      "passed": true
+    },
+    {
+      "name": "prior candidate binding whole",
+      "passed": true
+    },
+    {
+      "name": "actual candidate manifest whole",
+      "passed": true
+    },
+    {
+      "name": "exact accepted4a candidate",
+      "passed": true
+    },
+    {
+      "name": "first root transport exact",
+      "passed": true
+    },
+    {
+      "name": "second root transport exact",
+      "passed": true
+    },
+    {
+      "name": "candidate binding strict data delta",
+      "passed": true
+    },
+    {
+      "name": "only carrier and second-bundle actual fields",
+      "passed": true
+    },
+    {
+      "name": "whole exact stdin remains original cap",
+      "passed": true
+    },
+    {
+      "name": "actual bundle kinds and sizes",
+      "passed": true
+    },
+    {
+      "name": "whole canonical binary and header 0",
+      "passed": true
+    },
+    {
+      "name": "whole canonical binary and header 1",
+      "passed": true
+    },
+    {
+      "name": "original binder source and request exact replay",
+      "passed": true
+    },
+    {
+      "name": "correct typed lossless exact replay",
+      "passed": true
+    },
+    {
+      "name": "single binding line source change",
+      "passed": true
+    },
+    {
+      "name": "fresh exact X230 process request",
+      "passed": true
+    },
+    {
+      "name": "explicit request-envelope versus stdin sizes",
+      "passed": true
+    },
+    {
+      "name": "original controller budget and cap values unchanged",
+      "passed": true
+    },
+    {
+      "name": "historical base current presence remains unknown",
+      "passed": true
+    },
+    {
+      "name": "five closed journal literals",
+      "passed": true
+    },
+    {
+      "name": "unique journal replacement successor4a_mac_source_only_stage_gitfirst_r1",
+      "passed": true
+    },
+    {
+      "name": "unique journal replacement {\"blob\":\"c64853ad2e18f250d6e30424d6468e25b7a6b590\",\"bytes\":26577,\"sha256\":\"65d51bfef3b4103cbbec8e65d1c546a6b8aac3fd3b7f95197729bb9f5868bbed\"}",
+      "passed": true
+    },
+    {
+      "name": "unique journal replacement heptabao-4a49405b-mac-source-only-a88b3787-",
+      "passed": true
+    },
+    {
+      "name": "unique journal replacement a.host===\"mac\"",
+      "passed": true
+    },
+    {
+      "name": "unique journal replacement v.job?.host===\"mac\"",
+      "passed": true
+    },
+    {
+      "name": "journal full literal equality",
+      "passed": true
+    },
+    {
+      "name": "journal three strict forward reverse hunks",
+      "passed": true
+    },
+    {
+      "name": "new source only without actual host or product claims",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "templateAlgorithmChanged": false,
+  "binderChanged": false,
+  "actualX230Stage": false
+}

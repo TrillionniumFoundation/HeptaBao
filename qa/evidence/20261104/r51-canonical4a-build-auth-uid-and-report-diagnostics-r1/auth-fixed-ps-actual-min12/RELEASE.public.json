@@ -1,0 +1,174 @@
+{
+  "schema": "heptabao.fixed-setuid-ps-custody-original-release.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "host": "mac",
+  "jobId": "1a1b39a2fb0-fc05-83ca",
+  "go": {
+    "blob": "d53a5d17fa64bfde10a642a3527f4360e7d444af",
+    "bytes": 8491,
+    "sha256": "fc660396b4c50330af20a1a61f2092cddc7006ded40002ab3a1c57a8db83be31"
+  },
+  "laneGo": {
+    "blob": "8f1f8fc77c0af587085b31cfc12c8119136a0a69",
+    "bytes": 1804,
+    "sha256": "acc345b99b1186aa3c451107204ef40f1e64d0e720122ab537e4e0fa57525711"
+  },
+  "source": {
+    "blob": "d37f6efd90d07890b6031d164ec8980e38639ef0",
+    "bytes": 56248,
+    "sha256": "c0c5f6716f8701efbf57d2a5eae87bf5cfa311eeea2da28c988d02aac66dd484"
+  },
+  "request": {
+    "blob": "6b3c7b367fab9ef768f2ba145770a3ab3e713f0c",
+    "bytes": 57139,
+    "sha256": "74e700b9cfbfde31ddb5821ff231c9965a339d3581f8b114a1a13ce902c152c1"
+  },
+  "journal": {
+    "blob": "225aea4ff2abb64763eee631108d61a9b6a26fb2",
+    "bytes": 19056,
+    "sha256": "3a35571434326df1ca37b4470a73405040b7c39d70c5ddf6bf0b9b7ab89b9ea1"
+  },
+  "originalNativeCalls": 9,
+  "originalObservers": 2,
+  "immutablePages": 4,
+  "activeNativeCalls": 0,
+  "knownActiveNativeFutures": 0,
+  "pendingCall": null,
+  "activeObserver": null,
+  "allOriginalCallsAccepted": true,
+  "allOriginalObserversCompletedStoredInactive": true,
+  "allImmutablePagesClosed": true,
+  "authority": {
+    "blob": "d65a5d09e86aca102a1d298963abdc094985a6dd",
+    "bytes": 728,
+    "sha256": "fb10633654d08010497d2223e3a7b232a1bffc1499eba782edb187cd773a4f29"
+  },
+  "stdout": {
+    "blob": "57c9ac037053bc2163db3f12083529c02244c9df",
+    "bytes": 5208,
+    "sha256": "27b72de7619e9579fbcfeac27757087877a287429cda0e8e70d750fc503bb8fc"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalState": {
+    "blob": "da275ecb3984552da544e75f7008dc1a7c3dd95d",
+    "bytes": 91392,
+    "sha256": "679863b40914263e2eea14f502243bf11d2f65f42cce71b2d5d10cdbf9c08563"
+  },
+  "observers": [
+    {
+      "id": "0e1d95188d41bed90dfa37f48208362b2cd857d1fbd50bcd721a0053b8af265f",
+      "tool": "process_status",
+      "payload": {
+        "blob": "0ad1f42470fd7b050585b87b8d44719ebc654061",
+        "bytes": 907,
+        "sha256": "5315a3b7fc8091c7c9e210f56b811e6bc169e3cc66c9bf7de7f99aac42d78282"
+      },
+      "payloadTree": "3cbe5b90a3c3ba901969d438ae365315b6962b28",
+      "nativeText": {
+        "blob": "d65a5d09e86aca102a1d298963abdc094985a6dd",
+        "bytes": 728,
+        "sha256": "fb10633654d08010497d2223e3a7b232a1bffc1499eba782edb187cd773a4f29"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "0963370a7275af342063afdd358624beb237bfd2a226fa661427fa328ae200d8",
+      "tool": "process_read",
+      "payload": {
+        "blob": "163a538e16404c9d766cc867dda2f6b16c8e0951",
+        "bytes": 17691,
+        "sha256": "76a81a0f29679d473af02be57766b6224627b0247fdb3737b2f49a6ef49f49dc"
+      },
+      "payloadTree": "8057edc863ffd9aeedcc3a208f3e2c15a4b0b581",
+      "nativeText": {
+        "blob": "3c46a83c9530743a2e497d01648518d967a073db",
+        "bytes": 16482,
+        "sha256": "9e0988885d93827ca4db56fa55afd5afd9cfefc8231b4a7951d2c46669f85af5"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "terminal": {
+    "state": "failed",
+    "exitCode": 1,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "stdoutBytes": 5208,
+    "stderrBytes": 0
+  },
+  "actual": {
+    "error": {
+      "code": "typed_process_row",
+      "errno": null,
+      "type": "Refused",
+      "unknownErrorTextWithheld": false
+    },
+    "observationComplete": false,
+    "executionSucceeded": false,
+    "outcomeUnknown": false,
+    "allOwnDescriptorsAndChildrenClosed": true,
+    "allFixedHeldNamedFencesPassed": false,
+    "psAdmission": {
+      "effectiveUidMatches": true,
+      "expectedEffectiveUid": 0,
+      "expectedGroup": 74835,
+      "expectedParent": 74832,
+      "groupMatches": true,
+      "observedEffectiveUid": 0,
+      "observedGroup": 74835,
+      "observedParent": 74832,
+      "parentMatches": true,
+      "pid": 74835
+    },
+    "psNameFull9FencesPassed": true,
+    "psExitCode": 0,
+    "psStdoutBytes": 21402,
+    "psStderrBytes": 0,
+    "directChildReaped": true,
+    "retainedExit": {
+      "code": 1,
+      "pid": 74835,
+      "signo": 20,
+      "status": 0
+    },
+    "allGroupRowsEmptyAfterReap": true,
+    "signals": [],
+    "returnedInputFdLedger": {
+      "attempts": 2,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 2,
+      "registrationUnknown": false
+    },
+    "allReturnedInputFdsClosed": true,
+    "handlersRestored": true,
+    "original45SecondDeadlineMetAfterClosure": true
+  },
+  "limitsPreserved": {
+    "scriptWorkSeconds": 35,
+    "scriptDeadlineSeconds": 45,
+    "nativeTimeoutSeconds": 60,
+    "primaryCommandSeconds": 4,
+    "cleanupSeconds": 9,
+    "streamingCapEach": 262144
+  },
+  "scope": {
+    "newSdkBusiness": false,
+    "credentials": false,
+    "T5": false,
+    "launchd": false,
+    "oldPs84947And85012Reclassified": false,
+    "oldManagedCleanupClaimed": false
+  },
+  "interpretation": "The single fixed ps custody/admission, original child exit zero, same-name full9 fences and cleanup succeeded. The enclosing diagnostic remains failed at typed_process_row. The offending row/field/value was not exported. No final input fence pass or historical failure cause is claimed.",
+  "laneReleased": true,
+  "noNewNativeAuthorized": true,
+  "followup": "Pure Git original-chain archival and exact-source diagnosis only."
+}

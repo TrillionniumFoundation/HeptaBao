@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.root.qualification.mac4a-inert-actual-minimum.r1",
+  "checkedAtUtc": "2026-11-07 02:32:09 UTC",
+  "checks": [
+    "exact root inert GO",
+    "original START SDK whole exact",
+    "original authority exact",
+    "original streams exact",
+    "stdout exactly independently decoded hex",
+    "same original publisher job",
+    "successful complete durable terminal",
+    "context idle closed",
+    "eight original calls accepted",
+    "two inactive observers three pages",
+    "stream cursor and stored bytes",
+    "no output truncation errors",
+    "C0 release",
+    "exact original typed input",
+    "actual publisher consumed exact full carrier",
+    "three controls on actual T5 uid gid mode link",
+    "distinct created control inodes",
+    "actual receipt T5 full9 safety",
+    "frozen candidate",
+    "independent exact original build binder request",
+    "independent exact original build binder identity",
+    "receipt identity original release exact"
+  ],
+  "checkCount": 22,
+  "audit": {
+    "tree": "00ac682e0427be2e41fac73a02087de21a0aa079",
+    "files": 8,
+    "bytes": 196080,
+    "merkle": {
+      "root_sha": "00ac682e0427be2e41fac73a02087de21a0aa079",
+      "trees_verified": 1,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "actualPublisherJob": "1a1b3d20950-fc05-84e7",
+  "actualReceipt": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json",
+    "bytes": 3321,
+    "sha256": "6368b3d5723a04290b3f9356b0802f417ac0e633ee5bf2a0e5dfd69056da7b47",
+    "full9": [
+      "16777244",
+      "72776310",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "3321",
+      "1794018256934258676",
+      "1794018256934622037"
+    ]
+  },
+  "sourceQualification": {
+    "blob": "61594822caa029b58ed91924942e4d3ee91fd2f0",
+    "bytes": 3774,
+    "sha256": "cb02b2a454280e96b3b676900f1174b806a62543523602db930fb7b7848e7dbe"
+  },
+  "inertQualified": true,
+  "currentCNativeLane": 0,
+  "buildNotYetStarted": true,
+  "normal117Qualified": false,
+  "fullReplacement": false
+}

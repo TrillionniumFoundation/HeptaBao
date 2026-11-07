@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.root.go.auth-fixed-ps-signed-uid-R3-actual-lane.r1",
+  "authorization": "GO",
+  "issuedAtUtc": "2026-11-07 02:27:25 UTC",
+  "exactConditionalGO": {
+    "blob": "5b902c20f35e7928b0be0dcfcbbff69b99cc49c7",
+    "bytes": 8652,
+    "sha256": "3982ec361fa4aeb3cd7493849b2482aa1581c42b4edf1c124ead8e41197dbf13"
+  },
+  "sourceTree": "9ae05113a73e1232094dd7844940aeb8a8792498",
+  "slot": "owner_authbus_fixed_setuid_ps_lexical_gitfirst_r3",
+  "exact_request": {
+    "blob": "cc6a8a0615576d50b1e2add3388314f10c53aac8",
+    "bytes": 59279,
+    "sha256": "4c88fc542a3a7c5a1ea237dc8846f3aa1a19cceb758004b5e473b486c1d0864b"
+  },
+  "journal": {
+    "blob": "d76c9f956aad6d7bca2a48d75ce06dddc6c70ced",
+    "bytes": 19056,
+    "sha256": "6f882241d655f54b6e2b6a2d00da3eee2570478ca1b1f3f87054cf5e74c8cd38"
+  },
+  "nativeBinding": {
+    "sha256": "f54f6ca052c594cc921491bc00718ecb35829e6b7d97d592ca786fa3fc4fd005",
+    "native_fingerprint": "17676466498291733708",
+    "canonicalBytes": 59218,
+    "field": "stdin"
+  },
+  "prerequisiteROGRelease": {
+    "packet": "2d1d6c77e6ce2358e70275d1770894eb5501c9bd",
+    "rootQualification": {
+      "blob": "22a898626a12601d2c6fa2fd5d8bd8e9238d7f9b",
+      "bytes": 2467,
+      "sha256": "0886069199c5709bb9e3f91322deedd15a99f921d46699c687f3eb1e590a168c"
+    },
+    "state": {
+      "blob": "ffd08542730b5033fdc564c1b38a000f6515c6c8",
+      "bytes": 286087,
+      "sha256": "f55033d773c001c3e058c4d359f790f76ca9dd7402f9d1756fa29bff7ccda6a0"
+    },
+    "release": {
+      "blob": "a71c2ada7eacd587790b75ff003e6d419ccb60b6",
+      "bytes": 8141,
+      "sha256": "102c10b05fe4c8554f6c824c68bb179debfb6c8a5015b6d1f33da7bf4583a092"
+    }
+  },
+  "scheduling": {
+    "conditional": false,
+    "root": 0,
+    "A": 1,
+    "B": 0,
+    "C": 1,
+    "maximum": 2
+  },
+  "bounds": "All exact conditional GO35/45/60/4/9 seconds, held inputs, stream and observer limits remain unchanged.",
+  "freshR3Only": true,
+  "noSDKOrLaunchd": true,
+  "noReplayRekey": true,
+  "noOldFailurePromotion": true,
+  "noCounterOrClockReset": true,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

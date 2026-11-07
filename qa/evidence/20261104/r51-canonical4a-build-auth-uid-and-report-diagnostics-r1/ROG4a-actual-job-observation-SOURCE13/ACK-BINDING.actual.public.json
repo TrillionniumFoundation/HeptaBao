@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.4a-conditional-admission-actual-binding.r1",
+  "sourceTree": "9a539cf2a300566fca767055d955225c0489a3c7",
+  "rootGo": {
+    "blob": "123b5b2bd96eb5c88944a08dceec864745a1cc7a",
+    "bytes": 5240,
+    "sha256": "4adacf068d423ef72f8051874a0cfe0a58b63fb36da14a6f4502f5bd3e384776"
+  },
+  "originalRequest": {
+    "blob": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+    "bytes": 158691,
+    "sha256": "0e16d0235233595463dbdb53f51cc5790ea4fd62700b6f3a4529f907eb7d547e"
+  },
+  "originalArmTree": "958448876886905b74182aed9424e89149213312",
+  "originalSDK": {
+    "blob": "cb1009bdcaf5706e9f3f1578baf49ee171f23ee5",
+    "bytes": 8279,
+    "sha256": "d94d84a0016cc16eb1e560fea3f57a320d6d7a1ba3d72115b176ec3dbc22ed1a"
+  },
+  "originalSDKTree": "fe04afbd94e238c1e6afa030640e1ca0c74a2aaa",
+  "actualJob": "1a1b3978da9-fc05-83bd",
+  "actualHost": "rog",
+  "classification": {
+    "reused": false,
+    "classification": "first_admission_possible_under_new_go",
+    "originalStartOutcome": "UNKNOWN",
+    "originalTimeoutPreserved": true,
+    "originalNeverAdmittedInferred": false,
+    "lookupOnly": false,
+    "launchOk": true,
+    "authoritativeLiveStatus": false,
+    "sameJobObservationsAuthorized": false,
+    "originalBuildState": {
+      "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+      "bytes": 181122,
+      "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+    },
+    "originalInfoState": {
+      "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+      "bytes": 11134,
+      "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+    }
+  },
+  "typedDigest": "33dcdfaa308ff7e6669737a1326ec90e9f6275038ee7f27d896aeb95981f2d50",
+  "fingerprint": "3737107712862844902",
+  "actualState": {
+    "blob": "a4fea6d283d0fb3d58d8045a8f4c7df637ecd578",
+    "bytes": 168445,
+    "sha256": "535d5821d952b3a0d4558523bee33388e2256a1f8a66093f00da82afa5a7e270"
+  },
+  "nativeCallsInThisScope": 1,
+  "observerCalls": 0,
+  "pending": null,
+  "inflight": false,
+  "originalBuildState": {
+    "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+    "bytes": 181122,
+    "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+  },
+  "originalInfoState": {
+    "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+    "bytes": 11134,
+    "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+  },
+  "fullBuildOrTestsQualified": false,
+  "authoritativeCurrentStatus": false,
+  "productSourceUnchanged": true,
+  "originalTimeoutPreserved": true
+}

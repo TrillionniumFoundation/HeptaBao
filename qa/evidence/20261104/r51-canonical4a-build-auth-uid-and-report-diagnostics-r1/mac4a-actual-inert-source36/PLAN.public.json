@@ -1,0 +1,181 @@
+{
+  "schema": "heptabao.mac4a.normal117.actual-stage-bound-inert-source.r1",
+  "status": "SOURCE_ONLY_AWAITING_EXACT_INERT_GO",
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "manifest": {
+      "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+      "bytes": 4223,
+      "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+    }
+  },
+  "root_reviewed_binder": {
+    "blob": "fa10ad8f39e0890044eed6ee8dab38b8e8642977",
+    "bytes": 8519,
+    "sha256": "18b24d8ae6234123e1c140d3653d44198b6f790eea9ca9de5be4f286a2312c7e",
+    "source_tree": "8b533f5fc4552b11249393415cd80997f83d0ce7",
+    "root_qualification": {
+      "blob": "dd072d42d51c4966b19caf2d8d6afb7896679fdf",
+      "bytes": 2329,
+      "sha256": "6596fc1a04ebfb63965803403b534410933a56a21e46994b8a196619b06e0f17"
+    }
+  },
+  "actual_stage": {
+    "infoPin": {
+      "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+      "bytes": 489,
+      "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+    },
+    "bodyPin": {
+      "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
+      "bytes": 7685,
+      "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2"
+    },
+    "rootQualificationPin": {
+      "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+      "bytes": 6285,
+      "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+    },
+    "full9": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ],
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746"
+  },
+  "stage_root_qualification_tree": "2790d47907516c4005d406c6d5ff2a7c9349fc98",
+  "exact_request": {
+    "blob": "e159810aa46391f2934bfe48517c4da7bd0f0635",
+    "bytes": 130241,
+    "sha256": "de03e153ae7a3951600d9a29049069a06a49fbda33976ae9589faaf9ea5a33de"
+  },
+  "typed_binding": {
+    "sha256": "729392d378c02b9c292c894e0dd10b1b81da052963686cde76e6ba49aef6a46d",
+    "native_fingerprint": "8256103978861865884",
+    "canonical_bytes": 130161
+  },
+  "journal": {
+    "blob": "2288c1b8d4dcf103e80c27831c975351b99aeba5",
+    "bytes": 19058,
+    "sha256": "11b30b5a111f81d1a254d3ae627207dcabae6dc66c22698841f50a4d6aaf9508"
+  },
+  "publisher": {
+    "blob": "5977f13bfff455999eafe219dbdb154ba1108141",
+    "bytes": 9000,
+    "sha256": "18b8b35e9298f6cb9cdbcdf81b1ef962e999d461cb163a2aaf14e1f2e247ddb7"
+  },
+  "launcher": {
+    "blob": "db0b97d08b96cee8478174d22fac2bc25e9808d6",
+    "bytes": 25925,
+    "sha256": "ba55afb554abc657012e8972e2984888786f056e751f7f8aecbff4166c9980a2"
+  },
+  "runner": {
+    "blob": "f9c914de8ab5ba65ab79747acacc24260f553252",
+    "bytes": 42977,
+    "sha256": "9b05569375d5de0836ece83e9a93d04d6d60b50f455e535e980fefc7989f6a22"
+  },
+  "groups": {
+    "blob": "c1cd3341b57860b199302b1adf86e336957700c1",
+    "bytes": 13725,
+    "sha256": "3db98fdaf90b753b15e2c98fa256f3c5c7cd66667492db4422b2a0bfb902997d"
+  },
+  "carrier": {
+    "blob": "30b4d99a0f48219fe33818ac26df8880b4ea6acf",
+    "bytes": 120653,
+    "sha256": "28c030ebaeec2c762890e44a6270d6cfd14da6ffb8532127d9f5d6beebf5d801"
+  },
+  "paths": {
+    "base": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "stageRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/source",
+    "stageReport": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "runRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1",
+    "control": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control",
+    "admission": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/build-control-r1",
+    "output": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/normal-release-tests-r1",
+    "target": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/target-normal-r1",
+    "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json"
+  },
+  "scope": {
+    "one_fresh_publisher_process": true,
+    "python_compile_only": true,
+    "create_only_three_controls_and_receipt": true,
+    "original_job_status_and_streams_only": true,
+    "launcher_or_runner_execution": false,
+    "Cargo": false,
+    "Git_source_mutation": false,
+    "binary_transfer": false,
+    "source_restaging": false
+  },
+  "budgets": {
+    "publisher_request_seconds": 60,
+    "complete_stdin_cap_bytes": 262144,
+    "complete_stdin_actual_bytes": 120653,
+    "runner_read_cap_bytes": 49152,
+    "launcher_and_groups_read_cap_bytes": 40000,
+    "immutable_result_page_bytes": 8192,
+    "immutable_payload_cap_bytes": 1048576,
+    "process_stream_read_per_stream_bytes": 16384,
+    "normal_build_outer_seconds": 8280,
+    "normal_release_seconds": 1800,
+    "default_libtest_compile_seconds": 1800,
+    "file_libtest_compile_seconds": 1800,
+    "each_runtime_family_seconds": 600,
+    "each_listing_seconds": 30,
+    "normal_build_authorized": false
+  },
+  "tests": {
+    "original_normal_total": 61,
+    "original_groups_selected": 44,
+    "original_other_regressions": 17,
+    "new_native_unique": 28,
+    "new_native_profiles": 56,
+    "selected_unique": 89,
+    "selected_instances": 117,
+    "source_counts_only": true,
+    "actual_results": null
+  },
+  "changes": {
+    "launcher": "one actual full9 constant; strict forward and reverse one hunk",
+    "publisher": "ready, actual stage tuple and actual launcher pin in one constants hunk",
+    "journal": "only fresh slot, exact request pin and observer key prefix; strict forward/reverse two hunks",
+    "runner": "whole byte-identical",
+    "groups": "whole byte-identical",
+    "binding_document": "current SOURCE status and body-read evidence updated; original pending binding retained"
+  },
+  "history": {
+    "original_stage_INFO_paused_slot": "successor4a_mac_source_only_stage_gitfirst_r1",
+    "original_stage_INFO_state": {
+      "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+      "bytes": 69161,
+      "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+    },
+    "original_stage_INFO_history_unchanged": true,
+    "independent_INFO_retrieval_closed": true,
+    "independent_BODY_closed": true,
+    "body_full_packet": "ea7bcdcbec588f2c8aa59b8d559fe1908447506c"
+  },
+  "followup": {
+    "build_binder": {
+      "blob": "5ad7e169fbe237b26b410c6230cc3bbdcbffc815",
+      "bytes": 4706,
+      "sha256": "bbcd65ec381f1368e7070c73d33822d8800793bfd18981c9f303ca572f214b59"
+    },
+    "actual_publisher_job": null,
+    "actual_receipt": null,
+    "exact_build_request": null,
+    "actual_binary": null,
+    "normal117_qualified": false,
+    "full34_qualified": false,
+    "requires_independent_root_BUILD_GO": true
+  },
+  "Native_calls": 0,
+  "runtime_slot_initialized": false
+}

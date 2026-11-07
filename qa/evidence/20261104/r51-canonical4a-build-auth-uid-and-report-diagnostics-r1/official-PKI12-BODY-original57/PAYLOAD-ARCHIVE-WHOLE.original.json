@@ -1,0 +1,17 @@
+{
+  "tree": "b8d5eb933d1e4cdf77d15166a3e51a267e75cf12",
+  "entries": [
+    {
+      "path": "payload.original.json",
+      "blob": "083c0bb44c55127403e69baaad64e7bc82975c73",
+      "bytes": 55762,
+      "sha256": "dfad7e61e08ada43dc512c7a5014db31584d41babd5839b6271ab59516f06502",
+      "whole": true
+    }
+  ],
+  "count": 1,
+  "bytes": 55762,
+  "whole": true,
+  "localDurableJournal": false,
+  "runtimeAuthorized": false
+}

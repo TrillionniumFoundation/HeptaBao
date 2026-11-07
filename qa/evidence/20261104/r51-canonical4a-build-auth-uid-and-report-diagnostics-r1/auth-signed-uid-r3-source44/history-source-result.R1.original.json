@@ -1,0 +1,326 @@
+{
+  "schema": "heptabao.fixed-ps-signed-uid-source-checks.r3",
+  "passed": false,
+  "checkCount": 78,
+  "checks": [
+    {
+      "name": "whole/controller.before.py",
+      "passed": true
+    },
+    {
+      "name": "whole/controller.py",
+      "passed": true
+    },
+    {
+      "name": "whole/manager.before.py",
+      "passed": true
+    },
+    {
+      "name": "whole/manager.py",
+      "passed": true
+    },
+    {
+      "name": "whole/request.before.json",
+      "passed": true
+    },
+    {
+      "name": "whole/request.exact.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole/journal.before.js",
+      "passed": true
+    },
+    {
+      "name": "whole/journal.js",
+      "passed": true
+    },
+    {
+      "name": "whole/CONTRACT.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole/actual-r2.stdout.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole/actual-r2.RELEASE.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole/COMPONENT-CONTRACT.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole/sdk-original22-pins.original.json",
+      "passed": true
+    },
+    {
+      "name": "controller/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "controller/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "manager/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "manager/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "journal/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "sdk-source-pins/strict-forward",
+      "passed": true
+    },
+    {
+      "name": "sdk-source-pins/strict-inverse",
+      "passed": true
+    },
+    {
+      "name": "controller/only-exact-narrow-changes",
+      "passed": true
+    },
+    {
+      "name": "manager/only-exact-parser-changes",
+      "passed": true
+    },
+    {
+      "name": "both/one-uid-grammar",
+      "passed": true
+    },
+    {
+      "name": "both/one-uid-range",
+      "passed": true
+    },
+    {
+      "name": "both/retain-signed-map-int",
+      "passed": true
+    },
+    {
+      "name": "manager/group-filter-data-only-unchanged",
+      "passed": true
+    },
+    {
+      "name": "controller/finally-byte-identical",
+      "passed": true
+    },
+    {
+      "name": "manager/consumer-run-phase-byte-identical",
+      "passed": true
+    },
+    {
+      "name": "manager/actual-exit-zero-still-required",
+      "passed": true
+    },
+    {
+      "name": "controller/no-new-definitions",
+      "passed": true
+    },
+    {
+      "name": "manager/no-new-definitions",
+      "passed": true
+    },
+    {
+      "name": "projection/whole-original",
+      "passed": true
+    },
+    {
+      "name": "controller/embedded-helpers-byte-identical",
+      "passed": true
+    },
+    {
+      "name": "controller/two-original-helper-names",
+      "passed": true
+    },
+    {
+      "name": "embedded/mac_owned_unreaped_r1/whole",
+      "passed": true
+    },
+    {
+      "name": "embedded/mac_owned_unreaped_r1/chain",
+      "passed": true
+    },
+    {
+      "name": "embedded/mac_owned_commands_r1/whole",
+      "passed": true
+    },
+    {
+      "name": "embedded/mac_owned_commands_r1/chain",
+      "passed": true
+    },
+    {
+      "name": "inputs/exact-pins-unchanged",
+      "passed": true
+    },
+    {
+      "name": "inputs/contract",
+      "passed": true
+    },
+    {
+      "name": "request/exact-current-stdin",
+      "passed": true
+    },
+    {
+      "name": "request/all-other-fields-byte-value-equivalent",
+      "passed": true
+    },
+    {
+      "name": "request/fresh-key-source-derived",
+      "passed": true
+    },
+    {
+      "name": "journal/only-three-binding-literals",
+      "passed": true
+    },
+    {
+      "name": "journal/new-slot",
+      "passed": true
+    },
+    {
+      "name": "journal/request-pin",
+      "passed": true
+    },
+    {
+      "name": "journal/whole-pin",
+      "passed": true
+    },
+    {
+      "name": "binding/correct-stdin",
+      "passed": true
+    },
+    {
+      "name": "binding/chain",
+      "passed": true
+    },
+    {
+      "name": "caps/original-budgets",
+      "passed": true
+    },
+    {
+      "name": "caps/original-observe",
+      "passed": true
+    },
+    {
+      "name": "caps/original-primary-admission",
+      "passed": true
+    },
+    {
+      "name": "caps/accounting",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/prior-six-components-exact",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/only-manager-leaf-changed",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/manager-current-whole",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/current-source-overlay",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/prior-overlay",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/old-manager-before",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/old-namespace-not-dispatchable",
+      "passed": true
+    },
+    {
+      "name": "pin-chain/no-invented-runtime-bindings",
+      "passed": true
+    },
+    {
+      "name": "actual/retain-parent-failure",
+      "passed": true
+    },
+    {
+      "name": "actual/current-custody-closure-only",
+      "passed": true
+    },
+    {
+      "name": "actual/exact-fresh-negative-UID-shape",
+      "passed": true
+    },
+    {
+      "name": "actual/no-value-export",
+      "passed": true
+    },
+    {
+      "name": "actual/current-lane-closed",
+      "passed": true
+    },
+    {
+      "name": "actual/old-unknown-preserved",
+      "passed": true
+    },
+    {
+      "name": "primary/Apple-ps.original.c/whole",
+      "passed": true
+    },
+    {
+      "name": "primary/Apple-ps-keyword.original.c/whole",
+      "passed": true
+    },
+    {
+      "name": "primary/Apple-ps-print.original.c/whole",
+      "passed": true
+    },
+    {
+      "name": "primary/signed-Apple-keyword",
+      "passed": false
+    },
+    {
+      "name": "primary/UID-format-consumed",
+      "passed": true
+    },
+    {
+      "name": "primary/no-installed-build-attestation",
+      "passed": true
+    },
+    {
+      "name": "boundaries/exact-pure-result",
+      "passed": true
+    },
+    {
+      "name": "boundaries/18-finite-cases-pass",
+      "passed": true
+    },
+    {
+      "name": "boundaries/no-Python-or-product-claim",
+      "passed": true
+    },
+    {
+      "name": "scope/no-execution-or-issuer-qualification",
+      "passed": true
+    }
+  ],
+  "execution": "pure V8 exact source/diff/pin and finite-boundary validation only",
+  "NativeCallsAdded": 0,
+  "PythonModulesExecuted": false,
+  "oldFailuresPreserved": true,
+  "sourceComponentsDispatchable": false,
+  "actualSignedBranchObserved": false,
+  "productQualification": false
+}

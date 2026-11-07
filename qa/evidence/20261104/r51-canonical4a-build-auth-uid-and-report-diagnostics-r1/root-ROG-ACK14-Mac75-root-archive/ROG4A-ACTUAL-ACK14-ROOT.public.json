@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.root.rog4a.actual-conditional-admission-qualification.r1",
+  "audit": {
+    "tree": "d1dae7fe5f88e48b544a4edf96b4430dfd57a15f",
+    "files": 8,
+    "bytes": 195201,
+    "merkle": {
+      "root_sha": "d1dae7fe5f88e48b544a4edf96b4430dfd57a15f",
+      "trees_verified": 1,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "exact new conditional GO",
+      "pass": true
+    },
+    {
+      "name": "original SDK native text exact",
+      "pass": true
+    },
+    {
+      "name": "actual audited durable binding",
+      "pass": true
+    },
+    {
+      "name": "actual first-admission branch and launch",
+      "pass": true
+    },
+    {
+      "name": "actual host mode and stable key",
+      "pass": true
+    },
+    {
+      "name": "exact executable argv cwd",
+      "pass": true
+    },
+    {
+      "name": "actual typed digest fingerprint",
+      "pass": true
+    },
+    {
+      "name": "actual job ID exact",
+      "pass": true
+    },
+    {
+      "name": "one accepted START only",
+      "pass": true
+    },
+    {
+      "name": "same exact original request all bytes",
+      "pass": true
+    },
+    {
+      "name": "actual START SDK pin exact",
+      "pass": true
+    },
+    {
+      "name": "old timeout remains unknown",
+      "pass": true
+    },
+    {
+      "name": "no observation or liveness conclusion yet",
+      "pass": true
+    },
+    {
+      "name": "ACK call closed boundary",
+      "pass": true
+    }
+  ],
+  "actualJob": {
+    "host": "rog",
+    "id": "1a1b3978da9-fc05-83bd",
+    "reused": false,
+    "launchOk": true
+  },
+  "actualState": {
+    "blob": "a4fea6d283d0fb3d58d8045a8f4c7df637ecd578",
+    "bytes": 168445,
+    "sha256": "535d5821d952b3a0d4558523bee33388e2256a1f8a66093f00da82afa5a7e270"
+  },
+  "actualACKNative": {
+    "blob": "4268ac606715bdbddf3287943420ccc3e3359b1c",
+    "bytes": 7840,
+    "sha256": "15c88f47150e038c4e59566514fa3149622452fa41203ec64817942e1e9aefdc"
+  },
+  "actualACKSDK": {
+    "blob": "cb1009bdcaf5706e9f3f1578baf49ee171f23ee5",
+    "bytes": 8279,
+    "sha256": "d94d84a0016cc16eb1e560fea3f57a320d6d7a1ba3d72115b176ec3dbc22ed1a"
+  },
+  "originalTimeoutUnchanged": true,
+  "authoritativeCurrentJobStatusQualified": false,
+  "buildSuccessQualified": false,
+  "rootNativeCalls": 0
+}

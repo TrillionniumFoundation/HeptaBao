@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-fixed-setuid-ps-lexical-35fa0630-streams-0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b3d5d9cb-fc05-84fb",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

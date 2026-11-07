@@ -1,0 +1,1 @@
+Load pure_helpers.js, strict_diff.js and SOURCE-VERIFIER.js. Call verifyActualJobObservers({before,after,diff,pure,stateRaw,oldBuildRaw,oldInfoRaw}) using this packet and exact whole INPUTS state pins. All27 checks are pure local-Map fixtures, not actual observations. Actual attach requires new exact same-job GO. Never initialize the live slot again.

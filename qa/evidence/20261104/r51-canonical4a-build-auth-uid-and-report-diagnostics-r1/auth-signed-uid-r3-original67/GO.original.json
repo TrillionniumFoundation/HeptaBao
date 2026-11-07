@@ -1,0 +1,240 @@
+{
+  "schema": "heptabao.root.go.auth-fixed-ps-signed-uid-R3.r1",
+  "authorization": "GO_CONDITIONAL_LANE",
+  "issuedAtUtc": "2026-11-07 02:23:51 UTC",
+  "sourceTree": "9ae05113a73e1232094dd7844940aeb8a8792498",
+  "rootSourceQualification": {
+    "blob": "f6f78792a32704be79252d1c35cab867c8754a29",
+    "bytes": 13967,
+    "sha256": "316e44172afcb2f660fc43d3245390a52176cfe282dd78402a6781060642e812"
+  },
+  "sourceChecks": 78,
+  "finiteBoundaryCases": 18,
+  "independentRootAnchors": 10,
+  "exact_request": {
+    "blob": "cc6a8a0615576d50b1e2add3388314f10c53aac8",
+    "bytes": 59279,
+    "sha256": "4c88fc542a3a7c5a1ea237dc8846f3aa1a19cceb758004b5e473b486c1d0864b"
+  },
+  "source": {
+    "blob": "111b392deb1a1f0b02aa27fd4c91ea8f2505b064",
+    "bytes": 58347,
+    "sha256": "35fa06300c0c2c1d66c5eca8fee7a434d04831fe5dfd5329388674175269efd7"
+  },
+  "journal": {
+    "blob": "d76c9f956aad6d7bca2a48d75ce06dddc6c70ced",
+    "bytes": 19056,
+    "sha256": "6f882241d655f54b6e2b6a2d00da3eee2570478ca1b1f3f87054cf5e74c8cd38"
+  },
+  "slot": "owner_authbus_fixed_setuid_ps_lexical_gitfirst_r3",
+  "idempotency_key": "heptabao-mac-fixed-setuid-ps-lexical-35fa0630-20261107-r3",
+  "observer_prefix": "heptabao-mac-fixed-setuid-ps-lexical-35fa0630-",
+  "nativeBinding": {
+    "sha256": "f54f6ca052c594cc921491bc00718ecb35829e6b7d97d592ca786fa3fc4fd005",
+    "native_fingerprint": "17676466498291733708",
+    "canonicalBytes": 59218,
+    "field": "stdin"
+  },
+  "maximum_process_start_calls": 1,
+  "primaryCommand": {
+    "argv": [
+      "/bin/ps",
+      "-axo",
+      "pid=,ppid=,pgid=,uid=,stat="
+    ],
+    "label": "owned-launchd-group-observation",
+    "count": 1,
+    "expectedEffectiveUid": 0,
+    "onlyAfterCurrentWholeFull9OfPinnedPs": true,
+    "operatorUid": 501,
+    "otherCommandsExpectedEffectiveUid": 501,
+    "PPIDPGIDBirthWNOWAITUnchanged": true
+  },
+  "fixedPublicInputPins": {
+    "/bin/ps": {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "identity": [
+        "16777233",
+        "587518380",
+        "501",
+        "80",
+        "33261",
+        "1",
+        "34640",
+        "1793798038915516382",
+        "1793798038915695047"
+      ],
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    }
+  },
+  "budgets": {
+    "sharedWorkSeconds": 35,
+    "afterClosureSeconds": 45,
+    "nativeTimeoutSeconds": 60,
+    "primaryCommandSeconds": 4,
+    "cleanupReserveSeconds": 9,
+    "cleanupCaps": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "streamingStdoutBytes": 262144,
+    "streamingStderrBytes": 262144,
+    "primaryPipeObjects": 2,
+    "applicationHeldInputFds": 2,
+    "publicInputBodyBytes": 205072,
+    "publicInputReadByteCeilingIncludingEofSlack": 205074,
+    "inputReadCalls": 128,
+    "inputMetadataCalls": 128,
+    "additionalFixedPsLstatCallsMaximum": 2,
+    "publicTypedTableRows": 8192,
+    "publicFinalStdoutBytes": 65536,
+    "stderrExpectedBytes": 0
+  },
+  "observe": {
+    "process_statusMaximum": 8,
+    "process_readMaximum": 8,
+    "process_readBytes": 16384,
+    "operation_statusMaximumPerObserver": 8,
+    "immutablePageBytes": 8192,
+    "immutablePageMaximumPerObserver": 128,
+    "payloadBytesMaximumPerObserver": 1048576,
+    "stdoutTotalMaximum": 65536,
+    "stderrTotalMaximum": 0,
+    "sequentialOriginalIdsOnly": true,
+    "wholeSdkBeforeParse": true,
+    "noReplayRekey": true
+  },
+  "UIDDisplayContract": {
+    "wholeTableAsciiDecodeUnchanged": true,
+    "exactFiveFieldsUnchanged": true,
+    "firstThreeColumnsPredicate": "all(x.isdecimal() for x in fields[:3])",
+    "uidSyntax": "-?[0-9]{1,10}",
+    "fullTokenMatch": true,
+    "minimum": "-2147483648",
+    "maximum": "4294967295",
+    "positiveUnsigned32AndNegativeSigned32DisplayAccepted": true,
+    "plusSignAccepted": false,
+    "missingOrExtraColumnAccepted": false,
+    "nonAsciiOrNonDecimalAccepted": false,
+    "resultIsOriginalSignedInteger": true,
+    "wrapModuloOrDefaultOrOwnerMapping": false,
+    "rangeErrorStill": "typed_process_row",
+    "managerGroupFilterAndReturnedUidFieldUnchanged": true,
+    "ownerAuthorizationUsesThisTableUid": false,
+    "actualOwnershipPPIDPGIDEffectiveUidBirthWNOWAITUnchanged": true,
+    "fixedPrimaryRootUidExceptionUnchanged": true,
+    "otherCommandsStillRequireOperatorUid501": true
+  },
+  "outputProjection": {
+    "originalLexicalFunctionByteIdentical": true,
+    "originalClassesAndCounts": [
+      "ascii_decimal",
+      "negative_decimal",
+      "positive_decimal",
+      "other_ascii",
+      "missing"
+    ],
+    "existingProjection": [
+      "aggregate row count",
+      "number of rows rejected by original predicate",
+      "original predicate all-passed boolean",
+      "fixed field-count histogram",
+      "four columns times five closed lexical-class counts",
+      "four failed-column counts",
+      "first rejected row field count and one-based failed numeric-column indexes",
+      "rawRowsOrTokensOrHashExported=false"
+    ],
+    "newField": "table.signedUidRowsAccepted",
+    "newFieldMeaning": "Count of accepted UID tokens beginning with minus in this fresh table; no token, magnitude or unrelated row is emitted.",
+    "actualSignedBranchWitness": "Fresh executionSucceeded=true plus signedUidRowsAccepted>0. If zero, no actual negative branch claim.",
+    "oldPredicateAllPassedMayRemainFalseWhileNewParserPasses": true,
+    "forbidden": [
+      "unrelated PID/PPID/PGID/UID values",
+      "raw row",
+      "raw process table",
+      "state text",
+      "token",
+      "process-table or row/token hash",
+      "stderr text/hash",
+      "private paths or credentials"
+    ],
+    "oldFailuresNeverRewritten": true
+  },
+  "accounting": {
+    "newPrimaryChildren": 1,
+    "allOsChildCountNotClaimedOne": true,
+    "internalPsSamplers": "Existing unchanged WNOWAIT helper uses bounded ps subprocess.run; not counted as the primary streaming group-projection. Its original post-communicate 2 MiB/65536 bound is retained, not substituted for the primary 262144 streaming contract.",
+    "additionalCurrentWholeReadByComponentChange": 0,
+    "newConsumerCReads": 0,
+    "consumerOriginalCReadsMaximum": 3,
+    "consumerTypedEsrchRequeryMaximumPerAbsence": 1,
+    "consumerQueryStillUsesOriginalManagerCounterAndDeadline": true,
+    "newInfiniteRetries": 0,
+    "signalAndReapOnlyNewDirectPopenCustody": true,
+    "additionalNativeCommands": 0,
+    "additionalHostReadsWrites": 0,
+    "newDiagnosticPrimaryCount": 1,
+    "additionalTablePassesOverAlreadyCapturedMemory": 1,
+    "additionalBoundedRowsMaximum": 8192
+  },
+  "onlyThisFreshDiagnostic": true,
+  "managerLibrarySourceOnly": {
+    "before": {
+      "blob": "48f3e8394a15830953fb90e3470e8ba98e7df509",
+      "bytes": 60016,
+      "sha256": "edeb2b60dd102ea300887d3d2f23fc39682aa8700ce88d6273307f1b5d2ecbd4"
+    },
+    "after": {
+      "blob": "92a1293db9792644b378da07eb9650951979358a",
+      "bytes": 60153,
+      "sha256": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+    },
+    "onlyMethodChanged": "OwnedLaunchd._rows",
+    "consumerRunPhaseByteIdentical": true,
+    "actualExitZeroResultAndClosureGateUnchanged": true,
+    "oldNamespaceDispatchable": false
+  },
+  "sourceComponentsDispatchable": false,
+  "SDKExecutionAuthorized": false,
+  "issuerGenerationAuthorized": false,
+  "launchdRegistrationOrCleanupAuthorized": false,
+  "oldFailuresPreserved": true,
+  "oldGitCreateOutcome": "UNKNOWN",
+  "oldR1RowsNotReconstructed": true,
+  "wholeOriginalSDKBeforeInterpretation": true,
+  "wholeOriginalPayloadBeforeInterpretation": true,
+  "localFirstExplicitlyReplacedByGitFirst": true,
+  "noReplayRekey": true,
+  "noBudgetReset": true,
+  "unknownOutcomeMustPause": true,
+  "scheduling": {
+    "conditional": true,
+    "maximum": 2,
+    "root": 0,
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "condition": "A remains zero until root explicitly grants an actual lane after original B or C job and observers are closed; no initialize/arm before that grant."
+  },
+  "expectedWitness": "Fresh executionSucceeded=true, signedUidRowsAccepted>0, current exact fixed inputs and all own children/descriptors closed; zero count does not qualify actual signed branch.",
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

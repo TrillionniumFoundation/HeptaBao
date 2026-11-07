@@ -1,0 +1,11 @@
+--- a/launcher.py
++++ b/launcher.py
+@@ -22,7 +22,7 @@
+ args = parser.parse_args()
+ assert args.commit == '4a49405b93c45ab1c25ecba11cde63a7ede20dce'
+ assert args.tree == 'f02dd113d208d79f5275005dc65a5e8aecd0e9d3'
+-STAGE_EXPECTED_FULL9 = ["16777244","72771947","501","20","33152","1","7685","1794013039551370413","1794013039551379746"]
++STAGE_EXPECTED_FULL9 = None
+ for name in ('commit', 'tree'):
+     assert re.fullmatch('[0-9a-f]{40}', getattr(args, name))
+ for name in ('stage_sha256', 'runner_sha256', 'groups_sha256', 'launcher_sha256', 'controls_sha256'):

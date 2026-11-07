@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.actual-reconciled-job-observation-source.r1",
+  "authorization": "SOURCE_ONLY",
+  "scope": "combined4a_actual_job_observations_only",
+  "slot": "combined_4a49405b_exact_key_conditional_admission_r1",
+  "attachOnly": true,
+  "initializeForbidden": true,
+  "jobId": "1a1b3978da9-fc05-83bd",
+  "host": "rog",
+  "source": {
+    "blob": "f5654e24460c5dc41df6f61e7b1d43b1203f9342",
+    "bytes": 23797,
+    "sha256": "ee3cc9b05c12901caa1ec7f591681e809c98f3679084545cfedbb1868ef5ceff"
+  },
+  "before": {
+    "blob": "71215f78807891d4477eb0993f149a17ff8c56d2",
+    "bytes": 21167,
+    "sha256": "30ecb6bf11ce3842284c11d9ad8829ef5eb21dfb3e533eb3357f0a9a7315948b"
+  },
+  "diff": {
+    "blob": "afee1f993550ace2d47eb6d34139ad6ee98d0b4f",
+    "bytes": 6987,
+    "sha256": "4b789ca95b8b29cf0278f40882e632a0542220c2634d8de35d637f6133d1ffab"
+  },
+  "beforeState": {
+    "blob": "a4fea6d283d0fb3d58d8045a8f4c7df637ecd578",
+    "bytes": 168445,
+    "sha256": "535d5821d952b3a0d4558523bee33388e2256a1f8a66093f00da82afa5a7e270"
+  },
+  "actualAck": {
+    "blob": "cb1009bdcaf5706e9f3f1578baf49ee171f23ee5",
+    "bytes": 8279,
+    "sha256": "d94d84a0016cc16eb1e560fea3f57a320d6d7a1ba3d72115b176ec3dbc22ed1a"
+  },
+  "actualAckTree": "d1dae7fe5f88e48b544a4edf96b4430dfd57a15f",
+  "rootActualAckQualification": {
+    "blob": "bda8b492add53a8a0918e8249bc3d1ff79b687f7",
+    "bytes": 2283,
+    "sha256": "57ebcc95c4b1056b92e20a594ae6fe943708683d39535ae7eba81aec39534437",
+    "tree": "e321dd23c854e248a2c8792b06a756ebf6a59123",
+    "reportedByRoot": true
+  },
+  "maximumStatusObservers": 256,
+  "maximumReadObservers": 129,
+  "statusCallsPerObserver": 8,
+  "pagesPerObserver": 128,
+  "pageBytes": 8192,
+  "payloadCap": 1048576,
+  "streamReadLimit": 16384,
+  "streamByteCap": 2097152,
+  "processStartAuthorized": false,
+  "underlyingRequest": "f2c05f2d50e494b1046b57e727f89ce49a4d5d5a",
+  "underlyingBudgetUnchanged": {
+    "total": 12000,
+    "publication": 60,
+    "releaseIncludingPrecheck": 1800,
+    "precheck": 300,
+    "sharedCompile": 3600,
+    "families": 18,
+    "uniqueTests": 252,
+    "profileInstances": 280,
+    "cleanup": [
+      5,
+      5
+    ]
+  },
+  "noClockReset": true,
+  "noNewCandidate": true,
+  "noExtraParallelObserver": true,
+  "noFileInfoOrBody": true,
+  "originalBuildTimeoutAndRegistryAndInfoHistoryRetained": true,
+  "guard": "Same actual ACK state and job only; original old BUILD/INFO states continue exact each action. All non-observer kinds including process_start reject before arm. No old private Page or slot is changed.",
+  "nativeObserverKeys": "Original heptabao-combined-4a49405b-fresh-observe-r1- prefix, exact unique keys for this bound job; original failed BUILD context admitted no such observer.",
+  "sequence": [
+    "whole exact root GO -> gfRun authorize_actual_job_observers attach only",
+    "each request/intent/armed Git whole -> model boundary -> one original native invoke",
+    "full original SDK Git whole before accept; only same operation status/continuous immutable pages",
+    "whole original operation payload Git archive before semantic parsing and cursor advancement",
+    "finish each observer before next; preserve all failures and stop unknown; retain authoritative terminal and full streams within caps"
+  ],
+  "counters": "Global status/read observer counters and per-observer status/page counters advance once before Native dispatch; returned stream size also capped2MiB. Caps are the existing root limits, now explicit in this narrow attachment.",
+  "mechanical": {
+    "edits": 11,
+    "hunks": 7,
+    "checks": 27
+  },
+  "NativeCalls": 0,
+  "actualCurrentJobStatus": null,
+  "fullBuildTestsQualified": false
+}

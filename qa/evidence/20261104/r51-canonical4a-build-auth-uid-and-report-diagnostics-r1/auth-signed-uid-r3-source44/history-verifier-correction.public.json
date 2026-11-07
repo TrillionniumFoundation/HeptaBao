@@ -1,0 +1,17 @@
+{
+  "reason": "The initial checker searched spaces around UIDFMT; the exact primary source uses tabs. One checker literal only is corrected. Candidate/controller/manager/request/journal are unchanged.",
+  "sourceUnchanged": true,
+  "NativeCallsAdded": 0,
+  "before": {
+    "blob": "e44cf3f2ff0e3d707ffb6e5e73cd6b16a9029f01",
+    "bytes": 13019,
+    "sha256": "e2386865f234f75ddc040c5171f0bef82b7c1a21d9561c7353f29623cc1b7a2d"
+  },
+  "after": {
+    "blob": "3632cec2376deeae31218d9097d40f013230e292",
+    "bytes": 13021,
+    "sha256": "8a93e0e9e0c2b25b61a5c8a398ae8a654b9d414cb18e38894bef4f09cfcd508d"
+  },
+  "hunks": 1,
+  "diff": "--- a/source-verifier.R1.original.js\n+++ b/source-verifier.js\n@@ -84,7 +84,7 @@\n  check(\"actual/old-unknown-preserved\",c.predecessor.oldGitCreateStillUnknown===true&&c.predecessor.oldR1TableReconstructed===false&&c.historicalUnknownPreserved===true);\n  const prim=JSON.parse(files[\"PRIMARY-SOURCES.public.json\"]);\n  for(const x of prim.sources)check(\"primary/\"+x.path+\"/whole\",meta(files[x.path],x.pin));\n+ check(\"primary/signed-Apple-keyword\",files[\"Apple-ps-keyword.original.c\"].includes('#ifdef __APPLE__\\n#define\\tUIDFMT\\t\"d\"'));\n- check(\"primary/signed-Apple-keyword\",files[\"Apple-ps-keyword.original.c\"].includes('#ifdef __APPLE__\\n#define UIDFMT \"d\"'));\n  check(\"primary/UID-format-consumed\",files[\"Apple-ps-print.original.c\"].includes(\"printval\")&&files[\"Apple-ps-print.original.c\"].includes('fmtcheck(ofmt, \"%*u\")'));\n  check(\"primary/no-installed-build-attestation\",c.installedBinaryBuildMatchesAppleCommitNotClaimed===true);\n  const cases=JSON.parse(files[\"boundary-cases.public.json\"]);\n"
+}

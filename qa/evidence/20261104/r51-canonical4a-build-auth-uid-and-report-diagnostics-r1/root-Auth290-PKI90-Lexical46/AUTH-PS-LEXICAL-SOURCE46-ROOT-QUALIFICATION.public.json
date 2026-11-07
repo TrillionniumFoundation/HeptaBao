@@ -1,0 +1,242 @@
+{
+  "schema": "heptabao.root.Lexical46-qualification.r1",
+  "sourceTree": "b4fcfb45f14951671c37b6ac5190bbb51de5165b",
+  "whole": {
+    "tree": "b4fcfb45f14951671c37b6ac5190bbb51de5165b",
+    "files": 25,
+    "bytes": 410851,
+    "merkle": {
+      "root_sha": "b4fcfb45f14951671c37b6ac5190bbb51de5165b",
+      "trees_verified": 1,
+      "leaf_count": 25
+    },
+    "whole": true
+  },
+  "rootReproduced": {
+    "schema": "heptabao.fixed-ps-lexical-source-r2-pure-checks",
+    "passed": true,
+    "checkCount": 46,
+    "checks": [
+      {
+        "name": "controller whole",
+        "passed": true
+      },
+      {
+        "name": "request whole",
+        "passed": true
+      },
+      {
+        "name": "journal whole",
+        "passed": true
+      },
+      {
+        "name": "before source whole",
+        "passed": true
+      },
+      {
+        "name": "before request whole",
+        "passed": true
+      },
+      {
+        "name": "before journal whole",
+        "passed": true
+      },
+      {
+        "name": "controller forward whole+hunks",
+        "passed": true
+      },
+      {
+        "name": "controller inverse whole+hunks",
+        "passed": true
+      },
+      {
+        "name": "journal forward whole+hunks",
+        "passed": true
+      },
+      {
+        "name": "journal inverse whole+hunks",
+        "passed": true
+      },
+      {
+        "name": "single exact projector",
+        "passed": true
+      },
+      {
+        "name": "all original source except exact additions preserved",
+        "passed": true
+      },
+      {
+        "name": "projection exact call count",
+        "passed": true
+      },
+      {
+        "name": "projection after primary closed and before original table guard",
+        "passed": true
+      },
+      {
+        "name": "original guard literal remains",
+        "passed": true
+      },
+      {
+        "name": "current manager shares original guard",
+        "passed": true
+      },
+      {
+        "name": "manager before group selection",
+        "passed": true
+      },
+      {
+        "name": "manager whole pin",
+        "passed": true
+      },
+      {
+        "name": "request only stdin/fresh key",
+        "passed": true
+      },
+      {
+        "name": "request stdin exact",
+        "passed": true
+      },
+      {
+        "name": "request key exact",
+        "passed": true
+      },
+      {
+        "name": "key differs from original",
+        "passed": true
+      },
+      {
+        "name": "correct stdin typed binding",
+        "passed": true
+      },
+      {
+        "name": "journal descriptor exact",
+        "passed": true
+      },
+      {
+        "name": "journal only three fixed literal replacements",
+        "passed": true
+      },
+      {
+        "name": "original budgets unchanged",
+        "passed": true
+      },
+      {
+        "name": "original observer caps unchanged",
+        "passed": true
+      },
+      {
+        "name": "fixed two inputs unchanged",
+        "passed": true
+      },
+      {
+        "name": "exact one primary unchanged",
+        "passed": true
+      },
+      {
+        "name": "only one original command call",
+        "passed": true
+      },
+      {
+        "name": "original full9/two helper sources unchanged",
+        "passed": true
+      },
+      {
+        "name": "projection finite loop and remaining",
+        "passed": true
+      },
+      {
+        "name": "only five closed token classes",
+        "passed": true
+      },
+      {
+        "name": "only closed field-width buckets",
+        "passed": true
+      },
+      {
+        "name": "first failure contains no row/index value",
+        "passed": true
+      },
+      {
+        "name": "projection returns no token/line/out value",
+        "passed": true
+      },
+      {
+        "name": "projection has no IO/import/hash/signal",
+        "passed": true
+      },
+      {
+        "name": "original guard not replaced by signed acceptance",
+        "passed": true
+      },
+      {
+        "name": "actual original failure retained",
+        "passed": true
+      },
+      {
+        "name": "actual primary custody finite positive retained",
+        "passed": true
+      },
+      {
+        "name": "actual original stdout pin",
+        "passed": true
+      },
+      {
+        "name": "actual original release pin",
+        "passed": true
+      },
+      {
+        "name": "primary fixed commit",
+        "passed": true
+      },
+      {
+        "name": "Apple keyword whole",
+        "passed": true
+      },
+      {
+        "name": "Apple signed format conditional",
+        "passed": true
+      },
+      {
+        "name": "no old failure/SDK qualification",
+        "passed": true
+      }
+    ],
+    "PythonExecuted": false,
+    "NativeCalls": 0,
+    "oldRawTableRecovered": false,
+    "prospectiveOnly": true
+  },
+  "exactPublishedResult": true,
+  "independentActualBindings": [
+    {
+      "name": "before_controller_actual_executed",
+      "passed": true
+    },
+    {
+      "name": "before_request_actual_executed",
+      "passed": true
+    },
+    {
+      "name": "before_journal_actual_executed",
+      "passed": true
+    },
+    {
+      "name": "prior_report_and_release_actual",
+      "passed": true
+    },
+    {
+      "name": "budgets_inputs_prior_go",
+      "passed": true
+    }
+  ],
+  "prospectiveSourceOnly": true,
+  "originalGuardUnchanged": true,
+  "onlyClosedCategoryProjectionAdded": true,
+  "actualOffendingColumnKnown": false,
+  "noOwnerCustodyRelaxation": true,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

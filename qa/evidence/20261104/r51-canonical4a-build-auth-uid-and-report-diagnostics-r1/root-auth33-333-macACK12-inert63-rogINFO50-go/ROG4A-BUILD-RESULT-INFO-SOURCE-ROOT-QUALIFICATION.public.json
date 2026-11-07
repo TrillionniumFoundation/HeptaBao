@@ -1,0 +1,244 @@
+{
+  "schema": "heptabao.root.qualification.rog4a-failed-build-result-info-source.r1",
+  "checkedAtUtc": "2026-11-07 02:39:53 UTC",
+  "result": {
+    "schema": "heptabao.4a-known-failed-build-INFO-source-checks.r1",
+    "passed": true,
+    "checks": 50,
+    "results": [
+      {
+        "name": "unique_edit_add_exact_info_authorization",
+        "passed": true
+      },
+      {
+        "name": "unique_edit_allow_only_exact_info_host_and_path",
+        "passed": true
+      },
+      {
+        "name": "unique_edit_retain_read_job_binding",
+        "passed": true
+      },
+      {
+        "name": "unique_edit_bind_info_intent_to_new_GO",
+        "passed": true
+      },
+      {
+        "name": "unique_edit_separate_info_once_marker_before_native",
+        "passed": true
+      },
+      {
+        "name": "unique_edit_retain_metadata_guards",
+        "passed": true
+      },
+      {
+        "name": "unique_edit_expose_only_authorize_action",
+        "passed": true
+      },
+      {
+        "name": "seven_exact_edits",
+        "passed": true
+      },
+      {
+        "name": "strict_forward",
+        "passed": true
+      },
+      {
+        "name": "strict_reverse",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfOriginalFrozen",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfNeed",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfMetaEquals",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfState",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfSave",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfIntegerText",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfInitializeOnlyAfterRootGO",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfAuthorizeActualJobObservers",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfAcceptArchivedSDK",
+        "passed": true
+      },
+      {
+        "name": "unchanged_gfReconcileSameGitArchiveReadOnly",
+        "passed": true
+      },
+      {
+        "name": "exact_terminal_pin",
+        "passed": true
+      },
+      {
+        "name": "closed_actual_job",
+        "passed": true
+      },
+      {
+        "name": "43_14_14",
+        "passed": true
+      },
+      {
+        "name": "original_unknown_state",
+        "passed": true
+      },
+      {
+        "name": "original_failed_INFO_state",
+        "passed": true
+      },
+      {
+        "name": "8_exact_prior_native_inputs",
+        "passed": true
+      },
+      {
+        "name": "one_fixed_request",
+        "passed": true
+      },
+      {
+        "name": "cannot_initialize_existing_context",
+        "passed": true
+      },
+      {
+        "name": "private_positive_info_GO",
+        "passed": true
+      },
+      {
+        "name": "attach_preserves_all_original_fields",
+        "passed": true
+      },
+      {
+        "name": "exact_INFO_request_accepted",
+        "passed": true
+      },
+      {
+        "name": "repeat_GO_rejected",
+        "passed": true
+      },
+      {
+        "name": "no_GO_rejected",
+        "passed": true
+      },
+      {
+        "name": "once_marker_rejected",
+        "passed": true
+      },
+      {
+        "name": "wrong_key_rejected",
+        "passed": true
+      },
+      {
+        "name": "wrong_host_rejected",
+        "passed": true
+      },
+      {
+        "name": "wrong_path_rejected",
+        "passed": true
+      },
+      {
+        "name": "wrong_binary_rejected",
+        "passed": true
+      },
+      {
+        "name": "wrong_extra_argument_rejected",
+        "passed": true
+      },
+      {
+        "name": "process_start_rejected",
+        "passed": true
+      },
+      {
+        "name": "no_new_job_observer_under_info_GO",
+        "passed": true
+      },
+      {
+        "name": "status8_cap",
+        "passed": true
+      },
+      {
+        "name": "page128_cap",
+        "passed": true
+      },
+      {
+        "name": "page16K_not_allowed",
+        "passed": true
+      },
+      {
+        "name": "Linux_mode_owner_nlink",
+        "passed": true
+      },
+      {
+        "name": "actual_report_SHA",
+        "passed": true
+      },
+      {
+        "name": "4MiB_metadata_1MiB_payload",
+        "passed": true
+      },
+      {
+        "name": "Native_SDK_first_unchanged",
+        "passed": true
+      },
+      {
+        "name": "info_mark_before_dispatch",
+        "passed": true
+      },
+      {
+        "name": "frozen_state_inputs_still_exact",
+        "passed": true
+      }
+    ],
+    "NativeCalls": 0,
+    "toolsCalled": 0,
+    "liveContextModified": false,
+    "privateSyntheticGOOnly": true
+  },
+  "anchors": [
+    "root original actual-job observation journal",
+    "root actual terminal state",
+    "root actual B release",
+    "root exact failed stdout and report SHA",
+    "old unknown build state preserved",
+    "old failed INFO pin already root-qualified",
+    "root pure helper",
+    "root once archive helper"
+  ],
+  "audit": {
+    "tree": "a71161d6519763635ea79eee73af41da5933d997",
+    "files": 25,
+    "bytes": 670312,
+    "merkle": {
+      "root_sha": "a71161d6519763635ea79eee73af41da5933d997",
+      "trees_verified": 1,
+      "leaf_count": 25
+    },
+    "whole": true
+  },
+  "rootIndependentAnchors": 8,
+  "actualTerminalQualification": {
+    "blob": "22a898626a12601d2c6fa2fd5d8bd8e9238d7f9b",
+    "bytes": 2467,
+    "sha256": "0886069199c5709bb9e3f91322deedd15a99f921d46699c687f3eb1e590a168c"
+  },
+  "actualMetadataQualified": false,
+  "sourceOnly": true
+}

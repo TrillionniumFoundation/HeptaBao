@@ -1,0 +1,62 @@
+{
+  "journal.before.js": {
+    "blob": "71215f78807891d4477eb0993f149a17ff8c56d2",
+    "bytes": 21167,
+    "sha256": "30ecb6bf11ce3842284c11d9ad8829ef5eb21dfb3e533eb3357f0a9a7315948b"
+  },
+  "journal.after.js": {
+    "blob": "f5654e24460c5dc41df6f61e7b1d43b1203f9342",
+    "bytes": 23797,
+    "sha256": "ee3cc9b05c12901caa1ec7f591681e809c98f3679084545cfedbb1868ef5ceff"
+  },
+  "journal.strict.diff": {
+    "blob": "afee1f993550ace2d47eb6d34139ad6ee98d0b4f",
+    "bytes": 6987,
+    "sha256": "4b789ca95b8b29cf0278f40882e632a0542220c2634d8de35d637f6133d1ffab"
+  },
+  "PLAN.public.json": {
+    "blob": "276a5db449559e5805ee7a2f56b28a55f37b0633",
+    "bytes": 3679,
+    "sha256": "1da396fe32e8abebed39eff4fb9b7a43b25874df111cda06edd3693c612ace9c"
+  },
+  "INPUTS.public.json": {
+    "blob": "11902d5cb6957020a9d919838dacff56e17de549",
+    "bytes": 1421,
+    "sha256": "329c913110ae55ad24cce459736eca1f1d68c4bfdd50f44ca487607c962a1196"
+  },
+  "SOURCE-VERIFIER.js": {
+    "blob": "7a0cb7d2ece9c73c980b9cf0486e5acdc9122ebc",
+    "bytes": 5093,
+    "sha256": "61e2d4a7963e3289db2f0125b9039300fc02bc8498f53e8dbe2cee29665a3fd6"
+  },
+  "SOURCE-CHECKS.actual.json": {
+    "blob": "6f4489ea566f278af13555bea5c44987d4ba8db9",
+    "bytes": 2232,
+    "sha256": "57f4cb75b36446ee1d8007ab42708988b876a3e6aa50b262c05009ae07f1b838"
+  },
+  "ACK-BINDING.actual.public.json": {
+    "blob": "ec53e2cce3126ec9544fdd8203731910153b63cb",
+    "bytes": 2543,
+    "sha256": "b24a87b64eb43c007a018a4242184536ea67857e2ee7cdf8246ce3531b93195b"
+  },
+  "pure_helpers.js": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "git_archive_once.js": {
+    "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+    "bytes": 5957,
+    "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+  },
+  "strict_diff.js": {
+    "blob": "f595a6490497f54ea2b533fcbb98cdb306583286",
+    "bytes": 3497,
+    "sha256": "c872292668150c3b22396b4d23f315a709ef5b35eb9a286ded9cf7bbe7fd51f5"
+  },
+  "REPRODUCE.txt": {
+    "blob": "07b443c5d2c1efb6bf8891996bc325fe98c136da",
+    "bytes": 353,
+    "sha256": "08b45d27078958566de12414f92133f2d1abcdd4800d404b5b69c0ae8481bb04"
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "schema": "heptabao.root.Mac4a-INFO-retrieval-actual-qualification.r1",
+  "qualifiedAtUtc": "2026-11-07 01:44:59 UTC",
+  "sourceTree": "e49aad7ee8801ae1e70d42d936099755fd8eb9a1",
+  "whole": {
+    "tree": "e49aad7ee8801ae1e70d42d936099755fd8eb9a1",
+    "files": 14,
+    "bytes": 87070,
+    "merkle": {
+      "root_sha": "e49aad7ee8801ae1e70d42d936099755fd8eb9a1",
+      "trees_verified": 1,
+      "leaf_count": 14
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "all14_blobs_whole",
+      "passed": true
+    },
+    {
+      "name": "execution_and_lane_go_exact",
+      "passed": true
+    },
+    {
+      "name": "old_failed_state_and_status_exact",
+      "passed": true
+    },
+    {
+      "name": "same_original_completed_inactive_INFO",
+      "passed": true
+    },
+    {
+      "name": "request_original_page0_exact",
+      "passed": true
+    },
+    {
+      "name": "arm_once_and_old_state_bound",
+      "passed": true
+    },
+    {
+      "name": "arm_sdk_payload_Merkle_exact",
+      "passed": true
+    },
+    {
+      "name": "original_page_success",
+      "passed": true
+    },
+    {
+      "name": "original_page_immutable_complete",
+      "passed": true
+    },
+    {
+      "name": "original_page_opaque_payload_exact",
+      "passed": true
+    },
+    {
+      "name": "payload_original_native_exact",
+      "passed": true
+    },
+    {
+      "name": "new_context_closed_once",
+      "passed": true
+    },
+    {
+      "name": "new_context_actual_bindings",
+      "passed": true
+    },
+    {
+      "name": "whole_sdk_and_payload_before_interpretation",
+      "passed": true
+    },
+    {
+      "name": "fixed_stage_path",
+      "passed": true
+    },
+    {
+      "name": "actual_metadata_bounded_regular_owner",
+      "passed": true
+    },
+    {
+      "name": "exact_version_lossless",
+      "passed": true
+    },
+    {
+      "name": "full9_rederived",
+      "passed": true
+    },
+    {
+      "name": "actual_metadata_pin_and_digest",
+      "passed": true
+    },
+    {
+      "name": "release_joins_actual_state",
+      "passed": true
+    },
+    {
+      "name": "physical_C_lane_closed",
+      "passed": true
+    },
+    {
+      "name": "old_logical_context_frozen_no_handback",
+      "passed": true
+    },
+    {
+      "name": "body_not_read_or_qualified",
+      "passed": true
+    }
+  ],
+  "checksPassed": 23,
+  "threeOriginalTreesRebuilt": [
+    {
+      "root_sha": "884e755ba2394a5fbedee8a26bc231bfea083eac",
+      "trees_verified": 1,
+      "leaf_count": 3
+    },
+    {
+      "root_sha": "b51be8e099818c65de7444b716a75b8f142dfa9e",
+      "trees_verified": 1,
+      "leaf_count": 1
+    },
+    {
+      "root_sha": "a5e5e21ac13fa81358fd450ea8558fbfe131c91e",
+      "trees_verified": 1,
+      "leaf_count": 1
+    }
+  ],
+  "actualMetadata": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7685,
+    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+    "platform": "darwin",
+    "uid": 501,
+    "gid": 20,
+    "mode": 384,
+    "nlink": 1,
+    "full9Strings": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ],
+    "nativePin": {
+      "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+      "bytes": 489,
+      "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+    },
+    "originalInfoOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+    "retrievalPayload": {
+      "blob": "abe5bfbf7fe74a688651876df7e2d05e46f94459",
+      "bytes": 606,
+      "sha256": "cc0144f9aba8b7c97b0cdea0233ba674e76803777ed263a37a1b14359dd5350f"
+    },
+    "metadataQualified": true,
+    "bodyRead": false
+  },
+  "originalFailedPageAndPausedStatePreserved": true,
+  "originalLogicalObserverStillFrozen": true,
+  "newRetrievalContextClosed": true,
+  "CPhysicalLaneReleased": true,
+  "reportBodyQualified": false,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

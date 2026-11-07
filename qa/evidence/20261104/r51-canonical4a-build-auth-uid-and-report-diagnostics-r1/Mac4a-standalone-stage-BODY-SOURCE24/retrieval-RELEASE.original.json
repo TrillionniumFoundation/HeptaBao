@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.mac4a-stage-info-original-page0-retrieval.release.r1",
+  "scope": "original completed INFO opaque payload retrieval and independent exact metadata",
+  "nativeCalls": 1,
+  "nativeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "newContextClosed": true,
+  "payloadWhole": true,
+  "metadataQualified": true,
+  "reportBodyRead": false,
+  "originalOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "request": {
+    "blob": "2e67f1baabc04575aa277fcb2d270271500e68e3",
+    "bytes": 121,
+    "sha256": "177140e2743e89076257a772e458a8b784ed91e32f0bba3a96ef77083eb2dea9"
+  },
+  "executionGO": {
+    "blob": "b55a44c0d8933bd85dce598b0344dc294df6ea20",
+    "bytes": 2751,
+    "sha256": "29bdb779f4463d0fde7d6436934daece09bba60bf5182d811dac462b2351fb6a"
+  },
+  "laneGO": {
+    "blob": "e00a0a9675ab69d662abf4e0c85adbdd892eae27",
+    "bytes": 1759,
+    "sha256": "b54f2a6d16b093a6811245ef52c699011da8bf10249413e6af97343ba8f9419e"
+  },
+  "originalFailedSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "oldPausedState": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "oldStateUnchanged": true,
+  "newState": {
+    "blob": "670606feaab7a5947d02374ddf8773c7a4928d73",
+    "bytes": 2815,
+    "sha256": "25be8ac2e6f5c72a684401865aff56958f8dc3906245580038cad3e650d5d5c9"
+  },
+  "armTree": "884e755ba2394a5fbedee8a26bc231bfea083eac",
+  "sdk": {
+    "blob": "f065c24c697e280236c14b89ed620fd721b4f1f0",
+    "bytes": 1660,
+    "sha256": "98841c92874435ec75a585e9ad7a12510673d0e977e0fea11df7ae709e69997a"
+  },
+  "sdkTree": "b51be8e099818c65de7444b716a75b8f142dfa9e",
+  "payload": {
+    "blob": "abe5bfbf7fe74a688651876df7e2d05e46f94459",
+    "bytes": 606,
+    "sha256": "cc0144f9aba8b7c97b0cdea0233ba674e76803777ed263a37a1b14359dd5350f"
+  },
+  "payloadTree": "a5e5e21ac13fa81358fd450ea8558fbfe131c91e",
+  "actualInfo": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7685,
+    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+    "platform": "darwin",
+    "uid": 501,
+    "gid": 20,
+    "mode": 384,
+    "nlink": 1,
+    "full9Strings": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ],
+    "nativePin": {
+      "blob": "fe58365faf209bc91dac4a87c5ada5a7a6d6ecf3",
+      "bytes": 489,
+      "sha256": "5a38716e9743604e6b829a9178f5ad642a65bfb858a58118c8c2aa79ad2b664f"
+    },
+    "originalInfoOperation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+    "retrievalPayload": {
+      "blob": "abe5bfbf7fe74a688651876df7e2d05e46f94459",
+      "bytes": 606,
+      "sha256": "cc0144f9aba8b7c97b0cdea0233ba674e76803777ed263a37a1b14359dd5350f"
+    },
+    "metadataQualified": true,
+    "bodyRead": false
+  },
+  "handback": false,
+  "noNewInfoOrStatus": true,
+  "noProcessStart": true,
+  "noBODY": true,
+  "CPhysicalLaneReleased": true
+}

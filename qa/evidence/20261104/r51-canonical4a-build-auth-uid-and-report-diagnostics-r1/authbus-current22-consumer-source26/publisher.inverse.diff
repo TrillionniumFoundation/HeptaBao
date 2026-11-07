@@ -1,0 +1,72 @@
+--- a/publisher.source-template
++++ b/publisher.before
+@@ -41,16 +41,16 @@
+         "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b"
+     ],
+     "mac_current_fixture_materializer_r1.py": [
++        25973,
++        "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+-        26026,
+-        "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+     ],
+     "mac_current_outer_inputs_r2.py": [
+         33001,
+         "54a5a023b4f3af34e14c6617ee97c5bb2e38fd4bf843398e437c5c95fd45f673"
+     ],
+     "mac_current_outer_wal_r1.py": [
++        73918,
++        "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+-        74137,
+-        "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529"
+     ],
+     "mac_current_phase_owner_r2.py": [
+         25647,
+@@ -77,20 +77,20 @@
+         "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+     ],
+     "mac_native_process_observer_r1.py": [
++        13423,
++        "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+-        15269,
+-        "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5"
+     ],
+     "mac_owned_commands_r1.py": [
++        5965,
++        "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+-        7675,
+-        "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1"
+     ],
+     "mac_owned_launchd_r3.py": [
++        58584,
++        "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+-        60153,
+-        "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+     ],
+     "mac_owned_unreaped_r1.py": [
++        10990,
++        "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+-        13221,
+-        "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501"
+     ],
+     "mac_registry_readonly_wal_r1.py": [
+         31776,
+@@ -108,7 +108,7 @@
+ DOCUMENT_PINS={
+     "candidate-current-manager-wal-r1.public.json": [
+         7499,
++        "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81"
+-        "665c1d90f502b9e687711c68405283c8b0302e656e5030ab18b038d15bd93617"
+     ],
+     "proofs/native-proc-r2.authority.public.json": [
+         733,
+@@ -139,8 +139,8 @@
+         "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+     ]
+ }
++PAYLOAD_BYTES=837696
++PAYLOAD_SHA="757f8262c8ad1c206d888d40a3b9d38a9e15821a9ade01bda1409309a8e2c7f1"
+-PAYLOAD_BYTES=847864
+-PAYLOAD_SHA="6c3ca742c2f6a39e8db9976483d2c001c7bb0fcc745cca74a28618aa9d5ebc26"
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass

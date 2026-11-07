@@ -1,0 +1,207 @@
+[
+  {
+    "name": "zero",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "0",
+      "R"
+    ],
+    "accepted": true,
+    "uid": "0"
+  },
+  {
+    "name": "operator-positive",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "501",
+      "R"
+    ],
+    "accepted": true,
+    "uid": "501"
+  },
+  {
+    "name": "negative-display",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "-1",
+      "R"
+    ],
+    "accepted": true,
+    "uid": "-1"
+  },
+  {
+    "name": "signed32-minimum",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "-2147483648",
+      "R"
+    ],
+    "accepted": true,
+    "uid": "-2147483648"
+  },
+  {
+    "name": "signed32-maximum",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "2147483647",
+      "R"
+    ],
+    "accepted": true,
+    "uid": "2147483647"
+  },
+  {
+    "name": "unsigned-half",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "2147483648",
+      "R"
+    ],
+    "accepted": true,
+    "uid": "2147483648"
+  },
+  {
+    "name": "unsigned32-maximum",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "4294967295",
+      "R"
+    ],
+    "accepted": true,
+    "uid": "4294967295"
+  },
+  {
+    "name": "below-signed32",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "-2147483649",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "above-unsigned32",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "4294967296",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "plus-rejected",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "+501",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "nondigit-rejected",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "root",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "fraction-rejected",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "1.0",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "too-many-digits",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "00000000501",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "non-ASCII-rejected",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "٥٠١",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "missing-column",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "-1"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "extra-column",
+    "fields": [
+      "1",
+      "2",
+      "3",
+      "-1",
+      "R",
+      "extra"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "negative-PID-still-rejected",
+    "fields": [
+      "-1",
+      "2",
+      "3",
+      "-1",
+      "R"
+    ],
+    "accepted": false
+  },
+  {
+    "name": "plus-PPID-still-rejected",
+    "fields": [
+      "1",
+      "+2",
+      "3",
+      "-1",
+      "R"
+    ],
+    "accepted": false
+  }
+]

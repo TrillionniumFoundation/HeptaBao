@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b3af5466-fc05-844c",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  },
+  "idempotency_key": "heptabao-mac-fixed-setuid-ps-lexical-0ad20876-streams"
+}

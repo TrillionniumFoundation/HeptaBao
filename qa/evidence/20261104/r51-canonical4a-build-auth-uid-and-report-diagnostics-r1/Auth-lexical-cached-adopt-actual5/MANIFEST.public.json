@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "path": "adopt.result.public.json",
+      "blob": "985b4a9e18b16f0fc17e10fdf401d5330c0b7e52",
+      "bytes": 633,
+      "sha256": "ee4e7ce2953f6ee5fbd0a72452d769f2ef71a544d8e37533e5edaca5ebcfaa7c"
+    },
+    {
+      "path": "after-state.original.json",
+      "blob": "9035e51420729ec22aa0ce43df93dc6ab73f8ee7",
+      "bytes": 87299,
+      "sha256": "b04c49c49e99008617d3423cd49c73418038b40656e3839b92b2729433111180"
+    },
+    {
+      "path": "adopt-GO.original.json",
+      "blob": "564428584ac1b3ff1bce533cffeb86bd26547803",
+      "bytes": 3063,
+      "sha256": "9a3fd9365ca1ba7c9e32487cd66b938e90aa1c63978f234c17528848c9c2c92e"
+    },
+    {
+      "path": "recovery-receipt.root.original.json",
+      "blob": "3141ca1485cb5e6979070cfa1b0b4d70fad0b2a4",
+      "bytes": 3070,
+      "sha256": "81a143f0711fa8e9376cb2b3a684e657a27ea0d003778585e824cc335cb6226c"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.root.r50-publication-proof.r1",
+  "commit": "719ea25b9e734a18a80a9459904cea10ad116091",
+  "branch": "codex/heptabao-validation-20261104",
+  "parent": "0449368aa49e196d5ca16073c00acc00b620e884",
+  "tree": "e6942cd04cc59453fb68c27e767305af849a6e1b",
+  "prefix": "qa/evidence/20261104/r50-canonical4a-staging-auth-startup-and-original-recovery-r1",
+  "prefixTree": "a34eeeff59fcc127c5c8c7be0def97cf9a3578b2",
+  "rootCurrent": "423e67f0bd3a1566856418a9c54e00a814535f46",
+  "cutoffUTC": "2026-11-07 01:15:46 UTC",
+  "sourceMountedPackets": 112,
+  "files": 1399,
+  "bytes": 20522688,
+  "treeVerification": {
+    "schema": "heptabao.root.r50-prefix-tree-verification.r1",
+    "audit": {
+      "root_sha": "a34eeeff59fcc127c5c8c7be0def97cf9a3578b2",
+      "trees_verified": 114,
+      "leaf_count": 1399
+    },
+    "allExpectedLeavesExact": true,
+    "leafCount": 1399,
+    "bytes": 20522688,
+    "fourAncestorReplacementsExact": true,
+    "priorWholeContentChecked": true
+  },
+  "exactFourAncestorReplacementReadbacks": true,
+  "commitReadbackExact": true,
+  "branchCASAndReadbackExact": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "taskContinues": true,
+  "url": "https://github.com/TrillionniumFoundation/HeptaBao/tree/719ea25b9e734a18a80a9459904cea10ad116091/qa/evidence/20261104/r50-canonical4a-staging-auth-startup-and-original-recovery-r1/root-current"
+}

@@ -1,0 +1,15 @@
+--- a/sdk-source-pins.before.public.json
++++ b/sdk-source-pins.public.json
+@@ -85,9 +85,9 @@
+     "sha256": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1"
+   },
+   "mac_owned_launchd_r3.py": {
++    "blob": "92a1293db9792644b378da07eb9650951979358a",
++    "bytes": 60153,
++    "sha256": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+-    "blob": "48f3e8394a15830953fb90e3470e8ba98e7df509",
+-    "bytes": 60016,
+-    "sha256": "edeb2b60dd102ea300887d3d2f23fc39682aa8700ce88d6273307f1b5d2ecbd4"
+   },
+   "mac_owned_unreaped_r1.py": {
+     "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",

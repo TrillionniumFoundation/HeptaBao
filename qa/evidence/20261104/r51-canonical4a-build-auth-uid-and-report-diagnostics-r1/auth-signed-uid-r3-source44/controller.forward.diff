@@ -1,0 +1,36 @@
+--- a/controller.before.py
++++ b/controller.py
+@@ -224,7 +224,7 @@
+         'firstRejectedShape':first_rejected,'rawRowsOrTokensOrHashExported':False}
+ 
+ def main():
++    report={'schema':'heptabao.fixed-setuid-ps-lexical-diagnostic.r3',
+-    report={'schema':'heptabao.fixed-setuid-ps-lexical-diagnostic.r2',
+         'ok':False,'observationComplete':False,'executionSucceeded':False,'outcomeUnknown':True,
+         'onlyFixedGroupProjection':True,'originalStreamingCapEach':262144,
+         'oldPs84947And85012Reclassified':False,'oldManagedCleanupClaimed':False,
+@@ -262,17 +262,21 @@
+         need(report['commandOutcomeKnown'],'one_fixed_ps_command_known_closed')
+         need(value['exitCode']==0 and not err,'complete_group_observation')
+         report['tableLexicalProjection']=table_lexical_projection(out)
++        count=0;signed_uid_rows=0;self_rows=[]
+-        count=0;self_rows=[]
+         for line in out.decode('ascii','strict').splitlines():
+             fields=line.split()
++            need(len(fields)==5 and all(x.isdecimal() for x in fields[:3])
++                 and re.fullmatch(r'-?[0-9]{1,10}',fields[3]) is not None,'typed_process_row')
+-            need(len(fields)==5 and all(x.isdecimal() for x in fields[:4]),'typed_process_row')
+             count+=1
+             need(count<=8192,'public_process_row_count_bound')
+             pid,ppid,pgid,uid=map(int,fields[:4])
++            need(-(1<<31)<=uid<=(1<<32)-1,'typed_process_row')
++            signed_uid_rows+=int(fields[3].startswith('-'))
+             if pid==value['pid']:
+                 self_rows.append({'pid':pid,'ppid':ppid,'pgid':pgid,'uid':uid})
+         need(len(self_rows)<=1,'one_fixed_ps_table_self_row')
++        report['table']={'typedRows':count,'signedUidRowsAccepted':signed_uid_rows,
++            'selfRowObserved':len(self_rows)==1,
+-        report['table']={'typedRows':count,'selfRowObserved':len(self_rows)==1,
+             'selfRow':self_rows[0] if self_rows else None,
+             'otherRowsOrStateTextExported':False}
+         io.verify();fixed_fences=True

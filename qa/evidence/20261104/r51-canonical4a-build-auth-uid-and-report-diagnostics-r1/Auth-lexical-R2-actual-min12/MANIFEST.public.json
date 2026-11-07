@@ -1,0 +1,70 @@
+{
+  "files": [
+    {
+      "path": "GO.original.json",
+      "blob": "8d0244e688e9a928ff3772b7f4f7d62038507077",
+      "bytes": 11144,
+      "sha256": "ec64c36d88de0f78dfd08a6e532dd6b833930e973cf9ec6250c55b604711bea1"
+    },
+    {
+      "path": "cached-adopt-GO.original.json",
+      "blob": "564428584ac1b3ff1bce533cffeb86bd26547803",
+      "bytes": 3063,
+      "sha256": "9a3fd9365ca1ba7c9e32487cd66b938e90aa1c63978f234c17528848c9c2c92e"
+    },
+    {
+      "path": "start.sdk.original.json",
+      "blob": "fc6ca1c7ea674d68647c2d704b60e0c2eedbe534",
+      "bytes": 1424,
+      "sha256": "c468f79df48877bfadb8812caa401884e3c3b23bfa9a06e810682b13e5118e7e"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "256825e764a371e6b5b52331a5f47fda5eea45fa",
+      "bytes": 728,
+      "sha256": "82c0f71edf6b8d4b45fae08b310689ddf180c4240cba822885f083223576219e"
+    },
+    {
+      "path": "streams.native.original.json",
+      "blob": "e51e788529e1cb4b186c31b6a78f7e27c32ed952",
+      "bytes": 18760,
+      "sha256": "7ef6c17183e892d203fa883ab9d5f80ce5e113a5a30b0a69e8317a372e9659dd"
+    },
+    {
+      "path": "stdout.original.json",
+      "blob": "c3d203ed45894650efb2e35dcc37fa848459572d",
+      "bytes": 5942,
+      "sha256": "92f78f946fb9f059faa1fe414d6df48c1fe89eecb103a4c62418299220cdc05a"
+    },
+    {
+      "path": "stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authority-status.sdk.original.json",
+      "blob": "dd178b0dd98218c64b5878628f57c82ca7ab4bde",
+      "bytes": 980,
+      "sha256": "17ff93ec85fb3a28312cf2f7ab2c39e97fb2d985b02052be81f8dd8c1f4fbda0"
+    },
+    {
+      "path": "streams-status.sdk.original.json",
+      "blob": "081d0538ade396e74746c3105e14d71dbe483938",
+      "bytes": 978,
+      "sha256": "af427f140b4a9fdaf7313e93c442ae5f7e1b1d804c7d9c346ece36b8bfc940ce"
+    },
+    {
+      "path": "final-state.public.json",
+      "blob": "773bfe7ab8c5f580164a6dfde30054a55004b3c7",
+      "bytes": 100728,
+      "sha256": "fd845b2a75255fdf85a22a8230c264d516fe246d7e02025b62656f4da6caa05b"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "e1ecfaf881ad5c4abad1a1b13d29177ff1a882a5",
+      "bytes": 8203,
+      "sha256": "ac704f39e4798168d3b32137bf9f4e038d656b04c17135a7f5b7b1e5c34f7459"
+    }
+  ]
+}

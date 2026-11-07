@@ -1,0 +1,281 @@
+[
+  {
+    "ordinal": 0,
+    "key": "fixed-ps-r1-start",
+    "kind": "process_start",
+    "requestPin": {
+      "blob": "6b3c7b367fab9ef768f2ba145770a3ab3e713f0c",
+      "bytes": 57139,
+      "sha256": "74e700b9cfbfde31ddb5821ff231c9965a339d3581f8b114a1a13ce902c152c1"
+    },
+    "sdkPin": {
+      "blob": "4187afccbd3c781ca2bbe90ddae2faaefc1aaa45",
+      "bytes": 1423,
+      "sha256": "33358e814bcabf832329ebcd9a1d670d6e676b383c280137fa5d34ce1167638b"
+    },
+    "nativePin": {
+      "blob": "7d34f87baaf1a4f4eeff84a188ecf66d856d635e",
+      "bytes": 1175,
+      "sha256": "54aa689e539053d8ae39a2aadff54a427f9050227839b31bd3150ee01050236a"
+    },
+    "armTree": "62960daa43a320f19b7bd949cf55bbc91a9f25d6",
+    "sdkTree": "28c90f5cd9444c8603506007beff59aed5517d79",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-00-process_start.request.original.json",
+      "intent": "call-00-process_start.intent.original.json",
+      "armed": "call-00-process_start.armed.original.json",
+      "sdk": "call-00-process_start.sdk.original.json",
+      "native": "call-00-process_start.native.original.json"
+    }
+  },
+  {
+    "ordinal": 1,
+    "key": "fixed-ps-r1-authority-admit",
+    "kind": "operation_start",
+    "requestPin": {
+      "blob": "bd261d85dea15221e76ec84707b57a7c6c5a6308",
+      "bytes": 223,
+      "sha256": "99d98ede821982bf8275414f3894aba538357195569366b0009b0011ad3c1601"
+    },
+    "sdkPin": {
+      "blob": "a8d453c30b0fb30bfa32d586d89f68a4f87a1f6f",
+      "bytes": 709,
+      "sha256": "e171f27a7cb2dfad985c0e7993384f09768468a0a494e2b97c9cc11aea10a312"
+    },
+    "nativePin": {
+      "blob": "4df920bab690d44f26a40f4f1d6daf872c0b2966",
+      "bytes": 548,
+      "sha256": "92e76cb5b2b60608862cc64002da036a4e292841ae243ec4f73a3bd90cda263e"
+    },
+    "armTree": "e2aa0cb2a9fb5fb1390835b85b873b55a5ce87ef",
+    "sdkTree": "250efaf02f5ee1c0a353d3e27deaa4fbb7c5bb54",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-01-operation_start.request.original.json",
+      "intent": "call-01-operation_start.intent.original.json",
+      "armed": "call-01-operation_start.armed.original.json",
+      "sdk": "call-01-operation_start.sdk.original.json",
+      "native": "call-01-operation_start.native.original.json"
+    }
+  },
+  {
+    "ordinal": 2,
+    "key": "fixed-ps-r1-authority-status-0",
+    "kind": "operation_status",
+    "requestPin": {
+      "blob": "f51797586262253d66c58f0f8c268c5684a44078",
+      "bytes": 89,
+      "sha256": "9bccdbc9d750bfe23f4425d9d5c713543a001be4568b376e32eb49d5faa663a4"
+    },
+    "sdkPin": {
+      "blob": "5e3e695aaa262b8a34b7bcba2cf91a5ea27c2d02",
+      "bytes": 980,
+      "sha256": "61b4f5132da9fa9f07239e695a6ccc7040dfac5c0a37d75f3472b0d453b251fe"
+    },
+    "nativePin": {
+      "blob": "82e8201ff1a9242b87ba99103ff1e122ee1cd9d5",
+      "bytes": 805,
+      "sha256": "3073deaeb766265428be5fdde639ec84ee83caf670ab7bd847c5cec343975e0a"
+    },
+    "armTree": "011c5aaed5d633e383d59e4a3a9b488bdbe354c0",
+    "sdkTree": "8429998f90726dfb58d2a4ba479198176ffd1975",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-02-operation_status.request.original.json",
+      "intent": "call-02-operation_status.intent.original.json",
+      "armed": "call-02-operation_status.armed.original.json",
+      "sdk": "call-02-operation_status.sdk.original.json",
+      "native": "call-02-operation_status.native.original.json"
+    }
+  },
+  {
+    "ordinal": 3,
+    "key": "fixed-ps-r1-authority-page-0",
+    "kind": "operation_result",
+    "requestPin": {
+      "blob": "e2ee2df8d92800aefd097f97082701aa6461a63c",
+      "bytes": 121,
+      "sha256": "a14b01ee486f73bfef654be77bf63738170757c766ce51794a835042f8303466"
+    },
+    "sdkPin": {
+      "blob": "a0b015a4be1dd3de940527d2d09b331ea2c289c9",
+      "bytes": 2064,
+      "sha256": "1c5d1a66840b3ba1cc636ad9440a99005d0bb2408040190f0823714d57a178f6"
+    },
+    "nativePin": {
+      "blob": "ea4afe8e5c157a1ce0530959e2c45a3905cf6fcd",
+      "bytes": 1893,
+      "sha256": "9aa4ba8dd8af854dd42a8fdff6fcf6f915331205f3d5c0ed38d6f61c8a9b6c90"
+    },
+    "armTree": "b64169f5235e9c16cf3cbfdb840fe01b2717033a",
+    "sdkTree": "23cad59c339fd35fd031807d19f7a9a7c1ce97e9",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-03-operation_result.request.original.json",
+      "intent": "call-03-operation_result.intent.original.json",
+      "armed": "call-03-operation_result.armed.original.json",
+      "sdk": "call-03-operation_result.sdk.original.json",
+      "native": "call-03-operation_result.native.original.json"
+    }
+  },
+  {
+    "ordinal": 4,
+    "key": "fixed-ps-r1-streams-admit",
+    "kind": "operation_start",
+    "requestPin": {
+      "blob": "ebe169a959a59ac9e53aa34ada20224e9b62a973",
+      "bytes": 293,
+      "sha256": "5e6157ecce9b21c316db45bd715cd932121aa1cec22b52e533af223ce02c184c"
+    },
+    "sdkPin": {
+      "blob": "618eab5670ea8103e709a89651b062cb686482fe",
+      "bytes": 707,
+      "sha256": "4903a68b88d9b5099420882759cb7b9d1a90f6a0c866e616f17b85a9e33f3275"
+    },
+    "nativePin": {
+      "blob": "dcb200781fef2860157e7bccae74bda85e3abaa7",
+      "bytes": 546,
+      "sha256": "7dfaa5159ecc459fb7783d8924936781575c8239150f8d4b9f733f2c3747dcc9"
+    },
+    "armTree": "f699c07210fe06b2fd58ad327fcd20bc1f589789",
+    "sdkTree": "76953cb3570d34b802cbf0093e60b0e6e40a53f1",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-04-operation_start.request.original.json",
+      "intent": "call-04-operation_start.intent.original.json",
+      "armed": "call-04-operation_start.armed.original.json",
+      "sdk": "call-04-operation_start.sdk.original.json",
+      "native": "call-04-operation_start.native.original.json"
+    }
+  },
+  {
+    "ordinal": 5,
+    "key": "fixed-ps-r1-streams-status-0",
+    "kind": "operation_status",
+    "requestPin": {
+      "blob": "8b559316b29f4477c14222ed5f877fdc2ec34346",
+      "bytes": 89,
+      "sha256": "77a07e4ce6f9585ac8dcc2c88cca5f993744eb5f407399573daf5ea1586af22b"
+    },
+    "sdkPin": {
+      "blob": "b07aaae72e2ae8f92466377196377852519207a3",
+      "bytes": 978,
+      "sha256": "40cc55dec9c011e63a0d6a39432bbf65ae7801a87638cd55b78ca4c862246338"
+    },
+    "nativePin": {
+      "blob": "a7e42463d345b1c119ab292af4171739408357f4",
+      "bytes": 803,
+      "sha256": "e0dbd038ad97a878d33b62f38889d54486e4c7843d67ef63ecd09498625b8b75"
+    },
+    "armTree": "13bb0d00f366fcd8f6e7fe38e7821e0e22cc6c43",
+    "sdkTree": "e28546a1085157763b5bf3690278824a08424f68",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-05-operation_status.request.original.json",
+      "intent": "call-05-operation_status.intent.original.json",
+      "armed": "call-05-operation_status.armed.original.json",
+      "sdk": "call-05-operation_status.sdk.original.json",
+      "native": "call-05-operation_status.native.original.json"
+    }
+  },
+  {
+    "ordinal": 6,
+    "key": "fixed-ps-r1-streams-page-0",
+    "kind": "operation_result",
+    "requestPin": {
+      "blob": "f2c566f2836476ca3a7fc25e58ab5373956d3288",
+      "bytes": 121,
+      "sha256": "1757429df0b4c676aab76c766395fa5464725d89c6928ed001f9de68fc934452"
+    },
+    "sdkPin": {
+      "blob": "48be1b0f86815e3c7091c125c7dd55e23307dc1c",
+      "bytes": 11780,
+      "sha256": "48e6f805371b218f9c12a439d9f75827c3be8f906e2d76644de77400c12eb223"
+    },
+    "nativePin": {
+      "blob": "1a82e4e99e2e515c4d17c8569015460b17c7afb3",
+      "bytes": 11609,
+      "sha256": "4bcbf108d114872b24e63505389822c8e8b508c660d85736a6e0857b3276757f"
+    },
+    "armTree": "18279c8c64a424ae951da9cec46fa5c97e337ec6",
+    "sdkTree": "790d5bdbc462318a0c8eb7be3a4cfa69fe354168",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-06-operation_result.request.original.json",
+      "intent": "call-06-operation_result.intent.original.json",
+      "armed": "call-06-operation_result.armed.original.json",
+      "sdk": "call-06-operation_result.sdk.original.json",
+      "native": "call-06-operation_result.native.original.json"
+    }
+  },
+  {
+    "ordinal": 7,
+    "key": "fixed-ps-r1-streams-page-1",
+    "kind": "operation_result",
+    "requestPin": {
+      "blob": "255428da63e6b75c11891247a6088888af10ba0a",
+      "bytes": 124,
+      "sha256": "a4505e154a85105acf055ae40ba7a9d274beacf9df2c4e9550cc2e3705680652"
+    },
+    "sdkPin": {
+      "blob": "3123c9d7ee2dbffff4213c544d6ecb681260112c",
+      "bytes": 11784,
+      "sha256": "5f04b9df9f17553076ad1ab564a623d1a0a4b3df45499c7a3530366a770dbb8e"
+    },
+    "nativePin": {
+      "blob": "ee1ff5cd5175b0241a58b7cf71bb4d65fadc94c2",
+      "bytes": 11613,
+      "sha256": "b90840575e3489e310217e55c70ef29296433142377d46b2dd8a0f18b01e28a5"
+    },
+    "armTree": "652849a1c64fb7d2061fffc28efee146dd0802d1",
+    "sdkTree": "90f68b4b88106bd92532e51840167db9bf518d95",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-07-operation_result.request.original.json",
+      "intent": "call-07-operation_result.intent.original.json",
+      "armed": "call-07-operation_result.armed.original.json",
+      "sdk": "call-07-operation_result.sdk.original.json",
+      "native": "call-07-operation_result.native.original.json"
+    }
+  },
+  {
+    "ordinal": 8,
+    "key": "fixed-ps-r1-streams-page-2",
+    "kind": "operation_result",
+    "requestPin": {
+      "blob": "23c826017b6e866a25f9f539c7873c29b8dc8650",
+      "bytes": 125,
+      "sha256": "5832f025eb8e9593f74417d8fc935574e8e4eba00414337d968e671b19771ba3"
+    },
+    "sdkPin": {
+      "blob": "73cfb6d03f9747b13b68e2b294d863b27165c0fd",
+      "bytes": 2604,
+      "sha256": "c49f1ed46fe8c7a1e1ffe024bdb055fead985a559c9b06aedfdc59e94331d736"
+    },
+    "nativePin": {
+      "blob": "9b01c438057d5c34ec698f3fe5a02baaa9908bb5",
+      "bytes": 2433,
+      "sha256": "5a6a0c2aa31a56dc3ee0566931206388582dfbc9cba94b2d7c0103c15a78aa25"
+    },
+    "armTree": "89e66a3d4277885f60e7f8451860ac268af70ac6",
+    "sdkTree": "d0188198e2973520178936c18f55f548a1097870",
+    "calledOnce": true,
+    "phase": "accepted",
+    "paths": {
+      "request": "call-08-operation_result.request.original.json",
+      "intent": "call-08-operation_result.intent.original.json",
+      "armed": "call-08-operation_result.armed.original.json",
+      "sdk": "call-08-operation_result.sdk.original.json",
+      "native": "call-08-operation_result.native.original.json"
+    }
+  }
+]

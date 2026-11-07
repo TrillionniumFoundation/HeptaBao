@@ -1,0 +1,223 @@
+{
+  "schema": "heptabao.root.rog4a.exact-key-conditional-admission-source.r1",
+  "audit": {
+    "tree": "9a539cf2a300566fca767055d955225c0489a3c7",
+    "files": 16,
+    "bytes": 243725,
+    "merkle": {
+      "root_sha": "9a539cf2a300566fca767055d955225c0489a3c7",
+      "trees_verified": 1,
+      "leaf_count": 16
+    },
+    "whole": true
+  },
+  "verification": {
+    "schema": "heptabao.same-key-conditional-admission-source-checks.r1",
+    "checks": [
+      {
+        "name": "strict_forward_four_hunks",
+        "pass": true
+      },
+      {
+        "name": "strict_reverse_four_hunks",
+        "pass": true
+      },
+      {
+        "name": "original_request_all_bytes",
+        "pass": true
+      },
+      {
+        "name": "correct_stdin_typed_identity_unchanged",
+        "pass": true
+      },
+      {
+        "name": "original_key_and_total_timeout",
+        "pass": true
+      },
+      {
+        "name": "branch_true_keeps_original_unknown",
+        "pass": true
+      },
+      {
+        "name": "branch_true_no_second_start",
+        "pass": true
+      },
+      {
+        "name": "branch_true_no_job_observer_admission",
+        "pass": true
+      },
+      {
+        "name": "branch_false_keeps_original_unknown",
+        "pass": true
+      },
+      {
+        "name": "branch_false_no_second_start",
+        "pass": true
+      },
+      {
+        "name": "branch_false_no_job_observer_admission",
+        "pass": true
+      },
+      {
+        "name": "bound_launch_false_is_identity_only_not_success",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_reused",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_launch.ok",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_audit_recorded",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_local_record_pending",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.host",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.execution_mode",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.idempotency_key",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.request_digest",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.request_fingerprint",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.executable",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.cwd",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.args",
+        "pass": true
+      },
+      {
+        "name": "reject_ack_job.id",
+        "pass": true
+      },
+      {
+        "name": "tool_error_stops",
+        "pass": true
+      },
+      {
+        "name": "reject_go_lookupOnly",
+        "pass": true
+      },
+      {
+        "name": "reject_go_allowFirstAdmission",
+        "pass": true
+      },
+      {
+        "name": "reject_go_maximumProcessStartCalls",
+        "pass": true
+      },
+      {
+        "name": "reject_go_sameJobObservationsAuthorized",
+        "pass": true
+      },
+      {
+        "name": "original_request_once_valid",
+        "pass": true
+      },
+      {
+        "name": "request_byte_drift_rejected",
+        "pass": true
+      },
+      {
+        "name": "observer_kind_operation_start_rejected",
+        "pass": true
+      },
+      {
+        "name": "observer_kind_operation_status_rejected",
+        "pass": true
+      },
+      {
+        "name": "observer_kind_operation_result_rejected",
+        "pass": true
+      },
+      {
+        "name": "old_build_drift_rejected",
+        "pass": true
+      },
+      {
+        "name": "original_gfPrepareOne_whole",
+        "pass": true
+      },
+      {
+        "name": "original_gfInvokePreparedOnce_whole",
+        "pass": true
+      },
+      {
+        "name": "original_gfCloseOriginalObserver_whole",
+        "pass": true
+      },
+      {
+        "name": "original_gfReconcileSameGitArchiveReadOnly_whole",
+        "pass": true
+      },
+      {
+        "name": "original_gfRun_whole",
+        "pass": true
+      },
+      {
+        "name": "no_old_context_writes_no_tools",
+        "pass": true
+      }
+    ],
+    "passed": 42,
+    "NativeCalls": 0,
+    "PagesCalls": 0,
+    "GitCalls": 0,
+    "fixtureOnly": true,
+    "actualReused": null,
+    "actualJob": null
+  },
+  "actualBindings": [
+    {
+      "name": "exact actually authorized original request",
+      "pass": true
+    },
+    {
+      "name": "exact original executing journal",
+      "pass": true
+    },
+    {
+      "name": "original BUILD state",
+      "pass": true
+    },
+    {
+      "name": "original failed INFO state",
+      "pass": true
+    },
+    {
+      "name": "current actual tool contract exact",
+      "pass": true
+    },
+    {
+      "name": "same original GO binds request",
+      "pass": true
+    }
+  ],
+  "rootNativeCalls": 0,
+  "sourceContract": "One conditional admission with unchanged original request/key; may reconcile existing or first-admit; not lookup-only. Old timeout remains UNKNOWN. No observers in this source.",
+  "oldOriginalBuildGateUnchanged": true
+}

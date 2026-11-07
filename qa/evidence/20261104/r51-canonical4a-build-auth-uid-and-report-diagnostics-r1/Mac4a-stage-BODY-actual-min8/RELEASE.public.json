@@ -1,0 +1,213 @@
+{
+  "schema": "heptabao.mac4a-stage-report-independent-body.release.r1",
+  "CPhysicalLaneReleased": true,
+  "nativeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "originalNewCalls": 3,
+  "originalNewObservers": 1,
+  "immutablePages": 1,
+  "payloadBytes": 10691,
+  "reportBytes": 7685,
+  "slot": "successor4a_mac_stage_report_body_gitfirst_r1",
+  "originalOperation": "48b1267e59a55b6a640a0425e9011e5a5d65a2f8a9faf3817a86356ca631254b",
+  "completedInactive": true,
+  "logicalObserverClosed": true,
+  "paused": false,
+  "pending": null,
+  "body": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+    "bytes": 7685,
+    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+    "originalOperation": "48b1267e59a55b6a640a0425e9011e5a5d65a2f8a9faf3817a86356ca631254b",
+    "bodyPin": {
+      "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
+      "bytes": 7685,
+      "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2"
+    },
+    "bodyTree": "b3377be78c8487e9820ad9738cbcb0b5d4ea2497",
+    "whole": true
+  },
+  "completedObserver": {
+    "id": "48b1267e59a55b6a640a0425e9011e5a5d65a2f8a9faf3817a86356ca631254b",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "b0585bc34c5dec6ee4f7554e26c9a92a06a4e394",
+      "bytes": 10691,
+      "sha256": "7233e70345f55799721758f60c397152c14249f0b4ebf2afab8cdb1d5a6495f4"
+    },
+    "payloadTree": "70bf90428154e707ceb7dacfd0ec277360e306a6",
+    "nativeText": {
+      "blob": "7e566bb4c9ac1788d031ebcfbc326247b2a8810c",
+      "bytes": 10588,
+      "sha256": "b95dca74b4fa32c6729e1c5ad150ea8b232f0c203747d5ca42addcc16145da39"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "bodyGO": {
+    "blob": "9aa02b299ba175fd944477c18b1272083187237a",
+    "bytes": 3428,
+    "sha256": "f9f43a59ba894a5d00299fc3653f35459d0d2fb9aeace32f0d55dabee1ccd8be"
+  },
+  "laneGO": {
+    "blob": "2dd7600aea9583e0351094f989f182fef5bff513",
+    "bytes": 1510,
+    "sha256": "31654b7321e20b0205f38d352600a03556b5f419442e115e10e383f242194f39"
+  },
+  "closedState": {
+    "blob": "c23535ffde16a9681f138ecfe15324b0367c09d9",
+    "bytes": 17386,
+    "sha256": "f6edf32feecfd1b4974614e707c3c94e309187829626aaee98bee945806dbe03"
+  },
+  "oldPausedState": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "oldRetrievalState": {
+    "blob": "670606feaab7a5947d02374ddf8773c7a4928d73",
+    "bytes": 2815,
+    "sha256": "25be8ac2e6f5c72a684401865aff56958f8dc3906245580038cad3e650d5d5c9"
+  },
+  "oldStatesUnchanged": true,
+  "oldSlotHandback": false,
+  "newInfoCalls": 0,
+  "newProcessStarts": 0,
+  "Cargo": false,
+  "stageSemanticSummary": {
+    "schema": "heptabao.final-mac-source-only-stage.v1",
+    "status": "prepared",
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1",
+    "source_commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "source_tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "source_clean": true,
+    "independent_git_directory": true,
+    "full_strict_fsck_passed": true,
+    "full_worktree": {
+      "all_tracked_worktree_blobs_and_modes_match": true,
+      "full_leaf_index_sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+      "index_matches_tree": true,
+      "tracked_bytes": 62553956,
+      "tracked_leaf_count": 3932
+    },
+    "external_volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "controls_published": false,
+    "compiler_started": false,
+    "within_new_stage_deadline": true,
+    "cleanupCount": 31,
+    "allDirectChildrenReaped": true,
+    "reportKeys": [
+      "actual_build_qualification",
+      "canonical_bundle",
+      "canonical_bundle_published_after_volume_guard",
+      "canonical_history_count",
+      "carrier_sha256",
+      "cleanup",
+      "compiler_started",
+      "controls_published",
+      "elapsed_seconds_after_cleanup",
+      "external_volume_uuid",
+      "full_strict_fsck_passed",
+      "full_worktree",
+      "host",
+      "independent_git_directory",
+      "new_commits_since_actual_576",
+      "new_stage_total_seconds",
+      "new_supervisor_seconds",
+      "no_alternates",
+      "no_shared_object_links",
+      "object_files_checked",
+      "old_source_after",
+      "old_source_before",
+      "old_source_unchanged",
+      "original_clone_cap_seconds",
+      "original_git_leaf_cap_seconds",
+      "production_changed",
+      "public_network_fetch_used",
+      "root",
+      "schema",
+      "server_started",
+      "sole_parent",
+      "source",
+      "source_clean",
+      "source_commit",
+      "source_ref",
+      "source_tree",
+      "stage_purpose",
+      "stager_sha256",
+      "started_ns",
+      "status",
+      "terminal_ns",
+      "within_new_stage_deadline"
+    ]
+  },
+  "newCalls": [
+    {
+      "key": "mac4a-stage-body-r1-admit",
+      "request": {
+        "blob": "a24a188ed159093a3f60ab439deb7dc53ba6ef61",
+        "bytes": 428,
+        "sha256": "9966fa785adda9eb2b855277fab800e71a59ebfe5810a7a3247bea70f089f142"
+      },
+      "armTree": "25981714e20fc0c029b22543026c554ebca53029",
+      "SDK": {
+        "blob": "9509cffbec54bdc048da338238120882c7137e01",
+        "bytes": 706,
+        "sha256": "9226f9d885aa5129778998540a7d7c0a47119814109e23a63702b737237d0bde"
+      },
+      "SDKTree": "20d792fcd07b6328dfc7ba8c02567e809fa39c3c",
+      "native": {
+        "blob": "fbb9de1fc58060a26a68f07671031568fbc29077",
+        "bytes": 545,
+        "sha256": "88c9c85c36532d9673b0313bb2cc3406f65411c54a1e33bb2301f0a47525f0b4"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "mac4a-stage-body-r1-status0",
+      "request": {
+        "blob": "fbd155ceb0d4068f22df7a405ca1b100cff2a68c",
+        "bytes": 89,
+        "sha256": "c8b17de4433190664354979da9acc13f7f7e4b641165162aa3fd8583c7145617"
+      },
+      "armTree": "b723d0e4b298e04ff202b133aa786c0653614d61",
+      "SDK": {
+        "blob": "184621104517077763145d90b2807f5544a088e2",
+        "bytes": 977,
+        "sha256": "f5b1688380f159238d868998013b846fbc0e54dc68c9b6e51aa9374cdc151fb5"
+      },
+      "SDKTree": "8162d086c3201fb9cc11436a2bb5ba939a6af10b",
+      "native": {
+        "blob": "7885857ebbcc10d0eb8b0fa1bdeaccc6a5582a84",
+        "bytes": 802,
+        "sha256": "cd17cf8fa5d59fc9b8793600967645246c977067161c274c297d27643c5c1768"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "key": "mac4a-stage-body-r1-page0",
+      "request": {
+        "blob": "a26245dc1efe52cece837880323d1e4100733eaa",
+        "bytes": 122,
+        "sha256": "2b456c2e7a56fbadd88b86b2625b2fe4bb100952945ad580bd075279641500c1"
+      },
+      "armTree": "8a4280009a6b87480550f00cfeec6f001e8cf36f",
+      "SDK": {
+        "blob": "4fbf9a0a651cdc4bfc8c8a6d0beeaa9682a5111e",
+        "bytes": 15112,
+        "sha256": "7184e0429d4ca6c219f1b5cb8f9f9227bdf765ca80c58bcbdc9baa2a4243bf76"
+      },
+      "SDKTree": "7d85444fe1c4e53839fa406c27e6219c602f0b60",
+      "native": {
+        "blob": "acd74b4fc0cc094b8922dca953c7e499a9ada8f5",
+        "bytes": 14941,
+        "sha256": "5c842748327dd0ea92c96f2fdf9b26fa58eb48e8572dabaa78da4f98a4c40551"
+      },
+      "phase": "accepted",
+      "called": true
+    }
+  ]
+}

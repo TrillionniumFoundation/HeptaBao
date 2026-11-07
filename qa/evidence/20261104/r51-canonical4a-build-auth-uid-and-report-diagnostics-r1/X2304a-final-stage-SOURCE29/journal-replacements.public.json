@@ -1,0 +1,27 @@
+[
+  [
+    "successor4a_mac_source_only_stage_gitfirst_r1",
+    "successor4a_x230_two_bundle_source_gitfirst_r1",
+    1
+  ],
+  [
+    "{\"blob\":\"c64853ad2e18f250d6e30424d6468e25b7a6b590\",\"bytes\":26577,\"sha256\":\"65d51bfef3b4103cbbec8e65d1c546a6b8aac3fd3b7f95197729bb9f5868bbed\"}",
+    "{\"blob\":\"096dd02b94c5f15a2a6f34d1f06fab9641d5948e\",\"bytes\":268539,\"sha256\":\"13464d9109a85ae218e9d2da7270a9501e7d95f097ad73b07fcd4a6c3c2b2136\"}",
+    1
+  ],
+  [
+    "heptabao-4a49405b-mac-source-only-a88b3787-",
+    "heptabao-4a49405b-x230-two-bundle-source-20261106-r1-b0efa636-",
+    1
+  ],
+  [
+    "a.host===\"mac\"",
+    "a.host===\"x230\"",
+    1
+  ],
+  [
+    "v.job?.host===\"mac\"",
+    "v.job?.host===\"x230\"",
+    1
+  ]
+]

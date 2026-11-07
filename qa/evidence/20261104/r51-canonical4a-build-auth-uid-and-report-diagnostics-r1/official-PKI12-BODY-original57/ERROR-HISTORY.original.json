@@ -1,0 +1,11 @@
+[
+  {
+    "ordinal": 1,
+    "pin": {
+      "blob": "106fa8f62b977bea4e4cfa722bb72583a25fdf6b",
+      "bytes": 231,
+      "sha256": "c03e15893f1eec244f3c2bfbc800921e9add785baa3216a419a1f8353c0d6c2a"
+    },
+    "immutableStoreKey": "gitfirst-failure-by-blob:106fa8f62b977bea4e4cfa722bb72583a25fdf6b"
+  }
+]

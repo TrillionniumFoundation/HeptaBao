@@ -1,0 +1,28 @@
+--- a/candidate.source-template
++++ b/candidate.before
+@@ -9,19 +9,19 @@
+     "mac_capture_sqlite_synthetic_r2.py": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+     "mac_current_capture_entry_wal_r1.py": "783573e6c4dce62132baffb31c8abf49d45e4b00c901c5faa093719e1020c935",
+     "mac_current_cycle_r2.mjs": "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b",
++    "mac_current_fixture_materializer_r1.py": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9",
+-    "mac_current_fixture_materializer_r1.py": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace",
+     "mac_current_outer_inputs_r2.py": "54a5a023b4f3af34e14c6617ee97c5bb2e38fd4bf843398e437c5c95fd45f673",
++    "mac_current_outer_wal_r1.py": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0",
+-    "mac_current_outer_wal_r1.py": "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529",
+     "mac_current_phase_owner_r2.py": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60",
+     "mac_current_server_owner_r1.py": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277",
+     "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+     "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+     "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+     "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
++    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
++    "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
++    "mac_owned_launchd_r3.py": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc",
++    "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+-    "mac_native_process_observer_r1.py": "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5",
+-    "mac_owned_commands_r1.py": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1",
+-    "mac_owned_launchd_r3.py": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf",
+-    "mac_owned_unreaped_r1.py": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501",
+     "mac_registry_readonly_wal_r1.py": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+     "mac_single_native_r2.mjs": "e1b85fd42d637a2cdccb4e8ab958d4c8a99898725b3bca4558cdc2ff984da630",
+     "mac_t5_volume_guard_r1.py": "28bba28ee22a70002f47ab6cbb75a4af30d56806a85307dc585d533ce3a9f4d7"

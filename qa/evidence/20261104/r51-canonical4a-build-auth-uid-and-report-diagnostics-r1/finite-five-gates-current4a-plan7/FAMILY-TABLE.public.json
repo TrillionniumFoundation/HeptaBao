@@ -1,0 +1,191 @@
+{
+  "schema": "heptabao.current-4a-exact-family-inventory.r1",
+  "groups_original": {
+    "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+    "bytes": 35287,
+    "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+  },
+  "runner": {
+    "blob": "b3901c3ef34b4384c54e130637ea4ab8df0c6839",
+    "bytes": 38598,
+    "sha256": "3adf3aa07ec747e978f8484f670b41b2874d5f1d2b5a1a7afb45ea5989635a09"
+  },
+  "counts": {
+    "rows": [
+      {
+        "ordinal": 1,
+        "label": "native-jwt-pki-file28",
+        "profile": "file",
+        "crate": "heptabao-server",
+        "count": 28,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 2,
+        "label": "native-jwt-pki-default28",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 28,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 3,
+        "label": "legacy-jwt-default67",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 67,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 4,
+        "label": "native-auth-identity-default69",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 69,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 5,
+        "label": "snapshot-body10",
+        "profile": "ha-native-v6-peer-ingress",
+        "crate": "heptabao-ha-service",
+        "count": 10,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 6,
+        "label": "snapshot-peer7",
+        "profile": "ha-native-v6-peer-ingress",
+        "crate": "heptabao-ha-service",
+        "count": 7,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 7,
+        "label": "snapshot-actor2",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 2,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 8,
+        "label": "snapshot-wire4",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 4,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 9,
+        "label": "snapshot-service-audit4",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 4,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 10,
+        "label": "ssh25",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 25,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 11,
+        "label": "mount1",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 1,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 12,
+        "label": "redirect5",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 5,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 13,
+        "label": "actor2",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 2,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 14,
+        "label": "ordinary5",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 5,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 15,
+        "label": "no_forward6",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 6,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 16,
+        "label": "ingress_observer",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 7,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 17,
+        "label": "cold_h2",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 9,
+        "runtime_seconds": 600
+      },
+      {
+        "ordinal": 18,
+        "label": "same_root_publication",
+        "profile": "default",
+        "crate": "heptabao-server",
+        "count": 1,
+        "runtime_seconds": 600
+      }
+    ],
+    "total": 280,
+    "unique": 252,
+    "partitionUnique": [
+      164,
+      27,
+      61
+    ],
+    "partitionDisjoint": true
+  },
+  "profile_counts": {
+    "file": 28,
+    "default": 235,
+    "ha-native-v6-peer-ingress": 17
+  },
+  "unique_definition": "distinct(crate, exact fullname)",
+  "partition": {
+    "jwt_pki_auth_identity": 164,
+    "snapshot": 27,
+    "preserved_normal": 61,
+    "disjoint": true
+  },
+  "budgets": {
+    "total": 12000,
+    "one_absolute_release": 1800,
+    "precheck_max_within_same_release": 300,
+    "shared_compile": 3600,
+    "each_family": 600,
+    "deadline_reset": false
+  },
+  "actual_cases_qualified": false,
+  "verification": "Frozen groups parse and set calculation only; actual exact list/one-passed remains required."
+}

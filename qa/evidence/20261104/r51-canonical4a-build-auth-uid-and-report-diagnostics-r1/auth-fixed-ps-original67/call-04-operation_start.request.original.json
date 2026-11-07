@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b39a2fb0-fc05-83ca",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  },
+  "idempotency_key": "heptabao-mac-fixed-setuid-ps-custody-c0c5f671-streams-0"
+}

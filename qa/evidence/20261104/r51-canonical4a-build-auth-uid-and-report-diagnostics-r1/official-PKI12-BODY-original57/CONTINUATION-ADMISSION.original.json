@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.pki12.remaining-pages-continuation-admission.r1",
+  "continuationGO": {
+    "blob": "b6a009fbe66174cd1434c66ed690e7184185da3e",
+    "bytes": 3210,
+    "sha256": "8543f5745827e4709b62eede8df532ad606dbdc6213c57e8ac4ff3bc936bb935"
+  },
+  "wholeGORead": true,
+  "originalBodyGO": {
+    "blob": "f0328f282f20cb6b378ea53aaf039fa17f1bea57",
+    "bytes": 4038,
+    "sha256": "d80bac33e32e7b39eaa4ebab0e1b564942b8ab3ca7849feaedbf0567eb280536"
+  },
+  "originalArmGOContinuesUnchanged": true,
+  "actualRecoveredState": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "actualRecoveryReceipt": {
+    "blob": "f8ac5d0b1bbfc05de60a33ecfb344b9f0cbb5e80",
+    "bytes": 1247,
+    "sha256": "6c0686a3515e782f0bd7117e7be0b574a2dc4bf174e86d388e2c7cab0f5a7d6f"
+  },
+  "requests": [
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 16384,
+      "limit": 16384
+    },
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 32768,
+      "limit": 16384
+    },
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 49152,
+      "limit": 16384
+    }
+  ],
+  "maximumNativeCalls": 3,
+  "newNativeCallsSoFar": 0,
+  "page0Replay": false
+}

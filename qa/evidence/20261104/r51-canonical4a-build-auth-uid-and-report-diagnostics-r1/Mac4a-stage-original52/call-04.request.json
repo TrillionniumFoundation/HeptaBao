@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4a49405b-mac-source-only-a88b3787-streams0",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b382714d-fc05-8350",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

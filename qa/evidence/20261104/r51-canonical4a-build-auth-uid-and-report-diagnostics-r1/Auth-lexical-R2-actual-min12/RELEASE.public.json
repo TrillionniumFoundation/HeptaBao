@@ -1,0 +1,258 @@
+{
+  "schema": "heptabao.fixed-setuid-ps-lexical-original-release.r2",
+  "host": "mac",
+  "jobId": "1a1b3af5466-fc05-844c",
+  "go": {
+    "blob": "8d0244e688e9a928ff3772b7f4f7d62038507077",
+    "bytes": 11144,
+    "sha256": "ec64c36d88de0f78dfd08a6e532dd6b833930e973cf9ec6250c55b604711bea1"
+  },
+  "source": {
+    "blob": "a219542403173eac624081b938d846d60cab6795",
+    "bytes": 58079,
+    "sha256": "0ad2087613cce1e4cd6a543695689761421ff81b612263460a575ccbba583a3e"
+  },
+  "request": {
+    "blob": "c476d9c59017b7da5b63a015968d18cddd7017b4",
+    "bytes": 59007,
+    "sha256": "f5a2b45c6e3739a59a0a738bef0212ffaf36be278b255c15721c73ac705ebf62"
+  },
+  "journal": {
+    "blob": "be81a15c4a832b47e08c02bfc2df653b40c53bf6",
+    "bytes": 19056,
+    "sha256": "9051db0cb379f4cfcf9f3ebd1be88fef9c73d92fb2ac123e29dfa695ce602f5a"
+  },
+  "originalNativeCalls": 9,
+  "originalObservers": 2,
+  "immutablePages": 4,
+  "activeNativeCalls": 0,
+  "knownActiveNativeFutures": 0,
+  "pendingCall": null,
+  "activeObserver": null,
+  "allOriginalCallsAccepted": true,
+  "allOriginalObserversCompletedStoredInactive": true,
+  "allImmutablePagesClosed": true,
+  "authority": {
+    "blob": "256825e764a371e6b5b52331a5f47fda5eea45fa",
+    "bytes": 728,
+    "sha256": "82c0f71edf6b8d4b45fae08b310689ddf180c4240cba822885f083223576219e"
+  },
+  "stdout": {
+    "blob": "c3d203ed45894650efb2e35dcc37fa848459572d",
+    "bytes": 5942,
+    "sha256": "92f78f946fb9f059faa1fe414d6df48c1fe89eecb103a4c62418299220cdc05a"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalState": {
+    "blob": "773bfe7ab8c5f580164a6dfde30054a55004b3c7",
+    "bytes": 100728,
+    "sha256": "fd845b2a75255fdf85a22a8230c264d516fe246d7e02025b62656f4da6caa05b"
+  },
+  "observers": [
+    {
+      "id": "935c018fc993a7d076532e6a9aab2818da3a18516d24507feb404867f30480df",
+      "tool": "process_status",
+      "payload": {
+        "blob": "c7c55a8507821999cc009be42696580d77743861",
+        "bytes": 907,
+        "sha256": "265a1d6f6a765921f44601591cd583d878c14dba5fe7e481f24e2dd673a7de47"
+      },
+      "payloadTree": "7250e9a95003d114b3d1fb8bf767a08858cb5d66",
+      "nativeText": {
+        "blob": "256825e764a371e6b5b52331a5f47fda5eea45fa",
+        "bytes": 728,
+        "sha256": "82c0f71edf6b8d4b45fae08b310689ddf180c4240cba822885f083223576219e"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "3983e3458c1e7ec00d316590883bcf2f3ba3e41e3a44c99bf8e79fa1af331b48",
+      "tool": "process_read",
+      "payload": {
+        "blob": "784d38326ccd84fee5aba6bf69a8d3af55b7a7d8",
+        "bytes": 20121,
+        "sha256": "fec7f261d531d0e53ab61aa80387a468a3e5af9d616ad0582104b5dcd73a9799"
+      },
+      "payloadTree": "68deda852b0d1daced18215504995b61c8c05676",
+      "nativeText": {
+        "blob": "e51e788529e1cb4b186c31b6a78f7e27c32ed952",
+        "bytes": 18760,
+        "sha256": "7ef6c17183e892d203fa883ab9d5f80ce5e113a5a30b0a69e8317a372e9659dd"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "terminal": {
+    "state": "failed",
+    "exitCode": 1,
+    "outputComplete": true,
+    "outputDurable": true,
+    "terminalPublicationConfirmed": true,
+    "stdoutBytes": 5942,
+    "stderrBytes": 0
+  },
+  "actual": {
+    "error": {
+      "code": "typed_process_row",
+      "errno": null,
+      "type": "Refused",
+      "unknownErrorTextWithheld": false
+    },
+    "observationComplete": false,
+    "executionSucceeded": false,
+    "outcomeUnknown": false,
+    "allOwnDescriptorsAndChildrenClosed": true,
+    "allFixedHeldNamedFencesPassed": false,
+    "lexicalProjection": {
+      "failedNumericColumnCounts": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "fieldCountHistogram": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 719,
+        "more_than_5": 0
+      },
+      "firstRejectedShape": {
+        "failedNumericColumns": [
+          4
+        ],
+        "fieldCount": 5
+      },
+      "numericColumnLexicalCounts": [
+        {
+          "ascii_decimal": 719,
+          "missing": 0,
+          "negative_decimal": 0,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        },
+        {
+          "ascii_decimal": 719,
+          "missing": 0,
+          "negative_decimal": 0,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        },
+        {
+          "ascii_decimal": 719,
+          "missing": 0,
+          "negative_decimal": 0,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        },
+        {
+          "ascii_decimal": 718,
+          "missing": 0,
+          "negative_decimal": 1,
+          "other_ascii": 0,
+          "positive_decimal": 0
+        }
+      ],
+      "originalPredicateAllPassed": false,
+      "rawRowsOrTokensOrHashExported": false,
+      "rowCount": 719,
+      "rowsRejectedByOriginalPredicate": 1
+    },
+    "psAdmission": {
+      "effectiveUidMatches": true,
+      "expectedEffectiveUid": 0,
+      "expectedGroup": 83827,
+      "expectedParent": 83825,
+      "groupMatches": true,
+      "observedEffectiveUid": 0,
+      "observedGroup": 83827,
+      "observedParent": 83825,
+      "parentMatches": true,
+      "pid": 83827
+    },
+    "psNameFull9FencesPassed": true,
+    "psExitCode": 0,
+    "psStdoutBytes": 20851,
+    "psStderrBytes": 0,
+    "directChildReaped": true,
+    "retainedExit": {
+      "code": 1,
+      "pid": 83827,
+      "signo": 20,
+      "status": 0
+    },
+    "allGroupRowsEmptyAfterReap": true,
+    "signals": [],
+    "returnedInputFdLedger": {
+      "attempts": 2,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 2,
+      "registrationUnknown": false
+    },
+    "allReturnedInputFdsClosed": true,
+    "handlersRestored": true,
+    "original45SecondDeadlineMetAfterClosure": true
+  },
+  "recovery": {
+    "originalGitCreateExpectedTree": "4665892c2127b6a7665571e4690363098818e914",
+    "originalGitCreateOutcome": "UNKNOWN",
+    "evidencePacket": "3fc8c6cb3efb50997c9c2618bf5982bff749f692",
+    "cachedAdoptGO": {
+      "blob": "564428584ac1b3ff1bce533cffeb86bd26547803",
+      "bytes": 3063,
+      "sha256": "9a3fd9365ca1ba7c9e32487cd66b938e90aa1c63978f234c17528848c9c2c92e"
+    },
+    "actualCachedApplyPacket": "6c16fdc2af0af96b12b57a152b513f4b3100fdaf",
+    "actualCachedApplyResult": {
+      "blob": "985b4a9e18b16f0fc17e10fdf401d5330c0b7e52",
+      "bytes": 633,
+      "sha256": "ee4e7ce2953f6ee5fbd0a72452d769f2ef71a544d8e37533e5edaca5ebcfaa7c"
+    },
+    "originalPausedSnapshot": {
+      "blob": "db7b1ebc3c4c76b039f6cefb2dbe4a7071167438",
+      "bytes": 82671,
+      "sha256": "37772b46962bbe0758fe0d960f7fa19ad441ecaf8b377a539d8495dd52365a97"
+    },
+    "originalGitError": {
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    },
+    "archiveFailureAndOuterFailureRetained": true,
+    "originalPageNativeCallCount": 1,
+    "NativeCallsAddedByRecovery": 0,
+    "noOperationResultReplay": true,
+    "replacementSDKBytes": false,
+    "oldGitCreateRepeated": false
+  },
+  "limitsPreserved": {
+    "scriptWorkSeconds": 35,
+    "scriptDeadlineSeconds": 45,
+    "nativeTimeoutSeconds": 60,
+    "primaryCommandSeconds": 4,
+    "cleanupSeconds": 9,
+    "streamingCapEach": 262144
+  },
+  "scope": {
+    "newSdkBusiness": false,
+    "credentials": false,
+    "T5": false,
+    "launchd": false,
+    "oldPs84947And85012Reclassified": false,
+    "oldManagedCleanupClaimed": false,
+    "oldTableValuesReconstructed": false
+  },
+  "interpretation": "This fresh command observed exactly one negative-decimal UID-column token and no other original-predicate rejection class. Its token value and row were not exported. The unchanged original guard still refused it; final input fence remains false. Current primary custody/exit/cleanup are positive independent facts. This does not reconstruct the old table or qualify SDK/business.",
+  "laneReleased": true,
+  "noNewNativeAuthorized": true,
+  "followup": "Pure original-chain archival and exact signed-UID source repair proposal only."
+}

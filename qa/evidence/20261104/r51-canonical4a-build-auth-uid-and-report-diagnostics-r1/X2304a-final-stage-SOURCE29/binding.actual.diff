@@ -1,0 +1,33 @@
+--- a/binding.json
++++ b/binding.json
+@@ -19,9 +19,9 @@
+   "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+   "carrier": {
+     "schema": "heptabao.x2304a.two-bundle-source-only-carrier.v1",
+-    "blob": null,
+-    "bytes": null,
+-    "sha256": null
++    "blob": "62d3896e9ba6a2421746af238b041de5310cdaf1",
++    "bytes": 237239,
++    "sha256": "6c0928fbab276f3c7c22ddacb1d02649a6e9020ee58760213650af9e3316dc8a"
+   },
+   "bundles": [
+     {
+@@ -38,13 +38,13 @@
+     {
+       "field": "canonical_4a_base64",
+       "name": "canonical-hb-4a49405b-from02b.bundle",
+-      "bytes": null,
+-      "sha256": null,
++      "bytes": 6815,
++      "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+       "target_mode": 256,
+       "prerequisite": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+       "head": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+-      "header": null,
+-      "header_sha256": null
++      "header": "# v2 git bundle\n-02b90762b3d6cc8699cc88bffb6f76cb1f07e270 fix(storage,auth): integrate streaming snapshots and JWT policy schema 147\n4a49405b93c45ab1c25ecba11cde63a7ede20dce HEAD\n\n",
++      "header_sha256": "e1af68cc94dad436c795a3c1e7d809b73d8622bcd566b95a8c464b75ac50fa19"
+     }
+   ]
+ }

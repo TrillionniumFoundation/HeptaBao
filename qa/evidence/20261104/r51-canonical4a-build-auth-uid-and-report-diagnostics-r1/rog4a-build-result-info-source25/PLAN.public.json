@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.4a-known-failed-build-fixed-INFO-SOURCE.r1",
+  "state": "SOURCE_ONLY_NO_NATIVE_GO",
+  "scope": "build_result_file_info_only",
+  "candidate": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+  "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+  "slot": "combined_4a49405b_exact_key_conditional_admission_r1",
+  "original_job": "1a1b3978da9-fc05-83bd",
+  "journalBefore": {
+    "blob": "f5654e24460c5dc41df6f61e7b1d43b1203f9342",
+    "bytes": 23797,
+    "sha256": "ee3cc9b05c12901caa1ec7f591681e809c98f3679084545cfedbb1868ef5ceff"
+  },
+  "journalAfter": {
+    "blob": "b3ef235cd34fa6acbbb4a226f567a381289cb76a",
+    "bytes": 31733,
+    "sha256": "9fd13d3f2ab07c24c8f850000da71c1c8be7c9ad2c91266ace0433940ffa94d0"
+  },
+  "request": {
+    "blob": "28b3d72790e25a1058351341bf2c32d0f2e63eff",
+    "bytes": 234,
+    "sha256": "932bb58bd27f555bd0986bbb3ba7129c493e64113a30ab6ce3c1e275cc8e76bb"
+  },
+  "actualClosedState": {
+    "blob": "ffd08542730b5033fdc564c1b38a000f6515c6c8",
+    "bytes": 286087,
+    "sha256": "f55033d773c001c3e058c4d359f790f76ca9dd7402f9d1756fa29bff7ccda6a0"
+  },
+  "terminalWholeTree": "2d1d6c77e6ce2358e70275d1770894eb5501c9bd",
+  "rootTerminalQualificationTree": "2758801fb945319cc570fa6b10f90ad6fb9de579",
+  "reportPath": "/home/qian-qi/hb-4a49405b-controls-20261106-r1/build-tests-r1/result.public.json",
+  "expectedSHA256": "7be18adad000805344acf09d01b91fbd1ed99e561bfbc97c9faf0fd56a07b250",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "process_start_authorized": false,
+  "metadata": {
+    "maximumBytes": 4194304,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "links": 1,
+    "platform": "linux",
+    "size": null,
+    "version": null,
+    "full9": null,
+    "actualINFOOnly": true
+  },
+  "observations": {
+    "maximumStatusCalls": 8,
+    "maximumImmutablePages": 128,
+    "pageBytes": 8192,
+    "payloadBytes": 1048576,
+    "oneCallOrFuture": true
+  },
+  "donor": {
+    "journal": {
+      "blob": "7e2f29ccc85f9c111e2886d129ea5c4560c43a37",
+      "bytes": 26173,
+      "sha256": "ef550736faceaf12138a4ecba98874667e4653eb9b7a10815a7e5a922374934d"
+    },
+    "GO": {
+      "blob": "67b2f55eb6a01416870f89dea21c27247c73ec0f",
+      "bytes": 2712,
+      "sha256": "628515fca1eff01a2e718f3392fae6f1a4c57386b2175eb2f44df2d8c505f055"
+    },
+    "contract": "Original successful INFO-only branch; source logic reused, no former runtime qualification inherited."
+  },
+  "delta": {
+    "edits": 7,
+    "hunks": 6,
+    "unchangedNamedFunctions": 10,
+    "additionalGuards": [
+      "exact current terminal state pin before authorization",
+      "exact before-state in new GO",
+      "once INFO marker separate from original process_read counters",
+      "new INFO GO cannot create extra job observers"
+    ],
+    "currentOriginals": "43 accepted calls /14 closed observers /14 pages preserved; originalBuild and oldfailedINFO frozen separately."
+  },
+  "requiredGOFields": {
+    "authorization": "GO",
+    "scope": "build_result_file_info_only",
+    "original_job": "1a1b3978da9-fc05-83bd",
+    "maximum_file_info_starts": 1,
+    "binary_read_authorized": false,
+    "exact_request": {
+      "blob": "28b3d72790e25a1058351341bf2c32d0f2e63eff",
+      "bytes": 234,
+      "sha256": "932bb58bd27f555bd0986bbb3ba7129c493e64113a30ab6ce3c1e275cc8e76bb"
+    },
+    "actualClosedState": {
+      "blob": "ffd08542730b5033fdc564c1b38a000f6515c6c8",
+      "bytes": 286087,
+      "sha256": "f55033d773c001c3e058c4d359f790f76ca9dd7402f9d1756fa29bff7ccda6a0"
+    }
+  },
+  "steps": [
+    "Root whole exact new GO; existing slot attach authorize_stage_result_info only, never initialize.",
+    "Prepare exact file_info request/intent/armed into Git whole; independent model boundary.",
+    "Once invoke; original SDK whole before isError/native parse.",
+    "Only returned operation: at most8 status,128 contiguous8KiB pages, payload1MiB; each original SDK whole first.",
+    "Full original payload whole then exact report SHA/Linux owner-mode-link/version validation; close same original observer.",
+    "Return actual metadata and stop. No BODY/refresh/new process or Cargo until new exact scope."
+  ],
+  "history": {
+    "originalUnknownBuild": {
+      "blob": "2d512764d26256fabaaaf7deb3eae41120d92d3e",
+      "bytes": 181122,
+      "sha256": "196a33b53ea752d27a5226e06f90e75383b1f621a44791e0e240ded17f0bac82"
+    },
+    "originalFailedINFO": {
+      "blob": "24f7020e488bea35ab336990345c4d767d89da66",
+      "bytes": 11134,
+      "sha256": "d4105a16656aa555e755da451da41801438ab779947d3efbae66466aac82ccbb"
+    },
+    "originalMissingReportWasBeforeKnownNewAdmission": true,
+    "oldInfoNotRetried": true,
+    "oldKeyNotReused": true,
+    "normalReleaseSuccessPreserved": true,
+    "terminalExit": 1,
+    "final280Qualified": false
+  },
+  "onAnyUnknown": "Preserve once markers/raw SDK/state; no retry/rekey or replacement operation.",
+  "NativeCalls": 0,
+  "actualMetadataObtained": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

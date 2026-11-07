@@ -1,0 +1,227 @@
+{
+  "schema": "heptabao.fixed-ps-signed-uid-pure-boundaries.r3",
+  "passed": true,
+  "caseCount": 18,
+  "checks": [
+    {
+      "name": "zero",
+      "passed": true,
+      "controller": {
+        "accepted": true,
+        "uid": "0"
+      },
+      "manager": {
+        "accepted": true,
+        "uid": "0"
+      }
+    },
+    {
+      "name": "operator-positive",
+      "passed": true,
+      "controller": {
+        "accepted": true,
+        "uid": "501"
+      },
+      "manager": {
+        "accepted": true,
+        "uid": "501"
+      }
+    },
+    {
+      "name": "negative-display",
+      "passed": true,
+      "controller": {
+        "accepted": true,
+        "uid": "-1"
+      },
+      "manager": {
+        "accepted": true,
+        "uid": "-1"
+      }
+    },
+    {
+      "name": "signed32-minimum",
+      "passed": true,
+      "controller": {
+        "accepted": true,
+        "uid": "-2147483648"
+      },
+      "manager": {
+        "accepted": true,
+        "uid": "-2147483648"
+      }
+    },
+    {
+      "name": "signed32-maximum",
+      "passed": true,
+      "controller": {
+        "accepted": true,
+        "uid": "2147483647"
+      },
+      "manager": {
+        "accepted": true,
+        "uid": "2147483647"
+      }
+    },
+    {
+      "name": "unsigned-half",
+      "passed": true,
+      "controller": {
+        "accepted": true,
+        "uid": "2147483648"
+      },
+      "manager": {
+        "accepted": true,
+        "uid": "2147483648"
+      }
+    },
+    {
+      "name": "unsigned32-maximum",
+      "passed": true,
+      "controller": {
+        "accepted": true,
+        "uid": "4294967295"
+      },
+      "manager": {
+        "accepted": true,
+        "uid": "4294967295"
+      }
+    },
+    {
+      "name": "below-signed32",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "above-unsigned32",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "plus-rejected",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "nondigit-rejected",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "fraction-rejected",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "too-many-digits",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "non-ASCII-rejected",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "missing-column",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "extra-column",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "negative-PID-still-rejected",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    },
+    {
+      "name": "plus-PPID-still-rejected",
+      "passed": true,
+      "controller": {
+        "accepted": false,
+        "uid": null
+      },
+      "manager": {
+        "accepted": false,
+        "uid": null
+      }
+    }
+  ],
+  "execution": "pure V8 model bound to both exact Python predicates; no Python/ps/host execution",
+  "acceptedUidValuesArePreservedSignedIntegers": true,
+  "NativeCallsAdded": 0,
+  "productQualification": false
+}

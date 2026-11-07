@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.root.r51.next-actions",
+  "cutoff_UTC": "2026-11-07 02:46:35 UTC",
+  "taskContinues": true,
+  "sequence": [
+    {
+      "step": 1,
+      "action": "Read the fixed ROG failed-build public report in two version-bound ranges 0/65536 and65536/25716, join exact original bytes and verify whole SHA before interpreting the failure; fix the actual cause without replaying the old build.",
+      "status": "actual INFO qualified; BODY SOURCE/GO pending"
+    },
+    {
+      "step": 2,
+      "action": "Observe the original Mac current4a normal release and89 unique/117 executions; qualify actual artifacts and paired build receipts before current AuthBus/formal34 binding.",
+      "status": "actual ACK and fresh preflight; last observed running"
+    },
+    {
+      "step": 3,
+      "action": "Finish current X230 source staging, then current formal34MiB migration/recovery on Mac andX230 with complete cipher backups and restart/restore evidence.",
+      "status": "X230 two-bundle source qualified, no current stage execution; formal34 pending"
+    },
+    {
+      "step": 4,
+      "action": "Run current Mac/ROG/Pocket4 real leader loss, election, quorum/ReadIndex, persistence and restart cases on the qualified same candidate.",
+      "status": "current candidate runtime pending"
+    },
+    {
+      "step": 5,
+      "action": "Bind current Mac build into the repaired current22-source SDK chain and establish fresh trusted credential/TLS authority independently ofJ3160; exercise AppRole/TLS/KV/Policy/renew/revoke with real callers and preserve five-agent model/provider configuration.",
+      "status": "ps signed UID prerequisite passed; SDK credentials/issuer pending"
+    },
+    {
+      "step": 6,
+      "action": "For every registered client, finish real credential read/write, restart and inverse rollback, then switch traffic one at a time; finish each registered backup restore path.",
+      "status": "0 client cutovers; no allMigrated assertion"
+    },
+    {
+      "step": 7,
+      "action": "After all registered clients and backup paths have migrated and replacement evidence is complete, remove obsolete OpenBao/HeptaBao services, binaries and regenerable intermediates, retain latest HeptaBao service and immutable execution evidence.",
+      "status": "cleanup gated and not executed"
+    }
+  ],
+  "knownFullProductBoundaries": [
+    "Current4a production release was observed on ROG, but the enclosing build/tests job ended failed1; the exact phase remains pending the bound public report. Mac current4a normal89 unique/117 executions is running and unqualified.",
+    "Current4a formal34MiB migration/recovery and actual Mac/ROG/Pocket4 failover/ReadIndex/persistence/restarts remain pending; historical4e808 results do not qualify current4a.",
+    "Local JWT batching is implemented. Current native JWT owner/capability code rejects remote configuration, while HTTPS/JWKS/discovery implementation and remote tests exist elsewhere; native remote integration and actual compatibility remain a concrete unclosed boundary.",
+    "Remote JWKS/OIDC/Kubernetes auth/MFA/nonroot SDK, Database/Kubernetes/RabbitMQ formal-native behavior, ACME/EAB/KMS/HSM/admin/seal/root/rekey/rotate/plugins/protectedKV2/control groups/nondefaultRaft remain unqualified for a full-product replacement claim; existing engine implementations are not assumed absent.",
+    "Official OpenBao2.7.1 ACL23 and PKI12 baselines are evidence of the official artifact only; current candidate HTTP parity is pending. PKI expired/revoked lookup raw400s are retained without normalization.",
+    "Current fixed ps signed UID parser passed the fresh original probe; this does not qualify full AuthBus SDK, current product binary, new trusted issuer, actual credential read/write, renewal/revocation, or old managed cleanup.",
+    "Registered clients and backup/restore paths retain their finite scope. Zero client cutovers and zero legacy cleanup are complete; actual credential read/write, restart and inverse rollback are required before each switch."
+  ]
+}

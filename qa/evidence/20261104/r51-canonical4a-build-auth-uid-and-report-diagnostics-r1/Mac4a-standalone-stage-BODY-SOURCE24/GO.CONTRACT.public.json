@@ -1,0 +1,42 @@
+{
+  "authorization": "GO",
+  "scope": "mac4a_stage_result_binary_read_only",
+  "info_operation": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "maximum_binary_read_operations": 1,
+  "maximum_file_info_operations": 0,
+  "maximum_process_start_calls": 0,
+  "immutable_body_page_bytes": 16384,
+  "exact_request": {
+    "blob": "a24a188ed159093a3f60ab439deb7dc53ba6ef61",
+    "bytes": 428,
+    "sha256": "9966fa785adda9eb2b855277fab800e71a59ebfe5810a7a3247bea70f089f142"
+  },
+  "original_paused_state": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "completed_retrieval_state": {
+    "blob": "670606feaab7a5947d02374ddf8773c7a4928d73",
+    "bytes": 2815,
+    "sha256": "25be8ac2e6f5c72a684401865aff56958f8dc3906245580038cad3e650d5d5c9"
+  },
+  "no_old_slot_handback": true,
+  "fixed_report": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/control/stage-result.public.json",
+    "bytes": 7685,
+    "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+    "version": "16777244:72771947:7685:1794013039551370413:1794013039551379746",
+    "full9Strings": [
+      "16777244",
+      "72771947",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "7685",
+      "1794013039551370413",
+      "1794013039551379746"
+    ]
+  }
+}

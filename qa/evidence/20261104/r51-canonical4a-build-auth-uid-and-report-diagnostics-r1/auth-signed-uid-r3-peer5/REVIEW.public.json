@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.B.A-UID-r3-limited-source-peer.r1",
+  "scope": "Only manager _rows single hunk and controller same UID predicate; no source44 whole qualification or execution.",
+  "inputs": {
+    "tree": "9ae05113a73e1232094dd7844940aeb8a8792498",
+    "manager_before": {
+      "blob": "48f3e8394a15830953fb90e3470e8ba98e7df509",
+      "bytes": 60016,
+      "sha256": "edeb2b60dd102ea300887d3d2f23fc39682aa8700ce88d6273307f1b5d2ecbd4"
+    },
+    "manager_after": {
+      "blob": "92a1293db9792644b378da07eb9650951979358a",
+      "bytes": 60153,
+      "sha256": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf"
+    },
+    "controller_before": {
+      "blob": "a219542403173eac624081b938d846d60cab6795",
+      "bytes": 58079,
+      "sha256": "0ad2087613cce1e4cd6a543695689761421ff81b612263460a575ccbba583a3e"
+    },
+    "controller_after": {
+      "blob": "111b392deb1a1f0b02aa27fd4c91ea8f2505b064",
+      "bytes": 58347,
+      "sha256": "35fa06300c0c2c1d66c5eca8fee7a434d04831fe5dfd5329388674175269efd7"
+    },
+    "diffs": {
+      "manager.forward.diff": {
+        "blob": "f1e9b3fc8ce60474f5e197f6d56c4c1bb4b18e24",
+        "bytes": 697,
+        "sha256": "3feb10dbdce1723fcf15713e298f6e24f7e57b1a6e4be822a936d65c4441255a"
+      },
+      "manager.inverse.diff": {
+        "blob": "2561363c01a788d24be7b052ee648bc2d022afde",
+        "bytes": 697,
+        "sha256": "cadaed26f67404da096b197a84b1ebf35fad25aa3d915309720bcc4338a327ce"
+      },
+      "controller.forward.diff": {
+        "blob": "3a577c4c98ea132b28bbe7b8448d6195bb564db2",
+        "bytes": 2069,
+        "sha256": "759505bd289a891608ca142ae03098c34b4d220ef4720122b9f46e8ff6efcf3e"
+      },
+      "controller.inverse.diff": {
+        "blob": "d401197638ebbed36b7fb5fee2027bc5bd293334",
+        "bytes": 2069,
+        "sha256": "2558cc35bb380696205b5fd4ead9af27be94fd709f103bd1ea11889349650bf1"
+      }
+    },
+    "unchanged_owner_module": {
+      "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",
+      "bytes": 13221
+    },
+    "prior_owner_read": "Same previous narrow read: capture_child has fixed PPID/PGID/EUID constraints and exact ps exception; later group members retain operator UID guard. Embedded module bytes are unchanged."
+  },
+  "conclusion": "No new SOURCE blocker in this exact slice.",
+  "findings": [
+    {
+      "subject": "Same grammar and bounds",
+      "evidence": "manager lines656-664 and controller lines265-276",
+      "assessment": "ASCII strict decode and five-column shape retained; first3 decimal unchanged. UID alone accepts optional ASCII '-' and1..10 digits, then int must be in [-2^31,2^32-1]. No unsigned wrap or normalization replaces the value."
+    },
+    {
+      "subject": "Filtering and ownership",
+      "evidence": "group membership/self PID selection after type and bound; manager one strict hunk; controller embedded modules unchanged",
+      "assessment": "Accepting a syntactically valid foreign UID row does not grant signal/reap authority. _call/Commands/owner capture/WNOWAIT/cleanup and original consumer run_phase are byte-identical outside the one manager hunk."
+    },
+    {
+      "subject": "Public projection",
+      "evidence": "controller2-hunk exact delta",
+      "assessment": "Adds signedUidRowsAccepted count only. Prior closed lexical counts and selected self row unchanged; no foreign UID/PID/value/raw row/hash export. Aggregate count is not evidence of any particular signed UID magnitude."
+    },
+    {
+      "subject": "Remaining actual limit",
+      "assessment": "This reads source only; the earlier R1/R2 rejected parser outcome remains. It does not identify the rejected token, prove new execution, close managed jobs, or approve old namespace dispatch."
+    }
+  ],
+  "verification": {
+    "own_pure_checks": 14,
+    "all_pass": true,
+    "author78_or18_reexecuted": false,
+    "Python": 0,
+    "Native": 0,
+    "host_queries": 0,
+    "product_edits": 0
+  },
+  "old_failures_unchanged": true
+}

@@ -1,0 +1,77 @@
+{
+  "authorization": "GO",
+  "scope": "mac4a_stage_info_original_page0_once",
+  "maximumNativeCalls": 1,
+  "operationId": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "request": {
+    "blob": "2e67f1baabc04575aa277fcb2d270271500e68e3",
+    "bytes": 121,
+    "sha256": "177140e2743e89076257a772e458a8b784ed91e32f0bba3a96ef77083eb2dea9"
+  },
+  "originalInfoState": {
+    "blob": "c430ef8d263c59dfced528e9a6b35a19004b162f",
+    "bytes": 69161,
+    "sha256": "61b9e20f71244ac11c2b304a70eee0ee6f218cacb5a7fe382483f61cb632b93b"
+  },
+  "originalCompletedInactiveStatus": {
+    "blob": "be8f407df5b4e27260b8bb67170e8130e73e0eda",
+    "bytes": 800,
+    "sha256": "db1881cb30ef27e3e46c5248efb9c8f75bc63555cb23eb8e3cca6724b7210f8a"
+  },
+  "originalFailedPageSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "maximumStatus": 0,
+  "maximumOperationStart": 0,
+  "maximumProcessStart": 0,
+  "maximumBodyRead": 0,
+  "originalSlotMustRemainByteIdentical": true,
+  "opaquePayloadOnly": true,
+  "metadataAndBodyQualification": false,
+  "schema": "heptabao.root.go.mac4a.original-INFO-page0-immutable-retrieval.r1",
+  "issuedAtUtc": "2026-11-07 01:28:14 UTC",
+  "sourceTree": "9444c4143c9b6cdfff58a7bde85e1211c22da346",
+  "source": {
+    "blob": "0f049d847c7f1cd39f1b391e083bd3fe428dbe7a",
+    "bytes": 7301,
+    "sha256": "513b22b5cb098959a2954b602146aa764e62b1f046c27493eaf4c0cd6642358a"
+  },
+  "retrievalSlot": "successor4a_mac_stage_info_page0_retrieval_r1",
+  "rootQualification": {
+    "blob": "f8010283939880d522540e7ef54dbe9eb7a6a652",
+    "bytes": 3980,
+    "sha256": "bf3597e816b4fe26efaabd2b15057cc8f83a301b1ee7f43170ce3f4f486f5152"
+  },
+  "rootQualificationTree": "0f1fcc7282a2e4cf145f23e0302e960f345dc5d4",
+  "rootSourceChecks": 32,
+  "rootActualBindings": 7,
+  "originalINFO_GO": {
+    "blob": "16eb0795864bd79173519fd03868b6da884acdf9",
+    "bytes": 2744,
+    "sha256": "20bef26ef6827884e78806d436a7adc2a62b873a110a41678d251f6b3474c847"
+  },
+  "offset": 0,
+  "limit": 8192,
+  "maximumCompletePayloadBytes": 8192,
+  "noNewInfoOrStatus": true,
+  "noStart": true,
+  "noBODY": true,
+  "noOldSlotHandback": true,
+  "preserveOldTimeout": true,
+  "freshRequestArchiveRequired": true,
+  "wholeOriginalSDKThenOpaquePayloadBeforeSemanticParsing": true,
+  "scheduling": {
+    "conditional": true,
+    "root": 0,
+    "B": 1,
+    "C": 1,
+    "A": 0,
+    "maximumOwnerLanes": 2,
+    "condition": "Wait for root explicit actual fixed-ps job and observer closure-bound C lane allocation. Do not initialize, arm or invoke before that allocation."
+  },
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

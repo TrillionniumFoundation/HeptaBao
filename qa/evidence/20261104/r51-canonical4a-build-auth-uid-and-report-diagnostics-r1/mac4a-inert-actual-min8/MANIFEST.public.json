@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.public-actual-manifest.r1",
+  "entries": [
+    {
+      "path": "ROOT-GO.original.json",
+      "blob": "a7f6d0404fb9aa5b62e8848aea6a1a696e3cbe09",
+      "bytes": 6155,
+      "sha256": "5a4cce4197b9006d53c93982b77e12e2272dfdcf997dd95779247bc8794226bb"
+    },
+    {
+      "path": "START.original.sdk.json",
+      "blob": "d21acd137037db53df885f7cd9f310fed30382d7",
+      "bytes": 10964,
+      "sha256": "99ac7aeb44d2b78b9f1b619eb1dab3e92203675862e397562b4e721ab1e6198f"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "234255cec0eec3213e8619f20c81d8c2b4bae358",
+      "bytes": 731,
+      "sha256": "2ace47183f0c8ac5b360b859f45c91a3301401e07d9cfa299fe92f07712a6887"
+    },
+    {
+      "path": "streams.original.json",
+      "blob": "1ea8dfcfa44eeb645bacc78a843bee3367ae5557",
+      "bytes": 9472,
+      "sha256": "dec52f1d3d0bbe6c1c9febf027c055cf18d5c4ef48d3c79f3c85f1d9a9495b1e"
+    },
+    {
+      "path": "stdout.original.json",
+      "blob": "a3bac1e0c11d73e615e8c0e5f21acebecba67e95",
+      "bytes": 2988,
+      "sha256": "efaafc07557758ead03fbfd2cfaa61438841beffb2869c8490e6466a07c6cddb"
+    },
+    {
+      "path": "state.closed.original.json",
+      "blob": "ad54ded7fb41bc6a677dc863da5f72d63c041e73",
+      "bytes": 159150,
+      "sha256": "4d30328330e79e8a5b7039d0937d111bf93a868bf59e7c1313eed884ed22e6a7"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "b1ce6ddf89e1104cc2f43a6d9c76c16dfb55a7cb",
+      "bytes": 5042,
+      "sha256": "688644f817593a8e260a7a76c4cc5e3e2362e6863a5954ed41e0c3fb5db7d061"
+    }
+  ]
+}

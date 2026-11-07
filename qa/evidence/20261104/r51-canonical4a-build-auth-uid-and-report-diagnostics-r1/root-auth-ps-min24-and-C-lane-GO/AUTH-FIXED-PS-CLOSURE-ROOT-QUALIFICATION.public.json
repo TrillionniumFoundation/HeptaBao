@@ -1,0 +1,154 @@
+{
+  "schema": "heptabao.root.Auth-fixed-ps-min-closure-qualification.r1",
+  "qualifiedAtUtc": "2026-11-07 01:40:48 UTC",
+  "sourceTree": "f932973c64a516304a34eaa2ff5b75d03a34b41c",
+  "whole": {
+    "tree": "f932973c64a516304a34eaa2ff5b75d03a34b41c",
+    "files": 12,
+    "bytes": 135617,
+    "merkle": {
+      "root_sha": "f932973c64a516304a34eaa2ff5b75d03a34b41c",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "jobId": "mac/1a1b39a2fb0-fc05-83ca",
+  "checks": [
+    {
+      "name": "all12_blobs_root_whole_and_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_start_identity",
+      "passed": true
+    },
+    {
+      "name": "actual_request_binding",
+      "passed": true
+    },
+    {
+      "name": "original_go_and_lane_go_exact",
+      "passed": true
+    },
+    {
+      "name": "known_terminal_failure",
+      "passed": true
+    },
+    {
+      "name": "terminal_output_complete_and_durable",
+      "passed": true
+    },
+    {
+      "name": "nine_original_calls_all_accepted",
+      "passed": true
+    },
+    {
+      "name": "both_original_observer_statuses_closed",
+      "passed": true
+    },
+    {
+      "name": "two_observers_four_pages_closed",
+      "passed": true
+    },
+    {
+      "name": "no_pending_native_or_logical_work",
+      "passed": true
+    },
+    {
+      "name": "complete_stream_cursors",
+      "passed": true
+    },
+    {
+      "name": "reported_failure_not_suppressed",
+      "passed": true
+    },
+    {
+      "name": "single_exact_fixed_ps_command",
+      "passed": true
+    },
+    {
+      "name": "custody_admitted_expected_effective_uid_zero",
+      "passed": true
+    },
+    {
+      "name": "command_fences_and_exit_zero",
+      "passed": true
+    },
+    {
+      "name": "retained_exit_and_same_direct_child_reaped",
+      "passed": true
+    },
+    {
+      "name": "owned_group_closed_without_signals",
+      "passed": true
+    },
+    {
+      "name": "all_own_fds_and_children_closed",
+      "passed": true
+    },
+    {
+      "name": "handlers_and_original_deadline",
+      "passed": true
+    },
+    {
+      "name": "final_fence_not_claimed",
+      "passed": true
+    },
+    {
+      "name": "unrelated_process_table_not_exported",
+      "passed": true
+    },
+    {
+      "name": "no_business_or_old_cleanup_claim",
+      "passed": true
+    },
+    {
+      "name": "release_bindings_exact",
+      "passed": true
+    },
+    {
+      "name": "lane_released_not_reauthorized",
+      "passed": true
+    }
+  ],
+  "checksPassed": 24,
+  "release": {
+    "blob": "d71378cde6065986f23f238c34311b1fbd0fa7d4",
+    "bytes": 5686,
+    "sha256": "45331588e385c07e6447c0fc627ac2c276722485205babc5854e3f021d607fb5"
+  },
+  "authority": {
+    "blob": "d65a5d09e86aca102a1d298963abdc094985a6dd",
+    "bytes": 728,
+    "sha256": "fb10633654d08010497d2223e3a7b232a1bffc1499eba782edb187cd773a4f29"
+  },
+  "actualReport": {
+    "blob": "57c9ac037053bc2163db3f12083529c02244c9df",
+    "bytes": 5208,
+    "sha256": "27b72de7619e9579fbcfeac27757087877a287429cda0e8e70d750fc503bb8fc"
+  },
+  "finalState": {
+    "blob": "da275ecb3984552da544e75f7008dc1a7c3dd95d",
+    "bytes": 91392,
+    "sha256": "679863b40914263e2eea14f502243bf11d2f65f42cce71b2d5d10cdbf9c08563"
+  },
+  "overallDiagnosticPassed": false,
+  "knownFailure": "typed_process_row",
+  "fixedPsCustodyExitAndClosureSubobservationsPassed": true,
+  "finalHeldNamedInputFencesQualified": false,
+  "actualBadFieldCauseKnown": false,
+  "allOwnNativeAndObserverWorkClosed": true,
+  "ALaneReleased": true,
+  "fullOriginalChainRootQualificationPending": true,
+  "pureInspectionErrorPreserved": {
+    "error": "TypeError: s.calls.map is not a function",
+    "kind": "pure read-only inspection",
+    "nativeCalls": 0,
+    "gitMutations": 0,
+    "originalEvidenceChanged": false
+  },
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

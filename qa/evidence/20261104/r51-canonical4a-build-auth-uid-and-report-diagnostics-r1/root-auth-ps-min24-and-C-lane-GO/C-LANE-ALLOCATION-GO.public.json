@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.root.Mac4a-INFO-retrieval-actual-lane-allocation.r1",
+  "authorization": "GO",
+  "scope": "activate_existing_exact_Mac_INFO_page0_retrieval_GO_after_A_actual_closure",
+  "issuedAtUtc": "2026-11-07 01:40:48 UTC",
+  "originalExecutionGO": {
+    "blob": "b55a44c0d8933bd85dce598b0344dc294df6ea20",
+    "bytes": 2751,
+    "sha256": "29bdb779f4463d0fde7d6436934daece09bba60bf5182d811dac462b2351fb6a"
+  },
+  "originalExecutionGOTree": "23ee3170d1dcf29420ed074f871c4dc80fee42f7",
+  "sourceRequestOperationAndOldFrozenStateUnchanged": true,
+  "supersedesOnlySchedulingCondition": true,
+  "physicalReleaseQualification": {
+    "blob": "17e24ea98a0f11996528290da736fa87f48fd806",
+    "bytes": 3858,
+    "sha256": "77c34b891188a95c034cf9e65a7e358763b5e8bc1757ed62ef7fbb9aa42f2d99"
+  },
+  "actualClosureSourceTree": "f932973c64a516304a34eaa2ff5b75d03a34b41c",
+  "AJobId": "mac/1a1b39a2fb0-fc05-83ca",
+  "AKnownDiagnosticFailure": "typed_process_row",
+  "ANativeCallsInFlight": 0,
+  "ANativeFuturesActive": 0,
+  "ANewNativeActionsHeld": true,
+  "CInitializeAndArmNowAuthorized": true,
+  "maximumCOperationResultCalls": 1,
+  "operationId": "de877b50d2ab34adac0ab37da7e2de06bb44b9b993da97c20b7bca92592bdd39",
+  "retrievalSlot": "successor4a_mac_stage_info_page0_retrieval_r1",
+  "offset": 0,
+  "limit": 8192,
+  "noNewInfoOrStatus": true,
+  "noStart": true,
+  "noBODY": true,
+  "noOldSlotHandback": true,
+  "preserveOriginalFailedPageAndPausedState": true,
+  "laneAllocation": {
+    "root": 0,
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "maximum": 2
+  },
+  "BActualJob": "rog/1a1b3978da9-fc05-83bd",
+  "noDeadlineOrByteBoundChange": true,
+  "allOriginalFailuresPreserved": true,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.root.Auth-lexical-cached-SDK-adopt-SOURCE13-qualification.r1",
+  "sourceTree": "3fc8c6cb3efb50997c9c2618bf5982bff749f692",
+  "whole": {
+    "tree": "3fc8c6cb3efb50997c9c2618bf5982bff749f692",
+    "files": 12,
+    "bytes": 102446,
+    "merkle": {
+      "root_sha": "3fc8c6cb3efb50997c9c2618bf5982bff749f692",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "source": {
+    "blob": "752f708bb899d2fa75ddaf6a9e4d6e36c5c4217b",
+    "bytes": 5249,
+    "sha256": "03eb6aa8d6a312f81d4d5ee26e2e7df860d36cbf1a365349c64f29e572f3efa9"
+  },
+  "checks": [
+    {
+      "name": "root_whole_new_recovery12",
+      "passed": true
+    },
+    {
+      "name": "original_recovery_GO_exact",
+      "passed": true
+    },
+    {
+      "name": "original_native_sdk_and_failed_state_exact",
+      "passed": true
+    },
+    {
+      "name": "root_422_404_bytes_exact",
+      "passed": true
+    },
+    {
+      "name": "once_pure_apply_succeeds",
+      "passed": true
+    },
+    {
+      "name": "only_three_original_fields_and_one_added_record",
+      "passed": true
+    },
+    {
+      "name": "receipt_phase_and_paused_exact",
+      "passed": true
+    },
+    {
+      "name": "original_called_pending_observer_preserved",
+      "passed": true
+    },
+    {
+      "name": "both_original_errors_retained",
+      "passed": true
+    },
+    {
+      "name": "old_Git_unknown_context_unchanged",
+      "passed": true
+    },
+    {
+      "name": "SDK_and_snapshot_not_rewritten",
+      "passed": true
+    },
+    {
+      "name": "second_apply_refused_without_state_change",
+      "passed": true
+    },
+    {
+      "name": "no_native_sdk_interpretation_or_dispatch_in_source",
+      "passed": true
+    }
+  ],
+  "checksPassed": 13,
+  "privatePureHarnessOnly": true,
+  "actualLiveStateNotChanged": true,
+  "NativeCalls": 0,
+  "GitCalls": 0,
+  "originalSDKStillUninterpreted": true,
+  "oldCreateOutcomeRemainsUNKNOWN": true,
+  "afterApplyRequiresUnchangedOriginalAccept": true
+}

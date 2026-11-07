@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.root.go.PKI12-original-remaining-pages.r2",
+  "authorization": "GO",
+  "scope": "original_completed_inactive_PKI12_body_remaining_three_pages_only",
+  "issuedUTC": "2026-11-07 01:09:03 UTC",
+  "sourceTree": "c590555ad253e69a4345032ff9ad804d862913db",
+  "correctedJournal": {
+    "blob": "86edcf2a0d2d5206025a6a702883e6b645e2cc87",
+    "bytes": 28904,
+    "sha256": "0940f9d7b0c206864962e77cf40106e7b4d3faf2ec0ad225b472840e214fc107"
+  },
+  "originalOperation": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+  "actualRecoveredState": {
+    "blob": "8310d5b387c5d412294f4c9c7c44e1784ff72684",
+    "bytes": 268747,
+    "sha256": "d82280f45b3dfe3d0fe1aa9d761829a2dcfc4e3dd8db249317973146c183ca92"
+  },
+  "actualRecoveryReceipt": {
+    "blob": "f8ac5d0b1bbfc05de60a33ecfb344b9f0cbb5e80",
+    "bytes": 1247,
+    "sha256": "6c0686a3515e782f0bd7117e7be0b574a2dc4bf174e86d388e2c7cab0f5a7d6f"
+  },
+  "actualRecoveryTree": "b79774c68b3dbc3992abcb34c6fc64bd39fe926d",
+  "rootQualification": {
+    "blob": "c31b9eaed5c8fa030e62d66f472c1bc18eb0681f",
+    "bytes": 1730,
+    "sha256": "e44b247e833b409c9e577e06018c0be6dc0533476054e07e5849af5c6502e178"
+  },
+  "rootQualificationTree": "e17d3f744026e8866d5658c7c8ffe366e0c2d60e",
+  "originalBodyGO": {
+    "blob": "f0328f282f20cb6b378ea53aaf039fa17f1bea57",
+    "bytes": 4038,
+    "sha256": "d80bac33e32e7b39eaa4ebab0e1b564942b8ab3ca7849feaedbf0567eb280536"
+  },
+  "originalArmGOContinuesUnchanged": true,
+  "supplementalContinuationGORequiredBeforeFirstNewArm": true,
+  "requests": [
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 16384,
+      "limit": 16384
+    },
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 32768,
+      "limit": 16384
+    },
+    {
+      "operation_id": "decec225ffa9d077603bcf55dea04d12f8f80273cf1d5547d5582fb54c217706",
+      "offset": 49152,
+      "limit": 16384
+    }
+  ],
+  "maximumNativeCalls": 3,
+  "onlyNativeMethod": "operation_result",
+  "originalPayloadTotal": 55762,
+  "originalPayloadSHA256": "dfad7e61e08ada43dc512c7a5014db31584d41babd5839b6271ab59516f06502",
+  "originalRejectedPage0SDKPreserved": {
+    "blob": "5ceec5345171ff27f8bd0265c94f0f8e6a0cef7c",
+    "bytes": 22705,
+    "sha256": "d613452f7e603c59f49e059bbb987b53bc1aab73549cf7df464974f59912c309"
+  },
+  "noPage0Replay": true,
+  "noOperationStart": true,
+  "noStatus": true,
+  "noNewBinaryRead": true,
+  "noOldCallRewrite": true,
+  "budgets": {
+    "statusPerOriginalOperation": 8,
+    "allPageCallsPerOriginalOperation": 128,
+    "oldPageBytes": 8192,
+    "binaryPageBytes": 16384,
+    "payloadBytes": 1048576
+  },
+  "closeOriginalObserverOnlyAfterWholePayloadAndDecodedReportArchives": true,
+  "wholeOriginalSDKBeforeEachParse": true,
+  "scheduling": {
+    "root": 0,
+    "A": 0,
+    "B": "original unknown BUILD lane remains held",
+    "C": 1,
+    "maximumOwnerLanes": 2,
+    "MacStageAlreadyClosed": true,
+    "MacInfoMustWaitUntilOriginalPKIBodyObserverClosed": true
+  },
+  "acceptance": {
+    "pkiParity": false,
+    "fullReplacement": false,
+    "clientCutover": false,
+    "cleanup": false
+  }
+}

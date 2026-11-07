@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.root.C-native-lane-release-after-MacINFO-page0-timeout.r1",
+  "macAudit": {
+    "tree": "4375e2ec3136517b2e54b8afb6a41ab883b76ae0",
+    "files": 12,
+    "bytes": 84210,
+    "merkle": {
+      "root_sha": "4375e2ec3136517b2e54b8afb6a41ab883b76ae0",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "pkiAudit": {
+    "tree": "934a373be06bad00aecd1b1e9ce515d154269519",
+    "files": 6,
+    "bytes": 302954,
+    "merkle": {
+      "root_sha": "934a373be06bad00aecd1b1e9ce515d154269519",
+      "trees_verified": 1,
+      "leaf_count": 6
+    },
+    "whole": true
+  },
+  "checks": [
+    {
+      "name": "exact Mac INFO GO",
+      "pass": true
+    },
+    {
+      "name": "original INFO status completed inactive",
+      "pass": true
+    },
+    {
+      "name": "original active observer physically closed",
+      "pass": true
+    },
+    {
+      "name": "original page0 delivery failed with no accepted page",
+      "pass": true
+    },
+    {
+      "name": "current Native call returned",
+      "pass": true
+    },
+    {
+      "name": "failed row and logical pending retained",
+      "pass": true
+    },
+    {
+      "name": "PKI exact continuation GO",
+      "pass": true
+    },
+    {
+      "name": "PKI all call and observer state closed",
+      "pass": true
+    },
+    {
+      "name": "PKI original13 calls preserved",
+      "pass": true
+    },
+    {
+      "name": "PKI old failed page0 retained",
+      "pass": true
+    },
+    {
+      "name": "PKI complete report exact INFO size SHA",
+      "pass": true
+    }
+  ],
+  "rootNativeCalls": 0,
+  "CNativeCallsInFlight": 0,
+  "CNativeFuturesActive": 0,
+  "PKIOriginalObserverClosed": true,
+  "MacOriginalINFOCompletedInactive": true,
+  "MacINFOLogicalObserverStillPending": true,
+  "MacMetadataQualified": false,
+  "continuationAuthorizationRequired": true
+}

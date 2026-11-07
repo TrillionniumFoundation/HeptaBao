@@ -1,0 +1,8 @@
+[
+  {
+    "error": "TypeError: o.pages?.map is not a function",
+    "scope": "read-only shape inspection of completedObservers; completedObserver.pages is a count, not an array",
+    "candidateChanged": false,
+    "NativeCalls": 0
+  }
+]

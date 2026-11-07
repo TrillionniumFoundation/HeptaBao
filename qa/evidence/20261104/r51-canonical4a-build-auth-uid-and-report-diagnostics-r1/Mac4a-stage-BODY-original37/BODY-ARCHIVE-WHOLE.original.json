@@ -1,0 +1,17 @@
+{
+  "tree": "b3377be78c8487e9820ad9738cbcb0b5d4ea2497",
+  "entries": [
+    {
+      "path": "report.original.json",
+      "blob": "49bd3864f607eea4d1997da57e5008cfe2131b61",
+      "bytes": 7685,
+      "sha256": "4300d0cd7fc96eee76d2e8430b75991f50e07971018d2a9c6bd03fe5b6ccdaa2",
+      "whole": true
+    }
+  ],
+  "count": 1,
+  "bytes": 7685,
+  "whole": true,
+  "localDurableJournal": false,
+  "runtimeAuthorized": false
+}

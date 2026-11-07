@@ -1,0 +1,190 @@
+{
+  "schema": "heptabao.Auth-owner-minimal-fixes.SOURCE.r1",
+  "scope": "six finite source changes; old namespace remains nondispatchable; actual fixed ps validation proposal follows",
+  "beforeAndAfter": [
+    {
+      "name": "reader",
+      "file": "mac_native_process_observer_r1.py",
+      "before": {
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "after": {
+        "blob": "8ccc79e3f776bfb42648bcd6ace6ab021574a949",
+        "bytes": 15269,
+        "sha256": "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5"
+      },
+      "forwardHunks": 3,
+      "inverseHunks": 3
+    },
+    {
+      "name": "unreaped",
+      "file": "mac_owned_unreaped_r1.py",
+      "before": {
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "after": {
+        "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",
+        "bytes": 13221,
+        "sha256": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501"
+      },
+      "forwardHunks": 5,
+      "inverseHunks": 5
+    },
+    {
+      "name": "commands",
+      "file": "mac_owned_commands_r1.py",
+      "before": {
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "after": {
+        "blob": "e5fe545bdd842ae3bf4d61e2576b407149d32a2d",
+        "bytes": 7675,
+        "sha256": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1"
+      },
+      "forwardHunks": 7,
+      "inverseHunks": 7
+    },
+    {
+      "name": "manager",
+      "file": "mac_owned_launchd_r3.py",
+      "before": {
+        "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+        "bytes": 58584,
+        "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+      },
+      "after": {
+        "blob": "48f3e8394a15830953fb90e3470e8ba98e7df509",
+        "bytes": 60016,
+        "sha256": "edeb2b60dd102ea300887d3d2f23fc39682aa8700ce88d6273307f1b5d2ecbd4"
+      },
+      "forwardHunks": 4,
+      "inverseHunks": 4
+    },
+    {
+      "name": "outer",
+      "file": "mac_current_outer_wal_r1.py",
+      "before": {
+        "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+        "bytes": 73918,
+        "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+      },
+      "after": {
+        "blob": "27b9e70f6c708690f3a8f86347137a744253efbb",
+        "bytes": 74137,
+        "sha256": "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1
+    },
+    {
+      "name": "materializer",
+      "file": "mac_current_fixture_materializer_r1.py",
+      "before": {
+        "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+        "bytes": 25973,
+        "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+      },
+      "after": {
+        "blob": "6a3b8911ac391fea1884113625fde555cae132e8",
+        "bytes": 26026,
+        "sha256": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1
+    }
+  ],
+  "setuidPs": {
+    "path": "/bin/ps",
+    "bytes": 170432,
+    "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c",
+    "full9": [
+      "16777233",
+      "1152921500312571399",
+      "0",
+      "0",
+      "35309",
+      "1",
+      "170432",
+      "1786589515000000000",
+      "1786589515000000000"
+    ],
+    "actualRootSource": "public imports original source/GO whole validation and prior runtime finiteInputClosure",
+    "exactArgv": [
+      "/bin/ps",
+      "-axo",
+      "pid=,ppid=,pgid=,uid=,stat="
+    ],
+    "expectedEffectiveUid": 0,
+    "operatorEffectiveUid": 501,
+    "scopeMarker": "owned-launchd-group-observation",
+    "maxEachStream": 262144,
+    "streamingCapPreserved": true,
+    "firstWholeHashAndFull9AtOriginalOuterReadSystemTool": true,
+    "additionalWholeHashReads": 0,
+    "additionalPerSelectedRunLstatMaximum": 2,
+    "execByNameNotAtomicExecByFd": true,
+    "defaultUIDGuardUnchanged": true,
+    "rootPermissionNotGrantedToArbitraryCommands": true,
+    "liveGroupUIDException": "only the exact retained direct primary PID whose full stable identity equals recorded owner.ps; no root-UID descendant exception",
+    "WNOHANG_WNOWAIT_ReapGroupGatesPreserved": true,
+    "originalCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psEach": 4
+    },
+    "failedAdmissionNumericEvidence": "three expected/observed PPID/PGID/eUID values and exact booleans; absent evidence stays empty/unknown",
+    "actualValidationPassed": false,
+    "old84947And85012CauseProved": false,
+    "oldUnknownsReclassified": false
+  },
+  "consumerObserver": {
+    "defaultAllowsAbsence": false,
+    "optInOnly": "OwnedLaunchd.run_phase after known wrapper identity and same registration/runs1/PID",
+    "calls": "original two proc_pidinfo plus proc_pidpath",
+    "errno": "reset before each original C call and captured immediately after; no retry",
+    "absentRule": "only returnCount==0 and errno==ESRCH raises typed ProcessAbsent, only in opted-in method",
+    "notAbsent": "short/mismatched nonzero count, wrong PID, different birth, invalid path, non-ESRCH remain refused",
+    "nextGate": "requery exact same label/entry once with same runs1 and no PID; then all unchanged real exit==0 + exact public result/terminal/T5 closure + worker lineages and group gates",
+    "newQueryBudget": "uses existing absolute manager deadline and MAX_COMMANDS4096; no reset or added retry window",
+    "oldFailureProvedESRCH": false,
+    "ESRCHIsReapProof": false,
+    "oldBirthSynthesized": false
+  },
+  "profile": {
+    "component": {
+      "blob": "6a3b8911ac391fea1884113625fde555cae132e8",
+      "bytes": 26026,
+      "sha256": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace"
+    },
+    "onlyAddition": "(allow file-read* (literal \"/\"))\n",
+    "alreadyObservedPublicImports24": true,
+    "SDKQualified": false
+  },
+  "bindings": {
+    "oldRootNotExecutable": true,
+    "futureCandidate": null,
+    "actualBinaryFull9": null,
+    "actualBinaryVersion": null,
+    "trustedIssuer": null,
+    "privateCredentialGeneration": null,
+    "newRuntimeRequest": null,
+    "fullFiveAgentConfigChanges": false
+  },
+  "NativeAdded": 0,
+  "pythonModulesExecuted": false,
+  "noNewSupervisor": true,
+  "archivalWordingCorrection": {
+    "originalCoreTree": "199c18fcfff5a9fc9f5276ff5b47da42ebbdcf96",
+    "field": "profile.onlyAddition",
+    "before": "literal backslash-n text in core27 contract only",
+    "after": "actual 33-byte LF-terminated rule",
+    "sourceChanged": false
+  }
+}

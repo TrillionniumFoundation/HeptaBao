@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.mac4a.actual-build-binding-check.r1",
+  "pass": true,
+  "check_count": 19,
+  "checks": [
+    "whole actual original authority and streams",
+    "unchanged binder exact request",
+    "exact absent-stdin typed digest and full uint64 fingerprint",
+    "actual receipt full9 and original publisher job",
+    "original fixed Mac executable and outer request",
+    "same original launcher argv entry",
+    "actual receipt exact launch arguments",
+    "strict journal forward and reverse",
+    "unique literal const GF_SLOT = \"successor4a_m",
+    "unique literal const GF_REQUEST = {\"blob\":\"e1",
+    "unique literal heptabao-4a49405b-mac-normal11",
+    "only three journal binding literals",
+    "actual published source exact mac_normal_same_root_publication_build.py",
+    "actual published source exact launch_normal_same_root_publication.py",
+    "actual published source exact normal-test-groups.public.json",
+    "whole original publisher stdout",
+    "unchanged normal117 selection and budgets",
+    "all archive callsite keys dynamic",
+    "no invented build execution or artifact identities"
+  ],
+  "request": {
+    "blob": "a000e617b0ccb8890024e8d6e3812c1ca4820030",
+    "bytes": 1204,
+    "sha256": "6f99addf7edd0a982424b29f80ed567b2f95d5a162178e67ed3c962bd7d5b6e2"
+  },
+  "typed": {
+    "sha256": "f093234feecb5498326cc0f07f096acdc0b23582df08f4fb33b7c648b7c53f78",
+    "native_fingerprint": "17335238216894862488",
+    "canonical_bytes": 1061
+  },
+  "journal": {
+    "blob": "2e02eb61e2d2a69fb8aca4d6cb3e782c5847128a",
+    "bytes": 19044,
+    "sha256": "0ee14629cb15d2ec0e8340a54f4025ffced530436861d95a7771fb64a9e146e2"
+  },
+  "actualPublisherJob": "1a1b3d20950-fc05-84e7",
+  "actualReceipt": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/hb-4a49405b-src-20261106-r1/normal-build-r1/control/inert-stage.result.public.json",
+    "bytes": 3321,
+    "sha256": "6368b3d5723a04290b3f9356b0802f417ac0e633ee5bf2a0e5dfd69056da7b47",
+    "full9": [
+      "16777244",
+      "72776310",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "3321",
+      "1794018256934258676",
+      "1794018256934622037"
+    ]
+  },
+  "NativeCalls": 0
+}

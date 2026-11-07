@@ -1,0 +1,145 @@
+{
+  "schema": "heptabao.mac-current-manager-candidate.wal-r1",
+  "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "sourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "sourcePins": {
+    "mac_auth_rows_cas_r1.mjs": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5",
+    "mac_authbus_cache_cas_r1.mjs": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+    "mac_capture_sqlite_synthetic_r1.py": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+    "mac_capture_sqlite_synthetic_r2.py": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+    "mac_current_capture_entry_wal_r1.py": "783573e6c4dce62132baffb31c8abf49d45e4b00c901c5faa093719e1020c935",
+    "mac_current_cycle_r2.mjs": "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b",
+    "mac_current_fixture_materializer_r1.py": "ec7ead7e463868dc92042ec9e1ad5235c71be11e22cb77dd2a04911288ecbace",
+    "mac_current_outer_inputs_r2.py": "54a5a023b4f3af34e14c6617ee97c5bb2e38fd4bf843398e437c5c95fd45f673",
+    "mac_current_outer_wal_r1.py": "523a6cb1fc55bfc8139731b92702e7c7ba1dab2ea592b6906e7b4f05e6768529",
+    "mac_current_phase_owner_r2.py": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60",
+    "mac_current_server_owner_r1.py": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277",
+    "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+    "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+    "mac_native_process_observer_r1.py": "3b6d48f3208ee3ea52444347b353c7203f40d016db5a773b22085f6888c2b1a5",
+    "mac_owned_commands_r1.py": "e23ca2aeef4b3d1d48aa5b8063ea2bffcd3668b4a08c7ee03db065709cadb7e1",
+    "mac_owned_launchd_r3.py": "802d1502344b3806fd79f2549f618f8fb1318c16ead8911a7e2f7d976fca2adf",
+    "mac_owned_unreaped_r1.py": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501",
+    "mac_registry_readonly_wal_r1.py": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+    "mac_single_native_r2.mjs": "e1b85fd42d637a2cdccb4e8ab958d4c8a99898725b3bca4558cdc2ff984da630",
+    "mac_t5_volume_guard_r1.py": "28bba28ee22a70002f47ab6cbb75a4af30d56806a85307dc585d533ce3a9f4d7"
+  },
+  "syntheticBinding": {
+    "schema": "heptabao.mac-capture-synthetic-input-binding.r1",
+    "jobId": "1a1a918c6cf-fc05-3143",
+    "stdoutSha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+    "stdoutBytes": 16228,
+    "authoritySha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd",
+    "authorityBytes": 733,
+    "controllerSha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+  },
+  "publicVolumeAnchorSha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+  "utilityPins": {
+    "/usr/bin/openssl": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7",
+    "/usr/bin/sandbox-exec": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
+    "/bin/launchctl": "b4dbf509754d8e1117f7851baa93ede75bc75218c48d6ddf19fbb1505d261be7",
+    "/usr/sbin/diskutil": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f",
+    "/bin/ps": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c",
+    "/sbin/mount": "e0368cc89f48770e30dcbc639ae4d99d3ee478516b0186baf3e030ce9828e5dd"
+  },
+  "budgets": {
+    "outer": 900,
+    "manager": 600,
+    "managerFailureCleanup": 60,
+    "phase": 120,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "http": 10,
+    "capture": 45,
+    "listenerReady": 30,
+    "tlsCommand": 30
+  },
+  "nativeBinding": {
+    "schema": "heptabao.mac-native-proc-input-binding.r1",
+    "jobId": "1a1aa0eabee-fc05-3c36",
+    "stdoutBytes": 24032,
+    "stdoutSha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+    "authorityBytes": 733,
+    "authoritySha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+    "childStdoutBytes": 11066,
+    "childStdoutSha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+    "controllerSha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+    "modulePins": {
+      "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+      "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+      "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+    },
+    "probeProfileSha256": {
+      "original": "d31751dc8da537121b3f1ccce832a666cc6499bdef4d956ab3208dec86daf35e",
+      "patched": "58a8f52a66b0e6136b786857cb72e3f775837907bf382850320673342750c6bd"
+    },
+    "additionalReadOnlyDirectoryLiteral": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "additionalReadRuleSha256": "f591502879fc5b1f579d5d8ced77ce375b37269725c5dd3531f650e4c46676ef"
+  },
+  "walBinding": {
+    "schema": "heptabao.mac-registry-readonly-wal-input-binding.r1",
+    "jobId": "1a1aaaaa6cd-fc05-45dd",
+    "stdoutBytes": 62662,
+    "stdoutSha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+    "authorityBytes": 733,
+    "authoritySha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f",
+    "controllerSha256": "88a6abdc02c71b0cb25f6b85a4494f0b44a30c2f8a4936bb511948f258737cdc",
+    "librarySha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+    "cases": {
+      "W01": {
+        "stdoutBytes": 11923,
+        "stdoutSha256": "65c7881d113e1922f47d514eeb2260d3fd5c29c26fb67f654219ff5d373a1961"
+      },
+      "W02": {
+        "stdoutBytes": 7222,
+        "stdoutSha256": "15e3a834a5b283f5d1bf229e9c927cbc93b9b75ce0cad5d7a1a9964a1fde69f6"
+      },
+      "W03": {
+        "stdoutBytes": 8025,
+        "stdoutSha256": "ec2ced80293abcb4e5bd6d28fa6155076565cd5fb8e3dddfb5425695e4689293"
+      },
+      "W04": {
+        "stdoutBytes": 8078,
+        "stdoutSha256": "0fe9136fa7e654e841b63fd377b17abe11fafef7bbb1b9ae24af4d31701be4fa"
+      },
+      "W05": {
+        "stdoutBytes": 11300,
+        "stdoutSha256": "39476829ff2ec1610894721f3f29bed8801e49833df1e0988e1e112a82111fb7"
+      },
+      "W06": {
+        "stdoutBytes": 11300,
+        "stdoutSha256": "f7c5e84d6fe464b285bec0a5418e757aa87c2d3755f6af0ef6411b53acf026bc"
+      },
+      "W07": {
+        "stdoutBytes": 11296,
+        "stdoutSha256": "aeca9311147e86b45ff3f70ff5227b1318b12aefa464fb78fa6734a41e4da62f"
+      },
+      "W08": {
+        "stdoutBytes": 11298,
+        "stdoutSha256": "d24ae166653df4c8ad209a3998afb6924d9287877321fc2046e4f125c6a36cb6"
+      },
+      "W09": {
+        "stdoutBytes": 11049,
+        "stdoutSha256": "a47c06c90261e1d8a2e1d7d1075a06ab33b577f27056ef66c28e3815c97ae9c0"
+      },
+      "W10": {
+        "stdoutBytes": 11302,
+        "stdoutSha256": "dad92e8055161be45c826bc1178a0b545250493e8d436edfe84753fa33d07a88"
+      }
+    }
+  },
+  "homeControl": {
+    "root": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3",
+    "copySourceNames": [
+      "mac_current_server_owner_r1.py",
+      "mac_current_phase_owner_r2.py"
+    ],
+    "privateInputsRemainOnT5": true,
+    "bindingRequiredAtRuntime": true
+  }
+}

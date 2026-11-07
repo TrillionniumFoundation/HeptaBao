@@ -1,0 +1,13 @@
+{
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1b3d20950-fc05-84e7",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  },
+  "idempotency_key": "heptabao-4a49405b-mac-normal117-controls-r1-streams0"
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.mac4a.actual-inert-binding-check.r1",
+  "pass": true,
+  "check_count": 22,
+  "checks": [
+    "actual binder exact launcher",
+    "actual binder exact publisher",
+    "actual binder exact carrierRaw",
+    "actual binder exact requestRaw",
+    "actual binder exact journal",
+    "typed stdin and uint64 decimal exact",
+    "three exact actual stage inputs",
+    "actual version and lossless full9 plan exact",
+    "strict forward launcher",
+    "strict reverse launcher",
+    "strict forward publisher",
+    "strict reverse publisher",
+    "strict forward journal",
+    "strict reverse journal",
+    "documentary binding exact",
+    "unchanged runner and groups",
+    "complete carrier exact source and three controls",
+    "sole inert exact argv and stdin",
+    "original 61 plus identical 28 in two profiles",
+    "all four archive callsites dynamic",
+    "whole carrier and individual caps",
+    "no invented runtime or build identities"
+  ],
+  "request": {
+    "blob": "e159810aa46391f2934bfe48517c4da7bd0f0635",
+    "bytes": 130241,
+    "sha256": "de03e153ae7a3951600d9a29049069a06a49fbda33976ae9589faaf9ea5a33de"
+  },
+  "journal": {
+    "blob": "2288c1b8d4dcf103e80c27831c975351b99aeba5",
+    "bytes": 19058,
+    "sha256": "11b30b5a111f81d1a254d3ae627207dcabae6dc66c22698841f50a4d6aaf9508"
+  },
+  "publisher": {
+    "blob": "5977f13bfff455999eafe219dbdb154ba1108141",
+    "bytes": 9000,
+    "sha256": "18b8b35e9298f6cb9cdbcdf81b1ef962e999d461cb163a2aaf14e1f2e247ddb7"
+  },
+  "launcher": {
+    "blob": "db0b97d08b96cee8478174d22fac2bc25e9808d6",
+    "bytes": 25925,
+    "sha256": "ba55afb554abc657012e8972e2984888786f056e751f7f8aecbff4166c9980a2"
+  },
+  "carrier": {
+    "blob": "30b4d99a0f48219fe33818ac26df8880b4ea6acf",
+    "bytes": 120653,
+    "sha256": "28c030ebaeec2c762890e44a6270d6cfd14da6ffb8532127d9f5d6beebf5d801"
+  },
+  "typed": {
+    "sha256": "729392d378c02b9c292c894e0dd10b1b81da052963686cde76e6ba49aef6a46d",
+    "native_fingerprint": "8256103978861865884",
+    "canonical_bytes": 130161
+  },
+  "scope": "pure actual data binding only",
+  "Native_calls": 0
+}

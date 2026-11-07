@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.root.qualification.rog4a-terminal-minimum.r1",
+  "checkedAtUtc": "2026-11-07 02:27:25 UTC",
+  "packet": {
+    "tree": "2d1d6c77e6ce2358e70275d1770894eb5501c9bd",
+    "files": 8,
+    "bytes": 314734,
+    "merkle": {
+      "root_sha": "2d1d6c77e6ce2358e70275d1770894eb5501c9bd",
+      "trees_verified": 1,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "job": {
+    "host": "rog",
+    "id": "1a1b3978da9-fc05-83bd"
+  },
+  "terminal": {
+    "blob": "f81998dab23b195fa1fb79b89c69ba50d4ac61a4",
+    "bytes": 728,
+    "sha256": "1118cc928b4f22ff7c78a2d0b9829b767b17cc0e8cf18e93babb65c254bb20c4"
+  },
+  "state": {
+    "blob": "ffd08542730b5033fdc564c1b38a000f6515c6c8",
+    "bytes": 286087,
+    "sha256": "f55033d773c001c3e058c4d359f790f76ca9dd7402f9d1756fa29bff7ccda6a0"
+  },
+  "release": {
+    "blob": "a71c2ada7eacd587790b75ff003e6d419ccb60b6",
+    "bytes": 8141,
+    "sha256": "102c10b05fe4c8554f6c824c68bb179debfb6c8a5015b6d1f33da7bf4583a092"
+  },
+  "stdout": {
+    "blob": "526b287b5cfea6bf350bab6dde291d75a8d12dcd",
+    "bytes": 3708,
+    "sha256": "0e0729d57e5a44f68632174c68cd535c5341004a00c9bd0df8b9a24f689be9f1"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "checks": [
+    "terminal native exactly original payload",
+    "same actual job",
+    "failed one no timeout or cancellation",
+    "complete durable original terminal",
+    "no stream loss",
+    "no pending or in-flight calls",
+    "43 accepted original calls",
+    "one start fourteen closed observer sequences",
+    "fourteen original observers inactive closed",
+    "unique original observer ids",
+    "complete stream cursors",
+    "last original stream exact range",
+    "tail bytes exactly original hex",
+    "complete stdout size tail empty stderr",
+    "failure remains exact candidate",
+    "next report exact path and digest",
+    "runner reported original deadline publication and own process stop",
+    "B release scope zero",
+    "historical unknown unchanged",
+    "original start and observation GOs bound"
+  ],
+  "checkCount": 20,
+  "BActiveNativeLanes": 0,
+  "normalReleaseStagePreserved": true,
+  "fullBuildPassed": false,
+  "reportBodyQualified": false,
+  "artifactFull9Qualified": false,
+  "allOwnedStoppedIsRunnerReportedPendingDetailedReport": true,
+  "originalTimeoutOutcome": "UNKNOWN",
+  "fullReplacement": false
+}

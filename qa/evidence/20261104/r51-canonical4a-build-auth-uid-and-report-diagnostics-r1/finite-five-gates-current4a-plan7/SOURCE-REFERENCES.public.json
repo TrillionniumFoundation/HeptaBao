@@ -1,0 +1,146 @@
+{
+  "schema": "heptabao.current-4a-finite-order-inputs.r1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "sources": {
+    "auth_native_jwt.rs": {
+      "blob": "e082580797241ba4b57b3808e8a53f75ddcfece8",
+      "bytes": 21936,
+      "sha256": "76dcc4afa617c2d8a3a7089996428c7306f9447e0f33873b2b54fa0b0dd370a6",
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs"
+    },
+    "auth_native_v6_routes.rs": {
+      "blob": "6bb16ad15f43d0ca908438b4fb26d44d625f476b",
+      "bytes": 21959,
+      "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "path": "crates/heptabao-server/src/auth_native_v6_routes.rs"
+    },
+    "auth_remote.rs": {
+      "blob": "14033657f85dde0c40b545c416e3cd8c591874dc",
+      "bytes": 36595,
+      "sha256": "e6b0ce5a7ae2e04d60bcb028a46ebe3234f9eaac23cb2c010d2d07fc3b663af6",
+      "path": "crates/heptabao-server/src/auth_remote.rs"
+    },
+    "service_remote_jwt_tests.rs": {
+      "blob": "715b551f595cc1f98e9d780b19abfac8fc5669d2",
+      "bytes": 27222,
+      "sha256": "25add3ac40b5d3e9b52d99a030c8df3438edcc97b83fdead10a4571e01d47fd0",
+      "path": "crates/heptabao-server/src/service_remote_jwt_tests.rs"
+    },
+    "service_native_jwt_tests.rs": {
+      "blob": "407283ae222030d8baeec7fc0aef6a38b6859fff",
+      "bytes": 61884,
+      "sha256": "41e611618aa18298eb6b94318bd30a210571a323c7602fa3f58fe7d9aca122f9",
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs"
+    },
+    "official-config": {
+      "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+      "bytes": 24654,
+      "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80",
+      "path": null
+    },
+    "official-backend": {
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a",
+      "path": null
+    },
+    "official-sources": {
+      "blob": "aeceaaaf5fa8f6fde9f0f0c2691ad8e9e64a0de6",
+      "bytes": 5053,
+      "sha256": "8963352ab24804a4c0bdab694155c769564f612191e118c995959cef7e5ecbd1",
+      "path": null
+    },
+    "current-host-root1048": {
+      "blob": "95dec2462f5857683d597f188d8fb50f7d3a95b1",
+      "bytes": 99645,
+      "sha256": "c0b8b275f59bb29adc33570c069379e9eb7dbd046f0cef9b5142f408eccea5a2",
+      "path": null
+    },
+    "current-host-model-approval": {
+      "blob": "08aa017004f53e47becacb8a27588571d0658254",
+      "bytes": 1855,
+      "sha256": "92d3049a93e35b8a6debe36c4258dade4ce92d7bace217577348f2c5f24704ad",
+      "path": null
+    },
+    "official-acl23-summary": {
+      "blob": "5ebf2743de2e5e96a68c042d80e37f0921cb021e",
+      "bytes": 38300,
+      "sha256": "6ed54426f3b40166279dc45809f895db3223c1128afc6322ae0a9b9cf5ae158a",
+      "path": null
+    },
+    "official_pki12": {
+      "blob": "0cb0f23e1a4484cca6ac65c5597afe3f2ed502bd",
+      "bytes": 41509,
+      "sha256": "5d28fb22f023d9a4e10e3124f45e1ce68b89d0b3e0797e8c08db59bef8ea22a0"
+    },
+    "groups": {
+      "blob": "0a3d746de42bfc31d3072cee1073f3908fc5811c",
+      "bytes": 35287,
+      "sha256": "617d5c104309ec8fcd006d97a60cb519c7b26ad203359ca6dc84146855f746df"
+    },
+    "runner": {
+      "blob": "b3901c3ef34b4384c54e130637ea4ab8df0c6839",
+      "bytes": 38598,
+      "sha256": "3adf3aa07ec747e978f8484f670b41b2874d5f1d2b5a1a7afb45ea5989635a09"
+    },
+    "canonical_index": {
+      "blob": "4767ced1fa8bcb3d6efc1cf3d678ce6d75b2dd1c",
+      "bytes": 453838,
+      "sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d"
+    }
+  },
+  "official_urls": [
+    {
+      "path": "internal/builtin/credential/jwt/path_config.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/path_config.go",
+      "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_role.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/path_role.go",
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/backend.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/backend.go",
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123"
+    },
+    {
+      "path": "internal/http/logical.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/logical.go",
+      "blob": "7c091863ff2496db948ad945060d320d66b4bb7f"
+    },
+    {
+      "path": "internal/vault/policy/acl.go",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/policy/acl.go",
+      "blob": "2251475f3161a7eca462c0098b0ef6f8c970a553"
+    }
+  ],
+  "host_scope": {
+    "comparison": {
+      "blob": "95dec2462f5857683d597f188d8fb50f7d3a95b1",
+      "bytes": 99645,
+      "sha256": "c0b8b275f59bb29adc33570c069379e9eb7dbd046f0cef9b5142f408eccea5a2",
+      "path": null
+    },
+    "separate_model_approval": {
+      "blob": "08aa017004f53e47becacb8a27588571d0658254",
+      "bytes": 1855,
+      "sha256": "92d3049a93e35b8a6debe36c4258dade4ce92d7bace217577348f2c5f24704ad",
+      "path": null
+    },
+    "native_and_ssh_equal": true,
+    "two_linux_machine_hmac_differ": true,
+    "kernel_model_only": true,
+    "hardware_attestation": false,
+    "declared_ipv4_not_observed_interface_ip": true,
+    "ports_reserved": false,
+    "final_candidate_HA_qualified": false
+  },
+  "C_X230_source29": {
+    "tree": "922a44832cfbf630086d7e092f6455a7eb287dfb",
+    "provenance": "C existing-source message; not whole-reread in this packet",
+    "actual_stage": false
+  },
+  "private_page_or_credential_content": false
+}

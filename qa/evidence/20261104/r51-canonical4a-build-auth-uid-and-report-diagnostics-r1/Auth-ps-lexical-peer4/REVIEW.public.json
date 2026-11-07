@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.peer.A-lexical25.narrow-source.r1",
+  "reviewer": "B/compatibility_audit",
+  "conclusion": "No new SOURCE blocker in the requested lexical projection delta.",
+  "scope": "Whole before/after and both strict diffs; new helper, insertion, public_command and final report export; original embedded owner helper is unchanged. Other 21 packet leaves and actual probe execution are not requalified.",
+  "inputs": {
+    "tree": "b4fcfb45f14951671c37b6ac5190bbb51de5165b",
+    "before": {
+      "blob": "d37f6efd90d07890b6031d164ec8980e38639ef0",
+      "bytes": 56248,
+      "sha256": "c0c5f6716f8701efbf57d2a5eae87bf5cfa311eeea2da28c988d02aac66dd484"
+    },
+    "after": {
+      "blob": "a219542403173eac624081b938d846d60cab6795",
+      "bytes": 58079,
+      "sha256": "0ad2087613cce1e4cd6a543695689761421ff81b612263460a575ccbba583a3e"
+    },
+    "forward": {
+      "blob": "db2435b65a03ceb519038b44e67541fda3fce2ab",
+      "bytes": 2798,
+      "sha256": "c25c3258762bfda9f90ac7ae01e76ac692470e82e78b3344aafb5a6891688f94"
+    },
+    "inverse": {
+      "blob": "9b3f3a4892f0f0273205b5bb8ac51364c9b90ada",
+      "bytes": 2798,
+      "sha256": "1af2e80102c05eb96b985aeecd33ab6fee135ecd1ecc28c99ad6c0f1a8ef204f"
+    },
+    "embeddedUnreaped": {
+      "blob": "a9ea690f02b5e33d4d2f88b2fce732df9448b63f",
+      "bytes": 13221,
+      "sha256": "fc84d1ebd8d2f3a0469e648c22b28ec3d0da0efc98f116636c1bee92934b1501"
+    }
+  },
+  "checksPassed": 7,
+  "findings": [
+    {
+      "boundary": "No foreign process values exported",
+      "sourceLines": [
+        190,
+        224,
+        264,
+        277
+      ],
+      "detail": "New return value contains only the fixed five lexical-class counts in four columns, six fixed width buckets plus more_than_5, row/rejection counts, and first rejected field-count plus numeric-column indices 1..4. No token, PID/UID value, state string, raw row or table hash is returned. The integer field count is the requested width disclosure and remains bounded by the unchanged 262144-byte original stream cap."
+    },
+    {
+      "boundary": "Original refusal remains authoritative",
+      "sourceLines": [
+        264,
+        268
+      ],
+      "detail": "Projection runs over the already-owned original stdout before the original exact five-field/isdecimal predicate. Its result cannot bypass that predicate or set successful observation. Non-ASCII decoding and bounded projection failures reach the unchanged closed error_projection; no raw exception message is exported."
+    },
+    {
+      "boundary": "No new process or owner authority",
+      "sourceLines": [
+        243,
+        257,
+        283,
+        316
+      ],
+      "detail": "Original prefix and both embedded helpers are byte-identical. Main differs only in schema literal and projection assignment. The same sole fixed ps argv, deadlines, 8192-row/262144-byte caps, fixed-pin effective-UID exception, PPID/PGID checks, WNOWAIT, once cleanup and FD closure remain. Existing exact self-row projection is unchanged; no other process row is exported."
+    },
+    {
+      "boundary": "No historical success inference",
+      "detail": "Old managed cleanup/old ps reclassification flags remain false. Lexical categories do not prove a particular old rejected token or authorize a parser relaxation."
+    }
+  ],
+  "nativeCalls": 0,
+  "pythonExecutions": 0,
+  "authorCheckerReexecuted": false,
+  "actualProbeQualified": false,
+  "changesToCandidate": false
+}

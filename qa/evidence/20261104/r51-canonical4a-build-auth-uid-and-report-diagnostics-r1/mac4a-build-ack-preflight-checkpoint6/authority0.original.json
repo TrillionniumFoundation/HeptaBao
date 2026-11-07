@@ -1,0 +1,11 @@
+{
+  "audit_recorded": true,
+  "backend": "detached",
+  "identity": {
+    "kind": "ps_lstart",
+    "value": "Sat Nov  7 10:33:37 2026"
+  },
+  "job_id": "1a1b3da94dd-fc05-851a",
+  "pid": 99492,
+  "state": "running"
+}

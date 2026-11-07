@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.auth-ps-lexical-r3-minimum-original-manifest.v1",
+  "selfExcluded": true,
+  "entries": [
+    {
+      "path": "GO.original.json",
+      "blob": "5b902c20f35e7928b0be0dcfcbbff69b99cc49c7",
+      "bytes": 8652,
+      "sha256": "3982ec361fa4aeb3cd7493849b2482aa1581c42b4edf1c124ead8e41197dbf13"
+    },
+    {
+      "path": "RELEASE.public.json",
+      "blob": "cec907ce428175b52b5a0b160f2923bf15b7d960",
+      "bytes": 7513,
+      "sha256": "fe38ad3d5f9e4029dc056155cfad39c6135e4dcb4821a03242d868b952cf9763"
+    },
+    {
+      "path": "authority-status.sdk.original.json",
+      "blob": "9cc3169f76116f8d2d12c5cd8e9166e6659b3029",
+      "bytes": 980,
+      "sha256": "f65f385a779990adf2e755d98d87ce633874b5b9d1ec1b7a4a4cfe4eeeb87929"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "e46b827bbe24fbf5a662af6dcdfba18566598f2d",
+      "bytes": 731,
+      "sha256": "2ef35567f08e1c0840b9b11fb855159c63a51d6cceed2a678aeaff580d6352ad"
+    },
+    {
+      "path": "final-state.public.json",
+      "blob": "fb8c565438c198a3244bc81bc9a199b3adcc6025",
+      "bytes": 93838,
+      "sha256": "4f7cd3f6526049e0c2b3954691ebd082e272c1377994ce2eee2906732b2ea9cc"
+    },
+    {
+      "path": "lane-GO.original.json",
+      "blob": "f83f321ca3197f9d72f7a7dc260cf96f7e75f998",
+      "bytes": 2135,
+      "sha256": "84c939dc477301d3b7f3944fcf8d0afd27a2c4bc08c3f4ec160a8ee10f4d63ab"
+    },
+    {
+      "path": "start.sdk.original.json",
+      "blob": "ec7515ca1a4d06d4ef593e5f321024bccb25d21f",
+      "bytes": 1424,
+      "sha256": "904866f3d6ee979365a6e11b5cf8036c47d444c1cd60082dad48bd52fc02a444"
+    },
+    {
+      "path": "stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stdout.original.json",
+      "blob": "1dadfabb024aab0e027b35efeac95f1ff85adb17",
+      "bytes": 6008,
+      "sha256": "1752eb114107a5b67591d1a356b95f3b49343e6e43a31993337e03f052c2f959"
+    },
+    {
+      "path": "streams-status.sdk.original.json",
+      "blob": "5a85e78000e7dd33b4376dd05ab600bc82f73250",
+      "bytes": 978,
+      "sha256": "8c006bea2a85df55c59726bd65197a520cc274c4a7656d806fd84cfcbbadd368"
+    },
+    {
+      "path": "streams.native.original.json",
+      "blob": "3a8349c41c7a4ba9ac0b98f4a4e481fa299e5ace",
+      "bytes": 18964,
+      "sha256": "4b6fc0c61a97fc3adc4c18cdfce4cbe11eaf54cba2c73f30211ee93533884c85"
+    }
+  ],
+  "originalCalls": 9,
+  "originalObservers": 2,
+  "immutablePages": 4
+}

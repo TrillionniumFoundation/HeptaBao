@@ -1,0 +1,186 @@
+{
+  "schema": "heptabao.root.Mac4a-INFO-immutable-retrieval-SOURCE32.r1",
+  "audit": {
+    "tree": "9444c4143c9b6cdfff58a7bde85e1211c22da346",
+    "files": 19,
+    "bytes": 139798,
+    "merkle": {
+      "root_sha": "9444c4143c9b6cdfff58a7bde85e1211c22da346",
+      "trees_verified": 1,
+      "leaf_count": 19
+    },
+    "whole": true
+  },
+  "result": {
+    "schema": "heptabao.mac4a.stage-info.immutable-source-verification.r1",
+    "pass": true,
+    "checkCount": 32,
+    "checks": [
+      {
+        "name": "before_exact_approved_reader",
+        "pass": true
+      },
+      {
+        "name": "after_exact",
+        "pass": true
+      },
+      {
+        "name": "strict_forward",
+        "pass": true
+      },
+      {
+        "name": "strict_reverse",
+        "pass": true
+      },
+      {
+        "name": "five_hunks",
+        "pass": true
+      },
+      {
+        "name": "original_function_fipNeed",
+        "pass": true
+      },
+      {
+        "name": "original_function_fipJ",
+        "pass": true
+      },
+      {
+        "name": "original_function_fipEq",
+        "pass": true
+      },
+      {
+        "name": "original_function_fipDecodeOnePage",
+        "pass": true
+      },
+      {
+        "name": "one_native_method_only",
+        "pass": true
+      },
+      {
+        "name": "one_old_slot_no_build_slot",
+        "pass": true
+      },
+      {
+        "name": "old_whole_paused_state",
+        "pass": true
+      },
+      {
+        "name": "original_completed_inactive_status",
+        "pass": true
+      },
+      {
+        "name": "closed_status_from_whole_SDK",
+        "pass": true
+      },
+      {
+        "name": "failed_SDK_exact_context",
+        "pass": true
+      },
+      {
+        "name": "no_accepted_page_or_guessed_digest",
+        "pass": true
+      },
+      {
+        "name": "exact_same_id_request",
+        "pass": true
+      },
+      {
+        "name": "three_fresh_function_body_archive_keys",
+        "pass": true
+      },
+      {
+        "name": "actual_prepare_with_fake_archive_only",
+        "pass": true
+      },
+      {
+        "name": "actual_arm_binds_new_GO",
+        "pass": true
+      },
+      {
+        "name": "old_state_unchanged_after_prepare",
+        "pass": true
+      },
+      {
+        "name": "prepare_reentry_rejected",
+        "pass": true
+      },
+      {
+        "name": "actual_error_SDK_not_metadata",
+        "pass": true
+      },
+      {
+        "name": "opaque_whole_page_decode",
+        "pass": true
+      },
+      {
+        "name": "reject_wrong_id",
+        "pass": true
+      },
+      {
+        "name": "reject_nonzero_offset",
+        "pass": true
+      },
+      {
+        "name": "reject_not_EOF",
+        "pass": true
+      },
+      {
+        "name": "reject_oversize",
+        "pass": true
+      },
+      {
+        "name": "reject_wrong_SHA",
+        "pass": true
+      },
+      {
+        "name": "accept_archives_whole_opaque_before_semantics",
+        "pass": true
+      },
+      {
+        "name": "only_retrieval_context_closed",
+        "pass": true
+      },
+      {
+        "name": "SDK_whole_gate_rejects",
+        "pass": true
+      }
+    ],
+    "NativeCalls": 0,
+    "toolsPassedToFake": {},
+    "runtimeQualification": false,
+    "metadataQualification": false
+  },
+  "actualBindings": [
+    {
+      "name": "actual paused state",
+      "pass": true
+    },
+    {
+      "name": "actual failed SDK",
+      "pass": true
+    },
+    {
+      "name": "actual completed status native",
+      "pass": true
+    },
+    {
+      "name": "actual completed status SDK",
+      "pass": true
+    },
+    {
+      "name": "exact original same page request",
+      "pass": true
+    },
+    {
+      "name": "actually executed donor source",
+      "pass": true
+    },
+    {
+      "name": "actual original INFO GO",
+      "pass": true
+    }
+  ],
+  "rootNativeCalls": 0,
+  "metadataQualified": false,
+  "scope": "One exact original immutable payload redelivery, no new file_info, no status, no body, no old state write."
+}

@@ -1,0 +1,606 @@
+{
+  "schema": "heptabao.root.qualification.auth-fixed-ps-signed-uid-R3-source.r1",
+  "checkedAtUtc": "2026-11-07 02:23:51 UTC",
+  "source": {
+    "tree": "9ae05113a73e1232094dd7844940aeb8a8792498",
+    "files": 44,
+    "bytes": 614570,
+    "merkle": {
+      "root_sha": "9ae05113a73e1232094dd7844940aeb8a8792498",
+      "trees_verified": 1,
+      "leaf_count": 44
+    },
+    "whole": true
+  },
+  "sourceVerifier": {
+    "path": "source-verifier.js",
+    "blob": "3632cec2376deeae31218d9097d40f013230e292",
+    "bytes": 13021,
+    "sha256": "8a93e0e9e0c2b25b61a5c8a398ae8a654b9d414cb18e38894bef4f09cfcd508d"
+  },
+  "result": {
+    "schema": "heptabao.fixed-ps-signed-uid-source-checks.r3",
+    "passed": true,
+    "checkCount": 78,
+    "checks": [
+      {
+        "name": "whole/controller.before.py",
+        "passed": true
+      },
+      {
+        "name": "whole/controller.py",
+        "passed": true
+      },
+      {
+        "name": "whole/manager.before.py",
+        "passed": true
+      },
+      {
+        "name": "whole/manager.py",
+        "passed": true
+      },
+      {
+        "name": "whole/request.before.json",
+        "passed": true
+      },
+      {
+        "name": "whole/request.exact.public.json",
+        "passed": true
+      },
+      {
+        "name": "whole/journal.before.js",
+        "passed": true
+      },
+      {
+        "name": "whole/journal.js",
+        "passed": true
+      },
+      {
+        "name": "whole/CONTRACT.public.json",
+        "passed": true
+      },
+      {
+        "name": "whole/actual-r2.stdout.original.json",
+        "passed": true
+      },
+      {
+        "name": "whole/actual-r2.RELEASE.public.json",
+        "passed": true
+      },
+      {
+        "name": "whole/COMPONENT-CONTRACT.original.json",
+        "passed": true
+      },
+      {
+        "name": "whole/sdk-original22-pins.original.json",
+        "passed": true
+      },
+      {
+        "name": "controller/strict-forward",
+        "passed": true
+      },
+      {
+        "name": "controller/strict-inverse",
+        "passed": true
+      },
+      {
+        "name": "manager/strict-forward",
+        "passed": true
+      },
+      {
+        "name": "manager/strict-inverse",
+        "passed": true
+      },
+      {
+        "name": "journal/strict-forward",
+        "passed": true
+      },
+      {
+        "name": "journal/strict-inverse",
+        "passed": true
+      },
+      {
+        "name": "sdk-source-pins/strict-forward",
+        "passed": true
+      },
+      {
+        "name": "sdk-source-pins/strict-inverse",
+        "passed": true
+      },
+      {
+        "name": "controller/only-exact-narrow-changes",
+        "passed": true
+      },
+      {
+        "name": "manager/only-exact-parser-changes",
+        "passed": true
+      },
+      {
+        "name": "both/one-uid-grammar",
+        "passed": true
+      },
+      {
+        "name": "both/one-uid-range",
+        "passed": true
+      },
+      {
+        "name": "both/retain-signed-map-int",
+        "passed": true
+      },
+      {
+        "name": "manager/group-filter-data-only-unchanged",
+        "passed": true
+      },
+      {
+        "name": "controller/finally-byte-identical",
+        "passed": true
+      },
+      {
+        "name": "manager/consumer-run-phase-byte-identical",
+        "passed": true
+      },
+      {
+        "name": "manager/actual-exit-zero-still-required",
+        "passed": true
+      },
+      {
+        "name": "controller/no-new-definitions",
+        "passed": true
+      },
+      {
+        "name": "manager/no-new-definitions",
+        "passed": true
+      },
+      {
+        "name": "projection/whole-original",
+        "passed": true
+      },
+      {
+        "name": "controller/embedded-helpers-byte-identical",
+        "passed": true
+      },
+      {
+        "name": "controller/two-original-helper-names",
+        "passed": true
+      },
+      {
+        "name": "embedded/mac_owned_unreaped_r1/whole",
+        "passed": true
+      },
+      {
+        "name": "embedded/mac_owned_unreaped_r1/chain",
+        "passed": true
+      },
+      {
+        "name": "embedded/mac_owned_commands_r1/whole",
+        "passed": true
+      },
+      {
+        "name": "embedded/mac_owned_commands_r1/chain",
+        "passed": true
+      },
+      {
+        "name": "inputs/exact-pins-unchanged",
+        "passed": true
+      },
+      {
+        "name": "inputs/contract",
+        "passed": true
+      },
+      {
+        "name": "request/exact-current-stdin",
+        "passed": true
+      },
+      {
+        "name": "request/all-other-fields-byte-value-equivalent",
+        "passed": true
+      },
+      {
+        "name": "request/fresh-key-source-derived",
+        "passed": true
+      },
+      {
+        "name": "journal/only-three-binding-literals",
+        "passed": true
+      },
+      {
+        "name": "journal/new-slot",
+        "passed": true
+      },
+      {
+        "name": "journal/request-pin",
+        "passed": true
+      },
+      {
+        "name": "journal/whole-pin",
+        "passed": true
+      },
+      {
+        "name": "binding/correct-stdin",
+        "passed": true
+      },
+      {
+        "name": "binding/chain",
+        "passed": true
+      },
+      {
+        "name": "caps/original-budgets",
+        "passed": true
+      },
+      {
+        "name": "caps/original-observe",
+        "passed": true
+      },
+      {
+        "name": "caps/original-primary-admission",
+        "passed": true
+      },
+      {
+        "name": "caps/accounting",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/prior-six-components-exact",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/only-manager-leaf-changed",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/manager-current-whole",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/current-source-overlay",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/prior-overlay",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/old-manager-before",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/old-namespace-not-dispatchable",
+        "passed": true
+      },
+      {
+        "name": "pin-chain/no-invented-runtime-bindings",
+        "passed": true
+      },
+      {
+        "name": "actual/retain-parent-failure",
+        "passed": true
+      },
+      {
+        "name": "actual/current-custody-closure-only",
+        "passed": true
+      },
+      {
+        "name": "actual/exact-fresh-negative-UID-shape",
+        "passed": true
+      },
+      {
+        "name": "actual/no-value-export",
+        "passed": true
+      },
+      {
+        "name": "actual/current-lane-closed",
+        "passed": true
+      },
+      {
+        "name": "actual/old-unknown-preserved",
+        "passed": true
+      },
+      {
+        "name": "primary/Apple-ps.original.c/whole",
+        "passed": true
+      },
+      {
+        "name": "primary/Apple-ps-keyword.original.c/whole",
+        "passed": true
+      },
+      {
+        "name": "primary/Apple-ps-print.original.c/whole",
+        "passed": true
+      },
+      {
+        "name": "primary/signed-Apple-keyword",
+        "passed": true
+      },
+      {
+        "name": "primary/UID-format-consumed",
+        "passed": true
+      },
+      {
+        "name": "primary/no-installed-build-attestation",
+        "passed": true
+      },
+      {
+        "name": "boundaries/exact-pure-result",
+        "passed": true
+      },
+      {
+        "name": "boundaries/18-finite-cases-pass",
+        "passed": true
+      },
+      {
+        "name": "boundaries/no-Python-or-product-claim",
+        "passed": true
+      },
+      {
+        "name": "scope/no-execution-or-issuer-qualification",
+        "passed": true
+      }
+    ],
+    "execution": "pure V8 exact source/diff/pin and finite-boundary validation only",
+    "NativeCallsAdded": 0,
+    "PythonModulesExecuted": false,
+    "oldFailuresPreserved": true,
+    "sourceComponentsDispatchable": false,
+    "actualSignedBranchObserved": false,
+    "productQualification": false
+  },
+  "finiteBoundaryResult": {
+    "schema": "heptabao.fixed-ps-signed-uid-pure-boundaries.r3",
+    "passed": true,
+    "caseCount": 18,
+    "checks": [
+      {
+        "name": "zero",
+        "passed": true,
+        "controller": {
+          "accepted": true,
+          "uid": "0"
+        },
+        "manager": {
+          "accepted": true,
+          "uid": "0"
+        }
+      },
+      {
+        "name": "operator-positive",
+        "passed": true,
+        "controller": {
+          "accepted": true,
+          "uid": "501"
+        },
+        "manager": {
+          "accepted": true,
+          "uid": "501"
+        }
+      },
+      {
+        "name": "negative-display",
+        "passed": true,
+        "controller": {
+          "accepted": true,
+          "uid": "-1"
+        },
+        "manager": {
+          "accepted": true,
+          "uid": "-1"
+        }
+      },
+      {
+        "name": "signed32-minimum",
+        "passed": true,
+        "controller": {
+          "accepted": true,
+          "uid": "-2147483648"
+        },
+        "manager": {
+          "accepted": true,
+          "uid": "-2147483648"
+        }
+      },
+      {
+        "name": "signed32-maximum",
+        "passed": true,
+        "controller": {
+          "accepted": true,
+          "uid": "2147483647"
+        },
+        "manager": {
+          "accepted": true,
+          "uid": "2147483647"
+        }
+      },
+      {
+        "name": "unsigned-half",
+        "passed": true,
+        "controller": {
+          "accepted": true,
+          "uid": "2147483648"
+        },
+        "manager": {
+          "accepted": true,
+          "uid": "2147483648"
+        }
+      },
+      {
+        "name": "unsigned32-maximum",
+        "passed": true,
+        "controller": {
+          "accepted": true,
+          "uid": "4294967295"
+        },
+        "manager": {
+          "accepted": true,
+          "uid": "4294967295"
+        }
+      },
+      {
+        "name": "below-signed32",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "above-unsigned32",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "plus-rejected",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "nondigit-rejected",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "fraction-rejected",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "too-many-digits",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "non-ASCII-rejected",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "missing-column",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "extra-column",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "negative-PID-still-rejected",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      },
+      {
+        "name": "plus-PPID-still-rejected",
+        "passed": true,
+        "controller": {
+          "accepted": false,
+          "uid": null
+        },
+        "manager": {
+          "accepted": false,
+          "uid": null
+        }
+      }
+    ],
+    "execution": "pure V8 model bound to both exact Python predicates; no Python/ps/host execution",
+    "acceptedUidValuesArePreservedSignedIntegers": true,
+    "NativeCallsAdded": 0,
+    "productQualification": false
+  },
+  "independentRootAnchors": [
+    "controller before actual R2 source",
+    "journal before actual R2 source",
+    "request before actual R2 source",
+    "manager before independently reviewed core27",
+    "actual R2 original stdout",
+    "actual R2 original release",
+    "root pure helper",
+    "independent actual stdin digest",
+    "independent uint64 fingerprint",
+    "independent canonical bytes"
+  ],
+  "rootAnchorCount": 10,
+  "peerSourceOnly": {
+    "path": "REVIEW.public.json",
+    "blob": "afe513fe341a0f201c738c378eb6fc16748acca7",
+    "bytes": 3957,
+    "sha256": "ca0d7401ebff52e1436dd3a26d3d1d525751d92e813d81e5556df0797831fe82"
+  },
+  "actualPredecessorQualification": {
+    "blob": "8bb7580de21c3120f7f8514d79bbce266cb8f648",
+    "bytes": 30543,
+    "sha256": "a8a969ac7d3b9c846f4e3ea9699b44ef57590c988982671bad8e95272749e9cd"
+  },
+  "actualPredecessorFailurePreserved": true,
+  "oldGitCreateOutcome": "UNKNOWN",
+  "sourceQualificationOnly": true,
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "actualR3SignedBranchObserved": false,
+  "SDKQualified": false,
+  "fullReplacement": false
+}

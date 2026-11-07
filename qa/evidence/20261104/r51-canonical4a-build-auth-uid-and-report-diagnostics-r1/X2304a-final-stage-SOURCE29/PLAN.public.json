@@ -1,0 +1,198 @@
+{
+  "schema": "heptabao.x2304a.two-qualified-bundle.final-SOURCE.r1",
+  "status": "SOURCE_READY_ACTUAL_BUNDLES_BOUND_NOT_EXECUTED",
+  "candidate": {
+    "commit": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "tree": "f02dd113d208d79f5275005dc65a5e8aecd0e9d3",
+    "parent": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "leaves": 3932,
+    "tracked_bytes": 62553956,
+    "full_index_sha256": "7e7acf5b5f4c0b2f9c410e6ead923258cb8b8750389d516b8998f6a45f5e8d7d",
+    "history": 3770
+  },
+  "candidate_manifest": {
+    "blob": "c38e8861e72700088d2c3dd797fce885d117d903",
+    "bytes": 4223,
+    "sha256": "eeab7b526e96858f9dc75cd211da4a0af65f182c9da5198d18ca26b2f8cde911"
+  },
+  "accepted_original_source_packet": "b4cc37bfde4c036f1ad5dbc7cf5678916517583d",
+  "source_template": {
+    "blob": "d40b9565ddc74b93caf150fad29c612f7160c8c8",
+    "bytes": 27734,
+    "sha256": "431932d2bd1ea268887d9ce2f22a34a9a12dd3814b872efe1401df5d6c255cb7"
+  },
+  "binder": {
+    "blob": "5ee4b7696af740666382c8af80d31aba37343b4e",
+    "bytes": 3117,
+    "sha256": "75fd681504517961fe4d41628793f2b9f6d47b51e4daba91036a6d8babe6332f"
+  },
+  "binding": {
+    "blob": "25aaec89f01b41b7c745d12ce1e58a11a10ae92b",
+    "bytes": 2485,
+    "sha256": "c1881c9906ea27be7b12f1f8039a25f0d247992ffe532e76bfa35bc3f2038792"
+  },
+  "binding_diff": {
+    "blob": "5ea0ba028048c8c5c4b46890074535e639271fa5",
+    "bytes": 1240,
+    "sha256": "d1d2bf3e0b826d787c0c8671083e7e06578d49f06a0586112dd48a09ac938983"
+  },
+  "binding_source_hunks": 2,
+  "controller_algorithm_changed": false,
+  "binder_changed": false,
+  "original_template_binding_remains_null": true,
+  "source_only_candidate_data_binding": true,
+  "runtime_source": {
+    "blob": "498b9554681d573047fd5dbed064a557ab2cf7e6",
+    "bytes": 30057,
+    "sha256": "b0efa636a428fcf84f33328be18a733a120a748c92a8ac1bb4c2ea892517ce6a"
+  },
+  "carrier": {
+    "blob": "62d3896e9ba6a2421746af238b041de5310cdaf1",
+    "bytes": 237239,
+    "sha256": "6c0928fbab276f3c7c22ddacb1d02649a6e9020ee58760213650af9e3316dc8a"
+  },
+  "request": {
+    "blob": "096dd02b94c5f15a2a6f34d1f06fab9641d5948e",
+    "bytes": 268539,
+    "sha256": "13464d9109a85ae218e9d2da7270a9501e7d95f097ad73b07fcd4a6c3c2b2136"
+  },
+  "typed_binding": {
+    "sha256": "82ba36f4d145b60e1e9ddcc5d4d6cbcf0fa37a20484338aace8c9bbc44b8a075",
+    "native_fingerprint": "9419901995709740558",
+    "canonical_bytes": 268451
+  },
+  "journal": {
+    "blob": "4f732711a09ca8835677aec0c9564bc9dfeb6191",
+    "bytes": 19072,
+    "sha256": "b187616b2ddb9964b05b13d30bc040a5b0b296647494d48bdc5ba9a000653eec"
+  },
+  "product_slot": "successor4a_x230_two_bundle_source_gitfirst_r1",
+  "NativeGO": null,
+  "fixed_readonly_base": {
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "history": 3763,
+    "first_prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "current_presence": null
+  },
+  "future_paths": {
+    "root": "/home/qian/hb-4a49405b-src-20261106-r1",
+    "source": "/home/qian/hb-4a49405b-src-20261106-r1/source",
+    "control": "/home/qian/hb-4a49405b-src-20261106-r1/control",
+    "artifacts": "/home/qian/hb-4a49405b-src-20261106-r1/artifacts",
+    "report": "/home/qian/hb-4a49405b-src-20261106-r1/control/stage-result.public.json"
+  },
+  "first_bundle": {
+    "immutable_original": {
+      "field": "canonical_02b_base64",
+      "name": "canonical-hb-02b-from495.bundle",
+      "bytes": 171016,
+      "sha256": "069e0e07ef05dc6ec7f75407f8a06edd5efd53764833334fee74dcbf5719a800",
+      "target_mode": 256,
+      "prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "head": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+      "header": "# v2 git bundle\n-49503322c7f446e5eb41e7744f1fdbd7f1192ecc test: witness authenticated native state in NoForward HA regressions\n02b90762b3d6cc8699cc88bffb6f76cb1f07e270 HEAD\n\n",
+      "header_sha256": "bc421f87f1547daeef2cdd4ffce357d0eac193e380297296919658640be05ab5"
+    },
+    "transported_base64_blob": "aa2b5e2c231b7784603f8ccf621c405dacdeae08",
+    "root_transport_qualification": "6b95f49c60c5a7441668cb0edb43ea2769d0c606",
+    "new_read_requested": false
+  },
+  "second_bundle": {
+    "producer_stage_source": "eda0620d3bbf62f0add68918e2e948d540239e0e",
+    "expected_report_result_key": "canonical_x230_bundle",
+    "expected_producer_path": "/home/qian-qi/hb-4a49405b-src-20261106-r1/control/canonical-hb-4a49405b-from02b.bundle",
+    "expected_prerequisites": [
+      "02b90762b3d6cc8699cc88bffb6f76cb1f07e270"
+    ],
+    "expected_heads": [
+      [
+        "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+        "HEAD"
+      ]
+    ],
+    "expected_version": 2,
+    "bytes": 6815,
+    "sha256": "916868220c4009a71e8371568d67618e88fc8019cfc576a87247673135c81ac1",
+    "full9": [
+      "66306",
+      "34603406",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "6815",
+      "1794007675734817691",
+      "1794007675734817691"
+    ],
+    "metadata_version": "66306:34603406:6815:1794007675734817691:1794007675734817691",
+    "header": "# v2 git bundle\n-02b90762b3d6cc8699cc88bffb6f76cb1f07e270 fix(storage,auth): integrate streaming snapshots and JWT policy schema 147\n4a49405b93c45ab1c25ecba11cde63a7ede20dce HEAD\n\n",
+    "header_sha256": "e1af68cc94dad436c795a3c1e7d809b73d8622bcd566b95a8c464b75ac50fa19",
+    "base64_blob": "ee0d2ca9413ef27af0a5102235b67a2030fbc9f6",
+    "actual_producer_report": "1bc73accafe974e2ae7462c4e76b9093ad0edf12",
+    "actual_file_info": "3f660169529613ccd01ba8a8b8ff0a31a0ad0a29",
+    "actual_body": "b0c1eb47f288d4af715268c38145b6b4d65a37dc",
+    "root_transport_qualification": "eaa9d89d4b5f9e9cd6c62c73be052a2474edb56e",
+    "mac_from576_bundle_usable_here": false
+  },
+  "original_budgets": {
+    "stageSeconds": 300,
+    "cloneSeconds": 90,
+    "gitCommandSeconds": 60,
+    "outerSeconds": 360,
+    "termSeconds": 5,
+    "killSeconds": 5,
+    "processSnapshotSeconds": 5,
+    "commandStdoutAndStderrBytesEach": 2097152
+  },
+  "input_caps": {
+    "stdin_bytes": 262144,
+    "bundle_bytes_total": 262144,
+    "read_write_chunk_bytes": 65536,
+    "tracked_single_file": 2097152,
+    "tracked_total_bytes": 134217728,
+    "report_bytes": 1048576,
+    "files_exactly": 2,
+    "actual_carrier_bytes": 237239,
+    "actual_total_bundle_bytes": 177831,
+    "exact_request_bytes": 268539,
+    "request_envelope_is_not_stdin_cap": true
+  },
+  "full_finally_and_source_base_fences_unchanged": true,
+  "controls_published": false,
+  "CargoStarted": false,
+  "PythonExecuted": false,
+  "NativeCalls": 0,
+  "actualX230Stage": null,
+  "actualCurrentCandidateBinary": null,
+  "actualNormal117": null,
+  "actualFull34": null,
+  "actualLAN": null,
+  "followup": [
+    "Root reviews this exact source/request/journal before any Native init or arm.",
+    "At a granted lane, unique source-only stage validates actual current historical base identity/ancestry and source fences, then independent clone and both fixed qualified imports.",
+    "Observe only the returned original job; report metadata/body are separate later authorizations.",
+    "No controls/Cargo/current-binary/full34/LAN authorization follows from this source packet."
+  ],
+  "limits": "Existing source acceptance proves an unexecuted mechanism, not current X230 base existence, bundle creation, transport or runtime qualification. No old576 request or Native idempotency key is reused.",
+  "observationPlan": {
+    "maximumOriginalProcessStatusCalls": 64,
+    "maximumOriginalProcessReadCalls": 129,
+    "maximumStatusPerObserver": 8,
+    "maximumPagesPerObserver": 128,
+    "immutablePageBytes": 8192,
+    "payloadBytes": 1048576,
+    "streamReadBytesEach": 16384,
+    "streamTotalBytesEach": 2097152
+  },
+  "archiveKeys": {
+    "arm": "gfa-<new callKey>",
+    "sdk": "gfs-<same callKey>",
+    "exception": "gfx-<same callKey>",
+    "payload": "gfc-<returned original operation_id>",
+    "fixedArchiveKeyLiterals": []
+  },
+  "newSlotInitialized": false,
+  "candidateBindingPredecessorHunks": 3
+}

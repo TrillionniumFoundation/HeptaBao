@@ -1,0 +1,261 @@
+{
+  "schema": "heptabao.root.Mac49-original-chain-qualification.r1",
+  "sourceTree": "ea7bcdcbec588f2c8aa59b8d559fe1908447506c",
+  "whole": {
+    "tree": "ea7bcdcbec588f2c8aa59b8d559fe1908447506c",
+    "files": 37,
+    "bytes": 240095,
+    "merkle": {
+      "root_sha": "ea7bcdcbec588f2c8aa59b8d559fe1908447506c",
+      "trees_verified": 1,
+      "leaf_count": 37
+    },
+    "whole": true
+  },
+  "rootReproduced": {
+    "schema": "heptabao.mac4a.stage-independent-body.actual-checks.r1",
+    "passed": true,
+    "check_count": 49,
+    "checks": [
+      {
+        "name": "frozen executed source and GO",
+        "passed": true
+      },
+      {
+        "name": "actual root lane allocation",
+        "passed": true
+      },
+      {
+        "name": "original old paused state exact unchanged",
+        "passed": true
+      },
+      {
+        "name": "completed retrieval exact unchanged",
+        "passed": true
+      },
+      {
+        "name": "INFO root qualification exact",
+        "passed": true
+      },
+      {
+        "name": "three exact unique calls",
+        "passed": true
+      },
+      {
+        "name": "original actual call 0",
+        "passed": true
+      },
+      {
+        "name": "whole new BODY arm binding 0",
+        "passed": true
+      },
+      {
+        "name": "Merkle 25981714e20fc0c029b22543026c554ebca53029",
+        "passed": true
+      },
+      {
+        "name": "whole pin call00--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 20d792fcd07b6328dfc7ba8c02567e809fa39c3c",
+        "passed": true
+      },
+      {
+        "name": "SDK exact native 0",
+        "passed": true
+      },
+      {
+        "name": "whole pin call00--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "only exact version binary admission",
+        "passed": true
+      },
+      {
+        "name": "original actual call 1",
+        "passed": true
+      },
+      {
+        "name": "whole new BODY arm binding 1",
+        "passed": true
+      },
+      {
+        "name": "Merkle b723d0e4b298e04ff202b133aa786c0653614d61",
+        "passed": true
+      },
+      {
+        "name": "whole pin call01--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 8162d086c3201fb9cc11436a2bb5ba939a6af10b",
+        "passed": true
+      },
+      {
+        "name": "SDK exact native 1",
+        "passed": true
+      },
+      {
+        "name": "whole pin call01--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "same original inactive completed future",
+        "passed": true
+      },
+      {
+        "name": "original actual call 2",
+        "passed": true
+      },
+      {
+        "name": "whole new BODY arm binding 2",
+        "passed": true
+      },
+      {
+        "name": "Merkle 8a4280009a6b87480550f00cfeec6f001e8cf36f",
+        "passed": true
+      },
+      {
+        "name": "whole pin call02--original.sdk.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 7d85444fe1c4e53839fa406c27e6219c602f0b60",
+        "passed": true
+      },
+      {
+        "name": "SDK exact native 2",
+        "passed": true
+      },
+      {
+        "name": "whole pin call02--native.original.json",
+        "passed": true
+      },
+      {
+        "name": "one exact immutable16K page request",
+        "passed": true
+      },
+      {
+        "name": "actual10691-byte page accepted above old8192 bound",
+        "passed": true
+      },
+      {
+        "name": "exact whole payload from original page",
+        "passed": true
+      },
+      {
+        "name": "whole payload exact native text",
+        "passed": true
+      },
+      {
+        "name": "original actual metadata exact body",
+        "passed": true
+      },
+      {
+        "name": "full9 lossless exact",
+        "passed": true
+      },
+      {
+        "name": "all decoded bytes exact whole report",
+        "passed": true
+      },
+      {
+        "name": "external whole PAYLOAD-ARCHIVE-WHOLE.original.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle 70bf90428154e707ceb7dacfd0ec277360e306a6",
+        "passed": true
+      },
+      {
+        "name": "external whole BODY-ARCHIVE-WHOLE.original.json",
+        "passed": true
+      },
+      {
+        "name": "Merkle b3377be78c8487e9820ad9738cbcb0b5d4ea2497",
+        "passed": true
+      },
+      {
+        "name": "independent new context closed, no manufactured job",
+        "passed": true
+      },
+      {
+        "name": "actual physical release",
+        "passed": true
+      },
+      {
+        "name": "actual prepared exact4a source",
+        "passed": true
+      },
+      {
+        "name": "actual independent clean whole tree",
+        "passed": true
+      },
+      {
+        "name": "actual readonly576 and history3770",
+        "passed": true
+      },
+      {
+        "name": "actual Mac-only1253 bundle bound",
+        "passed": true
+      },
+      {
+        "name": "actual T5 and original bounded stage",
+        "passed": true
+      },
+      {
+        "name": "all31 original children0 reaped empty",
+        "passed": true
+      },
+      {
+        "name": "stage-only no product runtime claim",
+        "passed": true
+      }
+    ],
+    "newOriginalCalls": 3,
+    "completedObservers": 1,
+    "pages": 1,
+    "payloadBytes": 10691,
+    "bodyBytes": 7685,
+    "oldStatesUnchanged": true,
+    "MacBuildQualified": false,
+    "NativeCallsDuringVerification": 0
+  },
+  "exactPublishedResult": true,
+  "independentActualBindings": [
+    {
+      "name": "actual_min_report_state_GO_lane",
+      "passed": true
+    },
+    {
+      "name": "exact_executed_BODY_journal",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_INFO_root_qualification",
+      "passed": true
+    },
+    {
+      "name": "root_independently_retrieved_payload_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_frozen_old_states",
+      "passed": true
+    }
+  ],
+  "detailedStageRootQualification": {
+    "blob": "b927b14ecaed1b5091ca045df49c89324a33695a",
+    "bytes": 6285,
+    "sha256": "1c76db19c9a5edd6cde284984834c102f6ab7945ef0f7fef9134d775c159bb2c"
+  },
+  "sourceStagingQualified": true,
+  "allOriginalCallsClosed": true,
+  "oldContextsUnchanged": true,
+  "normal117Qualified": false,
+  "fullReplacement": false,
+  "clientCutover": false,
+  "cleanup": false
+}
