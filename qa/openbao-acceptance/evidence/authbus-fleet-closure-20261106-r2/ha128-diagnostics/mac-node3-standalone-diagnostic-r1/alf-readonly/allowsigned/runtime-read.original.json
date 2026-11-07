@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1b3398500-fc05-8133",
+  "stderr": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  },
+  "stdout": {
+    "bytes_hex": "4175746f6d61746963616c6c7920616c6c6f77206275696c742d696e207369676e656420736f66747761726520454e41424c45442e0a4175746f6d61746963616c6c7920616c6c6f7720646f776e6c6f61646564207369676e656420736f66747761726520454e41424c45442e0a",
+    "eof": true,
+    "next_offset": 110,
+    "offset": 0,
+    "size": 110,
+    "text": "Automatically allow built-in signed software ENABLED.\nAutomatically allow downloaded signed software ENABLED.\n"
+  }
+}

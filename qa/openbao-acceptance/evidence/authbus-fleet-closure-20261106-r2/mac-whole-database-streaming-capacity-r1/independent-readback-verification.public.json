@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.actual-largest-database-original-readback-verification.r1",
+  "jobId": "1a1b35e1142-fc05-8275",
+  "stdoutBytes": 17589,
+  "stdoutSha256": "663d9ca6a19032189c987653c1e208f81cfbd1283eef53e3d18e01b870a8f572",
+  "workerStdoutBytes": 10545,
+  "workerStdoutSha256": "6442a9d09efc6c83fefe37fa7420eb41ff9ff207a4132119d8dc7a1c7db0b97b",
+  "independentNativeWorkerMatchesParent": true,
+  "allOriginalTerminalAndResourcesClosed": true,
+  "actualCaseCount": 17,
+  "logicalPrimaryBytes": 2472751104,
+  "payloadRows": 2355,
+  "maximumObservedRssBytes": 73596928,
+  "capacityScope": "largest_current_database_plus_six_database_lifecycle",
+  "allCurrentSixDatabaseSizesReproduced": false,
+  "productionRollbackQualified": false
+}

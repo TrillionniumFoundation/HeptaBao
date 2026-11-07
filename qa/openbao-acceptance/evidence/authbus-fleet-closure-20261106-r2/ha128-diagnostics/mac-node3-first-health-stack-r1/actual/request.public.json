@@ -1,0 +1,21 @@
+{
+  "host": "main",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "env": {
+    "LC_ALL": "C",
+    "LANG": "C"
+  },
+  "idempotency_key": "mac-ha128-node3-first-health-stack-diagnostic-20261106-r1",
+  "timeout_seconds": 120,
+  "stdinSource": {
+    "path": "../preparation/mac_rust_tls_coordinator_stack_r1.py",
+    "sha256": "b9f2726af5f2f9ec1e3f0e5330a93e8545d2c7f2c27b0cf86660d37b622ba389",
+    "bytes": 39333
+  }
+}

@@ -1,0 +1,435 @@
+--- mac-rog/original/index.js
++++ mac-rog/prepared/index.js
+@@ -1,7 +1,9 @@
+ import crypto from "node:crypto";
+ import fs from "node:fs";
+-import https from "node:https";
+ import path from "node:path";
++
++import { ProductionTransportClient } from "./production-transport/production-client.js";
++import { normalizeTransport } from "./production-transport/bounded-outbox.js";
+ 
+ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
+ import {
+@@ -39,7 +41,6 @@
+ } from "./bad-refresh-quarantine.js";
+ 
+ const PLUGIN_ID = "openclaw-authbus";
+-const KV_MOUNT = "openclaw-auth";
+ 
+ function isRecord(value) {
+   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+@@ -100,100 +101,6 @@
+     if (typeof credential.token !== "string" || credential.token.length < 8 || credential.tokenRef !== undefined) return false;
+   }
+   return Buffer.byteLength(stableStringify(credential), "utf8") <= 128 * 1024;
+-}
+-
+-class BaoClient {
+-  constructor(config) {
+-    this.base = new URL(config.address);
+-    this.ca = fs.readFileSync(config.caFile);
+-    this.roleIdFile = config.roleIdFile;
+-    this.secretIdFile = config.secretIdFile;
+-    this.token = null;
+-    this.tokenExpiresAt = 0;
+-  }
+-
+-  async request(method, requestPath, body, token = this.token) {
+-    const payload = body === undefined ? null : Buffer.from(JSON.stringify(body));
+-    const options = {
+-      protocol: this.base.protocol,
+-      hostname: this.base.hostname,
+-      port: this.base.port || 443,
+-      path: requestPath,
+-      method,
+-      ca: this.ca,
+-      rejectUnauthorized: true,
+-      timeout: 15000,
+-      headers: {
+-        Accept: "application/json",
+-      },
+-    };
+-    if (payload) {
+-      options.headers["Content-Type"] = "application/json";
+-      options.headers["Content-Length"] = String(payload.length);
+-    }
+-    if (token) options.headers["X-Vault-Token"] = token;
+-
+-    return await new Promise((resolve, reject) => {
+-      const req = https.request(options, (res) => {
+-        const chunks = [];
+-        res.on("data", (chunk) => chunks.push(chunk));
+-        res.on("end", () => {
+-          const raw = Buffer.concat(chunks).toString("utf8");
+-          let parsed = null;
+-          if (raw) {
+-            try {
+-              parsed = JSON.parse(raw);
+-            } catch {
+-              return reject(new Error(`OpenBao returned non-JSON status ${res.statusCode}`));
+-            }
+-          }
+-          if (res.statusCode === 404) return resolve(null);
+-          if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
+-            return reject(new Error(`OpenBao request failed with status ${res.statusCode}`));
+-          }
+-          resolve(parsed);
+-        });
+-      });
+-      req.on("timeout", () => req.destroy(new Error("OpenBao request timed out")));
+-      req.on("error", reject);
+-      if (payload) req.write(payload);
+-      req.end();
+-    });
+-  }
+-
+-  async login() {
+-    if (this.token && Date.now() < this.tokenExpiresAt - 60_000) return;
+-    const roleId = fs.readFileSync(this.roleIdFile, "utf8").trim();
+-    const secretId = fs.readFileSync(this.secretIdFile, "utf8").trim();
+-    const result = await this.request("POST", "/v1/auth/approle/login", {
+-      role_id: roleId,
+-      secret_id: secretId,
+-    }, null);
+-    const token = result?.auth?.client_token;
+-    if (typeof token !== "string" || token.length < 8) throw new Error("OpenBao AppRole login returned no token");
+-    const leaseSeconds = Number(result?.auth?.lease_duration) || 3600;
+-    this.token = token;
+-    this.tokenExpiresAt = Date.now() + leaseSeconds * 1000;
+-  }
+-
+-  async readSecret(secretPath) {
+-    await this.login();
+-    const result = await this.request("GET", `/v1/${KV_MOUNT}/data/${secretPath}`);
+-    if (!result) return null;
+-    return {
+-      data: result?.data?.data ?? null,
+-      version: Number(result?.data?.metadata?.version) || 0,
+-    };
+-  }
+-
+-  async writeInbox(hostId, eventId, event) {
+-    await this.login();
+-    await this.request(
+-      "POST",
+-      `/v1/${KV_MOUNT}/data/inbox/${encodeURIComponent(hostId)}/${encodeURIComponent(eventId)}`,
+-      { data: event, options: { cas: 0 } },
+-    );
+-  }
+ }
+ 
+ function discoverAgentDirs(stateDir) {
+@@ -837,6 +744,7 @@
+     roleIdFile: raw.roleIdFile,
+     secretIdFile: raw.secretIdFile,
+     hostId: raw.hostId,
++    productionTransport: normalizeTransport(raw.productionTransport, raw.hostId),
+     pollIntervalMs: Number(raw.pollIntervalMs) || 15_000,
+     refreshMarginMs: Number(raw.refreshMarginMs) || 15 * 60_000,
+     maxRefreshesPerCycle: Number(raw.maxRefreshesPerCycle) || 1,
+@@ -859,14 +767,16 @@
+ export default definePluginEntry({
+   id: PLUGIN_ID,
+   name: "OpenClaw AuthBus",
+-  description: "Synchronizes auth credentials through OpenBao",
++  description: "Synchronizes auth credentials through HeptaBao",
+   register(api) {
+     if (api.registrationMode !== "full") return;
+     const config = normalizedConfig(api.pluginConfig ?? {});
+     let timer = null;
+-    let stopped = false;
++    let stopped = true;
+     let running = false;
+     let bao = null;
++    let transportStateDir = null;
++    let closePromise = null;
+     let applied = new Map();
+     let appliedLoaded = false;
+     const published = new Set();
+@@ -888,6 +798,39 @@
+       });
+       await previous;
+       return release;
++    }
++
++    function transportFor(ctx) {
++      if (!ctx || typeof ctx.stateDir !== "string" || !path.isAbsolute(ctx.stateDir)) {
++        throw new Error("AuthBus production state directory is invalid");
++      }
++      if (transportStateDir !== null && transportStateDir !== ctx.stateDir) {
++        throw new Error("AuthBus production state directory changed during one service lifetime");
++      }
++      if (bao === null) {
++        transportStateDir = ctx.stateDir;
++        bao = new ProductionTransportClient(config, ctx.stateDir);
++      }
++      return bao;
++    }
++
++    function stopService() {
++      // Closing admission is synchronous. Every previously admitted callback
++      // is already represented by the captured operation tail.
++      stopped = true;
++      serviceContext = null;
++      if (timer) clearInterval(timer);
++      timer = null;
++      if (closePromise === null) {
++        const admittedTail = operationTail;
++        closePromise = (async () => {
++          await admittedTail;
++          if (bao !== null) await bao.close();
++        })();
++      }
++      // A failed/unknown close remains the same original promise. Repeating
++      // stop does not dispatch another revoke or reset transport history.
++      return closePromise;
+     }
+ 
+     function ensureBadRefreshQuarantineLoaded(stateDir) {
+@@ -915,6 +858,7 @@
+         if (!failure || !sourceAgentId) return;
+         const releaseOperation = await acquireOperationLock();
+         try {
++          if (stopped || serviceContext !== ctx) return;
+           const agentDirs = discoverAgentDirs(ctx.stateDir);
+           const sourceAgentDir = agentDirs.find(
+             (agentDir) => path.basename(path.dirname(agentDir)) === sourceAgentId,
+@@ -936,7 +880,7 @@
+           const provider = failure.provider ?? resolveProviderIdForAuth(selected.credential.provider);
+           let model = lifecycleModel(event);
+           if (model && !model.includes("/")) model = `${provider}/${model}`;
+-          bao ??= new BaoClient(config);
++          bao = transportFor(ctx);
+           const observation = makeControlEvent(config, "health-observation", {
+             observedAt: Number(event.ts) || Date.now(),
+             provider,
+@@ -1009,7 +953,8 @@
+       };
+       let runtimeRecycle = null;
+       try {
+-        bao ??= new BaoClient(config);
++        if (stopped || serviceContext !== ctx) return;
++        bao = transportFor(ctx);
+         const agentDirs = discoverAgentDirs(ctx.stateDir);
+         if (agentDirs.length === 0) throw new Error("No local OpenClaw agent databases found");
+         if (!appliedLoaded) {
+@@ -1276,17 +1221,35 @@
+     api.registerService({
+       id: PLUGIN_ID,
+       async start(ctx) {
++        if (serviceContext !== null || closePromise !== null) {
++          throw new Error("AuthBus service requires a new registration after stop or failed start");
++        }
+         stopped = false;
+         serviceContext = ctx;
+-        await cycle(ctx);
+-        timer = setInterval(() => void cycle(ctx), config.pollIntervalMs);
+-        timer.unref?.();
++        try {
++          const releaseOperation = await acquireOperationLock();
++          try {
++            if (stopped || serviceContext !== ctx) return;
++            await transportFor(ctx).reconcile();
++          } finally {
++            releaseOperation();
++          }
++          if (stopped || serviceContext !== ctx) return;
++          await cycle(ctx);
++          if (stopped || serviceContext !== ctx) return;
++          timer = setInterval(() => void cycle(ctx), config.pollIntervalMs);
++          timer.unref?.();
++        } catch (error) {
++          try {
++            await stopService();
++          } catch (closeError) {
++            throw new AggregateError([error, closeError], "AuthBus startup and original transport closure failed");
++          }
++          throw error;
++        }
+       },
+       async stop() {
+-        stopped = true;
+-        serviceContext = null;
+-        if (timer) clearInterval(timer);
+-        timer = null;
++        await stopService();
+       },
+     });
+   },
+--- mac-rog/original/package.json
++++ mac-rog/prepared/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@local/openclaw-authbus",
+-  "version": "0.3.1",
++  "version": "0.3.1-heptabao.1",
+   "type": "module",
+   "files": [
+     "index.js",
+@@ -10,7 +10,8 @@
+     "bad-refresh-quarantine.js",
+     "runtime-refresh-policy.js",
+     "codex-client-recycler.js",
+-    "openclaw.plugin.json"
++    "openclaw.plugin.json",
++    "production-transport"
+   ],
+   "peerDependencies": {
+     "openclaw": ">=2026.7.1"
+--- mac-rog/original/openclaw.plugin.json
++++ mac-rog/prepared/openclaw.plugin.json
+@@ -1,7 +1,7 @@
+ {
+   "id": "openclaw-authbus",
+   "name": "OpenClaw AuthBus",
+-  "description": "Synchronizes auth credentials through an OpenBao control plane",
++  "description": "Synchronizes auth credentials through the HeptaBao production control plane",
+   "activation": {
+     "onStartup": true
+   },
+@@ -13,24 +13,71 @@
+       "caFile",
+       "roleIdFile",
+       "secretIdFile",
+-      "hostId"
++      "hostId",
++      "productionTransport"
+     ],
+     "properties": {
+-      "address": { "type": "string", "pattern": "^https://" },
+-      "caFile": { "type": "string" },
+-      "roleIdFile": { "type": "string" },
+-      "secretIdFile": { "type": "string" },
+-      "hostId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,62}$" },
+-      "pollIntervalMs": { "type": "integer", "minimum": 5000, "maximum": 300000 },
+-      "refreshMarginMs": { "type": "integer", "minimum": 300000, "maximum": 86400000 },
+-      "maxRefreshesPerCycle": { "type": "integer", "minimum": 1, "maximum": 10 },
+-      "leader": { "type": "boolean" },
+-      "publishNew": { "type": "boolean" },
+-      "manageOrder": { "type": "boolean" },
+-      "schedulerMode": { "type": "string", "enum": ["shadow", "enforce"] },
+-      "schedulerReportIntervalMs": { "type": "integer", "minimum": 15000, "maximum": 300000 },
+-      "enforceRefreshLeases": { "type": "boolean" },
+-      "releaseGeneration": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
++      "address": {
++        "type": "string",
++        "pattern": "^https://"
++      },
++      "caFile": {
++        "type": "string"
++      },
++      "roleIdFile": {
++        "type": "string"
++      },
++      "secretIdFile": {
++        "type": "string"
++      },
++      "hostId": {
++        "type": "string",
++        "pattern": "^[a-z0-9][a-z0-9-]{0,62}$"
++      },
++      "pollIntervalMs": {
++        "type": "integer",
++        "minimum": 5000,
++        "maximum": 300000
++      },
++      "refreshMarginMs": {
++        "type": "integer",
++        "minimum": 300000,
++        "maximum": 86400000
++      },
++      "maxRefreshesPerCycle": {
++        "type": "integer",
++        "minimum": 1,
++        "maximum": 10
++      },
++      "leader": {
++        "type": "boolean"
++      },
++      "publishNew": {
++        "type": "boolean"
++      },
++      "manageOrder": {
++        "type": "boolean"
++      },
++      "schedulerMode": {
++        "type": "string",
++        "enum": [
++          "shadow",
++          "enforce"
++        ]
++      },
++      "schedulerReportIntervalMs": {
++        "type": "integer",
++        "minimum": 15000,
++        "maximum": 300000
++      },
++      "enforceRefreshLeases": {
++        "type": "boolean"
++      },
++      "releaseGeneration": {
++        "type": "integer",
++        "minimum": 0,
++        "maximum": 2147483647
++      },
+       "orderExcludeAgentIds": {
+         "type": "array",
+         "items": {
+@@ -39,6 +86,56 @@
+         },
+         "uniqueItems": true,
+         "maxItems": 128
++      },
++      "productionTransport": {
++        "type": "object",
++        "additionalProperties": false,
++        "required": [
++          "schema",
++          "production",
++          "epoch",
++          "slots",
++          "agents",
++          "controlDigest",
++          "serverCertificateSha256"
++        ],
++        "properties": {
++          "schema": {
++            "type": "string",
++            "const": "heptabao-authbus-fixed-slots-v1"
++          },
++          "production": {
++            "type": "boolean",
++            "const": true
++          },
++          "epoch": {
++            "type": "string",
++            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
++          },
++          "slots": {
++            "type": "integer",
++            "minimum": 1,
++            "maximum": 32
++          },
++          "agents": {
++            "type": "array",
++            "minItems": 1,
++            "maxItems": 128,
++            "uniqueItems": true,
++            "items": {
++              "type": "string",
++              "pattern": "^[a-z0-9][a-z0-9_-]{0,127}$"
++            }
++          },
++          "controlDigest": {
++            "type": "string",
++            "pattern": "^[a-f0-9]{64}$"
++          },
++          "serverCertificateSha256": {
++            "type": "string",
++            "pattern": "^[a-f0-9]{64}$"
++          }
++        }
+       }
+     }
+   }

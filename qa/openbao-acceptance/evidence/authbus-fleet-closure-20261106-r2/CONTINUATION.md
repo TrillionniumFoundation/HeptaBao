@@ -1,10 +1,66 @@
-# Actual continuation checkpoint — 2026-11-06
+# Actual continuation checkpoint — 2026-11-07
 
 The current full-replacement gate remains **not qualified**. Product source is unified with canonical candidate `4bde9aee03fcd27c59e13607e529b1cee594b249` (tree `f08493a23f8ea0637073651231865ea9607b790e`). The 5ded017 merge retained both histories and took the canonical JWT test fixture. Later evidence and QA updates leave every product file outside `qa/` and `docs/` equal to canonical 4bde9.
 
 No production traffic was switched. No legacy production Bao service, binary, data or backup was deleted. The retired Mac R2 registration below was an explicitly owned failed QA wrapper.
 
-## r13 — real Linux SDK permission custody, Mac source inventory, and LAN blocker checkpoint
+## r14 — current-size rollback qualification, independent trust staging, and remaining HA/production gates
+
+This is the latest evidence checkpoint, recorded on 2026-11-07. The product remains canonical `4bde9aee03fcd27c59e13607e529b1cee594b249`. Full replacement and legacy deletion remain **not qualified**. Real provider calls, production credential writes, production gateway restarts/cutover and held-helper releases remain zero. The independent permanent runtime and CA staging below did create new private files, without installing or starting its service.
+
+### Complete database recovery at the observed main-database size
+
+The [actual streaming capacity result](mac-whole-database-streaming-capacity-r1/execution.stdout.original.json) and its original native terminal belong to Mac job `1a1b35e1142-fc05-8275`: known exit 0, complete/durable 17,589-byte stdout, zero stderr, 30.014 seconds. All 17 cases passed. The actual synthetic main database was **2,472,751,104 bytes**, exceeding the observed current main file's 2,469,126,144 bytes. After complete six-database restoration, all 2,355 deterministic one-MiB payload rows matched byte for byte.
+
+The unchanged streaming core performed 24 SQLite backup operations, 18,896 bounded backup steps and 48 recorded restore actions. It closed 72 SQL connections, 639 core descriptors, six worker-input descriptors and 83 parent descriptors; the original worker and vm_stat admission child both completed and were reaped with no unknown outcome. Actual Darwin peak RSS was **73,596,928 bytes**, below the 512-MiB post-run acceptance threshold. This is measured peak usage, not an OS-enforced RSS cap. The same core's earlier [small Mac qualification](mac-whole-database-streaming-small-r1/) passed its whole-six lifecycle and same-transaction/concurrent-writer, BUSY and corruption cases.
+
+This closes the earlier in-memory design's capacity blocker for the **largest current database plus the six-database lifecycle**. It does not reproduce all six current database sizes, admit the production disk budget, stop production writers or execute a production rollback. The actual production budget must include every current database/sidecar and all retained copies/quarantine; the largest-fixture formula is insufficient. The first local scaled capacity failure remains retained beside its later diagnostic result; neither is rewritten as a pass.
+
+A separate [six-database header observation](mac-six-database-header-modes-r1/), job `1a1b354e332-fc05-8220`, read only 240 header bytes with all 22 descriptors closed. Main is in rollback-journal mode; the other four agent databases and registry are WAL. A long-held main read transaction would block a later main CAS. Provider maintenance therefore still needs actual consumer quiescence, a fresh generation and fresh private whole-database clones with explicit SDK logical-to-clone read mapping, followed by current live owner/CAS checks.
+
+### Independent permanent trust and runtime staging actually created
+
+[Create-only preparation](permanent-authbus-target-preparation-r1/actual/stdout.original.json), Mac native job `1a1b360edf4-fc05-8287`, completed with exit 0, complete/durable 11,124-byte stdout and zero stderr. The reviewed 67,604-byte launcher has SHA-256 `442d86d12118813f7fb7aae06566e6649f98fd2b9eae6df059c747b3fce145c3`.
+
+It created an independent CA, a SAN-bound server certificate and the exact 92,359,328-byte normal Mac binary (SHA-256 `5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c`) under:
+
+- Runtime: `/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production`.
+- Separate private custody: `/Users/qianqi/heptabao-authbus-production-custody`.
+- New backup destination: `/Users/qianqi/heptabao-authbus-production-backups`, on the distinct HOME filesystem.
+
+Certificate-chain verification passed. One diskutil and four OpenSSL commands completed with original process/group/stream closure; all 29 explicit descriptors and held T5 anchors closed, the final anchor check passed and unknown-command count was zero. Private key bytes and digests were not published. Loopback bootstrap configuration, a future LAN configuration for `https://192.168.0.8:31080`, and a reviewable plist were written privately. **The LaunchAgent is not installed; the permanent server has not been initialized, started or exposed to clients.** Its real backup/restore, startup/unseal behavior, client enrollment and service lifecycle remain required. This is a proposed single-Mac service, not a deployed three-voter production cluster.
+
+The target observation preserves the failed interpreter-assumption and overstrict-read-only-parent attempts, the independent Python-path observation, and the succeeding zero-write r3 metadata observation. The final stage used the protected existing T5 work parent; it did not change mount-root permissions or mount-root entries.
+
+### Actual wrapper contract and production transport integration
+
+The [actual current wrapper sources](r14-contributors/mac-current-wrapper-source.blob-map.original.json) establish the eight-line positional shell wrapper and its separate file of 13 literal exports. The [parameter-wrapper fallback](r14-contributors/parameter-wrapper-fallback.blob-map.original.json) preserves those exact literal bytes and the original Node/SDK tail, adding only the four fixed SDK selectors. Its actual private-copy parse and create-only review outputs passed; this is still not a cold full production gateway restart or rollback.
+
+The [production transport plan](production-transport-integration-r1/PRODUCTION_TRANSPORT_INTEGRATION_PENDING.md) records the installed plugin gap. Existing SDK/API canaries did not install or qualify the durable production adapter in any real client. Separate source-bound Mac/ROG and Pocket4 variants are now [prepared](production-transport-integration-r1/production-plugin-r1/manifest.public.json): the manifest accepts and requires production enrollment, both callback paths share one `ProductionTransportClient`, startup reconciles before work, callbacks recheck stopped state after their operation lock, and stop closes admission, drains the original tail and invokes close/revoke once. A concurrent start cannot recreate a polling timer after stop. A stopped or failed registration requires a new registration; an unknown close remains the original promise.
+
+The complete prepared plugin sources passed [14 local wiring cases](production-transport-integration-r1/production-plugin-wiring-r3.stdout.original.json). The SDK and network boundaries are deliberately substituted in these tests; these are not actual SDK/TLS/provider/renew/revoke or cutover passes. Earlier fixture omissions and their original failed outputs are retained. No prepared variant has been installed.
+
+Production integration also adds exactly two local transport databases and their observed sidecars. Once any request has been dispatched, original outbox/authentication/operation history must remain in private custody through rollback. Never erase an unknown request, reset the epoch or manufacture a new key. Actual permanent fixed-slot coordinator/enrollment/ack/report behavior still needs source-bound implementation and runtime evidence; the repository's older inbox coordinator must not silently be substituted for that contract.
+
+### Physical HA r3: real progress, original profile still failed
+
+The [fresh preflight](r14-contributors/ha128-r3-preflight-blob-map.json.original.json) rechecked the exact two existing ai395 rules, both peer ports and all five new roots. The r3 driver differs from the reviewed r2 only in those fixed new roots; original 128 cases, 15-second requests, 45-second listener budget and 1,800-second outer budget remain unchanged.
+
+Mac native job `1a1b357f5e0-fc05-8241` ended known failed with complete/durable **40,446-byte stdout**, zero stderr and 114.749 seconds. It reached **51/128**: all three voters initially unsealed, election, all six directed Raft mTLS paths, API certificate pins and native activation passed. Ten of the planned 17 two-MiB native-history writes had known successful responses. Failure occurred in the exact historical-version-12 read after write 10; the next mutation intent had not been created. All **23 mutation intents have 23 responses**, unknown count is zero and no mutation was replayed.
+
+All original seed/native processes and foreground SSH were stopped/reaped, groups and streams closed, source custody remained exact and no tunnel remained. Original complete node logs are retained. Repeated short-budget append/synchronization failures are diagnostic leads; their logs do not contain sufficient request/time correlation to establish the cause of the failed GET. Its original wrapper did not retain URLError.reason. The exact current Mac Python urllib/http sources were subsequently read completely under fixed file versions and whole hashes. Their [retained exception-boundary review](r14-contributors/ha-mac-python-exception-boundary-blob-map.json.original.json) and five source-bound, no-network cases establish that this wrapper converts OSError to URLError around request/connect/TLS/send, while getresponse/body-read timeouts remain outside that conversion. The original failure is therefore in the former scope; this does not identify its missing reason or reproduce the HA fault. Ordinary response/storage waiting must not be asserted as its established cause. There is no HA128 pass and no deadline increase.
+
+The preceding Mac TLS-stack observation passed self HTTPS and parent TCP/TLS/HTTPS without a firewall/product change. Its original live sample projection correctly refused an OS-redacted executable path; the retained offline projection binds the exact original PID/birth/image evidence and samples an idle accept loop after the successful request. It does not explain earlier timeouts.
+
+The two narrowly scoped ai395 UFW peer rules remain active for this concrete HA diagnosis. No global firewall, sudoers, ALF, PF or WARP change occurred. Their eventual cleanup still requires fresh full pre-delete evidence and the exact reverse-order delete/compare sequence; counter/handle restoration is not claimed.
+
+### Next execution boundary
+
+The approved finite clients, four legacy Mac relays, held Linux helpers, protected unrelated services and zero historical backup-producer inventory remain the existing scope. Newly observed independent active processes require only exact credential/DB/source association before inclusion; a name or a gateway's empty descendant list is not proof of whole-host quiescence.
+
+The remaining sequence is actual consumer retirement and fresh source admission; once-only provider refresh and full-owner-preserving CAS for the three selected current owners; a new rollback baseline after all known committed rotations; actual full SDK fallback and each client's restart/rollback; permanent service/transport/coordinator qualification; physical HA completion; real permanent backup/restore; then traffic cutover and finite legacy cleanup. Unknown provider, CAS, transport or service effects prohibit advancing to the next ordinal or restarting old credential generations.
+
+## Historical r13 — real Linux SDK permission custody, Mac source inventory, and LAN blocker checkpoint
 
 This is a QA/evidence checkpoint on product `4bde9aee03fcd27c59e13607e529b1cee594b249`. It does not qualify complete OpenBao 2.7.1 replacement. No real provider request, production credential write, production gateway restart/cutover, helper hold release, or legacy deletion has occurred in this checkpoint.
 

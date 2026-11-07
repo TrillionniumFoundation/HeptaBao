@@ -1,0 +1,8 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-actual/stdout.original.ndjson": "ea2f533437e8e160b8e90df2ca97ae74bb86e745",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-actual/runtime-terminal.original.json": "6c254bf6f7836db428a51ced56a39529b090a722",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-actual/runtime-read-0.original.json": "617631e445f7cf356ccc6d11c5684010a0fb7bb6",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-actual/runtime-read-1.original.json": "5fa79f47b50c19fd37764fa74da27487b605ccd5",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-actual/runtime-read-2.original.json": "2c5f534d683a87a5c75c4776d1aa815cea8a1519",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-actual/post-terminal-state.public.json": "711005684dbb5c079b49d2dba6b178055f4f50a6"
+}

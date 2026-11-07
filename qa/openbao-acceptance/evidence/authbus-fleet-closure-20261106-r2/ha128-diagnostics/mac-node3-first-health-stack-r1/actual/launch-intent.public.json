@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "mac-ha128-node3-first-health-stack-diagnostic-20261106-r1",
+  "host": "main",
+  "sourceSha256": "b9f2726af5f2f9ec1e3f0e5330a93e8545d2c7f2c27b0cf86660d37b622ba389",
+  "sourceBytes": 39333,
+  "firstExecutionIntent": true,
+  "automaticRetry": false,
+  "supervisorSeconds": 120,
+  "productQualificationClaimed": false
+}

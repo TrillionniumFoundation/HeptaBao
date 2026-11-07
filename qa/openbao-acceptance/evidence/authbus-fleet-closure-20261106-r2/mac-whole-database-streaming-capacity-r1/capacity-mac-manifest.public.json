@@ -1,0 +1,49 @@
+{
+  "actualExecuted": false,
+  "allCurrentSixDatabaseSizesReproduced": false,
+  "capacityScope": "largest_current_database_plus_six_database_lifecycle",
+  "databaseByteLimit": 4294967296,
+  "directSourcePageOracleClaimed": false,
+  "installedSchemaSourcePins": {
+    "dist/openclaw-agent-db-DKpxi-Ll.js": "5c99ab6de1ccc1419ed1bdbc783b79203afc34e564f794df4d91bf10e0b53360",
+    "dist/openclaw-state-db-DzSsA9Ji.js": "ba920b2e6f63293a27c34615fc31dcb16a20a68a1e1e34fbccdcac56a9608149"
+  },
+  "launcherBytes": 168014,
+  "launcherSha256": "8cdf5777c921fbe927131304e658d25dd9ddfefcdffa17775f70ae4d982089ce",
+  "maximumPrimaryBytes": 2502680576,
+  "maximumProcessRssBytes": 536870912,
+  "memoryCommandSeconds": 3,
+  "minimumFreeDiskBytes": 26463895552,
+  "minimumFreeMemoryBytes": 1073741824,
+  "minimumPrimaryBytes": 2469126144,
+  "originalLargeChildren": 1,
+  "originalMemoryCommands": 1,
+  "productionRollbackQualified": false,
+  "productionSourceReads": 0,
+  "productionWholeSixDatabaseDiskBudgetAdmitted": false,
+  "productionWrites": 0,
+  "root": "/Users/qianqi/heptabao-authbus-whole-database-streaming-capacity-20261106-r1",
+  "rssThresholdIsPostRunAcceptanceNotOsEnforcedLimit": true,
+  "sameCoreSha256": "6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a",
+  "schema": "heptabao.whole-sqlite-capacity-mac-preparation.r1",
+  "schemaPins": {
+    "agent": "d37c6e104013adba853de170ca13588cef7d002215ce9417075139b7f95ee681",
+    "state": "aaca087250e53305be6994a516dbd260423b041330845ec457824fad82824ae5"
+  },
+  "sharedSeconds": 600,
+  "smallActualJobId": "1a1b347c2f5-fc05-81b8",
+  "sourcePins": {
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_owned_commands_r1.py": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530",
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_whole_sqlite_capacity_worker_r1.py": "4dde48125778c3ebea8e04148b28cc93b61b5eaf6314ee9ddcda3f4d865e6e5b",
+    "qualify_whole_sqlite_capacity_r1.py": "d8918be8794e687ef4f9d9f8bc451c11e53fa2c7ff9469b7e7b4d4a638e55643",
+    "whole_sqlite_streaming_r1.py": "6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a"
+  },
+  "sourceVfs": "unix-posix",
+  "sqliteHeapLimitBytes": 268435456,
+  "streamBlockBytes": 1048576,
+  "supervisorSeconds": 630,
+  "wholeBundleCases": 17,
+  "workerSeconds": 540
+}

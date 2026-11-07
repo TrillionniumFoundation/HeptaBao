@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.ha128-r3-preparation.r1",
+  "status": "prepared-not-launched",
+  "priorLauncherSha256": "b0b9c320a462828045a1046d99a9e2b65b50610780513a37b0d62e8d8a49d96a",
+  "launcherBytes": 106163,
+  "launcherSha256": "9d703c0b213e5fe9f4e5cd67f6127ca16dd303f870df85526b86e63893b27fd1",
+  "changes": {
+    "exactRootLiteralReplacements": 5,
+    "sourcePinsChanged": 0,
+    "sourcePinCount": 613,
+    "apiPort": 31040,
+    "raftPort": 31041,
+    "apiPortChanged": false,
+    "raftPortChanged": false,
+    "normalBinariesChanged": false,
+    "qaHarnessChanged": false,
+    "expectedCases": 128,
+    "productBudgetsChanged": false,
+    "outerSeconds": 1800
+  },
+  "freshRequirements": {
+    "ai395FullPrivateFirewallCaptureAndSemanticComparison": "exact two previously approved temporary QA flows; all other semantics equal to original before",
+    "threeHostPortsAndNewRoots": true
+  },
+  "newIdempotencyKey": "mac-ha128-current-4bde9-authbus-20261106-r3",
+  "priorFailedCampaignReplayed": false,
+  "priorFixtureRestarted": false,
+  "productionChangesAuthorized": false,
+  "rootCauseOfPriorIntermittentMacTlsTimeoutEstablished": false,
+  "latestSameCandidateStrictTlsPassedWithinOriginalBudget": true
+}
