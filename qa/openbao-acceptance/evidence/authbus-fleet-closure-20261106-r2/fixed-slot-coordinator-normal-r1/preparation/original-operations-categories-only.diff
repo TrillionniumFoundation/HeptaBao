@@ -1,0 +1,12 @@
+--- qualified-bootstrap-operations
++++ fixedslot-operations
+@@ -99,7 +99,8 @@
+ 
+     def append(self, category, value):
+         need(self.counter < 512 and category in ('api-request-intent', 'api-request-result',
+-             'server-start-intent', 'server-stop-result', 'bootstrap-recovery'), 'bootstrap_finite_journal')
++             'server-start-intent', 'server-stop-result', 'bootstrap-recovery',
++             'crypto-intent', 'crypto-result', 'node-request-intent', 'node-request-result'), 'bootstrap_finite_journal')
+         self.write('event-%04d.private.json' % self.counter, encoded({'category': category, 'value': value}))
+         self.counter += 1
+ 

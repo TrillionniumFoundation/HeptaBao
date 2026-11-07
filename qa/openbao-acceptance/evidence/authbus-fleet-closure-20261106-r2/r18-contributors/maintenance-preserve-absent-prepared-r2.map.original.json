@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.authbus-evidence-immutable-map.r1",
+  "scope": "maintenance-preserve-absent-prepared-r2",
+  "preparedOnly": true,
+  "productionActions": 0,
+  "providerCalls": 0,
+  "entries": [
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/code/mac_fixed_launchagent_park_r1.py",
+      "blob": "60061aaeda4af8df14406dcfc8aa16cbf253e08b",
+      "bytes": 31279,
+      "sha256": "178f81fdddc0dfe4d4bb69ae974ed934b952d9d22da65ed4cc023603469fa477"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/code/mac_gateway_writer_maintenance_r2.py",
+      "blob": "fc0c5b47c6095b1becf0613159a0916bf1656ecd",
+      "bytes": 39315,
+      "sha256": "442f01c3b40f9c2fe41f5127e98cd03f810e1cdbff7f2610b4a1b1d167c7f635"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/code/mac_owned_refresh_parent_r2.py",
+      "blob": "1000e7d2eea00ecf9a42979a3537238d76ad0c99",
+      "bytes": 28871,
+      "sha256": "e8f46fe273a00d9bb6801cba86e6abf72d8eacc1360c396b814f586c05ff190d"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/code/mac_post_commit_epoch_r2.py",
+      "blob": "0c2a6fe00f00e62b31ca0a0cbe3321599b5ea4f1",
+      "bytes": 15876,
+      "sha256": "9c6dd1b34b09168b5f5b5dfd9a2c657241c2510f558d9482e24f2db6056e0c12"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/code/mac_refresh_capture_sequence_r2.py",
+      "blob": "efa5b0b07e4764646067161493d0fce9dfaad049",
+      "bytes": 18253,
+      "sha256": "962f8dec14eaaddd2b515a83ab4af337a3b9001f33e500e277037abee6c3818a"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/code/mac_registered_relay_retirement_r2.py",
+      "blob": "20089144112268a8be021b6ef049c6f73713d5e0",
+      "bytes": 18918,
+      "sha256": "ea69652ba0a89b4f81ba55d47e547454b8c612628659e7999dd17c5a3de8a8ce"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/derivation/derive_preserve_absent_maintenance_r2.py",
+      "blob": "7e6c68b872dcd8c17c5479b3ffb756052879a80c",
+      "bytes": 29715,
+      "sha256": "c35b99b4e847e89b885f7aad71f6b09a55a1dcacdb72d67bc9a1f5ba1824e98d"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/derivation/mac_gateway_writer_maintenance_r2.py.diff",
+      "blob": "db2978723ab469ca97d795511931f5a629c7ff2e",
+      "bytes": 26537,
+      "sha256": "bcd82e9d1836e4c7cca5a118bb6dcb9da605d4f49c16332b4ade65baf29f2811"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/derivation/mac_owned_refresh_parent_r2.py.diff",
+      "blob": "4be9eb847119ff5e22b263f0dc83772ec6a33bea",
+      "bytes": 1885,
+      "sha256": "ff431896cbb6d2e1bbdc846474f3e7704a25bf75a98035ab2ce5f116419f766d"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/derivation/mac_post_commit_epoch_r2.py.diff",
+      "blob": "d24bbd1b97082958542db3f9bba474c0a48aa6bb",
+      "bytes": 422,
+      "sha256": "54cc207865a629986d7c63b86240dd7bf6b65c562243c278eb787122a14b5628"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/derivation/mac_refresh_capture_sequence_r2.py.diff",
+      "blob": "92499f675764a7717669b6bbf3fc3c612fb30ff0",
+      "bytes": 2029,
+      "sha256": "f3dbf0cec29db51f0f1913ca8d83abcc1318889e48f5b1828fa4bbf0e96f9830"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/derivation/mac_registered_relay_retirement_r2.py.diff",
+      "blob": "707b45d1307653aa372ef2a5df321c4dd1c6ee92",
+      "bytes": 16436,
+      "sha256": "4047f932d0135fdf1614a32588ec7ff73a9c618f4dc1c50b5087055783c8be86"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/derivation/preserve-absent-maintenance-r2.derivation.public.json",
+      "blob": "24aa9794cbdecc3cfcec0f9933f37c624f622787",
+      "bytes": 1773,
+      "sha256": "7457a818ad750a6b44bd5e6421446694a9b31fedeffe170726a0986f4deea8d1"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/manifest.public.json",
+      "blob": "e79c3294667c4d9fa617f746b54e728a7002384a",
+      "bytes": 5650,
+      "sha256": "2440d2f24834c34a591f05cc65f279960b7df5cd9a80111ec9cf52f94bd6a080"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/qualification/fixed-five-parking-local-r1.result.public.json",
+      "blob": "e5a7611b8b387e16d32969c056e684039485d371",
+      "bytes": 2972,
+      "sha256": "79ba45eb9fbc47de21ab585114e3889cac7cfda3d76d48ef4ed0e89f7dc6a2f7"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/qualification/fixed-five-parking-local-r1.stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/qualification/fixed-five-parking-local-r1.stdout.original.json",
+      "blob": "c1adc134db600e048139fda93fec659c08f3b377",
+      "bytes": 2560,
+      "sha256": "d2db951f3bcebc37b684db475c759f50026170b9a355e8800bb00fc1f22bdc02"
+    },
+    {
+      "path": "maintenance-preserve-absent-prepared-r2/qualification/qualify_fixed_launchagent_park_local_r1.py",
+      "blob": "da381d48dd611f55712931256a4bf01dfe3d7ce0",
+      "bytes": 18432,
+      "sha256": "ff1311583b04cd6150fa1129f1504bcd1df039867f040b1ca0b85d430d27e8ec"
+    }
+  ]
+}

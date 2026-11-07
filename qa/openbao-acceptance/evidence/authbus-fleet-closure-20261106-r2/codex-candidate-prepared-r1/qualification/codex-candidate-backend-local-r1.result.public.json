@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.codex-candidate-backend-pure-qualification.r1",
+  "ok": true,
+  "passed": 16,
+  "expected": 16,
+  "cases": [
+    {
+      "name": "C01_exact_actual_configuration_key",
+      "passed": true
+    },
+    {
+      "name": "C02_old_internal_field_spelling_remains_unknown",
+      "passed": true
+    },
+    {
+      "name": "C03_duplicate_storage_selector_refused",
+      "passed": true
+    },
+    {
+      "name": "C04_profile_v2_does_not_open_default_configuration",
+      "passed": true
+    },
+    {
+      "name": "C05_missing_environment_never_becomes_default_home",
+      "passed": true
+    },
+    {
+      "name": "C06_candidate_configuration_is_not_runtime_backend",
+      "passed": true
+    },
+    {
+      "name": "C07_invalid_storage_mode_type_refused",
+      "passed": true
+    },
+    {
+      "name": "C08_legacy_profile_key_not_promoted_to_root_mode",
+      "passed": true
+    },
+    {
+      "name": "C09_private_exact_shared_refresh_relation",
+      "passed": true
+    },
+    {
+      "name": "C10_file_inequality_does_not_exclude_cached_shared_auth",
+      "passed": true
+    },
+    {
+      "name": "C11_absence_and_empty_refresh_do_not_grant_admission",
+      "passed": true
+    },
+    {
+      "name": "C12_duplicate_json_key_refused",
+      "passed": true
+    },
+    {
+      "name": "C13_duplicate_selected_refresh_object_refused",
+      "passed": true
+    },
+    {
+      "name": "C14_missing_selected_owner_refresh_refused",
+      "passed": true
+    },
+    {
+      "name": "C15_malformed_auth_tokens_shape_refused",
+      "passed": true
+    },
+    {
+      "name": "C16_new_home_or_codex_override_outside_fixed_read_scope",
+      "passed": true
+    }
+  ],
+  "sourcePinsBeforeAndAfterExact": {
+    "mac_codex_backend_procargs_r1.py": "85fbf5a0502b9522e5df2a6dceef32c7cfc8fc263913b0c8b7661015355010be",
+    "mac_codex_candidate_backend_r1.py": "90def9a5976b94efa6e1794a0fd2d26ea2615f00922f18291e2cd331af802b87"
+  },
+  "syntheticValuesOnly": true,
+  "actualAuthFilesRead": 0,
+  "actualProcessesObserved": 0,
+  "actualProviderCalls": 0,
+  "effectiveRuntimeBackendQualified": false,
+  "allFiniteConsumersQuiescenceQualified": false,
+  "productionRefreshAdmission": false
+}

@@ -1,0 +1,11 @@
+# Normal-server fixed-slot coordinator: original attempt reconciliation
+
+The sole start RPC for `heptabao-mac-fixed-slot-coordinator-normal-20261107-r1` timed out. It was never reissued. Initial retained inventory pagination and a recent-directory view also failed; their original errors are preserved. A bounded native filename search completed and returned four recent request files. The unique candidate request was read in four version-bound binary pages and matched the original 242,236-byte source, executable, five argv entries and 630-second supervisor exactly.
+
+The original host/job is `mac` / `1a1b3e976fc-fc05-8575`. Its authoritative terminal is **failed, exit 1**, complete and durable, with 10,618 exact stdout bytes and empty stderr. The native request does not expose the stable key: provenance therefore combines the locally recorded sole dispatch and exact whole-source/request binding with authoritative status under the original host. No absent directory, absent process, metadata-search miss, or RPC timeout was treated as evidence that the start had not executed.
+
+Actual execution lasted about 1.774 seconds. Strict TLS health returned 501; the sole init returned 200 and its response was stored privately. The controller then refused `fixture_original_t5_mutable_directory`. No Node phase or actual coordinator business ran. The failed initialized fixture and its private recovery material remain in place; this attempt must not be relabeled or reinitialized. The error identifies the guard that refused, not yet the exact directory field or cause.
+
+The complete original report proves one Rust child retired by its original custody, five original commands closed, 82 explicit descriptors closed once, all T5 anchors closed, HTTP unknown count zero, and the final deadline check passed. This is original-job closure, not a newly performed independent post-terminal absence observation. There were no current-credential reads, provider calls, production-client changes, or LaunchAgent installation.
+
+The coordinator implementation remains the frozen R3 with 22 local synthetic checks; this failed fixture is not actual HeptaBao coordinator qualification. Subsequent recovery must bind this known init and retained original state without replaying init or any uncertain operation.

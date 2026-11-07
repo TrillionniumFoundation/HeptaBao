@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.pocket4-product49d-source-preparation-local-checks.v1",
+  "sourceFiles": [
+    {
+      "file": "create_private_control.py",
+      "bytes": 3511,
+      "sha256": "7a8c7e29f5381742a35a2147ed5d97476522d0fa531434bce7cbb94f03a992fd",
+      "pythonSyntaxCompiled": true,
+      "executed": false
+    },
+    {
+      "file": "prepare_source.py",
+      "bytes": 16779,
+      "sha256": "9385c9f4d7815436cea734850d1f91fe183dc7d69858856b486568303822ddad",
+      "pythonSyntaxCompiled": true,
+      "executed": false,
+      "receiptPublication": "exact held private parent dirfd, O_EXCL leaf, file+parent fsync, complete bytes/full9 readback, all3FD once-close"
+    },
+    {
+      "file": "controller.py",
+      "bytes": 21718,
+      "sha256": "ecefb15167d07295821e52acf6ce65989d6676c90a4f70c159cafd1f255654aa",
+      "pythonSyntaxCompiled": true,
+      "executed": false
+    }
+  ],
+  "originalControllerOutsideSevenAssignmentsAstEqual": true,
+  "bundleLocalWholePinAndHeaderVerified": true,
+  "actualPrerequisites": [
+    "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+    "4bde9aee03fcd27c59e13607e529b1cee594b249"
+  ],
+  "actualAdvertisedHeads": [
+    "49d3bb88f548d7647c44cefe21e5e7ab75a77fe9 HEAD"
+  ],
+  "remoteStageExecuted": false,
+  "remoteUploadStarted": false,
+  "sourcePreparationExecuted": false,
+  "RustCompilerExecuted": false,
+  "RustTestsExecuted": false,
+  "productServiceExecuted": false
+}

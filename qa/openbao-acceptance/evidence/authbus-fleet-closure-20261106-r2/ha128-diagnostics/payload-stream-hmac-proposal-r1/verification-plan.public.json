@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.payload-stream-hmac-verification-plan.v1",
+  "status": "scratch-only-awaiting-product-review-and-real-Rust-execution",
+  "patchSha256": "e6ac88eeeceec7093fdf42a20f3b4c8461ce87855f7d67f3c2d69e93a38501ab",
+  "baseSourceCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "causalEvidence": {
+    "originalHaJob": "1a1b3c982b3-fc05-84bc",
+    "originalResult": "failed-63-of-128",
+    "node2ObservedCategory": "completed_exchange_failure:completion_proof",
+    "node2PeerExchangeMicroseconds": 7006240,
+    "node1InstallPostCasGraphEntryRemainingNanoseconds": 518579701,
+    "node1InstallPostCasGraphMicroseconds": 521369,
+    "node1InstallPostCasGraphExitRemainingNanoseconds": 0,
+    "interpretation": "The leader exhausted the original inbound deadline during fresh post-CAS graph validation; no completion proof was returned. The scratch change only targets repeated contiguous payload allocation/copy/zeroization on deterministic JSON-semantic memo hits. It does not establish sufficient performance benefit or resolve the earlier unrelated URLError."
+  },
+  "scope": {
+    "changedProductionFiles": 2,
+    "changedTestFiles": 2,
+    "newTests": [
+      "address_value_stream_matches_previous_domain_encoding_and_block_boundaries",
+      "address_value_stream_rejects_length_bounds_producer_failure_and_ignored_overrun",
+      "payload_validation_streamed_hit_rejects_other_fully_keyed_blocks_by_complete_payload_mac",
+      "payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo",
+      "payload_validation_streamed_hit_rejects_memo_entry_replaced_during_actual_read"
+    ],
+    "unchangedOriginalMemoTests": [
+      "payload_validation_memo_hits_still_read_every_actual_block_and_reject_corruption",
+      "payload_validation_memo_cannot_cover_original_gate_loss_or_format_change",
+      "payload_validation_memo_binds_scoped_key_and_rechecks_current_lossless_floor",
+      "payload_validation_transition_memo_hits_still_read_every_actual_block_and_reject_corruption",
+      "payload_validation_transition_memo_cannot_cover_original_gate_loss_or_format_change",
+      "payload_validation_transition_memo_binds_scoped_key_and_rechecks_current_lossless_floor"
+    ],
+    "unchanged": [
+      "normal-build-features/profile/toolchain",
+      "original-deadlines",
+      "source-custody",
+      "fresh-reader-AEAD",
+      "each-ObjectRef-verification",
+      "exact-declared-and-chunk-lengths",
+      "complete-payload-HMAC-and-domain-encoding",
+      "memo-key-and-bool-semantics",
+      "live-check-before-and-after-each-block",
+      "current-lossless-owner-permission",
+      "pre-and-post-CAS-physical-reopen",
+      "forward-completion-receipt",
+      "all-original128-assertions"
+    ]
+  },
+  "localChecks": {
+    "gitApplyCheck": {
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "allOriginalTestBodiesPreserved": true,
+    "rustcAvailable": false,
+    "cargoAvailable": false,
+    "RustTestsActuallyExecuted": 0
+  },
+  "sourceRepositoryAndRefsModified": false,
+  "proposedActualVerification": [
+    {
+      "step": "real Rust targeted tests",
+      "selection": "state_records::tests address HMAC cases plus all existing six payload_validation memo cases and the five added tests; exact list/zero ignored/zero failed receipts",
+      "normalFeatures": true,
+      "compileStatus": "not-executed"
+    },
+    {
+      "step": "bounded old/new performance comparison",
+      "workload": "same synthetic 17 x 2 MiB retained histories, same normal features/profile and host, warm semantic memo, fresh authenticated source reads; record actual read counts, elapsed and peak allocations/RSS where supported",
+      "status": "not-executed",
+      "claim": "A reduction in allocation/copy is an intended mechanism, not measured throughput.",
+      "required": false,
+      "alternativeEvidence": "The original full128 timing evidence can assess the practical effect without adding a separate mandatory benchmark gate."
+    },
+    {
+      "step": "new candidate qualification",
+      "workload": "same-source complete normal107 on Mac and Linux, current receiver ABI/full31/API69 and required current recovery gates",
+      "status": "not-executed",
+      "reuseOldPassForChangedSource": false
+    },
+    {
+      "step": "physical HA original128",
+      "workload": "new roots, full original128, original1800/15/8 budgets, same finite voters and evidence ledger, approved narrow temporary firewall rules only",
+      "status": "not-authorized-or-executed",
+      "changeDeadlineOrExpectedResult": false
+    }
+  ]
+}

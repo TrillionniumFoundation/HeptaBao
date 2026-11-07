@@ -1,0 +1,66 @@
+--- mac_procargs_selectors_r4.py
++++ mac_codex_backend_procargs_r1.py
+@@ -6,6 +6,10 @@
+ The latter may omit all environment strings for restricted signed processes.
+ An absent environment section therefore never proves a missing selector.
+ No filesystem, process, credential-store, or network operation occurs here.
++Backend selector correction: official openai/codex rust-v0.133.0,
++config_toml.rs a4d384b5f39e3d56d252afa6dd0437c02469aab8 and
++cli/main.rs 95873191b936aa338043e57c59a86c411c7bee96. The previous
++R4 report remains candidate-only and is never retroactively upgraded.
+ """
+ from __future__ import annotations
+ 
+@@ -117,6 +121,7 @@
+     overrides = []
+     unknown_override_count = 0
+     profile = None
++    profile_v2 = None
+     exact_app_server = False
+     exact_node_entry = False
+     other_arguments = 0
+@@ -145,6 +150,16 @@
+             need(profile is None, 'selector_duplicate_profile_selection')
+             profile = text(selected, maximum=256)
+             need(bool(profile), 'selector_profile_nonempty')
++        elif value == b'--profile-v2' or value.startswith(b'--profile-v2='):
++            if value.startswith(b'--profile-v2='):
++                selected = value[len(b'--profile-v2='):]
++            else:
++                i += 1
++                need(i < len(argv), 'selector_profile_v2_value_present')
++                selected = argv[i]
++            need(profile_v2 is None, 'selector_duplicate_profile_v2_selection')
++            profile_v2 = text(selected, maximum=256)
++            need(bool(profile_v2), 'selector_profile_v2_nonempty')
+         elif value == b'app-server':
+             exact_app_server = True
+         elif value == NODE_ENTRY.encode():
+@@ -153,7 +168,7 @@
+             other_arguments += 1
+         if assignment is not None:
+             key, separator, contents = assignment.partition(b'=')
+-            if key.strip() == b'cli_auth_credentials_store_mode' and separator:
++            if key.strip() == b'cli_auth_credentials_store' and separator:
+                 try:
+                     mode = contents.strip().decode('ascii')
+                 except UnicodeError:
+@@ -193,6 +208,8 @@
+         'recognizedStorageModeOverride': overrides[0] if overrides else None,
+         'otherConfigurationOverrides': unknown_override_count,
+         'profileSelectionPresent': profile is not None,
++        'profileV2SelectionPresent': profile_v2 is not None,
++        'configurationKeyBoundToOfficialV0133Source': True,
+         'otherArgumentsNotRetained': other_arguments,
+         'candidateHomeKind': candidate['kind'] if candidate else 'unresolved',
+         'effectiveCredentialBackendQualified': False,
+@@ -200,7 +217,8 @@
+     }
+     private = {
+         'savedExecutable': executable, 'selectors': selectors, 'presenceOnly': presence,
+-        'profileSelector': profile, 'storageModeOverride': overrides[0] if overrides else None,
++        'profileSelector': profile, 'profileV2Selector': profile_v2,
++        'storageModeOverride': overrides[0] if overrides else None,
+         'candidateHome': candidate,
+     }
+     return {'private': private, 'public': public}

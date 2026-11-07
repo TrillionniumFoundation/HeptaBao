@@ -1,0 +1,70 @@
+--- reviewed-946102/prepare_source.py
++++ final-9385c9/prepare_source.py
+@@ -105,16 +105,63 @@
+ 
+ def new_json(path, value):
+     raw = (json.dumps(value, sort_keys=True, indent=2) + '\n').encode()
+-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+-    row = {'fd': fd, 'attempts': 0, 'closed': False}; FDS.append(row)
++    need(path.parent == OUT and path.name == 'preparation.result.public.json'
++         and len(raw) <= 1048576, 'exact_bounded_new_receipt')
++    held = []
++    def opened(name, flags, parent=None):
++        fd = os.open(name, flags | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC,
++                     0o600, **({} if parent is None else {'dir_fd': parent}))
++        row = {'fd': fd, 'attempts': 0, 'closed': False}
++        FDS.append(row); held.append(row)
++        return fd
+     try:
++        parent = opened(OUT, os.O_RDONLY | os.O_DIRECTORY)
++        parent_identity = identity(os.fstat(parent))[:5]
++        need(parent_identity == identity(OUT.lstat())[:5]
++             and os.fstat(parent).st_uid == os.getuid()
++             and stat.S_IMODE(os.fstat(parent).st_mode) == 0o700,
++             'exact_private_receipt_parent')
++        fd = opened(path.name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, parent)
++        first = os.fstat(fd)
++        need(stat.S_ISREG(first.st_mode) and first.st_uid == os.getuid()
++             and first.st_gid == os.getgid() and first.st_nlink == 1
++             and stat.S_IMODE(first.st_mode) == 0o600 and first.st_size == 0,
++             'new_empty_private_receipt')
+         offset = 0
+         while offset < len(raw):
+             count = os.write(fd, raw[offset:]); need(count > 0, 'receipt_write_progress'); offset += count
+         os.fsync(fd)
++        final_identity = identity(os.fstat(fd))
++        need(final_identity[:6] == identity(first)[:6]
++             and final_identity[6] == len(raw)
++             and final_identity == identity(os.stat(path.name, dir_fd=parent, follow_symlinks=False)),
++             'complete_named_receipt_identity')
++        readback = opened(path.name, os.O_RDONLY, parent)
++        need(identity(os.fstat(readback)) == final_identity, 'same_receipt_readback_descriptor')
++        actual = bytearray()
++        while True:
++            need(time.monotonic() < END, 'receipt_readback_deadline')
++            block = os.read(readback, min(1048576, len(raw) + 1 - len(actual)))
++            if not block:
++                break
++            actual.extend(block)
++            need(len(actual) <= len(raw), 'receipt_readback_bound')
++        need(bytes(actual) == raw and identity(os.fstat(readback)) == identity(os.fstat(fd))
++             == identity(os.stat(path.name, dir_fd=parent, follow_symlinks=False)) == final_identity,
++             'complete_receipt_bytes_and_full9_readback')
++        os.fsync(parent)
++        need(identity(os.fstat(parent))[:5] == identity(OUT.lstat())[:5] == parent_identity
++             and identity(path.lstat()) == final_identity, 'durable_receipt_named_parent_unchanged')
+     finally:
+-        row['attempts'] = 1
+-        os.close(fd); row['closed'] = True
++        first_error = None
++        for row in reversed(held):
++            row['attempts'] = 1
++            try:
++                os.close(row['fd']); row['closed'] = True
++            except BaseException as error:
++                first_error = first_error or error
++        if first_error is not None:
++            raise first_error
+ 
+ def run(label, args, cap):
+     live()

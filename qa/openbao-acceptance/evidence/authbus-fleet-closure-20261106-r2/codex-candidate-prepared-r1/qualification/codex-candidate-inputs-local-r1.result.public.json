@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.codex-candidate-inputs-local-filesystem-qualification.r1",
+  "ok": true,
+  "passed": 7,
+  "expected": 7,
+  "cases": [
+    {
+      "name": "I01_two_complete_private_files_and_closed_full9",
+      "passed": true
+    },
+    {
+      "name": "I02_symlink_candidate_refused_without_target_read",
+      "passed": true
+    },
+    {
+      "name": "I03_same_bytes_new_inode_refused",
+      "passed": true
+    },
+    {
+      "name": "I04_absent_candidate_directory_not_runtime_exclusion",
+      "passed": true
+    },
+    {
+      "name": "I05_absent_source_name_appearing_refused",
+      "passed": true
+    },
+    {
+      "name": "I06_hardlinked_auth_candidate_refused",
+      "passed": true
+    },
+    {
+      "name": "I07_parse_refusal_retains_original_private_bytes",
+      "passed": true
+    }
+  ],
+  "sourcePinsBeforeAndAfterExact": {
+    "mac_codex_candidate_backend_r1.py": "90def9a5976b94efa6e1794a0fd2d26ea2615f00922f18291e2cd331af802b87",
+    "mac_codex_fixed_candidate_inputs_r1.py": "b8fa9607c47635c3cd0b77d075a27b01ce689a3223075b8ce047b17f9935605e"
+  },
+  "realLocalFilesystemUsed": true,
+  "productionPathsUidAndGidReboundOnlyInSyntheticFixture": true,
+  "actualMacProcessesObserved": 0,
+  "actualCredentialFilesRead": 0,
+  "providerCalls": 0,
+  "productionRefreshAdmission": false
+}

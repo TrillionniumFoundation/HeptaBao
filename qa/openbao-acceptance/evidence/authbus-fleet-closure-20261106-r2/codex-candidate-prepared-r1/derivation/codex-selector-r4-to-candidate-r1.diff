@@ -1,0 +1,114 @@
+--- observe_finite_codex_selectors_r4.py
++++ observe_fixed_codex_candidate_files_r1.py
+@@ -14,7 +14,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 20
+-ROOT = Path('/Users/qianqi/heptabao-authbus-finite-codex-selectors-20261107-r4')
++ROOT = Path('/Users/qianqi/heptabao-authbus-finite-codex-candidate-files-20261107-r1')
+ CALLER_HOME = Path('/Users/qianqi')
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+ PYTHON_PIN = (34640, 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13')
+@@ -23,7 +23,8 @@
+ PAYLOAD = __CANDIDATE_PAYLOAD__
+ 
+ codes, descriptors, directories, received_signals = set(), [], {}, []
+-report = {'schema': 'heptabao.finite-codex-selector-observation.r4', 'ok': False,
++candidate_inputs = None
++report = {'schema': 'heptabao.finite-codex-candidate-file-observation.r1', 'ok': False,
+           'scope': 'four_prior_full_birth_processes', 'selectedPids': [66414, 66687, 89324, 89325],
+           'rawArgumentOrEnvironmentBytesPublished': False, 'rawArgumentOrEnvironmentBytesPersisted': False,
+           'onlyAllowlistedSourceSelectorValuesPersistedPrivately': True,
+@@ -104,10 +105,12 @@
+ 
+ 
+ def private_output(name, packet):
+-    need(name in ('selectors-first.private.json', 'selectors-second.private.json'),
++    need(name in ('selectors-first.private.json', 'selectors-second.private.json',
++                  'candidate-files.private.json'),
+          'selector_fixed_private_output_names')
+     raw = (json.dumps(packet, sort_keys=True, separators=(',', ':')) + '\n').encode()
+-    need(len(raw) <= 131072, 'selector_bounded_private_packet')
++    need(len(raw) <= (2 * 1048576 if name == 'candidate-files.private.json' else 131072),
++         'selector_bounded_private_packet')
+     check_directories()
+     parent = directories[ROOT / 'output']['row']
+     row = opened(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, dir_fd=parent['fd'])
+@@ -233,7 +236,8 @@
+     pins = {str(PYTHON): PYTHON_PIN, **PAYLOAD['publicFilePins']}
+     before_pins = {path: pin_public(path, expected) for path, expected in pins.items()}
+     need(set(PAYLOAD['sources']) == {'mac_owned_unreaped_r1.py', 'mac_native_process_observer_r1.py',
+-         'mac_procargs_selectors_r4.py'}, 'selector_exact_three_source_modules')
++         'mac_codex_backend_procargs_r1.py', 'mac_codex_candidate_backend_r1.py',
++         'mac_codex_fixed_candidate_inputs_r1.py'}, 'candidate_exact_five_source_modules')
+     for name, source in PAYLOAD['sources'].items():
+         need(hashlib.sha256(source.encode()).hexdigest() == PAYLOAD['sourcePins'][name],
+              'selector_exact_module_whole_source_pin')
+@@ -249,7 +253,9 @@
+         sys.modules[module.__name__] = module
+         exec(compile(source, module.__file__, 'exec'), module.__dict__)
+     from mac_native_process_observer_r1 import ProcessReader
+-    from mac_procargs_selectors_r4 import parse_procargs, SelectorRefused
++    from mac_codex_backend_procargs_r1 import parse_procargs, SelectorRefused
++    from mac_codex_fixed_candidate_inputs_r1 import FixedCandidateInputs, InputsRefused
++    from mac_codex_candidate_backend_r1 import CandidateRefused
+     reader, args_reader = ProcessReader(), ArgsReader()
+     first = []
+     for ordinal, expected in enumerate(PAYLOAD['processes']):
+@@ -257,6 +263,13 @@
+         first.append(sample(reader, args_reader, expected, ordinal))
+     private_output('selectors-first.private.json', {'schema': 'heptabao.finite-selectors.private.r1',
+         'priorAuthority': PAYLOAD['priorAuthority'], 'observations': first})
++    def candidate_source_fence():
++        remaining()
++        need({path: pin_public(path, expected) for path, expected in pins.items()} == before_pins,
++             'candidate_actual_public_code_generation_exact')
++    candidate_inputs = FixedCandidateInputs(until=UNTIL, source_fence=candidate_source_fence,
++        private_write=private_output)
++    candidate_inputs.capture([{'private': row['private'], 'public': row['public']} for row in first])
+     second = []
+     for ordinal, expected in enumerate(PAYLOAD['processes']):
+         report['observationOrdinal'] = ordinal
+@@ -266,6 +279,7 @@
+     need(first == second, 'selector_all_four_selected_bindings_unchanged_between_observations')
+     need(all(reader.read(row['pid']) == row['identity'] for row in first),
+          'selector_final_four_process_births_unchanged')
++    candidate_inputs.verify()
+     after_pins = {path: pin_public(path, expected) for path, expected in pins.items()}
+     need(before_pins == after_pins, 'selector_all_public_code_full9_and_hash_unchanged')
+     check_directories()
+@@ -278,19 +292,32 @@
+     report['chatGptBundleVersionIsNativeVersion'] = False
+     report['nativeVersionFromProcessMemoryQualified'] = False
+     report['sourcePins'] = PAYLOAD['sourcePins']
++    report['originalR4ActualEvidenceMap'] = PAYLOAD['originalR4ActualEvidenceMap']
++    report['currentMain3ComparisonPerformed'] = False
++    report['candidateFileObservationIsCurrentBackendProof'] = False
+     report['publicFilePins'] = {path: {'bytes': value[0], 'sha256': value[1]} for path, value in pins.items()}
+     report['priorAuthority'] = PAYLOAD['priorAuthority']
+     report['ok'] = True
+ except BaseException as error:
+     report['ok'] = False
+     report['errorClass'] = type(error).__name__ if type(error).__name__ in (
+-        'RuntimeError','SelectorRefused','ObservationRefused','OSError','FileNotFoundError',
++        'RuntimeError','SelectorRefused','ObservationRefused','InputsRefused','CandidateRefused','OSError','FileNotFoundError',
+         'PermissionError','UnicodeDecodeError') else 'OtherException'
+     code = str(error)
+     report['errorCode'] = code if code in codes or type(error).__name__ in (
+-        'SelectorRefused','ObservationRefused') and code.isascii() and code.replace('_','').isalnum() else 'selector_observation_refused'
++        'SelectorRefused','ObservationRefused','InputsRefused','CandidateRefused') and code.isascii() and code.replace('_','').isalnum() else 'selector_observation_refused'
+ finally:
+     errors = []
++    if candidate_inputs is not None:
++        try:
++            report['candidateInputs'] = candidate_inputs.close()
++            report['authFileContentsRead'] = report['candidateInputs']['authFileContentsRead']
++            report['ok'] = bool(report['ok'] and report['candidateInputs']['ok']
++                and report['candidateInputs']['allSourceDescriptorsClosedOnce']
++                and report['candidateInputs'].get('closedSourceNamesStillExact') is True)
++        except BaseException:
++            errors.append('candidate_original_source_close_or_generation_unknown')
++            report['ok'] = False
+     for row in reversed(descriptors):
+         try:
+             close_once(row)

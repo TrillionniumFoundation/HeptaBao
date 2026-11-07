@@ -1,0 +1,432 @@
+--- retained/mac_gateway_writer_maintenance_r1.py
++++ prepared/mac_gateway_writer_maintenance_r2.py
+@@ -37,7 +37,7 @@
+ PENDING_PLIST_NAME = 'ai.openclaw.gateway.heptabao-maintenance-20261106-r1.pending'
+ FIELDS = ('st_dev', 'st_ino', 'st_uid', 'st_gid', 'st_mode', 'st_nlink',
+           'st_size', 'st_mtime_ns', 'st_ctime_ns')
+-SERVICE_GRAPH = ('disable', 'bootout', 'publish-safe-plist', 'enable-safe-local', 'bootstrap-safe-local')
++SERVICE_GRAPH = ('bootout', 'publish-safe-plist', 'bootstrap-safe-local')
+ 
+ 
+ class MaintenanceRefused(RuntimeError):
+@@ -86,8 +86,10 @@
+         self.owned_refresh_child = None
+         self.retired_refresh_children = []
+         self.new_process = None
++        self.parking = None
++        self.safe_files_attempted = False
+         self.phase, self.unknown, self.closed = 'new', False, False
+-        self.report = {'schema': 'heptabao.registered-gateway-maintenance.public.r1',
++        self.report = {'schema': 'heptabao.registered-gateway-maintenance.public.r2',
+             'ok': False, 'phase': self.phase, 'actions': self.actions, 'commands': self.command_rows,
+             'automaticRetry': False, 'automaticCompensation': False,
+             'configuredFlagsUsedAsRunningWriterProof': False,
+@@ -100,7 +102,7 @@
+             'credentialValuesOrDigestsPublished': False, 'privateConfigurationDigestsPublished': False,
+             'privateArgumentsOrEnvironmentPublished': False,
+             'conditionalRenameIsAtomicCompareAndSwapClaimed': False,
+-            'originalOverrideAbsenceRestorationClaimed': False}
++            'originalOverrideAbsencePreserved': False, 'disabledOverrideMutations': 0}
+ 
+     def within(self, cap=600):
+         need(not self.closed and self.clock() < self.until, 'maintenance_original_deadline')
+@@ -211,7 +213,7 @@
+ 
+     def _command(self, name, argv, *, allow_stopped=False):
+         self.within()
+-        need(len(self.command_rows) < 768, 'maintenance_finite_original_helpers')
++        need(len(self.command_rows) < (3 * 96 + 64) * 3, 'maintenance_finite_original_helpers')
+         need(not self.unknown or allow_stopped, 'maintenance_no_new_helper_after_unknown')
+         self.source_fence()
+         ordinal = len(self.command_rows)
+@@ -362,8 +364,11 @@
+         self.consumer_fence('before-maintenance', self.original_rows, None)
+         self.same_original_running('bound-original')
+         self.original_disabled = self.disabled()
+-        need(self.original_disabled is None or self.original_disabled is False,
+-             'maintenance_original_gateway_effectively_enabled')
++        original_plist = plistlib.loads(plist_bytes)
++        need(self.original_disabled is None and original_plist.get('Disabled', False) is False
++             and original_plist.get('KeepAlive') is True
++             and original_plist.get('AbandonProcessGroup', False) is False,
++             'maintenance_observed_keepalive_true_original_override_absent')
+         self._write('original-disabled.private.json', {'override': self.original_disabled})
+         self._write('original-restore-inputs.private.json', binding)
+         self._write('original-config.private.json', config_bytes)
+@@ -376,7 +381,7 @@
+         return self
+ 
+     def same_original_running(self, stage, ordinal=None):
+-        need(not self.unknown and self.phase in ('binding-original', 'original-bound', 'disabled'),
++        need(not self.unknown and self.phase in ('binding-original', 'original-bound'),
+              'maintenance_original_running_phase')
+         self.within()
+         expected = self.binding['loadedSecond']
+@@ -400,13 +405,18 @@
+         return True
+ 
+     def _intent(self, operation, extra=None):
+-        need(not self.unknown and operation in SERVICE_GRAPH and operation not in self.actions,
+-             'maintenance_original_service_effect_once')
+-        expected = SERVICE_GRAPH[len(self.actions)]
+-        need(expected == operation, 'maintenance_fixed_service_effect_graph')
+-        self.source_fence()
+-        self.within()
+-        # The in-memory slot is consumed even when the durable write throws.
++        original_restore = operation == 'bootstrap-original-before-provider'
++        need(not self.unknown and (operation in SERVICE_GRAPH or original_restore)
++             and operation not in self.actions, 'maintenance_original_service_effect_once')
++        if original_restore:
++            need(tuple(self.actions) == ('bootout',)
++                 and self.actions['bootout']['outcome'] == 'COMPLETE'
++                 and self.phase == 'restoring-original-before-provider',
++                 'maintenance_original_restore_is_separate_pre_provider_branch')
++        else:
++            need(len(self.actions) < len(SERVICE_GRAPH) and SERVICE_GRAPH[len(self.actions)] == operation,
++                 'maintenance_fixed_post_commit_service_effect_graph')
++        self.source_fence();self.within()
+         row = {'attempted': True, 'intentDurable': False, 'outcome': 'UNKNOWN'}
+         self.actions[operation] = row
+         try:
+@@ -423,70 +433,71 @@
+         self._write('complete-%s.private.json' % operation, result)
+         row['outcome'] = 'COMPLETE'
+ 
+-    def disable(self):
+-        need(self.phase == 'original-bound', 'maintenance_disable_after_original_binding')
+-        self.same_original_running('before-disable')
+-        disabled = self.disabled()
+-        need(disabled is None or disabled is False, 'maintenance_original_enabled_before_disable')
+-        self._intent('disable')
+-        try:
+-            row, _, stderr = self._command('maintenance-disable', ['/bin/launchctl', 'disable', TARGET])
+-            need(row['exitCode'] == 0 and not stderr, 'maintenance_original_disable_known_zero')
+-            self._complete('disable', {'exitCode': 0})
+-            self.phase = 'disabled'
+-            need(self.disabled() is True, 'maintenance_disabled_persistent_override_true')
+-            self.same_original_running('after-disable')
++    def prepare_safe_private_files(self):
++        need(self.phase == 'original-bound' and not self.safe_files_attempted and not self.unknown,
++             'maintenance_safe_private_files_prepared_before_first_service_action')
++        self.safe_files_attempted = True
++        try:
++            self.same_original_running('before-private-fallback-preparation')
++            self.selector_fence('before-private-fallback-preparation', self.safe)
++            self._create_fallback_file(FALLBACK_CONFIG, self.safe['configBytes'])
++            self._create_fallback_file(FALLBACK_ENVIRONMENT, self.safe['environmentBytes'])
++            self._verify_fallback_files()
++            self._write('safe-private-fallback-prepared.private.json',
++                {'authbusExplicitlyDisabled': True, 'autoloadEntryPublished': False,
++                 'configurationFull9': self.fallback_files[FALLBACK_CONFIG]['identity'],
++                 'environmentFull9': self.fallback_files[FALLBACK_ENVIRONMENT]['identity']})
++            self.report['safeFallbackPrivateFilesPreparedWithoutAutoload'] = True
+         except BaseException:
+             self.unknown = True
+             raise
+ 
+     def bootout(self):
+-        need(self.phase == 'disabled' and self.disabled() is True,
+-             'maintenance_bootout_only_after_known_disable')
++        need(self.phase == 'original-bound' and self.disabled() is None
++             and self.parking is not None and self.parking.phase == 'bound'
++             and self.parking.relays.phase == 'retired',
++             'maintenance_original_bootout_after_four_known_relay_retirements')
++        self.parking.verify();self.parking.relays.verify_retired()
++        self._verify_fallback_files()
+         self.same_original_running('before-bootout')
+         self._intent('bootout')
+         try:
+             row, _, stderr = self._command('maintenance-bootout', ['/bin/launchctl', 'bootout', TARGET])
+             need(row['exitCode'] == 0 and not stderr, 'maintenance_original_bootout_known_zero')
+-            self._complete('bootout', {'exitCode': 0})
++            self._complete('bootout', {'exitCode': 0, 'disabledOverrideMutation': False})
+             self.phase = 'quiescing'
+             deadline = min(self.until, self.clock() + 15)
+             while True:
+                 gone = self.query() is None and all(self._pid_absent(pid) for pid in self.original_rows)
+-                if gone and not self._related_rows():
+-                    break
++                if gone and not self._related_rows():break
+                 need(self.clock() < deadline, 'maintenance_original_family_retirement_budget')
+                 time.sleep(min(0.1, deadline - self.clock()))
+             self.phase = 'quiesced'
+             for number in range(2):
+                 self.verify_quiesced('after-bootout')
+-                if number == 0:
+-                    time.sleep(min(0.15, self.within()))
+-            self.report['originalRegisteredFamilyRetiredTwice'] = True
++                if number == 0:time.sleep(min(0.15, self.within()))
++            self.report.update(originalRegisteredFamilyRetiredTwice=True,
++                               originalOverrideAbsencePreserved=True)
+         except BaseException:
+             self.unknown = True
+             raise
+ 
+     def verify_quiesced(self, stage):
+-        need(not self.unknown and self.phase in ('quiesced', 'safe-plist-published', 'refreshing', 'committed'),
+-             'maintenance_quiesced_original_phase')
+-        self.within()
+-        self.source_fence()
+-        need(self.disabled() is True and self.query() is None
++        need(not self.unknown and self.phase in ('quiesced', 'parked-for-refresh', 'refreshing',
++             'committed', 'safe-plist-published'), 'maintenance_quiesced_original_phase')
++        self.within();self.source_fence()
++        need(self.disabled() is None and self.query() is None
+              and all(self._pid_absent(pid) for pid in self.original_rows)
+-             and not self._related_rows(), 'maintenance_disabled_label_and_original_family_absent')
++             and not self._related_rows(), 'maintenance_preserved_override_absence_and_original_family_absent')
+         if self.owned_refresh_child is not None:
+             original = self.owned_refresh_child
+-            need(self.reader.read(original['pid']) == original
+-                 and not self.reader.children(original['pid']),
++            need(self.reader.read(original['pid']) == original and not self.reader.children(original['pid']),
+                  'maintenance_same_original_refresh_child_before_consumer_check')
+         self.consumer_fence(stage, self.original_rows, copy.deepcopy(self.owned_refresh_child))
+-        if self.phase == 'quiesced':
+-            self._read_plist(self.binding['plistFull9'], self.plist_bytes)
+-            self.wrapper_inputs.verify()
+-        else:
+-            self._read_plist(self.safe_plist_identity, self.safe['plistBytes'])
+-            self._verify_fallback_files()
++        need(self.parking is not None, 'maintenance_concrete_original_five_plist_owner')
++        self.parking.verify()
++        if self.phase != 'quiesced':self.parking.verify_parked()
++        self._verify_fallback_files()
+         return True
+ 
+     def bind_owned_refresh_child(self, original, custody):
+@@ -498,7 +509,7 @@
+         by complete libproc identity, not just a copied PID.
+         """
+         need(self.owned_refresh_child is None and not self.unknown
+-             and self.phase in ('safe-plist-published', 'refreshing')
++             and self.phase in ('parked-for-refresh', 'refreshing')
+              and isinstance(original, dict) and isinstance(custody, dict),
+              'maintenance_single_original_refresh_child_binding')
+         self.within()
+@@ -529,101 +540,135 @@
+         self.retired_refresh_children.append(copy.deepcopy(original))
+         self.owned_refresh_child = None
+ 
+-    def publish_safe_plist(self):
+-        need(self.phase == 'quiesced', 'maintenance_safe_plist_only_after_original_retirement')
+-        self.verify_quiesced('before-safe-plist')
+-        self.selector_fence('before-safe-plist', self.safe)
++    def accept_known_original_park(self, parking):
++        from mac_fixed_launchagent_park_r1 import FixedLaunchAgentParking
++        need(type(parking) is FixedLaunchAgentParking and parking is self.parking
++             and parking.gateway is self and parking.until == self.until
++             and parking.phase == 'parked' and parking.parked == list(range(5))
++             and not parking.unknown and not parking.blocked and self.phase == 'quiesced',
++             'maintenance_actual_five_original_inodes_known_parked')
++        parking.verify_parked()
++        self.phase = 'parked-for-refresh'
++        self.report['fiveOriginalAutoloadEntriesParkedBeforeProvider'] = True
++
++    def publish_safe_plist(self, *, sequence):
++        from mac_refresh_capture_sequence_r2 import FreshOwnerRefreshSequence
++        need(type(sequence) is FreshOwnerRefreshSequence and sequence.maintenance is self
++             and sequence.until == self.until and sequence.report['ok'] is True
++             and self.phase == 'committed' and self.parking is not None,
++             'maintenance_actual_three_committed_before_safe_autoload')
++        self.verify_quiesced('before-safe-autoload-publication')
++        sequence.verify_current_epoch('before-safe-plist-intent')
+         self._intent('publish-safe-plist')
+-        descriptor = None
+-        try:
+-            # The actual fixed config and environment paths are published via
+-            # this class's held ROOT descriptor, distinct from journal output.
+-            # Neither the original config nor original environment is edited.
+-            self._create_fallback_file(FALLBACK_CONFIG, self.safe['configBytes'])
+-            self._create_fallback_file(FALLBACK_ENVIRONMENT, self.safe['environmentBytes'])
+-            parent = self.original_parent
+-            self._read_plist(self.binding['plistFull9'], self.plist_bytes)
+-            descriptor = os.open(PENDING_PLIST_NAME, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+-                                 0o600, dir_fd=parent['fd'])
+-            row = {'fd': descriptor, 'closeAttempts': 0, 'closed': False}
+-            self.descriptors.append(row)
+-            info = os.fstat(descriptor)
+-            need(stat.S_ISREG(info.st_mode) and info.st_uid == 501 and info.st_gid == 20
+-                 and stat.S_IMODE(info.st_mode) == 0o600 and info.st_nlink == 1,
+-                 'maintenance_owned_new_pending_plist')
+-            self._write_complete_private(descriptor, self.safe['plistBytes'])
+-            complete = full(os.fstat(descriptor))
+-            self._read_plist(self.binding['plistFull9'], self.plist_bytes)
+-            self._verify_fallback_files()
+-            need(complete[:6] == full(info)[:6]
+-                 and complete == full(os.fstat(descriptor))
+-                 == full(os.stat(PENDING_PLIST_NAME, dir_fd=parent['fd'], follow_symlinks=False)),
+-                 'maintenance_same_owned_pending_plist_full9_and_bytes')
+-            os.replace(PENDING_PLIST_NAME, PLIST.name, src_dir_fd=parent['fd'], dst_dir_fd=parent['fd'])
+-            os.fsync(parent['fd'])
+-            self._close_descriptor(row)
+-            _, self.safe_plist_identity = self._read_plist(raw_expected=self.safe['plistBytes'])
+-            self.selector_fence('after-safe-plist', self.safe)
+-            self._complete('publish-safe-plist', {'newFull9': self.safe_plist_identity,
+-                                                  'authbusExplicitlyDisabled': True})
+-            self.phase = 'safe-plist-published'
+-            self.verify_quiesced('after-safe-plist')
+-            self.report['persistentOriginalLabelPlistNowUsesSafeLocalConfig'] = True
+-        except BaseException:
+-            self.unknown = True
+-            raise
+-        finally:
+-            if descriptor is not None:
+-                for row in self.descriptors:
+-                    if row['fd'] == descriptor and not row['closeAttempts']:
+-                        self._close_descriptor(row)
++        try:
++            self.parking.publish_safe_gateway(sequence=sequence)
++        except BaseException:
++            self.unknown = True
++            raise
++
++    def accept_known_safe_autoload(self, parking):
++        from mac_fixed_launchagent_park_r1 import FixedLaunchAgentParking
++        need(type(parking) is FixedLaunchAgentParking and parking is self.parking
++             and parking.phase == 'safe-published' and parking.safe_file is not None
++             and not parking.unknown and not parking.blocked and self.phase == 'committed'
++             and self.actions.get('publish-safe-plist', {}).get('outcome') == 'UNKNOWN',
++             'maintenance_original_known_safe_publication_handoff')
++        parking.verify_parked()
++        self.safe_plist_identity = parking.safe_file['expected']
++        self._read_plist(self.safe_plist_identity, self.safe['plistBytes'])
++        self._verify_fallback_files()
++        self.selector_fence('after-safe-plist', self.safe)
++        self._complete('publish-safe-plist', {'newFull9': self.safe_plist_identity,
++            'authbusExplicitlyDisabled': True, 'originalOverrideAbsent': True,
++            'threeCommittedEpochRequiredBeforePublication': True})
++        self.phase = 'safe-plist-published'
++        self.verify_quiesced('after-safe-plist')
++        self.report['persistentOriginalLabelPlistNowUsesSafeLocalConfig'] = True
+ 
+     def restore_safe_local(self, *, current_epoch_fence, current_baseline_fence, retired_source_resources):
+-        """Only the same parent with three known COMMITTED responses may call.
+-
+-        Both supplied fences must execute fresh source-bound comparisons, not
+-        inspect booleans passed from an earlier runtime job. A fixed ledger
+-        reader is expected to bind all original responses/COMMIT records and
+-        the post-refresh full-state rollback baseline before this first enable.
+-        """
+-        need(not self.unknown and self.phase == 'committed'
++        need(not self.unknown and self.phase == 'safe-plist-published'
+              and callable(current_epoch_fence) and callable(current_baseline_fence),
+              'maintenance_known_current_post_refresh_epoch_required')
+         need(retired_source_resources.get('allOwnedResourcesClosedOnce') is True,
+              'maintenance_original_source_handles_closed_before_restore')
+-        current_epoch_fence()
+-        current_baseline_fence()
++        current_epoch_fence();current_baseline_fence()
+         self.selector_fence('before-safe-restore', self.safe)
+-        need(self.disabled() is True and self.query() is None
+-             and all(self._pid_absent(pid) for pid in self.original_rows)
+-             and not self._related_rows(), 'maintenance_still_disabled_absent_before_restore')
++        self.verify_quiesced('before-safe-restore')
+         need(self.owned_refresh_child is None, 'maintenance_no_owned_refresh_child_before_restore')
+-        self.consumer_fence('before-safe-restore', self.original_rows, None)
+         self._read_plist(self.safe_plist_identity, self.safe['plistBytes'])
+         self._verify_fallback_files()
+-        self._intent('enable-safe-local')
+-        try:
+-            row, _, stderr = self._command('maintenance-enable-safe', ['/bin/launchctl', 'enable', TARGET])
+-            need(row['exitCode'] == 0 and not stderr, 'maintenance_enable_safe_local_known_zero')
+-            self._complete('enable-safe-local', {'exitCode': 0})
+-            need(self.disabled() is False and self.query() is None,
+-                 'maintenance_safe_original_label_enabled_but_absent')
+-            current_epoch_fence()
+-            current_baseline_fence()
+-            self._read_plist(self.safe_plist_identity, self.safe['plistBytes'])
+-            self._verify_fallback_files()
+-            self._intent('bootstrap-safe-local')
+-            row, _, stderr = self._command('maintenance-bootstrap-safe', ['/bin/launchctl', 'bootstrap', DOMAIN, str(PLIST)])
++        self._intent('bootstrap-safe-local')
++        try:
++            row, _, stderr = self._command('maintenance-bootstrap-safe',
++                ['/bin/launchctl', 'bootstrap', DOMAIN, str(PLIST)])
+             need(row['exitCode'] == 0 and not stderr, 'maintenance_bootstrap_safe_local_known_zero')
+             self._complete('bootstrap-safe-local', {'exitCode': 0})
+             self.phase = 'safe-local-bootstrap-complete'
+-            self.report['safeLocalBootstrapKnown'] = True
+-            self.report['restoredEffectiveDisabledFalse'] = True
+-            self.report['persistedFalseOverrideMayRemain'] = self.original_disabled is None
+-            # The caller must still observe the actual new gateway birth,
+-            # selected configuration, memory registration and cold consumption.
+-            self.report['gatewayRuntimeQualified'] = False
+-            self.report['productionRollbackQualified'] = False
++            need(self.disabled() is None, 'maintenance_original_override_absence_preserved_after_bootstrap')
++            self.report.update(safeLocalBootstrapKnown=True, restoredEffectiveDisabledFalse=True,
++                originalOverrideAbsencePreserved=True, gatewayRuntimeQualified=False,
++                productionRollbackQualified=False)
++            # The outer still must observe actual new birth/config/memory,
++            # real cold consumption and the post-refresh full-state baseline.
++        except BaseException:
++            self.unknown = True
++            raise
++
++    def restore_original_before_any_provider(self, parent):
++        from mac_owned_refresh_parent_r2 import OwnedRefreshParent
++        need(type(parent) is OwnedRefreshParent and parent.maintenance is self
++             and parent.until == self.until and not self.unknown
++             and self.phase == 'parked-for-refresh' and self.parking is not None
++             and self.parking.phase == 'restored' and self.owned_refresh_child is None,
++             'maintenance_original_restore_only_before_any_provider_attempt')
++        parent.assert_no_provider_dispatch()
++        self.parking.verify();self.wrapper_inputs.verify()
++        need(self.disabled() is None and self.query() is None
++             and all(self._pid_absent(pid) for pid in self.original_rows) and not self._related_rows(),
++             'maintenance_original_restore_no_original_registration_or_family')
++        restored = self.parking.files[4]
++        need(restored['location'] == 'restored' and restored['raw'] == self.plist_bytes,
++             'maintenance_same_original_parked_inode_and_bytes_restored')
++        self._read_plist(restored['expected'], self.plist_bytes)
++        self.consumer_fence('before-pre-provider-original-bootstrap', self.original_rows, None)
++        parent.assert_no_provider_dispatch()
++        self.phase = 'restoring-original-before-provider'
++        self._intent('bootstrap-original-before-provider')
++        try:
++            row, _, stderr = self._command('maintenance-bootstrap-original-before-provider',
++                ['/bin/launchctl', 'bootstrap', DOMAIN, str(PLIST)])
++            need(row['exitCode'] == 0 and not stderr, 'maintenance_original_restore_bootstrap_known_zero')
++            self._complete('bootstrap-original-before-provider', {'exitCode': 0,
++                'providerAttemptCount': 0, 'originalOverrideAbsent': True})
++            deadline = min(self.until, self.clock() + 15)
++            while True:
++                current = self.query()
++                if current is not None and current.get('state') == 'running' and type(current.get('pid')) is int:
++                    break
++                need(self.clock() < deadline, 'maintenance_original_restore_cold_start_budget')
++                time.sleep(min(.1, max(0, deadline - self.clock())))
++            prior = self.binding['loadedSecond']
++            need(all(current.get(key) == prior.get(key) for key in
++                 ('path', 'program', 'arguments', 'observedEnvironmentScope')),
++                 'maintenance_original_restored_exact_registration_configuration')
++            pid = current['pid'];new = self.reader.read(pid)
++            need(pid not in self.original_rows and new['uid'] == 501 and new['ppid'] == 1
++                 and new['executable'] == NODE and not self.reader.children(pid),
++                 'maintenance_original_restored_new_node_birth_without_unclassified_children')
++            for number in range(2):
++                parent.assert_no_provider_dispatch();self.parking.verify();self.wrapper_inputs.verify()
++                need(self.disabled() is None and self.query() == current
++                     and self.reader.read(pid) == new and not self.reader.children(pid),
++                     'maintenance_original_restored_same_new_birth_twice')
++                if number == 0:time.sleep(min(.15, self.within()))
++            self._write('original-gateway-restored-before-provider.private.json',
++                {'registration': current, 'process': new, 'originalOverrideAbsent': True,
++                 'sameOriginalPlistInodeAndBytes': True, 'sourceCredentialRollbackExecuted': False})
++            self.new_process = new
++            self.phase = 'original-restored-before-provider'
++            self.report.update(originalRegistrationRestoredBeforeAnyProviderAttempt=True,
++                originalOverrideAbsencePreserved=True, gatewayRuntimeQualified=False,
++                productionRollbackQualified=False)
+         except BaseException:
+             self.unknown = True
+             raise
+@@ -644,7 +689,7 @@
+             originalRefreshChildRetirementKnown=self.owned_refresh_child is None,
+             originalDescriptorsOpened=len(self.descriptors), closeErrorTypes=errors,
+             allOriginalDescriptorsClosedOnce=all(row['closed'] and row['closeAttempts'] == 1 for row in self.descriptors),
+-            registeredGatewayMayRemainStopped=self.phase not in ('new', 'binding-original', 'original-bound', 'safe-local-bootstrap-complete'),
++            registeredGatewayMayRemainStopped=self.phase not in ('new', 'binding-original', 'original-bound', 'safe-local-bootstrap-complete', 'original-restored-before-provider'),
+             fullRollbackOrProductionCutoverQualified=False)
+         if errors or not self.report['allOriginalDescriptorsClosedOnce'] or self.owned_refresh_child is not None:
+             self.report['ok'] = False
