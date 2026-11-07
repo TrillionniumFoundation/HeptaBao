@@ -1,0 +1,528 @@
+{
+  "actions": [
+    {
+      "job_id": "1a1aff07791-fc05-6ce9",
+      "number": 1,
+      "phase": "preflight"
+    },
+    {
+      "job_id": "1a1aff10ed5-fc05-6cef",
+      "number": 2,
+      "phase": "install"
+    },
+    {
+      "job_id": "1a1aff1dfac-fc05-6cf6",
+      "number": 3,
+      "phase": "reverse,settings-arm,launch-provider,inspect"
+    },
+    {
+      "job_id": "1a1aff2d6d9-fc05-6cfa",
+      "number": 4,
+      "phase": [
+        [
+          "tap",
+          "--selector",
+          "OPEN PROVIDER SETTINGS"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "job_id": "1a1aff40fbd-fc05-6d01",
+      "number": 5,
+      "phase": "ordinary_settings_package_uri"
+    },
+    {
+      "job_id": "1a1aff5cf94-fc05-6d0b",
+      "number": 6,
+      "phase": "localized_settings_inspect"
+    },
+    {
+      "job_id": "1a1aff8099d-fc05-6d21",
+      "number": 7,
+      "phase": "static_settings_headers"
+    },
+    {
+      "job_id": "1a1aff8df31-fc05-6d2b",
+      "number": 8,
+      "phase": [
+        [
+          "tap",
+          "--selector-kind",
+          "id",
+          "--selector",
+          "com.android.settings:id/change_button"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "driver_sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d",
+      "job_id": "1a1affc2f05-fc05-6d42",
+      "number": 9,
+      "phase": [
+        [
+          "settings-arm-primary-empty"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao synthetic passkeys"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "driver_sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d",
+      "job_id": "1a1affca8d4-fc05-6d45",
+      "number": 10,
+      "phase": [
+        [
+          "tap",
+          "--selector-kind",
+          "id",
+          "--selector",
+          "android:id/button1"
+        ],
+        [
+          "settings-selected"
+        ],
+        [
+          "launch-provider"
+        ],
+        [
+          "tap",
+          "--selector",
+          "CHOOSE ENCRYPTED VAULT FILE"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "job_id": "1a1affd6bc9-fc05-6d4c",
+      "number": 11,
+      "phase": "unexpected_settings_readonly_classification"
+    },
+    {
+      "job_id": "1a1affe547d-fc05-6d53",
+      "number": 12,
+      "phase": "autofill_component_readonly_metadata"
+    },
+    {
+      "job_id": "1a1b00220bc-fc05-6d68",
+      "number": 13,
+      "phase": "bridge_readonly_provenance"
+    },
+    {
+      "job_id": "1a1b0035056-fc05-6d75",
+      "number": 14,
+      "phase": "bridge_readonly_provenance_regex_fixed"
+    },
+    {
+      "job_id": "1a1b005ec2c-fc05-6d85",
+      "number": 15,
+      "phase": "reviewed_restore_original_autofill_only",
+      "source_sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d"
+    },
+    {
+      "job_id": "1a1b00682bc-fc05-6d8a",
+      "number": 16,
+      "phase": [
+        [
+          "settings-selected"
+        ],
+        [
+          "launch-provider"
+        ],
+        [
+          "tap",
+          "--selector",
+          "CHOOSE ENCRYPTED VAULT FILE"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "driver_sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a",
+      "job_id": "1a1b008300a-fc05-6d94",
+      "number": 17,
+      "phase": [
+        [
+          "tap",
+          "--selector-kind",
+          "description",
+          "--selector",
+          "\u663e\u793a\u6839\u76ee\u5f55"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "job_id": "1a1b0090685-fc05-6d9b",
+      "number": 18,
+      "phase": [
+        [
+          "tap",
+          "--selector",
+          "\u4e0b\u8f7d"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-20261106-r4"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-r4-seed.hbv"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "job_id": "1a1b009d98d-fc05-6da0",
+      "number": 19,
+      "phase": [
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "job_id": "1a1b00b9c35-fc05-6db3",
+      "number": 20,
+      "phase": "owned_ciphertext_media_index"
+    },
+    {
+      "job_id": "1a1b00c0b71-fc05-6db8",
+      "number": 21,
+      "phase": [
+        [
+          "back"
+        ],
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-20261106-r4"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "job_id": "1a1b00ce243-fc05-6dbd",
+      "number": 22,
+      "phase": [
+        [
+          "tap",
+          "--selector",
+          "HeptaBao-Passkey-QA-r4-seed.hbv"
+        ],
+        [
+          "inspect"
+        ]
+      ]
+    },
+    {
+      "job_id": "1a1b00fc2c8-fc05-6dd3",
+      "number": 23,
+      "phase": "restore"
+    },
+    {
+      "job_id": "1a1b01121f5-fc05-6de0",
+      "number": 24,
+      "phase": "owned_documents_cleanup_and_final_postchecks"
+    }
+  ],
+  "android_api": 36,
+  "attempts": [],
+  "auxiliary_actions": [
+    {
+      "job_id": "1a1aff3124d-fc05-6cfd",
+      "kind": "owned_ciphertext_ingress"
+    },
+    {
+      "job_id": "1a1afefe9b5-fc05-6ce3",
+      "kind": "rp_service"
+    }
+  ],
+  "blocked_count": 16,
+  "build_receipt_sha256": "c7f84bd9ff3dcde9adf1bf7b24c641f393bb1274cb27e3b860f41845b98d107c",
+  "candidate": "r4",
+  "cases": [
+    {
+      "attempts": [
+        {
+          "job_id": "1a1b0090685-fc05-6d9b",
+          "outcome": "setup_blocked",
+          "reason": "owned pushed file not yet media-indexed"
+        },
+        {
+          "job_id": "1a1b00ce243-fc05-6dbd",
+          "outcome": "failed",
+          "reason": "unsafe_directory"
+        }
+      ],
+      "evidence": [
+        {
+          "job_id": "1a1b00ce243-fc05-6dbd",
+          "observed": "ordinary SAF chose fixed seed; provider Home returned unsafe_directory"
+        }
+      ],
+      "executed": true,
+      "id": "M01",
+      "status": "failed"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "M02",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "M03",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "M04",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "M05",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "M06",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G01",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G02",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G03",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G04",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G05",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G06",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G07",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G08",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G09",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G10",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "blocked_by": "M01",
+      "evidence": [],
+      "executed": false,
+      "id": "G11",
+      "reason": "r4 failed before password entry, credential creation or backup; required precondition unavailable",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "job_id": "1a1b00fc2c8-fc05-6dd3",
+          "operation": "restore_settings_packages_reverse"
+        },
+        {
+          "artifact": "cleanup.result.public.json",
+          "job_id": "1a1b01121f5-fc05-6de0",
+          "sha256": "a89c4a4c0e3e3c24d4b6bde440ddd0a5094986fa8ff1a08370d00ccca270dd3d"
+        }
+      ],
+      "executed": true,
+      "id": "M07",
+      "status": "passed"
+    }
+  ],
+  "cleanup_sha256": "a89c4a4c0e3e3c24d4b6bde440ddd0a5094986fa8ff1a08370d00ccca270dd3d",
+  "credential_manager_create_get_exercised": false,
+  "device_model": "XT2551-3",
+  "device_sha256": "41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1",
+  "executed_count": 2,
+  "expected": [
+    "M01",
+    "M02",
+    "M03",
+    "M04",
+    "M05",
+    "M06",
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "G09",
+    "G10",
+    "G11",
+    "M07"
+  ],
+  "expected_count": 18,
+  "failed_count": 1,
+  "finalized": true,
+  "finished_unix_ns": 1793956481570638360,
+  "master_entered_on_device": false,
+  "missing_count": 0,
+  "not_executed_count": 16,
+  "observations": [
+    {
+      "code": "provider_settings_shortcut_missing_package_uri",
+      "fallback": "ordinary_system_settings",
+      "source_job_id": "1a1aff2d6d9-fc05-6cfa",
+      "status": "observed_failure"
+    },
+    {
+      "classification_job_id": "1a1affd6bc9-fc05-6d4c",
+      "code": "oem_primary_selection_changed_autofill_bridge",
+      "restored": false,
+      "source_job_id": "1a1affca8d4-fc05-6d45",
+      "status": "observed_guard_failure_preserved"
+    },
+    {
+      "code": "original_autofill_restored_after_observed_system_linkage",
+      "prior_failed_observation_retained": true,
+      "receipt_sha256": "4d84f24da4ac8fe8cfd17ef0addebfa4cd8e02239a318fec20ddc44d0dd19369",
+      "source_job_id": "1a1b005ec2c-fc05-6d85",
+      "status": "corrective_restore_verified"
+    },
+    {
+      "code": "platform_files_directory_mode_diagnosis",
+      "explanation": "ContextImpl defaults files to 0771; r4 required 0700 before normalizing. Private phone directory mode was not directly read.",
+      "observed": "unsafe_directory",
+      "source": "https://android.googlesource.com/platform/frameworks/base/+/android16-qpr2-release/core/java/android/app/ContextImpl.java",
+      "status": "source_inference_not_private_mode_measurement"
+    }
+  ],
+  "p4_qualified": false,
+  "passed_count": 1,
+  "phone_private_key_created": false,
+  "phone_qualified": false,
+  "production_qualified": false,
+  "profile_source_sha256": "6a26dbf2c4394becba2eb0c21192853afb5f176ede68f2e4dbf9d00ed9b1a7b0",
+  "provider_apk_sha256": "e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8",
+  "rp_final": {
+    "counters": {
+      "authentications": 0,
+      "options": 0,
+      "registrations": 0,
+      "rejected": 0,
+      "restart_invalidated": 0,
+      "verification_attempts": 0
+    },
+    "credential_count": 0,
+    "event_count": 1,
+    "server_exit_code": 0,
+    "server_job_id": "1a1afefe9b5-fc05-6ce3",
+    "server_terminal_state": "cancelled",
+    "state_sha256": "70bf8de9359bfe1c3c1e64f9bb9d138249b6784d002b234b3c53c72d0a4c40ea"
+  },
+  "runtime_source_bundle_sha256": "1b7af164b251f7075a1d54e3f950b96dc0581b5d2e14899d1857209a6e3118b0",
+  "saf_picker_exercised": true,
+  "schema": 1,
+  "seed": {
+    "ciphertext_sha256": "85345f56cc374c330a96c7b09a2498c206deae2b9aea65ae1ef908fa5d551140",
+    "producer_binary_sha256": "9269c070399493f634055bc9e002ea141988f1368cce8358fcc05bbf98d9bfb1",
+    "producer_source_binding": "not_independently_proven; not relabeled as fixed b0cc"
+  }
+}

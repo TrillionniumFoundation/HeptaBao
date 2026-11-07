@@ -1,0 +1,358 @@
+{
+  "binaries": {
+    "heptabao-browser": {
+      "bytes": 1243128,
+      "mtime_ns": 1793944882676176095,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1/target/debug/heptabao-browser",
+      "sha256": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d"
+    },
+    "heptabao-credential-broker": {
+      "bytes": 2218312,
+      "mtime_ns": 1793944882696175405,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1/target/debug/heptabao-credential-broker",
+      "sha256": "389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175"
+    },
+    "heptabao-sync": {
+      "bytes": 1053760,
+      "mtime_ns": 1793944881680210474,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1/target/debug/heptabao-sync",
+      "sha256": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663"
+    },
+    "heptabao-vault": {
+      "bytes": 1227400,
+      "mtime_ns": 1793944882953166535,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1/target/debug/heptabao-vault",
+      "sha256": "aecd8a1799f4d17b6eaaa02a55656c8d4461424eee08c48b4b3d4c1a85c2191a"
+    }
+  },
+  "binaries_source_binding": {
+    "argv": [
+      "/home/qq/.cargo/bin/cargo",
+      "+1.98.0",
+      "build",
+      "--locked",
+      "-p",
+      "heptabao-credential-broker",
+      "-p",
+      "heptabao-personal-vault",
+      "-p",
+      "heptabao-personal-edge",
+      "--bins"
+    ],
+    "elapsed_seconds": 23.443,
+    "environment": {
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+    },
+    "exit_code": 0,
+    "name": "01-build-binaries",
+    "passed": true,
+    "source_after": {
+      "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+      "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+      "status_porcelain": "",
+      "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+    },
+    "source_before": {
+      "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+      "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+      "status_porcelain": "",
+      "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+    },
+    "source_unchanged": true,
+    "started_unix": 1793944859,
+    "stderr_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/01-build-binaries.stderr.log",
+    "stderr_sha256": "ccad96bc689e81923e726eed56aadec60e06eda6537982d50a15faf9ea8a7364",
+    "stdout_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/01-build-binaries.stdout.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+  },
+  "evidence_directory": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4",
+  "finished_unix": 1793944896,
+  "passed": true,
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8",
+  "schema": "heptabao-selected-qualification-build-v1",
+  "scope": "synthetic-only selected crates; not production qualification",
+  "source_after": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+    "status_porcelain": "",
+    "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+  },
+  "source_before": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+    "status_porcelain": "",
+    "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+  },
+  "source_directory": "/home/qq/heptabao-personal-credentials-20261106-r1",
+  "started_unix": 1793944854,
+  "steps": [
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/rustup",
+        "toolchain",
+        "install",
+        "1.98.0",
+        "--profile",
+        "minimal",
+        "--component",
+        "rustfmt",
+        "--component",
+        "clippy",
+        "--no-self-update"
+      ],
+      "elapsed_seconds": 4.551,
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+      },
+      "exit_code": 0,
+      "name": "00-toolchain",
+      "passed": true,
+      "source_after": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_before": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_unchanged": true,
+      "started_unix": 1793944854,
+      "stderr_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/00-toolchain.stderr.log",
+      "stderr_sha256": "bcaf308cf76a616b2b292b003fe60b45c666d8365fd586e4074e55232a487f89",
+      "stdout_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/00-toolchain.stdout.log",
+      "stdout_sha256": "b1cb7f21f1d8ee75634b7ada8a648c78e37fdc9cfddac8d95bdb27bcf860e8e9"
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "build",
+        "--locked",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--bins"
+      ],
+      "elapsed_seconds": 23.443,
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+      },
+      "exit_code": 0,
+      "name": "01-build-binaries",
+      "passed": true,
+      "source_after": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_before": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_unchanged": true,
+      "started_unix": 1793944859,
+      "stderr_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/01-build-binaries.stderr.log",
+      "stderr_sha256": "ccad96bc689e81923e726eed56aadec60e06eda6537982d50a15faf9ea8a7364",
+      "stdout_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/01-build-binaries.stdout.log",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "test",
+        "--locked",
+        "-p",
+        "heptabao-credential-broker"
+      ],
+      "elapsed_seconds": 1.974,
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+      },
+      "exit_code": 0,
+      "name": "02-broker-tests",
+      "passed": true,
+      "source_after": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_before": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_unchanged": true,
+      "started_unix": 1793944883,
+      "stderr_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/02-broker-tests.stderr.log",
+      "stderr_sha256": "c675205618cec5bc2d497effc24bdb74b30353ea7c821f7023c217dae0016843",
+      "stdout_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/02-broker-tests.stdout.log",
+      "stdout_sha256": "fd69f35e7c71bd9c47f95cb7cc9fcaad75bcdd7266f404c6e1aa0af5d4b6f558"
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "test",
+        "--locked",
+        "-p",
+        "heptabao-personal-vault"
+      ],
+      "elapsed_seconds": 5.633,
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+      },
+      "exit_code": 0,
+      "name": "03-vault-tests",
+      "passed": true,
+      "source_after": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_before": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_unchanged": true,
+      "started_unix": 1793944884,
+      "stderr_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/03-vault-tests.stderr.log",
+      "stderr_sha256": "e84f875abf0ee19f99e160b0474380785f9787b14f9f2539e7e6a5b8e4d97e51",
+      "stdout_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/03-vault-tests.stdout.log",
+      "stdout_sha256": "c7644ec379a6d990563b472ef5939396d268095457530d3d72409c8a06845962"
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "fmt",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--",
+        "--check"
+      ],
+      "elapsed_seconds": 0.114,
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+      },
+      "exit_code": 0,
+      "name": "04-format",
+      "passed": true,
+      "source_after": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_before": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_unchanged": true,
+      "started_unix": 1793944890,
+      "stderr_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/04-format.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/04-format.stdout.log",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "clippy",
+        "--locked",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsed_seconds": 5.687,
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+      },
+      "exit_code": 0,
+      "name": "05-clippy",
+      "passed": true,
+      "source_after": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_before": {
+        "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+        "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "status_porcelain": "",
+        "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+      },
+      "source_unchanged": true,
+      "started_unix": 1793944890,
+      "stderr_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/05-clippy.stderr.log",
+      "stderr_sha256": "8ef807e3fac82b25c4fc38ebe49f1d3d8de55a4b6f73ad440db3b38a5beb310b",
+      "stdout_log": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/05-clippy.stdout.log",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

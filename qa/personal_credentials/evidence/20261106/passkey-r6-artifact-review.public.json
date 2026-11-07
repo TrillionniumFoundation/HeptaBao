@@ -1,0 +1,19 @@
+{
+  "all_product_archive_bytes_equal_checkout": true,
+  "all_qa_archive_bytes_equal_checkout": true,
+  "archive_regular_members": 33,
+  "build_receipt_sha256": "cb70894ea9ea6f6216b015f978dab7be304ec9910969dca9a46eee2beee84190",
+  "build_sources_before_equal_after_equal_archive": true,
+  "device_qualified": false,
+  "external_review": false,
+  "host_checks": {
+    "expected": 10,
+    "passed": 10
+  },
+  "host_receipt_sha256": "69a03e93b8aaad9edceffba5bdfc745db38626817289544ba2cdb82874afe7cc",
+  "product_sources": 29,
+  "production_qualified": false,
+  "schema": 1,
+  "scope": "internal_original_artifact_consistency",
+  "source_archive_sha256": "90d66751273ce8266014245a2f03bd5accb7e4794cc70128c91be3bfd88bf2a9"
+}

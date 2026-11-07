@@ -1026,7 +1026,7 @@ fn process_parsed_request(
             let native_snapshot = request.native_snapshot.take();
             // Index admission precedes logical dispatch and any snapshot body I/O.
             // It never authenticates the caller or creates permission to retry.
-            let consistency = consistency::admit(
+            let mut consistency = consistency::admit(
                 service,
                 &request.consistency,
                 consistency_settings,
@@ -1098,7 +1098,7 @@ fn process_parsed_request(
                     );
                 }
             };
-            let mut reply = if let Err(response) = &consistency {
+            let mut reply = if let Err(response) = &mut consistency {
                 let mut rejected = audited_wire_rejection(
                     service,
                     attempt_id,
@@ -1109,6 +1109,11 @@ fn process_parsed_request(
                 );
                 if rejected.status == response.status {
                     rejected.body = response.body.clone();
+                }
+                // Only the original 429 surviving both audit records proves
+                // success here. An original 503 can equal an audit-failure 503.
+                if response.status == 429 && rejected.status == 429 {
+                    rejected.response_headers = std::mem::take(&mut response.response_headers);
                 }
                 crate::service::erase_json(&mut service_request.body);
                 snapshot::NativeReply::Json(rejected)
@@ -1163,6 +1168,42 @@ fn process_parsed_request(
             (reply, error.health_head == Some(true), String::new())
         }
     }
+}
+
+/// Exercise the ordinary parser, consistency admission, mandatory wire audit,
+/// logical projection and HTTP writer with the caller's real test Service.
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) fn consistency_rejection_wire_fixture(
+    service: &Arc<Mutex<Service>>,
+    source: &mut impl Read,
+    attempt_id: &[u8; 16],
+    deadline: Instant,
+) -> io::Result<Vec<u8>> {
+    let parsed = read_request_with_ui(
+        source,
+        deadline.saturating_duration_since(Instant::now()),
+        false,
+        false,
+    );
+    let (reply, head, namespace) = process_parsed_request(
+        service,
+        None,
+        parsed,
+        source,
+        None,
+        IpAddr::V4(std::net::Ipv4Addr::LOCALHOST),
+        attempt_id,
+        consistency::Settings::default(),
+        deadline,
+    );
+    let snapshot::NativeReply::Json(response) = reply else {
+        return Err(io::Error::other(
+            "consistency fixture expected a JSON reply",
+        ));
+    };
+    let mut wire = Vec::new();
+    write_response_with_namespace(&mut wire, response, head, &namespace)?;
+    Ok(wire)
 }
 
 fn execute_deferred_native_body(

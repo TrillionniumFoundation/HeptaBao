@@ -1,0 +1,94 @@
+{
+  "auth_observed": false,
+  "candidate": "c5",
+  "device_qualification": "FAILED",
+  "error": "autofill_menu_context_changed",
+  "expected_cases": 12,
+  "files": [
+    {
+      "name": "phone-report-r7.json",
+      "sha256": "be859adb806b91a57f8cf206e5880e5b995e596641b3caca8a321bd29b2af251",
+      "size": 7296
+    },
+    {
+      "name": "run-r7.launch.public.json",
+      "sha256": "f92efc883e3a4b90a5c79c8d399cb6e69d8fac3ec3e1b8535d141cb795d0224a",
+      "size": 2039
+    },
+    {
+      "name": "run-r7.execution.public.json",
+      "sha256": "0132fac2a321fc23a12d70852a69bda79f23f146e5e90194e37fba4c53e6ab49",
+      "size": 2677
+    },
+    {
+      "name": "run-r7.wrapper.actual.py",
+      "sha256": "2112bf11a314961047928ac1e8578c265c28b01a1253d29d0e9a4d02c729ec56",
+      "size": 3392
+    },
+    {
+      "name": "run-r7.runtime-start.request.json",
+      "sha256": "89fb8deaaea63a35f0658d32b688d3d31e0b0fce433670a1b210c932a6b4958e",
+      "size": 336
+    },
+    {
+      "name": "run-r7.runtime-start.raw.json",
+      "sha256": "de556c316ee143f00ccc190b9a85e23698845053703cb6e9cb089c69f98c9ce1",
+      "size": 1337
+    },
+    {
+      "name": "run-r7.runtime-status.json",
+      "sha256": "4ccd6095ed9ae23d0bc2e9946044868ff739b9b139d8bbd05c6676bd01a26937",
+      "size": 727
+    },
+    {
+      "name": "release-r7.json",
+      "sha256": "a37086bd5cf49be3896ad1e6dd82e0ed7b2bed1f7fc3bf429ca24347d028b9af",
+      "size": 1200
+    },
+    {
+      "name": "release-r7.readonly.py",
+      "sha256": "87b6ce7f2f40ae22ce0172ec6ceabb914efbe1562e686a52a36d12f3c27aa14a",
+      "size": 2543
+    },
+    {
+      "name": "release-r7.runtime-start.request.json",
+      "sha256": "313d87f4943e65a863bac9d418725db961e3f6c8bc6754a7b7c08bc2db5f2e31",
+      "size": 334
+    },
+    {
+      "name": "release-r7.runtime-start.raw.json",
+      "sha256": "19f49dd3ddbd11af2fe02e86bd5bf7d41cfdb1b8205920ceca1dd2221fd3747a",
+      "size": 1337
+    },
+    {
+      "name": "release-r7.runtime-status.json",
+      "sha256": "7699fe05d78d821dfcaeafcd305900d0bfd2c41244dc8ce12d3a823f58ee4975",
+      "size": 730
+    },
+    {
+      "name": "run-r7.runtime.stdout",
+      "sha256": "bf2c0774aeb88e5c80205aa11153affa9c7e020e4836dbfa7723588640296f28",
+      "size": 817
+    },
+    {
+      "name": "release-r7.runtime.stdout",
+      "sha256": "bf389ec708ea3594344f5c447e1fa1c3485af0c5cea0d5d9fe168a7099e8afc2",
+      "size": 170
+    }
+  ],
+  "limitations": [
+    "Two memory_pressure_locked events do not identify callback level or prove an earlier run cause.",
+    "A missing owned PendingIntent record does not distinguish cancellation from one-shot send.",
+    "Foreground was classified unavailable_or_other; no raw focused-window metadata is retained."
+  ],
+  "master_entered": false,
+  "menu_tap_performed": false,
+  "owned_packages_absent": 3,
+  "passed_cases": 1,
+  "qa_revision": 9,
+  "release_job": "1a1b067b82a-fc05-7048",
+  "restoration": "restored_original",
+  "run": "r7",
+  "runtime_job": "1a1b065558e-fc05-7038",
+  "schema": 1
+}

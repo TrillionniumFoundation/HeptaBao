@@ -1,0 +1,1014 @@
+{
+  "actual_sigkill": true,
+  "all_owned_processes_terminal": true,
+  "artifacts": {
+    "new": {
+      "artifact_receipt_sha256": "d29fff92ecbcdab6e52c905e6a4a96217d4c712f2c453dd5c63214e47c0e88bb",
+      "frozen_path": "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+      "sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+      "source_commit": "c447536ae0343731d84c18291d2dcd712b3bea08",
+      "source_path": "/home/qq/heptabao-broker-ed25519-c447536-build/bin-qualified/heptabao-credential-broker"
+    },
+    "old": {
+      "artifact_receipt_sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+      "frozen_path": "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+      "sha256": "389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175",
+      "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+      "source_path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final/heptabao-credential-broker"
+    }
+  },
+  "binary_identities_unchanged": true,
+  "checks": [
+    "old_completed_real_authenticated_request",
+    "old_revocation_acknowledged",
+    "unknown_target_contact_observed_before_kill",
+    "unknown_durably_visible_before_kill",
+    "real_sigkill_and_client_failure_observed",
+    "upgrade_status_preserves_completed_receipt",
+    "upgrade_execute_returns_cached_receipt",
+    "upgrade_preserves_unknown_status",
+    "upgrade_unknown_execute_nonzero_without_retry",
+    "upgrade_preserves_revocation",
+    "upgrade_preserves_expiry",
+    "upgrade_preserves_exact_target",
+    "upgrade_new_operation_real_effect",
+    "rollback_preserves_old_receipt",
+    "rollback_preserves_new_receipt",
+    "rollback_preserves_unknown_status",
+    "rollback_unknown_execute_nonzero_without_retry",
+    "rollback_preserves_revocation",
+    "rollback_preserves_expiry",
+    "rollback_preserves_exact_target",
+    "rollback_new_operation_real_effect",
+    "reupgrade_preserves_rollback_receipt",
+    "reupgrade_preserves_new_receipt",
+    "reupgrade_unknown_never_redispatched",
+    "exact_upstream_effect_counts_across_all_generations",
+    "wrong_target_trap_never_contacted",
+    "no_credential_in_persisted_operation_ledger"
+  ],
+  "checks_passed": 27,
+  "commands": [
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "init",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745310598911,
+      "label": "initialize-old",
+      "started_unix_ns": 1793967745303324976,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "b9907fd37e3197fa894883d4c39e5469ea560836a187cfe3562b0aadceabc687"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "issue",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.grant.json",
+        "3600"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745321414983,
+      "label": "issue-completed-old",
+      "started_unix_ns": 1793967745315408463,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "0141350c8d6c0b99d318d3cfa123ae3605e9b0a0cab3cb3223d0c8fc7fc7d195"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "issue",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.grant.json",
+        "3600"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745331712533,
+      "label": "issue-unknown-old",
+      "started_unix_ns": 1793967745325815389,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "01471e9e50448113b96d9dcc29b4de989697241bd6e8780a56d396023a60c7d6"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "issue",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/revoked-operation.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/revoked-operation.grant.json",
+        "3600"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745341563548,
+      "label": "issue-revoked-operation",
+      "started_unix_ns": 1793967745335980243,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "0ce2d963040ac30bd94f72a7891aace2a882bcc7d931c79f45c65b34b6678673"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "issue",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/expired-operation.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/expired-operation.grant.json",
+        "1"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745351022957,
+      "label": "issue-expired-operation",
+      "started_unix_ns": 1793967745345534779,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "af7bd81624b372ff0a9add096487b4953653c1a22fbd6fd7ecf543024275cdd3"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745377547008,
+      "label": "old-completed",
+      "started_unix_ns": 1793967745367964924,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "revoke",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/revoked-operation.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745387745391,
+      "label": "old-revoke",
+      "started_unix_ns": 1793967745381614656,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "bed250a4da2b4e8a320b2a3ffa9516d36532b5403833e74ffb543c6ffe68fe7a"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "serve",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "100"
+      ],
+      "exit_code": -9,
+      "expected_exit_code": -9,
+      "finished_unix_ns": 1793967745399064325,
+      "label": "serve-old-before-crash",
+      "started_unix_ns": 1793967745354441547,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967745403483380,
+      "label": "old-client-interrupted",
+      "started_unix_ns": 1793967745392202865,
+      "stderr_sha256": "d3601881cde4612e7abd59ed700ba56eeef7f6dd52898480fc595c8d8dce3791",
+      "stdin_recorded": false,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "issue",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.grant.json",
+        "3600"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967745414278203,
+      "label": "issue-completed-new",
+      "started_unix_ns": 1793967745408189346,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "48a7e19cb824ae091676c051e884dbdaebedd567ff1181ab63f9a3a6add38b58"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "status",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746043368944,
+      "label": "upgrade-completed-status",
+      "started_unix_ns": 1793967746036995927,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746055145092,
+      "label": "upgrade-completed-replay",
+      "started_unix_ns": 1793967746048982078,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "status",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746065364334,
+      "label": "upgrade-unknown-status",
+      "started_unix_ns": 1793967746059733091,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746073745891,
+      "label": "upgrade-unknown-replay",
+      "started_unix_ns": 1793967746068858122,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/revoked-operation.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/revoked-operation.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746082635510,
+      "label": "upgrade-revoked-denied",
+      "started_unix_ns": 1793967746077142872,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/expired-operation.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/expired-operation.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746091637955,
+      "label": "upgrade-expired-denied",
+      "started_unix_ns": 1793967746086564832,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/wrong-target.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746100031721,
+      "label": "upgrade-wrong-target-denied",
+      "started_unix_ns": 1793967746095124093,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746110923430,
+      "label": "upgrade-new-operation",
+      "started_unix_ns": 1793967746103402033,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "13cbb2a3f31cfd6af2b0988936ee12b98342bc27d0057b74fe3c616c62b9effd"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "serve",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "8"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746116078269,
+      "label": "serve-upgraded",
+      "started_unix_ns": 1793967746022778975,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "issue",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-rollback.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-rollback.grant.json",
+        "3600"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746126129187,
+      "label": "issue-completed-rollback",
+      "started_unix_ns": 1793967746120425687,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "31f8c6959913aee357a4e6ddef1dbdf27b0339ee1544c2d12e467cff9185e658"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "status",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746149727181,
+      "label": "rollback-old-status",
+      "started_unix_ns": 1793967746144370339,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746158044940,
+      "label": "rollback-new-replay",
+      "started_unix_ns": 1793967746153150522,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "13cbb2a3f31cfd6af2b0988936ee12b98342bc27d0057b74fe3c616c62b9effd"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "status",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746166750076,
+      "label": "rollback-unknown-status",
+      "started_unix_ns": 1793967746161627615,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746175634405,
+      "label": "rollback-unknown-replay",
+      "started_unix_ns": 1793967746170799834,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/revoked-operation.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/revoked-operation.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746184966528,
+      "label": "rollback-revoked-denied",
+      "started_unix_ns": 1793967746179887956,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/expired-operation.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/expired-operation.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746193940274,
+      "label": "rollback-expired-denied",
+      "started_unix_ns": 1793967746188381348,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/wrong-target.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-old.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746202173166,
+      "label": "rollback-wrong-target-denied",
+      "started_unix_ns": 1793967746197332255,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-rollback.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-rollback.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746213286557,
+      "label": "rollback-new-operation",
+      "started_unix_ns": 1793967746205528988,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "af99ed1defaa74cbe2492684473ea7d46b3dcaaa6a397e1df5b91f5d5222b6ff"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-old",
+        "serve",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "8"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746217619955,
+      "label": "serve-rollback",
+      "started_unix_ns": 1793967746130262913,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-rollback.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-rollback.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746239795469,
+      "label": "reupgrade-rollback-replay",
+      "started_unix_ns": 1793967746234353189,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "af99ed1defaa74cbe2492684473ea7d46b3dcaaa6a397e1df5b91f5d5222b6ff"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "status",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/completed-new.grant.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746248155156,
+      "label": "reupgrade-new-status",
+      "started_unix_ns": 1793967746243184020,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "13cbb2a3f31cfd6af2b0988936ee12b98342bc27d0057b74fe3c616c62b9effd"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "execute",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.operation.json",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/input/unknown-old.grant.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "finished_unix_ns": 1793967746257172401,
+      "label": "reupgrade-unknown-replay",
+      "started_unix_ns": 1793967746252154396,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/bin/broker-new",
+        "serve",
+        "/home/qq/heptabao-qualification-continuation-20261106/broker-upgrade-r1/owner",
+        "3"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "finished_unix_ns": 1793967746261787629,
+      "label": "serve-reupgrade",
+      "started_unix_ns": 1793967746220954768,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_recorded": false,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "expected_checks": [
+    "old_completed_real_authenticated_request",
+    "old_revocation_acknowledged",
+    "unknown_target_contact_observed_before_kill",
+    "unknown_durably_visible_before_kill",
+    "real_sigkill_and_client_failure_observed",
+    "upgrade_status_preserves_completed_receipt",
+    "upgrade_execute_returns_cached_receipt",
+    "upgrade_preserves_unknown_status",
+    "upgrade_unknown_execute_nonzero_without_retry",
+    "upgrade_preserves_revocation",
+    "upgrade_preserves_expiry",
+    "upgrade_preserves_exact_target",
+    "upgrade_new_operation_real_effect",
+    "rollback_preserves_old_receipt",
+    "rollback_preserves_new_receipt",
+    "rollback_preserves_unknown_status",
+    "rollback_unknown_execute_nonzero_without_retry",
+    "rollback_preserves_revocation",
+    "rollback_preserves_expiry",
+    "rollback_preserves_exact_target",
+    "rollback_new_operation_real_effect",
+    "reupgrade_preserves_rollback_receipt",
+    "reupgrade_preserves_new_receipt",
+    "reupgrade_unknown_never_redispatched",
+    "exact_upstream_effect_counts_across_all_generations",
+    "wrong_target_trap_never_contacted",
+    "no_credential_in_persisted_operation_ledger"
+  ],
+  "expected_count": 27,
+  "external_security_review": false,
+  "failure": null,
+  "fixture_errors": [],
+  "format_migration_exercised": false,
+  "host": {
+    "machine": "x86_64",
+    "system": "Linux"
+  },
+  "limits": [
+    "One trusted Unix owner and numeric loopback HTTP target.",
+    "Only these exact previously built executables and their current state format.",
+    "No installer, signed release, arbitrary version rollback, runtime identity isolation, physical power loss, or long-term stability qualification.",
+    "The target counts received synthetic requests; no remote production service or external account is used."
+  ],
+  "missing_checks": [],
+  "original_public_outputs": [
+    {
+      "bytes": 34,
+      "path": "initialize-old.stdout.original",
+      "sha256": "b9907fd37e3197fa894883d4c39e5469ea560836a187cfe3562b0aadceabc687"
+    },
+    {
+      "bytes": 0,
+      "path": "initialize-old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 93,
+      "path": "issue-completed-old.stdout.original",
+      "sha256": "0141350c8d6c0b99d318d3cfa123ae3605e9b0a0cab3cb3223d0c8fc7fc7d195"
+    },
+    {
+      "bytes": 0,
+      "path": "issue-completed-old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 93,
+      "path": "issue-unknown-old.stdout.original",
+      "sha256": "01471e9e50448113b96d9dcc29b4de989697241bd6e8780a56d396023a60c7d6"
+    },
+    {
+      "bytes": 0,
+      "path": "issue-unknown-old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 93,
+      "path": "issue-revoked-operation.stdout.original",
+      "sha256": "0ce2d963040ac30bd94f72a7891aace2a882bcc7d931c79f45c65b34b6678673"
+    },
+    {
+      "bytes": 0,
+      "path": "issue-revoked-operation.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 93,
+      "path": "issue-expired-operation.stdout.original",
+      "sha256": "af7bd81624b372ff0a9add096487b4953653c1a22fbd6fd7ecf543024275cdd3"
+    },
+    {
+      "bytes": 0,
+      "path": "issue-expired-operation.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 154,
+      "path": "old-completed.stdout.original",
+      "sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "bytes": 0,
+      "path": "old-completed.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 140,
+      "path": "old-revoke.stdout.original",
+      "sha256": "bed250a4da2b4e8a320b2a3ffa9516d36532b5403833e74ffb543c6ffe68fe7a"
+    },
+    {
+      "bytes": 0,
+      "path": "old-revoke.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-old-before-crash.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-old-before-crash.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "old-client-interrupted.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 40,
+      "path": "old-client-interrupted.stderr.original",
+      "sha256": "d3601881cde4612e7abd59ed700ba56eeef7f6dd52898480fc595c8d8dce3791"
+    },
+    {
+      "bytes": 93,
+      "path": "issue-completed-new.stdout.original",
+      "sha256": "48a7e19cb824ae091676c051e884dbdaebedd567ff1181ab63f9a3a6add38b58"
+    },
+    {
+      "bytes": 0,
+      "path": "issue-completed-new.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 154,
+      "path": "upgrade-completed-status.stdout.original",
+      "sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-completed-status.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 154,
+      "path": "upgrade-completed-replay.stdout.original",
+      "sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-completed-replay.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 159,
+      "path": "upgrade-unknown-status.stdout.original",
+      "sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-unknown-status.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 159,
+      "path": "upgrade-unknown-replay.stdout.original",
+      "sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-unknown-replay.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 44,
+      "path": "upgrade-revoked-denied.stdout.original",
+      "sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-revoked-denied.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 44,
+      "path": "upgrade-expired-denied.stdout.original",
+      "sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-expired-denied.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 44,
+      "path": "upgrade-wrong-target-denied.stdout.original",
+      "sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-wrong-target-denied.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 154,
+      "path": "upgrade-new-operation.stdout.original",
+      "sha256": "13cbb2a3f31cfd6af2b0988936ee12b98342bc27d0057b74fe3c616c62b9effd"
+    },
+    {
+      "bytes": 0,
+      "path": "upgrade-new-operation.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-upgraded.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-upgraded.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 93,
+      "path": "issue-completed-rollback.stdout.original",
+      "sha256": "31f8c6959913aee357a4e6ddef1dbdf27b0339ee1544c2d12e467cff9185e658"
+    },
+    {
+      "bytes": 0,
+      "path": "issue-completed-rollback.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 154,
+      "path": "rollback-old-status.stdout.original",
+      "sha256": "298653023a7d8fa52e6cf1d74977d06c34362684dbebe2b46f8763b98ca103e3"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-old-status.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 154,
+      "path": "rollback-new-replay.stdout.original",
+      "sha256": "13cbb2a3f31cfd6af2b0988936ee12b98342bc27d0057b74fe3c616c62b9effd"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-new-replay.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 159,
+      "path": "rollback-unknown-status.stdout.original",
+      "sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-unknown-status.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 159,
+      "path": "rollback-unknown-replay.stdout.original",
+      "sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-unknown-replay.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 44,
+      "path": "rollback-revoked-denied.stdout.original",
+      "sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-revoked-denied.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 44,
+      "path": "rollback-expired-denied.stdout.original",
+      "sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-expired-denied.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 44,
+      "path": "rollback-wrong-target-denied.stdout.original",
+      "sha256": "2a477f32b220e461a8921ec02ad8cd4ebedece7e636a82c435ca180ae844664a"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-wrong-target-denied.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 159,
+      "path": "rollback-new-operation.stdout.original",
+      "sha256": "af99ed1defaa74cbe2492684473ea7d46b3dcaaa6a397e1df5b91f5d5222b6ff"
+    },
+    {
+      "bytes": 0,
+      "path": "rollback-new-operation.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-rollback.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-rollback.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 159,
+      "path": "reupgrade-rollback-replay.stdout.original",
+      "sha256": "af99ed1defaa74cbe2492684473ea7d46b3dcaaa6a397e1df5b91f5d5222b6ff"
+    },
+    {
+      "bytes": 0,
+      "path": "reupgrade-rollback-replay.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 154,
+      "path": "reupgrade-new-status.stdout.original",
+      "sha256": "13cbb2a3f31cfd6af2b0988936ee12b98342bc27d0057b74fe3c616c62b9effd"
+    },
+    {
+      "bytes": 0,
+      "path": "reupgrade-new-status.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 159,
+      "path": "reupgrade-unknown-replay.stdout.original",
+      "sha256": "95b409735a3d7fe79462b6ece386fa809b69e974bb83a7ee0553137fdcae3cc0"
+    },
+    {
+      "bytes": 0,
+      "path": "reupgrade-unknown-replay.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-reupgrade.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "serve-reupgrade.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "p5_qualified": false,
+  "passed": true,
+  "private_material_included": false,
+  "production_qualified": false,
+  "qa_script_sha256": "49a9cb4a263e0620ba5488580094e1dd9e72cad02cf445a146b822fd59673501",
+  "schema": 1,
+  "scope": "exact_two_binary_same_format_synthetic_upgrade_rollback",
+  "source_bindings_from_prior_receipts": true,
+  "synthetic_only": true,
+  "upstream_authenticated_requests": 4,
+  "upstream_effect_counts": {
+    "completed-new": 1,
+    "completed-old": 1,
+    "completed-rollback": 1,
+    "expired-operation": 0,
+    "revoked-operation": 0,
+    "unknown-old": 1
+  },
+  "version_sequence": [
+    "old",
+    "new",
+    "old",
+    "new"
+  ]
+}

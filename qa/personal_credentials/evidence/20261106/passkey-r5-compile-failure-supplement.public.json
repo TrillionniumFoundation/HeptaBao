@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "scope": "r5_initial_compile_stderr_original_supplement",
+  "previous_packet_manifest_sha256": "7167caa81f48e4166e35aa2212b24767b4d37887c68d8400e5f284c5244f2a3d",
+  "method": "Frozen builder 3cde1f09676c5f0a1fd7df2b65195b111bed11933118a08e37dc644d379a92f6 writes logs/<label>.stderr; receipt label provider-javac binds this original path and SHA.",
+  "host": "mac",
+  "remote_path": "/Users/qianqi/HeptaBaoPasskey-20261106-r1/build-r5/logs/provider-javac.stderr",
+  "remote_version": "16777233:593003510:406:1793955921472918927:1793955921472918927",
+  "local_name": "r5-first-provider-javac.stderr",
+  "bytes": 406,
+  "sha256": "039fc9c4f9c21455f9044892dbb0602e7818437ecda301827e9c5dded0c60f17",
+  "matched_original_failure_receipt": true,
+  "private_build_inputs_read": false,
+  "adb_or_ui_actions": 0
+}

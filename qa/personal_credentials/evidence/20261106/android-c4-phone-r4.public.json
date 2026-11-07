@@ -1,0 +1,91 @@
+{
+  "api": 36,
+  "build_fingerprint_sha256": "d7b29f1502146836dc09806b423e9b6bf4c3a94bc5feed1dcc8addf13aa2a666",
+  "build_receipt_sha256": "3dbf8fd47edea4342e92dfac309d0d9ccae47796fc255166e5a612c4555db135",
+  "cases": [
+    {
+      "elapsed_ms": 8768,
+      "name": "rust_ciphertext_import",
+      "passed": true
+    }
+  ],
+  "checks_passed": 1,
+  "credential_entry": "synthetic_only_adb_input_text_argv",
+  "current_case": "locked_fill_refused",
+  "device_serial_sha256": "41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1",
+  "error": "unexpected_foreground_no_ui_read",
+  "expected_cases": [
+    "rust_ciphertext_import",
+    "locked_fill_refused",
+    "wrong_master_refused",
+    "actual_system_fill_and_login",
+    "system_cached_plaintext_not_reusable",
+    "explicit_lock_refused",
+    "expired_authorization_refused",
+    "cancelled_authorization_refused",
+    "background_authorization_refused",
+    "independent_process_restart_locked_and_recovered",
+    "wrong_package_same_certificate_refused",
+    "same_package_wrong_certificate_refused"
+  ],
+  "expected_count": 12,
+  "failure_context": {
+    "expected_control": {
+      "description": null,
+      "text": "HeptaBao \u00b7 local authorization"
+    },
+    "provider_decision": "memory_locked",
+    "public_ui": {
+      "controls": [
+        "unlock heptabao locally"
+      ],
+      "foreground": [
+        "org.heptabao.synthetic.fixture",
+        "org.heptabao.fixture.FixtureActivity"
+      ]
+    }
+  },
+  "finished_unix_ns": 1793950744683276052,
+  "hardware_sku": "XT2551-3",
+  "installed_apk_sha256": {
+    "fixture-good": "a27e14ac9461d5cd36a5ff497c9385996cf256240912fb44cab8782b60d599ac",
+    "fixture-wrong-package": "dd319856cfbf23a9c2cae27436a3cfe75535c9fe21d462d7ab0ee1622ea0448b",
+    "provider": "602d6bb660b6436f92f7610ffead3e59b0293159eaba62124d7db117c58801c6"
+  },
+  "missing_cases": [
+    "locked_fill_refused",
+    "wrong_master_refused",
+    "actual_system_fill_and_login",
+    "system_cached_plaintext_not_reusable",
+    "explicit_lock_refused",
+    "expired_authorization_refused",
+    "cancelled_authorization_refused",
+    "background_authorization_refused",
+    "independent_process_restart_locked_and_recovered",
+    "wrong_package_same_certificate_refused",
+    "same_package_wrong_certificate_refused"
+  ],
+  "model": "XT2551-3",
+  "package_cleanup": {
+    "org.heptabao.personal.preview": "removed_owned_package",
+    "org.heptabao.synthetic.decoy": "removed_owned_package",
+    "org.heptabao.synthetic.fixture": "removed_owned_package"
+  },
+  "passed": false,
+  "previous_setting_sha256": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+  "production_qualified": false,
+  "qa_script_sha256": "1ea646c10e4d01dcd2b0539550775f559f4b3fabbf97ac2ba0d59da4f3ed010a",
+  "release": "16",
+  "restoration": "restored_original",
+  "schema": 1,
+  "scope": "native_synthetic_autofill_only",
+  "started_unix_ns": 1793950725019845584,
+  "synthetic_only": true,
+  "unsupported": [
+    "browser",
+    "WebView filling",
+    "arbitrary applications",
+    "passkeys",
+    "sharing"
+  ]
+}

@@ -1,0 +1,70 @@
+diff --git a/clients/android/provider/java/org/heptabao/preview/AuthActivity.java b/clients/android/provider/java/org/heptabao/preview/AuthActivity.java
+index 973a2aa..2cf8dab 100644
+--- a/clients/android/provider/java/org/heptabao/preview/AuthActivity.java
++++ b/clients/android/provider/java/org/heptabao/preview/AuthActivity.java
+@@ -90,7 +90,17 @@ public final class AuthActivity extends Activity {
+             finally { Arrays.fill(password, (byte)0); }
+             final VaultCrypto.Login value = result; final String code = error;
+             app.handler.post(() -> {
+-                if (!foreground || isFinishing() || app.ticket(token) != ticket) { if (value != null) value.close(); return; }
++                if (!foreground || isFinishing() || app.ticket(token) != ticket) {
++                    if (value != null) value.close();
++                    // A trim can revoke this KDF ticket while retaining the
++                    // same locked challenge. Permit fresh input only for that
++                    // still-live token in this foreground activity; never use
++                    // the stale result or recreate a cancelled request.
++                    if (foreground && !isFinishing() && app.ticket(token) >= 0) {
++                        unlock.setEnabled(true); status.setText("Locked or expired");
++                    }
++                    return;
++                }
+                 unlock.setEnabled(true);
+                 try { boundRequest(); }
+                 catch (TargetPolicy.Rejected rejection) { if (value != null) value.close(); app.lockAll(rejection.code); status.setText("Authorization rejected"); return; }
+diff --git a/clients/android/provider/java/org/heptabao/preview/VaultApplication.java b/clients/android/provider/java/org/heptabao/preview/VaultApplication.java
+index 5ae573b..fbe5312 100644
+--- a/clients/android/provider/java/org/heptabao/preview/VaultApplication.java
++++ b/clients/android/provider/java/org/heptabao/preview/VaultApplication.java
+@@ -141,16 +141,32 @@ public final class VaultApplication extends Application {
+     @Override public void onCreate() { super.onCreate(); timers.setRemoveOnCancelPolicy(true); }
+     @Override public void onTrimMemory(int level) {
+         super.onTrimMemory(level);
+-        // This application also serves locked challenges while its settings UI is hidden.
+-        // UI_HIDDEN can arrive after that UI closed and must not revoke a newer request.
+-        // AuthActivity.onPause owns the precise authorization/background boundary.
+-        if (level == TRIM_MEMORY_UI_HIDDEN) {
+-            android.util.Log.i("HeptaBaoPreview", "ui_hidden_notification");
+-            return;
+-        }
+-        if (level >= TRIM_MEMORY_RUNNING_LOW) {
+-            lockAll("memory_locked");
+-            android.util.Log.i("HeptaBaoPreview", "memory_pressure_locked");
++        final String event;
++        synchronized (this) {
++            // The single pending challenge has no decrypted credentials. Its
++            // original deadline and launch are retained; it grants only entry
++            // to fresh local authentication. Cancellation/expiry/onPause still
++            // clear it through lockAll. Always advance generation, even when
++            // login is null, so a KDF already running cannot install its result.
++            String before = stateBits();
++            clearLogin(); generation++; lastDecision = "memory_locked";
++            event = "trim_" + trimLevel(level) + "_before_" + before
++                + "_after_" + stateBits() + "_epoch_advanced";
+         }
++        android.util.Log.i("HeptaBaoPreview", event);
++    }
++    private String stateBits() {
++        return "p" + (pending != null ? "1" : "0") + "l" + (login != null ? "1" : "0")
++            + "h" + (handoff != null ? "1" : "0");
++    }
++    private static String trimLevel(int level) {
++        if (level == TRIM_MEMORY_RUNNING_MODERATE) return "running_moderate";
++        if (level == TRIM_MEMORY_RUNNING_LOW) return "running_low";
++        if (level == TRIM_MEMORY_RUNNING_CRITICAL) return "running_critical";
++        if (level == TRIM_MEMORY_UI_HIDDEN) return "ui_hidden";
++        if (level == TRIM_MEMORY_BACKGROUND) return "background";
++        if (level == TRIM_MEMORY_MODERATE) return "moderate";
++        if (level == TRIM_MEMORY_COMPLETE) return "complete";
++        return "other";
+     }
+ }

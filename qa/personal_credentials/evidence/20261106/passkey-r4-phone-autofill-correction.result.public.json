@@ -1,0 +1,23 @@
+{
+  "after_sha256": {
+    "autofill_service": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+    "credential_service": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe",
+    "credential_service_primary": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe"
+  },
+  "autofill_matches_original": true,
+  "before_sha256": {
+    "autofill_service": "8c2f5be9a25e52146575a2c6acfc4c3ff7096f38918f612b0f5c03499a89c0c0",
+    "credential_service": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe",
+    "credential_service_primary": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe"
+  },
+  "credential_services_unchanged": true,
+  "intent_sha256": "f2379e2c67f88e95713bde0d0c9fe8c4bb267bd5a8d60d5ebd2656bcf4080e0e",
+  "journal_sha256": "aa677b7b375fc487d84fed7d7570fc68516559ae9c3e8d5669880705374574a3",
+  "ok": true,
+  "original_authorization_unchanged": true,
+  "original_failed_observation_preserved": true,
+  "provenance_sha256": "c078a27fd760598d291e55775c4aece81cca580a43fc277edcb32bca2916b049",
+  "schema": 1,
+  "scope": "restore_original_autofill_only",
+  "snapshot_sha256": "94f7bd98721c98cb247d6b77c89461770c8b455f65d9e714ac8bdbd996a5e524"
+}

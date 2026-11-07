@@ -1,0 +1,22 @@
+{
+  "capsule_sha256": "c91ce0e4a7f465ff3db1748905413cfc9c5ca3b736124fcc890a4872bf50ec62",
+  "ciphertext_sha256": "bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917",
+  "created_unix_ns": 1793956052816291136,
+  "ok": true,
+  "peer_public_key_sha256": "8cfb95be3707303b5f2a9bfc2ddc090d75c97b2a5960cc6dbfbfc59a331efe53",
+  "plaintext_credentials_returned": false,
+  "prepare_receipt_sha256": "ab16e81f85823b75bea71a4648b701be6072b41ee6096926c13ded5282a814d3",
+  "prepare_script_sha256": "01d18f09db37a06876f02b193bb5a961bebdbfa203893ff58d2fbd8b3a7c995f",
+  "prior_r4_seed_reused": false,
+  "producer_binary_path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final/heptabao-vault",
+  "producer_binary_sha256": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+  "producer_build_receipt_path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/receipt.final.json",
+  "producer_build_receipt_sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+  "producer_source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+  "producer_source_tree": "5f685c1aaf647f016afed0555a6710cd4a76c317",
+  "producer_toolchain": "rustc 1.98.0",
+  "qa_enrollment_not_product_pairing": true,
+  "schema": 1,
+  "scope": "new_r5_synthetic_seed_fixed_producer",
+  "vault_id": "GAUCEkJXBim6YJXO3Gg9kg"
+}

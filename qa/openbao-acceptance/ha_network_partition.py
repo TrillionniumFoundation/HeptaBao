@@ -399,6 +399,7 @@ def main() -> int:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
             report["fixture_mount_setup"] = cluster.fixture_mount_setup
+            report["snapshot_downloads"] = cluster.snapshot_downloads
             report["health_observations"] = cluster.health_observations
             try:
                 cluster.close()

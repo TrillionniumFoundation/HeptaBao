@@ -12,6 +12,7 @@ import os
 import platform
 from pathlib import Path
 import owned_process
+import signal
 import subprocess
 import tarfile
 import tempfile
@@ -194,6 +195,34 @@ def stop_oracle(oracle):
         lambda: owned_process.stop(process, action="TERM", timeout=5, expected_codes=(0,)),
         lambda: log.close() if log is not None and not log.closed else None,
     ])
+
+
+def crash_oracle_for_restart(oracle):
+    """Kill and reap this running original for an explicit crash-recovery case.
+
+    Normal shutdown still requires exit zero. An already exited child is not
+    admitted as an intentional crash, and no exit other than this SIGKILL is
+    accepted. Clear the handle only after the original wait and log close.
+    """
+    process = oracle.get("process")
+    if process is None or process.poll() is not None:
+        raise BaoError("official_oracle_crash_requires_running_original")
+    log = oracle.get("log")
+
+    def kill_and_wait():
+        observed = owned_process.stop(
+            process, action="KILL", timeout=5, expected_codes=(-signal.SIGKILL,)
+        )
+        # An active Owner records unexpected codes instead of raising here.
+        # A recovery scenario must reject that outcome before any restart.
+        if observed != -signal.SIGKILL:
+            raise BaoError("official_oracle_crash_wrong_exit")
+
+    owned_process.close_all([
+        kill_and_wait,
+        lambda: log.close() if log is not None and not log.closed else None,
+    ])
+    oracle["process"] = None
 
 
 def restart_oracle(oracle):

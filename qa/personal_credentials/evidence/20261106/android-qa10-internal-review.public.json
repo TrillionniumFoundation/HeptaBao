@@ -1,0 +1,104 @@
+{
+  "adb_calls": 0,
+  "android_runtime_tested": false,
+  "artifacts": {
+    "host.stderr.original.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "host.stdout.original.json": {
+      "bytes": 1211,
+      "sha256": "1bb9967df9f1813eb4ab3530fd707f81b3f6261029fe2e2da2640e0b8f74376a"
+    },
+    "reproduce.py": {
+      "bytes": 3223,
+      "sha256": "48cd01b259a5392b1e8a185462fd50808686fed379f271e285cbed75a8782e59"
+    }
+  },
+  "blocking_finding": {
+    "counterexample_sha256": "5487d40b2def7dbf2c1eb68c67d84245fbe8abc66a058a71edb4718719ba1e65",
+    "description": "A sole two-space client-origin ResumedActivity line satisfies the current regex and is accepted as resumed evidence. Suggested indentation is not a trusted server boundary.",
+    "device_exploit_claimed": false,
+    "id": "QA10_AMS_CLIENT_PROVENANCE",
+    "observed_available": true,
+    "status": "reproduced_on_host"
+  },
+  "external_review": false,
+  "host_existing_tests": {
+    "expected": 44,
+    "external_calls_attempted": 0,
+    "failed": 0,
+    "passed": 44,
+    "scope": "synthetic text and host stubs only"
+  },
+  "limits": [
+    "Internal team review is not independent external security review.",
+    "Host fixtures are not OEM WindowManager output.",
+    "QA10 remains HOLD despite its existing 44 passing tests.",
+    "No conclusion about r7 original root cause.",
+    "Top-resumed output formatting remains an OEM qualification requirement."
+  ],
+  "official_source_observations": [
+    {
+      "blob": "ce8dd66c10114d0cc73754e7c38ef9aede5277cb",
+      "fact": "-p sets dumpClient=true; default is false; top-resumed dispatches to ActivityTaskManager.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/am/ActivityManagerService.java"
+    },
+    {
+      "blob": "29c14c6f84f88acb3a21ef3f897d86f46a7f786e",
+      "fact": "Client dump passes innerPrefix as an application argument and transfers client bytes without enforcing a TransferPipe buffer prefix at that call site.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/wm/ActivityRecord.java"
+    },
+    {
+      "blob": "afa7ea136c77bd3ece38a79142e0ddd3a48dda5f",
+      "fact": "top-resumed dumps only the current server ActivityRecord; no client dump is invoked in that branch. This is not a package filter.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/wm/ActivityTaskManagerService.java"
+    },
+    {
+      "blob": "cca73c574951e3a25ba25f5bc920db89b72334a8",
+      "fact": "Server dump emits windows=mChildren, allowing the verified parent Window identity to bind the top Activity record.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/wm/WindowToken.java"
+    },
+    {
+      "blob": "3161c3c498cfd1d27238b4cea4c10bedf48d4b0d",
+      "fact": "Upstream nonfullscreen Autofill uses APPLICATION_ABOVE_SUB_PANEL; fullscreen uses SYSTEM_DIALOG.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/view/autofill/AutofillPopupWindow.java"
+    }
+  ],
+  "other_review_checks": {
+    "new_popup_path_requires_system_uid_package_type_parent_activity_token_task_display_visibility_and_final_focus": true,
+    "one_second_menu_sample_limit_preserved": true,
+    "one_touch_behavior_preserved": true,
+    "original_12_case_inventory_and_calls_unchanged": true,
+    "raw_wms_ams_client_output_not_in_public_report": true,
+    "ui_wait_authentication_restore_journal_functions_unchanged": true
+  },
+  "product_or_driver_files_changed": false,
+  "production_qualified": false,
+  "qa9_baseline_sha256": "4d20ac12535e592da591b5c63cf7971ef2443c6b219f36e250aac2074fd3ce1e",
+  "remediation_direction": {
+    "admission": "only after verified synthetic popup and parent chain, with final focus recheck",
+    "implemented_or_device_verified_by_reviewer": false,
+    "package_filtered": false,
+    "query": [
+      "dumpsys",
+      "activity",
+      "top-resumed"
+    ],
+    "required_binding": [
+      "fixed TOP-RESUMED header",
+      "generic unique fields before expected-value comparison",
+      "same fixture package/process/component and user zero",
+      "RESUMED with delayedResume=false and finishing=false",
+      "server windows list includes exact previously verified parent Window identity"
+    ],
+    "source": "server_current_single_activity"
+  },
+  "reviewed_source_sha256": {
+    "android_live.py": "8fc8ddff71ef534fc95d7c5fae1fcb707e7ee0c687a234212aab68fdbd5905f2",
+    "android_popup_guard_tests.py": "62be4f817e7d4ad45922040a4b37178146a81702caa5ed644abd400a5249da5f"
+  },
+  "reviewer_authored_product_code": false,
+  "schema": 1,
+  "scope": "independent_internal_source_and_host_review_only"
+}

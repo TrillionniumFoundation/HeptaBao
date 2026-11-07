@@ -1,0 +1,6 @@
+{"phase": "launch_bound", "run": "r7", "qa_sha256": "4d20ac12535e592da591b5c63cf7971ef2443c6b219f36e250aac2074fd3ce1e", "binding_sha256": "f92efc883e3a4b90a5c79c8d399cb6e69d8fac3ec3e1b8535d141cb795d0224a"}
+{"case": "rust_ciphertext_import", "state": "running"}
+{"case": "rust_ciphertext_import", "passed": true}
+{"case": "locked_fill_refused", "state": "running"}
+{"checks_passed": 1, "error": "autofill_menu_context_changed", "ok": false, "report": "/home/alex/heptabao-android-autofill-20261106-r1/run-r7/report.json", "report_sha256": "be859adb806b91a57f8cf206e5880e5b995e596641b3caca8a321bd29b2af251", "restoration": "restored_original"}
+{"phase": "execution_finished", "run": "r7", "exit_code": 1, "inputs_unchanged": true, "execution_sha256": "0132fac2a321fc23a12d70852a69bda79f23f146e5e90194e37fba4c53e6ab49"}

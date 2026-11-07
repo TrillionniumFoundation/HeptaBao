@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.personal-credentials.headed-driver.v1",
+  "synthetic_only": true,
+  "display_server": "Xvfb",
+  "window_manager": "openbox",
+  "real_headed_chromium": true,
+  "physical_monitor_claimed": false,
+  "owned_processes": [
+    {
+      "name": "openbox",
+      "pid": 2391330,
+      "returncode": 0,
+      "reaped": true
+    },
+    {
+      "name": "Xvfb",
+      "pid": 2391329,
+      "returncode": 0,
+      "reaped": true
+    }
+  ],
+  "bin_sha256": {
+    "Xvfb": "4adf27968d6f78f329f88beb71cbd3d181fa2018850a95ae3716afae2ae236c9",
+    "openbox": "3e20f93a61d47fbb5c2e4ec863226fc77517a5ec809e58f61c58bb20a904af8c"
+  },
+  "browser_exit_code": 1,
+  "browser_report_sha256": "6fd57756916b063a36cb9f37d7cbbd1f1941ab53cd919767d885c1e195230237",
+  "browser_summary": {
+    "status": "failed",
+    "passed": 6,
+    "observed": 6,
+    "expected_count": 26,
+    "failed_case": "browser_operation_failed",
+    "error_type": "TimeoutError",
+    "failure_browser_state": [
+      {
+        "tabId": 306032302,
+        "url": "https://login.example.test:39089/",
+        "active": true,
+        "window": {
+          "alwaysOnTop": false,
+          "focused": false,
+          "height": 851,
+          "id": 306032301,
+          "incognito": false,
+          "left": 0,
+          "state": "normal",
+          "top": 10,
+          "type": "normal",
+          "width": 1288
+        }
+      }
+    ],
+    "failure_popup_status": [
+      "\u8bf7\u6c42\u88ab\u62d2\u7edd\u6216\u5bc6\u7801\u5e93\u5df2\u9501\u5b9a\u3002\u8bf7\u68c0\u67e5\u9875\u9762\u548c\u672c\u5730\u914d\u7f6e\u3002"
+    ],
+    "failure_document_state": {
+      "visibility": "visible",
+      "focused": true,
+      "url": "https://login.example.test:39089/"
+    }
+  },
+  "status": "failed"
+}

@@ -1,0 +1,18 @@
+The Slice field serialization in provider/java/org/heptabao/passkey/preview/Entries.java
+is adapted from AndroidX Credentials 1.6.0 CreateEntry.kt, CredentialEntry.kt and
+PublicKeyCredentialEntry.kt, Copyright The Android Open Source Project,
+licensed under the Apache License, Version 2.0.
+
+Official source artifact:
+https://dl.google.com/dl/android/maven2/androidx/credentials/credentials/1.6.0/credentials-1.6.0-sources.jar
+SHA-256: 8a7c14ff4fef351ea737072c74d8e837954bbb1082b55113ef44364d469ea1d7
+
+No AndroidX runtime is bundled. The preview invokes Android API 34 platform
+CredentialManager and CredentialProviderService directly. Compatibility of
+these Slice fields must be checked on each qualified device/OS combination.
+
+Bouncy Castle bcprov-jdk15to18 1.86 supplies Argon2id and is bundled by the
+explicit build script. The script preserves its license text in the APK.
+Official artifact:
+https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15to18/1.86/bcprov-jdk15to18-1.86.jar
+SHA-256: fc50334d4d87b4272e72fa95ca748ead05bdef02ef760a5b13f64ffee317cd81

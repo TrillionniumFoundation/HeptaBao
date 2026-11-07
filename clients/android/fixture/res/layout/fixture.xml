@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:padding="24dp" android:layout_width="match_parent" android:layout_height="match_parent">
+  <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="HeptaBao synthetic native login" android:textSize="22sp" />
+  <EditText android:id="@+id/login_username" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Synthetic username" android:contentDescription="Synthetic username" android:autofillHints="username" android:importantForAutofill="yes" android:inputType="text" android:saveEnabled="false" />
+  <EditText android:id="@+id/login_password" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Synthetic password" android:contentDescription="Synthetic password" android:autofillHints="password" android:importantForAutofill="yes" android:inputType="textPassword" android:saveEnabled="false" />
+  <Button android:id="@+id/request_fill" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Request Autofill" />
+  <Button android:id="@+id/check_login" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Verify synthetic login" />
+  <Button android:id="@+id/clear_fields" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Clear fields" />
+  <Button android:id="@+id/import_ciphertext" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Import synthetic encrypted vault" />
+  <Button android:id="@+id/webview_mode" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="WebView unsupported fixture" />
+  <TextView android:id="@+id/result" android:layout_width="match_parent" android:layout_height="wrap_content" android:contentDescription="Fixture verification" android:text="Verification 0: Empty fields" />
+</LinearLayout>

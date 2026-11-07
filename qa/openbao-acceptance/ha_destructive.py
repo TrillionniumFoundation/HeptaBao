@@ -23,6 +23,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import zlib
 
 
 class FixtureError(RuntimeError):
@@ -32,6 +33,8 @@ class FixtureError(RuntimeError):
 MISBOUND_BOOTSTRAP_ERROR = (
     "heptabao-server: HA bootstrap admission marker binding is invalid"
 )
+SNAPSHOT_WIRE_LIMIT = 32 * 1024 * 1024
+SNAPSHOT_EXPANDED_LIMIT = 64 * 1024 * 1024
 
 
 def exact_startup_rejection(returncode: int | None, log_delta: bytes,
@@ -146,6 +149,96 @@ class Node:
                 raise FixtureError("non_object_response")
             return int(response.status), parsed
 
+    def download_snapshot(self, *, token: str, timeout: float) -> dict[str, object]:
+        """Validate one bounded native gzip download; never parse it as JSON.
+
+        This checks transport and gzip framing only. It does not authenticate
+        archive contents or qualify restore. A failed or ambiguous GET is not
+        retried: snapshot creation is itself a server-side operation.
+        """
+        request = urllib.request.Request(
+            f"https://127.0.0.1:{self.http_port}/v1/sys/storage/raft/snapshot",
+            headers={"Accept": "application/gzip", "X-Vault-Token": token},
+            method="GET")
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(),
+                                             urllib.request.HTTPSHandler(context=self.context))
+        try:
+            response = opener.open(request, timeout=timeout)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            if response.status != 200:
+                raise FixtureError("snapshot_download_http_status")
+            if (response.headers.get_all("Content-Type") != ["application/gzip"]
+                    or response.headers.get_all("Transfer-Encoding")
+                    or response.headers.get_all("Content-Encoding")):
+                raise FixtureError("snapshot_download_framing")
+            lengths = response.headers.get_all("Content-Length")
+            if (not lengths or len(lengths) != 1 or not 1 <= len(lengths[0]) <= 8
+                    or any(c not in "0123456789" for c in lengths[0])
+                    or lengths[0].startswith("0")):
+                raise FixtureError("snapshot_download_length")
+            length = int(lengths[0])
+            if not 0 < length <= SNAPSHOT_WIRE_LIMIT:
+                raise FixtureError("snapshot_download_wire_bound")
+            raw = response.read(SNAPSHOT_WIRE_LIMIT + 1)
+            if len(raw) != length:
+                raise FixtureError("snapshot_download_length_mismatch")
+        decoder = zlib.decompressobj(31)
+        try:
+            # max_length bounds allocation even for a highly compressed input.
+            expanded = len(decoder.decompress(raw, SNAPSHOT_EXPANDED_LIMIT + 1))
+        except zlib.error as error:
+            raise FixtureError("snapshot_download_invalid_gzip") from error
+        if expanded > SNAPSHOT_EXPANDED_LIMIT:
+            raise FixtureError("snapshot_download_expanded_bound")
+        if (expanded == 0 or not decoder.eof or decoder.unused_data
+                or decoder.unconsumed_tail):
+            raise FixtureError("snapshot_download_incomplete_or_trailing_gzip")
+        return {"http_status": 200, "content_type": "application/gzip",
+                "archive_bytes": len(raw), "archive_sha256": hashlib.sha256(raw).hexdigest(),
+                "expanded_bytes": expanded, "gzip_framing_verified": True,
+                "archive_authenticity_verified": False, "restore_verified": False}
+
+    def snapshot_after_compaction(self, *, token: str, timeout: float) -> dict[str, object]:
+        """Request Raft maintenance explicitly before the separate backup GET.
+
+        HTTP native export does not run the legacy JSON snapshot trigger. All
+        three requests share the caller's original budget; none is replayed.
+        A successful maintenance response is not proof that log purge finished.
+        """
+        deadline = time.monotonic() + timeout
+
+        def remaining() -> float:
+            value = deadline - time.monotonic()
+            if value <= 0:
+                raise FixtureError("snapshot_operation_deadline")
+            return value
+
+        status, body = self.call("GET", "sys/storage/raft/snapshot-status",
+                                 token=token, timeout=remaining())
+        data = body.get("data") if isinstance(body, dict) else None
+        if (status != 200 or not isinstance(data, dict)
+                or type(data.get("applied_index")) is not int
+                or not 0 < data["applied_index"] < 2 ** 64):
+            raise FixtureError("snapshot_pre_compaction_frontier_unavailable")
+        applied_index = data["applied_index"]
+        status, body = self.call("POST", "sys/storage/raft/compact", {},
+                                 token=token, timeout=remaining())
+        data = body.get("data") if isinstance(body, dict) else None
+        fields = ("generation", "retained_requests", "journal_bytes_before", "journal_bytes_after")
+        if (status != 200 or not isinstance(data, dict)
+                or any(type(data.get(key)) is not int or not 0 <= data[key] < 2 ** 64
+                       for key in fields)
+                or data["journal_bytes_after"] > data["journal_bytes_before"]):
+            raise FixtureError("snapshot_compaction_not_acknowledged")
+        compaction = {key: data[key] for key in fields}
+        snapshot = self.download_snapshot(token=token, timeout=remaining())
+        remaining()
+        return {**snapshot, "raft_compaction": {
+            "http_status": 200, "target_applied_index": applied_index,
+            **compaction, "purge_completion_verified": False}}
+
     def start(self, ha: bool = True, *, wait: bool = True) -> None:
         if self.process is not None:
             raise FixtureError("node_already_running")
@@ -207,14 +300,20 @@ class Node:
             if len(delta) > 64 * 1024 or not exact_startup_rejection(
                     returncode, delta, expected_line):
                 raise FixtureError("unexpected_startup_rejection")
-        finally:
-            self.stop()
+        except BaseException as error:
+            # Reap the owned child while retaining the actual rejection or
+            # timeout failure if cleanup also reports an unexpected exit.
+            owned_process.abort(error, [self.stop])
+        else:
+            # The exact diagnostic and exit 1 have already been observed.
+            # This child exited itself; cleanup must not require SIGKILL.
+            self.stop(expected_codes=(1,))
 
-    def stop(self) -> None:
+    def stop(self, *, expected_codes: tuple[int, ...] = (-9,)) -> None:
         process, log = self.process, self.log
         try:
             owned_process.close_all([
-                lambda: owned_process.stop(process, action="KILL", timeout=10, expected_codes=(-9,)),
+                lambda: owned_process.stop(process, action="KILL", timeout=10, expected_codes=expected_codes),
                 lambda: log.close() if log is not None and not log.closed else None,
             ])
         finally:
@@ -232,6 +331,7 @@ class Cluster:
         self.nodes: list[Node] = []
         self.scenarios: list[str] = []
         self.fixture_mount_setup: list[dict] = []
+        self.snapshot_downloads: list[dict[str, object]] = []
         self.root_token = ""
         self.unseal_key = ""
         self.cluster_id = ""
@@ -449,7 +549,8 @@ class Cluster:
         standby.stop()
         for index in range(8):
             self.write(leader, f"snapshot-probe-{index}", secrets.token_hex(12))
-        self.check("leader_snapshot_trigger", leader.call("GET", "sys/storage/raft/snapshot", token=self.root_token, timeout=15)[0] == 200)
+        self.snapshot_downloads.append(leader.snapshot_after_compaction(token=self.root_token, timeout=15))
+        self.check("leader_snapshot_trigger", True)
         snapshot_value = secrets.token_hex(16)
         self.write(leader, "after-snapshot", snapshot_value)
         self.restart(standby)
@@ -516,6 +617,7 @@ def main() -> int:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
             report["fixture_mount_setup"] = cluster.fixture_mount_setup
+            report["snapshot_downloads"] = cluster.snapshot_downloads
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):

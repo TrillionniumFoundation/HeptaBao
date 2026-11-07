@@ -39,6 +39,12 @@ modules:
   documentation_standard: V3
   source: crates/heptabao-compatibility/src/lib.rs
   guide: docs/modules/heptabao-compatibility.md
+- crate: heptabao-credential-broker
+  domain: synthetic exact-operation grants, loopback API execution and Git SSHSIG
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-credential-broker/src/lib.rs
+  guide: docs/modules/heptabao-credential-broker.md
 - crate: heptabao-darwin-vnode-events
   domain: owned macOS vnode event boundary for filesystem mutation observations
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -183,6 +189,18 @@ modules:
   documentation_standard: V2
   source: crates/heptabao-p0-server/src/lib.rs
   guide: docs/modules/heptabao-p0-server.md
+- crate: heptabao-personal-edge
+  domain: Chromium native messaging and opaque ciphertext compare-and-swap storage
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-personal-edge/src/lib.rs
+  guide: docs/modules/heptabao-personal-edge.md
+- crate: heptabao-personal-vault
+  domain: offline encrypted personal entries and explicit backup/recovery
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-personal-vault/src/lib.rs
+  guide: docs/modules/heptabao-personal-vault.md
 - crate: heptabao-platform-bakeoff
   domain: dependency bakeoff contracts
   state: INHERITED_IMPLEMENTED

@@ -1,0 +1,13 @@
+{
+  "last_report_sha256": "bcbed79b08d191e1cf93525538c4d4d88057a651add81a6766df8b7475767d1c",
+  "original_setting_sha256": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+  "owned_packages_absent": {
+    "org.heptabao.personal.preview": true,
+    "org.heptabao.synthetic.decoy": true,
+    "org.heptabao.synthetic.fixture": true
+  },
+  "phone_released_for_next_task": true,
+  "schema": 1,
+  "scope": "read_only_restore_confirmation",
+  "setting_matches_original": true
+}

@@ -12,6 +12,7 @@ import hmac
 import importlib.util
 import json
 import os
+import owned_process
 import secrets
 from pathlib import Path
 import shutil
@@ -25,7 +26,10 @@ import time
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparison
 from online_evidence import source_identity
-from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
+from official_openbao_launcher import (
+    BINARY_SHA256, start_oracle, stop_oracle, restart_oracle,
+    crash_oracle_for_restart,
+)
 
 RADIUS_MATERIAL = secrets.token_urlsafe(32).encode("ascii")
 USERNAME = b"alice"
@@ -571,9 +575,7 @@ def main():
                 raise ScenarioFailure("radius_renewal.candidate_restart_unseal")
 
         def restart_reference():
-            oracle["process"].kill()
-            oracle["process"].wait(timeout=5)
-            stop_oracle(oracle)
+            crash_oracle_for_restart(oracle)
             restart_oracle(oracle)
 
         for side, client, responder, restart in [("candidate", candidate, candidate_udp, restart_candidate),
@@ -597,14 +599,25 @@ def main():
         result["status"] = "failed"
         result["safe_failure_code"] = "unexpected_" + type(error).__name__
     finally:
+        cleanup = []
         if instance is not None:
-            instance.stop()
+            cleanup.append(instance.stop)
         if oracle is not None:
-            stop_oracle(oracle)
-            shutil.rmtree(oracle["root"])
-        for responder in responders:
-            responder.close()
-        shutil.rmtree(private_root)
+            cleanup.extend([
+                lambda: stop_oracle(oracle),
+                lambda: shutil.rmtree(oracle["root"]),
+            ])
+        cleanup.extend(responder.close for responder in responders)
+        cleanup.append(lambda: shutil.rmtree(private_root))
+        try:
+            owned_process.close_all(cleanup)
+        except Exception as error:
+            # Keep the original business observations and still close every
+            # resource. A cleanup failure is a failed run, never a pass.
+            result["status_before_cleanup"] = result.get("status")
+            result["cleanup_failure_class"] = type(error).__name__
+            result["status"] = "failed"
+            result.setdefault("safe_failure_code", "resource_cleanup_failed")
         result["candidate_binary_unchanged"] = file_hash(binary) == result["candidate_binary_sha256"]
         result["source_identity"] = source_before
         result["source_and_binary_unchanged"] = source_before == source_identity(ROOT, binary)

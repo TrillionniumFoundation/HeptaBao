@@ -1,0 +1,89 @@
+{
+  "artifact_build_executed": false,
+  "broker_manifest_sha256": "8afe41129e0e3734442f8864e01ccaa0742cc011485afc984e92dc7b3688b60b",
+  "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+  "checks": [
+    {
+      "affected_packages_in_selected_normal_closure": [],
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} [{f}]",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "-p",
+        "heptabao-filesystem-guard"
+      ],
+      "exit_code": 0,
+      "package_version_pairs": 50,
+      "ssh_key_lines": [
+        "ssh-key v0.6.7 [alloc,ed25519,rand_core,std]"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4d43cdaf716c5e545ca04a650d6f67999304c764663d3772e020c1cb4b09c18f",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "affected_packages_in_selected_normal_closure": [],
+      "argv": [
+        "cargo",
+        "+1.98.0",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "aarch64-apple-darwin",
+        "--edges",
+        "normal",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} [{f}]",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "-p",
+        "heptabao-filesystem-guard"
+      ],
+      "exit_code": 0,
+      "package_version_pairs": 49,
+      "ssh_key_lines": [
+        "ssh-key v0.6.7 [alloc,ed25519,rand_core,std]"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "12e0944211019e1fb6bbb2dbda6d0b7ee5eb65583dfe6760edb5804ad3ea2974",
+      "target": "aarch64-apple-darwin"
+    }
+  ],
+  "full_workspace_clean_claim": false,
+  "independent_security_review": false,
+  "production_qualified": false,
+  "schema": "heptabao.broker-feature-closure-check.v1",
+  "scope": "selected_normal_dependencies_only",
+  "server_manifest_sha256": "6464e7c760943ef3e973e1416ea91f469780261e28afb3c0a5267d62d7d06642",
+  "server_ssh_key_declared_features": [
+    "std",
+    "crypto"
+  ],
+  "server_still_declares_broad_ssh_crypto": true,
+  "source_commit": "c447536ae0343731d84c18291d2dcd712b3bea08",
+  "source_tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2",
+  "target_platforms_executed": false
+}

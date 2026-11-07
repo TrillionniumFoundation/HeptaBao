@@ -1,0 +1,24 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.heptabao.passkey.preview">
+    <uses-sdk android:minSdkVersion="34" android:targetSdkVersion="34"/>
+    <queries>
+        <package android:name="org.heptabao.passkey.fixture"/>
+        <provider android:authorities="com.android.externalstorage.documents"/>
+        <provider android:authorities="com.android.providers.downloads.documents"/>
+    </queries>
+    <application android:label="HeptaBao Passkey Preview" android:icon="@drawable/key_icon"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar" android:allowBackup="false"
+        android:fullBackupContent="false" android:dataExtractionRules="@xml/data_extraction_rules"
+        android:usesCleartextTraffic="false" android:debuggable="false">
+        <activity android:name=".HomeActivity" android:exported="true" android:excludeFromRecents="true">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+        </activity>
+        <activity android:name=".OperationActivity" android:exported="false" android:excludeFromRecents="true"
+            android:taskAffinity=""/>
+        <service android:name=".ProviderService" android:exported="true" android:enabled="true"
+            android:label="HeptaBao synthetic passkeys" android:icon="@drawable/key_icon"
+            android:permission="android.permission.BIND_CREDENTIAL_PROVIDER_SERVICE">
+            <intent-filter><action android:name="android.service.credentials.CredentialProviderService"/></intent-filter>
+            <meta-data android:name="android.credentials.provider" android:resource="@xml/provider"/>
+        </service>
+    </application>
+</manifest>

@@ -262,6 +262,21 @@ fn consistency270_configuration_rejects_unbounded_or_unknown_fallbacks() {
     assert!(consistency::Settings::checked(Some("25ms"), Some("fail"), false).is_ok());
 }
 
+#[test]
+fn consistency270_audited_wire_generic_429_does_not_acquire_a_retry_hint()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut bytes = Vec::new();
+    write_response(
+        &mut bytes,
+        Response::error(429, "synthetic quota refusal"),
+        false,
+    )?;
+    let text = String::from_utf8(bytes)?;
+    assert!(text.starts_with("HTTP/1.1 429 "));
+    assert!(!text.contains("Retry-After:"));
+    Ok(())
+}
+
 // Model headers and body arriving in separate TLS records. Rejecting an index
 // must not leave a bounded ordinary body unread when the response socket closes.
 struct SplitRejectedBody {

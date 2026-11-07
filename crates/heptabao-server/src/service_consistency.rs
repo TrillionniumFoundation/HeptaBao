@@ -84,6 +84,190 @@ impl Service {
 mod tests {
     use super::*;
     use crate::http::consistency;
+
+    struct AuditedWireFixture {
+        service: Arc<Mutex<Service>>,
+        _cluster: crate::ha::snapshot_test_support::Cluster,
+        _root: crate::service::tests::Root,
+        index: String,
+    }
+
+    impl AuditedWireFixture {
+        fn new() -> Result<Self, Box<dyn std::error::Error>> {
+            use crate::service::tests::{Root, bootstrap};
+            let root = Root::new();
+            let mut service = root.service()?;
+            bootstrap(&mut service)?;
+            let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+            let cluster = crate::ha::snapshot_test_support::Cluster::new(
+                &root.path.join("raft"),
+                &cluster_id,
+            )?;
+            let leader = cluster.processes[0]
+                .lock()
+                .map_err(|_| "raft")?
+                .leader_status()?;
+            assert_eq!(leader.leader, Some(leader.local_id));
+            let initial_commit = leader.committed_index.ok_or("initial membership commit")?;
+            assert_eq!(leader.applied_index, Some(initial_commit));
+            let setup_deadline = Instant::now() + Duration::from_secs(15);
+            loop {
+                let seen = cluster.processes[1]
+                    .lock()
+                    .map_err(|_| "raft")?
+                    .leader_status()?;
+                if at_initial_standby_frontier(&seen, leader.local_id, initial_commit) {
+                    break;
+                }
+                if Instant::now() >= setup_deadline {
+                    return Err("initial standby membership did not converge".into());
+                }
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            service.ha = Some(Arc::clone(&cluster.processes[1]));
+            let index = consistency::IndexValue::for_raft(&cluster_id, u64::MAX)
+                .wire()
+                .ok_or("index")?
+                .as_str()
+                .to_owned();
+            Ok(Self {
+                service: Arc::new(Mutex::new(service)),
+                _cluster: cluster,
+                _root: root,
+                index,
+            })
+        }
+
+        fn request(&self, method: &str) -> Result<String, Box<dyn std::error::Error>> {
+            let body = if method == "POST" {
+                r#"{"data":{"synthetic":"must-not-be-written"}}"#
+            } else {
+                ""
+            };
+            let request = format!(
+                "{method} /v1/secret/data/consistency-rejected HTTP/1.1\r\nHost: localhost\r\nX-Vault-Index: {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n{body}",
+                self.index,
+                body.len(),
+            );
+            let wire = crate::http::consistency_rejection_wire_fixture(
+                &self.service,
+                &mut request.as_bytes(),
+                &[47; 16],
+                Instant::now() + Duration::from_secs(1),
+            )?;
+            Ok(String::from_utf8(wire)?)
+        }
+    }
+
+    #[test]
+    fn consistency270_audited_wire_retains_retry_hint_and_no_application_effect()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let fixture = AuditedWireFixture::new()?;
+        for method in ["GET", "HEAD", "POST"] {
+            let (audit_before, state_before, generation_before) = {
+                let service = fixture.service.lock().map_err(|_| "service")?;
+                (
+                    service.audit_sequence,
+                    service.current_state_digest().map_err(|_| "state digest")?,
+                    service.durable.as_ref().ok_or("durable")?.generation(),
+                )
+            };
+            let wire = fixture.request(method)?;
+            let (headers, body) = wire.split_once("\r\n\r\n").ok_or("HTTP separator")?;
+            assert!(headers.starts_with("HTTP/1.1 429 "), "{method} status");
+            assert_eq!(
+                headers.matches("Retry-After:").count(),
+                1,
+                "{method} hint count"
+            );
+            assert!(headers.lines().any(|line| line == "Retry-After: 1"));
+            assert!(!headers.contains("X-Vault-Index:"));
+            if method == "HEAD" {
+                assert!(body.is_empty());
+            } else {
+                assert_eq!(serde_json::from_str::<Value>(body)?, json!({"errors": []}));
+            }
+            let service = fixture.service.lock().map_err(|_| "service")?;
+            assert_eq!(service.audit_sequence, audit_before + 2);
+            assert_eq!(
+                service.current_state_digest().map_err(|_| "state digest")?,
+                state_before
+            );
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation_before
+            );
+        }
+        Ok(())
+    }
+
+    fn failed_audit_wire_case(response_audit: bool) -> Result<(), Box<dyn std::error::Error>> {
+        let fixture = AuditedWireFixture::new()?;
+        let audit_before = {
+            let mut service = fixture.service.lock().map_err(|_| "service")?;
+            let before = service.audit_sequence;
+            let request_record_bytes = if response_audit {
+                // Reserve exactly the real signed request record. Its timestamp
+                // value is not compared; only the encoded decimal width matters.
+                let event = AuditUnsigned {
+                    schema: 2,
+                    sequence: before + 1,
+                    previous: STANDARD.encode(service.audit_previous),
+                    time: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
+                    kind: "wire-rejection".into(),
+                    path_digest: service.wire_rejection_fingerprint(
+                        &[47; 16],
+                        WireRejection::ParseRejected,
+                        429,
+                    ),
+                    status: None,
+                };
+                let payload = serde_json::to_vec(&event)?;
+                let mac = STANDARD.encode(hmac::sign(&service.audit_key, &payload).as_ref());
+                serde_json::to_vec(&AuditRecord { event, mac })?.len() as u64 + 1
+            } else {
+                0
+            };
+            service.audit_capacity = service.audit.metadata()?.len() + request_record_bytes;
+            before
+        };
+        let wire = fixture.request("POST")?;
+        let (headers, body) = wire.split_once("\r\n\r\n").ok_or("HTTP separator")?;
+        assert!(headers.starts_with("HTTP/1.1 503 "));
+        assert!(!headers.contains("Retry-After:"));
+        assert!(!headers.contains("X-Vault-Index:"));
+        let message = if response_audit {
+            "wire rejection response audit unavailable"
+        } else {
+            "wire rejection audit unavailable"
+        };
+        assert_eq!(
+            serde_json::from_str::<Value>(body)?,
+            json!({"errors": [message]})
+        );
+        let service = fixture.service.lock().map_err(|_| "service")?;
+        assert_eq!(
+            service.audit_sequence,
+            audit_before + u64::from(response_audit)
+        );
+        if response_audit {
+            assert!(service.recovery_required);
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn consistency270_audited_wire_request_audit_failure_keeps_503_without_hint()
+    -> Result<(), Box<dyn std::error::Error>> {
+        failed_audit_wire_case(false)
+    }
+
+    #[test]
+    fn consistency270_audited_wire_response_audit_failure_keeps_503_without_hint()
+    -> Result<(), Box<dyn std::error::Error>> {
+        failed_audit_wire_case(true)
+    }
+
     fn at_initial_standby_frontier(
         seen: &heptabao_raft_runtime::LocalLeaderObservation,
         leader: u64,

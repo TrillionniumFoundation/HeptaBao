@@ -1,0 +1,22 @@
+{
+  "actual_sdk_build_qualified_by_this_review": false,
+  "diagnostic_source_sha256": "3b239db3169ae22e76ee56a2bf0e901398dd30c0c8245d94300cd9a1152fc234",
+  "independent_external_security_review": false,
+  "independent_root_execution": {
+    "adb_calls": 0,
+    "compiler": "Java 21 with Android type stubs",
+    "exact_source_line_bindings_checked": 41,
+    "exit_code": 0,
+    "host_checks_passed": 14,
+    "report_sha256": "789c432dd7bc8103655688b3670a70e51e7e51ce59bbab3c6dbf065d6634f14c",
+    "same_author_suite": true,
+    "stdout_sha256": "57e11690ab505db147acc1bcc697a776e197f2df0aecc5f3d1016231154e8f56"
+  },
+  "phone_qualified": false,
+  "production_qualified": false,
+  "reviewed_boundary": "Only the outer ciphertext-stage exception boundary changes. Existing Failure objects, ENOENT handling, visible-publication unknown outcomes, resource close order and all file/SAF/lock checks remain unchanged. New codes come only from static enums and exact frozen source-line bindings. Unknown first app frame or line does not fall through to a caller.",
+  "reviewed_source_admitted_for_sdk_build": true,
+  "schema": 1,
+  "scope": "internal_review_of_fixed_stage_diagnostic_candidate",
+  "vault_source_sha256": "2b21338fe7086ac034f04441b521ddf11ed9d071e0c6aa4e64b34cd0dd7fcbc9"
+}

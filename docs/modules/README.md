@@ -1,8 +1,8 @@
 # HeptaBao module documentation index
 
-Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Twelve packages appear in the normal and target-specific server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
+Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Twelve packages appear in the normal and target-specific server runtime dependency closure; the other forty packages include separately executed credential/vault/browser clients, models, contracts, prototypes and tools.
 
-Current status: `V2.1 / 49 WORKSPACE PACKAGES`
+Current status: `V2.1 / 52 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
@@ -26,6 +26,7 @@ Run `python scripts/validate_module_closure.py` to check the closed set.
 | `heptabao-cli-contracts` | secret-safe CLI invocation contracts | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-cli-contracts.md` |
 | `heptabao-client-contracts` | client retry classification | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-client-contracts.md` |
 | `heptabao-compatibility` | differential compatibility admission | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-compatibility.md` |
+| `heptabao-credential-broker` | synthetic operation grants, loopback API execution and Git SSHSIG | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-credential-broker.md` |
 | `heptabao-darwin-vnode-events` | owned macOS vnode event boundary | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-darwin-vnode-events.md` |
 | `heptabao-domain` | shared bounded domain values | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-domain.md` |
 | `heptabao-durable-core` | durable commit contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-durable-core.md` |
@@ -51,6 +52,8 @@ Run `python scripts/validate_module_closure.py` to check the closed set.
 | `heptabao-operator-api` | operator outcome classification | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-operator-api.md` |
 | `heptabao-oracle-observer` | clean-room observation contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-oracle-observer.md` |
 | `heptabao-p0-server` | loopback memory server | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-p0-server.md` |
+| `heptabao-personal-edge` | Chromium native messaging and opaque ciphertext CAS | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-personal-edge.md` |
+| `heptabao-personal-vault` | offline encrypted personal entries and explicit backup/recovery | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-personal-vault.md` |
 | `heptabao-platform-bakeoff` | dependency bakeoff contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-platform-bakeoff.md` |
 | `heptabao-platform-contracts` | runtime TLS and Raft provider contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-platform-contracts.md` |
 | `heptabao-plugin-contracts` | plugin lifecycle and outcome contracts | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-plugin-contracts.md` |

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import http.server
 import json
+import owned_process
 from pathlib import Path
 import re
 import secrets
@@ -24,7 +25,10 @@ import time
 from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparison
 from online_evidence import admit_output, source_identity
-from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
+from official_openbao_launcher import (
+    BINARY_SHA256, start_oracle, stop_oracle, restart_oracle,
+    crash_oracle_for_restart,
+)
 from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
 from remote_jwks_live import Instance, signing_key, serialization
 from jwt_login_claims_live import signed_assertion
@@ -358,9 +362,7 @@ def main():
                 raise ScenarioFailure("kubernetes_renewal.candidate_restart_unseal")
 
         def restart_reference():
-            oracle["process"].kill()
-            oracle["process"].wait(timeout=5)
-            stop_oracle(oracle)
+            crash_oracle_for_restart(oracle)
             restart_oracle(oracle)
 
         for side, client, issuer, restart in [("candidate", candidate, issuers[0], restart_candidate),
@@ -381,14 +383,25 @@ def main():
     except Exception as error:
         result["status"], result["safe_failure_code"] = "failed", "unexpected_" + type(error).__name__
     finally:
+        cleanup = []
         if instance is not None:
-            instance.stop()
+            cleanup.append(instance.stop)
         if oracle is not None:
-            stop_oracle(oracle)
-            shutil.rmtree(oracle["root"])
-        for issuer in issuers:
-            issuer.close()
-        shutil.rmtree(root)
+            cleanup.extend([
+                lambda: stop_oracle(oracle),
+                lambda: shutil.rmtree(oracle["root"]),
+            ])
+        cleanup.extend(issuer.close for issuer in issuers)
+        cleanup.append(lambda: shutil.rmtree(root))
+        try:
+            owned_process.close_all(cleanup)
+        except Exception as error:
+            # Publish the original business outcome as well as the cleanup
+            # failure, after attempting every remaining owned cleanup.
+            result["status_before_cleanup"] = result.get("status")
+            result["cleanup_failure_class"] = type(error).__name__
+            result["status"] = "failed"
+            result.setdefault("safe_failure_code", "resource_cleanup_failed")
         after = source_identity(ROOT, binary)
         for name in ("source_commit", "source_tree", "source_dirty", "source_content_sha256"):
             result["harness_" + name] = before[name]

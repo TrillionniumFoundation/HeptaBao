@@ -1,0 +1,25 @@
+{
+  "bridge_apk_path": "/system/priv-app/CredentialManager/CredentialManager.apk",
+  "bridge_apk_sha256": "05d91aee432f7e1db6bcaaec3721f94752e40a4895519c17cc81c51b850f75a9",
+  "bridge_component": "com.android.credentialmanager/com.android.credentialmanager.autofill.CredentialAutofillService",
+  "current_matches_observed_after": true,
+  "current_settings_sha256": {
+    "autofill_service": "8c2f5be9a25e52146575a2c6acfc4c3ff7096f38918f612b0f5c03499a89c0c0",
+    "credential_service": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe",
+    "credential_service_primary": "5c64efa774fdb8b483e5c3dc0df1c4d57d9d9a79224b249bc9753a17d0b74dfe"
+  },
+  "first_postcheck_job": "1a1affca8d4-fc05-6d45",
+  "first_snapshot_job": "1a1affd6bc9-fc05-6d4c",
+  "flags": [
+    "flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]",
+    "pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]"
+  ],
+  "initial_selection_job": "1a1affca8d4-fc05-6d45",
+  "ok": true,
+  "schema": 1,
+  "scope": "read_only_system_bridge_provenance",
+  "service_query": "com.android.credentialmanager/.autofill.CredentialAutofillService",
+  "snapshot_path": "/home/alex/HeptaBaoPasskey-20261106-r1/live-r4/settings-unexpected.private.json",
+  "snapshot_sha256": "94f7bd98721c98cb247d6b77c89461770c8b455f65d9e714ac8bdbd996a5e524",
+  "system_flag": true
+}

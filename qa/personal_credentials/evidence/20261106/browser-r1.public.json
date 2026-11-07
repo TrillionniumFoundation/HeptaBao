@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "synthetic_only": true,
+  "real_browser": true,
+  "fixture_tls_trust_test": false,
+  "production_qualified": false,
+  "checks": [
+    {
+      "name": "vault_init",
+      "passed": true
+    },
+    {
+      "name": "vault_put",
+      "passed": true
+    },
+    {
+      "name": "actual_action_popup",
+      "passed": false
+    }
+  ],
+  "extension_id": "lbpeabhhkkligobepjagnahjimfdcnol",
+  "browser_version": "157.0.8103.38",
+  "status": "failed",
+  "error_type": "RuntimeError",
+  "failed_case": "actual_action_popup",
+  "passed": 2,
+  "observed": 3,
+  "binary_sha256": {
+    "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+    "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d"
+  },
+  "source_manifest_sha256": "a70a50e4a1b614cbbb9e5feacd83bb0ee13c66e7b80da4690435d118765e5153"
+}

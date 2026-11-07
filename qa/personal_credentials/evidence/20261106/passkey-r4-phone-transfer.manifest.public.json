@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "scope": "passkey_r4_public_evidence_transfer",
+  "method": "HeptaRuntime binary_read explicit public whitelist only",
+  "adb_or_ui_performed": false,
+  "private_journals_read": false,
+  "private_logs_read": false,
+  "master_files_read": false,
+  "worker_metadata_read": false,
+  "original_bytes_preserved": true,
+  "files": [
+    {
+      "name": "phone-r4-public-evidence.tar.gz",
+      "sha256": "77dc53f7d944b94e14692817a8c974de658311d27b279325adafbd83a4d98bc5",
+      "host": "pocket4",
+      "path": "/home/alex/HeptaBaoPasskey-20261106-r1/phone-r4-public-evidence.tar.gz",
+      "bytes": 8131,
+      "remote_version": "66306:35309656:8131:1793956827916882858:1793956827916882858",
+      "sha256_verified": true,
+      "local_path": "/workspace/scratch/848006513f75/passkey_r4_public_packet/phone-r4-public-evidence.tar.gz"
+    },
+    {
+      "name": "passkey_live.final-r4.py",
+      "sha256": "67d7ab8dd282cec1e7f94796352b6c40bd2f14339acd1d2866dc75c3bd0f6000",
+      "host": "pocket4",
+      "path": "/home/alex/HeptaBaoPasskey-20261106-r1/passkey_live.final-r4.py",
+      "bytes": 27781,
+      "remote_version": "66306:35309534:27781:1793953045915062314:1793953045915741950",
+      "sha256_verified": true,
+      "local_path": "/workspace/scratch/848006513f75/passkey_r4_public_packet/passkey_live.final-r4.py"
+    },
+    {
+      "name": "passkey_live.primary-r4.py",
+      "sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d",
+      "host": "pocket4",
+      "path": "/home/alex/HeptaBaoPasskey-20261106-r1/passkey_live.primary-r4.py",
+      "bytes": 30448,
+      "remote_version": "66306:35309536:30448:1793953823230836508:1793953823350664893",
+      "sha256_verified": true,
+      "local_path": "/workspace/scratch/848006513f75/passkey_r4_public_packet/passkey_live.primary-r4.py"
+    },
+    {
+      "name": "passkey_live.localized-r4.py",
+      "sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a",
+      "host": "pocket4",
+      "path": "/home/alex/HeptaBaoPasskey-20261106-r1/passkey_live.localized-r4.py",
+      "bytes": 30991,
+      "remote_version": "66306:35309400:30991:1793954676044508240:1793954676044628418",
+      "sha256_verified": true,
+      "local_path": "/workspace/scratch/848006513f75/passkey_r4_public_packet/passkey_live.localized-r4.py"
+    },
+    {
+      "name": "passkey_restore_autofill_bridge.final-r4.py",
+      "sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d",
+      "host": "pocket4",
+      "path": "/home/alex/HeptaBaoPasskey-20261106-r1/passkey_restore_autofill_bridge.final-r4.py",
+      "bytes": 7289,
+      "remote_version": "66306:35308172:7289:1793954432923799421:1793954432924993793",
+      "sha256_verified": true,
+      "local_path": "/workspace/scratch/848006513f75/passkey_r4_public_packet/passkey_restore_autofill_bridge.final-r4.py"
+    },
+    {
+      "name": "passkey_phone_profile.r4.py",
+      "sha256": "6a26dbf2c4394becba2eb0c21192853afb5f176ede68f2e4dbf9d00ed9b1a7b0",
+      "host": "pocket4",
+      "path": "/home/alex/HeptaBaoPasskey-20261106-r1/passkey_phone_profile.r4.py",
+      "bytes": 6303,
+      "remote_version": "66306:35309532:6303:1793952946811219509:1793952946812029283",
+      "sha256_verified": true,
+      "local_path": "/workspace/scratch/848006513f75/passkey_r4_public_packet/passkey_phone_profile.r4.py"
+    }
+  ],
+  "inline_wrapper_original_argv_archived": false,
+  "limitation": "The five QA script originals are preserved. The complete original inline wrapper argv for all 24 runtime jobs has not been archived; phase success and script availability do not prove every original invocation.",
+  "author_reported_revision_ranges": [
+    {
+      "attempts": "1-8",
+      "script": "passkey_live.final-r4.py"
+    },
+    {
+      "attempts": "9-16",
+      "script": "passkey_live.primary-r4.py",
+      "exception": {
+        "attempt": 15,
+        "script": "passkey_restore_autofill_bridge.final-r4.py"
+      }
+    },
+    {
+      "attempts": "17-24",
+      "script": "passkey_live.localized-r4.py"
+    }
+  ],
+  "revision_range_evidence": "Provided by personal_vault agent; exact driver/source hashes are independently compared only where present in the original public attempt index."
+}

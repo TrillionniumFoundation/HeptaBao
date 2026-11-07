@@ -1,0 +1,64 @@
+diff --git a/qa/personal_credentials/passkey_phone_profile_r6.py b/qa/personal_credentials/passkey_phone_profile_r7.py
+index 2fb30ff..a7fc0ed 100644
+--- a/qa/personal_credentials/passkey_phone_profile_r6.py
++++ b/qa/personal_credentials/passkey_phone_profile_r7.py
+@@ -1,15 +1,25 @@
+ #!/usr/bin/env python3
+-"""Frozen r6 diagnostic phone acceptance declaration; no execution or qualification implied."""
++"""Frozen r7 storage-fix phone acceptance declaration; no execution or qualification implied."""
+ import json
+ 
+ PROFILE = {'schema': 1,
+- 'profile': 'android16-native-passkey-r6-diagnostic-synthetic',
+- 'runtime_source_bundle_sha256': '90d66751273ce8266014245a2f03bd5accb7e4794cc70128c91be3bfd88bf2a9',
+- 'build_receipt_sha256': 'cb70894ea9ea6f6216b015f978dab7be304ec9910969dca9a46eee2beee84190',
++ 'profile': 'android16-native-passkey-r7-synthetic',
++ 'runtime_source_bundle_sha256': 'e2e79c7e35a507c11ba2a52a67c5a4882528d2447fa1c489977a64ad992f91b6',
++ 'build_receipt_sha256': 'e12bd68de3c606e03ce22a7a688ebb90c7b6ec4a951d15e5be233339e698042b',
++ 'host_result_sha256': '173a3777dd928acb8b3a18f1e7bb81e995c74fd501c48cd35cdb702a2ade7c57',
++ 'dex_line_check_sha256': '1aa1b59249be927fa41c68d21015b9503903485d74fa1fd52f0497ba41479abc',
++ 'run_paths': {'operator_host': 'pocket4',
++               'operator_base': '/home/alex/HeptaBaoPasskey-20261106-r7',
++               'driver_root': '/home/alex/HeptaBaoPasskey-20261106-r7/live-r7',
++               'artifacts': '/home/alex/HeptaBaoPasskey-20261106-r7/artifacts',
++               'rp_root': '/home/alex/HeptaBaoPasskey-20261106-r7/rp-r7',
++               'device_documents': '/sdcard/Download/HeptaBao-Passkey-QA-20261106-r7',
++               'build_source': '/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r7-final/source',
++               'build_output': '/Users/qianqi/HeptaBaoPasskey-20261106-r1/build-r7'},
+  'device_sha256': '41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1',
+  'android_api': 36,
+  'rp_id': 'passkeys.heptabao.test',
+- 'fixture_certificate_sha256': '15c1d0cd8508fab307e9c2cf74ddc988bcc77c22623f9d963d0eca15b4b18353',
++ 'fixture_certificate_sha256': 'cb684e07720b0233e9aa87bc74e87cf40956476770dabc2a426bee30dcba6135',
+  'rp_source_sha256': '386de84bb5335f21998a000b4a1267eaa17fadbde1e1753d5df1c30325709a63',
+  'credential_entry': 'synthetic_only_adb_input_text_argv',
+  'production_qualified': False,
+@@ -134,13 +144,16 @@ PROFILE = {'schema': 1,
+                   'passkey portability.',
+                   'Latest-backup recovery is supported only when its counter has not been superseded at the '
+                   'strict RP.',
+-                  'Do not pool r4, the failed first r5 build, r5b or r6 artifacts into one result.',
++                  'Do not pool r4, the failed first r5 build, r5b, r6 or different r7 artifacts into one result.',
+                   'Preserve setup failures separately from all eighteen case states; phase success does not '
+                   'pass a case.',
+                   'M07 passes only after settings, exact package absence, owned reverse mapping and tracked '
+                   'synthetic documents are all checked.'],
+- 'provider_apk_sha256': '0240a545d9ed9518201cfda945a26c5f7dc8742534d1ab21d5e84f23bf9c4ac7',
+- 'fixture_apk_sha256': 'f1ffccd48b5e9597e8d3a6985097bedbc56cac69be27ad22f93794fe0ac62bc2',
++ 'provider_apk_sha256': 'b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459',
++ 'fixture_apk_sha256': '88a5731f2b24ca6a07a8748422e344443cab7c43db3c96e4907aa3137ff8de8f',
++ 'wrong_certificate_fixture_apk_sha256': '2c1de4d6b9eaa1685e9aee35386d16c51f5dd0cd6971dd5385253b90387b9e1e',
++ 'wrong_certificate_sha256': '50e5b45daa0f5d87fbe796e9dc9bd1b5f67d2ed686e308b283a7e9be2830124d',
++ 'wrong_package_fixture_apk_sha256': '2fe1613b38ab332d8020c235cba657256af155495b7a368046f0b32f00cda8fb',
+  'seed_ciphertext_sha256': 'bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917',
+  'seed_producer_binary_sha256': 'b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358',
+  'seed_producer_source_commit': 'a1b6ff4506f52082a0893b7167fafb4ff95610be',
+@@ -168,7 +181,7 @@ PROFILE = {'schema': 1,
+                         'restoration': 'compare the complete three-value tuple against the durable original '
+                                        'and allowed recovery chain; preserve unknown changes before package '
+                                        'or reverse cleanup'},
+- 'reset_admission': {'helper_repository_path': 'qa/personal_credentials/passkey_reset_provider.py',
++ 'reset_admission': {'helper_repository_path': 'qa/personal_credentials/passkey_reset_provider_r7.py',
+                      'helper_binding': 'freeze and independently review a separate helper SHA and '
+                                        'case-specific checkpoint before any reset; the author cannot '
+                                        'self-grant that review',
