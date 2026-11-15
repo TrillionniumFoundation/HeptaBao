@@ -23,7 +23,15 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Local execution artifacts; committed qualification evidence must live under
-# the explicit planning/evidence or qualifications trees.
+# Local execution artifacts. Reviewed originals already tracked in qa/*/evidence,
+# docs/evidence, planning/evidence, or qualifications remain versioned.
 *.log
 *.tmp
+
+# Historical executable captures belong to their original Git commit or an
+# evidence artifact, not the current source tree. See docs/REPOSITORY_LAYOUT.md.
+# Current QA programs live beside evidence/ and remain tracked normally.
+/qa/openbao-acceptance/evidence/**/*.py
+/qa/openbao-acceptance/evidence/**/*.js
+/qa/openbao-acceptance/evidence/**/*.mjs
+/qa/openbao-acceptance/evidence/**/*.rs

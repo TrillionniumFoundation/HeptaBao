@@ -2,7 +2,7 @@ name: evidence-semantics
 
 on:
   push:
-    branches: ["main", "codex/plan-v1.1-h00-execution"]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:

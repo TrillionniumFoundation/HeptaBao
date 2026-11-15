@@ -1,0 +1,10 @@
+# Receipts and archived source samples document past runs; they are not product
+# implementations. Keep active QA, clients, and bridge code in language counts.
+qa/openbao-acceptance/evidence/** linguist-documentation
+qa/personal_credentials/evidence/** linguist-documentation
+docs/evidence/** linguist-documentation
+planning/evidence/** linguist-documentation
+
+# Required, attributed third-party source dependencies.
+vendor/** linguist-vendored
+third_party/** linguist-vendored

@@ -11,6 +11,11 @@ change on main. Engineering navigation, package counts, exact state-format
 links and every mandatory validation command remain here and are checked by the
 repository validators. An empty homepage grants no exception to those checks.
 
+[Repository layout and language ownership](REPOSITORY_LAYOUT.md) explains the
+Rust runtime, required clients and QA languages, and the retrieval of retired
+historical source snapshots. The [2026-11-15 cleanup audit](audits/2026-11-15-repository-cleanup/README.md)
+records the exact deletion set, immutable recovery commit, and verification.
+
 ## Managed-secret Agent renderer
 
 `docs/modules/heptabao-agent-renderer.md` describes the separate bounded template

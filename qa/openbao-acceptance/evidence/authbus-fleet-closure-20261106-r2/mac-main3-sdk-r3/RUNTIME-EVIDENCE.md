@@ -38,7 +38,7 @@ For both cases, request 2 used a different observed socket object; `req.reusedSo
 
 These are source-derived values, not direct reads of a lexical local variable. The experiment did not record timestamps for each callback invocation; the final counters alone do not establish which handshake invoked the first callback. It does establish that a per-request callback side effect is not equivalent to the validity of that request's actual TLS response. No keep-alive or session-resumption cause is claimed for r3.
 
-The experiment completed in 0.45305991591885686 seconds. Its three original child processes exited zero without signals; all 38 parent descriptors, accepted sockets, peer threads and listeners closed. A successful diagnostic does not qualify the original wire or the failed business campaign. See [its complete original stdout](original-wire-sequence/stdout.original.json), [authority](original-wire-sequence/terminal.original.json), and [the reviewed source](original-wire-sequence/observe_original_wire_sequence_r1.py).
+The experiment completed in 0.45305991591885686 seconds. Its three original child processes exited zero without signals; all 38 parent descriptors, accepted sockets, peer threads and listeners closed. A successful diagnostic does not qualify the original wire or the failed business campaign. See [its complete original stdout](original-wire-sequence/stdout.original.json), [authority](original-wire-sequence/terminal.original.json), and [the reviewed source](https://github.com/TrillionniumFoundation/HeptaBao/blob/6faf7957bb0b9390141a9f3680567ef96295eba6/qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-sdk-r3/original-wire-sequence/observe_original_wire_sequence_r1.py).
 
 ## Archive scope
 

@@ -1,0 +1,826 @@
+{
+  "schema": "heptabao.repository-cleanup-validation.v1",
+  "baseline_commit": "6faf7957bb0b9390141a9f3680567ef96295eba6",
+  "scope": "local source-tree cleanup regression and archival integrity",
+  "environment": {
+    "python": "3.12.14",
+    "cryptography": "50.0.0",
+    "PyYAML": "6.0.2",
+    "jsonschema": "4.23.0",
+    "rust": "1.98.0",
+    "os": "Linux"
+  },
+  "suite_runs": [
+    {
+      "check": "acceptance-before-pinned",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/openbao-acceptance/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "source": "baseline",
+      "exit_code": 1,
+      "seconds": 54.91,
+      "unittest_summary": [
+        "Ran 1768 tests in 53.744s",
+        "FAILED (failures=1, errors=2, skipped=3)"
+      ],
+      "errors": [
+        "ERROR: test_long_private_directory_uses_same_fd_binding_as_real_proxy (test_client_consistency_contract.UnixFixtureDirectoryTests.test_long_private_directory_uses_same_fd_binding_as_real_proxy)",
+        "ERROR: test_actual_local_system_elf_loader_observation_is_not_product_execution (test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution)",
+        "FAIL: test_actual_native_argv_and_wrong_identity_never_signal_another_child (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_actual_native_argv_and_wrong_identity_never_signal_another_child)"
+      ]
+    },
+    {
+      "check": "acceptance-after-pinned",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/openbao-acceptance/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "source": "cleanup",
+      "exit_code": 1,
+      "seconds": 55.499,
+      "unittest_summary": [
+        "Ran 1768 tests in 53.710s",
+        "FAILED (errors=2, skipped=3)"
+      ],
+      "errors": [
+        "ERROR: test_long_private_directory_uses_same_fd_binding_as_real_proxy (test_client_consistency_contract.UnixFixtureDirectoryTests.test_long_private_directory_uses_same_fd_binding_as_real_proxy)",
+        "ERROR: test_actual_local_system_elf_loader_observation_is_not_product_execution (test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution)"
+      ]
+    },
+    {
+      "check": "repository-after",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/repository",
+        "-p",
+        "test_*.py"
+      ],
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 51.945,
+      "unittest_summary": [
+        "Ran 304 tests in 51.595s",
+        "OK"
+      ],
+      "errors": []
+    },
+    {
+      "check": "security-after",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/security",
+        "-p",
+        "test_*.py"
+      ],
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 1.741,
+      "unittest_summary": [
+        "Ran 80 tests in 1.644s",
+        "OK"
+      ],
+      "errors": []
+    }
+  ],
+  "retained_clients_and_personal_guards": [
+    {
+      "name": "personal-passkey_rp-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.57,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_rp.py",
+        "--self-test",
+        "--crypto-backend",
+        "openssl"
+      ],
+      "public_result": {
+        "passed": 68,
+        "schema": "heptabao.synthetic.passkey-rp-selftest.v1",
+        "scope": "synthetic_protocol_storage_and_http_framing_unit_tests",
+        "total": 68
+      }
+    },
+    {
+      "name": "personal-verify_evidence-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.169,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/verify_evidence.py",
+        "--self-test"
+      ],
+      "public_result": {
+        "checks_passed": 24,
+        "expected_count": 24,
+        "passed": true,
+        "qualification_granted": false,
+        "receipt_results_evaluated": false,
+        "schema": "heptabao.personal-credentials.archive-integrity.v1",
+        "scope": "archive_integrity_only"
+      }
+    },
+    {
+      "name": "personal-verify_evidence",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.065,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/verify_evidence.py"
+      ],
+      "public_result": {
+        "archive_integrity": "passed",
+        "indexed_files": 256,
+        "manifest_sha256": "949a82827b600349bfba11a2ca6521f68892d0e1deb584fd951c07c53071d058",
+        "qualification_granted": false,
+        "receipt_results_evaluated": false,
+        "schema": "heptabao.personal-credentials.archive-integrity.v1",
+        "scope": "archive_integrity_only",
+        "verified_bytes": 28189714
+      }
+    },
+    {
+      "name": "personal-test_synthetic_workflow_paths",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.115,
+      "test_counts": [
+        1
+      ],
+      "summary_lines": [
+        "Ran 1 test in 0.004s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/test_synthetic_workflow_paths.py"
+      ]
+    },
+    {
+      "name": "personal-browser_installer_guard_test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.169,
+      "test_counts": [
+        17
+      ],
+      "summary_lines": [
+        "Ran 17 tests in 0.014s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/browser_installer_guard_test.py"
+      ]
+    },
+    {
+      "name": "personal-browser_live_staging_guard_test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.166,
+      "test_counts": [
+        4
+      ],
+      "summary_lines": [
+        "Ran 4 tests in 0.031s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/browser_live_staging_guard_test.py"
+      ]
+    },
+    {
+      "name": "personal-firefox_staging_guard_test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.166,
+      "test_counts": [
+        7
+      ],
+      "summary_lines": [
+        "Ran 7 tests in 0.008s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/firefox_staging_guard_test.py"
+      ]
+    },
+    {
+      "name": "personal-android_driver_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.165,
+      "test_counts": [
+        8
+      ],
+      "summary_lines": [
+        "Ran 8 tests in 0.002s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_driver_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_diagnostic_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.114,
+      "test_counts": [
+        12
+      ],
+      "summary_lines": [
+        "Ran 12 tests in 0.002s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_diagnostic_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_lifecycle_diagnostic_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.165,
+      "test_counts": [
+        14
+      ],
+      "summary_lines": [
+        "Ran 14 tests in 0.044s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_lifecycle_diagnostic_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_popup_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.165,
+      "test_counts": [
+        46
+      ],
+      "summary_lines": [
+        "Ran 46 tests in 0.015s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_popup_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "python-client",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_seconds": 2.225,
+      "test_counts": [
+        224
+      ],
+      "summary_lines": [
+        "ERROR: test_replaced_renderer_path_cannot_change_admitted_executable (test_managed_templates.TemplateCustodyTests.test_replaced_renderer_path_cannot_change_admitted_executable)",
+        "ERROR: test_actual_bind_failure_preserves_cwd_and_existing_socket (test_proxy_platform.ProxyPlatformTests.test_actual_bind_failure_preserves_cwd_and_existing_socket)",
+        "ERROR: test_directory_replacement_rejects_and_cleans_only_original_socket (test_proxy_platform.ProxyPlatformTests.test_directory_replacement_rejects_and_cleans_only_original_socket)",
+        "FAIL: test_renderer_fifo_rejects_without_waiting_for_writer (test_managed_templates.TemplateCustodyTests.test_renderer_fifo_rejects_without_waiting_for_writer)",
+        "Ran 224 tests in 2.002s",
+        "FAILED (failures=1, errors=3, skipped=4)"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "clients/python/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_return_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.266,
+      "test_counts": [
+        38
+      ],
+      "summary_lines": [
+        "Ran 38 tests in 0.102s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_return_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_cached_popup_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.215,
+      "test_counts": [
+        24
+      ],
+      "summary_lines": [
+        "Ran 24 tests in 0.072s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_cached_popup_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_late_popup_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.215,
+      "test_counts": [
+        16
+      ],
+      "summary_lines": [
+        "Ran 16 tests in 0.036s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_late_popup_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_cancel_observation_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.215,
+      "test_counts": [
+        15
+      ],
+      "summary_lines": [
+        "Ran 15 tests in 0.091s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_cancel_observation_guard_tests.py",
+        "-v"
+      ]
+    },
+    {
+      "name": "personal-android_prebinding_popup_guard_tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.165,
+      "test_counts": [
+        15
+      ],
+      "summary_lines": [
+        "Ran 15 tests in 0.034s",
+        "OK"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/android_prebinding_popup_guard_tests.py"
+      ]
+    },
+    {
+      "name": "personal-passkey_live_guard_test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.268,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_live_guard_test.py"
+      ],
+      "public_result": {
+        "passed": 25,
+        "phone_qualified": false,
+        "schema": 1,
+        "scope": "host_only_driver_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_reset_provider-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.218,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_reset_provider.py",
+        "--self-test",
+        "--driver",
+        "qa/personal_credentials/passkey_live.py"
+      ],
+      "public_result": {
+        "passed": 46,
+        "phone_qualified": false,
+        "schema": 1,
+        "scope": "host_only_reset_helper_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_reset_provider_r7-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.215,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_reset_provider_r7.py",
+        "--self-test",
+        "--driver",
+        "qa/personal_credentials/passkey_live.py"
+      ],
+      "public_result": {
+        "passed": 49,
+        "phone_qualified": false,
+        "schema": 1,
+        "scope": "host_only_reset_helper_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_input_r7-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.165,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_input_r7.py",
+        "--self-test",
+        "--driver",
+        "qa/personal_credentials/passkey_live.py"
+      ],
+      "public_result": {
+        "passed": 20,
+        "phone_qualified": false,
+        "scope": "host_only_actual_input_method_with_ui_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_reset_provider_r8-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.265,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_reset_provider_r8.py",
+        "--self-test",
+        "--driver",
+        "qa/personal_credentials/passkey_live.py"
+      ],
+      "public_result": {
+        "passed": 55,
+        "phone_qualified": false,
+        "schema": 1,
+        "scope": "host_only_reset_helper_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_input_r8-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.215,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_input_r8.py",
+        "--self-test",
+        "--driver",
+        "qa/personal_credentials/passkey_live.py"
+      ],
+      "public_result": {
+        "passed": 20,
+        "phone_qualified": false,
+        "scope": "host_only_actual_input_method_with_ui_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_input_r9-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.215,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_r9/passkey_input_r9.py",
+        "--self-test",
+        "--driver",
+        "qa/personal_credentials/passkey_r9/passkey_live.r9.py"
+      ],
+      "public_result": {
+        "passed": 20,
+        "phone_qualified": false,
+        "scope": "host_only_actual_input_method_with_ui_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_reset_provider_r9-self-test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.316,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_r9/passkey_reset_provider_r9.py",
+        "--self-test",
+        "--driver",
+        "qa/personal_credentials/passkey_r9/passkey_live.r9.py"
+      ],
+      "public_result": {
+        "passed": 55,
+        "phone_qualified": false,
+        "schema": 1,
+        "scope": "host_only_reset_helper_stubs"
+      }
+    },
+    {
+      "name": "personal-passkey_r9_workflow_guard_test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.064,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_r9/passkey_r9_workflow_guard_test.py"
+      ],
+      "public_result": {
+        "passed": 13,
+        "phone_qualified": false,
+        "production_qualified": false,
+        "schema": 1,
+        "scope": "actual_QA_function_host_boundary_controls_only"
+      }
+    },
+    {
+      "name": "personal-passkey_r9_record_guard_test",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 0.064,
+      "test_counts": [],
+      "summary_lines": [],
+      "command": [
+        "python3",
+        "-B",
+        "qa/personal_credentials/passkey_r9/passkey_r9_record_guard_test.py"
+      ],
+      "public_result": {
+        "passed": 14,
+        "phone_qualified": false,
+        "schema": 1,
+        "scope": "actual_runtime_binding_and_dispatch_functions_with_host_doubles"
+      }
+    }
+  ],
+  "client_failure_baseline_comparison": {
+    "commit": "6faf7957bb0b9390141a9f3680567ef96295eba6",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "-v",
+      "test_managed_templates.TemplateCustodyTests.test_renderer_fifo_rejects_without_waiting_for_writer",
+      "test_managed_templates.TemplateCustodyTests.test_replaced_renderer_path_cannot_change_admitted_executable",
+      "test_proxy_platform.ProxyPlatformTests.test_actual_bind_failure_preserves_cwd_and_existing_socket",
+      "test_proxy_platform.ProxyPlatformTests.test_directory_replacement_rejects_and_cleans_only_original_socket"
+    ],
+    "cwd": "clients/python/tests",
+    "pythonpath": "clients/python",
+    "exit_code": 1,
+    "summary_lines": [
+      "ERROR: test_replaced_renderer_path_cannot_change_admitted_executable (test_managed_templates.TemplateCustodyTests.test_replaced_renderer_path_cannot_change_admitted_executable)",
+      "ERROR: test_actual_bind_failure_preserves_cwd_and_existing_socket (test_proxy_platform.ProxyPlatformTests.test_actual_bind_failure_preserves_cwd_and_existing_socket)",
+      "ERROR: test_directory_replacement_rejects_and_cleans_only_original_socket (test_proxy_platform.ProxyPlatformTests.test_directory_replacement_rejects_and_cleans_only_original_socket)",
+      "FAIL: test_renderer_fifo_rejects_without_waiting_for_writer (test_managed_templates.TemplateCustodyTests.test_renderer_fifo_rejects_without_waiting_for_writer)",
+      "Ran 4 tests in 0.002s",
+      "FAILED (failures=1, errors=3)"
+    ],
+    "classification": "Four cleanup-tree failures reproduce on untouched baseline: two renderer platform capability failures, two AF_UNIX PermissionError failures.",
+    "unchanged_files": [
+      {
+        "path": "clients/python/tests/test_managed_templates.py",
+        "sha256": "528c1223a4c979baed1113121f38bdea5277f4f5a50cbac105bf30761d3f7054",
+        "matches_baseline": true
+      },
+      {
+        "path": "clients/python/tests/test_proxy_platform.py",
+        "sha256": "642550b20168e05684cedfd23274cb245416c51d9c3a47bd07710b59da08bcdf",
+        "matches_baseline": true
+      },
+      {
+        "path": "clients/python/heptabao/templates.py",
+        "sha256": "22b6f92666fe52803848a264adc75602fc55da88e0b592ca87161cd631f54299",
+        "matches_baseline": true
+      },
+      {
+        "path": "clients/python/heptabao/proxy.py",
+        "sha256": "cc24f9dec5b7f2a41d94e8d70d6017706d437886f85e032e5b17a86daa9d3b6e",
+        "matches_baseline": true
+      },
+      {
+        "path": "clients/python/heptabao/private_state.py",
+        "sha256": "41e8d13c84f36fc7eff5e555edf0620c817053cfb06c98899074c35cdacf5d7f",
+        "matches_baseline": true
+      }
+    ]
+  },
+  "personal_summary": {
+    "passed_suites": 26,
+    "failed_suites": 0,
+    "unittest_cases": 217,
+    "json_selftest_cases": 409,
+    "archive_files_verified": 256,
+    "archive_bytes_verified": 28189714,
+    "scope": "host-only guards and archive integrity; no physical phone or production qualification"
+  },
+  "runtime_capability_observation": {
+    "os_memfd_create": true,
+    "fcntl_seals": {
+      "F_ADD_SEALS": false,
+      "F_SEAL_WRITE": false,
+      "F_SEAL_SHRINK": false,
+      "F_SEAL_GROW": false,
+      "F_SEAL_SEAL": false
+    }
+  },
+  "independent_recovery_review": {
+    "restored_files": 1302,
+    "restored_bytes": 26931646,
+    "retained_evidence_nonmarkdown_unchanged": 4565,
+    "all_manifest_git_bindings_and_restored_hashes_match": true,
+    "script_sha256": "d722e691cb7a0f8e9f2d549b429848fbb827e81b6c2858865bf32a635cdf4e8f",
+    "manifest_matches_entire_deleted_set": true,
+    "deleted_files": 1302,
+    "deleted_scope": {
+      "qa/openbao-acceptance/evidence": 1301,
+      ".github/workflows/heptabao-official-private-owner-root-exact-head.yml": 1
+    },
+    "source_tree_mismatch_rejected": true,
+    "existing_restore_directory_refused": true,
+    "in_checkout_restore_refused": true,
+    "path_traversal_and_absolute_paths_refused": true,
+    "duplicate_entries_and_wrong_blob_refused": true,
+    "sha_mismatch_rejected_before_directory_creation": true,
+    "historical_code_executed": false,
+    "review_result": "PASS",
+    "retained_evidence_markdown_changes": "Six Markdown documents only replace relative historical source links with immutable 6faf7957 GitHub links; receipt claims and all non-Markdown bytes retained."
+  },
+  "metadata": {
+    "command": "cargo metadata --offline --locked --format-version 1 --no-deps",
+    "exit_code": 0,
+    "before_after_byte_identical": true
+  },
+  "format": {
+    "command": "cargo fmt --all -- --check",
+    "toolchain": "1.98.0",
+    "exit_code": 0
+  },
+  "validators": [
+    {
+      "command": "python3 scripts/validate_repository_identity_v1.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 1.093
+    },
+    {
+      "command": "python3 scripts/validate_repository_v2.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 2.968
+    },
+    {
+      "command": "python3 scripts/validate_current_documentation_semantics.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 2.24
+    },
+    {
+      "command": "python3 scripts/validate_module_closure.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 0.453
+    },
+    {
+      "command": "python3 scripts/validate_openbao_271_release_denominator.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 0.026
+    },
+    {
+      "command": "python3 scripts/validate_delivery_gate_ownership.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 0.069
+    },
+    {
+      "command": "python3 scripts/validate_workflow_trust.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 1.085
+    },
+    {
+      "command": "python3 scripts/validate_provenance_v1.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 0.155
+    },
+    {
+      "command": "python3 scripts/validate_evidence_objects_v1.py",
+      "source": "cleanup",
+      "exit_code": 0,
+      "seconds": 0.157
+    }
+  ],
+  "all_tests_passed": false,
+  "new_failing_cases_observed": false,
+  "native_rust_runtime_suite_rerun": false,
+  "runtime_build_inputs_modified": false,
+  "baseline_only_intermittent_failure": "test_actual_native_argv_and_wrong_identity_never_signal_another_child: ProcessLookupError during short-lived process observation; baseline run failed, cleanup run passed; no source change or fix claimed.",
+  "failure_policy": "Original failures and skips retained. No admission assertion relaxed, no new skip added."
+}

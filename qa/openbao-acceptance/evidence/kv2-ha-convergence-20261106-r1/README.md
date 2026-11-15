@@ -144,7 +144,7 @@ missing, extra selected, ignored or failed cases cannot satisfy a group.
 
 [selection-r4.public.json](rog/controllers/selection-r4.public.json) retains
 the exact names, original 61-case source receipts, original profile and budgets,
-and independent additional groups. [build-test-r4.py](rog/controllers/build-test-r4.py)
+and independent additional groups. [build-test-r4.py](https://github.com/TrillionniumFoundation/HeptaBao/blob/6faf7957bb0b9390141a9f3680567ef96295eba6/qa/openbao-acceptance/evidence/kv2-ha-convergence-20261106-r1/rog/controllers/build-test-r4.py)
 is the exact executed controller. Its functions/classes are unchanged from the
 independently reviewed first controller; only source/tree/patch/bundle/output
 bindings changed for the repaired attempt. These component tests alone do not

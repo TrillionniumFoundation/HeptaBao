@@ -72,7 +72,7 @@ flags remain false.
 - [baseline31-summary.original.json.gz](baseline31-summary.original.json.gz)
   decompresses to the complete 92,097-byte original baseline summary, SHA-256
   `89448bf85f01828b05c4ad5f310502bd116d57ea2bb29b0f368577420b79603d`.
-- [archive.original.py](archive.original.py) and its original stdout/terminal
+- [archive.original.py](https://github.com/TrillionniumFoundation/HeptaBao/blob/6faf7957bb0b9390141a9f3680567ef96295eba6/qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-dr25-authbus-r2/archive.original.py) and its original stdout/terminal
   record the create-only, lossless compression after the actual test completed.
   It performed no service action and opened no private credential file.
 - The source-stage, wrapper, read-only prepare, and actual Mac 34/34 controller

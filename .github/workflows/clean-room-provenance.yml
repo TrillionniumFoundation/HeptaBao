@@ -2,7 +2,7 @@ name: clean-room-provenance
 
 on:
   push:
-    branches: ["main", "codex/plan-v1.1-h00-execution"]
+    branches: ["main"]
     paths:
       - "planning/HEPTABAO_CLEAN_ROOM_ACCESS_POLICY_V1.yaml"
       - "schemas/heptabao_source_provenance_record_v1.schema.json"

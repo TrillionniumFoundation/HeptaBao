@@ -1,0 +1,361 @@
+{
+  "schema": "heptabao.repository-cleanup-summary.v1",
+  "base_commit": "6faf7957bb0b9390141a9f3680567ef96295eba6",
+  "baseline": {
+    "source_commit": "6faf7957bb0b9390141a9f3680567ef96295eba6",
+    "tracked_files": 9115,
+    "tracked_bytes": 171161708,
+    "by_extension": {
+      "(none)": {
+        "files": 12,
+        "bytes": 74418
+      },
+      ".0": {
+        "files": 1,
+        "bytes": 10926
+      },
+      ".bundle": {
+        "files": 3,
+        "bytes": 621677
+      },
+      ".cnf": {
+        "files": 2,
+        "bytes": 580
+      },
+      ".crt": {
+        "files": 5,
+        "bytes": 6197
+      },
+      ".csr": {
+        "files": 2,
+        "bytes": 1055
+      },
+      ".css": {
+        "files": 1,
+        "bytes": 994
+      },
+      ".der": {
+        "files": 3,
+        "bytes": 1818
+      },
+      ".diff": {
+        "files": 122,
+        "bytes": 1430648
+      },
+      ".disabled": {
+        "files": 1,
+        "bytes": 1320
+      },
+      ".go": {
+        "files": 21,
+        "bytes": 160674
+      },
+      ".gz": {
+        "files": 48,
+        "bytes": 24906664
+      },
+      ".h": {
+        "files": 1,
+        "bytes": 2180
+      },
+      ".hex": {
+        "files": 2,
+        "bytes": 317593
+      },
+      ".html": {
+        "files": 1,
+        "bytes": 994
+      },
+      ".input": {
+        "files": 1,
+        "bytes": 17070
+      },
+      ".java": {
+        "files": 29,
+        "bytes": 220364
+      },
+      ".js": {
+        "files": 203,
+        "bytes": 3019060
+      },
+      ".json": {
+        "files": 3907,
+        "bytes": 62477199
+      },
+      ".jsonl": {
+        "files": 13,
+        "bytes": 347467
+      },
+      ".lock": {
+        "files": 4,
+        "bytes": 145595
+      },
+      ".log": {
+        "files": 409,
+        "bytes": 4875971
+      },
+      ".md": {
+        "files": 463,
+        "bytes": 3966823
+      },
+      ".mjs": {
+        "files": 200,
+        "bytes": 2611809
+      },
+      ".mod": {
+        "files": 3,
+        "bytes": 6368
+      },
+      ".ndjson": {
+        "files": 4,
+        "bytes": 461142
+      },
+      ".orig": {
+        "files": 1,
+        "bytes": 1025
+      },
+      ".original": {
+        "files": 48,
+        "bytes": 380610
+      },
+      ".patch": {
+        "files": 13,
+        "bytes": 290080
+      },
+      ".pem": {
+        "files": 2,
+        "bytes": 4195
+      },
+      ".pic": {
+        "files": 2,
+        "bytes": 4459
+      },
+      ".plist": {
+        "files": 4,
+        "bytes": 10989
+      },
+      ".png": {
+        "files": 2,
+        "bytes": 403
+      },
+      ".private": {
+        "files": 6,
+        "bytes": 36847
+      },
+      ".proto": {
+        "files": 2,
+        "bytes": 3768
+      },
+      ".py": {
+        "files": 1885,
+        "bytes": 33723479
+      },
+      ".rs": {
+        "files": 1259,
+        "bytes": 27520563
+      },
+      ".sb": {
+        "files": 4,
+        "bytes": 4932
+      },
+      ".sql": {
+        "files": 10,
+        "bytes": 400062
+      },
+      ".stderr": {
+        "files": 27,
+        "bytes": 59772
+      },
+      ".stdout": {
+        "files": 30,
+        "bytes": 180925
+      },
+      ".sum": {
+        "files": 3,
+        "bytes": 46479
+      },
+      ".svg": {
+        "files": 2,
+        "bytes": 6268
+      },
+      ".toml": {
+        "files": 63,
+        "bytes": 33244
+      },
+      ".txt": {
+        "files": 120,
+        "bytes": 1050088
+      },
+      ".xml": {
+        "files": 14,
+        "bytes": 10087
+      },
+      ".yaml": {
+        "files": 108,
+        "bytes": 1153332
+      },
+      ".yml": {
+        "files": 49,
+        "bytes": 553495
+      }
+    },
+    "by_root": {
+      ".github": {
+        "files": 44,
+        "bytes": 455650
+      },
+      ".gitignore": {
+        "files": 1,
+        "bytes": 429
+      },
+      "Cargo.lock": {
+        "files": 1,
+        "bytes": 102713
+      },
+      "Cargo.toml": {
+        "files": 1,
+        "bytes": 615
+      },
+      "LICENSE-PLANNING.md": {
+        "files": 1,
+        "bytes": 2578
+      },
+      "README.md": {
+        "files": 1,
+        "bytes": 0
+      },
+      "SECURITY.md": {
+        "files": 1,
+        "bytes": 3060
+      },
+      "bootstrap": {
+        "files": 12,
+        "bytes": 281345
+      },
+      "clients": {
+        "files": 90,
+        "bytes": 673392
+      },
+      "crates": {
+        "files": 1311,
+        "bytes": 26338928
+      },
+      "docs": {
+        "files": 686,
+        "bytes": 7712358
+      },
+      "oracle": {
+        "files": 16,
+        "bytes": 402217
+      },
+      "planning": {
+        "files": 118,
+        "bytes": 1744688
+      },
+      "probes": {
+        "files": 27,
+        "bytes": 286891
+      },
+      "qa": {
+        "files": 6421,
+        "bytes": 129292432
+      },
+      "qualifications": {
+        "files": 21,
+        "bytes": 49745
+      },
+      "requirements-plan.txt": {
+        "files": 1,
+        "bytes": 139
+      },
+      "rust-toolchain.toml": {
+        "files": 1,
+        "bytes": 86
+      },
+      "schemas": {
+        "files": 52,
+        "bytes": 278971
+      },
+      "scripts": {
+        "files": 94,
+        "bytes": 1366587
+      },
+      "specs": {
+        "files": 4,
+        "bytes": 31651
+      },
+      "tests": {
+        "files": 108,
+        "bytes": 780672
+      },
+      "third_party": {
+        "files": 22,
+        "bytes": 622705
+      },
+      "tools": {
+        "files": 48,
+        "bytes": 433383
+      },
+      "vendor": {
+        "files": 32,
+        "bytes": 289920
+      },
+      "verification": {
+        "files": 1,
+        "bytes": 10553
+      }
+    }
+  },
+  "retired_by_extension": {
+    ".yml": {
+      "files": 1,
+      "bytes": 1656
+    },
+    ".py": {
+      "files": 944,
+      "bytes": 21558691
+    },
+    ".rs": {
+      "files": 11,
+      "bytes": 524885
+    },
+    ".js": {
+      "files": 196,
+      "bytes": 2944635
+    },
+    ".mjs": {
+      "files": 150,
+      "bytes": 1901779
+    }
+  },
+  "retired_files": 1302,
+  "retired_bytes": 26931646,
+  "historical_evidence_nonmarkdown_files_preserved": 4565,
+  "workspace_first_party_packages_preserved": 53,
+  "workflows_before": 42,
+  "workflows_after": 41,
+  "live_runtime_paths_modified": [],
+  "all_active_duplicate_groups_retained": [
+    {
+      "paths": [
+        "qa/personal_credentials/passkey_live.py",
+        "qa/personal_credentials/passkey_r9/passkey_live.r9.py"
+      ],
+      "size": 40150
+    },
+    {
+      "paths": [
+        "crates/heptabao-plugin-host/fixtures/sdk_v270/go.sum",
+        "tools/openbao-sdk-bridge/go.sum"
+      ],
+      "size": 18737
+    },
+    {
+      "paths": [
+        "clients/android-passkey/LICENSE-APACHE-2.0.txt",
+        "vendor/qrcode-0.14.1/LICENSE-APACHE.txt"
+      ],
+      "size": 11358
+    }
+  ]
+}

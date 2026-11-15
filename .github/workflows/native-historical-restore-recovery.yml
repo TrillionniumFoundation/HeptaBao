@@ -1,20 +1,6 @@
 name: Native historical restore recovery candidate
 
 on:
-  push:
-    branches:
-      - 'agent/heptabao-continuation-20261018-*'
-      - 'agent/heptabao-followthrough-*'
-    paths:
-      - '.github/workflows/native-historical-restore-recovery.yml'
-      - 'crates/**'
-      - 'Cargo.toml'
-      - 'Cargo.lock'
-      - 'rust-toolchain.toml'
-      - 'vendor/**'
-      - 'third_party/**'
-      - 'tests/fixtures/**'
-      - 'qa/openbao-acceptance/fixtures/**'
   workflow_dispatch:
 
 permissions:
