@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """Local guard fixtures only; no HeptaBao, compiler, provider or remote execution."""
-import copy
 import hashlib
 import importlib.util
-import json
 import os
 from pathlib import Path
 import subprocess

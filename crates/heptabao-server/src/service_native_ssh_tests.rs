@@ -15,17 +15,7 @@ thread_local! { static AFTER_AUDIT: RefCell<Option<AfterAudit>> = RefCell::new(N
 
 pub(super) fn after_actual_ssh_audit(service: &mut Service, response: &mut Response) {
     let hook = AFTER_AUDIT.with(|slot| slot.borrow_mut().take());
-    if let Some(hook) = hook {
-        assert!(service.native_failure_notice.is_none());
-        let binding = service.native_request_binding.take();
-        assert!(binding.is_some());
-        assert!(service.pending_native_auth_delivery.is_none());
-        hook(service, response);
-        assert!(service.native_request_binding.is_none());
-        assert!(service.native_failure_notice.is_none());
-        assert!(service.pending_native_auth_delivery.is_none());
-        service.native_request_binding = binding;
-    }
+    crate::service::tests::run_after_actual_native_audit(service, response, hook);
 }
 struct HookGuard;
 impl Drop for HookGuard {
@@ -321,14 +311,7 @@ impl Fixture {
             .complete_native_auth_delivery(true, response, "ssh-original-audited-delivery")
     }
     fn idle(&mut self, now: u64) -> TestResult<bool> {
-        self.now = now;
-        let started = Instant::now();
-        let clock = RequestClock::anchored(Duration::from_secs(now), started)?;
-        let _deadline =
-            crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
-        Ok(self
-            .service
-            .maintain_native_transit_with_clock_for_test(now, clock)?)
+        crate::service::tests::idle_native_fixture(&mut self.service, &mut self.now, now)
     }
 }
 fn private_bytes_absent(path: &std::path::Path, secret: &[u8]) -> TestResult {

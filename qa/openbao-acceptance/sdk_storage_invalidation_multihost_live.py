@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Exact finite SDK Storage invalidation over three owned physical LAN nodes."""
 from pathlib import Path
-import argparse, concurrent.futures, hashlib, json, os, secrets, shlex, ssl, subprocess, sys, time, traceback
+import argparse, concurrent.futures, hashlib, json, os, secrets, shlex, ssl, subprocess, time, traceback
 import ha_multihost_live as ha
 
 REQUIRED = frozenset({

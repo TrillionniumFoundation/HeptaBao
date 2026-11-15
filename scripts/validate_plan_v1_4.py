@@ -288,9 +288,6 @@ def validate_rust_sources(root: Path) -> None:
             "pub fn create_new",
             "pub fn reopen_existing",
             "pub fn adopt_legacy",
-            "root.open_file(leaf_name, FileAccess::CreateNew)",
-            "root.rename(&temporary_name, target_name)",
-            "sync_all",
             "CommitOutcomeUnknown",
             "GenerationConflict",
             "GenerationAlreadyExists",
@@ -299,6 +296,8 @@ def validate_rust_sources(root: Path) -> None:
         "single-node store",
     )
 
+    # Descriptor creation, replacement and sync now belong to the shared
+    # filesystem guard. Validate its actual binding and ordered implementation.
     descriptor_errors = descriptor_provider_errors(root, "store")
     require(not descriptor_errors, "; ".join(descriptor_errors))
 

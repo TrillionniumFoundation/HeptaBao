@@ -1,7 +1,6 @@
 """Hostile regressions for the exact OpenBao compatibility denominator."""
 from __future__ import annotations
 
-import ast
 import copy
 import importlib.util
 import json
@@ -36,16 +35,6 @@ def load_corpus() -> dict:
     return value
 
 
-def acceptance_case_ids() -> set[str]:
-    module = ast.parse(ACCEPTANCE_PATH.read_text(encoding="utf-8"))
-    assignment = next(
-        node
-        for node in module.body
-        if isinstance(node, ast.Assign)
-        and any(isinstance(target, ast.Name) and target.id == "CASES" for target in node.targets)
-    )
-    cases = ast.literal_eval(assignment.value)
-    return {f"{group}.{case}" for group, names in cases.items() for case in names}
 
 
 class CompatibilityCorpusV23Tests(unittest.TestCase):

@@ -14,7 +14,6 @@ from pathlib import Path
 import shutil
 import socket
 import owned_process
-import subprocess
 import tempfile
 import time
 

@@ -1,5 +1,4 @@
 """Trace-integrity checks; native TLS comparison is a separate mandatory lane."""
-import copy
 import json
 from pathlib import Path
 import sys

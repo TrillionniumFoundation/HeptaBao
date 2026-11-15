@@ -16,7 +16,6 @@ import { TrustedRefreshAdmissionRegistry } from "./authbus_refresh_registry_cand
 import { TrustedBaoControlSource, TrustedBaoCoordinator } from "./authbus_trusted_control_candidate.mjs";
 const self = fileURLToPath(import.meta.url);
 process.umask(0o077);
-const fail = code => { throw Object.assign(new Error(code), { diagnosticCode: code }); };
 const safe = error => ({ code: error.diagnosticCode ?? error.code ?? "test_error" });
 function durable(file, value) {
   const temp = file + ".new-" + crypto.randomUUID();

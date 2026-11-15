@@ -3,19 +3,7 @@
 use super::*;
 
 pub(super) fn validate_role_type(role: &JwtRole) -> Result<(), AuthError> {
-    if role.token_type == Some(batch_issuance::UserTokenType::Batch) {
-        if role.token_period != 0 {
-            return Err(bad(
-                "'token_type' cannot be 'batch' or 'default_batch' when set to generate periodic tokens",
-            ));
-        }
-        if role.token_num_uses != 0 {
-            return Err(bad(
-                "'token_type' cannot be 'batch' or 'default_batch' when set to generate tokens with limited use count",
-            ));
-        }
-    }
-    Ok(())
+    batch_issuance::validate_role_limits(role.token_type, role.token_period, role.token_num_uses)
 }
 
 impl AuthState {

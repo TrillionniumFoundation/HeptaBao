@@ -379,17 +379,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         &self,
         conditions: &[PublicationCondition],
     ) -> Result<(), ServiceError> {
-        for condition in conditions {
-            if self
-                .get("system", &condition.resource)?
-                .as_ref()
-                .map(Secret::expose)
-                != condition.expected.as_ref().map(Secret::expose)
-            {
-                return Err(ServiceError::PublicationConditionConflict);
-            }
-        }
-        Ok(())
+        self.check_system_publication_conditions(conditions)
     }
 
     /// Reserve both request identities, six exact-size journal frames, both

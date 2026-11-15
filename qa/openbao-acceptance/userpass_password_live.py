@@ -19,7 +19,7 @@ from bao_http import Client, SafeArgumentParser, private_read, private_write
 from heptabao.private_state import _descriptor_walk_path
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import verify_inputs, start_oracle, stop_oracle, restart_oracle
-from online_evidence import admit_output, source_identity
+from online_evidence import admit_output, check_numeric_observation, source_identity
 
 PREFIX = 'userpass_password.'
 MOUNT = 'password-semantics'
@@ -55,12 +55,8 @@ class Trace:
         self.client,self.rows=client,rows
         self.sensitive=[]
 
-    def check(self,name,condition,**observations):
-        if (not isinstance(name,str) or re.fullmatch(r'[a-z0-9_.]{1,140}',name) is None
-                or any(type(v) not in (int,bool) for v in observations.values())):
-            raise ValueError('unsafe_observation')
-        self.rows.append({'case':PREFIX+name,'passed':condition is True,**observations})
-        if condition is not True:raise ScenarioFailure(PREFIX+name)
+    def check(self, name, condition, **observations):
+        check_numeric_observation(self.rows, PREFIX, name, condition, observations, ScenarioFailure)
 
     def call(self,name,path,fields=None,*,method='POST',status=200,bearer=None):
         result=self.client.request(method,'/v1/'+path,fields,token=bearer)

@@ -8,17 +8,7 @@ const V5_PREFIX: u64 = 2;
 const PAYLOAD_BYTES: usize = 2 * 1024 * 1024;
 
 fn full34_value(version: u64) -> Value {
-    let mut payload = String::with_capacity(PAYLOAD_BYTES);
-    let fill = char::from(b'a' + version as u8).to_string();
-    for block in 0..PAYLOAD_BYTES / 1024 {
-        let prefix = format!("version-{version:02}/piece-{block:04}:");
-        payload.push_str(&prefix);
-        payload.push_str(&fill.repeat(1024 - prefix.len()));
-    }
-    assert_eq!(payload.len(), PAYLOAD_BYTES);
-    // Distinct version/piece prefixes keep physical block deduplication from
-    // hiding loss of an old version or the retained graph's actual byte size.
-    json!({"ordinal":version,"payload":payload})
+    crate::service::tests::full34_fixture_value(version, PAYLOAD_BYTES)
 }
 
 fn full34_history(service: &mut Service, mount: &str, token: &str) -> TestResult<Value> {

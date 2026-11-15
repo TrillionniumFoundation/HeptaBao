@@ -18,7 +18,6 @@ from pathlib import Path
 import re
 import secrets
 import shlex
-import shutil
 import ssl
 import subprocess
 import time

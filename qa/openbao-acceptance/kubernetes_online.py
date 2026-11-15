@@ -6,25 +6,19 @@ The controlled reviewer verifies the request and emits hostile or valid protocol
 responses. All credentials are synthetic and secret-bearing roots are removed.
 """
 from __future__ import annotations
-import copy
-import hashlib
 import http.server
 import json
-import os
 from pathlib import Path
 import secrets
 import shutil
 import ssl
-import subprocess
 import sys
 import tempfile
 import threading
-import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 from smoke import Instance
-from bao_http import private_write
 from heptabao.transport import SafeArgumentParser
 from online_evidence import admit_output, source_identity, publish
 

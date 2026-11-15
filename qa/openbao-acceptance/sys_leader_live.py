@@ -17,7 +17,6 @@ import signal
 import socket
 import ssl
 import owned_process
-import subprocess
 import tempfile
 import time
 from urllib.parse import urlsplit

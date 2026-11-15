@@ -400,3 +400,23 @@ impl AuthState {
         Ok(())
     }
 }
+
+pub(super) fn validate_role_limits(
+    token_type: Option<UserTokenType>,
+    token_period: u64,
+    token_num_uses: u64,
+) -> Result<(), AuthError> {
+    if token_type == Some(UserTokenType::Batch) {
+        if token_period != 0 {
+            return Err(bad(
+                "'token_type' cannot be 'batch' or 'default_batch' when set to generate periodic tokens",
+            ));
+        }
+        if token_num_uses != 0 {
+            return Err(bad(
+                "'token_type' cannot be 'batch' or 'default_batch' when set to generate tokens with limited use count",
+            ));
+        }
+    }
+    Ok(())
+}

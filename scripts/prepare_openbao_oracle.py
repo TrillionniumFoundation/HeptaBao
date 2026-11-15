@@ -10,8 +10,8 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
 import platform
+from pathlib import Path
 import shutil
 import sys
 import tarfile

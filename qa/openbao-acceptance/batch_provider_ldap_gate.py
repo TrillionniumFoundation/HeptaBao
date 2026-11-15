@@ -1,7 +1,6 @@
 """Real slapd Add/readback response gate; does not synthesize provider success."""
 from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
-import json
 import socket
 import ssl
 import time

@@ -7,9 +7,9 @@ never copied. Apply mode requires a private resumable checkpoint plus explicit
 source-write freeze and exclusive ownership of selected target role names.
 """
 from __future__ import annotations
-import fcntl, json, os, stat
-from pathlib import Path
-from bao_http import BaoError, Client, SafeArgumentParser, digest, distinct_endpoints, key_path, private_json, private_write, supported_migration_source_version
+import json
+from bao_http import BaoError, Client, SafeArgumentParser, digest, distinct_endpoints, key_path, supported_migration_source_version
+from migration_checkpoint import CheckpointLock, ObjectCheckpoint
 
 SCHEMA="heptabao.ssh-otp-role-transfer.v1"
 CHECKPOINT_SCHEMA="heptabao.ssh-otp-role-checkpoint.v1"
@@ -73,30 +73,10 @@ def validate_record(record):
     canonical_name(record["name"]); role=normalize_role(record["role"])
     if role!=record["role"] or record["source_digest"]!=digest(role): raise BaoError("ssh_role_record_digest_mismatch")
 
-class CheckpointLock:
-    def __init__(self,filename): self.filename,self.fd=str(filename)+".lock",None
-    def __enter__(self):
-        try:
-            self.fd=os.open(self.filename,os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW,0o600); info=os.fstat(self.fd)
-            if not stat.S_ISREG(info.st_mode) or info.st_uid!=os.geteuid() or info.st_mode&0o077: raise BaoError("checkpoint_lock_not_private_regular_file")
-            fcntl.flock(self.fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        except (OSError,BaoError):
-            if self.fd is not None: os.close(self.fd); self.fd=None
-            raise BaoError("checkpoint_locked_or_inaccessible") from None
-        return self
-    def __exit__(self,*_):
-        if self.fd is not None: os.close(self.fd); self.fd=None
 
-class Checkpoint:
-    def __init__(self,filename,binding):
-        self.filename=Path(filename); self.binding=digest(binding)
-        if self.filename.exists() or self.filename.is_symlink():
-            self.state=private_json(self.filename)
-            if not isinstance(self.state,dict) or self.state.get("schema")!=CHECKPOINT_SCHEMA or self.state.get("binding")!=self.binding or not isinstance(self.state.get("objects"),dict): raise BaoError("checkpoint_context_mismatch")
-        else:
-            self.state={"schema":CHECKPOINT_SCHEMA,"binding":self.binding,"objects":{}}
-            private_write(self.filename,self.state,replace=False)
-    def save(self): private_write(self.filename,self.state)
+class Checkpoint(ObjectCheckpoint):
+    def __init__(self, filename, binding):
+        super().__init__(filename, binding, CHECKPOINT_SCHEMA)
 
 def transfer_role(target,mount,record,checkpoint):
     validate_record(record); name,role=record["name"],record["role"]; oid=digest({"mount":mount,"name":name})

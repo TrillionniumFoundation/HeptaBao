@@ -1,6 +1,7 @@
 //! These cfg controls supply maintained-crypto observations at the existing
 //! completion boundary. No Go bridge or external provider is invoked here.
 use super::*;
+use crate::service::tests::return_original_fixture_leader as return_original_leader;
 use crate::service::tests::{Root, bootstrap, call};
 use openssl::{
     ec::{EcGroup, EcKey},
@@ -521,24 +522,6 @@ fn attach_ha(f: &mut Fixture) -> TestResult<crate::ha::snapshot_test_support::Cl
         .sync_from_ha()
         .map_err(|_| "genuine PKI HA seed")?;
     Ok(cluster)
-}
-fn return_original_leader(cluster: &crate::ha::snapshot_test_support::Cluster) -> TestResult<u64> {
-    let next = cluster.processes[0]
-        .lock()
-        .map_err(|_| "original mutex")?
-        .step_down()?;
-    assert_ne!(next, 1);
-    let returned = cluster.processes[(next - 1) as usize]
-        .lock()
-        .map_err(|_| "successor mutex")?
-        .step_down()?;
-    assert_eq!(returned, 1);
-    let role = cluster.processes[0]
-        .lock()
-        .map_err(|_| "returned mutex")?
-        .leader_status()?;
-    assert!(role.local_is_leader && role.leader == Some(1));
-    Ok(role.term)
 }
 
 #[test]

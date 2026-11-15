@@ -16,7 +16,7 @@ import os
 import stat
 import sys
 from pathlib import Path, PurePosixPath
-from typing import Any, Callable, Iterable
+from typing import Any, Iterable
 
 SCHEMA = "heptabao.external-completion.v2.5"
 TRUST_SCHEMA = "heptabao.external-trust-store.v2.5"

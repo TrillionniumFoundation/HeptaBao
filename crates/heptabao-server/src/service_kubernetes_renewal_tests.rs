@@ -1,33 +1,11 @@
 //! Service publication tests inject verified TokenReview observations at
 //! login and renewal. Live provider revocation must be tested separately.
 use super::online_auth::OnlineAuthObservation;
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap, call, restore_legacy_engine_owner};
 use super::*;
 use crate::auth::KubernetesLoginObservation;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
-
-// These auth format fixtures have no record-backed KV1 mounts. Decode their
-// unchanged owner bytes as a legacy reader would, without retaining the v5
-// runtime installed by current HTTP writes and masking the auth schema fence.
-fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
-    state.engines.restore_pre47_identity_metadata_for_test();
-    assert!(
-        !state.engines.has_record_kv1(),
-        "legacy auth fixture cannot discard record-backed KV1 data"
-    );
-    let before = owner_store::serialize_owner(&state.engines)
-        .map_err(|_| "legacy engine fixture serialization")?;
-    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
-    assert!(state.engines.record_root().is_none());
-    let after = owner_store::serialize_owner(&state.engines)
-        .map_err(|_| "legacy engine fixture reserialization")?;
-    assert!(
-        before.as_slice() == after.as_slice(),
-        "legacy engine owner bytes changed"
-    );
-    Ok(())
-}
 
 // Current behavioral regressions keep the normal first-publication factory.
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {

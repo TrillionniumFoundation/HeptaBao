@@ -51,22 +51,11 @@ fn text(value: &Value, pointer: &str) -> TestResultWith<String> {
         .to_owned())
 }
 fn start(service: &mut Service) -> TestResultWith<(String, String)> {
-    let initialized = call(
+    crate::service::tests::initialize_fixture(
         service,
-        "",
-        "POST",
-        "sys/init",
-        json!({"secret_shares":1,"secret_threshold":1}),
-        100,
-    );
-    assert_eq!(initialized.status, 200);
-    let root = text(&initialized.body, "/root_token")?;
-    let key = text(&initialized.body, "/keys_base64/0")?;
-    assert_eq!(
-        call(service, "", "POST", "sys/unseal", json!({"key":key}), 100).status,
-        200
-    );
-    Ok((root, key))
+        |service, token, path, body| call(service, token, "POST", path, body, 100),
+        text,
+    )
 }
 fn install(service: &mut Service, root: &str) {
     for (path, body, status) in [

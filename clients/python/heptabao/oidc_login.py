@@ -5,10 +5,8 @@ login URL in a trusted terminal; do not capture that URL in shared logs.
 The server owns the durable one-use session and upstream code exchange.
 """
 from __future__ import annotations
-import argparse
 import base64
 import hmac
-import json
 import math
 import os
 from pathlib import Path

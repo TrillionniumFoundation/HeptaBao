@@ -11,6 +11,51 @@ from bao_http import private_write
 from heptabao.private_state import _descriptor_walk_path
 
 
+def check_numeric_observation(rows, prefix, name, condition, observations, failure_type):
+    """Append one bounded numeric observation with the caller's failure policy."""
+    if (not isinstance(name, str) or re.fullmatch(r'[a-z0-9_.]{1,140}', name) is None
+            or any(type(value) not in (int, bool) for value in observations.values())):
+        raise ValueError('unsafe_observation')
+    rows.append({'case': prefix + name, 'passed': condition is True, **observations})
+    if condition is not True:
+        raise failure_type(prefix + name)
+
+
+def trace_request(self, name, path, fields=None, *, method='POST', bearer=None, status=200, wrap=None):
+    response = self.client.request(method, '/v1/' + path, fields, token=bearer, wrap_ttl=wrap)
+    self.check(name + '.status', response.status == status, status=response.status)
+    return response.body
+
+
+def trace_auth(self, name, body, *, exact=None, maximum=None, nonexpiring=False):
+    auth = body.get('auth') or {}
+    self.check(name + '.credentials', all(isinstance(auth.get(k), str) and bool(auth[k])
+               for k in ('client_token', 'accessor')))
+    self.sensitive.append(auth['client_token'])
+    self.lease(name, auth, exact=exact, maximum=maximum, nonexpiring=nonexpiring)
+    self.check(name + '.renewable', auth.get('renewable') is (not nonexpiring))
+    return auth
+
+
+def trace_renewal(self, name, auth, *, via='self', increment=None, exact=None, maximum=None, status=200, renewal_shape):
+    fields = {} if increment is None else {'increment': increment}
+    path = {'self': 'renew-self', 'token': 'renew', 'accessor': 'renew-accessor'}[via]
+    if via == 'token':
+        fields['token'] = auth['client_token']
+    elif via == 'accessor':
+        fields['accessor'] = auth['accessor']
+    name += '.' + via
+    body = self.call(name, 'auth/token/' + path, fields,
+                     bearer=auth['client_token'] if via == 'self' else None, status=status)
+    if status != 200:
+        self.check(name + '.no_credentials', not body.get('auth') and not body.get('wrap_info'))
+        return
+    renewed = body.get('auth') or {}
+    self.lease(name, renewed, exact=exact, maximum=maximum)
+    self.check(name + '.shape', renewed.get('renewable') is True
+               and renewal_shape(renewed, auth['client_token'], via_accessor=via == 'accessor'))
+
+
 def admit_output(path: Path) -> tuple[int, int]:
     """Reject existing/linked outputs before allocating a synthetic service."""
     path = _descriptor_walk_path(path.absolute())

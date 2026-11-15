@@ -13,7 +13,6 @@ from pathlib import Path
 import shutil
 import signal
 import owned_process
-import subprocess
 import tempfile
 import time
 

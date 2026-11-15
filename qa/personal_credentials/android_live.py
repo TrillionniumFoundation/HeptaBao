@@ -14,7 +14,6 @@ import re
 import shlex
 import signal
 import subprocess
-import sys
 import time
 import xml.etree.ElementTree as ET
 

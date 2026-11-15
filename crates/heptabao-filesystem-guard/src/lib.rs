@@ -31,6 +31,10 @@ use std::os::fd::AsRawFd;
 #[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
 
+mod existing_sync;
+pub use existing_sync::{MAX_PARALLEL_EXISTING_FSYNC, parallel_existing_sync};
+mod durable_write;
+pub use durable_write::{AtomicReplaceError, atomic_replace, write_new_file_and_sync_parent};
 mod immutable;
 pub use immutable::{
     ImmutableBatchEntry, ImmutableFileSyncWitness, ImmutablePublication,

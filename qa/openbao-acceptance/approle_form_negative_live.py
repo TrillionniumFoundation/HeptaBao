@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """New private TLS fixture; finite-use AppRole negative custody checks only."""
 from pathlib import Path
-import argparse, http.client, importlib.util, json, os, ssl, sys
+import argparse, http.client, json, os, ssl, sys
 from urllib.parse import urlsplit, urlencode
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/"qa/openbao-acceptance"))

@@ -1808,6 +1808,27 @@ impl Service {
 // private diagnostic and fencing its owned provider through Case::drop.
 #[allow(clippy::expect_used, clippy::panic)]
 mod source825_real_recovery_fixture_tests {
+    fn commit(
+        cluster: &crate::ha::snapshot_test_support::Cluster,
+        state: &State,
+        previous: [u8; 32],
+        operation: &str,
+    ) -> [u8; 32] {
+        let bytes = owner_store::serialize_owner(state).expect("actual owner bytes");
+        let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
+            .unwrap_or_else(|_| panic!("actual owner plan"))
+            .publication_binding(operation, &bytes)
+            .expect("actual owner binding");
+        cluster.processes[0]
+            .lock()
+            .expect("actual HA")
+            .commit_state_with_owner_binding(operation, previous, &bytes, binding)
+            .expect("actual committed owner");
+        crypto::digest(&bytes)
+    }
+
+    use self::commit as commit_materialized;
+
     use super::*;
     use std::fs::{self, OpenOptions};
     use std::io::{Read, Write};
@@ -2440,24 +2461,6 @@ mod source825_real_recovery_fixture_tests {
     #[test]
     #[ignore = "requires admitted genuine PKCS11 provider, fresh owned store and real three-Raft cluster"]
     fn genuine_wrapper_known_index_completion_and_noop_catchup() {
-        fn commit(
-            cluster: &crate::ha::snapshot_test_support::Cluster,
-            state: &State,
-            previous: [u8; 32],
-            operation: &str,
-        ) -> [u8; 32] {
-            let bytes = owner_store::serialize_owner(state).expect("actual owner bytes");
-            let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
-                .unwrap_or_else(|_| panic!("actual owner plan"))
-                .publication_binding(operation, &bytes)
-                .expect("actual owner binding");
-            cluster.processes[0]
-                .lock()
-                .expect("actual HA")
-                .commit_state_with_owner_binding(operation, previous, &bytes, binding)
-                .expect("actual committed owner");
-            crypto::digest(&bytes)
-        }
         #[derive(Clone, Copy, PartialEq, Eq)]
         enum Outcome {
             Catchup,
@@ -2722,24 +2725,6 @@ mod source825_real_recovery_fixture_tests {
     #[test]
     #[ignore = "requires admitted genuine PKCS11 provider, actual durable graph and real three-Raft cluster"]
     fn genuine_wrapper_existing_complete_readonly_catchup() {
-        fn commit_materialized(
-            cluster: &crate::ha::snapshot_test_support::Cluster,
-            state: &State,
-            previous: [u8; 32],
-            operation: &str,
-        ) -> [u8; 32] {
-            let bytes = owner_store::serialize_owner(state).expect("actual owner bytes");
-            let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
-                .unwrap_or_else(|_| panic!("actual owner plan"))
-                .publication_binding(operation, &bytes)
-                .expect("actual owner binding");
-            cluster.processes[0]
-                .lock()
-                .expect("actual HA")
-                .commit_state_with_owner_binding(operation, previous, &bytes, binding)
-                .expect("actual committed owner");
-            crypto::digest(&bytes)
-        }
         fn commit_records(
             service: &Service,
             cluster: &crate::ha::snapshot_test_support::Cluster,

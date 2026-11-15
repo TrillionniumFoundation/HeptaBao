@@ -1,32 +1,9 @@
 //! Actual JWS, owned DNS proof, signed CSR and encrypted order certificate.
 use super::*;
-use openssl::x509::{X509, X509NameBuilder, X509Req, extension::SubjectAlternativeName};
+use crate::service::tests::acme_fixture::{csr, csr_with_key};
+use openssl::x509::{X509, X509Req};
 use x509_parser::prelude::FromDer;
 
-fn csr(domain: &str) -> TestResult<(PKey<Private>, Vec<u8>)> {
-    let (private, _) = key()?;
-    let request = csr_with_key(domain, &private)?;
-    Ok((private, request))
-}
-fn csr_with_key(domain: &str, private: &PKey<Private>) -> TestResult<Vec<u8>> {
-    let mut request = X509Req::builder()?;
-    let mut name = X509NameBuilder::new()?;
-    name.append_entry_by_nid(Nid::COMMONNAME, domain)?;
-    name.append_entry_by_nid(Nid::ORGANIZATIONNAME, "UntrustedSubjectMustBeIgnored")?;
-    request.set_subject_name(&name.build())?;
-    request.set_pubkey(private)?;
-    let mut extensions = openssl::stack::Stack::new()?;
-    extensions.push(
-        SubjectAlternativeName::new()
-            .dns(domain)
-            .build(&request.x509v3_context(None))?,
-    )?;
-    request.add_extensions(&extensions)?;
-    request.sign(private, MessageDigest::sha256())?;
-    let request = request.build();
-    assert!(request.verify(private)?);
-    Ok(request.to_der()?)
-}
 fn ready(
     service: &mut Service,
     admin: &str,

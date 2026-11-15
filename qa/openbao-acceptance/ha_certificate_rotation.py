@@ -12,7 +12,6 @@ import json
 import os
 from pathlib import Path
 import ssl
-import time
 
 from ha_destructive import Cluster, FixtureError, checked_binary, openssl, private_write
 

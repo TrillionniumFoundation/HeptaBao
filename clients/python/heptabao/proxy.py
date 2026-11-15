@@ -6,7 +6,6 @@ management routes. Optional owned mTLS loopback and online leased-response cache
 are bounded features, not a general OpenBao Proxy replacement.
 """
 from __future__ import annotations
-import json
 import os
 from pathlib import Path
 import signal

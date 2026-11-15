@@ -17,7 +17,7 @@ from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
 from oidc_renewal_live import free_port
-from online_evidence import admit_output, source_identity
+from online_evidence import admit_output, check_numeric_observation, source_identity, trace_request
 from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
 from remote_jwks_live import Instance
 
@@ -53,17 +53,10 @@ class Trace:
         self.sensitive = []
 
     def check(self, name, condition, **observations):
-        if (not isinstance(name, str) or re.fullmatch(r'[a-z0-9_.]{1,140}', name) is None
-                or any(type(value) not in (int, bool) for value in observations.values())):
-            raise ValueError('unsafe_observation')
-        self.rows.append({'case': PREFIX + name, 'passed': condition is True, **observations})
-        if condition is not True:
-            raise ScenarioFailure(PREFIX + name)
+        check_numeric_observation(self.rows, PREFIX, name, condition, observations, ScenarioFailure)
 
     def call(self, name, path, fields=None, *, method='POST', bearer=None, status=200, wrap=None):
-        response = self.client.request(method, '/v1/' + path, fields, token=bearer, wrap_ttl=wrap)
-        self.check(name + '.status', response.status == status, status=response.status)
-        return response.body
+        return trace_request(self, name, path, fields, method=method, bearer=bearer, status=status, wrap=wrap)
 
     def lease(self, name, auth, *, exact=None, maximum=None):
         ttl = auth.get('lease_duration')

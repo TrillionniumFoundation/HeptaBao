@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import importlib.util
-import shutil
 import tempfile
 import unittest
 from pathlib import Path
+
+try:
+    from tests.plan.repository_fixture import temporary_surface
+except ModuleNotFoundError:  # direct execution from tests/plan
+    from repository_fixture import temporary_surface
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validate_repository_identity_v1.py"
@@ -16,14 +20,7 @@ SPEC.loader.exec_module(MODULE)
 
 class RepositoryIdentityTransferTests(unittest.TestCase):
     def fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path]:
-        temporary = tempfile.TemporaryDirectory()
-        root = Path(temporary.name)
-        for relative in MODULE.REQUIRED_PATHS:
-            source = ROOT / relative
-            target = root / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, target)
-        return temporary, root
+        return temporary_surface(ROOT, MODULE.REQUIRED_PATHS)
 
     def test_current_repository_identity_passes(self) -> None:
         tracked = MODULE.validate_repository_identity(ROOT)

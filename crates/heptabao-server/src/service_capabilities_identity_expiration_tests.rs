@@ -1,6 +1,6 @@
 //! Real AppRole targets retain their policy and use count when Identity is
 //! disabled or deleted. The inspection backend rejects before target ACL load.
-use super::super::tests::{Root, bootstrap};
+use super::super::tests::Root;
 use super::*;
 use std::time::{Duration, Instant};
 
@@ -34,39 +34,7 @@ fn call(
 }
 
 fn fixture(native: bool) -> TestResult<(Root, Service, String, String)> {
-    let root = Root::new();
-    let mut service = root.service()?;
-    #[cfg(feature = "native-v6-storage")]
-    if native {
-        service.configure_native_v6_candidate()?;
-    }
-    #[cfg(not(feature = "native-v6-storage"))]
-    assert!(!native);
-    // Native cold loading requires the original request deadline, including
-    // the first unseal before activation. Model that HTTP admission explicitly.
-    let (key, admin) = {
-        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
-            Instant::now() + Duration::from_secs(15),
-        );
-        bootstrap(&mut service)?
-    };
-    #[cfg(feature = "native-v6-storage")]
-    if native {
-        assert_eq!(
-            call(
-                &mut service,
-                100,
-                "POST",
-                "sys/internal/native-v6/activate",
-                &admin,
-                json!({})
-            )?
-            .status,
-            204
-        );
-        assert!(service.native_root.is_some());
-    }
-    Ok((root, service, key, admin))
+    crate::service::tests::activation_fixture(native, call)
 }
 
 fn target_uses(service: &mut Service, admin: &str, token: &str, seconds: u64) -> TestResult {

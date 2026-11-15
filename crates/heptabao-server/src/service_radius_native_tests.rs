@@ -1,33 +1,12 @@
 //! These tests drive real durable Service state and split-phase completion.
 //! Packet authentication is exercised separately by radius_renewal_live.py.
 use super::online_auth::OnlineAuthObservation;
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap, call, restore_legacy_engine_owner};
 use super::*;
 use crate::auth::{ProviderRenewalObservation, RadiusLoginObservation, RadiusRenewalObservation};
+use crate::service::tests::pending_radius_fixture as pending_with_wrapping;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
-
-// These auth format fixtures have no record-backed KV1 mounts. Decode their
-// unchanged owner bytes as a legacy reader would, without retaining the v5
-// runtime installed by current HTTP writes and masking the auth schema fence.
-fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
-    state.engines.restore_pre47_identity_metadata_for_test();
-    assert!(
-        !state.engines.has_record_kv1(),
-        "legacy auth fixture cannot discard record-backed KV1 data"
-    );
-    let before = owner_store::serialize_owner(&state.engines)
-        .map_err(|_| "legacy engine fixture serialization")?;
-    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
-    assert!(state.engines.record_root().is_none());
-    let after = owner_store::serialize_owner(&state.engines)
-        .map_err(|_| "legacy engine fixture reserialization")?;
-    assert!(
-        before.as_slice() == after.as_slice(),
-        "legacy engine owner bytes changed"
-    );
-    Ok(())
-}
 
 fn enroll(service: &mut Service) -> TestResult {
     service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
@@ -49,32 +28,6 @@ fn pending(
     now: u64,
 ) -> TestResult<Box<PendingExternalRequest>> {
     pending_with_wrapping(service, path, token, body, now, None)
-}
-
-fn pending_with_wrapping(
-    service: &mut Service,
-    path: &str,
-    token: &str,
-    body: Value,
-    now: u64,
-    wrap_ttl_seconds: Option<u64>,
-) -> TestResult<Box<PendingExternalRequest>> {
-    match service.begin_at_mode(RequestDispatch {
-        method: "POST",
-        path,
-        namespace: "",
-        token,
-        body,
-        now,
-        allow_forward: false,
-        enforce_namespace: true,
-        wrap_ttl_seconds,
-        origin_peer: None,
-        client_certificates: None,
-    }) {
-        RequestExecution::External(plan) => Ok(plan),
-        RequestExecution::Complete(_) => Err("expected staged provider request".into()),
-    }
 }
 
 fn accepted(service: &mut Service, plan: PendingExternalRequest) -> Response {

@@ -11,7 +11,6 @@ import os
 from pathlib import Path
 import platform
 import select
-import signal
 import subprocess
 import sys
 import time

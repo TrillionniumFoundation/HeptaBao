@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-import re
 
 from bao_http import BaoError, Client, SafeArgumentParser, digest, private_json, private_read, private_write, supported_migration_source_version
 from capacity_live import validate_observation

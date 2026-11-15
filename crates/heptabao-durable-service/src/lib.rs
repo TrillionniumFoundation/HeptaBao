@@ -857,6 +857,23 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         self.execute(binding, None, failpoint, false)
     }
 
+    fn check_system_publication_conditions(
+        &self,
+        conditions: &[PublicationCondition],
+    ) -> Result<(), ServiceError> {
+        for condition in conditions {
+            if self
+                .get("system", &condition.resource)?
+                .as_ref()
+                .map(Secret::expose)
+                != condition.expected.as_ref().map(Secret::expose)
+            {
+                return Err(ServiceError::PublicationConditionConflict);
+            }
+        }
+        Ok(())
+    }
+
     pub fn get(&self, namespace: &str, resource: &str) -> Result<Option<Secret>, ServiceError> {
         validate_namespace(namespace)?;
         validate_resource(resource)?;

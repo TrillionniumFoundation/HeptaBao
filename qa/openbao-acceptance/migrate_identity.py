@@ -14,11 +14,8 @@ resolved only by authoritative target readback; absence is never auto-retried.
 """
 from __future__ import annotations
 
-import fcntl
 import json
-import os
 import re
-import stat
 from pathlib import Path
 
 from bao_http import (
@@ -31,6 +28,7 @@ from bao_http import (
     private_json,
     private_write,
 )
+from migration_checkpoint import CheckpointLock
 
 SCHEMA = "heptabao.identity-recreation.v1"
 CHECKPOINT_SCHEMA = "heptabao.identity-recreation-checkpoint.v1"
@@ -250,28 +248,6 @@ def require_target_policy_dependencies(target, entities, groups):
         raise BaoError("target_identity_policy_dependency_missing")
 
 
-class CheckpointLock:
-    def __init__(self, filename):
-        self.filename, self.fd = str(filename) + ".lock", None
-
-    def __enter__(self):
-        try:
-            self.fd = os.open(self.filename, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
-            info = os.fstat(self.fd)
-            if not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid() or info.st_mode & 0o077:
-                raise BaoError("checkpoint_lock_not_private_regular_file")
-            fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except (OSError, BaoError):
-            if self.fd is not None:
-                os.close(self.fd)
-                self.fd = None
-            raise BaoError("checkpoint_locked_or_inaccessible") from None
-        return self
-
-    def __exit__(self, *_):
-        if self.fd is not None:
-            os.close(self.fd)
-            self.fd = None
 
 
 class Checkpoint:

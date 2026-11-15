@@ -1,21 +1,10 @@
 //! Affine prepared submission and fresh read-only metadata reconciliation.
 //! The caller must separately hold the original Actor/deadline, all-member
 //! reader6 admission and its authenticated exact Pending barrier record.
+use super::v6_retention::source;
 use super::*;
-use crate::v6_retention::{
-    NativeV6IntentRetirementRecovery, NativeV6IntentRetirementResolution, NativeV6RetentionSource,
-};
+use crate::v6_retention::{NativeV6IntentRetirementRecovery, NativeV6IntentRetirementResolution};
 
-fn source(read: &NativeV6CommittedRootRead) -> NativeV6RetentionSource {
-    NativeV6RetentionSource {
-        enrollment_digest: read.enrollment().digest(),
-        root_digest: read.root().root_digest(),
-        generation: read.root().generation(),
-        epoch: read.enrollment().epoch(),
-        publication_log: read.root().publication_log_id(),
-        intent_log: read.root().intent_log_id(),
-    }
-}
 fn unavailable() -> RemoteRaftError {
     RemoteRaftError::Consensus("native intent retirement original observation unavailable".into())
 }

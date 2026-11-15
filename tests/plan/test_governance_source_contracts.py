@@ -20,6 +20,7 @@ from governance_source_contracts import (
 
 GUARD = "crates/heptabao-filesystem-guard/src/lib.rs"
 LEAF = "crates/heptabao-filesystem-guard/src/relative.rs"
+WRITE = "crates/heptabao-filesystem-guard/src/durable_write.rs"
 STORE = "crates/heptabao-single-node-store/src/lib.rs"
 JOURNAL = "crates/heptabao-single-node-journal/src/lib.rs"
 CANONICAL = ".github/workflows/plan-v1.3.1-head-and-merge-closure.yml"
@@ -45,7 +46,7 @@ class GovernanceSourceContractTests(unittest.TestCase):
         return root
 
     def descriptor_candidate(self) -> Path:
-        root = self.candidate(GUARD, LEAF, STORE, JOURNAL)
+        root = self.candidate(GUARD, LEAF, WRITE, STORE, JOURNAL)
         self.assertEqual(descriptor_provider_errors(root, "store"), [])
         self.assertEqual(descriptor_provider_errors(root, "journal"), [])
         return root
@@ -66,6 +67,39 @@ class GovernanceSourceContractTests(unittest.TestCase):
     def test_current_descriptor_providers_have_the_actual_safe_contract(self) -> None:
         self.assertEqual(descriptor_provider_errors(ROOT, "store"), [])
         self.assertEqual(descriptor_provider_errors(ROOT, "journal"), [])
+
+    def test_earlier_plan_validators_check_the_active_shared_write_source(self) -> None:
+        import validate_plan_v1_4
+        import validate_plan_v1_4_1
+
+        sources = (
+            GUARD, LEAF, WRITE, STORE, JOURNAL,
+            "crates/heptabao-storage-api/src/lib.rs",
+            "crates/heptabao-barrier-api/src/lib.rs",
+            "crates/heptabao-durable-core/src/lib.rs",
+            "crates/heptabao-journal-api/src/lib.rs",
+            "crates/heptabao-operation-ledger/src/lib.rs",
+            "crates/heptabao-journaled-core/src/lib.rs",
+        )
+        for old, new in (
+            ("root.open_file(leaf_name, FileAccess::CreateNew)",
+             "root.open_file(leaf_name, FileAccess::Write)"),
+            ("root.open_file(&temporary_name, FileAccess::CreateNew)",
+             "root.open_file(&temporary_name, FileAccess::Write)"),
+            ("root.rename(&temporary_name, target_name)",
+             "root.rename(&temporary_name, other_name)"),
+            ("file.sync_all()?;", "file.sync_data()?;"),
+            ("root.sync_all().map_err(io::Error::other)", "Ok(())"),
+        ):
+            with self.subTest(contract=old):
+                root = self.candidate(*sources)
+                for module in (validate_plan_v1_4, validate_plan_v1_4_1):
+                    module.validate_rust_sources(root)
+                self.mutate(root, WRITE, old, new)
+                for module in (validate_plan_v1_4, validate_plan_v1_4_1):
+                    with self.subTest(validator=module.__name__):
+                        with self.assertRaisesRegex(module.ValidationFailure, "shared (create|replace) lost"):
+                            module.validate_rust_sources(root)
 
     def test_leaf_exclusive_create_removal_is_rejected(self) -> None:
         root = self.descriptor_candidate()
@@ -141,7 +175,7 @@ class GovernanceSourceContractTests(unittest.TestCase):
 
     def test_store_uses_exclusive_descriptor_create(self) -> None:
         root = self.descriptor_candidate()
-        self.mutate(root, STORE, "root.open_file(leaf_name, FileAccess::CreateNew)?",
+        self.mutate(root, WRITE, "root.open_file(leaf_name, FileAccess::CreateNew)?",
                     "root.open_file(leaf_name, FileAccess::Write)?")
         errors = descriptor_provider_errors(root, "store")
         self.assertTrue(any("generation store source" in error for error in errors))
@@ -152,6 +186,130 @@ class GovernanceSourceContractTests(unittest.TestCase):
                     ".open_file(leaf_name, FileAccess::Write)")
         errors = descriptor_provider_errors(root, "journal")
         self.assertTrue(any("durable journal source" in error for error in errors))
+
+    def test_shared_helper_is_required_by_both_actual_callers(self) -> None:
+        root = self.descriptor_candidate()
+        (root / WRITE).unlink()
+        for kind in ("store", "journal"):
+            self.assertTrue(any("shared durable-write source missing" in error
+                                for error in descriptor_provider_errors(root, kind)))
+
+    def test_each_caller_must_keep_its_import_wrapper_and_counter(self) -> None:
+        mutations = (
+            ("AtomicReplaceError, DirectoryGuardError", "DirectoryGuardError"),
+            ("fn write_new_file_and_sync_parent(", "fn unused_write_helper("),
+            ("heptabao_filesystem_guard::write_new_file_and_sync_parent(root, leaf_name, bytes)", "Ok(())"),
+            ("heptabao_filesystem_guard::atomic_replace(root, target_name, bytes, &TEMP_SEQUENCE)", "Ok(())"),
+            ("&TEMP_SEQUENCE)", "&FOREIGN_SEQUENCE)"),
+            ("static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);", ""),
+            ("static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);",
+             "#[cfg(any())]\nstatic TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);"),
+        )
+        for kind, relative in (("store", STORE), ("journal", JOURNAL)):
+            for old, new in mutations:
+                with self.subTest(kind=kind, mutation=old):
+                    root = self.descriptor_candidate()
+                    self.mutate(root, relative, old, new)
+                    self.assertTrue(descriptor_provider_errors(root, kind))
+
+    def test_shared_helper_must_be_exported_from_the_actual_guard_crate(self) -> None:
+        for old, new in (
+            ("mod durable_write;", "mod unrelated_write;"),
+            ("pub use durable_write::{AtomicReplaceError, atomic_replace, write_new_file_and_sync_parent};", ""),
+        ):
+            with self.subTest(mutation=old):
+                root = self.descriptor_candidate()
+                self.mutate(root, GUARD, old, new)
+                self.assertTrue(descriptor_provider_errors(root, "store"))
+                self.assertTrue(descriptor_provider_errors(root, "journal"))
+
+    def test_module_attributes_cannot_redirect_the_verified_shared_source(self) -> None:
+        for attributes in (
+            '#[path = "alternate_durable.rs"]\n',
+            '#[cfg_attr(all(), path = "alternate_durable.rs")]\n',
+            '#[allow(dead_code)]\n/* between attributes */\n#[path = "alternate_durable.rs"]\n// before module\n',
+            '#[path = "alternate_durable.rs"] ',
+            '#[path = "alternate_durable.rs"]\npub ',
+            '#[path = "alternate_durable.rs"]\npub(crate) ',
+            '#[path = "alternate_durable.rs"]\npub\n',
+        ):
+            with self.subTest(attributes=attributes):
+                root = self.descriptor_candidate()
+                alternate = root / "crates/heptabao-filesystem-guard/src/alternate_durable.rs"
+                alternate.write_text((root / WRITE).read_text().replace(
+                    "root.verify().map_err(io::Error::other)?;", "", 1))
+                self.mutate(root, GUARD, "mod durable_write;", attributes + "mod durable_write;")
+                for kind in ("store", "journal"):
+                    self.assertTrue(any("default module binding" in error
+                                        for error in descriptor_provider_errors(root, kind)))
+
+    def test_conditional_export_cannot_hide_a_different_implementation(self) -> None:
+        root = self.descriptor_candidate()
+        export = "pub use durable_write::{AtomicReplaceError, atomic_replace, write_new_file_and_sync_parent};"
+        self.mutate(root, GUARD, export, "#[cfg(any())]\n" + export)
+        for kind in ("store", "journal"):
+            self.assertTrue(any("public export binding" in error
+                                for error in descriptor_provider_errors(root, kind)))
+
+    def test_descriptor_imports_must_be_unconditional_in_callers_and_helper(self) -> None:
+        for relative, item in (
+            (STORE, "use heptabao_filesystem_guard::{"),
+            (JOURNAL, "use heptabao_filesystem_guard::{"),
+            (WRITE, "use crate::{ExclusiveDirectory, FileAccess};"),
+        ):
+            for attribute in ("#[cfg(any())]\n", "#[cfg_attr(all(), cfg(any()))]\n"):
+                with self.subTest(relative=relative, attribute=attribute):
+                    root = self.descriptor_candidate()
+                    self.mutate(root, relative, item, attribute + item)
+                    kinds = ("store", "journal") if relative == WRITE else (
+                        "store" if relative == STORE else "journal",
+                    )
+                    for kind in kinds:
+                        self.assertTrue(any("import" in error
+                                            for error in descriptor_provider_errors(root, kind)))
+
+    def test_shared_write_order_cleanup_and_published_state_cannot_drift(self) -> None:
+        mutations = (
+            ("root.verify().map_err(io::Error::other)?;", ""),
+            ("file.write_all(bytes)?;\n    file.flush()?;", "file.flush()?;\n    file.write_all(bytes)?;"),
+            ("file.flush()?;", ""),
+            ("file.sync_all()?;", ""),
+            ("root.sync_all().map_err(io::Error::other)", "Ok(())"),
+            ("if let Err(error) = root.verify()", "if let Err(error) = foreign.verify()"),
+            ("temporary_sequence.fetch_add(1, Ordering::Relaxed)", "foreign_sequence.fetch_add(1, Ordering::Relaxed)"),
+            ("root.open_file(&temporary_name, FileAccess::CreateNew)?", "root.open_file(&temporary_name, FileAccess::Write)?"),
+            ("let _ = root.remove_file(&temporary_name);", ""),
+            ("root.rename(&temporary_name, target_name)", "foreign.rename(&temporary_name, target_name)"),
+            ("if let Err(error) = root.sync_all()", "if let Err(error) = foreign.sync_all()"),
+            ("published: true,", "published: false,"),
+        )
+        for old, new in mutations:
+            with self.subTest(mutation=old):
+                root = self.descriptor_candidate()
+                self.mutate(root, WRITE, old, new)
+                self.assertTrue(descriptor_provider_errors(root, "store"))
+                self.assertTrue(descriptor_provider_errors(root, "journal"))
+
+    def test_publication_unknown_mappings_remain_in_the_owning_caller(self) -> None:
+        for kind, relative, old, new in (
+            ("store", STORE, "Err(error) if error.published => Err(FileStoreError::CommitOutcomeUnknown)",
+             "Err(error) if error.published => Ok(())"),
+            ("store", STORE, "if error.published {\n                return Err(FileStoreError::CommitOutcomeUnknown);",
+             "if false {\n                return Err(FileStoreError::CommitOutcomeUnknown);"),
+            ("journal", JOURNAL, "Err(FileJournalError::InitializationOutcomeUnknown)", "Ok(())"),
+            ("journal", JOURNAL, "Err(error) if error.published => Err(FileJournalError::AppendOutcomeUnknown)",
+             "Err(error) if error.published => Ok(())"),
+        ):
+            with self.subTest(kind=kind, mutation=old):
+                root = self.descriptor_candidate()
+                self.mutate(root, relative, old, new)
+                self.assertTrue(descriptor_provider_errors(root, kind))
+
+    def test_comments_cannot_restore_a_removed_shared_delegation(self) -> None:
+        root = self.descriptor_candidate()
+        call = "heptabao_filesystem_guard::atomic_replace(root, target_name, bytes, &TEMP_SEQUENCE)"
+        self.mutate(root, STORE, call, "Ok(()) // " + call)
+        self.assertTrue(descriptor_provider_errors(root, "store"))
 
     def test_rename_cannot_change_its_destination_directory_owner(self) -> None:
         root = self.descriptor_candidate()

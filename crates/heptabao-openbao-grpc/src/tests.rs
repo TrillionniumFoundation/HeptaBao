@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 use super::*;
 use crate::handshake::{LocalEndpoint, PublicHandshake};
 
-fn identity() -> OwnedPluginIdentity {
+pub(super) fn identity() -> OwnedPluginIdentity {
     OwnedPluginIdentity {
         uid: 1000,
         pid: 101,

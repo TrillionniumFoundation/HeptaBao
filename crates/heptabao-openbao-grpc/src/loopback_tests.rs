@@ -1,5 +1,6 @@
 //! Only public synthetic fixtures, generated inside this test process. Tonic
 //! owns TLS, HTTP/2 and gRPC framing; no product/plugin subprocess is launched.
+use crate::tests::identity;
 use std::convert::Infallible;
 use std::future::Future;
 use std::pin::Pin;
@@ -19,21 +20,6 @@ use super::*;
 use crate::handshake::LocalEndpoint;
 use crate::transport::{OwnedMutualTlsMaterial, RawCodec, RawFrame, TonicWrapperTransport};
 
-fn identity() -> OwnedPluginIdentity {
-    OwnedPluginIdentity {
-        uid: 1000,
-        pid: 101,
-        session_id: 101,
-        start_ticks: 200,
-        executable_device: 2,
-        executable_inode: 3,
-        executable_sha256: [1; 32],
-        config_device: 2,
-        config_inode: 4,
-        config_sha256: [2; 32],
-        config_mode: 0o600,
-    }
-}
 #[derive(Clone, Debug)]
 struct Probe(Arc<Mutex<(OwnedPluginIdentity, HostLifecycle)>>);
 impl Probe {

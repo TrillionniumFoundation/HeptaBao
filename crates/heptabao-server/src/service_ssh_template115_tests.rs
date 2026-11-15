@@ -13,22 +13,9 @@ fn owned(
     path: &str,
     body: Value,
 ) -> Response {
-    let execution = service.begin_request_before(
-        ServiceRequest {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            wrap_ttl_seconds: None,
-            origin_peer: None,
-            client_certificates: None,
-        },
-        Instant::now() + Duration::from_secs(15),
-        false,
-    );
-    service.finish_synchronous_request(execution)
+    super::tests::owned_request_fixture(service, method, path, namespace, token, body)
 }
+
 fn text(body: &Value, path: &str) -> TestResult<String> {
     Ok(body
         .pointer(path)

@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bao_http import BaoError, Client
 import core_isolation as core
-from fixture_transport_case import begin_case, complete_case, pending_case
+from fixture_transport_case import begin_case, pending_case
 import transit_derived_live as derived
 
 

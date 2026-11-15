@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys as _contract_sys
 from pathlib import Path as _ContractPath
 _contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
-from governance_source_contracts import archived_document_reference
+from governance_source_contracts import archived_document_reference, _unique_mapping
 
 
 import argparse
@@ -34,13 +34,7 @@ class UniqueLoader(yaml.SafeLoader):
 
 
 def construct_mapping(loader, node, deep=False):
-    mapping = {}
-    for key_node, value_node in node.value:
-        key = loader.construct_object(key_node, deep=deep)
-        if key in mapping:
-            raise ValueError(f'duplicate YAML key: {key!r}')
-        mapping[key] = loader.construct_object(value_node, deep=deep)
-    return mapping
+    return _unique_mapping(loader, node, deep)
 
 
 UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping)

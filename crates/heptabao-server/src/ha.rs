@@ -70,6 +70,98 @@ pub(crate) use native_v6_runtime::{
     NativeV6RequestObservation, NativeV6TimingSpan,
 };
 
+// Opt-in phase observations only: no payload, credential, source admission or
+// new deadline is created. Drop also records the phase that returned an error.
+// Diagnostic I/O failure never changes the original result or its custody.
+#[cfg(all(
+    feature = "native-v6-ha",
+    any(test, feature = "private-ha-forward-diagnostic")
+))]
+pub(crate) struct NativeHaPhaseTimer {
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    phase: &'static str,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    started: std::time::Instant,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    original_until: std::time::Instant,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    generation: u64,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    objects: u64,
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    bytes: u64,
+    completed: bool,
+    #[cfg(test)]
+    timing: Option<NativeV6TimingSpan>,
+}
+#[cfg(all(
+    feature = "native-v6-ha",
+    any(test, feature = "private-ha-forward-diagnostic")
+))]
+impl NativeHaPhaseTimer {
+    pub(crate) fn start(
+        scope: &'static str,
+        phase: &'static str,
+        original_until: std::time::Instant,
+        generation: u64,
+        objects: u64,
+        bytes: u64,
+    ) -> Self {
+        #[cfg(not(test))]
+        let _ = scope;
+        #[cfg(all(test, not(feature = "private-ha-forward-diagnostic")))]
+        let _ = (generation, objects, bytes);
+        Self {
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            phase,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            started: std::time::Instant::now(),
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            original_until,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            generation,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            objects,
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            bytes,
+            completed: false,
+            #[cfg(test)]
+            timing: NativeV6TimingSpan::start(scope, phase, Some(original_until)),
+        }
+    }
+    pub(crate) fn finish(mut self, completed: bool) {
+        self.completed = completed;
+    }
+}
+#[cfg(all(
+    feature = "native-v6-ha",
+    any(test, feature = "private-ha-forward-diagnostic")
+))]
+impl Drop for NativeHaPhaseTimer {
+    fn drop(&mut self) {
+        #[cfg(test)]
+        if let Some(timing) = self.timing.take() {
+            timing.finish(self.completed);
+        }
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        {
+            use std::io::Write as _;
+            let observed = std::time::Instant::now();
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-PERF phase={} elapsed_us={} completed={} original_deadline_expired={} generation={} objects={} bytes={}",
+                self.phase,
+                observed.duration_since(self.started).as_micros(),
+                self.completed,
+                observed >= self.original_until,
+                self.generation,
+                self.objects,
+                self.bytes,
+            );
+        }
+    }
+}
+
 // Timing only: every caller's original operation is evaluated exactly once.
 // With no native request observation this wrapper retains no data or output.
 pub(crate) fn observe_native_v6_timing<T, E>(

@@ -10,7 +10,6 @@ import hashlib
 import http.client
 import socket
 import owned_process
-import subprocess
 import time
 import os
 from pathlib import Path

@@ -17,7 +17,7 @@ import ssl
 import tempfile
 import time
 from urllib.parse import urlsplit
-from bao_http import Client, Response, SafeArgumentParser, private_read, private_write
+from bao_http import Response, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, BINARY_SHA256
 from online_evidence import admit_output, source_identity

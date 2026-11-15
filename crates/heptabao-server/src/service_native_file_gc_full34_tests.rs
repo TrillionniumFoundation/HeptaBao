@@ -9,17 +9,7 @@ const PAYLOAD_BYTES: usize = 2 * 1024 * 1024;
 const DESTROYED: [u64; 3] = [2, 8, 16];
 
 fn full34_value(version: u64) -> Value {
-    let mut payload = String::with_capacity(PAYLOAD_BYTES);
-    let fill = char::from(b'a' + version as u8).to_string();
-    for block in 0..PAYLOAD_BYTES / 1024 {
-        let prefix = format!("version-{version:02}/piece-{block:04}:");
-        payload.push_str(&prefix);
-        payload.push_str(&fill.repeat(1024 - prefix.len()));
-    }
-    assert_eq!(payload.len(), PAYLOAD_BYTES);
-    // Every 1 KiB piece has a distinct version/piece prefix. Repeated whole
-    // chunks cannot hide physical retirement behind identical payload blocks.
-    json!({"ordinal":version,"payload":payload})
+    crate::service::tests::full34_fixture_value(version, PAYLOAD_BYTES)
 }
 
 fn full34_history(service: &mut Service, token: &str, destroyed: &[u64]) -> TestResult<Value> {

@@ -1,7 +1,6 @@
 """Real local transport and private filesystem controls; no Bao/Cargo or real credentials."""
 import time
 _STARTED = time.monotonic()
-import hashlib
 import http.server
 import importlib.util
 import json

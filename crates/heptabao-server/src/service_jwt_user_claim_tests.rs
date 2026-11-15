@@ -3,6 +3,7 @@ use super::online_auth::OnlineAuthObservation;
 use super::tests::{Root, bootstrap};
 use super::*;
 use crate::auth::RemoteJwtLoginObservation;
+use crate::service::tests::pending_remote_jwt_fixture as remote_pending;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use openssl::{
     hash::MessageDigest,
@@ -606,29 +607,6 @@ fn jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected() -> Tes
 
 // Parsed public observations isolate the real Service publication boundary;
 // network fetching itself remains covered by the existing remote JWT fixture.
-fn remote_pending(
-    service: &mut Service,
-    path: &str,
-    token: &str,
-    body: Value,
-) -> TestResult<Box<PendingExternalRequest>> {
-    match service.begin_at_mode(RequestDispatch {
-        method: "POST",
-        path,
-        namespace: "",
-        token,
-        body,
-        now: 110,
-        allow_forward: false,
-        enforce_namespace: true,
-        wrap_ttl_seconds: None,
-        client_certificates: None,
-        origin_peer: None,
-    }) {
-        RequestExecution::External(plan) => Ok(plan),
-        RequestExecution::Complete(_) => Err("expected remote JWT plan".into()),
-    }
-}
 
 fn remote_observed(
     service: &mut Service,

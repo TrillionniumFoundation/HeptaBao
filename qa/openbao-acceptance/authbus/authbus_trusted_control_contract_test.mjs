@@ -7,7 +7,7 @@ import path from "node:path";
 import https from "node:https";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
-import { AdmissionAuthority, digest } from "./authbus_admission_authority_candidate.mjs";
+import { digest } from "./authbus_admission_authority_candidate.mjs";
 import { TrustedAdmissionAuthority } from "./authbus_trusted_admission_candidate.mjs";
 import { TrustedBaoControlSource, TrustedBaoCoordinator } from "./authbus_trusted_control_candidate.mjs";
 

@@ -292,16 +292,14 @@ def validate_rust_sources(root: Path) -> None:
             "pub fn create_new",
             "pub fn reopen_existing",
             "pub fn reconcile_next_orphan",
-            "root.open_file(leaf_name, FileAccess::CreateNew)",
-            "root.rename(&temporary_name, target_name)",
-            "sync_all",
             "AppendOutcomeUnknown",
             "PendingOrphan",
             "AuthenticationFailed",
-            "root.open_file(&temporary_name, FileAccess::CreateNew)",
         ],
         "single-node journal",
     )
+    # Descriptor creation, replacement and sync now belong to the shared
+    # filesystem guard. Validate its actual binding and ordered implementation.
     descriptor_errors = descriptor_provider_errors(root, "journal")
     require(not descriptor_errors, "; ".join(descriptor_errors))
     require(

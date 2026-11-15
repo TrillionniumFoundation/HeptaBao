@@ -1,3 +1,10 @@
+#[path = "../cli.rs"]
+mod cli;
+use cli::parse_seed;
+
+#[path = "openraft_fault_lab/node.rs"]
+mod node;
+
 #[path = "inmemory_cluster/network.rs"]
 pub mod network;
 
@@ -160,17 +167,6 @@ const CANDIDATE_ID: &str = "HB-DEP-RAFT-OPENRAFT";
 const VERSION: &str = "0.10.0-alpha.33";
 const PROFILE_ID: &str = "HB-H02-BEHAVIOR-RAFT-OPENRAFT-INMEMORY-0_10_0_ALPHA_33";
 const SNAPSHOT_CASE_ID: &str = "raft-committed-snapshot-conflict-rejected";
-
-fn parse_seed() -> u64 {
-    let args = std::env::args().collect::<Vec<_>>();
-    let raw = args
-        .windows(2)
-        .find(|pair| pair[0] == "--seed")
-        .map(|pair| pair[1].as_str())
-        .unwrap_or("0x5eed20260828cafe");
-    let trimmed = raw.strip_prefix("0x").unwrap_or(raw);
-    u64::from_str_radix(trimmed, 16).unwrap_or_else(|_| panic!("invalid seed: {raw}"))
-}
 
 fn bind_hostile_snapshot_observation(
     cases: &mut [Value],

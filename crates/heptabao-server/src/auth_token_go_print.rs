@@ -8,6 +8,38 @@ pub(crate) fn is_print(character: char) -> bool {
     index == 0 || NON_PRINT[index - 1].1 < point
 }
 
+pub(crate) fn quote(value: &str) -> String {
+    // Match Go fmt %q with the pinned printable-Unicode table and Go string escapes.
+    let mut quoted = String::from("\"");
+    for character in value.chars() {
+        match character {
+            '\\' => quoted.push_str("\\\\"),
+            '\"' => quoted.push_str("\\\""),
+            '\x07' => quoted.push_str("\\a"),
+            '\x08' => quoted.push_str("\\b"),
+            '\x0c' => quoted.push_str("\\f"),
+            '\n' => quoted.push_str("\\n"),
+            '\r' => quoted.push_str("\\r"),
+            '\t' => quoted.push_str("\\t"),
+            '\x0b' => quoted.push_str("\\v"),
+            character if (character as u32) < 0x20 || character == '\x7f' => {
+                quoted.push_str(&format!("\\x{:02x}", character as u32));
+            }
+            character if !is_print(character) => {
+                let point = character as u32;
+                if point < 0x10000 {
+                    quoted.push_str(&format!("\\u{point:04x}"));
+                } else {
+                    quoted.push_str(&format!("\\U{point:08x}"));
+                }
+            }
+            character => quoted.push(character),
+        }
+    }
+    quoted.push('\"');
+    quoted
+}
+
 const NON_PRINT: &[(u32, u32)] = &[
     (0x0, 0x1f),
     (0x7f, 0xa0),

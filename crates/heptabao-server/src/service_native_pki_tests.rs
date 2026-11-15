@@ -3,6 +3,7 @@
 use super::*;
 use crate::configuration::NativeStorageProfile;
 use crate::service::tests::Root;
+use crate::service::tests::native_fixture_call as call;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use openssl::{
     hash::MessageDigest,
@@ -38,39 +39,7 @@ fn secret(response: &mut Response, path: &str) -> TestResult<Zeroizing<String>> 
     erase_json(&mut response.body);
     Ok(value)
 }
-fn call(
-    service: &mut Service,
-    now: &mut u64,
-    token: &str,
-    method: &str,
-    path: &str,
-    body: Value,
-) -> TestResult<Response> {
-    *now += 1;
-    let started = Instant::now();
-    let clock = RequestClock::anchored(Duration::from_secs(*now), started)?;
-    let _deadline =
-        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
-    let execution = service.begin_at_mode_precise(
-        RequestDispatch {
-            method,
-            path,
-            namespace: "",
-            token,
-            body,
-            now: *now,
-            allow_forward: true,
-            enforce_namespace: true,
-            wrap_ttl_seconds: None,
-            origin_peer: None,
-            client_certificates: None,
-        },
-        clock,
-    );
-    let response = service.finish_synchronous_request(execution);
-    assert!(service.pending_native_auth_delivery.is_none());
-    Ok(response)
-}
+
 fn role() -> Value {
     json!({"allowed_domains":["example.test"],"allow_subdomains":true,
         "key_type":"ec","key_bits":256,"max_ttl":"2h","generate_lease":true})
@@ -86,41 +55,13 @@ impl Fixture {
     fn initialized() -> TestResult<Self> {
         let files = Root::new();
         let mut service = files.service()?;
-        service.configure_native_v6_storage(NativeStorageProfile::File)?;
-        let mut now = 100;
-        let mut init = call(
+        let (key, admin, now) = crate::service::tests::initialize_native_fixture(
             &mut service,
-            &mut now,
-            "",
-            "POST",
-            "sys/init",
-            json!({"secret_shares":1,"secret_threshold":1}),
+            call,
+            status,
+            text,
+            secret,
         )?;
-        status(&init, 200);
-        let key = Zeroizing::new(text(&init, "/keys/0")?);
-        let admin = secret(&mut init, "/root_token")?;
-        status(
-            &call(
-                &mut service,
-                &mut now,
-                "",
-                "POST",
-                "sys/unseal",
-                json!({"key":key.as_str()}),
-            )?,
-            200,
-        );
-        status(
-            &call(
-                &mut service,
-                &mut now,
-                &admin,
-                "POST",
-                "sys/init/ack",
-                json!({}),
-            )?,
-            204,
-        );
         Ok(Self {
             files,
             service,
@@ -283,14 +224,7 @@ impl Fixture {
         secret(&mut response, "/auth/client_token")
     }
     fn idle(&mut self, now: u64) -> TestResult<bool> {
-        self.now = now;
-        let started = Instant::now();
-        let clock = RequestClock::anchored(Duration::from_secs(now), started)?;
-        let _deadline =
-            crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
-        Ok(self
-            .service
-            .maintain_native_transit_with_clock_for_test(now, clock)?)
+        crate::service::tests::idle_native_fixture(&mut self.service, &mut self.now, now)
     }
     fn audited(
         &mut self,

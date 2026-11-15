@@ -7,8 +7,10 @@ import unittest
 
 try:
     from tests.plan.historical import historical_only
+    from tests.plan.repository_fixture import replace_text
 except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
     from historical import historical_only
+    from repository_fixture import replace_text
 from pathlib import Path
 
 import yaml
@@ -50,11 +52,7 @@ def copy_validation_surface(target_root: Path) -> None:
 
 
 def mutate_text(target_root: Path, relative: str, old: str, new: str) -> None:
-    path = target_root / relative
-    source = path.read_text(encoding="utf-8")
-    if old not in source:
-        raise AssertionError(f"mutation marker not found in {relative}: {old}")
-    path.write_text(source.replace(old, new, 1), encoding="utf-8")
+    replace_text(target_root, relative, old, new)
 
 
 class PlanV131Tests(unittest.TestCase):

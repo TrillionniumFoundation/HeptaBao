@@ -6,22 +6,17 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
-use openraft::{Config, Raft, ReadPolicy, SnapshotPolicy};
-use openraft_memstore::{ClientRequest, MemLogStore, MemStateMachine, TypeConfig, new_mem_store};
+use openraft::{Config, ReadPolicy, SnapshotPolicy};
+use openraft_memstore::ClientRequest;
 use serde_json::{Value, json};
 use tokio::time::{sleep, timeout};
 
-use super::network::{InMemoryNetworkFactory, InMemoryRouter, MemRaft};
+use super::network::InMemoryRouter;
+use super::node::Node;
 
 pub type AnyResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 
 const REGISTER_KEY: &str = "heptabao-h02-os-clock-register";
-
-struct Node {
-    raft: MemRaft,
-    log_store: Arc<MemLogStore>,
-    state_machine: Arc<MemStateMachine>,
-}
 
 struct Cluster {
     router: InMemoryRouter,
@@ -49,25 +44,8 @@ impl Cluster {
     }
 
     async fn start_node(&mut self, id: u64) -> AnyResult<()> {
-        let (log_store, state_machine) = new_mem_store();
-        let network = InMemoryNetworkFactory::new(id, self.router.clone());
-        let raft = Raft::<TypeConfig, Arc<MemStateMachine>>::new(
-            id,
-            self.config.clone(),
-            network,
-            log_store.clone(),
-            state_machine.clone(),
-        )
-        .await?;
-        self.router.register(id, raft.clone()).await;
-        self.nodes.insert(
-            id,
-            Node {
-                raft,
-                log_store,
-                state_machine,
-            },
-        );
+        let node = Node::start(id, self.config.clone(), &self.router).await?;
+        self.nodes.insert(id, node);
         Ok(())
     }
 

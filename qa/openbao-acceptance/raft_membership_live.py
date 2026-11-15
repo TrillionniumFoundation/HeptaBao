@@ -9,12 +9,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import re
 from pathlib import Path
-import secrets
 import shutil
-import subprocess
 import tempfile
 import time
 from ha_destructive import Cluster,FixtureError,checked_binary

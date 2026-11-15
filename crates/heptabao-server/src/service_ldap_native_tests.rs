@@ -4,6 +4,7 @@ use super::online_auth::OnlineAuthObservation;
 use super::tests::{Root, bootstrap, call};
 use super::*;
 use crate::auth::{LdapLoginObservation, LdapRenewalObservation, ProviderRenewalObservation};
+use crate::service::tests::pending_ldap_fixture as pending;
 use std::collections::BTreeSet;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
@@ -47,34 +48,6 @@ fn certificate() -> TestResult<String> {
         .as_str()
         .ok_or("missing certificate")?
         .to_owned())
-}
-
-fn pending(
-    service: &mut Service,
-    path: &str,
-    token: &str,
-    body: Value,
-    now: u64,
-    wrap_ttl_seconds: Option<u64>,
-) -> TestResult<Box<PendingExternalRequest>> {
-    match service.begin_at_mode(RequestDispatch {
-        method: "POST",
-        path,
-        namespace: "",
-        token,
-        body,
-        now,
-        allow_forward: false,
-        enforce_namespace: true,
-        wrap_ttl_seconds,
-        origin_peer: None,
-        client_certificates: None,
-    }) {
-        RequestExecution::External(plan) => Ok(plan),
-        RequestExecution::Complete(response) => {
-            Err(format!("expected provider request, got {}", response.status).into())
-        }
-    }
 }
 
 fn groups(member: bool) -> BTreeSet<String> {

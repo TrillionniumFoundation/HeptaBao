@@ -29,17 +29,7 @@ thread_local! { static AFTER_AUDIT: RefCell<Option<AfterAudit>> = RefCell::new(N
 
 pub(super) fn after_actual_capabilities_audit(service: &mut Service, response: &mut Response) {
     let hook = AFTER_AUDIT.with(|slot| slot.borrow_mut().take());
-    if let Some(hook) = hook {
-        assert!(service.native_failure_notice.is_none());
-        let binding = service.native_request_binding.take();
-        assert!(binding.is_some());
-        assert!(service.pending_native_auth_delivery.is_none());
-        hook(service, response);
-        assert!(service.native_request_binding.is_none());
-        assert!(service.native_failure_notice.is_none());
-        assert!(service.pending_native_auth_delivery.is_none());
-        service.native_request_binding = binding;
-    }
+    crate::service::tests::run_after_actual_native_audit(service, response, hook);
 }
 
 pub(in crate::service) struct HookGuard;

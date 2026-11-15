@@ -1,8 +1,6 @@
-import copy
 import json
 import time
 import unittest
-from unittest import mock
 import native_restore_gate_controller as f
 
 

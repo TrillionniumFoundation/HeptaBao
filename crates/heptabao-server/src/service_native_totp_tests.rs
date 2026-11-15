@@ -14,19 +14,7 @@ thread_local! { static AFTER_AUDIT: RefCell<Option<AfterAudit>> = RefCell::new(N
 
 pub(super) fn after_actual_totp_audit(service: &mut Service, response: &mut Response) {
     let hook = AFTER_AUDIT.with(|slot| slot.borrow_mut().take());
-    if let Some(hook) = hook {
-        // Interleave an actual second request after actual publication/audit.
-        // The outer capsule retains its Actor, proof, clock and checkpoint.
-        assert!(service.native_failure_notice.is_none());
-        let binding = service.native_request_binding.take();
-        assert!(binding.is_some());
-        assert!(service.pending_native_auth_delivery.is_none());
-        hook(service, response);
-        assert!(service.native_request_binding.is_none());
-        assert!(service.native_failure_notice.is_none());
-        assert!(service.pending_native_auth_delivery.is_none());
-        service.native_request_binding = binding;
-    }
+    crate::service::tests::run_after_actual_native_audit(service, response, hook);
 }
 pub(in crate::service) struct HookGuard;
 impl Drop for HookGuard {
@@ -178,27 +166,10 @@ fn enable(service: &mut Service, token: &str, mount: &str) -> TestResult {
     Ok(())
 }
 fn reopen(files: &Root, key: &str) -> TestResult<Service> {
-    let mut service = files.service()?;
-    service.configure_native_v6_storage(NativeStorageProfile::File)?;
-    expect(
-        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})),
-        200,
-        "formal-File-cold-unseal",
-    )?;
-    assert!(service.native_root.is_some());
-    Ok(service)
+    crate::service::tests::reopen_native_fixture(files, key, call, expect)
 }
 fn sentinel(service: &mut Service, root: &str) -> TestResult {
-    let response = expect(
-        call(service, "GET", "secret/data/sentinel", root, json!({})),
-        200,
-        "unrelated-KV-sentinel",
-    )?;
-    assert!(response.body["data"]["data"] == json!({"kept":"unchanged"}));
-    assert!(service.pending_native_auth_delivery.is_none());
-    assert!(service.native_request_binding.is_none());
-    assert!(!service.recovery_required && !service.audit_failed);
-    Ok(())
+    crate::service::tests::assert_native_sentinel(service, root, call, expect)
 }
 
 fn imported(issuer: &str) -> Value {

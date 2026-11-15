@@ -17,7 +17,8 @@ from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
 from oidc_renewal_live import free_port
-from online_evidence import admit_output, source_identity
+from online_evidence import (admit_output, check_numeric_observation, source_identity,
+                             trace_auth, trace_renewal, trace_request)
 from radius_renewal_live import renewal_token_shape
 from remote_jwks_live import Instance
 
@@ -61,17 +62,10 @@ class Trace:
         self.sensitive = []
 
     def check(self, name, condition, **observations):
-        if (not isinstance(name, str) or re.fullmatch(r'[a-z0-9_.]{1,140}', name) is None
-                or any(type(v) not in (int, bool) for v in observations.values())):
-            raise ValueError('unsafe_observation')
-        self.rows.append({'case': 'approle_native_defaults.' + name, 'passed': condition is True, **observations})
-        if condition is not True:
-            raise ScenarioFailure('approle_native_defaults.' + name)
+        check_numeric_observation(self.rows, 'approle_native_defaults.', name, condition, observations, ScenarioFailure)
 
     def call(self, name, path, fields=None, *, method='POST', bearer=None, status=200, wrap=None):
-        response = self.client.request(method, '/v1/' + path, fields, token=bearer, wrap_ttl=wrap)
-        self.check(name + '.status', response.status == status, status=response.status)
-        return response.body
+        return trace_request(self, name, path, fields, method=method, bearer=bearer, status=status, wrap=wrap)
 
     def lease(self, name, auth, *, exact=None, maximum=None, nonexpiring=False):
         ttl = auth.get('lease_duration')
@@ -87,31 +81,11 @@ class Trace:
                    and (exact is None or ttl == exact) and (maximum is None or ttl <= maximum))
 
     def auth(self, name, body, *, exact=None, maximum=None, nonexpiring=False):
-        auth = body.get('auth') or {}
-        self.check(name + '.credentials', all(isinstance(auth.get(k), str) and bool(auth[k])
-                   for k in ('client_token', 'accessor')))
-        self.sensitive.append(auth['client_token'])
-        self.lease(name, auth, exact=exact, maximum=maximum, nonexpiring=nonexpiring)
-        self.check(name + '.renewable', auth.get('renewable') is (not nonexpiring))
-        return auth
+        return trace_auth(self, name, body, exact=exact, maximum=maximum, nonexpiring=nonexpiring)
 
     def renew(self, name, auth, *, via='self', increment=None, exact=None, maximum=None, status=200):
-        fields = {} if increment is None else {'increment': increment}
-        path = {'self': 'renew-self', 'token': 'renew', 'accessor': 'renew-accessor'}[via]
-        if via == 'token':
-            fields['token'] = auth['client_token']
-        elif via == 'accessor':
-            fields['accessor'] = auth['accessor']
-        name += '.' + via
-        body = self.call(name, 'auth/token/' + path, fields,
-                         bearer=auth['client_token'] if via == 'self' else None, status=status)
-        if status != 200:
-            self.check(name + '.no_credentials', not body.get('auth') and not body.get('wrap_info'))
-            return
-        renewed = body.get('auth') or {}
-        self.lease(name, renewed, exact=exact, maximum=maximum)
-        self.check(name + '.shape', renewed.get('renewable') is True
-                   and renewal_token_shape(renewed, auth['client_token'], via_accessor=via == 'accessor'))
+        return trace_renewal(self, name, auth, via=via, increment=increment, exact=exact, maximum=maximum,
+                             status=status, renewal_shape=renewal_token_shape)
 
 
 def run_scenarios(client, restart, rows, diagnostics, *, wait=time.sleep):

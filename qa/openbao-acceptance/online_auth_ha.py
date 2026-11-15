@@ -6,18 +6,14 @@ protocol fixture, NOT a kube-apiserver. Three processes are not physical hosts.
 """
 from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
-import hashlib
 import json
-import os
 from pathlib import Path
 import secrets
 import shutil
-import subprocess
-import sys
 import tempfile
 import time
 import urllib.parse
-from bao_http import Client, private_write
+from bao_http import Client
 from heptabao.transport import SafeArgumentParser
 from online_evidence import admit_output, source_identity, publish
 from official_openbao_launcher import start_oracle, stop_oracle

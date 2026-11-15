@@ -1,7 +1,5 @@
 """Offline dispatch/custody regressions; these never claim a physical HA pass."""
-import hashlib
 import json
-import os
 from pathlib import Path
 import stat
 import sys

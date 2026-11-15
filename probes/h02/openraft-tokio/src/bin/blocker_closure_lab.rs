@@ -1,7 +1,13 @@
+#[path = "../cli.rs"]
+mod cli;
+use cli::{argument, parse_seed};
+
 #[path = "openraft_fault_lab/durable.rs"]
 mod durable;
 #[path = "inmemory_cluster/network.rs"]
 mod network;
+#[path = "openraft_fault_lab/node.rs"]
+mod node;
 #[path = "openraft_fault_lab/os_clock.rs"]
 mod os_clock;
 #[path = "openraft_fault_lab/os_clock_cluster.rs"]
@@ -10,20 +16,6 @@ mod os_clock_cluster;
 use std::path::PathBuf;
 
 use serde_json::{Value, json};
-
-fn argument(name: &str, default: &str) -> String {
-    let args = std::env::args().collect::<Vec<_>>();
-    args.windows(2)
-        .find(|pair| pair[0] == name)
-        .map(|pair| pair[1].clone())
-        .unwrap_or_else(|| default.to_owned())
-}
-
-fn parse_seed() -> u64 {
-    let raw = argument("--seed", "0x5eed20260828cafe");
-    let trimmed = raw.strip_prefix("0x").unwrap_or(&raw);
-    u64::from_str_radix(trimmed, 16).unwrap_or_else(|_| panic!("invalid seed: {raw}"))
-}
 
 fn blocked(seed: u64, scope: &str, reason: String) -> Value {
     json!({

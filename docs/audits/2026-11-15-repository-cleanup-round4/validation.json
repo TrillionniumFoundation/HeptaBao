@@ -1,0 +1,3184 @@
+{
+  "schema": "heptabao.round4.cleanup-validation.v1",
+  "baseline_commit": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+  "scope": "Complete repository redundancy review with source-bound affected-component validation. External account/device/provider/destructive-HA/production migration qualifications are not asserted.",
+  "source_changes": {
+    "path": "source-changes.json",
+    "sha256": "1065dd1cfa9e7d29c57018cd57901f696eb6fddc60f1027a201a1319c288aa71",
+    "files": 237,
+    "bytes_delta": -65915,
+    "lines_delta": -1621
+  },
+  "candidate_register": {
+    "path": "candidates.json.gz",
+    "bytes": 438576,
+    "sha256": "14396724487dbcd54209658c17b1aae42090a45279ce41e150ef038c94e49ba4",
+    "uncompressed_bytes": 2228674,
+    "uncompressed_sha256": "8ca6d52bacfd0f3c7af88dd91daf495f44b2b392fe5d741c2544c2e8701fa098"
+  },
+  "python": {
+    "schema": "heptabao.round4-python-final-validation.v1",
+    "baseline_commit": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+    "status": "SAFE_CLEANUP_COMPLETE_WITH_RECORDED_BASELINE_ENVIRONMENT_FAILURES_AND_ONE_TRANSIENT_QA_FAILURE",
+    "source_freeze": {
+      "file": "round4-python-final-owned-files.json",
+      "bytes": 24824,
+      "sha256": "b48565565e966bd24a5363f669c20b090c62953f8c8eb93cbe2b48c50cf20ca6"
+    },
+    "interpreter": "/workspace/scratch/4990b2915f7b/round3-python/bin/python",
+    "dependency_versions": {
+      "Python": "3.12.14",
+      "PyYAML": "6.0.2",
+      "jsonschema": "4.23.0",
+      "cryptography": "50.0.0"
+    },
+    "suite_result_vocabulary": [
+      "PASS",
+      "BASELINE_EQUIVALENT_FAILURE",
+      "FLAKY",
+      "NOT_RUN"
+    ],
+    "suite_counts_are_not_additive": "Some targeted suites overlap the complete discovery suites. No summed total is claimed as unique tests.",
+    "suites": [
+      {
+        "id": "plan_all_final",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-plan-full-final.log",
+          "bytes": 1569,
+          "sha256": "2e0b3a6877a0d6263984bfe207b930c378bca4f63161fb513a6b9f7baecf56ae",
+          "tests_ran": 360,
+          "seconds": 82.385,
+          "result": "OK (skipped=27)",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "Complete plan discovery after descriptor integration; 360 run = 333 passed + 27 existing skips.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "plan_descriptor_integration",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-plan-source-integration-tests.log",
+          "bytes": 9541,
+          "sha256": "6ff4d6f7ca6b2afe59abff3c2fffb4c36b695b5cbc4018af5ce5e7616d5af34f",
+          "tests_ran": 51,
+          "seconds": 10.071,
+          "result": "OK (skipped=3)",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "V1.4, V1.4.1 and descriptor guard suites; 51 run with 3 existing historical skips. Includes 5 helper mutations through each validator.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "repository_and_tools_impacted",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-support-tests-final.log",
+          "bytes": 16209,
+          "sha256": "2474fbf8417cd9def61eaa3ccd8c7f1b7a5fd96d7d0520f11aaef079de122f93",
+          "tests_ran": 89,
+          "seconds": 38.541,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "89 existing affected support/repository/tool tests; exported platform was restored after observing its actual test patch surface.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "migration_adapters_and_lock",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-migration-tests-final.log",
+          "bytes": 19026,
+          "sha256": "fea1370eb945f4f9b10cdfb783def308369622a72a8c4880bc6cd0dd9968d09e",
+          "tests_ran": 106,
+          "seconds": 5.932,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "106 tests: 102 existing plus four lock tests applied to all five migration adapters.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "shared_trace_adapters",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-trace-tests.log",
+          "bytes": 7537,
+          "sha256": "87bc6684d0db5ec7e27c56ced65353f997a58c7a17ff4f52e5bb9b2ba8f3b36d",
+          "tests_ran": 38,
+          "seconds": 0.069,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "38 existing tests exercising the affected auth/renewal traces.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "workflow_cli",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-workflow-cli-tests.log",
+          "bytes": 4665,
+          "sha256": "15499cb558af30bffbc3ceda0a4584e582ebbfc1ab797ae678551cc5f52147a8",
+          "tests_ran": 34,
+          "seconds": 0.048,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "34 existing workflow policy/CLI tests; version-specific validation entrypoints preserved.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "yaml11_and_numeric_trace",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-fourth-tests-final.log",
+          "bytes": 6222,
+          "sha256": "6531171be304a0055bc552f740a9ff020a873a25ed218f140e4eafa0e0dd7aad",
+          "tests_ran": 32,
+          "seconds": 5.334,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "32 existing module-document and userpass suites after YAML1.1 constructor and trace-check sharing.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "compatibility_corpus",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-dead-definitions-tests.log",
+          "bytes": 1881,
+          "sha256": "beb3f402c008693614eb85f5734c7a52a73842b496ce246735dcb6b76004ba5d",
+          "tests_ran": 9,
+          "seconds": 0.5,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "9 tests after uncalled compatibility test helper removal; every actual test method remained unchanged.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "isolated_kv2_redirect_worker",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-dead-class-tests-final.log",
+          "bytes": 2533,
+          "sha256": "4a2b845d4cf7db3b67a559448373e61b224ac4fb3047ae7bb4dbca46791f4a00",
+          "tests_ran": 12,
+          "seconds": 6.271,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "12 existing native large KV2 tests after dead parent NoRedirect removal; real isolated HTTP worker refusal remains.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "descriptor_guard_before_final_integration",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-descriptor-tests-final.log",
+          "bytes": 6749,
+          "sha256": "a6243e81413e2be0ee400f728bbf959b3d3045a1ffad6107413e14e96e027a35",
+          "tests_ran": 34,
+          "seconds": 4.262,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "34 tests at the independently reviewed guard snapshot; the final full plan additionally includes the new integration method.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "postgres_generation_and_state_schema",
+        "status": "PASS",
+        "current": {
+          "file": "round4-python-postgres-row-tests.log",
+          "bytes": 2606,
+          "sha256": "0a5abee323cf143a188135d5db963b1a07f6f8f30bbdc55ab1d039ac941e6e53",
+          "tests_ran": 13,
+          "seconds": 0.018,
+          "result": "OK",
+          "failed_test_or_fixture_ids": []
+        },
+        "scope": "9 existing generation and 4 existing candidate-state-schema tests after uncalled row() removal; 13/13 passed.",
+        "baseline": "Existing assertions retained; specific baseline behavior checked separately where semantic refactoring occurred."
+      },
+      {
+        "id": "qa_full_discovery",
+        "status": "FLAKY",
+        "baseline": {
+          "file": "round4-python-qa-baseline-tests.log",
+          "bytes": 326752,
+          "sha256": "f59958f95fa572c44f43ea79ec2fbff51357709b101ad25c538efb533297510a",
+          "tests_ran": 1768,
+          "seconds": 51.294,
+          "result": "FAILED (errors=2, skipped=3)",
+          "failed_test_or_fixture_ids": [
+            {
+              "outcome": "ERROR",
+              "id": "test_long_private_directory_uses_same_fd_binding_as_real_proxy (test_client_consistency_contract.UnixFixtureDirectoryTests.test_long_private_directory_uses_same_fd_binding_as_real_proxy)"
+            },
+            {
+              "outcome": "ERROR",
+              "id": "test_actual_local_system_elf_loader_observation_is_not_product_execution (test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution)"
+            }
+          ]
+        },
+        "current": {
+          "file": "round4-python-qa-tests.log",
+          "bytes": 329727,
+          "sha256": "b3c148743b88c5f3c354dfb53e5c5243ee77a46ff250d8e27f868c8ebf133c78",
+          "tests_ran": 1780,
+          "seconds": 52.434,
+          "result": "FAILED (failures=1, errors=2, skipped=3)",
+          "failed_test_or_fixture_ids": [
+            {
+              "outcome": "ERROR",
+              "id": "test_long_private_directory_uses_same_fd_binding_as_real_proxy (test_client_consistency_contract.UnixFixtureDirectoryTests.test_long_private_directory_uses_same_fd_binding_as_real_proxy)"
+            },
+            {
+              "outcome": "ERROR",
+              "id": "test_actual_local_system_elf_loader_observation_is_not_product_execution (test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution)"
+            },
+            {
+              "outcome": "FAIL",
+              "id": "test_actual_native_argv_and_wrong_identity_never_signal_another_child (test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_actual_native_argv_and_wrong_identity_never_signal_another_child)"
+            }
+          ]
+        },
+        "baseline_equivalent_environment_errors": [
+          {
+            "id": "test_client_consistency_contract.UnixFixtureDirectoryTests.test_long_private_directory_uses_same_fd_binding_as_real_proxy",
+            "reason": "This container denies actual AF_UNIX bind with PermissionError [Errno 1] for the descriptor-bound long private path; same baseline/current error."
+          },
+          {
+            "id": "test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution",
+            "reason": "Actual host ELF-loader custody does not meet owned_bounded_regular_file_required; same baseline/current Refusal."
+          }
+        ],
+        "one_current_transient_failure": {
+          "id": "test_native_v6_ha_multihost_live.NativePhysicalOwnershipTests.test_actual_native_argv_and_wrong_identity_never_signal_another_child",
+          "reason": "Owned child exited during /proc identity observation, raising ProcessLookupError. Only an unused outer import changed in the controller; retained function/embedded source AST is unchanged.",
+          "targeted_baseline": {
+            "file": "round4-python-qa-process-race-baseline.log",
+            "bytes": 308,
+            "sha256": "dd529135f68d83123513fdb1c21b3b5115957c9ae0b54b2f89fac12dabb45193",
+            "tests_ran": 1,
+            "seconds": 0.664,
+            "result": "OK",
+            "failed_test_or_fixture_ids": []
+          },
+          "targeted_current": {
+            "file": "round4-python-qa-process-race-current.log",
+            "bytes": 308,
+            "sha256": "166b7443f4c94fbed83c81f2eca460e8a1867357596c8872a084f2d4fd200052",
+            "tests_ran": 1,
+            "seconds": 0.71,
+            "result": "OK",
+            "failed_test_or_fixture_ids": []
+          },
+          "resolution": "Both bounded targeted reruns passed without source/test changes. Original full-suite failure is retained; full QA is not labelled all-green."
+        },
+        "test_count_change": "1768 baseline -> 1780 current = four migration lock methods plus eight PostgreSQL contract methods supplied by the structure agent.",
+        "scope_limit": "Full discovery ran before later narrow shared trace/checkpoint/descriptor changes; those changes have their own existing suites/differential proofs, and descriptor integration is covered by final complete plan."
+      },
+      {
+        "id": "qa_additional_top_level",
+        "status": "BASELINE_EQUIVALENT_FAILURE",
+        "baseline": {
+          "file": "round4-python-qa-top-level-baseline-tests.log",
+          "bytes": 8080,
+          "sha256": "7f2786d2201fbba9010a3f56b04346165895e6fa3aedf570b4ec06b0f7b80ac6",
+          "tests_ran": 44,
+          "seconds": 5.579,
+          "result": "FAILED (errors=1)",
+          "failed_test_or_fixture_ids": [
+            {
+              "outcome": "ERROR",
+              "id": "setUpClass (test_authbus_native_openai_once.NativeOpenaiPacketQualification)"
+            }
+          ]
+        },
+        "current": {
+          "file": "round4-python-qa-top-level-tests.log",
+          "bytes": 8066,
+          "sha256": "ac333f4a52a33a14d015184dbc9a38a5fefb8d6d553ca3f8dde958eebd972301",
+          "tests_ran": 44,
+          "seconds": 5.583,
+          "result": "FAILED (errors=1)",
+          "failed_test_or_fixture_ids": [
+            {
+              "outcome": "ERROR",
+              "id": "setUpClass (test_authbus_native_openai_once.NativeOpenaiPacketQualification)"
+            }
+          ]
+        },
+        "reason": "Both runs execute 44 tests and report the same NativeOpenaiPacketQualification.setUpClass error: explicit_packet_test_input_required. No independently supplied packet was invented or bypassed."
+      },
+      {
+        "id": "python_sdk_full_discovery",
+        "status": "BASELINE_EQUIVALENT_FAILURE",
+        "baseline": {
+          "file": "round4-python-sdk-baseline-tests.log",
+          "bytes": 40595,
+          "sha256": "24bd7fa0fa916aa4e09e2bcd8db6667d3697956908a856a0b66f1619a03fdcab",
+          "tests_ran": 224,
+          "seconds": 2.114,
+          "result": "FAILED (failures=1, errors=3, skipped=4)",
+          "failed_test_or_fixture_ids": [
+            {
+              "outcome": "ERROR",
+              "id": "test_replaced_renderer_path_cannot_change_admitted_executable (test_managed_templates.TemplateCustodyTests.test_replaced_renderer_path_cannot_change_admitted_executable)"
+            },
+            {
+              "outcome": "ERROR",
+              "id": "test_actual_bind_failure_preserves_cwd_and_existing_socket (test_proxy_platform.ProxyPlatformTests.test_actual_bind_failure_preserves_cwd_and_existing_socket)"
+            },
+            {
+              "outcome": "ERROR",
+              "id": "test_directory_replacement_rejects_and_cleans_only_original_socket (test_proxy_platform.ProxyPlatformTests.test_directory_replacement_rejects_and_cleans_only_original_socket)"
+            },
+            {
+              "outcome": "FAIL",
+              "id": "test_renderer_fifo_rejects_without_waiting_for_writer (test_managed_templates.TemplateCustodyTests.test_renderer_fifo_rejects_without_waiting_for_writer)"
+            }
+          ]
+        },
+        "current": {
+          "file": "round4-python-sdk-tests.log",
+          "bytes": 40511,
+          "sha256": "e8e375ae0b27b1eaf24b70d64ae01ab0a5eea1f596583d3698322819f3ff0e42",
+          "tests_ran": 224,
+          "seconds": 1.886,
+          "result": "FAILED (failures=1, errors=3, skipped=4)",
+          "failed_test_or_fixture_ids": [
+            {
+              "outcome": "ERROR",
+              "id": "test_replaced_renderer_path_cannot_change_admitted_executable (test_managed_templates.TemplateCustodyTests.test_replaced_renderer_path_cannot_change_admitted_executable)"
+            },
+            {
+              "outcome": "ERROR",
+              "id": "test_actual_bind_failure_preserves_cwd_and_existing_socket (test_proxy_platform.ProxyPlatformTests.test_actual_bind_failure_preserves_cwd_and_existing_socket)"
+            },
+            {
+              "outcome": "ERROR",
+              "id": "test_directory_replacement_rejects_and_cleans_only_original_socket (test_proxy_platform.ProxyPlatformTests.test_directory_replacement_rejects_and_cleans_only_original_socket)"
+            },
+            {
+              "outcome": "FAIL",
+              "id": "test_renderer_fifo_rejects_without_waiting_for_writer (test_managed_templates.TemplateCustodyTests.test_renderer_fifo_rejects_without_waiting_for_writer)"
+            }
+          ]
+        },
+        "reason": "Both 224-test runs have exactly one failure, three errors and four existing skips; actual private-executable/AF_UNIX host controls are unavailable here.",
+        "matching_conditions": [
+          {
+            "id": "test_managed_templates.TemplateCustodyTests.test_replaced_renderer_path_cannot_change_admitted_executable",
+            "condition": "template_immutable_renderer_platform_unsupported"
+          },
+          {
+            "id": "test_proxy_platform.ProxyPlatformTests.test_actual_bind_failure_preserves_cwd_and_existing_socket",
+            "condition": "Actual AF_UNIX bind PermissionError [Errno 1]"
+          },
+          {
+            "id": "test_proxy_platform.ProxyPlatformTests.test_directory_replacement_rejects_and_cleans_only_original_socket",
+            "condition": "Actual AF_UNIX bind PermissionError [Errno 1]"
+          },
+          {
+            "id": "test_managed_templates.TemplateCustodyTests.test_renderer_fifo_rejects_without_waiting_for_writer",
+            "condition": "Unsupported renderer platform is rejected before the test-specific trusted-executable refusal text"
+          }
+        ]
+      }
+    ],
+    "differential_and_source_proofs": [
+      {
+        "file": "round4-python-behavior-proof.json",
+        "bytes": 39328,
+        "sha256": "8c9ad93c11a03235bc83baa436b7ce87c726b51530ae4e905e6461bd159e2bd0",
+        "scope": "198 baseline/current YAML1.2 comparisons, global/sibling loader isolation, exact fixture semantics and frozen-renderer output equality. AST statements describe the initial batch snapshot; later authorized function changes are separately proved below."
+      },
+      {
+        "file": "round4-python-migration-proof.json",
+        "bytes": 3487,
+        "sha256": "bd199695667d1b26b18fd8355d888a1642e17198374a7077a85f09845502c7e9",
+        "scope": "40 baseline/current lock scenarios, five CLI forms and KV2 original post-exit fd semantics. Initial unchanged-checkpoint AST statement is superseded only by the separately proved ObjectCheckpoint extraction."
+      },
+      {
+        "file": "round4-python-fourth-proof.json",
+        "bytes": 15610,
+        "sha256": "c04adbf9518f0f7e62b13fce47fce57c56b0af161b2612541e4ffe25d8c20b1c",
+        "scope": "150 numeric trace comparisons; 28 YAML1.1 texts + six mapping/order/deep scenarios. Callback identity, numeric/bool/NaN handling and exception text/order preserved."
+      },
+      {
+        "file": "round4-python-last-batches-proof.json",
+        "bytes": 13108,
+        "sha256": "1fb366691e1e7153b4ce6e4918353fa5e8c0a843d24f5e1c965bd337e8b668dd",
+        "scope": "12 exact CLI stdout/stderr/exit comparisons, 88 trace call/auth/renew comparisons, 16 ObjectCheckpoint comparisons, and retained-AST proof for the first four removed definitions."
+      },
+      {
+        "file": "round4-python-descriptor-proof.json",
+        "bytes": 538,
+        "sha256": "756345153592a2ffe1bd60ff69c817115bd611558d356fa0ad9ae06c6b51074c",
+        "scope": "Actual current and all-four-SHA-authenticated d35 inline descriptor sources both pass; shared helper module/import/export/counter/order semantics are independently reviewed."
+      },
+      {
+        "file": "round4-python-plan-source-integration-proof.json",
+        "bytes": 957,
+        "sha256": "4a014235c5029d165e388d2caf93682acb333593030857841246917088565e1e",
+        "scope": "Both older plan validators pass current and exact d35 source trees; only validate_rust_sources changed, imports unchanged; all 38 pre-existing governance functions/tests unchanged at this integration step."
+      },
+      {
+        "file": "round4-python-postgres-row-proof.json",
+        "bytes": 1237,
+        "sha256": "abda27210171de17e7d06d172ff0ebb1d838081c46cf0e098285ec33e4575e46",
+        "scope": "Fifth orphan definition: exact removed 261-byte function /263-byte file delta, executable mode unchanged, complete remaining module AST identical."
+      },
+      {
+        "file": "round4-python-owned-deadline-proof.json",
+        "bytes": 1209,
+        "sha256": "b0349688df698e54c64b184d8fd7f7f66faf6ec73b1fe6adfeac0fa79b7817ba",
+        "scope": "Seven actual local TCP/private-file/owned-child controls passed using a newly allocated private test fixture; no physical device/product qualification claimed."
+      },
+      {
+        "file": "round4-python-final-ast-and-size-proof.json",
+        "bytes": 53279,
+        "sha256": "7a9f16bc1f0d3b3338a0595fc6ad86ccac8966dfadb69f9b507f5f0b9be4611b",
+        "scope": "Final snapshot: 133 owned Python files, 95 import-only AST-equivalent files, three new helpers/tests, existing modes unchanged, 57 evidence/operator/runtime/frozen-renderer Python sources byte-identical."
+      },
+      {
+        "file": "round4-python-test-method-preservation.json",
+        "bytes": 2854,
+        "sha256": "8b573caad118943f6af4eab180b89f60a79591bc924d6d3b36b4553e7d1bae09",
+        "scope": "599 pre-existing test methods: no deletion, 598 AST-identical, one existing negative test retargeted from caller STORE to active WRITE helper; 14 new test methods."
+      }
+    ],
+    "independent_reviews": [
+      {
+        "file": "round4-python-migration-independent-review.json",
+        "bytes": 3094,
+        "sha256": "821ffd752b9ae17729a36ec2aba741eb47989b0ab84915eab3690a52e549a041",
+        "reviewer": "rust_round3",
+        "status": "GO",
+        "scope": "Shared lock/ObjectCheckpoint and five actual adapters; recommended six unused imports were subsequently removed."
+      },
+      {
+        "file": "round4-descriptor-guard-independent-review.json",
+        "bytes": 4616,
+        "sha256": "2b7ff8fb321900efba58dd59f0cdef225b6beaab0dd33056881abd385f626cc3",
+        "reviewer": "structure_round3",
+        "status": "GO",
+        "scope": "Exact shared descriptor source binding, original/negative tests and historical fallback; final integration adds only caller tests and no guard changes."
+      }
+    ],
+    "resolved_integration_regressions": [
+      {
+        "original": {
+          "file": "round4-regression-plan.log",
+          "bytes": 7803,
+          "sha256": "c0a48b928de5a5bbc4efab4ec73d6e103afd7bda541b81eb447ee3f4436cd948"
+        },
+        "observed": "359 tests: 3 failures + 2 errors + 27 skips because V1.4/V1.4.1 still searched moved IO tokens only in caller lib.rs.",
+        "fix": "Removed the obsolete duplicate location demands while preserving mandatory existing strict descriptor_provider_errors calls; added real shared-source mutations through both entrypoints.",
+        "final": {
+          "file": "round4-python-plan-full-final.log",
+          "bytes": 1569,
+          "sha256": "2e0b3a6877a0d6263984bfe207b930c378bca4f63161fb513a6b9f7baecf56ae"
+        },
+        "result": "360 tests: 333 passed + 27 original skips; no original negative assertion removed or relaxed."
+      },
+      {
+        "original": {
+          "file": "round4-python-support-tests.log",
+          "bytes": 24249,
+          "sha256": "8527f1456840af42fb37c5377747f4baaaaf7f81cc453d4197bd66482ce5c437"
+        },
+        "fix": "Restored prepare_openbao_oracle.platform because actual tests patch the exported module attribute; corrected tool-test import path for the existing test runner.",
+        "final": {
+          "file": "round4-python-support-tests-final.log",
+          "bytes": 16209,
+          "sha256": "2474fbf8417cd9def61eaa3ccd8c7f1b7a5fd96d7d0520f11aaef079de122f93"
+        }
+      },
+      {
+        "original": {
+          "file": "round4-python-fourth-tests.log",
+          "bytes": 28724,
+          "sha256": "7ebb751ab18a1c08fdf131f5454a2e5ae12ad683690efb9bc4dfbb23d1b7af02"
+        },
+        "fix": "Rust write extraction initially made old inline-source descriptor checks stale. Guard now validates actual mandatory helper calls and ordered shared body; existing negative mutation follows that body.",
+        "final": {
+          "file": "round4-python-plan-full-final.log",
+          "bytes": 1569,
+          "sha256": "2e0b3a6877a0d6263984bfe207b930c378bca4f63161fb513a6b9f7baecf56ae"
+        }
+      }
+    ],
+    "not_run": [
+      {
+        "status": "NOT_RUN",
+        "scope": "Actual phone/Android/passkey/device workflows and externally credentialed provider migration qualification",
+        "reason": "Cleanup validation uses synthetic/existing local regression contracts; no device inputs, accounts or production actions were fabricated."
+      },
+      {
+        "status": "NOT_RUN",
+        "scope": "SDK private renderer and actual AF_UNIX qualification on a supported unrestricted host",
+        "reason": "Baseline and current report the same host restrictions; source/test guards were retained."
+      }
+    ],
+    "candidate_ledger": {
+      "file": "round4-python-candidate-ledger-compact.json",
+      "bytes": 726009,
+      "sha256": "756f8a7351a4cedec39c35c297dadbbdb72b4098d5595d0e248897ca82518f3e"
+    },
+    "candidate_ledger_full": {
+      "file": "round4-python-candidate-ledger.json",
+      "bytes": 15050748,
+      "sha256": "2ce3891f87066a706f63801fed38a878ab00daaf9f2ae0c31d3aacc56bd0f2f3"
+    },
+    "candidate_ledger_projection_proof": {
+      "file": "round4-python-compact-ledger-projection-proof.json",
+      "bytes": 620,
+      "sha256": "79afb389898cc7b3f9bad6a14bdb42ab2b6ac6df5af13db34b43f644ab60d881"
+    },
+    "candidate_counts": {
+      "baseline_python_files": 940,
+      "current_python_files": 945,
+      "normalized_duplicate_groups_before": 222,
+      "normalized_duplicate_groups_after": 206,
+      "exact_ast_duplicate_groups_before": 211,
+      "exact_ast_duplicate_groups_after": 197,
+      "duplicate_status": {
+        "retained_required": 206,
+        "consolidated": 16
+      },
+      "initial_unused_import_status": {
+        "retained_required": 78,
+        "removed": 139
+      },
+      "initial_unreferenced_definition_status": {
+        "retained_required": 551,
+        "removed": 5
+      },
+      "initial_unreferenced_definition_classification": {
+        "packaged_cli_entrypoint": 2,
+        "observed_public_import_or_attribute": 83,
+        "unittest_discovery": 444,
+        "frozen_or_staged_export": 15,
+        "inline_operator_public_api": 1,
+        "hash_bound_measured_library_surface": 1,
+        "orphan_definition_removed": 5,
+        "dynamic_module_or_callback_api": 4,
+        "python_module_protocol": 1
+      },
+      "current_unreferenced_definitions": 565,
+      "current_unreferenced_definition_classification": {
+        "packaged_cli_entrypoint": 2,
+        "observed_public_import_or_attribute": 83,
+        "unittest_discovery": 446,
+        "frozen_or_staged_export": 15,
+        "inline_operator_public_api": 1,
+        "hash_bound_measured_library_surface": 1,
+        "new_shared_implementation_with_callers": 12,
+        "dynamic_module_or_callback_api": 4,
+        "python_module_protocol": 1
+      },
+      "parse_errors": []
+    },
+    "remaining_confirmed_actionable_python_candidates": [],
+    "interpretation": "No confirmed removable Python candidate remains unimplemented after two AST-normalized duplicate scans, unreferenced-definition/import review, actual dynamic-consumer tracing, and the final rescan. Retained syntax includes authenticated replay packages and independently required version/profile assertions; no claim that arbitrary dynamic code contains literally zero duplicate text is made."
+  },
+  "rust_linux": {
+    "schema": "heptabao.round4.rust-local-validation.v1",
+    "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+    "toolchain": "Rust 1.98.0 native Linux",
+    "source_snapshot": {
+      "path": "/workspace/scratch/4990b2915f7b/round4-rust-initial-native-snapshot.json",
+      "sha256": "6b2b65312a56e39969f5fd41baa46fae5d539b131e27eac5216adbc487b2acc1",
+      "file_count": 83,
+      "all_hashes_matched_when_local_checks_completed": true
+    },
+    "environment": {
+      "CARGO_HOME": "/workspace/scratch/4990b2915f7b/round3-cargo",
+      "RUSTUP_HOME": "/workspace/scratch/4990b2915f7b/round3-rustup",
+      "CARGO_TARGET_DIR": "/workspace/scratch/4990b2915f7b/round3-target",
+      "CMAKE": "/workspace/scratch/4990b2915f7b/round3-python/bin/cmake",
+      "BINDGEN_EXTRA_CLANG_ARGS": "-isystem/usr/lib/gcc/x86_64-linux-gnu/14/include"
+    },
+    "tests": {
+      "command": "/workspace/scratch/4990b2915f7b/round3-cargo/bin/cargo test -p heptabao-filesystem-guard -p heptabao-single-node-store -p heptabao-single-node-journal -p heptabao-durable-service -p heptabao-raft-runtime -p heptabao-openbao-grpc --features heptabao-raft-runtime/native-v6-raft-objects -j 1 --lib",
+      "exit_code": 0,
+      "log": "/workspace/scratch/4990b2915f7b/round4-rust-final-package-tests.log",
+      "packages": {
+        "heptabao-durable-service": {
+          "status": "ok",
+          "passed": 249,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        "heptabao-filesystem-guard": {
+          "status": "ok",
+          "passed": 48,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        "heptabao-openbao-grpc": {
+          "status": "ok",
+          "passed": 34,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        "heptabao-raft-runtime": {
+          "status": "ok",
+          "passed": 220,
+          "failed": 0,
+          "ignored": 1,
+          "measured": 0,
+          "filtered": 0
+        },
+        "heptabao-single-node-journal": {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        "heptabao-single-node-store": {
+          "status": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      },
+      "total_passed": 572,
+      "total_failed": 0,
+      "total_ignored": 1,
+      "ignored": "heptabao-raft-runtime::v6_replica_blobs::tests::stages_unique_139_mib_without_raft_json; existing explicit 139 MiB local disk trial, no quorum or root publication",
+      "child_process_note": "filesystem-guard runs two one-test child subprocesses; their PASS footers are nested observations and not counted twice."
+    },
+    "clippy": {
+      "command": "/workspace/scratch/4990b2915f7b/round3-cargo/bin/cargo clippy -p heptabao-filesystem-guard -p heptabao-single-node-store -p heptabao-single-node-journal -p heptabao-durable-service -p heptabao-raft-runtime -p heptabao-openbao-grpc --features heptabao-raft-runtime/native-v6-raft-objects --all-targets -j 1 -- -D warnings",
+      "exit_code": 0,
+      "log": "/workspace/scratch/4990b2915f7b/round4-rust-final-package-clippy.log",
+      "warnings": 0,
+      "errors": 0
+    },
+    "existing_negative_coverage_observed": [
+      "capacity::tests::atomic_batch_unknown_outcome_reconciles_as_one_commit",
+      "immutable_publication::tests::unknown_barrier_and_unresolved_mutation_are_read_only_refusals",
+      "prepared_restore::tests::epoch_publication_tests::epoch_publication_original_owner_loss_after_physical_commit_is_unknown_and_fenced",
+      "retirement::tests::immutable_retirement_directory_sync_loss_is_unknown_not_retry",
+      "store::blocking_io::tests::store_io_worker_panic_is_reported_as_io_failure_without_panic_contents",
+      "parallel existing descriptor ABA/failure/late-gate/cold-reopen scenarios in durable-service and raft-runtime"
+    ],
+    "proofs": [
+      "round4-rust-final-test-preservation.json",
+      "round4-rust-extraction-equivalence.json",
+      "round4-rust-candidate-ledger.json",
+      "round4-rust-module-asset-inventory.json",
+      "round4-rust-dependency-inventory.json"
+    ],
+    "mac_server_note": "See rust_native_mac for the completed 560-test validation of the final source. The six locally tested Linux packages did not change during the later server-test fixture repairs.",
+    "result": "PASS for all selected local Rust package tests and strict Clippy",
+    "subsequent_source_changes": {
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/service_secret_delivery_tests.rs",
+          "before": "debef1f4096209b3567139b3714d4a141147fd25973f7e9d570e16e2ffbb142a",
+          "after": "b2ac2b885f9b580e2e9aa785a8e2b3cea579e375bc087ae4824e410e29b0422b"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_ssh_template115_tests.rs",
+          "before": "8b479bbd652fb4671cb44be169550127bae8569d639c1400466c2928d6d46e40",
+          "after": "3da1c148c0e21a8fc614cd40e356f1bc2ff3a7a8fbed29b2e48b532d51e7e8d8"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+          "before": "3cecdd2bcb8c67b13e717ac978a737b6233ef80e90a7964c6e27a7cb2ac2225b",
+          "after": "9f5913623744ece9f4f2a66f7c154b4a4e7e1dd29599627f3236778f7aad5735"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+          "before": "071ee064870a7845569b5fb9e2b83340c0435fb54699194e1fb34e8e4b209111",
+          "after": "e35d1710f429d3ae1f7af4308e1247a7e52c3c07574a2d74f49d185c2af0452c"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_tests.rs",
+          "before": "61616b3a9f0e889aaae26ee7c2808a01b21a9d7529c7e3b91535d94034dc0c6a",
+          "after": "fc434f4d46bf5550a690bf2b7623d73dd33d9caea110617f13b55c22b9a1aa95"
+        }
+      ],
+      "scope": "Five server test/helper files changed after the initial snapshot; no source in the six locally tested packages changed. Their 572-test/Clippy outcomes remain applicable. The corrected server passes native compile, strict Clippy, workspace fmt and the required AppRole default-stack regression test; parent final native full selected-suite execution is ongoing."
+    },
+    "native_server_strict_clippy": {
+      "schema": "heptabao.round4.validated-native-clippy.v1",
+      "source_manifest_sha256": "b5c0c62be4c68595a380800b932f7d4b7e8451f0551ed010a89db44f29d903b8",
+      "source_files": 1426,
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-p",
+        "heptabao-server",
+        "--all-targets",
+        "-j",
+        "1",
+        "--message-format=json",
+        "--config",
+        "profile.test.package.heptabao-server.opt-level=0",
+        "--config",
+        "profile.test.debug-assertions=true",
+        "--config",
+        "profile.test.overflow-checks=true",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environment": {
+        "RUSTC": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "CARGO_HOME": "/Users/qianqi/.cargo",
+        "CARGO_TARGET_DIR": "/Users/qianqi/heptabao-round2-native-4990b2915f7b-20261115/target",
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/opt/homebrew/opt/openssl@3/bin:/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "OPENSSL_DIR": "/opt/homebrew/opt/openssl@3",
+        "LIBCLANG_PATH": "/Library/Developer/CommandLineTools/usr/lib",
+        "RUSTFLAGS": "",
+        "CARGO_ENCODED_RUSTFLAGS": "",
+        "RUSTC_WRAPPER": "",
+        "RUSTC_WORKSPACE_WRAPPER": ""
+      },
+      "exit_code": 0,
+      "seconds": 52.62,
+      "diagnostics": [],
+      "stdout_sha256": "154061fe55c2622b9bfa22d25d62272835df3fb90dd3576405ca9a40517c968e",
+      "stderr_sha256": "fdbcca53230457ec350e49b666c795745300a843d4823b24346cca0472278c2a",
+      "source_integrity_after_clippy": true
+    },
+    "native_workspace_fmt": {
+      "schema": "heptabao.round4.validated-native-workspace-fmt.v1",
+      "source_manifest_sha256": "b5c0c62be4c68595a380800b932f7d4b7e8451f0551ed010a89db44f29d903b8",
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 4.383,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_integrity_after_fmt": true
+    },
+    "native_targeted_stack_regression_fix": {
+      "schema": "heptabao.round4.native-stack-regression-fix.v1",
+      "baseline_evidence": "round4-native-baseline-additional-stack-comparison.json",
+      "initial_candidate": "9b3b3b36b8ac986b71c2f355a38196d5b301261fa16be6f4530e1951854355c9",
+      "original_regression": "Same native profile: baseline default stack passed while initial candidate default stack aborted; explicit larger stack was not used to hide this case.",
+      "source_change": "Keep Root and Service construction in the original Fixture::initialized; shared initializer borrows &mut Service and returns only key/admin/clock.",
+      "corrected_native_observation": {
+        "job_id": "1a1e010eb5e-392-2976",
+        "source_manifest_sha256": "b5c0c62be4c68595a380800b932f7d4b7e8451f0551ed010a89db44f29d903b8",
+        "candidate_binary_sha256": "8cec8f24b9d1f7956a513b8c5b23687e9f33def6d3ea2899e3fab298d8234ae9",
+        "test": "service::native_auth::userpass_tests::batch_issuer_tests::native_batch_approle_failed_cidr_consumes_only_authenticated_sid_and_stays_cold",
+        "stack": "default; RUST_MIN_STACK absent",
+        "exit_code": 0,
+        "counts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 3614
+        },
+        "observation": "Parent native runner required_default_stack_check stdout; passed before admitting remaining 559 tests."
+      },
+      "remaining_full_suite": "Parent running all 560 selected compiled names individually; this targeted result is not a claim that the full suite has finished."
+    },
+    "final_source_snapshot": {
+      "path": "/workspace/scratch/4990b2915f7b/round4-rust-final-snapshot.json",
+      "sha256": "f5c046d81a7d8d9be17b02fc9ac28a50d3225ff84411f4c6ad0ea376375f102a",
+      "file_count": 83,
+      "all_current_hashes_match": true,
+      "all_six_local_package_files_unchanged_since_local_checks": true
+    },
+    "source_record": {
+      "name": "round4-rust-final-validation.json",
+      "bytes": 10802,
+      "sha256": "ccca1accacc6af278609468c749dc0a889b1a32544e209d903303f4fed752c9d"
+    }
+  },
+  "rust_native_mac": {
+    "source_manifest_sha256": "b5c0c62be4c68595a380800b932f7d4b7e8451f0551ed010a89db44f29d903b8",
+    "binary_sha256": "8cec8f24b9d1f7956a513b8c5b23687e9f33def6d3ea2899e3fab298d8234ae9",
+    "baseline_binary_sha256": "efdc3f5440152d8ca489020e428dbbd1c630645217dcd09c0907ff290ff5ea30",
+    "source_tests": 671,
+    "compiled_target_tests": 3615,
+    "selected_tests": 560,
+    "parallel_processes": 2,
+    "test_threads_per_process": 1,
+    "isolation": "One exact test per owned subprocess; abort cannot suppress later test cases.",
+    "default_stack_first": true,
+    "stack_policy": "32 MiB only after the exact d35 baseline has the same default-stack abort; each successful footer and exact executed name is verified.",
+    "complete": true,
+    "passed": true,
+    "seconds": 699.362,
+    "counts": {
+      "PASS_32_MIB_BASELINE_STACK_LIMIT": 31,
+      "PASS_DEFAULT_STACK": 529
+    },
+    "source_integrity_after_tests": true,
+    "binary_integrity_after_tests": true,
+    "cfg_filtered_source_tests": 111,
+    "detailed_record": {
+      "path": "native-tests.json.gz",
+      "bytes": 161127,
+      "sha256": "27a20ae8976fb0b47bb579bae0a3d2ef0ada4f6ac3de28a3eecde529d82cc296",
+      "uncompressed_bytes": 1015358,
+      "uncompressed_sha256": "cee2b181c4b68de904206d5f3779d0fa8c0684f5978935b07d19e23a1b9f5261"
+    },
+    "required_default_stack_regression_check": {
+      "variant": "candidate",
+      "RUST_MIN_STACK": null,
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 1.261,
+      "counts": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 3614
+      },
+      "exact_test_name_verified": true,
+      "passed": true,
+      "ignored": false,
+      "stack_overflow": false,
+      "stdout_file": "case-0324-candidate-default.stdout.log",
+      "stderr_file": "case-0324-candidate-default.stderr.log",
+      "stdout_sha256": "1521e8b87348e8d95e5c0e4dc037bbca95dc864df5ecfef934a9572dcd272a0f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "failure_stdout_tail": null,
+      "failure_stderr_tail": null
+    },
+    "build": {
+      "schema": "heptabao.round4.native-validated-build.v1",
+      "source_files": 1426,
+      "source_manifest_sha256": "b5c0c62be4c68595a380800b932f7d4b7e8451f0551ed010a89db44f29d903b8",
+      "pre_fix_manifest_sha256": "5fe327c838aae43274e11776951a235314c1fa1653bea6f8fa67ab62473656ec",
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json",
+        "--config",
+        "profile.test.package.heptabao-server.opt-level=0",
+        "--config",
+        "profile.test.debug-assertions=true",
+        "--config",
+        "profile.test.overflow-checks=true"
+      ],
+      "environment": {
+        "RUSTC": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "CARGO_HOME": "/Users/qianqi/.cargo",
+        "CARGO_TARGET_DIR": "/Users/qianqi/heptabao-round2-native-4990b2915f7b-20261115/target",
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/opt/homebrew/opt/openssl@3/bin:/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "OPENSSL_DIR": "/opt/homebrew/opt/openssl@3",
+        "LIBCLANG_PATH": "/Library/Developer/CommandLineTools/usr/lib",
+        "RUSTFLAGS": "",
+        "CARGO_ENCODED_RUSTFLAGS": "",
+        "RUSTC_WRAPPER": "",
+        "RUSTC_WORKSPACE_WRAPPER": ""
+      },
+      "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8",
+      "source_verified": true,
+      "corrections": [
+        {
+          "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+          "old_sha256": "3cecdd2bcb8c67b13e717ac978a737b6233ef80e90a7964c6e27a7cb2ac2225b",
+          "new_sha256": "9f5913623744ece9f4f2a66f7c154b4a4e7e1dd29599627f3236778f7aad5735"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_userpass_tests.rs",
+          "old_sha256": "071ee064870a7845569b5fb9e2b83340c0435fb54699194e1fb34e8e4b209111",
+          "new_sha256": "e35d1710f429d3ae1f7af4308e1247a7e52c3c07574a2d74f49d185c2af0452c"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_tests.rs",
+          "old_sha256": "61616b3a9f0e889aaae26ee7c2808a01b21a9d7529c7e3b91535d94034dc0c6a",
+          "new_sha256": "fc434f4d46bf5550a690bf2b7623d73dd33d9caea110617f13b55c22b9a1aa95"
+        }
+      ],
+      "exit_code": 0,
+      "seconds": 146.715,
+      "diagnostics": [
+        {
+          "rendered": "warning: linker stderr: ld: __eh_frame section too large (max 16MB) to encode dwarf unwind offsets in compact unwind table, performance of exception handling might be affected\n  |\n  = note: `#[warn(linker_messages)]` on by default\n\n",
+          "$message_type": "diagnostic",
+          "children": [
+            {
+              "children": [],
+              "code": null,
+              "level": "note",
+              "message": "`#[warn(linker_messages)]` on by default",
+              "rendered": null,
+              "spans": []
+            }
+          ],
+          "level": "warning",
+          "message": "linker stderr: ld: __eh_frame section too large (max 16MB) to encode dwarf unwind offsets in compact unwind table, performance of exception handling might be affected",
+          "spans": [],
+          "code": {
+            "code": "linker_messages",
+            "explanation": null
+          }
+        }
+      ],
+      "executables": [
+        {
+          "path": "/Users/qianqi/heptabao-round2-native-4990b2915f7b-20261115/target/debug/deps/heptabao_server-d8ac5afbedb25816",
+          "profile": {
+            "opt_level": "0",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": true
+          },
+          "copied_path": "/Users/qianqi/heptabao-round4-native-4990b2915f7b-20261115/bin/heptabao-server-validated-tests",
+          "sha256": "8cec8f24b9d1f7956a513b8c5b23687e9f33def6d3ea2899e3fab298d8234ae9",
+          "file": "/Users/qianqi/heptabao-round4-native-4990b2915f7b-20261115/bin/heptabao-server-validated-tests: Mach-O 64-bit executable arm64"
+        }
+      ],
+      "stdout.jsonl_sha256": "ede0677d90d3a6b1618262ad045d1546ed80c68db00cbf7229191e185a1335e1",
+      "stderr.log_sha256": "0a1e2102f7ffd304df2c500e0b886b94720790686014b1b988bcfcfe3261789b",
+      "source_integrity_after_build": true
+    }
+  },
+  "rust_native_clippy_and_format": {
+    "schema": "heptabao.round4.native-final-clippy-fmt.v1",
+    "clippy": {
+      "schema": "heptabao.round4.validated-native-clippy.v1",
+      "source_manifest_sha256": "b5c0c62be4c68595a380800b932f7d4b7e8451f0551ed010a89db44f29d903b8",
+      "source_files": 1426,
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-p",
+        "heptabao-server",
+        "--all-targets",
+        "-j",
+        "1",
+        "--message-format=json",
+        "--config",
+        "profile.test.package.heptabao-server.opt-level=0",
+        "--config",
+        "profile.test.debug-assertions=true",
+        "--config",
+        "profile.test.overflow-checks=true",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environment": {
+        "RUSTC": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "CARGO_HOME": "/Users/qianqi/.cargo",
+        "CARGO_TARGET_DIR": "/Users/qianqi/heptabao-round2-native-4990b2915f7b-20261115/target",
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/opt/homebrew/opt/openssl@3/bin:/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "OPENSSL_DIR": "/opt/homebrew/opt/openssl@3",
+        "LIBCLANG_PATH": "/Library/Developer/CommandLineTools/usr/lib",
+        "RUSTFLAGS": "",
+        "CARGO_ENCODED_RUSTFLAGS": "",
+        "RUSTC_WRAPPER": "",
+        "RUSTC_WORKSPACE_WRAPPER": ""
+      },
+      "exit_code": 0,
+      "seconds": 52.62,
+      "diagnostics": [],
+      "stdout_sha256": "154061fe55c2622b9bfa22d25d62272835df3fb90dd3576405ca9a40517c968e",
+      "stderr_sha256": "fdbcca53230457ec350e49b666c795745300a843d4823b24346cca0472278c2a",
+      "source_integrity_after_clippy": true
+    },
+    "fmt": {
+      "schema": "heptabao.round4.validated-native-workspace-fmt.v1",
+      "source_manifest_sha256": "b5c0c62be4c68595a380800b932f7d4b7e8451f0551ed010a89db44f29d903b8",
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 4.383,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_integrity_after_fmt": true
+    }
+  },
+  "postgresql": {
+    "source_record": {
+      "name": "round4-postgresql-equivalence.json",
+      "bytes": 261988,
+      "sha256": "63aefba0c75740a176f48b42759ed45c11fa74c55b11f652f1cff936330320cc"
+    },
+    "postgres_version": "17.11 (Debian 17.11-0+deb13u1)",
+    "source_sha256": {
+      "round4-provider-original.sql": "1d4fe8ec1cf08d3da1c58c4c88a08c58cc4d3128276b5659244c45ea56ff7128",
+      "round4-provider-clean.sql": "c3a705f2963d532d972dc65b960d17b39676dccd6ab4d1c1da1abcb0b12e4c73"
+    },
+    "checks": [
+      {
+        "case": "original_and_cleaned_fresh_install_succeed",
+        "passed": true
+      },
+      {
+        "case": "complete_legacy_v2_through_v6_upgrade_chain_succeeds",
+        "passed": true
+      },
+      {
+        "case": "all_31_final_function_bodies_signatures_owners_acl_and_attributes_match",
+        "passed": true
+      },
+      {
+        "case": "final_schema_match",
+        "passed": true
+      },
+      {
+        "case": "final_relations_match",
+        "passed": true
+      },
+      {
+        "case": "final_columns_match",
+        "passed": true
+      },
+      {
+        "case": "final_constraints_match",
+        "passed": true
+      },
+      {
+        "case": "final_indexes_match",
+        "passed": true
+      },
+      {
+        "case": "original.current_username_and_password_bounds_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "original.dynamic_issue_replay_renew_revoke_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "original.statement_issue_revoke_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "original.static_rotation_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "original.root_rotation_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "original.bounded_root_statement_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "original.unknown_short_username_cleanup_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "original.manager_cannot_write_provider_ledger_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.manager_cannot_replace_provider_function_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.invalid_dynamic_identity_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.short_username_issuance_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.unregistered_group_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.noncanonical_scram_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.empty_statement_array_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.arbitrary_root_statement_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.unregistered_static_target_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "original.stale_fence_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.current_username_and_password_bounds_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "cleaned.dynamic_issue_replay_renew_revoke_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "cleaned.statement_issue_revoke_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "cleaned.static_rotation_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "cleaned.root_rotation_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "cleaned.bounded_root_statement_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "cleaned.unknown_short_username_cleanup_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "cleaned.manager_cannot_write_provider_ledger_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.manager_cannot_replace_provider_function_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.invalid_dynamic_identity_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.short_username_issuance_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.unregistered_group_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.noncanonical_scram_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.empty_statement_array_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.arbitrary_root_statement_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.unregistered_static_target_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "cleaned.stale_fence_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.current_username_and_password_bounds_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "upgraded.dynamic_issue_replay_renew_revoke_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "upgraded.statement_issue_revoke_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "upgraded.static_rotation_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "upgraded.root_rotation_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "upgraded.bounded_root_statement_and_exact_replay_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "upgraded.unknown_short_username_cleanup_assertions_hold",
+        "passed": true
+      },
+      {
+        "case": "upgraded.manager_cannot_write_provider_ledger_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.manager_cannot_replace_provider_function_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.invalid_dynamic_identity_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.short_username_issuance_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.unregistered_group_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.noncanonical_scram_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.empty_statement_array_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.arbitrary_root_statement_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.unregistered_static_target_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "upgraded.stale_fence_refused_rejects",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.protocols",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.current_username_and_password_bounds",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.dynamic_issue_replay_renew_revoke",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.statement_issue_revoke",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.static_rotation_and_exact_replay",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.root_rotation_and_exact_replay",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.bounded_root_statement_and_exact_replay",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.unknown_short_username_cleanup",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.manager_cannot_write_provider_ledger",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.manager_cannot_replace_provider_function",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.invalid_dynamic_identity",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.short_username_issuance_refused",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.unregistered_group_refused",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.noncanonical_scram_refused",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.empty_statement_array_refused",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.arbitrary_root_statement_refused",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.unregistered_static_target_refused",
+        "passed": true
+      },
+      {
+        "case": "three_install_modes_match.stale_fence_refused",
+        "passed": true
+      }
+    ],
+    "scope": "Standalone PostgreSQL 17 fixture only; no native HeptaBao or remote provider qualification.",
+    "catalogs": {
+      "original": {
+        "sha256": "607ff82e4be8c38d2ef58bb5457880b59ec3690f53c0d69b9f9031345d9b0c3f",
+        "parts": {
+          "schema": {
+            "items": 2,
+            "sha256": "0d70428e410ba54210cca15c02013e66d05c24ac81a69045b8a98603b2a5166d"
+          },
+          "columns": {
+            "items": 50,
+            "sha256": "bfe405a055eb8f005b98c326256e105d5636c3644ba50235e8a8b20b7f27a117"
+          },
+          "indexes": {
+            "items": 10,
+            "sha256": "e67d7aa84cf0505c78735ce1cbd60f657deb1e41ac74dc7fcab8f99c13df147b"
+          },
+          "functions": {
+            "items": 31,
+            "sha256": "ff10a28f182037687dbcc1942b603878fd4f596f13c8e50f7b32fa9a83bc4973"
+          },
+          "relations": {
+            "items": 17,
+            "sha256": "56b3e1d3fc3cab1f2e40cf30a3fc7dadad09bf5889c3baf4693f9bd596417de6"
+          },
+          "constraints": {
+            "items": 31,
+            "sha256": "1883e989ead6e334a525666a376cb32ed3a3728ebc22219e3c2ad23062e7978f"
+          }
+        }
+      },
+      "cleaned": {
+        "sha256": "607ff82e4be8c38d2ef58bb5457880b59ec3690f53c0d69b9f9031345d9b0c3f",
+        "parts": {
+          "schema": {
+            "items": 2,
+            "sha256": "0d70428e410ba54210cca15c02013e66d05c24ac81a69045b8a98603b2a5166d"
+          },
+          "columns": {
+            "items": 50,
+            "sha256": "bfe405a055eb8f005b98c326256e105d5636c3644ba50235e8a8b20b7f27a117"
+          },
+          "indexes": {
+            "items": 10,
+            "sha256": "e67d7aa84cf0505c78735ce1cbd60f657deb1e41ac74dc7fcab8f99c13df147b"
+          },
+          "functions": {
+            "items": 31,
+            "sha256": "ff10a28f182037687dbcc1942b603878fd4f596f13c8e50f7b32fa9a83bc4973"
+          },
+          "relations": {
+            "items": 17,
+            "sha256": "56b3e1d3fc3cab1f2e40cf30a3fc7dadad09bf5889c3baf4693f9bd596417de6"
+          },
+          "constraints": {
+            "items": 31,
+            "sha256": "1883e989ead6e334a525666a376cb32ed3a3728ebc22219e3c2ad23062e7978f"
+          }
+        }
+      },
+      "upgraded": {
+        "sha256": "607ff82e4be8c38d2ef58bb5457880b59ec3690f53c0d69b9f9031345d9b0c3f",
+        "parts": {
+          "schema": {
+            "items": 2,
+            "sha256": "0d70428e410ba54210cca15c02013e66d05c24ac81a69045b8a98603b2a5166d"
+          },
+          "columns": {
+            "items": 50,
+            "sha256": "bfe405a055eb8f005b98c326256e105d5636c3644ba50235e8a8b20b7f27a117"
+          },
+          "indexes": {
+            "items": 10,
+            "sha256": "e67d7aa84cf0505c78735ce1cbd60f657deb1e41ac74dc7fcab8f99c13df147b"
+          },
+          "functions": {
+            "items": 31,
+            "sha256": "ff10a28f182037687dbcc1942b603878fd4f596f13c8e50f7b32fa9a83bc4973"
+          },
+          "relations": {
+            "items": 17,
+            "sha256": "56b3e1d3fc3cab1f2e40cf30a3fc7dadad09bf5889c3baf4693f9bd596417de6"
+          },
+          "constraints": {
+            "items": 31,
+            "sha256": "1883e989ead6e334a525666a376cb32ed3a3728ebc22219e3c2ad23062e7978f"
+          }
+        }
+      }
+    },
+    "behavior": {
+      "original": {
+        "protocols": {
+          "ok": true,
+          "output": "heptabao-postgresql-provider-v2|heptabao-postgresql-static-v1|heptabao-postgresql-statements-v1|heptabao-postgresql-password-authentication-v1|heptabao-postgresql-generation-v1|heptabao-postgresql-root-statements-v1"
+        },
+        "current_username_and_password_bounds": {
+          "ok": true,
+          "output": "t|t|t|t|t"
+        },
+        "dynamic_issue_replay_renew_revoke": {
+          "ok": true,
+          "output": "t\nt\nt\nt"
+        },
+        "statement_issue_revoke": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "static_rotation_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "root_rotation_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "bounded_root_statement_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "unknown_short_username_cleanup": {
+          "ok": true,
+          "output": "t"
+        },
+        "manager_cannot_write_provider_ledger": {
+          "ok": false,
+          "error": "ERROR:  permission denied for table leases"
+        },
+        "manager_cannot_replace_provider_function": {
+          "ok": false,
+          "error": "ERROR:  permission denied for schema heptabao_provider"
+        },
+        "invalid_dynamic_identity": {
+          "ok": false,
+          "error": "ERROR:  invalid provider operation"
+        },
+        "short_username_issuance_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid provider operation"
+        },
+        "unregistered_group_refused": {
+          "ok": false,
+          "error": "ERROR:  provider group not independently enrolled"
+        },
+        "noncanonical_scram_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid SCRAM provider credential"
+        },
+        "empty_statement_array_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid statement provider operation"
+        },
+        "arbitrary_root_statement_refused": {
+          "ok": false,
+          "error": "ERROR:  root rotation statement is outside bounded password-change grammar"
+        },
+        "unregistered_static_target_refused": {
+          "ok": false,
+          "error": "ERROR:  static-role target is not independently enrolled"
+        },
+        "stale_fence_refused": {
+          "ok": false,
+          "error": "ERROR:  provider global fence rejected stale operation"
+        }
+      },
+      "cleaned": {
+        "protocols": {
+          "ok": true,
+          "output": "heptabao-postgresql-provider-v2|heptabao-postgresql-static-v1|heptabao-postgresql-statements-v1|heptabao-postgresql-password-authentication-v1|heptabao-postgresql-generation-v1|heptabao-postgresql-root-statements-v1"
+        },
+        "current_username_and_password_bounds": {
+          "ok": true,
+          "output": "t|t|t|t|t"
+        },
+        "dynamic_issue_replay_renew_revoke": {
+          "ok": true,
+          "output": "t\nt\nt\nt"
+        },
+        "statement_issue_revoke": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "static_rotation_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "root_rotation_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "bounded_root_statement_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "unknown_short_username_cleanup": {
+          "ok": true,
+          "output": "t"
+        },
+        "manager_cannot_write_provider_ledger": {
+          "ok": false,
+          "error": "ERROR:  permission denied for table leases"
+        },
+        "manager_cannot_replace_provider_function": {
+          "ok": false,
+          "error": "ERROR:  permission denied for schema heptabao_provider"
+        },
+        "invalid_dynamic_identity": {
+          "ok": false,
+          "error": "ERROR:  invalid provider operation"
+        },
+        "short_username_issuance_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid provider operation"
+        },
+        "unregistered_group_refused": {
+          "ok": false,
+          "error": "ERROR:  provider group not independently enrolled"
+        },
+        "noncanonical_scram_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid SCRAM provider credential"
+        },
+        "empty_statement_array_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid statement provider operation"
+        },
+        "arbitrary_root_statement_refused": {
+          "ok": false,
+          "error": "ERROR:  root rotation statement is outside bounded password-change grammar"
+        },
+        "unregistered_static_target_refused": {
+          "ok": false,
+          "error": "ERROR:  static-role target is not independently enrolled"
+        },
+        "stale_fence_refused": {
+          "ok": false,
+          "error": "ERROR:  provider global fence rejected stale operation"
+        }
+      },
+      "upgraded": {
+        "protocols": {
+          "ok": true,
+          "output": "heptabao-postgresql-provider-v2|heptabao-postgresql-static-v1|heptabao-postgresql-statements-v1|heptabao-postgresql-password-authentication-v1|heptabao-postgresql-generation-v1|heptabao-postgresql-root-statements-v1"
+        },
+        "current_username_and_password_bounds": {
+          "ok": true,
+          "output": "t|t|t|t|t"
+        },
+        "dynamic_issue_replay_renew_revoke": {
+          "ok": true,
+          "output": "t\nt\nt\nt"
+        },
+        "statement_issue_revoke": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "static_rotation_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "root_rotation_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "bounded_root_statement_and_exact_replay": {
+          "ok": true,
+          "output": "t\nt"
+        },
+        "unknown_short_username_cleanup": {
+          "ok": true,
+          "output": "t"
+        },
+        "manager_cannot_write_provider_ledger": {
+          "ok": false,
+          "error": "ERROR:  permission denied for table leases"
+        },
+        "manager_cannot_replace_provider_function": {
+          "ok": false,
+          "error": "ERROR:  permission denied for schema heptabao_provider"
+        },
+        "invalid_dynamic_identity": {
+          "ok": false,
+          "error": "ERROR:  invalid provider operation"
+        },
+        "short_username_issuance_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid provider operation"
+        },
+        "unregistered_group_refused": {
+          "ok": false,
+          "error": "ERROR:  provider group not independently enrolled"
+        },
+        "noncanonical_scram_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid SCRAM provider credential"
+        },
+        "empty_statement_array_refused": {
+          "ok": false,
+          "error": "ERROR:  invalid statement provider operation"
+        },
+        "arbitrary_root_statement_refused": {
+          "ok": false,
+          "error": "ERROR:  root rotation statement is outside bounded password-change grammar"
+        },
+        "unregistered_static_target_refused": {
+          "ok": false,
+          "error": "ERROR:  static-role target is not independently enrolled"
+        },
+        "stale_fence_refused": {
+          "ok": false,
+          "error": "ERROR:  provider global fence rejected stale operation"
+        }
+      }
+    },
+    "projection": "Complete SQL function bodies and repeated catalogs remain reproducible from the baseline/current source and are represented by canonical JSON hashes here, instead of reintroducing removed SQL source inside the audit."
+  },
+  "javascript": {
+    "refresh_contract": {
+      "schema": "authbus-refresh-r5-process-http-contract",
+      "ok": true,
+      "actualNativeHeptaBao": false,
+      "actualSdk": false,
+      "actualColdProcess": true,
+      "actualProviderHttp": true,
+      "providerSynthetic": true,
+      "tlsControlEmulator": true,
+      "productionMutation": false,
+      "checks": [
+        {
+          "case": "close-fails: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "close-fails: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "close-fails: durable control state",
+          "passed": true
+        },
+        {
+          "case": "fence-write-denied: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "fence-write-denied: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "fence-write-denied: durable control state",
+          "passed": true
+        },
+        {
+          "case": "fence-commit-response-lost: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "fence-commit-response-lost: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "fence-commit-response-lost: cold retry after lease expiry denied",
+          "passed": true
+        },
+        {
+          "case": "fence-commit-response-lost: durable control state",
+          "passed": true
+        },
+        {
+          "case": "provider-response-lost: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "provider-response-lost: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "provider-response-lost: cold retry after lease expiry denied",
+          "passed": true
+        },
+        {
+          "case": "provider-response-lost: durable control state",
+          "passed": true
+        },
+        {
+          "case": "kill-after-response: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "kill-after-response: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "kill-after-response: cold retry after lease expiry denied",
+          "passed": true
+        },
+        {
+          "case": "kill-after-response: durable control state",
+          "passed": true
+        },
+        {
+          "case": "sdk-false: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "sdk-false: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "sdk-false: cold retry after lease expiry denied",
+          "passed": true
+        },
+        {
+          "case": "sdk-false: durable control state",
+          "passed": true
+        },
+        {
+          "case": "sdk-lying-success: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "sdk-lying-success: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "sdk-lying-success: cold retry after lease expiry denied",
+          "passed": true
+        },
+        {
+          "case": "sdk-lying-success: durable control state",
+          "passed": true
+        },
+        {
+          "case": "duplicate-dispatch: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "duplicate-dispatch: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "duplicate-dispatch: cold retry after lease expiry denied",
+          "passed": true
+        },
+        {
+          "case": "duplicate-dispatch: durable control state",
+          "passed": true
+        },
+        {
+          "case": "dispatch-deadline-expired: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "dispatch-deadline-expired: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "dispatch-deadline-expired: cold retry after lease expiry denied",
+          "passed": true
+        },
+        {
+          "case": "dispatch-deadline-expired: durable control state",
+          "passed": true
+        },
+        {
+          "case": "completion-response-lost: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "completion-response-lost: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "completion-response-lost: cold old-credential reissue denied",
+          "passed": true
+        },
+        {
+          "case": "completion-response-lost: verified publication cold reissue without repeating provider I/O",
+          "passed": true
+        },
+        {
+          "case": "completion-response-lost: durable control state",
+          "passed": true
+        },
+        {
+          "case": "success: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "success: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "success: cold old-credential reissue denied",
+          "passed": true
+        },
+        {
+          "case": "success: durable control state",
+          "passed": true
+        },
+        {
+          "case": "same-owner-race: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "same-owner-race: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "same-owner-race: cold old-credential reissue denied",
+          "passed": true
+        },
+        {
+          "case": "same-owner-race: durable control state",
+          "passed": true
+        },
+        {
+          "case": "registry-success: exact provider request count",
+          "passed": true
+        },
+        {
+          "case": "registry-success: actual process outcome",
+          "passed": true
+        },
+        {
+          "case": "registry successor admits exact new wire credential and rejects old credential",
+          "passed": true
+        },
+        {
+          "case": "registry-success: cold old-credential reissue denied",
+          "passed": true
+        },
+        {
+          "case": "registry-success: durable control state",
+          "passed": true
+        }
+      ],
+      "observations": [
+        {
+          "scenario": "close-fails",
+          "providerCount": 0,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_refresh_admission_close_failed",
+            "counts": {
+              "providerCalls": 0,
+              "writes": 0,
+              "closes": 1
+            }
+          },
+          "attemptStatus": null,
+          "controlVersion": 1
+        },
+        {
+          "scenario": "fence-write-denied",
+          "providerCount": 0,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_control_write_denied",
+            "counts": {
+              "providerCalls": 0,
+              "writes": 0,
+              "closes": 1
+            }
+          },
+          "attemptStatus": null,
+          "controlVersion": 1
+        },
+        {
+          "scenario": "fence-commit-response-lost",
+          "providerCount": 0,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_control_request_io_failed",
+            "counts": {
+              "providerCalls": 0,
+              "writes": 0,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "UNKNOWN",
+          "controlVersion": 2
+        },
+        {
+          "scenario": "provider-response-lost",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "test_error",
+            "counts": {
+              "providerCalls": 1,
+              "writes": 0,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "UNKNOWN",
+          "controlVersion": 2
+        },
+        {
+          "scenario": "kill-after-response",
+          "providerCount": 1,
+          "processSignal": "SIGKILL",
+          "result": null,
+          "attemptStatus": "UNKNOWN",
+          "controlVersion": 2
+        },
+        {
+          "scenario": "sdk-false",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_refresh_sdk_write_failed",
+            "counts": {
+              "providerCalls": 1,
+              "writes": 1,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "UNKNOWN",
+          "controlVersion": 2
+        },
+        {
+          "scenario": "sdk-lying-success",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_refresh_sdk_publication_not_verified",
+            "counts": {
+              "providerCalls": 1,
+              "writes": 1,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "UNKNOWN",
+          "controlVersion": 2
+        },
+        {
+          "scenario": "duplicate-dispatch",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_refresh_dispatch_already_consumed",
+            "counts": {
+              "providerCalls": 1,
+              "writes": 0,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "UNKNOWN",
+          "controlVersion": 2
+        },
+        {
+          "scenario": "dispatch-deadline-expired",
+          "providerCount": 0,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_refresh_dispatch_deadline_expired",
+            "counts": {
+              "providerCalls": 1,
+              "writes": 0,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "UNKNOWN",
+          "controlVersion": 2
+        },
+        {
+          "scenario": "completion-response-lost",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": false,
+            "code": "trusted_control_request_io_failed",
+            "counts": {
+              "providerCalls": 1,
+              "writes": 1,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "PUBLISHED",
+          "controlVersion": 3
+        },
+        {
+          "scenario": "success",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": true,
+            "fenceEpoch": 2,
+            "publishedEpoch": 3,
+            "newGrantEpoch": 4,
+            "newGrantReadable": true,
+            "successorChecked": false,
+            "counts": {
+              "providerCalls": 1,
+              "writes": 1,
+              "closes": 1
+            }
+          },
+          "attemptStatus": "PUBLISHED",
+          "controlVersion": 4
+        },
+        {
+          "scenario": "same-owner-race",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": true,
+            "fenceEpoch": 2,
+            "publishedEpoch": 3,
+            "newGrantEpoch": 4,
+            "newGrantReadable": true,
+            "successorChecked": false,
+            "counts": {
+              "providerCalls": 1,
+              "writes": 1,
+              "closes": 2
+            }
+          },
+          "attemptStatus": "PUBLISHED",
+          "controlVersion": 4
+        },
+        {
+          "scenario": "registry-success",
+          "providerCount": 1,
+          "processSignal": null,
+          "result": {
+            "ok": true,
+            "fenceEpoch": 2,
+            "publishedEpoch": 3,
+            "newGrantEpoch": 4,
+            "newGrantReadable": true,
+            "successorChecked": true,
+            "counts": {
+              "providerCalls": 1,
+              "writes": 1,
+              "closes": 0
+            }
+          },
+          "attemptStatus": "PUBLISHED",
+          "controlVersion": 4
+        }
+      ],
+      "sourceManifest": [
+        {
+          "name": "authbus_refresh_control_contract_test.mjs",
+          "sha256": "f2fbdf3588f2c14b817030a44c30a7da917dd16148b1f9e60856ee12b314ebc0"
+        },
+        {
+          "name": "authbus_trusted_control_candidate.mjs",
+          "sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637"
+        },
+        {
+          "name": "authbus_admission_authority_candidate.mjs",
+          "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+        },
+        {
+          "name": "authbus_trusted_admission_candidate.mjs",
+          "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad"
+        },
+        {
+          "name": "authbus_refresh_registry_candidate.mjs",
+          "sha256": "c57bc679e9d5a658941d8e5e31b129547550b3323bdbd7f7d84881ed257ec57d"
+        },
+        {
+          "name": "authbus_dispatch_registry_candidate.mjs",
+          "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0"
+        },
+        {
+          "name": "authbus_admission_registry_candidate.mjs",
+          "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e"
+        }
+      ],
+      "checksPassed": 52
+    },
+    "trusted_contract": {
+      "schema": "authbus-trusted-control-local-tls-contract-r4",
+      "ok": true,
+      "checks": [
+        {
+          "case": "no_json_proof_or_verifier_can_mint_admission",
+          "passed": true
+        },
+        {
+          "case": "unresolved_cold_bootstrap_can_publish_durable_negative_without_a_clock_proof",
+          "passed": true
+        },
+        {
+          "case": "pinned_tls_approle_cas_mints_opaque_single_use_proof",
+          "passed": true
+        },
+        {
+          "case": "active_refresh_owner_blocks_other_bootstrap",
+          "passed": true
+        },
+        {
+          "case": "fresh_authenticated_same_epoch_cannot_boot_a_cold_authority",
+          "passed": true
+        },
+        {
+          "case": "replayed_or_serialized_proof_cannot_warm_reconcile",
+          "passed": true
+        },
+        {
+          "case": "grant_mutation_and_scope_escape_fail_proof_binding",
+          "passed": true
+        },
+        {
+          "case": "new_process_boot_id_cannot_read_old_control_grant",
+          "passed": true
+        },
+        {
+          "case": "cold_strictly_higher_actual_tls_issuance_survives_raw_wall_rollback",
+          "passed": true
+        },
+        {
+          "case": "failed_store_leaves_pending_and_cold_needs_another_new_epoch",
+          "passed": true
+        },
+        {
+          "case": "tls_reader_write_denied_and_approle_tokens_renewed",
+          "passed": true
+        }
+      ],
+      "actualNativeHeptaBao": false,
+      "actualSdk": false,
+      "actualColdProcess": false,
+      "tlsControlEmulator": true,
+      "productionMutation": false,
+      "readerCleanup": {
+        "revoked": true,
+        "coldDenied": true
+      },
+      "issuerCleanup": {
+        "revoked": true,
+        "coldDenied": true
+      },
+      "tlsRequests": 32
+    }
+  },
+  "go_native_limit": {
+    "status": "NOT_RUN",
+    "kind": "native_darwin_cgo_compile_and_runtime_validation",
+    "reason": "Required Go1.27.1 could not be provisioned on the native Mac within bounded download/relay attempts; stopped before compiler and tests ran. No Go version downgrade, source module edits, root escalation or forced test skips.",
+    "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+    "current_source_sha256": "4e4888b756f05f2862abcc5622ef16702a32e47badfeaa934b489ceab758b45c",
+    "source_change": {
+      "path": "crates/heptabao-plugin-host/bridges/kms_v270/darwin_native.go",
+      "added_lines": 0,
+      "deleted_lines": 21,
+      "deleted_bytes": 839,
+      "exact_deletions": [
+        "unused Go function ownedGroupMembers",
+        "its sole-use C static helper hbp_group_members",
+        "exclusive errors import"
+      ]
+    },
+    "static_validation": {
+      "status": "PASS",
+      "proof": "round4-go-deletion-ast-proof.json",
+      "go_files": 21,
+      "functions_before": 193,
+      "functions_after": 192,
+      "remaining_function_bodies_unchanged": 192,
+      "parse_errors_before_and_after": 0,
+      "exact_three_deletions_reconstruct_current_bytes": true,
+      "removed_go_function_baseline_references": 1,
+      "removed_c_helper_baseline_references": 2
+    },
+    "native_attempts": [
+      {
+        "kind": "automatic_toolchain_fetch",
+        "timeout_seconds": 300,
+        "status": "timed_out_before_compilation",
+        "reported_by": "root native validation coordinator"
+      },
+      {
+        "kind": "official_metadata_fetch_on_mac",
+        "timeout_seconds": 40,
+        "status": "timed_out",
+        "reported_by": "root native validation coordinator"
+      },
+      {
+        "kind": "official_archive_fetch_on_mac",
+        "timeout_seconds": 180,
+        "status": "curl_exit_28",
+        "observed_partial_bytes": 3717725,
+        "original_path": "/Users/qianqi/heptabao-round4-go-4990b2915f7b-20261115/go1.27.1.darwin-arm64.tar.gz",
+        "original_log": "/Users/qianqi/heptabao-round4-go-4990b2915f7b-20261115/toolchain-download.stderr.log",
+        "preserved": true
+      },
+      {
+        "kind": "local_official_archive_fetch",
+        "status": "PASS",
+        "proof": "round4-go-relay-fetch.json",
+        "verified_size": 68100347,
+        "verified_sha256": "ee215d57e0ec269c60cc9ceca68e6bda321ba9ee5afe24f4b0988703c2d87d12"
+      },
+      {
+        "kind": "bounded_binary_upload_relay",
+        "status": "MCP_REQUEST_TIMED_OUT",
+        "acknowledged_initial_bytes": 262144,
+        "unacknowledged_next_chunk_bytes": 1048576,
+        "commit_status": "REFUSED_SIZE_OR_CHECKSUM_MISMATCH",
+        "abort_status": "aborted=true",
+        "proof": "round4-go-relay-abort-receipt.json"
+      }
+    ],
+    "native_test_passes": null,
+    "native_test_failures": null,
+    "native_test_skips": null,
+    "recorded_at_utc": "2026-11-15T16:06:01.425950+00:00"
+  },
+  "initial_root_regression_observations": [
+    {
+      "id": "security",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/security",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.253,
+      "log_file": "round4-regression-security.log",
+      "log_bytes": 180,
+      "log_sha256": "b33884747bab8a759d6ec84ad64deedbbd78ab280765e1213258a0eb3a74412c",
+      "unittest_ran": 81,
+      "unittest_result": "OK"
+    },
+    {
+      "id": "validate_repository_v2",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_repository_v2.py"
+      ],
+      "exit_code": 0,
+      "seconds": 3.575,
+      "log_file": "round4-regression-validate_repository_v2.log",
+      "log_bytes": 44,
+      "log_sha256": "eb13c684216ecaf8161275dc6657b63a4be12f9bd94f4bc008d221ed7d879e2f",
+      "unittest_ran": null,
+      "unittest_result": null
+    },
+    {
+      "id": "validate_current_documentation_semantics",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_current_documentation_semantics.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.961,
+      "log_file": "round4-regression-validate_current_documentation_semantics.log",
+      "log_bytes": 75,
+      "log_sha256": "235e33f4d159bbc9bbdb023438f52b11376537f17804076db7155bbb844d4e03",
+      "unittest_ran": null,
+      "unittest_result": null
+    },
+    {
+      "id": "validate_repository_identity_v1",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_repository_identity_v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.226,
+      "log_file": "round4-regression-validate_repository_identity_v1.log",
+      "log_bytes": 182,
+      "log_sha256": "b405d167851b2e6d248651ad88733eb27048f1be363cd0ab597b5bd5902641af",
+      "unittest_ran": null,
+      "unittest_result": null
+    },
+    {
+      "id": "validate_module_closure",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_module_closure.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.661,
+      "log_file": "round4-regression-validate_module_closure.log",
+      "log_bytes": 4021,
+      "log_sha256": "53bf318a25b8f04826baa792a1374de880fd11751a18de0c626cc88f8732c6e0",
+      "unittest_ran": null,
+      "unittest_result": null
+    },
+    {
+      "id": "validate_workflow_trust",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_workflow_trust.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.231,
+      "log_file": "round4-regression-validate_workflow_trust.log",
+      "log_bytes": 2323,
+      "log_sha256": "0944a1557f3c43ccd5512290bae1db08c17f1ea6617110598a574764b0a77bd2",
+      "unittest_ran": null,
+      "unittest_result": null
+    },
+    {
+      "id": "validate_delivery_gate_ownership",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_delivery_gate_ownership.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.08,
+      "log_file": "round4-regression-validate_delivery_gate_ownership.log",
+      "log_bytes": 54,
+      "log_sha256": "125c16ae60f12e892597dc986849b47560b623a9145db7fdb4acaa346e9f0cc3",
+      "unittest_ran": null,
+      "unittest_result": null
+    },
+    {
+      "id": "validate_openbao_271_release_denominator",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_openbao_271_release_denominator.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.021,
+      "log_file": "round4-regression-validate_openbao_271_release_denominator.log",
+      "log_bytes": 202,
+      "log_sha256": "b164d3dcb2b0c25bdd944dd698d8206f4176b65410e1f0c48f03545d01bacc1b",
+      "unittest_ran": null,
+      "unittest_result": null
+    },
+    {
+      "id": "validate_plan_v2",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_plan_v2.py"
+      ],
+      "exit_code": 1,
+      "seconds": 0.958,
+      "log_file": "round4-regression-validate_plan_v2.log",
+      "log_bytes": 164,
+      "log_sha256": "ec3ab62e5847d954d6569094d469da821601bda2da1b83f6dbe35d03d16eff62",
+      "unittest_ran": null,
+      "unittest_result": null,
+      "known_baseline_result": "Pre-existing synthetic private-key-delimiter fixture; original output is retained under its exact log SHA. No fixture or scanner change."
+    },
+    {
+      "id": "repository",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/repository",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "seconds": 51.274,
+      "log_file": "round4-regression-repository.log",
+      "log_bytes": 5312,
+      "log_sha256": "9c958866cf6ad47aabd50f7f56401b35670b551a2ddd56a9006824b9a1921a85",
+      "unittest_ran": 305,
+      "unittest_result": "OK"
+    },
+    {
+      "id": "plan",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/plan",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 1,
+      "seconds": 79.327,
+      "log_file": "round4-regression-plan.log",
+      "log_bytes": 7803,
+      "log_sha256": "c0a48b928de5a5bbc4efab4ec73d6e103afd7bda541b81eb447ee3f4436cd948",
+      "unittest_ran": 359,
+      "unittest_result": "FAILED (failures=3, errors=2, skipped=27)",
+      "tail": [
+        "----------------------------------------------------------------------",
+        "validate_plan_v1_4_1.ValidationFailure: single-node journal is missing required source contracts: ['root.open_file(leaf_name, FileAccess::CreateNew)', 'root.rename(&temporary_name, target_name)', 'sync_all', 'root.open_file(&temporary_name, FileAccess::CreateNew)']",
+        "",
+        "During handling of the above exception, another exception occurred:",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/workspace/scratch/4990b2915f7b/HeptaBao/tests/plan/test_plan_v1_4_1.py\", line 107, in test_temporary_write_workflow_fails_closed",
+        "    with self.assertRaisesRegex(ValidationFailure, \"temporary write-capable workflow remains\"):",
+        "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "AssertionError: \"temporary write-capable workflow remains\" does not match \"single-node journal is missing required source contracts: ['root.open_file(leaf_name, FileAccess::CreateNew)', 'root.rename(&temporary_name, target_name)', 'sync_all', 'root.open_file(&temporary_name, FileAccess::CreateNew)']\"",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 359 tests in 79.021s",
+        "",
+        "FAILED (failures=3, errors=2, skipped=27)"
+      ],
+      "interpretation": "Initial integration failure before old V1.4/V1.4.1 source locators were repaired. Final full-plan result is recorded in python.suites."
+    }
+  ],
+  "evidence_preservation": {
+    "schema": "heptabao.round4-evidence-preservation.v1",
+    "baseline_commit": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+    "checked_at_utc": "2026-11-15T16:20:07.133365+00:00",
+    "comparison": "Full baseline Git blob bytes compared directly with current file bytes; executable/symlink Git mode also checked. No hash-only equality assumption.",
+    "selection": "Every baseline tracked path with an exact evidence directory component, plus separately reported historical audit paths, receipt JSON outside evidence, frozen passkey_r9, and original/log captures outside evidence.",
+    "groups": {
+      "evidence": {
+        "files": 4531,
+        "bytes": 91754542,
+        "non_markdown_files": 4440,
+        "all_content_and_git_modes_unchanged": true,
+        "inventory_sha256": "86d1d15b0958b891a973dc335c52fc1c296d41ffbb7ad244246975dcaf6ccffe"
+      },
+      "historical_audits": {
+        "files": 64,
+        "bytes": 2923063,
+        "non_markdown_files": 57,
+        "all_content_and_git_modes_unchanged": true,
+        "inventory_sha256": "cc3eb34ba8957c2cbaa800ac0df3c40755daa552175ee85f3d50785882795784"
+      },
+      "outside_evidence_receipt_json": {
+        "files": 10,
+        "bytes": 125661,
+        "non_markdown_files": 10,
+        "all_content_and_git_modes_unchanged": true,
+        "inventory_sha256": "9cdc4c8371abf529437f2e4d500da7da0e0fcf313cb893ca39ac43fae496b8fb"
+      },
+      "frozen_passkey_r9": {
+        "files": 33,
+        "bytes": 508399,
+        "non_markdown_files": 32,
+        "all_content_and_git_modes_unchanged": true,
+        "inventory_sha256": "d920cd28acfbe14f7a865bbfc3e3f55e23a8babf5297f55acb5c704df7f144ce"
+      },
+      "outside_evidence_original_logs": {
+        "files": 37,
+        "bytes": 989297,
+        "non_markdown_files": 37,
+        "all_content_and_git_modes_unchanged": true,
+        "inventory_sha256": "0ab7f4fa99f6fa267c39671eb44dae81df6b6ee3677c25549075d7112374601e"
+      }
+    },
+    "unique_files_checked": 4646,
+    "differences": [],
+    "content_and_git_modes_unchanged": true,
+    "readme": {
+      "path": "README.md",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "policy_preserved": true
+    },
+    "restored_generated_receipt": {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-contract-receipt.json",
+      "reason": "Current tracked receipt JSON equals this round’s captured 52-assertion Node output; test default output writes this path. Only two sourceManifest digests differ from d35. Restored this one file, preserving new run outside repo.",
+      "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+      "original_sha256": "d52b3b317f8fed0d853412c9a82cb1bdbde0cf690a83e335be0b132bcb05ffd9",
+      "generated_sha256": "ed1278c9f1a5d8d71309ff6bee417b15a2424d058c72fb4ca7c0459713f29e9f",
+      "restored_sha256": "d52b3b317f8fed0d853412c9a82cb1bdbde0cf690a83e335be0b132bcb05ffd9",
+      "mode_before_and_after": "0o644",
+      "source_manifest_changes": [
+        {
+          "before": {
+            "name": "authbus_refresh_control_contract_test.mjs",
+            "sha256": "552525fcdf2ee0466dc4a4632cc2d61a0837c5e95f89ec1430bc7d356277a652"
+          },
+          "after": {
+            "name": "authbus_refresh_control_contract_test.mjs",
+            "sha256": "f2fbdf3588f2c14b817030a44c30a7da917dd16148b1f9e60856ee12b314ebc0"
+          }
+        },
+        {
+          "before": {
+            "name": "authbus_refresh_registry_candidate.mjs",
+            "sha256": "dcd8a9c7d18b7dfb1cd6fc341b31db0f52e60056c54ca8a8e688f453f29aadf5"
+          },
+          "after": {
+            "name": "authbus_refresh_registry_candidate.mjs",
+            "sha256": "c57bc679e9d5a658941d8e5e31b129547550b3323bdbd7f7d84881ed257ec57d"
+          }
+        }
+      ],
+      "captured_test_output": "round4-authbus-control-contract.json",
+      "generated_pretty_receipt": "round4-r5-generated-contract-receipt.json",
+      "restored": true
+    },
+    "source_mutation_during_review": "Only this explicitly identified generated receipt was restored; implementation sources remained untouched by this evidence review.",
+    "round3_boundary_reproduced": true,
+    "inventory_file": "round4-evidence-preservation-inventory.json"
+  },
+  "owned_fixture_resource_retirement": {
+    "schema": "heptabao.round4-owned-resource-retirement.v1",
+    "checked_at_utc": "2026-11-15T16:44:53.580508+00:00",
+    "status": "NO_OWNED_TASK_PROCESSES_OR_SERVERS_REMAIN",
+    "scope": "Only the PostgreSQL data/bin paths, Node R5/R4 fixture commands and OpenRaft target directory created by structure_round3. No unrelated process was signalled or stopped.",
+    "postgresql": {
+      "data_directory": "/workspace/scratch/4990b2915f7b/round4-pg-data",
+      "endpoint": "127.0.0.1:56417",
+      "pid_file_present": false,
+      "listening_socket_present": false,
+      "matching_processes": 0,
+      "normal_shutdown_log": [
+        "2026-11-15 10:32:53.309 EST [15] LOG:  database system was shut down at 2026-11-15 10:30:33 EST",
+        "2026-11-15 10:32:54.975 EST [11] LOG:  received smart shutdown request",
+        "2026-11-15 10:32:54.978 EST [13] LOG:  checkpoint starting: shutdown immediate",
+        "2026-11-15 10:32:55.135 EST [11] LOG:  database system is shut down"
+      ],
+      "log_sha256": "9941b60c4dc5715d78cfeae62bcf37974a814e85f7d85584d9fa8d11a3fb096a"
+    },
+    "node_tls_fixtures": {
+      "r5_contract_ok": true,
+      "r5_checks_passed": 52,
+      "r4_contract_ok": true,
+      "matching_controllers_or_workers": 0,
+      "cleanup_contract": "R5 awaits worker exit and finally closes control/provider servers; R4 finally closes its server.",
+      "intentional_fault_scenario_exits": [
+        {
+          "scenario": "kill-after-response",
+          "signal": "SIGKILL"
+        }
+      ]
+    },
+    "openraft": {
+      "target_directory": "/workspace/scratch/4990b2915f7b/round4-probe-target",
+      "matching_executables_or_children": 0,
+      "test_result_lines": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "scope_limit": "Unit/all-target test execution only; no new OS-clock or physical qualification campaign is claimed."
+    },
+    "actions_during_this_check": [],
+    "original_fixture_directories_and_evidence_preserved": true,
+    "observation_file": "round4-resource-process-observation.json"
+  },
+  "independent_and_behavior_proofs": {
+    "round4-rust-final-test-preservation.json": {
+      "source_record": {
+        "name": "round4-rust-final-test-preservation.json",
+        "bytes": 217289,
+        "sha256": "6c4eacc2dc1ef0201841f100b55252bdba48acd6411336b51ba82e2e9c2840fc"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-rust-final-test-preservation.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "test_definition_count": 544,
+        "file_count": 83,
+        "all_test_names_and_attributes_preserved": true,
+        "all_test_assertions_control_and_execution_tokens_preserved": true,
+        "comparison": "Rust AST tokens excluding comments and nested function declarations, and normalizing optional trailing commas only in function argument lists; tuple, macro, and string contents retained verbatim"
+      },
+      "collection_counts": {
+        "raw_test_bodies_changed": 3,
+        "files": 83
+      }
+    },
+    "round4-rust-extraction-equivalence.json": {
+      "source_record": {
+        "name": "round4-rust-extraction-equivalence.json",
+        "bytes": 2963,
+        "sha256": "a27c53dee61161096d8964bb35751527315f4a80505d04cfe35d5c781a969f17"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-rust-extraction-equivalence.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "io_caller_counters_and_unknown_mapping": "unchanged caller-owned static counters and caller result mappings; wrappers bind shared helpers with exact arguments",
+        "sdk_secret_drop_order": "Shared helper returns restored State; each typed validate holds _restored through the original final check_current/check_original calls. Existing explicit drop(keys) remains inside shared body."
+      },
+      "collection_counts": {
+        "checks": 11
+      }
+    },
+    "round4-rust-argument-fix-proof.json": {
+      "source_record": {
+        "name": "round4-rust-argument-fix-proof.json",
+        "bytes": 2774,
+        "sha256": "1259b496c856f054555939f5fd8d3b32ffc8b7cec55b8b9eac6f540d9568c421"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-rust-argument-fix-proof.json",
+      "summary": {
+        "schema": "heptabao.round4.explicit-argument-fix-proof.v1",
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "native_discovery": "15 initial native assertion failures: secret-delivery wrong HTTP dispatch statuses and SSH-template wrong routes. All same-typed &str arguments compiled, so body-only equivalence was insufficient.",
+        "independent_review": "round4-rust-independent-parameter-review.json covers 92 files / 43 aliases / 54 wrappers / 18 callbacks / 10 timer calls / 7 nested lifts including probes and the later borrowed-Service initializer fix.",
+        "native_fixed_candidate_execution": "Parent final candidate native tests own runtime validation; this artifact proves positional binding and intentionally demonstrates rejection of the previous bad aliases."
+      },
+      "collection_counts": {
+        "corrected_adapters": 2,
+        "current_direct_alias_checks": 3,
+        "modified_existing_function_signatures": 2
+      }
+    },
+    "round4-rust-independent-parameter-review.json": {
+      "source_record": {
+        "name": "round4-rust-independent-parameter-review.json",
+        "bytes": 85099,
+        "sha256": "57557bfccd6ebd3bd77505428693b355b3322d15e193314c4053766e0727153d"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-rust-independent-parameter-review.json",
+      "summary": {
+        "status": "GO",
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "files": 92,
+        "parse_errors": 0,
+        "direct_aliases": 43,
+        "all_alias_parameter_names_order_types_match_actual_target": true,
+        "removed_functions": 56,
+        "modified_non_test_functions": 60,
+        "all_modified_external_parameter_lists_preserved": true,
+        "wrapper_bindings": 54,
+        "callback_contracts": 18,
+        "timer_calls": 10,
+        "nested_helper_promotions": 7,
+        "repaired_same_type_string_adapters": 2,
+        "proof_data": "round4-rust-independent-binding-data.json",
+        "source_frozen_at_review_completion": true
+      },
+      "collection_counts": {
+        "source_sha256": 92,
+        "wrappers": 54,
+        "callbacks": 18,
+        "timer_bindings": 2,
+        "nested_promotions": 7,
+        "repaired_adapters": 2,
+        "remaining_bulk_functions": 6,
+        "manual_semantic_checks": 7,
+        "limits": 2,
+        "module_resolution_checks": 7
+      }
+    },
+    "round4-native-stack-regression-fix-proof.json": {
+      "source_record": {
+        "name": "round4-native-stack-regression-fix-proof.json",
+        "bytes": 1471,
+        "sha256": "f9c3cedb52ba9f1782a7ab28f444923b9a8441ca132ecad84eeae5925f394873"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-native-stack-regression-fix-proof.json",
+      "summary": {
+        "schema": "heptabao.round4.native-stack-regression-fix.v1",
+        "baseline_evidence": "round4-native-baseline-additional-stack-comparison.json",
+        "initial_candidate": "9b3b3b36b8ac986b71c2f355a38196d5b301261fa16be6f4530e1951854355c9",
+        "original_regression": "Same native profile: baseline default stack passed while initial candidate default stack aborted; explicit larger stack was not used to hide this case.",
+        "source_change": "Keep Root and Service construction in the original Fixture::initialized; shared initializer borrows &mut Service and returns only key/admin/clock.",
+        "remaining_full_suite": "Parent running all 560 selected compiled names individually; this targeted result is not a claim that the full suite has finished."
+      },
+      "collection_counts": {
+        "corrected_native_observation": 8
+      }
+    },
+    "round4-python-migration-independent-review.json": {
+      "source_record": {
+        "name": "round4-python-migration-independent-review.json",
+        "bytes": 3094,
+        "sha256": "821ffd752b9ae17729a36ec2aba741eb47989b0ab84915eab3690a52e549a041"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-migration-independent-review.json",
+      "summary": {
+        "schema": "heptabao.round4.independent-python-migration-review.v1",
+        "reviewer": "rust_round3",
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "result": "GO; no semantic blocker found; optional unused-import cleanup recommended to owner"
+      },
+      "collection_counts": {
+        "ast": 5,
+        "imports_and_consumers": 5,
+        "source_sha256": 6
+      }
+    },
+    "round4-descriptor-guard-independent-review.json": {
+      "source_record": {
+        "name": "round4-descriptor-guard-independent-review.json",
+        "bytes": 4616,
+        "sha256": "2b7ff8fb321900efba58dd59f0cdef225b6beaab0dd33056881abd385f626cc3"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-descriptor-guard-independent-review.json",
+      "summary": {
+        "reviewer": "structure_round3 independent read-only review",
+        "reviewed_at_utc": "2026-11-15T16:04:05.917697+00:00",
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "status": "GO",
+        "scope": "Descriptor source audit migration from store/journal inline implementations to filesystem-guard durable_write helper; no source edits or native-runtime claims.",
+        "supporting_proof": "round4-descriptor-independent-checks.json"
+      },
+      "collection_counts": {
+        "reviewed_sha256": 4,
+        "checks": 8,
+        "findings": 1,
+        "limits": 1,
+        "supporting_proofs": 3
+      }
+    },
+    "round4-descriptor-attribute-final-recheck.json": {
+      "source_record": {
+        "name": "round4-descriptor-attribute-final-recheck.json",
+        "bytes": 3599,
+        "sha256": "7f0b613afd82fc7b911367300312ce88b9cff4a857989db1b0b76a649686f354"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-descriptor-attribute-final-recheck.json",
+      "summary": {
+        "items": 11
+      },
+      "collection_counts": {
+        "items": 11
+      }
+    },
+    "round4-python-plan-source-integration-proof.json": {
+      "source_record": {
+        "name": "round4-python-plan-source-integration-proof.json",
+        "bytes": 957,
+        "sha256": "4a014235c5029d165e388d2caf93682acb333593030857841246917088565e1e"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-plan-source-integration-proof.json",
+      "summary": {
+        "baseline_commit": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "strong_descriptor_guard_unchanged": true,
+        "existing_test_functions_ast_unchanged": 38,
+        "added_integration_test": "5 shared-source mutations, both validators each; validates original candidate first",
+        "status": "PASS"
+      },
+      "collection_counts": {
+        "validators": 2
+      }
+    },
+    "round4-python-postgres-row-proof.json": {
+      "source_record": {
+        "name": "round4-python-postgres-row-proof.json",
+        "bytes": 1237,
+        "sha256": "abda27210171de17e7d06d172ff0ebb1d838081c46cf0e098285ec33e4575e46"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-postgres-row-proof.json",
+      "summary": {
+        "path": "qa/openbao-acceptance/postgres_generation_live.py",
+        "baseline_commit": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "before_sha256": "f084c583981a9971b2cff56b524a732b0a3802a6dc87ac92de7aad4e5aecb92b",
+        "mode": "0o755",
+        "git_blob": "3c74e847c5101fc653cf426c7641d16f825a140e",
+        "after_sha256": "9e43da12f351399242e34c8595856a115934666b4917196d7b77e006a43f4b4c",
+        "removed_file_bytes": 263,
+        "remaining_entire_module_ast_identical": true,
+        "mode_unchanged": true,
+        "function_removed": "row",
+        "reference_assessment": "No same-module Name load, from-import, .row(...) attribute use in tracked Python, dynamic export or current exact-source pin; structure agent independently traced imports/exports/source contract and root authorized deletion.",
+        "result": "PASS"
+      },
+      "collection_counts": {
+        "definition": 5
+      }
+    },
+    "round4-go-deletion-ast-proof.json": {
+      "source_record": {
+        "name": "round4-go-deletion-ast-proof.json",
+        "bytes": 1888,
+        "sha256": "4165de4a376b0ad202a645fab2b9d18cd236008f4aa28f5e3fb4aafbd87a287b"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-go-deletion-ast-proof.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "path": "crates/heptabao-plugin-host/bridges/kms_v270/darwin_native.go",
+        "before_sha256": "4fd5dac0809845f6cca7fa67ca98ae277e7680894f3affd548d68b5320c4de3c",
+        "after_sha256": "4e4888b756f05f2862abcc5622ef16702a32e47badfeaa934b489ceab758b45c",
+        "added_lines": 0,
+        "deleted_lines": 21,
+        "deleted_bytes": 839,
+        "removed_go_function": "ownedGroupMembers",
+        "removed_c_static_function": "hbp_group_members",
+        "removed_import": "errors",
+        "exact_three_deletions_reconstruct_current_bytes": true,
+        "all_other_current_go_function_bodies_byte_identical": true,
+        "tracked_go_files": 21,
+        "unchanged_current_bodies": 192,
+        "validation_scope": "Syntax and exact deletion/body preservation, not Darwin CGO compilation or runtime behavior.",
+        "function_identity": "whole AST function header including method receiver and parameter list, preserving distinct same-named methods"
+      },
+      "collection_counts": {
+        "go_function_counts": 2,
+        "parse_errors": 0,
+        "baseline_references": 2,
+        "removed_functions": 1
+      }
+    },
+    "round4-probe-preservation.json": {
+      "source_record": {
+        "name": "round4-probe-preservation.json",
+        "bytes": 2612,
+        "sha256": "8d826d3b61983c3b9a811731278158bcb2b12a1de87932e8446fdab6eddc80c6"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-probe-preservation.json",
+      "summary": {
+        "schema": "heptabao.round4.probe-source-preservation.v1",
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "total_preserved_other_function_bodies": 54,
+        "cargo_manifest_and_lock_byte_identical": true,
+        "source_copy_closure": "All added files lie below probes/h02/openraft-tokio, already recursively copied by every standalone OpenRaft profile workflow.",
+        "limitations": "No full H02 acceptance, repeated seeded runtime campaign, OS-clock fault run or physical host claim."
+      },
+      "collection_counts": {
+        "changed_existing_sources": 7,
+        "private_helpers": 2,
+        "validation": 5
+      }
+    },
+    "round4-probe-seed-differential.json": {
+      "source_record": {
+        "name": "round4-probe-seed-differential.json",
+        "bytes": 34359,
+        "sha256": "52b75a5e2f417b0fcb5192a679b51fe8a553307542825d00b89b297e0e67f617"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-probe-seed-differential.json",
+      "summary": {
+        "schema": "heptabao.round4.probe-seed-differential.v1",
+        "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+        "baseline_variants": 5,
+        "argv_cases": 27,
+        "comparisons": 135,
+        "all_match": true,
+        "shared_argument_body_exact": true,
+        "scope": "Exact original CLI parser extraction vs package helper only; no H02 runtime/provider qualification."
+      },
+      "collection_counts": {
+        "cases": 135
+      }
+    },
+    "round4-python-behavior-proof.json": {
+      "source_record": {
+        "name": "round4-python-behavior-proof.json",
+        "bytes": 39328,
+        "sha256": "8c9ad93c11a03235bc83baa436b7ce87c726b51530ae4e905e6461bd159e2bd0"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-behavior-proof.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "result": "PASS"
+      },
+      "collection_counts": {
+        "ast": 38,
+        "yaml": 5,
+        "fixture": 5,
+        "renderer": 5
+      }
+    },
+    "round4-python-fourth-proof.json": {
+      "source_record": {
+        "name": "round4-python-fourth-proof.json",
+        "bytes": 15610,
+        "sha256": "c04adbf9518f0f7e62b13fce47fce57c56b0af161b2612541e4ffe25d8c20b1c"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-fourth-proof.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "result": "PASS"
+      },
+      "collection_counts": {
+        "ast": 7,
+        "yaml11": 4,
+        "trace": 7
+      }
+    },
+    "round4-python-migration-proof.json": {
+      "source_record": {
+        "name": "round4-python-migration-proof.json",
+        "bytes": 3487,
+        "sha256": "bd199695667d1b26b18fd8355d888a1642e17198374a7077a85f09845502c7e9"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-migration-proof.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "kv2_original_post_exit_fd_value_semantics_preserved": true,
+        "remaining_adapter_post_exit_fd_none_semantics_preserved": true,
+        "result": "PASS"
+      },
+      "collection_counts": {
+        "ast": 5,
+        "cli": 5,
+        "lock_contracts": 2
+      }
+    },
+    "round4-python-last-batches-proof.json": {
+      "source_record": {
+        "name": "round4-python-last-batches-proof.json",
+        "bytes": 13108,
+        "sha256": "1fb366691e1e7153b4ce6e4918353fa5e8c0a843d24f5e1c965bd337e8b668dd"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-last-batches-proof.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "result": "PASS"
+      },
+      "collection_counts": {
+        "cli": 12,
+        "trace": 88,
+        "checkpoint": 16,
+        "dead_definitions": 4
+      }
+    },
+    "round4-python-owned-deadline-proof.json": {
+      "source_record": {
+        "name": "round4-python-owned-deadline-proof.json",
+        "bytes": 1209,
+        "sha256": "b0349688df698e54c64b184d8fd7f7f66faf6ec73b1fe6adfeac0fa79b7817ba"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-owned-deadline-proof.json",
+      "summary": {
+        "checks_completed": 7,
+        "qualified": false,
+        "scope": "CLI-local transport/lifecycle tests only; no real migration or decoder requalification",
+        "elapsed_seconds": 5.766997898000227,
+        "server_thread_joined": true
+      },
+      "collection_counts": {
+        "controls": 7,
+        "counts": 3,
+        "http_original_lifecycle": 5,
+        "supervisor_original_lifecycle": 6
+      }
+    },
+    "round4-python-descriptor-proof.json": {
+      "source_record": {
+        "name": "round4-python-descriptor-proof.json",
+        "bytes": 538,
+        "sha256": "756345153592a2ffe1bd60ff69c817115bd611558d356fa0ad9ae06c6b51074c"
+      },
+      "archive": "candidates.json.gz",
+      "archive_key": "behavior_and_independent_proofs/round4-python-descriptor-proof.json",
+      "summary": {
+        "baseline": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+        "guard_sha256": "e336ef769de4448e7fe46c8d376fa555d91ef79bd8f07df804aae8eb452034ad",
+        "result": "PASS"
+      },
+      "collection_counts": {
+        "historical": 2,
+        "current": 2
+      }
+    }
+  },
+  "remaining_confirmed_actionable_candidates": 0,
+  "known_limits": [
+    "Similarity and reference scans cannot prove the absence of every semantic duplication or unknown external dynamic consumer.",
+    "Native server tests use an explicitly recorded opt-level=0 profile with debug assertions and overflow checks enabled. Default-stack failures are compared individually against exact d35; explicit 32 MiB success is reported separately.",
+    "Full Python SDK and QA discovery are not reported as all passing; identical host-dependent baseline failures and the original transient process-lifetime failure remain recorded.",
+    "The Go native compiler/tests were not run because the required toolchain could not be provisioned within bounded attempts.",
+    "Targeted and complete suites overlap; their counts are not added as a total of independent tests."
+  ],
+  "current_validators_after_audit_staging": {
+    "schema": "heptabao.round4.final-current-validators.v1",
+    "checked_on_staged_worktree": true,
+    "head_at_check": "d35a7b72a95441ac9cf0908077ec9a979d36b81c",
+    "staged_tree_at_check": "28946a8c20c00a6b7d55f8c77403b803b7af24cb",
+    "module_tree_binding_note": "The module validator reads the current source, but prints HEAD directory tree IDs; final published HEAD is checked again after publication.",
+    "checks": [
+      {
+        "name": "validate_repository_v2",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_repository_v2.py"
+        ],
+        "exit_code": 0,
+        "seconds": 3.595,
+        "log_file": "round4-final-gate-validate_repository_v2.log",
+        "log_bytes": 44,
+        "log_sha256": "eb13c684216ecaf8161275dc6657b63a4be12f9bd94f4bc008d221ed7d879e2f",
+        "status": "PASS",
+        "expected_result_verified": true
+      },
+      {
+        "name": "validate_current_documentation_semantics",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_current_documentation_semantics.py"
+        ],
+        "exit_code": 0,
+        "seconds": 2.708,
+        "log_file": "round4-final-gate-validate_current_documentation_semantics.log",
+        "log_bytes": 75,
+        "log_sha256": "235e33f4d159bbc9bbdb023438f52b11376537f17804076db7155bbb844d4e03",
+        "status": "PASS",
+        "expected_result_verified": true
+      },
+      {
+        "name": "validate_repository_identity_v1",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_repository_identity_v1.py"
+        ],
+        "exit_code": 0,
+        "seconds": 1.774,
+        "log_file": "round4-final-gate-validate_repository_identity_v1.log",
+        "log_bytes": 182,
+        "log_sha256": "eb83f1877fa596e2942fe7caa21b81ccdf001f4e25f4774bdef81f47393d445a",
+        "status": "PASS",
+        "expected_result_verified": true
+      },
+      {
+        "name": "validate_module_closure",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_module_closure.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.468,
+        "log_file": "round4-final-gate-validate_module_closure.log",
+        "log_bytes": 4021,
+        "log_sha256": "53bf318a25b8f04826baa792a1374de880fd11751a18de0c626cc88f8732c6e0",
+        "status": "PASS",
+        "expected_result_verified": true
+      },
+      {
+        "name": "validate_workflow_trust",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_workflow_trust.py"
+        ],
+        "exit_code": 0,
+        "seconds": 1.167,
+        "log_file": "round4-final-gate-validate_workflow_trust.log",
+        "log_bytes": 2323,
+        "log_sha256": "0944a1557f3c43ccd5512290bae1db08c17f1ea6617110598a574764b0a77bd2",
+        "status": "PASS",
+        "expected_result_verified": true
+      },
+      {
+        "name": "validate_delivery_gate_ownership",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_delivery_gate_ownership.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.076,
+        "log_file": "round4-final-gate-validate_delivery_gate_ownership.log",
+        "log_bytes": 54,
+        "log_sha256": "125c16ae60f12e892597dc986849b47560b623a9145db7fdb4acaa346e9f0cc3",
+        "status": "PASS",
+        "expected_result_verified": true
+      },
+      {
+        "name": "validate_openbao_271_release_denominator",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_openbao_271_release_denominator.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.023,
+        "log_file": "round4-final-gate-validate_openbao_271_release_denominator.log",
+        "log_bytes": 202,
+        "log_sha256": "b164d3dcb2b0c25bdd944dd698d8206f4176b65410e1f0c48f03545d01bacc1b",
+        "status": "PASS",
+        "expected_result_verified": true
+      },
+      {
+        "name": "validate_plan_v2",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_plan_v2.py"
+        ],
+        "exit_code": 1,
+        "seconds": 0.796,
+        "log_file": "round4-final-gate-validate_plan_v2.log",
+        "log_bytes": 164,
+        "log_sha256": "ec3ab62e5847d954d6569094d469da821601bda2da1b83f6dbe35d03d16eff62",
+        "status": "BASELINE_EQUIVALENT_FAILURE",
+        "expected_result_verified": true
+      }
+    ],
+    "all_expected_results_verified": true
+  }
+}

@@ -11,6 +11,22 @@ use crate::v6_read_validation::{ObjectSource, ReadContext, ReadError, ReadReceip
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet};
 
+fn stage(
+    objects: &mut BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
+    domain: ObjectDomain,
+    object: &Arc<crate::state_records::StagedObject>,
+) -> Result<(), RecordError> {
+    let key = (domain, object.reference().id);
+    if let Some(prior) = objects.get(&key) {
+        if prior.reference() != object.reference() || prior.bytes() != object.bytes() {
+            return Err(RecordError::Corrupt);
+        }
+    } else {
+        objects.insert(key, Arc::clone(object));
+    }
+    Ok(())
+}
+
 #[cfg(feature = "native-v6-ha")]
 #[path = "service_records_v6_historical.rs"]
 mod historical;
@@ -714,24 +730,7 @@ impl Service {
         .map_err(|_| rejected())?;
         root.kv1 = recorded.record_root().ok_or_else(rejected)?;
         let mut objects = BTreeMap::new();
-        fn stage(
-            objects: &mut BTreeMap<
-                (ObjectDomain, ObjectId),
-                Arc<crate::state_records::StagedObject>,
-            >,
-            domain: ObjectDomain,
-            object: &Arc<crate::state_records::StagedObject>,
-        ) -> Result<(), RecordError> {
-            let key = (domain, object.reference().id);
-            if let Some(prior) = objects.get(&key) {
-                if prior.reference() != object.reference() || prior.bytes() != object.bytes() {
-                    return Err(RecordError::Corrupt);
-                }
-            } else {
-                objects.insert(key, Arc::clone(object));
-            }
-            Ok(())
-        }
+
         recorded
             .visit_record_objects(|object| {
                 check()?;
@@ -1399,24 +1398,7 @@ impl Service {
         let recorded = (*candidate.engines).clone();
         root.kv1 = recorded.record_root().ok_or_else(rejected)?;
         let mut objects = BTreeMap::new();
-        fn stage(
-            objects: &mut BTreeMap<
-                (ObjectDomain, ObjectId),
-                Arc<crate::state_records::StagedObject>,
-            >,
-            domain: ObjectDomain,
-            object: &Arc<crate::state_records::StagedObject>,
-        ) -> Result<(), RecordError> {
-            let key = (domain, object.reference().id);
-            if let Some(prior) = objects.get(&key) {
-                if prior.reference() != object.reference() || prior.bytes() != object.bytes() {
-                    return Err(RecordError::Corrupt);
-                }
-            } else {
-                objects.insert(key, Arc::clone(object));
-            }
-            Ok(())
-        }
+
         recorded
             .visit_record_objects(|object| {
                 check()?;

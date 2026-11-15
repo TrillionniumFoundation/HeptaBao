@@ -172,27 +172,10 @@ fn enable(service: &mut Service, token: &str, mount: &str) -> TestResult {
     Ok(())
 }
 fn reopen(files: &Root, key: &str) -> TestResult<Service> {
-    let mut service = files.service()?;
-    service.configure_native_v6_storage(NativeStorageProfile::File)?;
-    expect(
-        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})),
-        200,
-        "formal-File-cold-unseal",
-    )?;
-    assert!(service.native_root.is_some());
-    Ok(service)
+    crate::service::tests::reopen_native_fixture(files, key, call, expect)
 }
 fn sentinel(service: &mut Service, root: &str) -> TestResult {
-    let response = expect(
-        call(service, "GET", "secret/data/sentinel", root, json!({})),
-        200,
-        "unrelated-KV-sentinel",
-    )?;
-    assert!(response.body["data"]["data"] == json!({"kept":"unchanged"}));
-    assert!(service.pending_native_auth_delivery.is_none());
-    assert!(service.native_request_binding.is_none());
-    assert!(!service.recovery_required && !service.audit_failed);
-    Ok(())
+    crate::service::tests::assert_native_sentinel(service, root, call, expect)
 }
 fn encrypt(service: &mut Service, root: &str, key: &str) -> TestResult<Zeroizing<String>> {
     let mut response = expect(

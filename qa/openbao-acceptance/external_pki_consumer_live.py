@@ -23,9 +23,9 @@ import time
 
 from cryptography import x509
 from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.primitives.asymmetric import ec, ed25519
+from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
-from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
+from bao_http import Client, SafeArgumentParser, private_read, private_write
 from official_openbao_launcher import file_digest, pinned_artifact, start_oracle, stop_oracle
 import external_transit_consumer_live as shared
 

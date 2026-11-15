@@ -844,145 +844,14 @@ impl RetirementPublication {
     pub(in crate::service) fn validate(&self, service: &Service) -> Result<(), Response> {
         self.view.check_current(service)?;
         namespace_diagnostic!("custody.original", self.check_original())?;
-        self.logical
-            .validate_publication_schema(Some(&self.view.private))?;
-        namespace_diagnostic!(
-            "custody.proof.logical_format",
-            self.logical.validate_format()
+        let _restored = validate_restored_publication(
+            &self.view.private,
+            &self.logical,
+            &self.closed,
+            &self.owners,
+            &self.view.maintenance,
+            service,
         )?;
-        let physical = self.closed.protected_state()?;
-        namespace_diagnostic!("custody.proof.physical_format", physical.validate_format())?;
-        physical.namespaces.validate_custody_successor(
-            &service
-                .state
-                .as_ref()
-                .ok_or_else(failed)?
-                .protected_state()?
-                .namespaces,
-        )?;
-        // Reopen the exact new descriptor and cells using the same sole Keys.
-        // Compare the complete logical graph, never the locator projection.
-        let keys = self.view.maintenance.lock().map_err(|_| failed())?;
-        let mut restored = self.closed.clone();
-        restored.namespace_leases = Leases::default();
-        restored.namespace_protected = None;
-        let mut paths = self.owners.keys().cloned().collect::<Vec<_>>();
-        paths.sort_by_key(|path| (path.split('/').count(), path.clone()));
-        for actual in paths {
-            let next = self.owners.get(&actual).ok_or_else(failed)?;
-            if Owner::actual(&restored, &actual)? != *next {
-                return Err(failed());
-            }
-            let key = &keys.keys.get(&actual).ok_or_else(failed)?.1;
-            let bytes = next
-                .open_assets(next.binding(), key)
-                .map_err(|_| failed())?;
-            let assets = serde_json::from_slice(&bytes).map_err(|_| failed())?;
-            let cells = restored
-                .engines
-                .namespace_record_cells(next.binding())
-                .map_err(|_| failed())?;
-            restored = restored.restore_namespace_assets(&actual, key, assets, &cells)?;
-            restored.namespaces.set_sealed(&actual, false)?;
-        }
-        drop(keys);
-        namespace_diagnostic!("custody.restored.format", restored.validate_format())?;
-        if wire(&restored)? != wire(&self.logical)? {
-            #[cfg(test)]
-            {
-                // Fixed component equality only. No values or paths are emitted.
-                for (stage, equal) in [
-                    (
-                        "custody.component.schema",
-                        restored.schema == self.logical.schema,
-                    ),
-                    (
-                        "custody.component.replay",
-                        restored.replay_epoch == self.logical.replay_epoch,
-                    ),
-                    (
-                        "custody.component.cluster",
-                        restored.cluster_id == self.logical.cluster_id,
-                    ),
-                    (
-                        "custody.component.auth",
-                        wire(&restored.auth)
-                            .and_then(|a| wire(&self.logical.auth).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.engines",
-                        wire(&restored.engines)
-                            .and_then(|a| wire(&self.logical.engines).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.database",
-                        wire(&restored.database)
-                            .and_then(|a| wire(&self.logical.database).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.raft_admin",
-                        wire(&restored.raft_admin)
-                            .and_then(|a| wire(&self.logical.raft_admin).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.namespaces",
-                        wire(&restored.namespaces)
-                            .and_then(|a| wire(&self.logical.namespaces).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                ] {
-                    crate::service::namespace_diagnostics::record_status(
-                        stage,
-                        if equal { 200 } else { 503 },
-                    );
-                }
-                for actual in self.owners.keys() {
-                    let pair = Owner::actual(&restored, actual)
-                        .and_then(|new| Owner::actual(&self.logical, actual).map(|old| (new, old)));
-                    if let Ok((new, old)) = pair {
-                        for (stage, equal) in [
-                            ("custody.component.owner_equal", new == old),
-                            (
-                                "custody.component.owner_binding",
-                                new.binding() == old.binding(),
-                            ),
-                            (
-                                "custody.component.owner_epoch",
-                                new.key_epoch() == old.key_epoch(),
-                            ),
-                            (
-                                "custody.component.owner_frontier",
-                                new.seal_frontier() == old.seal_frontier(),
-                            ),
-                            (
-                                "custody.component.owner_parent",
-                                new.parent() == old.parent(),
-                            ),
-                        ] {
-                            crate::service::namespace_diagnostics::record_status(
-                                stage,
-                                if equal { 200 } else { 503 },
-                            );
-                        }
-                    } else {
-                        crate::service::namespace_diagnostics::record_status(
-                            "custody.component.owner_lookup",
-                            503,
-                        );
-                    }
-                }
-            }
-            #[cfg(test)]
-            crate::service::namespace_diagnostics::record_status(
-                "custody.proof.restored_equal",
-                503,
-            );
-            return Err(failed());
-        }
         self.view.check_current(service)?;
         self.check_original()
     }
@@ -1384,145 +1253,14 @@ impl CleanupPublication {
     pub(in crate::service) fn validate(&self, service: &Service) -> Result<(), Response> {
         self.view.check_current(service)?;
         namespace_diagnostic!("custody.original", self.check_original())?;
-        self.logical
-            .validate_publication_schema(Some(&self.view.private))?;
-        namespace_diagnostic!(
-            "custody.proof.logical_format",
-            self.logical.validate_format()
+        let _restored = validate_restored_publication(
+            &self.view.private,
+            &self.logical,
+            &self.closed,
+            &self.owners,
+            &self.view.maintenance,
+            service,
         )?;
-        let physical = self.closed.protected_state()?;
-        namespace_diagnostic!("custody.proof.physical_format", physical.validate_format())?;
-        physical.namespaces.validate_custody_successor(
-            &service
-                .state
-                .as_ref()
-                .ok_or_else(failed)?
-                .protected_state()?
-                .namespaces,
-        )?;
-        // Reopen the exact new descriptor and cells using the same sole Keys.
-        // Compare the complete logical graph, never the locator projection.
-        let keys = self.view.maintenance.lock().map_err(|_| failed())?;
-        let mut restored = self.closed.clone();
-        restored.namespace_leases = Leases::default();
-        restored.namespace_protected = None;
-        let mut paths = self.owners.keys().cloned().collect::<Vec<_>>();
-        paths.sort_by_key(|path| (path.split('/').count(), path.clone()));
-        for actual in paths {
-            let next = self.owners.get(&actual).ok_or_else(failed)?;
-            if Owner::actual(&restored, &actual)? != *next {
-                return Err(failed());
-            }
-            let key = &keys.keys.get(&actual).ok_or_else(failed)?.1;
-            let bytes = next
-                .open_assets(next.binding(), key)
-                .map_err(|_| failed())?;
-            let assets = serde_json::from_slice(&bytes).map_err(|_| failed())?;
-            let cells = restored
-                .engines
-                .namespace_record_cells(next.binding())
-                .map_err(|_| failed())?;
-            restored = restored.restore_namespace_assets(&actual, key, assets, &cells)?;
-            restored.namespaces.set_sealed(&actual, false)?;
-        }
-        drop(keys);
-        namespace_diagnostic!("custody.restored.format", restored.validate_format())?;
-        if wire(&restored)? != wire(&self.logical)? {
-            #[cfg(test)]
-            {
-                // Fixed component equality only. No values or paths are emitted.
-                for (stage, equal) in [
-                    (
-                        "custody.component.schema",
-                        restored.schema == self.logical.schema,
-                    ),
-                    (
-                        "custody.component.replay",
-                        restored.replay_epoch == self.logical.replay_epoch,
-                    ),
-                    (
-                        "custody.component.cluster",
-                        restored.cluster_id == self.logical.cluster_id,
-                    ),
-                    (
-                        "custody.component.auth",
-                        wire(&restored.auth)
-                            .and_then(|a| wire(&self.logical.auth).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.engines",
-                        wire(&restored.engines)
-                            .and_then(|a| wire(&self.logical.engines).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.database",
-                        wire(&restored.database)
-                            .and_then(|a| wire(&self.logical.database).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.raft_admin",
-                        wire(&restored.raft_admin)
-                            .and_then(|a| wire(&self.logical.raft_admin).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                    (
-                        "custody.component.namespaces",
-                        wire(&restored.namespaces)
-                            .and_then(|a| wire(&self.logical.namespaces).map(|b| a == b))
-                            .unwrap_or(false),
-                    ),
-                ] {
-                    crate::service::namespace_diagnostics::record_status(
-                        stage,
-                        if equal { 200 } else { 503 },
-                    );
-                }
-                for actual in self.owners.keys() {
-                    let pair = Owner::actual(&restored, actual)
-                        .and_then(|new| Owner::actual(&self.logical, actual).map(|old| (new, old)));
-                    if let Ok((new, old)) = pair {
-                        for (stage, equal) in [
-                            ("custody.component.owner_equal", new == old),
-                            (
-                                "custody.component.owner_binding",
-                                new.binding() == old.binding(),
-                            ),
-                            (
-                                "custody.component.owner_epoch",
-                                new.key_epoch() == old.key_epoch(),
-                            ),
-                            (
-                                "custody.component.owner_frontier",
-                                new.seal_frontier() == old.seal_frontier(),
-                            ),
-                            (
-                                "custody.component.owner_parent",
-                                new.parent() == old.parent(),
-                            ),
-                        ] {
-                            crate::service::namespace_diagnostics::record_status(
-                                stage,
-                                if equal { 200 } else { 503 },
-                            );
-                        }
-                    } else {
-                        crate::service::namespace_diagnostics::record_status(
-                            "custody.component.owner_lookup",
-                            503,
-                        );
-                    }
-                }
-            }
-            #[cfg(test)]
-            crate::service::namespace_diagnostics::record_status(
-                "custody.proof.restored_equal",
-                503,
-            );
-            return Err(failed());
-        }
         self.view.check_current(service)?;
         self.check_original()
     }
@@ -1539,4 +1277,149 @@ impl CleanupPublication {
         )?;
         Ok(self.closed)
     }
+}
+
+// Return the restored secret state so each typed caller retains its original
+// destruction order through both final ownership checks.
+fn validate_restored_publication(
+    private: &State,
+    logical: &State,
+    closed: &State,
+    owners: &BTreeMap<String, Owner>,
+    maintenance: &Arc<Mutex<Maintenance>>,
+    service: &Service,
+) -> Result<State, Response> {
+    logical.validate_publication_schema(Some(private))?;
+    namespace_diagnostic!("custody.proof.logical_format", logical.validate_format())?;
+    let physical = closed.protected_state()?;
+    namespace_diagnostic!("custody.proof.physical_format", physical.validate_format())?;
+    physical.namespaces.validate_custody_successor(
+        &service
+            .state
+            .as_ref()
+            .ok_or_else(failed)?
+            .protected_state()?
+            .namespaces,
+    )?;
+    // Reopen the exact new descriptor and cells using the same sole Keys.
+    // Compare the complete logical graph, never the locator projection.
+    let keys = maintenance.lock().map_err(|_| failed())?;
+    let mut restored = closed.clone();
+    restored.namespace_leases = Leases::default();
+    restored.namespace_protected = None;
+    let mut paths = owners.keys().cloned().collect::<Vec<_>>();
+    paths.sort_by_key(|path| (path.split('/').count(), path.clone()));
+    for actual in paths {
+        let next = owners.get(&actual).ok_or_else(failed)?;
+        if Owner::actual(&restored, &actual)? != *next {
+            return Err(failed());
+        }
+        let key = &keys.keys.get(&actual).ok_or_else(failed)?.1;
+        let bytes = next
+            .open_assets(next.binding(), key)
+            .map_err(|_| failed())?;
+        let assets = serde_json::from_slice(&bytes).map_err(|_| failed())?;
+        let cells = restored
+            .engines
+            .namespace_record_cells(next.binding())
+            .map_err(|_| failed())?;
+        restored = restored.restore_namespace_assets(&actual, key, assets, &cells)?;
+        restored.namespaces.set_sealed(&actual, false)?;
+    }
+    drop(keys);
+    namespace_diagnostic!("custody.restored.format", restored.validate_format())?;
+    if wire(&restored)? != wire(logical)? {
+        #[cfg(test)]
+        {
+            // Fixed component equality only. No values or paths are emitted.
+            for (stage, equal) in [
+                (
+                    "custody.component.schema",
+                    restored.schema == logical.schema,
+                ),
+                (
+                    "custody.component.replay",
+                    restored.replay_epoch == logical.replay_epoch,
+                ),
+                (
+                    "custody.component.cluster",
+                    restored.cluster_id == logical.cluster_id,
+                ),
+                (
+                    "custody.component.auth",
+                    wire(&restored.auth)
+                        .and_then(|a| wire(&logical.auth).map(|b| a == b))
+                        .unwrap_or(false),
+                ),
+                (
+                    "custody.component.engines",
+                    wire(&restored.engines)
+                        .and_then(|a| wire(&logical.engines).map(|b| a == b))
+                        .unwrap_or(false),
+                ),
+                (
+                    "custody.component.database",
+                    wire(&restored.database)
+                        .and_then(|a| wire(&logical.database).map(|b| a == b))
+                        .unwrap_or(false),
+                ),
+                (
+                    "custody.component.raft_admin",
+                    wire(&restored.raft_admin)
+                        .and_then(|a| wire(&logical.raft_admin).map(|b| a == b))
+                        .unwrap_or(false),
+                ),
+                (
+                    "custody.component.namespaces",
+                    wire(&restored.namespaces)
+                        .and_then(|a| wire(&logical.namespaces).map(|b| a == b))
+                        .unwrap_or(false),
+                ),
+            ] {
+                crate::service::namespace_diagnostics::record_status(
+                    stage,
+                    if equal { 200 } else { 503 },
+                );
+            }
+            for actual in owners.keys() {
+                let pair = Owner::actual(&restored, actual)
+                    .and_then(|new| Owner::actual(logical, actual).map(|old| (new, old)));
+                if let Ok((new, old)) = pair {
+                    for (stage, equal) in [
+                        ("custody.component.owner_equal", new == old),
+                        (
+                            "custody.component.owner_binding",
+                            new.binding() == old.binding(),
+                        ),
+                        (
+                            "custody.component.owner_epoch",
+                            new.key_epoch() == old.key_epoch(),
+                        ),
+                        (
+                            "custody.component.owner_frontier",
+                            new.seal_frontier() == old.seal_frontier(),
+                        ),
+                        (
+                            "custody.component.owner_parent",
+                            new.parent() == old.parent(),
+                        ),
+                    ] {
+                        crate::service::namespace_diagnostics::record_status(
+                            stage,
+                            if equal { 200 } else { 503 },
+                        );
+                    }
+                } else {
+                    crate::service::namespace_diagnostics::record_status(
+                        "custody.component.owner_lookup",
+                        503,
+                    );
+                }
+            }
+        }
+        #[cfg(test)]
+        crate::service::namespace_diagnostics::record_status("custody.proof.restored_equal", 503);
+        return Err(failed());
+    }
+    Ok(restored)
 }

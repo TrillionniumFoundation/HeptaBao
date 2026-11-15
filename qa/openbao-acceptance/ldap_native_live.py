@@ -11,9 +11,7 @@ import os
 from pathlib import Path
 import shutil
 import socket
-import subprocess
 import tempfile
-import time
 from urllib.parse import quote
 
 from bao_http import Client, SafeArgumentParser, private_read, private_write

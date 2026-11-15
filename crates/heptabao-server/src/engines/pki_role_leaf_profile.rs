@@ -644,36 +644,4 @@ fn simple_lowercase(value: &str) -> String {
         .collect()
 }
 
-use crate::auth::go_print;
-fn go_quote(value: &str) -> String {
-    // Go fmt %q uses printable Unicode and Go string escapes, rather than
-    // inventing a different name after the policy-existence lookup.
-    let mut quoted = String::from("\"");
-    for character in value.chars() {
-        match character {
-            '\\' => quoted.push_str("\\\\"),
-            '\"' => quoted.push_str("\\\""),
-            '\x07' => quoted.push_str("\\a"),
-            '\x08' => quoted.push_str("\\b"),
-            '\x0c' => quoted.push_str("\\f"),
-            '\n' => quoted.push_str("\\n"),
-            '\r' => quoted.push_str("\\r"),
-            '\t' => quoted.push_str("\\t"),
-            '\x0b' => quoted.push_str("\\v"),
-            character if (character as u32) < 0x20 || character == '\x7f' => {
-                quoted.push_str(&format!("\\x{:02x}", character as u32));
-            }
-            character if !go_print::is_print(character) => {
-                let point = character as u32;
-                if point < 0x10000 {
-                    quoted.push_str(&format!("\\u{point:04x}"));
-                } else {
-                    quoted.push_str(&format!("\\U{point:08x}"));
-                }
-            }
-            character => quoted.push(character),
-        }
-    }
-    quoted.push('\"');
-    quoted
-}
+use crate::auth::go_print::quote as go_quote;

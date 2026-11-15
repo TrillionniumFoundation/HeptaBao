@@ -15,7 +15,6 @@ from pathlib import Path
 import re
 import socket
 import ssl
-import subprocess
 import sys
 import time
 from urllib.parse import urlsplit

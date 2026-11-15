@@ -4,7 +4,7 @@ Only newly allocated private loopback TLS fixtures. This runner records bounded
 positive/negative behavior, never whole-surface or replacement admission.
 """
 from __future__ import annotations
-import argparse, hashlib, http.client, json, os, ssl, sys, tempfile, time
+import argparse, http.client, json, os, ssl, sys, time
 from pathlib import Path
 from urllib.parse import urlencode
 ROOT = Path(__file__).resolve().parents[2]

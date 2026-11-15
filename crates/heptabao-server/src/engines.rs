@@ -55,6 +55,10 @@ mod native_kv1;
 #[cfg(feature = "native-v6-storage")]
 pub(crate) use native_kv1::NativeKv1Owner;
 #[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_root_guard.rs"]
+mod native_root_guard;
+
+#[cfg(feature = "native-v6-storage")]
 #[path = "engine_native_transit.rs"]
 mod native_transit;
 #[cfg(feature = "native-v6-storage")]
@@ -4211,4 +4215,16 @@ impl EngineState {
             })
         })
     }
+}
+
+#[cfg(feature = "native-v6-storage")]
+fn native_registry_target(path: &str, rejected: fn() -> EngineError) -> Result<(String, bool)> {
+    let requested = path
+        .strip_prefix("sys/mounts/")
+        .ok_or_else(rejected)?
+        .trim_end_matches('/');
+    let (requested, tune) = requested
+        .strip_suffix("/tune")
+        .map_or((requested, false), |mount| (mount, true));
+    Ok((format!("{}/", canonical_secret_mount(requested)?), tune))
 }

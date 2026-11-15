@@ -1,3 +1,7 @@
+#[path = "../cli.rs"]
+mod cli;
+use cli::parse_seed;
+
 mod durable_store_lab {
     pub mod cluster;
     pub mod network;
@@ -18,17 +22,6 @@ use tokio::task::spawn_blocking;
 const CANDIDATE_ID: &str = "HB-DEP-RAFT-OPENRAFT";
 const VERSION: &str = "0.10.0-alpha.33";
 const PROFILE_ID: &str = "HB-H02-OPENRAFT-DURABLE-STORE-V1";
-
-fn parse_seed() -> u64 {
-    let args = std::env::args().collect::<Vec<_>>();
-    let raw = args
-        .windows(2)
-        .find(|pair| pair[0] == "--seed")
-        .map(|pair| pair[1].as_str())
-        .unwrap_or("0x5eed20260828cafe");
-    let trimmed = raw.strip_prefix("0x").unwrap_or(raw);
-    u64::from_str_radix(trimmed, 16).unwrap_or_else(|_| panic!("invalid seed: {raw}"))
-}
 
 fn copy_tree(source: &Path, destination: &Path) -> std::io::Result<()> {
     if destination.exists() {

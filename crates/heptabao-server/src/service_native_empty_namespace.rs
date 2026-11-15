@@ -720,63 +720,7 @@ mod tests {
     }
 
     fn formal() -> TestResult<(Root, Service, Zeroizing<String>, Zeroizing<String>)> {
-        let files = Root::new();
-        let mut service = files.service()?;
-        service.configure_native_v6_storage(NativeStorageProfile::File)?;
-        let nonce = Zeroizing::new(hex(&crypto::random::<32>()?));
-        let mut initialized = call(
-            &mut service,
-            "POST",
-            "sys/init",
-            "",
-            "",
-            json!({
-                "secret_shares":1, "secret_threshold":1, "recovery_nonce":nonce.as_str()
-            }),
-        );
-        assert_eq!(initialized.status, 200);
-        let key = Zeroizing::new(
-            initialized.body["keys"][0]
-                .as_str()
-                .ok_or("share")?
-                .to_owned(),
-        );
-        let admin = Zeroizing::new(
-            initialized.body["root_token"]
-                .as_str()
-                .ok_or("token")?
-                .to_owned(),
-        );
-        erase_json(&mut initialized.body);
-        assert_eq!(
-            call(
-                &mut service,
-                "POST",
-                "sys/unseal",
-                "",
-                "",
-                json!({"key":key.as_str()})
-            )
-            .status,
-            200
-        );
-        assert_eq!(
-            call(&mut service, "POST", "sys/init/ack", "", &admin, json!({})).status,
-            204
-        );
-        assert_eq!(
-            call(
-                &mut service,
-                "POST",
-                "sys/storage/native-v6/activate",
-                "",
-                &admin,
-                json!({})
-            )
-            .status,
-            204
-        );
-        Ok((files, service, key, admin))
+        crate::service::tests::formal_native_fixture(call)
     }
 
     #[test]

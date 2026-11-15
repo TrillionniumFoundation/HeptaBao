@@ -1,13 +1,15 @@
 """Statement templates remain bounded, identity-bound and executable."""
 from pathlib import Path
 import ast
-import re
 import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
 from candidate_state_schema import parse_current_schema
+from postgres_provider_contract import (
+    HISTORICAL_V4, current_provider_contract_matches, provider_function,
+)
 
 
 
@@ -21,25 +23,16 @@ def extension(path: Path) -> str:
     return source[start:min(boundaries)].rstrip() + "\n"
 
 
-def function(source: str, name: str) -> str:
-    match = re.search(
-        r"CREATE FUNCTION heptabao_provider\." + re.escape(name)
-        + r"\(.*?END \$\$;", source, re.S,
-    )
-    if match is None:
-        raise AssertionError("missing provider function: " + name)
-    return match.group(0)
-
-
 class PostgresStatementTemplateContractTests(unittest.TestCase):
-    def test_fresh_and_forward_install_share_exact_extension(self):
-        fresh = extension(ROOT / "bootstrap/postgresql/provider.sql")
+    def test_historical_extension_and_current_final_contract_match_upgrades(self):
+        fresh = extension(ROOT / HISTORICAL_V4)
         upgrade = extension(ROOT / "bootstrap/postgresql/upgrade_v3_statement_templates.sql")
         self.assertEqual(fresh, upgrade)
         self.assertIn("heptabao-postgresql-statements-v1", fresh)
+        self.assertTrue(current_provider_contract_matches(ROOT))
 
     def test_provider_ledger_has_only_identity_and_digest_fields(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
+        source = (ROOT / "bootstrap/postgresql/provider.sql").read_text()
         table = source[source.index("CREATE TABLE heptabao_provider.statement_leases"):]
         table = table[:table.index(");")]
         for field in ("request_digest", "statements_digest", "password_digest",
@@ -50,7 +43,7 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
             self.assertNotIn(forbidden, table)
 
     def test_capacity_and_fence_precede_any_statement_execution(self):
-        apply = function(extension(ROOT / "bootstrap/postgresql/provider.sql"), "apply_statements")
+        apply = provider_function((ROOT / "bootstrap/postgresql/provider.sql").read_text(), "apply_statements")
         self.assertIn("identity_count>=4096", apply)
         self.assertIn("identity_count>=8192", apply)
         self.assertLess(apply.index("statement provider issuance capacity exhausted"),
@@ -62,8 +55,8 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         self.assertIn("statement provider postcondition failed", apply)
 
     def test_statement_payload_digest_is_exact_and_readback_is_compared(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
-        apply = function(source, "apply_statements")
+        source = (ROOT / "bootstrap/postgresql/provider.sql").read_text()
+        apply = provider_function(source, "apply_statements")
         self.assertIn("p_password text,p_digest text,p_statements text", apply)
         self.assertIn("parsed_statements:=p_statements::jsonb", apply)
         self.assertIn("sha256(convert_to(p_statements,'UTF8'))", apply)
@@ -83,8 +76,8 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         self.assertIn("(None, Some(_)) => return Err(())", rust)
 
     def test_default_revoke_is_bounded_but_not_a_direct_definer_bypass(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
-        helper = function(source, "default_statement_revoke")
+        source = (ROOT / "bootstrap/postgresql/provider.sql").read_text()
+        helper = provider_function(source, "default_statement_revoke")
         self.assertNotIn("SECURITY DEFINER", helper)
         self.assertIn("schema_count>64", helper)
         self.assertIn("ALTER ROLE %I NOLOGIN", helper)

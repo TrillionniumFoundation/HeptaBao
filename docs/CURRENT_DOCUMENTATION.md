@@ -21,6 +21,9 @@ patches, and consolidated workflow coverage.
 The [third cleanup audit](audits/2026-11-15-repository-cleanup-round3/README.md)
 records shared response and parser helpers, the removal of unused r4 duplicates,
 and repaired inherited checks for the current documentation entry points.
+The [fourth cleanup audit](audits/2026-11-15-repository-cleanup-round4/README.md)
+records the complete remaining-candidate review, shared Rust/Python helpers,
+PostgreSQL fresh-install consolidation, unused-code removal and regression evidence.
 
 ## Managed-secret Agent renderer
 

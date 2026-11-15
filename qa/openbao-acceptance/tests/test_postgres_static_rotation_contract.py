@@ -8,6 +8,9 @@ RUNNER = ROOT / "qa/openbao-acceptance/postgres_static_rotation_live.py"
 SPEC = importlib.util.spec_from_file_location("postgres_static_rotation_contract", RUNNER)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+from postgres_provider_contract import (
+    HISTORICAL_V4, current_provider_contract_matches, provider_function,
+)
 
 
 def extension(path):
@@ -21,18 +24,19 @@ def extension(path):
 
 
 class PostgresStaticRotationContractTests(unittest.TestCase):
-    def test_fresh_and_forward_install_share_the_exact_extension(self):
+    def test_historical_extension_and_current_final_contract_match_upgrades(self):
         self.assertEqual(
-            extension(ROOT / "bootstrap/postgresql/provider.sql"),
+            extension(ROOT / HISTORICAL_V4),
             extension(ROOT / "bootstrap/postgresql/upgrade_v2_static_credentials.sql"),
         )
+        self.assertTrue(current_provider_contract_matches(ROOT))
         self.assertNotIn(
             "PostgreSQL statement-template extension",
             extension(ROOT / "bootstrap/postgresql/provider.sql"),
         )
 
     def test_retirement_is_a_digest_bound_bounded_tombstone(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
+        source = (ROOT / "bootstrap/postgresql/provider.sql").read_text()
         self.assertIn("retired boolean NOT NULL DEFAULT false", source)
         self.assertIn("p_fence text,p_id text,p_name text,p_seq bigint,p_digest text", source)
         self.assertIn("s.payload_digest=payload_hash AND s.retired", source)
@@ -50,7 +54,11 @@ class PostgresStaticRotationContractTests(unittest.TestCase):
         )
 
     def test_same_sequence_proof_survives_a_later_global_floor(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
+        current = (ROOT / "bootstrap/postgresql/provider.sql").read_text()
+        source = "\n".join(provider_function(current, name) for name in (
+            "rotate_static", "rotate_root", "root_rotation_retriable",
+            "root_rotation_observed", "static_retired", "retire_static",
+        ))
         self.assertGreaterEqual(source.count("floor<p_seq"), 3)
         self.assertNotIn("floor<>p_seq", source)
 

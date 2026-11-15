@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import importlib.util
-import shutil
 import tempfile
 import unittest
 from pathlib import Path
+
+try:
+    from tests.plan.repository_fixture import assert_mutation_rejected, temporary_repository
+except ModuleNotFoundError:  # direct execution from tests/plan
+    from repository_fixture import assert_mutation_rejected, temporary_repository
 
 ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR_PATH = ROOT / "scripts/validate_plan_v1_4_5.py"
@@ -16,27 +20,10 @@ SPEC.loader.exec_module(VALIDATOR)
 
 class PlanV145HostileTests(unittest.TestCase):
     def candidate(self) -> tuple[tempfile.TemporaryDirectory[str], Path]:
-        temporary = tempfile.TemporaryDirectory()
-        root = Path(temporary.name) / "repo"
-        shutil.copytree(
-            ROOT,
-            root,
-            ignore=shutil.ignore_patterns(".git", "target", "__pycache__", "*.pyc"),
-        )
-        return temporary, root
+        return temporary_repository(ROOT, "repo")
 
     def assert_rejected(self, path: str, mutate, expected_error: str | None = None) -> None:
-        temporary, root = self.candidate()
-        try:
-            self.assertEqual(VALIDATOR.validate(root), [])
-            target = root / path
-            mutate(target)
-            errors = VALIDATOR.validate(root)
-            self.assertTrue(errors)
-            if expected_error is not None:
-                self.assertTrue(any(expected_error in error for error in errors), errors)
-        finally:
-            temporary.cleanup()
+        assert_mutation_rejected(self, self.candidate, VALIDATOR.validate, path, mutate, expected_error)
 
     def test_current_tree_passes(self) -> None:
         self.assertEqual(VALIDATOR.validate(ROOT), [])

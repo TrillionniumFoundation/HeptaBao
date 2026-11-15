@@ -2023,6 +2023,23 @@ impl Service {
 
 #[cfg(test)]
 mod tests {
+    fn commit(
+        cluster: &crate::ha::snapshot_test_support::Cluster,
+        state: &State,
+        previous: [u8; 32],
+        operation: &str,
+    ) -> Result<[u8; 32], Box<dyn std::error::Error>> {
+        let bytes = owner_store::serialize_owner(state)?;
+        let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
+            .map_err(|_| "owner plan")?
+            .publication_binding(operation, &bytes)?;
+        cluster.processes[0]
+            .lock()
+            .map_err(|_| "HA")?
+            .commit_state_with_owner_binding(operation, previous, &bytes, binding)?;
+        Ok(crypto::digest(&bytes))
+    }
+
     use super::*;
     use crate::auth::RecoveryCredential;
     use crate::service::tests::{Root, bootstrap};
@@ -2288,22 +2305,6 @@ mod tests {
     #[test]
     fn real_raft_completed_publication_proves_strict_newer_c_and_d_but_shamir_still_fences()
     -> TestResult {
-        fn commit(
-            cluster: &crate::ha::snapshot_test_support::Cluster,
-            state: &State,
-            previous: [u8; 32],
-            operation: &str,
-        ) -> Result<[u8; 32], Box<dyn std::error::Error>> {
-            let bytes = owner_store::serialize_owner(state)?;
-            let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
-                .map_err(|_| "owner plan")?
-                .publication_binding(operation, &bytes)?;
-            cluster.processes[0]
-                .lock()
-                .map_err(|_| "HA")?
-                .commit_state_with_owner_binding(operation, previous, &bytes, binding)?;
-            Ok(crypto::digest(&bytes))
-        }
         let root = Root::new();
         let mut service = root.service()?;
         crate::service::tests::bootstrap_unmounted(&mut service)?;
@@ -2462,22 +2463,6 @@ mod tests {
     }
 
     fn actual_shamir_completion_case(case: &str) -> TestResult {
-        fn commit(
-            cluster: &crate::ha::snapshot_test_support::Cluster,
-            state: &State,
-            previous: [u8; 32],
-            operation: &str,
-        ) -> Result<[u8; 32], Box<dyn std::error::Error>> {
-            let bytes = owner_store::serialize_owner(state)?;
-            let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
-                .map_err(|_| "owner plan")?
-                .publication_binding(operation, &bytes)?;
-            cluster.processes[0]
-                .lock()
-                .map_err(|_| "HA")?
-                .commit_state_with_owner_binding(operation, previous, &bytes, binding)?;
-            Ok(crypto::digest(&bytes))
-        }
         let root = Root::new();
         let mut service = root.service()?;
         crate::service::tests::bootstrap_unmounted(&mut service)?;

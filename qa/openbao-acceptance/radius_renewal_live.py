@@ -12,10 +12,8 @@ import hmac
 import importlib.util
 import json
 import os
-import owned_process
 import secrets
 from pathlib import Path
-import shutil
 import socket
 import struct
 import subprocess
@@ -23,7 +21,7 @@ import tempfile
 import threading
 import time
 
-from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
+from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparison
 from online_evidence import source_identity
 from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle, crash_oracle

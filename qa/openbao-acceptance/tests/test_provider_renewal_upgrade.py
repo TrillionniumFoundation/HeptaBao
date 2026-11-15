@@ -1,5 +1,4 @@
 """Upgrade evidence pins actual binaries and compares the complete store."""
-import json
 from pathlib import Path
 import sys
 import tempfile

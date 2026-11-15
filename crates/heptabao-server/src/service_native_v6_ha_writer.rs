@@ -1,94 +1,12 @@
 //! Actual Service publication through native Raft, pinned TLS custody and the
 //! independent local Shamir owner. Every phase retains the original Actor.
 use super::*;
+#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
+use crate::ha::NativeHaPhaseTimer;
 use crate::ha::NativeHaPublicationError;
 use crate::ha_state::native_v6::{CodecResult, NativeV6CodecError};
 use crate::state_record_root::StateIdentity;
 use std::cell::RefCell;
-
-// Opt-in phase observations only: no payload, credential, source admission or
-// new deadline is created. Drop also records the phase that returned an error.
-// Diagnostic I/O failure never changes the original result or its custody.
-#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
-struct NativeHaPhaseTimer {
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    phase: &'static str,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    started: std::time::Instant,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    original_until: std::time::Instant,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    generation: u64,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    objects: u64,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    bytes: u64,
-    completed: bool,
-    #[cfg(test)]
-    timing: Option<crate::ha::NativeV6TimingSpan>,
-}
-#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
-impl NativeHaPhaseTimer {
-    fn start(
-        phase: &'static str,
-        original_until: std::time::Instant,
-        generation: u64,
-        objects: u64,
-        bytes: u64,
-    ) -> Self {
-        #[cfg(all(test, not(feature = "private-ha-forward-diagnostic")))]
-        let _ = (generation, objects, bytes);
-        Self {
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            phase,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            started: std::time::Instant::now(),
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            original_until,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            generation,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            objects,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            bytes,
-            completed: false,
-            #[cfg(test)]
-            timing: crate::ha::NativeV6TimingSpan::start(
-                "test_native_service_publication",
-                phase,
-                Some(original_until),
-            ),
-        }
-    }
-    fn finish(mut self, completed: bool) {
-        self.completed = completed;
-    }
-}
-#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
-impl Drop for NativeHaPhaseTimer {
-    fn drop(&mut self) {
-        #[cfg(test)]
-        if let Some(timing) = self.timing.take() {
-            timing.finish(self.completed);
-        }
-        #[cfg(feature = "private-ha-forward-diagnostic")]
-        {
-            use std::io::Write as _;
-            let observed = std::time::Instant::now();
-            let _ = writeln!(
-                std::io::stderr().lock(),
-                "HBHA-PRIVATE-PERF phase={} elapsed_us={} completed={} original_deadline_expired={} generation={} objects={} bytes={}",
-                self.phase,
-                observed.duration_since(self.started).as_micros(),
-                self.completed,
-                observed >= self.original_until,
-                self.generation,
-                self.objects,
-                self.bytes,
-            );
-        }
-    }
-}
 
 // Observations only. Unknown reasons, their bytes and their fingerprints never
 // enter a report; this classification cannot change the original refusal.
@@ -160,6 +78,7 @@ impl Service {
         // before they are offered to the real consensus writer.
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
+            "test_native_service_publication",
             "service_staged_candidate",
             deadline.instant(),
             plan.source_generation,
@@ -211,6 +130,7 @@ impl Service {
         let payload_validation = &plan.payload_validation;
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
+            "test_native_service_publication",
             "service_ha_publication",
             deadline.instant(),
             plan.source_generation,
@@ -368,6 +288,7 @@ impl Service {
             // takes that same process and the actual local barrier owner.
             #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
             let phase = NativeHaPhaseTimer::start(
+                "test_native_service_publication",
                 "service_local_install",
                 deadline.instant(),
                 plan.source_generation,

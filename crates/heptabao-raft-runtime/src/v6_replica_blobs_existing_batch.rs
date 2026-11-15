@@ -4,43 +4,7 @@ use super::*;
 
 // This changes only scheduling within the existing 32-object/four-MiB unit.
 // Every retained descriptor still crosses its own strong File::sync_all.
-const MAX_PARALLEL_EXISTING_FSYNC: usize = 4;
-
-fn parallel_existing_sync(
-    files: &[&File],
-    sync_one: &(impl Fn(&File) -> io::Result<()> + Sync),
-) -> io::Result<Vec<io::Result<()>>> {
-    if files.is_empty() || files.len() > MAX_PARALLEL_EXISTING_FSYNC {
-        return Err(io::Error::other("invalid existing fsync worker count"));
-    }
-    std::thread::scope(|scope| {
-        let mut jobs = Vec::with_capacity(files.len());
-        let mut spawn_error = None;
-        for file in files {
-            match std::thread::Builder::new().spawn_scoped(scope, move || sync_one(file)) {
-                Ok(job) => jobs.push(job),
-                Err(error) => {
-                    spawn_error = Some(error);
-                    break;
-                }
-            }
-        }
-        // Neither a failed spawn, a failed fsync nor a panic permits an
-        // unfinished worker to outlive these borrowed descriptors or escape
-        // into the directory barrier, cleanup, next chunk or caller return.
-        let results = jobs
-            .into_iter()
-            .map(|job| {
-                job.join()
-                    .unwrap_or_else(|_| Err(io::Error::other("existing fsync worker panicked")))
-            })
-            .collect();
-        match spawn_error {
-            Some(error) => Err(error),
-            None => Ok(results),
-        }
-    })
-}
+use heptabao_filesystem_guard::{MAX_PARALLEL_EXISTING_FSYNC, parallel_existing_sync};
 
 struct PendingExistingCiphertext {
     reference: RecordObjectRef,

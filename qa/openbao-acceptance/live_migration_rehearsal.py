@@ -13,7 +13,6 @@ import io
 import json
 import os
 import secrets
-import sys
 import time
 from unittest.mock import patch
 from pathlib import Path

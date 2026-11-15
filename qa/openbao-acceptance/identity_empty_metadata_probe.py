@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 """Official-only SecretID metadata parsing and immutable credential observations."""
 from __future__ import annotations
-import hashlib
-import importlib
 import json
 import os
 from pathlib import Path
-import re
-import secrets
 import signal
 import tempfile
 from bao_http import SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import verify_inputs, start_oracle, stop_oracle, restart_oracle
 from online_evidence import admit_output, source_identity
-from approle_token_cidrs_probe import Trace as BaseTrace
 from radius_cidrs_live import SourceClient
 from userpass_password_live import free_port, private_parent, safe_files
 

@@ -1,9 +1,15 @@
+#[path = "../cli.rs"]
+mod cli;
+use cli::{argument, parse_seed};
+
 mod cluster {
     include!("openraft_fault_lab/cluster.rs");
     include!("openraft_fault_lab/hostile_snapshot_guard.rs");
 }
 #[path = "inmemory_cluster/network.rs"]
 mod network;
+#[path = "openraft_fault_lab/node.rs"]
+mod node;
 
 use std::process::Stdio;
 use std::time::Duration;
@@ -16,20 +22,6 @@ const CANDIDATE_ID: &str = "HB-DEP-RAFT-OPENRAFT";
 const VERSION: &str = "0.10.0-alpha.33";
 const PROFILE_ID: &str = "HB-H02-FAULT-LAB-OPENRAFT-0_10_0_ALPHA_33";
 const HOSTILE_PHASE: &str = "ABOUT_TO_INSTALL_STALE_COMMITTED_SNAPSHOT";
-
-fn argument(name: &str, default: &str) -> String {
-    let args = std::env::args().collect::<Vec<_>>();
-    args.windows(2)
-        .find(|pair| pair[0] == name)
-        .map(|pair| pair[1].clone())
-        .unwrap_or_else(|| default.to_owned())
-}
-
-fn parse_seed() -> u64 {
-    let raw = argument("--seed", "0x5eed20260828cafe");
-    let trimmed = raw.strip_prefix("0x").unwrap_or(&raw);
-    u64::from_str_radix(trimmed, 16).unwrap_or_else(|_| panic!("invalid seed: {raw}"))
-}
 
 fn parse_json_lines(bytes: &[u8]) -> Vec<Value> {
     String::from_utf8_lossy(bytes)

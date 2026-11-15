@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 from database_config_completion_live import source_identity
 from postgres_live import Postgres
+from postgres_provider_contract import HISTORICAL_V4, current_provider_contract_matches
 from smoke import Instance
 
 REQUIRED_CASES = frozenset({
@@ -360,7 +361,7 @@ def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:
             database="password_upgrade"
         ).stdout.strip() == "heptabao-postgresql-password-authentication-v1")
         check("fresh_and_upgrade_extensions_match", extension(
-            ROOT / "bootstrap/postgresql/provider.sql") == extension(upgrade))
+            ROOT / HISTORICAL_V4) == extension(upgrade) and current_provider_contract_matches(ROOT))
 
         plaintexts = [value.encode() for value in sensitive if isinstance(value, str)]
         state_files = [path for path in (instance.root / "data").rglob("*") if path.is_file()]

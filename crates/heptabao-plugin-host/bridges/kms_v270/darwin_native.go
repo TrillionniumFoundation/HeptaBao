@@ -77,19 +77,10 @@ static int hbp_signal_original(const struct hbp_identity *birth) {
     // No kill(pid), killpg, Process.Kill or numeric-only fallback exists.
     return proc_signal_with_audittoken(&selector, SIGKILL);
 }
-static int hbp_group_members(int pgid, int *pids, int capacity) {
-    if (pgid <= 0 || capacity <= 0) return -EINVAL;
-    errno = 0;
-    int n = proc_listpgrppids(pgid, pids, capacity * sizeof(int));
-    if (n < 0 || n == 0 && errno != 0) return -(errno ? errno : EIO);
-    if (n % sizeof(int) || n >= capacity * sizeof(int)) return -EOVERFLOW;
-    return n / sizeof(int);
-}
 */
 import "C"
 
 import (
-    "errors"
     "syscall"
 )
 
@@ -117,16 +108,4 @@ func signalOriginal(id birthIdentity) error {
         idversion: C.int32_t(id.Version)}
     if e := C.hbp_signal_original(&native); e != 0 { return syscall.Errno(e) }
     return nil
-}
-func ownedGroupMembers(pgid int) ([]int, error) {
-    // A full buffer is a gap, never an empty/retired group.
-    var pids [65536]C.int
-    n := C.hbp_group_members(C.int(pgid), &pids[0], C.int(len(pids)))
-    if n < 0 { return nil, syscall.Errno(-n) }
-    out := make([]int, int(n))
-    for i := range out {
-        out[i] = int(pids[i])
-        if out[i] <= 0 { return nil, errors.New("invalid native group identity") }
-    }
-    return out, nil
 }

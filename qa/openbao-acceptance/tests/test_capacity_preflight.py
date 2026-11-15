@@ -1,9 +1,7 @@
 """Bounded capacity / migration preflight refuses invented evidence and writes."""
 import contextlib
-import copy
 import io
 import json
-import os
 from pathlib import Path
 import sys
 import tempfile

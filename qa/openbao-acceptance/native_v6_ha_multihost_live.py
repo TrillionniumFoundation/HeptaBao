@@ -28,7 +28,6 @@ import secrets
 import shlex
 import socket
 import ssl
-import stat
 import subprocess
 import tarfile
 import time

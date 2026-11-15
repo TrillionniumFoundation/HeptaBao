@@ -6,7 +6,7 @@ import json
 import os
 import stat
 from pathlib import Path, PurePosixPath
-from typing import Any, BinaryIO, Mapping
+from typing import Any, Mapping
 
 MAX_JSON_BYTES = 16 * 1024 * 1024
 MAX_ARTIFACT_BYTES = 1 << 40

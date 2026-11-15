@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 
 from .private_state import StateDirectory, read_trusted_ca
-from .transport import BaoError, Client, canonical, digest, endpoint, key_path, private_json, private_read
+from .transport import BaoError, Client, digest, endpoint, key_path, private_json, private_read
 
 MAX_RECORDS = 256
 MAX_PLAINTEXT_BYTES = 16 * 1024

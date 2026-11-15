@@ -3,7 +3,8 @@
 use super::*;
 use crate::configuration::NativeStorageProfile;
 use crate::service::tests::Root;
-use std::io::{self, Read};
+use crate::service::tests::transfer_native_snapshot as transfer;
+use std::io;
 use std::time::Instant;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
@@ -201,26 +202,7 @@ fn history(service: &mut Service, token: &str) -> TestResult<Value> {
     assert_eq!(metadata.status, 200);
     Ok(metadata.body["data"].clone())
 }
-fn transfer(
-    service: &mut Service,
-    method: &str,
-    token: &str,
-    input: &mut impl Read,
-) -> TestResult<(Response, Option<crate::snapshot_file::SnapshotFile>)> {
-    let request = ServiceRequest::new(method, "sys/storage/raft/snapshot", "", token, json!({}));
-    match service.begin_native_snapshot_before(request, Instant::now() + Duration::from_secs(15)) {
-        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {
-            let (observation, file) = pending.execute_snapshot_transfer(input);
-            Ok((service.finish_external_request(*pending, observation), file))
-        }
-        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
-            Ok((response, None))
-        }
-        NativeSnapshotAdmission::Redirect(_) => Err("standalone snapshot redirected".into()),
-        #[cfg(feature = "native-v6-ha")]
-        NativeSnapshotAdmission::Forward(_) => Err("standalone snapshot forwarded".into()),
-    }
-}
+
 fn download(service: &mut Service, token: &str) -> TestResult<Zeroizing<Vec<u8>>> {
     let (response, file) = transfer(service, "GET", token, &mut io::empty())?;
     assert_eq!(response.status, 200);

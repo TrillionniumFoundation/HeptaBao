@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from heptabao import cli,kv_cli
-from heptabao.transport import BaoError,Response
+from heptabao.transport import Response
 class KVEnableVersioningTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)

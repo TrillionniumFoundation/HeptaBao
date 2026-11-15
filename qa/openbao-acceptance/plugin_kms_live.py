@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded real Service -> checksum-bound KMS provider qualification."""
 from __future__ import annotations
-import argparse, base64, hashlib, hmac, json, os, stat, sys, time
+import argparse, base64, hashlib, json, os, stat, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "single-node"))
 import smoke

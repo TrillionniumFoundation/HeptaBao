@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 from database_config_completion_live import source_identity
 from postgres_live import Postgres
+from postgres_provider_contract import HISTORICAL_V4, current_provider_contract_matches
 from smoke import Instance
 
 
@@ -184,8 +185,8 @@ def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:
             statement_upgrade.read_text(), database="statement_upgrade"
         ).returncode == 0)
         check("fresh_and_upgrade_statement_extensions_match", statement_extension(
-            ROOT / "bootstrap/postgresql/provider.sql"
-        ) == statement_extension(statement_upgrade))
+            ROOT / HISTORICAL_V4
+        ) == statement_extension(statement_upgrade) and current_provider_contract_matches(ROOT))
 
         check("application_table_created", pg.sql(
             "CREATE TABLE public.items(id integer PRIMARY KEY,value text NOT NULL);"

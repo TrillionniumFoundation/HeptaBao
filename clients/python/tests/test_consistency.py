@@ -2,13 +2,12 @@
 import base64
 import email.message
 import io
-import json
 from pathlib import Path
 import socket
 import sys
 import time
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from heptabao.transport import BaoError, Client
 from heptabao.proxy import read_request

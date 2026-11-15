@@ -7,7 +7,6 @@ flow, complete JWT/OIDC equivalence, independent or production qualification.
 from __future__ import annotations
 import argparse
 import hashlib
-import importlib.util
 import json
 import os
 from pathlib import Path

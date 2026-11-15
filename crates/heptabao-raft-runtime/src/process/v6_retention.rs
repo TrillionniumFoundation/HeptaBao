@@ -21,7 +21,7 @@ impl NativeV6IntentRetirementOutcome {
     }
 }
 
-fn source(read: &NativeV6CommittedRootRead) -> NativeV6RetentionSource {
+pub(super) fn source(read: &NativeV6CommittedRootRead) -> NativeV6RetentionSource {
     NativeV6RetentionSource {
         enrollment_digest: read.enrollment().digest(),
         root_digest: read.root().root_digest(),

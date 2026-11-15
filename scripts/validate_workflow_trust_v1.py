@@ -11,6 +11,7 @@ has no publishing exception and never downloads or executes artifact payloads.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import re
@@ -19,6 +20,12 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from yaml12_loader import Yaml12SafeLoader  # noqa: E402
 
 MAX_WORKFLOW_BYTES = 1024 * 1024
 MAX_WORKFLOWS = 256
@@ -33,21 +40,8 @@ class PolicyError(ValueError):
     """The input cannot establish this tree's read-only trust boundary."""
 
 
-class WorkflowLoader(yaml.SafeLoader):
-    pass
-
-
-# YAML 1.1 treats the GitHub Actions key `on` as a boolean. Keep true/false
-# booleans but do not mutate PyYAML's global loader configuration.
-WorkflowLoader.yaml_implicit_resolvers = {
-    key: [(tag, pattern) for tag, pattern in values
-          if tag != "tag:yaml.org,2002:bool"]
-    for key, values in yaml.SafeLoader.yaml_implicit_resolvers.items()
-}
-WorkflowLoader.add_implicit_resolver(
-    "tag:yaml.org,2002:bool", re.compile(r"^(?:true|false|True|False|TRUE|FALSE)$"),
-    list("tTfF"),
-)
+class WorkflowLoader(Yaml12SafeLoader):
+    yaml_implicit_resolvers = copy.deepcopy(Yaml12SafeLoader.yaml_implicit_resolvers)
 
 
 def unique_mapping(loader: WorkflowLoader, node: yaml.MappingNode, deep: bool = False) -> dict:
@@ -337,18 +331,22 @@ def validate_directory(directory: Path) -> dict[str, Any]:
             "requires_live_runner_environment_and_independent_policy_controls": True}
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def _command_line(validate, description: str | None, directory: Path) -> int:
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--directory", type=Path,
-                        default=Path(__file__).resolve().parents[1] / ".github/workflows")
+                        default=directory)
     args = parser.parse_args()
     try:
-        result = validate_directory(args.directory)
+        result = validate(args.directory)
     except (PolicyError, OSError) as error:
         print(f"FAIL: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result, indent=2, sort_keys=True))
     return int(bool(result["failures"]))
+
+
+def main() -> int:
+    return _command_line(validate_directory, __doc__, Path(__file__).resolve().parents[1] / ".github/workflows")
 
 
 if __name__ == "__main__":

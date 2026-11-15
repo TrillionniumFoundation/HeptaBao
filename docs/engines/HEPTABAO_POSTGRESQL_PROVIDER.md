@@ -42,6 +42,14 @@ extensions for an already installed provider-v2 schema. `outbound.rs` owns
 host-enrolled network destinations.
 No component may infer an external transaction's success from local persistence.
 
+The fresh-install SQL contains each current function once. Earlier definitions
+that would be replaced within the same installation transaction live in the
+versioned upgrade scripts and immutable migration fixtures. Source contract checks
+compare all final fresh-install functions, tables and function revocations with
+the complete legacy-v2-through-v6 upgrade chain. Historical extension checks
+continue to compare their original versioned baseline; the live profiles retain
+their actual owner-only upgrade, permission, replay and recovery checks.
+
 The ordinary Service request admission, live Identity/ACL, pre-entry audit,
 encrypted durable writer and Raft commit remain mandatory. A database mutation
 never installs a second local authoritative store. The original dynamic provider increment introduced schema 4; retained static/root

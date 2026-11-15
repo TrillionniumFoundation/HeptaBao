@@ -16,17 +16,12 @@ from pathlib import Path
 import shutil
 import socket
 import owned_process
-import subprocess
-import sys
 import tempfile
 import time
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write, transport_diagnostic
 from fixture_transport_case import pending_case
-from official_openbao_launcher import (
-    BINARY_SHA256, SUPPORTED_VERSIONS, VERSION, pinned_artifact,
-    restart_oracle, start_oracle, stop_oracle,
-)
+from official_openbao_launcher import SUPPORTED_VERSIONS, VERSION, pinned_artifact, restart_oracle, start_oracle, stop_oracle
 
 ROOT = Path(__file__).resolve().parents[2]
 

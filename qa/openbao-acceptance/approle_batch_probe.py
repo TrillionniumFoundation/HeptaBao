@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Official-only AppRole batch observations. Completion is not a parity claim."""
 from __future__ import annotations
-import json,os,re,shutil,sys,tempfile
+import json, os, shutil, sys, tempfile
 from pathlib import Path
 from bao_http import BaoError,Client,SafeArgumentParser,private_read,private_write
 from core_isolation import file_hash

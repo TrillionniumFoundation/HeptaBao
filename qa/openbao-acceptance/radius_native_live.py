@@ -5,7 +5,6 @@ Compares a candidate with pinned OpenBao 2.6.2 using synthetic PAP accounts.
 The candidate uses administrator-authorized targets and strict response MA.
 """
 from __future__ import annotations
-import hashlib
 import hmac
 import ipaddress
 import json

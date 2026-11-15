@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 from email.message import Message
-import json
-import os
 from pathlib import Path
 import tempfile
 import unittest

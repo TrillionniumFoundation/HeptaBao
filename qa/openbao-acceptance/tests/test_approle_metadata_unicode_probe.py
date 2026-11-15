@@ -1,4 +1,4 @@
-import copy,json,unittest,hashlib
+import json, unittest, hashlib
 from pathlib import Path
 import approle_metadata_unicode_probe as f
 class UnicodeProbeTests(unittest.TestCase):

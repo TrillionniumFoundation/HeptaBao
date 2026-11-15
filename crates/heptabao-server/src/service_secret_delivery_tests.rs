@@ -14,22 +14,7 @@ fn begin(
     path: &str,
     body: Value,
 ) -> RequestExecution {
-    service.begin_at_mode_started(
-        RequestDispatch {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            now: 100,
-            allow_forward: true,
-            enforce_namespace: true,
-            wrap_ttl_seconds: None,
-            origin_peer: None,
-            client_certificates: None,
-        },
-        Instant::now(),
-    )
+    super::tests::begin_delivery_fixture(service, method, path, namespace, token, body)
 }
 
 fn complete(execution: RequestExecution, expected: u16) -> TestResult<Response> {

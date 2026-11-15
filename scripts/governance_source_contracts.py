@@ -5,12 +5,19 @@ workflow bytes are authenticated independently of the current workflow gate.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
-import json
 import re
+import sys
 from pathlib import Path
 
 import yaml
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from yaml12_loader import Yaml12SafeLoader  # noqa: E402
 
 ARCHIVED_WORKFLOWS = {'.github/workflows/export-exact-audit-source.yml': {'SHA256': '5e13898b4ea5c5c5f6f676f3c6eb6663cb995e66b156b4520aeaf5fd5ac4ff7c', 'bytes': 2185, 'commit': '676a3e68af340b2cb7439dbc99c69dee550e5db9', 'fixture': 'tests/fixtures/retired-workflows/export-exact-audit-source.yml', 'git_blob': 'e2f77807e5248ed34d6c3bb5ee8605f1c0b564f2'}, '.github/workflows/plan-v1.3.1-head-and-merge-closure.yml': {'SHA256': '738b38909dc8bc44a8e848252bf7dc30c3a540a7641da8f6002c9a263b39017d', 'bytes': 74825, 'commit': '936cb5599d206cea895de2ae04a1289a0b3a0326', 'fixture': 'tests/fixtures/retired-workflows/plan-v1.3.1-head-and-merge-closure.yml', 'git_blob': '66acfbd8d844109a3a39237d400f33dcffd1d91f'}, '.github/workflows/plan-v1.4.2-anchored-recovery.yml': {'SHA256': '2a8e9e5b1391345fcd51dc58b4c953d815e1e8978c5c584b0e6b59dc9593d9b8', 'bytes': 6258, 'commit': '34e8dc0caceb84288d4ef61f79cd7ca062718b63', 'fixture': 'tests/fixtures/retired-workflows/plan-v1.4.2-anchored-recovery.yml', 'git_blob': 'c516124667116c94f92810f97f5287ffb4f4d0ef'}, '.github/workflows/plan-v1.4.3-descriptor-fencing.yml': {'SHA256': '09033e5ebd8e5ccf393068b112bb64196d57c610cf7b1a57f8045575dd19a199', 'bytes': 6564, 'commit': '676a3e68af340b2cb7439dbc99c69dee550e5db9', 'fixture': 'tests/fixtures/retired-workflows/plan-v1.4.3-descriptor-fencing.yml', 'git_blob': '120189f1e3d3012d51272d8431514e31d3295ffd'}, '.github/workflows/plan-v1.4.4-module-documentation.yml': {'SHA256': 'df7c2a396094efa6b9afc5257e998c651a11ce38824f5f51567548a4858ea6a9', 'bytes': 2021, 'commit': 'a926d10f658c536b12c857658d2b27b7c56a8baa', 'fixture': 'tests/fixtures/retired-workflows/plan-v1.4.4-module-documentation.yml', 'git_blob': '0f47b7535ae813ec26efda610a2b41f235d99f69'}, '.github/workflows/plan-v1.4.6-authoritative-recovery-closure.yml': {'SHA256': '12d2ca16641e08485aefa0ee85c48186f1183e0235f04d258b43ff228d8a9b51', 'bytes': 2924, 'commit': '676a3e68af340b2cb7439dbc99c69dee550e5db9', 'fixture': 'tests/fixtures/retired-workflows/plan-v1.4.6-authoritative-recovery-closure.yml', 'git_blob': 'c2ea49508e039429ba1037093185d3f46bc3759b'}, '.github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml': {'SHA256': 'ae38272ccdd97e412e412339e236ee824214da81c1be072e94b8eb38c8fe6496', 'bytes': 4495, 'commit': 'a926d10f658c536b12c857658d2b27b7c56a8baa', 'fixture': 'tests/fixtures/retired-workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml', 'git_blob': 'c355f6e3741929c4a89fc18545bae298e10e635e'}}
 
@@ -29,19 +36,8 @@ def current_documentation_entry_errors(root: Path) -> list[str]:
     return errors
 
 
-class Yaml12UniqueLoader(yaml.SafeLoader):
-    pass
-
-
-Yaml12UniqueLoader.yaml_implicit_resolvers = {
-    key: [(tag, regex) for tag, regex in values
-          if tag != "tag:yaml.org,2002:bool"]
-    for key, values in yaml.SafeLoader.yaml_implicit_resolvers.items()
-}
-Yaml12UniqueLoader.add_implicit_resolver(
-    "tag:yaml.org,2002:bool", re.compile(r"^(?:true|false|True|False|TRUE|FALSE)$"),
-    list("tTfF"),
-)
+class Yaml12UniqueLoader(Yaml12SafeLoader):
+    yaml_implicit_resolvers = copy.deepcopy(Yaml12SafeLoader.yaml_implicit_resolvers)
 
 
 def _unique_mapping(loader, node, deep=False):
@@ -236,6 +232,141 @@ def descriptor_guard_errors(root: Path) -> list[str]:
     return errors
 
 
+_INLINE_DESCRIPTOR_BASELINE = {
+    # Exact d35a7b72a95441ac9cf0908077ec9a979d36b81c sources, before extraction.
+    # Absence of the new helper alone never selects the historical branch.
+    "crates/heptabao-filesystem-guard/src/lib.rs": "47f166cff08a938b2ba8aef72f09546f58a59b90db6e4da293b273bd64a73afe",
+    "crates/heptabao-filesystem-guard/src/relative.rs": "be660bea286be359f4883615c4982f2ebfc4e021b929e13dc133d5cae3017a91",
+    "crates/heptabao-single-node-store/src/lib.rs": "b617101e0a959729a8e3cb30360904040655ee5c323880eed257fba2e9437b06",
+    "crates/heptabao-single-node-journal/src/lib.rs": "c708e759b008922fac9a75b0cc8512c139aca74599e93c4fbbc269ccf4c96b61",
+}
+_DURABLE_WRITE_SOURCE = "crates/heptabao-filesystem-guard/src/durable_write.rs"
+
+
+def _historical_inline_descriptors(root: Path) -> bool:
+    helper = root / _DURABLE_WRITE_SOURCE
+    if helper.exists() or helper.is_symlink():
+        return False
+    try:
+        for relative, digest in _INLINE_DESCRIPTOR_BASELINE.items():
+            path = root / relative
+            if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                return False
+    except OSError:
+        return False
+    return True
+
+
+def _body(source: str, name: str) -> str:
+    function = _function(source, name)
+    return function.partition("{")[2][:-1] if function else ""
+
+
+def _unconditional_top_level_item(code: str, pattern: str) -> bool:
+    matches = list(re.finditer(pattern, code))
+    if len(matches) != 1:
+        return False
+    prefix = code[:matches[0].start()].rstrip()
+    # Attached attributes can select another file or disable this item while
+    # a different export supplies the runtime implementation. Comments and
+    # string contents have already been erased, including between attributes.
+    return (not prefix or prefix[-1] in ";}") and prefix.count("{") == prefix.count("}")
+
+
+def _shared_descriptor_write_errors(root: Path, source: str, kind: str, label: str) -> list[str]:
+    errors: list[str] = []
+    code = re.sub(r"\s+", "", _rust_code(source))
+    _need(errors, code, (
+        "use heptabao_filesystem_guard::{AtomicReplaceError, DirectoryGuardError, ExclusiveDirectory, FileAccess,};",
+        "static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);",
+    ), label)
+    if not _unconditional_top_level_item(
+        _rust_code(source), r"\buse\s+heptabao_filesystem_guard\s*::\s*\{[^{}]*\}\s*;"
+    ):
+        errors.append(f"{label} lost unconditional filesystem-guard import binding")
+    if not _unconditional_top_level_item(
+        _rust_code(source), r"\bstatic\s+TEMP_SEQUENCE\s*:\s*AtomicU64\s*=\s*AtomicU64::new\(1\)\s*;"
+    ):
+        errors.append(f"{label} lost unconditional caller-owned temporary counter")
+    for name, call in (
+        ("write_new_file_and_sync_parent", "heptabao_filesystem_guard::write_new_file_and_sync_parent(root,leaf_name,bytes)"),
+        ("atomic_replace", "heptabao_filesystem_guard::atomic_replace(root,target_name,bytes,&TEMP_SEQUENCE)"),
+    ):
+        if _body(source, name) != call:
+            errors.append(f"{label} lost exact descriptor helper delegation: {name}")
+    guard = (root / "crates/heptabao-filesystem-guard/src/lib.rs").read_text()
+    guard_code = _rust_code(guard)
+    _need(errors, re.sub(r"\s+", "", guard_code), (
+        "mod durable_write;",
+        "pub use durable_write::{AtomicReplaceError, atomic_replace, write_new_file_and_sync_parent};",
+    ), label)
+    if not _unconditional_top_level_item(guard_code, r"(?m)^[ \t]*mod\s+durable_write\s*;"):
+        errors.append(f"{label} shared helper lost unconditional default module binding")
+    if not _unconditional_top_level_item(
+        guard_code, r"\bpub\s+use\s+durable_write\s*::\s*\{[^{}]*\}\s*;"
+    ):
+        errors.append(f"{label} shared helper lost unconditional public export binding")
+    path = root / _DURABLE_WRITE_SOURCE
+    try:
+        if path.is_symlink():
+            raise ValueError("redirected shared source")
+        shared = path.read_text()
+    except (OSError, UnicodeError, ValueError):
+        return errors + [f"{label} shared durable-write source missing or redirected"]
+    _need(errors, re.sub(r"\s+", "", _rust_code(shared)), (
+        "use crate::{ExclusiveDirectory, FileAccess};",
+        "pub struct AtomicReplaceError { pub source: io::Error, pub published: bool, }",
+    ), label)
+    if not _unconditional_top_level_item(
+        _rust_code(shared), r"\buse\s+crate\s*::\s*\{[^{}]*\}\s*;"
+    ):
+        errors.append(f"{label} shared helper lost unconditional descriptor type import")
+    create_steps = (
+        "root.verify().map_err(io::Error::other)?;",
+        "letmutfile=root.open_file(leaf_name,FileAccess::CreateNew)?;",
+        "file.write_all(bytes)?;", "file.flush()?;", "file.sync_all()?;",
+        "root.sync_all().map_err(io::Error::other)",
+    )
+    if _body(shared, "write_new_file_and_sync_parent") != "".join(create_steps):
+        errors.append(f"{label} shared create lost descriptor verify/write/flush/sync order")
+    replace_steps = (
+        "ifletErr(error)=root.verify(){returnErr(AtomicReplaceError{source:io::Error::other(error),published:false,});}",
+        "letsequence=temporary_sequence.fetch_add(1,Ordering::Relaxed);",
+        'lettemporary_name=format!("",std::process::id());',
+        "letwrite_result=(||->io::Result<()>{letmutfile=root.open_file(&temporary_name,FileAccess::CreateNew)?;"
+        "file.write_all(bytes)?;file.flush()?;file.sync_all()})();",
+        "ifletErr(source)=write_result{let_=root.remove_file(&temporary_name);"
+        "returnErr(AtomicReplaceError{source,published:false,});}",
+        "ifletErr(source)=root.rename(&temporary_name,target_name){let_=root.remove_file(&temporary_name);"
+        "returnErr(AtomicReplaceError{source,published:false,});}",
+        "ifletErr(error)=root.sync_all(){returnErr(AtomicReplaceError{source:io::Error::other(error),published:true,});}",
+        "Ok(())",
+    )
+    if _body(shared, "atomic_replace") != "".join(replace_steps):
+        errors.append(f"{label} shared replace lost descriptor write/rename/sync/published/cleanup order")
+    if kind == "store":
+        _need(errors, _function(source, "publish_current_record"), (
+            "let result = atomic_replace(&self.root, CURRENT_NAME, &bytes);",
+            "Err(error) if error.published => Err(FileStoreError::CommitOutcomeUnknown),",
+            "Err(error) => Err(FileStoreError::Io(error.source)),",
+        ), label)
+        _need(errors, _function(source, "commit"), (
+            "let current_result = atomic_replace(&self.root, CURRENT_NAME, &current_bytes);",
+            "if let Err(error) = current_result { if error.published { return Err(FileStoreError::CommitOutcomeUnknown); } return Err(FileStoreError::Io(error.source)); }",
+        ), label)
+    else:
+        _need(errors, _function(source, "create_new"), (
+            "let publish = atomic_replace(&root, MARKER_NAME, &marker);",
+            "if let Err(error) = publish { return if error.published { Err(FileJournalError::InitializationOutcomeUnknown) } else { Err(FileJournalError::Io(error.source)) }; }",
+        ), label)
+        _need(errors, _function(source, "publish_tail"), (
+            "let result = atomic_replace(&self.root, TAIL_NAME, &encoded);",
+            "Err(error) if error.published => Err(FileJournalError::AppendOutcomeUnknown),",
+            "Err(error) => Err(FileJournalError::Io(error.source)),",
+        ), label)
+    return errors
+
+
 def descriptor_provider_errors(root: Path, kind: str) -> list[str]:
     if kind not in ("store", "journal"):
         raise ValueError("unknown descriptor provider")
@@ -258,18 +389,21 @@ def descriptor_provider_errors(root: Path, kind: str) -> list[str]:
         ".open_file(leaf_name, FileAccess::Read)", "let metadata = file.metadata()",
         "file.take(take_bound)" if kind == "store" else "file.take(bound)",
     ), label)
-    create = _function(source, "write_new_file_and_sync_parent")
-    _need(errors, create, (
-        "root.verify().map_err(io::Error::other)?",
-        "root.open_file(leaf_name, FileAccess::CreateNew)?", "file.write_all(bytes)?",
-        "file.flush()?", "file.sync_all()?", "root.sync_all().map_err(io::Error::other)",
-    ), label)
-    replace = _function(source, "atomic_replace")
-    _need(errors, replace, (
-        "root.verify()", "root.open_file(&temporary_name, FileAccess::CreateNew)?",
-        "file.write_all(bytes)?", "file.flush()?", "file.sync_all()",
-        "root.rename(&temporary_name, target_name)", "root.sync_all()",
-    ), label)
+    if _historical_inline_descriptors(root):
+        create = _function(source, "write_new_file_and_sync_parent")
+        _need(errors, create, (
+            "root.verify().map_err(io::Error::other)?",
+            "root.open_file(leaf_name, FileAccess::CreateNew)?", "file.write_all(bytes)?",
+            "file.flush()?", "file.sync_all()?", "root.sync_all().map_err(io::Error::other)",
+        ), label)
+        replace = _function(source, "atomic_replace")
+        _need(errors, replace, (
+            "root.verify()", "root.open_file(&temporary_name, FileAccess::CreateNew)?",
+            "file.write_all(bytes)?", "file.flush()?", "file.sync_all()",
+            "root.rename(&temporary_name, target_name)", "root.sync_all()",
+        ), label)
+    else:
+        errors.extend(_shared_descriptor_write_errors(root, source, kind, label))
     if "fnvalidate_root" in code:
         errors.append(f"{label} retained path-reopen root validation")
     if kind == "store" and "ifself.bundle_path(generation).exists()" in code:

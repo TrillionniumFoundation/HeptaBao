@@ -205,3 +205,19 @@ pub(super) fn reject_unconfigured_native_root(
 #[cfg(test)]
 #[path = "service_native_storage_tests.rs"]
 mod tests;
+
+pub(super) fn immutable_retirement_status(
+    status: Option<heptabao_durable_service::ImmutableRetirementStatus>,
+) -> Value {
+    status.map_or(Value::Null, |status| json!({
+        "phase":status.phase, "pending":status.pending,
+        "record_sha256":hex(&status.record_sha256),
+        "original_pending_sha256":hex(&status.original_pending_sha256),
+        "original_completion_recorded":status.original_completion_recorded,
+        "historical_request_outcome_reclassified":status.historical_request_outcome_reclassified,
+        "selected_objects":status.selected_objects,
+        "original_retirement_generation":status.original_retirement_generation,
+        "active_retirement_generation":status.active_retirement_generation,
+        "replay_epoch":status.replay_epoch, "reconciliation_attempt":status.reconciliation_attempt
+    }))
+}

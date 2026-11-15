@@ -12,7 +12,7 @@ import secrets
 import shutil
 import tempfile
 
-from bao_http import Client, SafeArgumentParser, private_write
+from bao_http import SafeArgumentParser, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from identity_upgrade import validate_binary_pins
 from online_evidence import admit_output, complete_checks, source_identity

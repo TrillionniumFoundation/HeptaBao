@@ -18,23 +18,7 @@ fn precise_call(
     token: &str,
     body: Value,
 ) -> TestResult<Response> {
-    let execution = service.begin_at_mode_precise(
-        RequestDispatch {
-            method,
-            path,
-            namespace: "",
-            token,
-            body,
-            now: 100,
-            allow_forward: true,
-            enforce_namespace: true,
-            wrap_ttl_seconds: None,
-            origin_peer: None,
-            client_certificates: None,
-        },
-        clock()?,
-    );
-    Ok(service.finish_synchronous_request(execution))
+    crate::service::tests::precise_fixture_request(service, method, path, token, body, clock)
 }
 
 fn issue(service: &mut Service, root: &str, ttl: &str, uses: u64) -> TestResult<String> {

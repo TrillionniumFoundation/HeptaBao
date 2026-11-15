@@ -1,6 +1,5 @@
 """Standard-library-only guards: no server, crypto runtime or VM required."""
 import copy
-import json
 import os
 from pathlib import Path
 import stat

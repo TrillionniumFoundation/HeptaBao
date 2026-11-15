@@ -13,90 +13,6 @@ use ring::rand::{SecureRandom, SystemRandom};
 #[path = "ha_native_v6_checkpoint_reselection_probe.rs"]
 mod checkpoint_reselection_probe;
 
-// Opt-in phase observations only: no payload, credential, source admission or
-// new deadline is created. Drop also records the phase that returned an error.
-// Diagnostic I/O failure never changes the original result or its custody.
-#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
-struct NativeHaPhaseTimer {
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    phase: &'static str,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    started: std::time::Instant,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    original_until: std::time::Instant,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    generation: u64,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    objects: u64,
-    #[cfg(feature = "private-ha-forward-diagnostic")]
-    bytes: u64,
-    completed: bool,
-    #[cfg(test)]
-    timing: Option<NativeV6TimingSpan>,
-}
-#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
-impl NativeHaPhaseTimer {
-    fn start(
-        phase: &'static str,
-        original_until: std::time::Instant,
-        generation: u64,
-        objects: u64,
-        bytes: u64,
-    ) -> Self {
-        #[cfg(all(test, not(feature = "private-ha-forward-diagnostic")))]
-        let _ = (generation, objects, bytes);
-        Self {
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            phase,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            started: std::time::Instant::now(),
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            original_until,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            generation,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            objects,
-            #[cfg(feature = "private-ha-forward-diagnostic")]
-            bytes,
-            completed: false,
-            #[cfg(test)]
-            timing: NativeV6TimingSpan::start(
-                "test_native_publication",
-                phase,
-                Some(original_until),
-            ),
-        }
-    }
-    fn finish(mut self, completed: bool) {
-        self.completed = completed;
-    }
-}
-#[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
-impl Drop for NativeHaPhaseTimer {
-    fn drop(&mut self) {
-        #[cfg(test)]
-        if let Some(timing) = self.timing.take() {
-            timing.finish(self.completed);
-        }
-        #[cfg(feature = "private-ha-forward-diagnostic")]
-        {
-            use std::io::Write as _;
-            let observed = std::time::Instant::now();
-            let _ = writeln!(
-                std::io::stderr().lock(),
-                "HBHA-PRIVATE-PERF phase={} elapsed_us={} completed={} original_deadline_expired={} generation={} objects={} bytes={}",
-                self.phase,
-                observed.duration_since(self.started).as_micros(),
-                self.completed,
-                observed >= self.original_until,
-                self.generation,
-                self.objects,
-                self.bytes,
-            );
-        }
-    }
-}
-
 /// Data for reconciling this exact operation, not a publication or reply grant.
 /// The constructor is private and no decoder can manufacture its provenance.
 pub(crate) struct NativeHaRecoveryReference {
@@ -477,8 +393,14 @@ impl HaProcess {
             .ok_or_else(|| before("native ciphertext store absent"))?;
         let _native_operation = storage.begin_native_operation().map_err(before)?;
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
-        let phase =
-            NativeHaPhaseTimer::start("publication_source_enrollment", deadline.instant(), 0, 0, 0);
+        let phase = NativeHaPhaseTimer::start(
+            "test_native_publication",
+            "publication_source_enrollment",
+            deadline.instant(),
+            0,
+            0,
+            0,
+        );
         let initial = self
             .observe_native_publication_source(expected, epoch, deadline)
             .map_err(before)?;
@@ -525,6 +447,7 @@ impl HaProcess {
         // missing ciphertext is repaired from pinned committed voters first.
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
+            "test_native_publication",
             "publication_previous_closure",
             deadline.instant(),
             source.prior_generation(),
@@ -556,6 +479,7 @@ impl HaProcess {
         original(deadline, original_gate).map_err(before)?;
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
+            "test_native_publication",
             "publication_typed_prepare",
             deadline.instant(),
             source.prior_generation(),
@@ -582,6 +506,7 @@ impl HaProcess {
             .map_err(before)?;
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
+            "test_native_publication",
             "publication_intent_admission",
             deadline.instant(),
             source.prior_generation(),
@@ -701,6 +626,7 @@ impl HaProcess {
         phase.finish(true);
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
+            "test_native_publication",
             "publication_fsync_quorum",
             deadline.instant(),
             source.prior_generation(),
@@ -754,6 +680,7 @@ impl HaProcess {
         // authorize another root invocation or a changed operation identity.
         #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
         let phase = NativeHaPhaseTimer::start(
+            "test_native_publication",
             "publication_root_cas",
             deadline.instant(),
             source.prior_generation(),
@@ -784,6 +711,7 @@ impl HaProcess {
         let mut after_commit = || -> Result<CommittedNativeV6Read, String> {
             #[cfg(any(test, feature = "private-ha-forward-diagnostic"))]
             let phase = NativeHaPhaseTimer::start(
+                "test_native_publication",
                 "publication_committed_readback",
                 deadline.instant(),
                 source.prior_generation(),

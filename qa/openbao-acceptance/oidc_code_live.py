@@ -6,7 +6,6 @@ client authentication and signed ID-token validation. No browser UI automation,
 external identity provider, refresh-token or independent product qualification.
 """
 from __future__ import annotations
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -22,7 +21,7 @@ import urllib.parse
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 from smoke import Instance
-from bao_http import Client, private_write
+from bao_http import Client
 from heptabao.transport import SafeArgumentParser
 from online_evidence import admit_output, source_identity, publish
 from official_openbao_launcher import start_oracle, stop_oracle

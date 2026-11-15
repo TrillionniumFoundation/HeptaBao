@@ -39,15 +39,6 @@ def md5(*parts: bytes) -> bytes:
     return radius_md5(b"".join(parts)).digest()
 
 
-def encode_pap_value(pap_value: bytes, request_authenticator: bytes) -> bytes:
-    padded = pap_value + b"\0" * ((16 - len(pap_value) % 16) % 16)
-    result = bytearray()
-    previous = request_authenticator
-    for offset in range(0, len(padded), 16):
-        block = bytes(a ^ b for a, b in zip(padded[offset : offset + 16], md5(RADIUS_MATERIAL, previous)))
-        result.extend(block)
-        previous = block
-    return bytes(result)
 
 
 def hmac_md5(message: bytes) -> bytes:

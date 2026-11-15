@@ -3610,3 +3610,37 @@ mod ssh_tests;
 #[cfg(test)]
 #[path = "service_native_jwt_tests.rs"]
 mod jwt_tests;
+
+fn unchanged_non_engine_owners(
+    source: &State,
+    candidate: &State,
+    allow_auth: bool,
+    unavailable: fn() -> Response,
+) -> Result<(), Response> {
+    fn owner_digest<T: serde::Serialize>(
+        owner: &T,
+        unavailable: fn() -> Response,
+    ) -> Result<[u8; 32], Response> {
+        let bytes = owner_store::serialize_owner(owner).map_err(|_| unavailable())?;
+        Ok(crypto::digest(&bytes))
+    }
+
+    if candidate.cluster_id != source.cluster_id
+        || candidate.replay_epoch != source.replay_epoch
+        || candidate.global_lossless_json_format != source.global_lossless_json_format
+        || candidate.namespace_protected.is_some()
+        || !candidate.namespace_leases.is_empty()
+        || owner_digest(&candidate.namespaces, unavailable)?
+            != owner_digest(&source.namespaces, unavailable)?
+        || owner_digest(&candidate.database, unavailable)?
+            != owner_digest(&source.database, unavailable)?
+        || owner_digest(&candidate.raft_admin, unavailable)?
+            != owner_digest(&source.raft_admin, unavailable)?
+        || !allow_auth
+            && owner_digest(&candidate.auth, unavailable)?
+                != owner_digest(&source.auth, unavailable)?
+    {
+        return Err(unavailable());
+    }
+    Ok(())
+}

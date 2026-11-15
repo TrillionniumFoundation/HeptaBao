@@ -48,22 +48,11 @@ fn text(value: &Value, pointer: &str) -> Result<String, Box<dyn std::error::Erro
         .to_owned())
 }
 fn start(service: &mut Service) -> Result<(String, String), Box<dyn std::error::Error>> {
-    let init = call(
+    crate::service::tests::initialize_fixture(
         service,
-        "",
-        "POST",
-        "sys/init",
-        json!({"secret_shares":1,"secret_threshold":1}),
-        100,
-    );
-    assert_eq!(init.status, 200);
-    let root = text(&init.body, "/root_token")?;
-    let key = text(&init.body, "/keys_base64/0")?;
-    assert_eq!(
-        call(service, "", "POST", "sys/unseal", json!({"key":key}), 100).status,
-        200
-    );
-    Ok((root, key))
+        |service, token, path, body| call(service, token, "POST", path, body, 100),
+        text,
+    )
 }
 // Schema-floor fixtures select the historical root before its first publication.
 fn start_historical(service: &mut Service) -> Result<(String, String), Box<dyn std::error::Error>> {

@@ -14,15 +14,19 @@ use std::error::Error;
 use std::fmt;
 #[cfg(test)]
 use std::fs;
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::path::Path;
 #[cfg(test)]
 use std::path::PathBuf;
 use zeroize::Zeroize;
 
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::AtomicU64;
+#[cfg(test)]
+use std::sync::atomic::Ordering;
 
-use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory, FileAccess};
+use heptabao_filesystem_guard::{
+    AtomicReplaceError, DirectoryGuardError, ExclusiveDirectory, FileAccess,
+};
 use heptabao_storage_api::{
     CommitIntent, CommitReceipt, CommitRecovery, DurableGenerationStore, Generation,
     GenerationSnapshot, IntegrityProvider, OpaqueState, StateDigest, StorageContractError,
@@ -615,12 +619,6 @@ impl Drop for DecodedBundle {
     }
 }
 
-#[derive(Debug)]
-struct AtomicReplaceError {
-    source: io::Error,
-    published: bool,
-}
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum DecodeError {
     Truncated,
@@ -748,12 +746,7 @@ fn write_new_file_and_sync_parent(
     leaf_name: &str,
     bytes: &[u8],
 ) -> io::Result<()> {
-    root.verify().map_err(io::Error::other)?;
-    let mut file = root.open_file(leaf_name, FileAccess::CreateNew)?;
-    file.write_all(bytes)?;
-    file.flush()?;
-    file.sync_all()?;
-    root.sync_all().map_err(io::Error::other)
+    heptabao_filesystem_guard::write_new_file_and_sync_parent(root, leaf_name, bytes)
 }
 
 fn atomic_replace(
@@ -761,41 +754,7 @@ fn atomic_replace(
     target_name: &str,
     bytes: &[u8],
 ) -> Result<(), AtomicReplaceError> {
-    if let Err(error) = root.verify() {
-        return Err(AtomicReplaceError {
-            source: io::Error::other(error),
-            published: false,
-        });
-    }
-    let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
-    let temporary_name = format!(".{target_name}.tmp-{}-{sequence:016x}", std::process::id());
-    let write_result = (|| -> io::Result<()> {
-        let mut file = root.open_file(&temporary_name, FileAccess::CreateNew)?;
-        file.write_all(bytes)?;
-        file.flush()?;
-        file.sync_all()
-    })();
-    if let Err(source) = write_result {
-        let _ = root.remove_file(&temporary_name);
-        return Err(AtomicReplaceError {
-            source,
-            published: false,
-        });
-    }
-    if let Err(source) = root.rename(&temporary_name, target_name) {
-        let _ = root.remove_file(&temporary_name);
-        return Err(AtomicReplaceError {
-            source,
-            published: false,
-        });
-    }
-    if let Err(error) = root.sync_all() {
-        return Err(AtomicReplaceError {
-            source: io::Error::other(error),
-            published: true,
-        });
-    }
-    Ok(())
+    heptabao_filesystem_guard::atomic_replace(root, target_name, bytes, &TEMP_SEQUENCE)
 }
 
 fn bundle_file_name(generation: Generation) -> String {

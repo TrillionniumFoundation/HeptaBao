@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-import shutil
 import sys
 import tempfile
 import unittest
 
 try:
     from tests.plan.historical import historical_only
+    from tests.plan.repository_fixture import temporary_repository
 except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
     from historical import historical_only
+    from repository_fixture import temporary_repository
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,14 +20,7 @@ from validate_plan_v1_4_2 import ValidationFailure, validate  # noqa: E402
 
 class PlanV142Tests(unittest.TestCase):
     def copy_repository(self) -> tuple[tempfile.TemporaryDirectory[str], Path]:
-        temporary = tempfile.TemporaryDirectory()
-        target = Path(temporary.name) / "repository"
-        shutil.copytree(
-            ROOT,
-            target,
-            ignore=shutil.ignore_patterns(".git", "target", "__pycache__", "*.pyc"),
-        )
-        return temporary, target
+        return temporary_repository(ROOT, "repository")
 
     def test_current_repository_validates(self) -> None:
         validate(ROOT)

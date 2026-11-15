@@ -1,6 +1,6 @@
 //! Actual lookup routes after real Identity DELETE, including cold restore.
 use super::*;
-use crate::service::tests::{Root, bootstrap};
+use crate::service::tests::Root;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const PATH: &str = "secret/data/missing-lookup143";
@@ -31,39 +31,7 @@ fn call(
 }
 
 fn fixture(native: bool) -> TestResult<(Root, Service, String, String)> {
-    let root = Root::new();
-    let mut service = root.service()?;
-    #[cfg(feature = "native-v6-storage")]
-    if native {
-        service.configure_native_v6_candidate()?;
-    }
-    #[cfg(not(feature = "native-v6-storage"))]
-    assert!(!native);
-    // Native cold loading requires the original request deadline, including
-    // the first unseal before activation. Model that HTTP admission explicitly.
-    let (key, admin) = {
-        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
-            Instant::now() + Duration::from_secs(15),
-        );
-        bootstrap(&mut service)?
-    };
-    #[cfg(feature = "native-v6-storage")]
-    if native {
-        assert_eq!(
-            call(
-                &mut service,
-                100,
-                "POST",
-                "sys/internal/native-v6/activate",
-                &admin,
-                json!({})
-            )?
-            .status,
-            204
-        );
-        assert!(service.native_root.is_some());
-    }
-    Ok((root, service, key, admin))
+    crate::service::tests::activation_fixture(native, call)
 }
 
 fn lookup(
@@ -108,19 +76,7 @@ fn lookup(
 }
 
 fn listed(service: &mut Service, admin: &str, seconds: u64, name: &str) -> TestResult<bool> {
-    let response = call(
-        service,
-        seconds,
-        "LIST",
-        "sys/policies/acl",
-        admin,
-        json!({}),
-    )?;
-    assert_eq!(response.status, 200);
-    Ok(response.body["data"]["keys"]
-        .as_array()
-        .ok_or("actual policy keys")?
-        .contains(&json!(name)))
+    crate::service::tests::listed_fixture_policy(service, admin, seconds, name, call)
 }
 
 fn missing_lookup_target(native: bool) -> TestResult {

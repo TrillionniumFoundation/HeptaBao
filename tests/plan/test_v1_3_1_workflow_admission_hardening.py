@@ -7,8 +7,10 @@ import unittest
 
 try:
     from tests.plan.historical import historical_only
+    from tests.plan.repository_fixture import replace_text
 except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
     from historical import historical_only
+    from repository_fixture import replace_text
 from pathlib import Path
 
 import yaml
@@ -42,11 +44,7 @@ def copy_repository(target: Path) -> None:
 
 
 def mutate_text(root: Path, relative: str, old: str, new: str) -> None:
-    path = root / relative
-    text = path.read_text(encoding="utf-8")
-    if old not in text:
-        raise AssertionError(f"mutation marker not found in {relative}: {old}")
-    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+    replace_text(root, relative, old, new)
 
 
 class WorkflowAdmissionHardeningTests(unittest.TestCase):

@@ -19,7 +19,7 @@ from userpass_password_live import private_parent, free_port, safe_files
 from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import verify_inputs, start_oracle, stop_oracle, restart_oracle
-from online_evidence import admit_output, source_identity
+from online_evidence import admit_output, check_numeric_observation, source_identity
 
 PREFIX='userpass_hash.'
 MOUNT=shared.MOUNT
@@ -35,12 +35,8 @@ REQUIRED=frozenset({'mounted.status','roundtrip.imported.credentials','roundtrip
     | frozenset(f'bad.{name}.{phase}' for name in ('short_tail','salt','hash','unicode_hash') for phase in ('write.status','login.status','login.no_credentials','restart.status'))
 
 class Trace(shared.Trace):
-    def check(self,name,condition,**observations):
-        if (not isinstance(name,str) or re.fullmatch(r'[a-z0-9_.]{1,140}',name) is None
-                or any(type(v) not in (int,bool) for v in observations.values())):
-            raise ValueError('unsafe_observation')
-        self.rows.append({'case':PREFIX+name,'passed':condition is True,**observations})
-        if condition is not True:raise ScenarioFailure(PREFIX+name)
+    def check(self, name, condition, **observations):
+        check_numeric_observation(self.rows, PREFIX, name, condition, observations, ScenarioFailure)
 
 
 def generator_capability():

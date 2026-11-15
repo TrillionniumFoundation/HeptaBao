@@ -2,9 +2,12 @@
 import hashlib
 from pathlib import Path
 import re
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
+from postgres_provider_contract import HISTORICAL_V4, current_provider_contract_matches
 
 
 def function(sql, name):
@@ -27,18 +30,23 @@ class PostgreSQLUsernameUpgradeTests(unittest.TestCase):
             'c0422f3dda8de5ae8921f875859c858259264a2a92bca24701057f961398fcf6')
         self.assertEqual(self.legacy.count(b"p_name !~ '^hbp_[0-9a-f]{32}$'"), 3)
 
-    def test_upgrade_matches_fresh_functions_without_another_semantic_dialect(self):
+    def test_upgrade_matches_historical_functions_and_current_final_contract(self):
+        historical = (ROOT / HISTORICAL_V4).read_text()
         for name in ('apply', 'retire', 'retired'):
             with self.subTest(name=name):
-                self.assertEqual(function(self.current, name), function(self.upgrade, name))
+                self.assertEqual(function(historical, name), function(self.upgrade, name))
         self.assertEqual(self.upgrade.count('CREATE OR REPLACE FUNCTION'), 3)
+        self.assertTrue(current_provider_contract_matches(ROOT))
 
     def test_short_username_exception_is_only_for_cleanup(self):
-        apply = function(self.current, 'apply')
+        apply = function(self.upgrade, 'apply')
         self.assertIn("p_action <> 'revoke' AND p_name !~ '^hbp_[0-9a-f]{32}$'", apply)
         for name in ('apply', 'retire', 'retired'):
             self.assertIn("p_name !~ '^hbp_([0-9a-f]{28}|[0-9a-f]{32})$'",
-                          function(self.current, name))
+                          function(self.upgrade, name))
+        current = function(self.current, 'apply')
+        self.assertIn("p_action <> 'revoke' AND p_name ~ '^hbp_[0-9a-f]{28}$'", current)
+        self.assertIn("valid_dynamic_username(p_name)", current)
         self.assertIn("provider global fence rejected stale operation", apply)
         self.assertIn("unowned role collision", apply)
         self.assertIn("provider role identity or ownership drift", apply)

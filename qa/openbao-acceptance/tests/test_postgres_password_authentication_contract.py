@@ -8,6 +8,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
 from candidate_state_schema import parse_current_schema
+from postgres_provider_contract import (
+    HISTORICAL_V4, current_provider_contract_matches, provider_function,
+)
 
 
 
@@ -24,18 +27,6 @@ def extension(path: Path) -> str:
     return source[start:min(boundaries)].rstrip() + "\n"
 
 
-def function(source: str, name: str) -> str:
-    match = re.search(
-        r"CREATE(?: OR REPLACE)? FUNCTION heptabao_provider\."
-        + re.escape(name) + r"\(.*?END \$\$;",
-        source,
-        re.S,
-    )
-    if match is None:
-        raise AssertionError("missing provider function: " + name)
-    return match.group(0)
-
-
 class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
     def test_live_profile_stops_comparison_before_later_extensions(self):
         source = (ROOT / "qa/openbao-acceptance/postgres_password_authentication_live.py").read_text()
@@ -43,28 +34,34 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
         self.assertIn("PostgreSQL password-policy and username-template generation extension.", source)
         self.assertIn("return source[start:min(boundaries)].rstrip()", source)
 
-    def test_fresh_and_forward_install_share_exact_extension(self):
-        fresh = extension(ROOT / "bootstrap/postgresql/provider.sql")
+    def test_historical_extension_and_current_final_contract_match_upgrades(self):
+        fresh = extension(ROOT / HISTORICAL_V4)
         upgrade = extension(
             ROOT / "bootstrap/postgresql/upgrade_v4_password_authentication.sql"
         )
         self.assertEqual(fresh, upgrade)
         self.assertIn("heptabao-postgresql-password-authentication-v1", fresh)
+        self.assertTrue(current_provider_contract_matches(ROOT))
 
     def test_verifier_validation_is_canonical_and_not_a_session_setting(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
-        validator = function(source, "valid_scram_verifier")
+        source = (ROOT / "bootstrap/postgresql/provider.sql").read_text()
+        validator = provider_function(source, "valid_scram_verifier")
         self.assertIn("SCRAM-SHA-256[$]4096", validator)
         self.assertIn("encode(decode(parts[1],'base64'),'base64')=parts[1]", validator)
         self.assertIn("octet_length(decode(parts[3],'base64'))=32", validator)
         self.assertIn("EXCEPTION WHEN others", validator)
-        accepted = function(source, "valid_password_credential")
+        accepted = provider_function(extension(
+            ROOT / "bootstrap/postgresql/upgrade_v4_password_authentication.sql"
+        ), "valid_password_credential")
         self.assertIn("p_value ~ '^[0-9a-f]{64}$'", accepted)
         self.assertIn("valid_scram_verifier", accepted)
+        current = provider_function(source, "valid_password_credential")
+        self.assertIn("octet_length(p_value) BETWEEN 1 AND 16384", current)
+        self.assertIn("valid_scram_verifier", current)
         self.assertNotIn("set_config('password_encryption'", source)
 
     def test_scram_wrappers_reuse_existing_fenced_mutation_owners(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
+        source = (ROOT / "bootstrap/postgresql/provider.sql").read_text()
         calls = {
             "apply_scram": "RETURN heptabao_provider.apply(",
             "rotate_static_scram": "RETURN heptabao_provider.rotate_static(",
@@ -73,7 +70,7 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
         }
         for name, call in calls.items():
             with self.subTest(name=name):
-                body = function(source, name)
+                body = provider_function(source, name)
                 self.assertIn("SECURITY DEFINER", body)
                 self.assertIn("valid_scram_verifier", body)
                 self.assertIn(call, body)
@@ -81,7 +78,7 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
                 self.assertNotIn("ALTER ROLE", body)
 
     def test_owner_replacement_is_explicit_and_limited(self):
-        source = extension(ROOT / "bootstrap/postgresql/provider.sql")
+        source = extension(ROOT / "bootstrap/postgresql/upgrade_v4_password_authentication.sql")
         replaced = set(re.findall(
             r"CREATE OR REPLACE FUNCTION heptabao_provider\.([a-z_]+)", source
         ))
@@ -94,7 +91,7 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
         })
         for name in ("apply", "rotate_static", "rotate_root", "apply_statements"):
             with self.subTest(name=name):
-                body = function(source, name)
+                body = provider_function(source, name)
                 self.assertIn("SECURITY DEFINER", body)
                 self.assertIn("valid_password_credential", body)
                 self.assertIn("pg_advisory_xact_lock", body)

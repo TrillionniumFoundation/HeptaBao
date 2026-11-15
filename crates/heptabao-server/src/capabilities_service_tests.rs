@@ -38,20 +38,7 @@ fn call(service: &mut Service, token: &str, path: &str, body: Value) -> Response
     service.handle_at("POST", path, "", token, body, 100)
 }
 fn start(service: &mut Service) -> Result<(String, String), Box<dyn std::error::Error>> {
-    let init = call(
-        service,
-        "",
-        "sys/init",
-        json!({"secret_shares":1,"secret_threshold":1}),
-    );
-    assert_eq!(init.status, 200);
-    let root = text(&init.body, "/root_token")?;
-    let key = text(&init.body, "/keys_base64/0")?;
-    assert_eq!(
-        call(service, "", "sys/unseal", json!({"key":key})).status,
-        200
-    );
-    Ok((root, key))
+    crate::service::tests::initialize_fixture(service, call, text)
 }
 fn snapshot(service: &Service) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     Ok(serde_json::to_vec(service.state.as_ref().ok_or("state")?)?)

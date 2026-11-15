@@ -1,7 +1,7 @@
 //! Token API policy resolution; login and mapping policy semantics are separate.
 //!
 //! Pinned OpenBao 2.7.0 token_store.go resolveTokenPolicies and policyutil.go.
-use super::go_print;
+pub(super) use super::go_print::quote as quote_policy;
 use super::{AuthError, Token, bad};
 use serde_json::Value;
 use std::collections::BTreeSet;
@@ -155,39 +155,6 @@ pub(super) fn weak_boolean(value: Option<&Value>, field: &str) -> Result<bool, A
             "Field validation failed: error converting input for field \"{field}\": '' cannot parse value as 'bool': strconv.ParseBool: invalid syntax"
         ))),
     }
-}
-
-pub(super) fn quote_policy(value: &str) -> String {
-    // Go fmt %q uses printable Unicode and Go string escapes, rather than
-    // inventing a different name after the policy-existence lookup.
-    let mut quoted = String::from("\"");
-    for character in value.chars() {
-        match character {
-            '\\' => quoted.push_str("\\\\"),
-            '\"' => quoted.push_str("\\\""),
-            '\x07' => quoted.push_str("\\a"),
-            '\x08' => quoted.push_str("\\b"),
-            '\x0c' => quoted.push_str("\\f"),
-            '\n' => quoted.push_str("\\n"),
-            '\r' => quoted.push_str("\\r"),
-            '\t' => quoted.push_str("\\t"),
-            '\x0b' => quoted.push_str("\\v"),
-            character if (character as u32) < 0x20 || character == '\x7f' => {
-                quoted.push_str(&format!("\\x{:02x}", character as u32));
-            }
-            character if !go_print::is_print(character) => {
-                let point = character as u32;
-                if point < 0x10000 {
-                    quoted.push_str(&format!("\\u{point:04x}"));
-                } else {
-                    quoted.push_str(&format!("\\U{point:08x}"));
-                }
-            }
-            character => quoted.push(character),
-        }
-    }
-    quoted.push('\"');
-    quoted
 }
 
 fn go_kind(value: &Value) -> &'static str {

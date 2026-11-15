@@ -14,15 +14,12 @@ import json
 import os
 import pathlib
 import re
-import ssl
 import stat
 import sys
 import signal
 import subprocess
 import tempfile
-import urllib.error
 import urllib.parse
-import urllib.request
 
 # Isolated workers load only the adjacent, explicit decoder; no Python path search.
 _decoder_path = pathlib.Path(__file__).resolve().with_name("kv2_lossless_raw.py")
@@ -96,9 +93,6 @@ def canonical_path(value, label):
                      for c in value), label)
     return value
 
-class NoRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise DecodeError("HTTP redirect refused")
 
 class Client:
     def __init__(self, address, token, namespace="", ca_file=None, *, end=None):

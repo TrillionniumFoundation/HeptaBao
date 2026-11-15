@@ -143,12 +143,6 @@ def audit_contains_plaintext(audit: bytes, plaintexts: list[bytes]) -> bool:
     return False
 
 
-def row(pg: Postgres, query: str, *, database: str = "app") -> list[str]:
-    result = pg.sql(query, database=database)
-    require(result.returncode == 0, "operator_readback_failed")
-    return result.stdout.strip().split("|") if result.stdout.strip() else []
-
-
 def manager_call(pg: Postgres, query: str, *, database: str = "app"):
     return pg.sql(
         query, user="hb_manager", password=pg.manager_password, database=database

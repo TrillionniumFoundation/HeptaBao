@@ -15,7 +15,6 @@ import socket
 import ssl
 import struct
 import threading
-import time
 
 
 def b64(value: bytes) -> str:

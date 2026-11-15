@@ -1,4 +1,7 @@
 use super::*;
+
+#[path = "service_acme_test_fixture.rs"]
+pub(super) mod acme_fixture;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 // Only this cfg(test) module constructs authenticated historical writer inputs.
@@ -3806,4 +3809,541 @@ fn official_go_init_defaults_do_not_request_unsupported_seal_options()
         );
     }
     Ok(())
+}
+
+// These auth format fixtures have no record-backed KV1 mounts. Decode their
+// unchanged owner bytes as a legacy reader would, without retaining the v5
+// runtime installed by current HTTP writes and masking the auth schema fence.
+pub(super) fn restore_legacy_engine_owner(
+    state: &mut State,
+) -> Result<(), Box<dyn std::error::Error>> {
+    state.engines.restore_pre47_identity_metadata_for_test();
+    assert!(
+        !state.engines.has_record_kv1(),
+        "legacy auth fixture cannot discard record-backed KV1 data"
+    );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
+    assert!(state.engines.record_root().is_none());
+    let after = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture reserialization")?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "legacy engine owner bytes changed"
+    );
+    Ok(())
+}
+
+pub(super) fn activation_fixture(
+    native: bool,
+    call: impl FnOnce(
+        &mut Service,
+        u64,
+        &str,
+        &str,
+        &str,
+        Value,
+    ) -> Result<Response, Box<dyn std::error::Error>>,
+) -> Result<(Root, Service, String, String), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    #[cfg(feature = "native-v6-storage")]
+    if native {
+        service.configure_native_v6_candidate()?;
+    }
+    #[cfg(not(feature = "native-v6-storage"))]
+    {
+        assert!(!native);
+        let _ = call;
+    }
+    // Native cold loading requires the original request deadline, including
+    // the first unseal before activation. Model that HTTP admission explicitly.
+    let (key, admin) = {
+        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+            Instant::now() + Duration::from_secs(15),
+        );
+        bootstrap(&mut service)?
+    };
+    #[cfg(feature = "native-v6-storage")]
+    if native {
+        assert_eq!(
+            call(
+                &mut service,
+                100,
+                "POST",
+                "sys/internal/native-v6/activate",
+                &admin,
+                json!({})
+            )?
+            .status,
+            204
+        );
+        assert!(service.native_root.is_some());
+    }
+    Ok((root, service, key, admin))
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn run_after_actual_native_audit(
+    service: &mut Service,
+    response: &mut Response,
+    hook: Option<impl FnOnce(&mut Service, &mut Response)>,
+) {
+    if let Some(hook) = hook {
+        assert!(service.native_failure_notice.is_none());
+        let binding = service.native_request_binding.take();
+        assert!(binding.is_some());
+        assert!(service.pending_native_auth_delivery.is_none());
+        hook(service, response);
+        assert!(service.native_request_binding.is_none());
+        assert!(service.native_failure_notice.is_none());
+        assert!(service.pending_native_auth_delivery.is_none());
+        service.native_request_binding = binding;
+    }
+}
+
+type FixtureResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn transfer_native_snapshot(
+    service: &mut Service,
+    method: &str,
+    token: &str,
+    input: &mut impl std::io::Read,
+) -> FixtureResult<(Response, Option<crate::snapshot_file::SnapshotFile>)> {
+    let request = ServiceRequest::new(method, "sys/storage/raft/snapshot", "", token, json!({}));
+    match service.begin_native_snapshot_before(request, Instant::now() + Duration::from_secs(15)) {
+        NativeSnapshotAdmission::Execute(RequestExecution::External(mut pending)) => {
+            let (observation, file) = pending.execute_snapshot_transfer(input);
+            Ok((service.finish_external_request(*pending, observation), file))
+        }
+        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
+            Ok((response, None))
+        }
+        NativeSnapshotAdmission::Redirect(_) => Err("standalone snapshot redirected".into()),
+        #[cfg(feature = "native-v6-ha")]
+        NativeSnapshotAdmission::Forward(_) => Err("standalone snapshot forwarded".into()),
+    }
+}
+
+pub(super) fn pending_ldap_fixture(
+    service: &mut Service,
+    path: &str,
+    token: &str,
+    body: Value,
+    now: u64,
+    wrap_ttl_seconds: Option<u64>,
+) -> FixtureResult<Box<PendingExternalRequest>> {
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path,
+        namespace: "",
+        token,
+        body,
+        now,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(plan) => Ok(plan),
+        RequestExecution::Complete(response) => {
+            Err(format!("expected provider request, got {}", response.status).into())
+        }
+    }
+}
+
+pub(super) fn pending_remote_jwt_fixture(
+    service: &mut Service,
+    path: &str,
+    token: &str,
+    body: Value,
+) -> FixtureResult<Box<PendingExternalRequest>> {
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path,
+        namespace: "",
+        token,
+        body,
+        now: 110,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        client_certificates: None,
+        origin_peer: None,
+    }) {
+        RequestExecution::External(plan) => Ok(plan),
+        RequestExecution::Complete(_) => Err("expected remote JWT plan".into()),
+    }
+}
+
+pub(super) fn pending_radius_fixture(
+    service: &mut Service,
+    path: &str,
+    token: &str,
+    body: Value,
+    now: u64,
+    wrap_ttl_seconds: Option<u64>,
+) -> FixtureResult<Box<PendingExternalRequest>> {
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path,
+        namespace: "",
+        token,
+        body,
+        now,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(plan) => Ok(plan),
+        RequestExecution::Complete(_) => Err("expected staged provider request".into()),
+    }
+}
+
+pub(super) fn owned_request_fixture(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: Value,
+) -> Response {
+    let execution = service.begin_request_before(
+        ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now() + Duration::from_secs(15),
+        false,
+    );
+    service.finish_synchronous_request(execution)
+}
+
+pub(super) fn begin_delivery_fixture(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: Value,
+) -> RequestExecution {
+    service.begin_at_mode_started(
+        RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now(),
+    )
+}
+
+pub(super) fn precise_fixture_request(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+    clock: impl FnOnce() -> FixtureResult<RequestClock>,
+) -> FixtureResult<Response> {
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method,
+            path,
+            namespace: "",
+            token,
+            body,
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock()?,
+    );
+    Ok(service.finish_synchronous_request(execution))
+}
+
+pub(super) fn initialize_fixture(
+    service: &mut Service,
+    mut call: impl FnMut(&mut Service, &str, &str, Value) -> Response,
+    text: fn(&Value, &str) -> FixtureResult<String>,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let init = call(
+        service,
+        "",
+        "sys/init",
+        json!({"secret_shares":1,"secret_threshold":1}),
+    );
+    assert_eq!(init.status, 200);
+    let root = text(&init.body, "/root_token")?;
+    let key = text(&init.body, "/keys_base64/0")?;
+    assert_eq!(
+        call(service, "", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    Ok((root, key))
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn assert_native_sentinel(
+    service: &mut Service,
+    root: &str,
+    call: fn(&mut Service, &str, &str, &str, Value) -> Response,
+    expect: fn(Response, u16, &str) -> FixtureResult<Response>,
+) -> FixtureResult {
+    let response = expect(
+        call(service, "GET", "secret/data/sentinel", root, json!({})),
+        200,
+        "unrelated-KV-sentinel",
+    )?;
+    assert!(response.body["data"]["data"] == json!({"kept":"unchanged"}));
+    assert!(service.pending_native_auth_delivery.is_none());
+    assert!(service.native_request_binding.is_none());
+    assert!(!service.recovery_required && !service.audit_failed);
+    Ok(())
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn reopen_native_fixture(
+    files: &Root,
+    key: &str,
+    call: fn(&mut Service, &str, &str, &str, Value) -> Response,
+    expect: fn(Response, u16, &str) -> FixtureResult<Response>,
+) -> FixtureResult<Service> {
+    let mut service = files.service()?;
+    service.configure_native_v6_storage(crate::configuration::NativeStorageProfile::File)?;
+    expect(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})),
+        200,
+        "formal-File-cold-unseal",
+    )?;
+    assert!(service.native_root.is_some());
+    Ok(service)
+}
+
+pub(super) fn listed_fixture_policy(
+    service: &mut Service,
+    admin: &str,
+    seconds: u64,
+    name: &str,
+    call: impl FnOnce(&mut Service, u64, &str, &str, &str, Value) -> FixtureResult<Response>,
+) -> FixtureResult<bool> {
+    let response = call(
+        service,
+        seconds,
+        "LIST",
+        "sys/policies/acl",
+        admin,
+        json!({}),
+    )?;
+    assert_eq!(response.status, 200);
+    Ok(response.body["data"]["keys"]
+        .as_array()
+        .ok_or("actual policy keys")?
+        .contains(&json!(name)))
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn full34_fixture_value(version: u64, payload_bytes: usize) -> Value {
+    let mut payload = String::with_capacity(payload_bytes);
+    let fill = char::from(b'a' + version as u8).to_string();
+    for block in 0..payload_bytes / 1024 {
+        let prefix = format!("version-{version:02}/piece-{block:04}:");
+        payload.push_str(&prefix);
+        payload.push_str(&fill.repeat(1024 - prefix.len()));
+    }
+    assert_eq!(payload.len(), payload_bytes);
+    // Every 1 KiB piece has a distinct version/piece prefix. Repeated whole
+    // chunks cannot hide physical retirement behind identical payload blocks.
+    json!({"ordinal":version,"payload":payload})
+}
+
+pub(super) fn return_original_fixture_leader(
+    cluster: &crate::ha::snapshot_test_support::Cluster,
+) -> FixtureResult<u64> {
+    let next = cluster.processes[0]
+        .lock()
+        .map_err(|_| "original mutex")?
+        .step_down()?;
+    assert_ne!(next, 1);
+    let returned = cluster.processes[(next - 1) as usize]
+        .lock()
+        .map_err(|_| "successor mutex")?
+        .step_down()?;
+    assert_eq!(returned, 1);
+    let actual = cluster.processes[0]
+        .lock()
+        .map_err(|_| "returned mutex")?
+        .leader_status()?;
+    assert!(actual.local_is_leader && actual.leader == Some(1));
+    Ok(actual.term)
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn formal_native_fixture(
+    call: fn(&mut Service, &str, &str, &str, &str, Value) -> Response,
+) -> FixtureResult<(Root, Service, Zeroizing<String>, Zeroizing<String>)> {
+    let files = Root::new();
+    let mut service = files.service()?;
+    service.configure_native_v6_storage(crate::configuration::NativeStorageProfile::File)?;
+    let nonce = Zeroizing::new(hex(&crypto::random::<32>()?));
+    let mut initialized = call(
+        &mut service,
+        "POST",
+        "sys/init",
+        "",
+        "",
+        json!({"secret_shares": 1, "secret_threshold": 1, "recovery_nonce": nonce.as_str()}),
+    );
+    assert_eq!(initialized.status, 200);
+    let key = Zeroizing::new(
+        initialized.body["keys"][0]
+            .as_str()
+            .ok_or("share")?
+            .to_owned(),
+    );
+    let admin = Zeroizing::new(
+        initialized.body["root_token"]
+            .as_str()
+            .ok_or("token")?
+            .to_owned(),
+    );
+    erase_json(&mut initialized.body);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            "",
+            json!({"key": key.as_str()})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/init/ack", "", &admin, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/storage/native-v6/activate",
+            "",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    Ok((files, service, key, admin))
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn native_fixture_call(
+    service: &mut Service,
+    now: &mut u64,
+    token: &str,
+    method: &str,
+    path: &str,
+    body: Value,
+) -> FixtureResult<Response> {
+    *now += 1;
+    let started = Instant::now();
+    let clock = RequestClock::anchored(Duration::from_secs(*now), started)?;
+    let _scope =
+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method,
+            path,
+            namespace: "",
+            token,
+            body,
+            now: *now,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock,
+    );
+    let response = service.finish_synchronous_request(execution);
+    assert!(service.pending_native_auth_delivery.is_none());
+    Ok(response)
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn initialize_native_fixture(
+    service: &mut Service,
+    call: fn(&mut Service, &mut u64, &str, &str, &str, Value) -> FixtureResult<Response>,
+    status: fn(&Response, u16),
+    text: fn(&Response, &str) -> FixtureResult<String>,
+    secret: fn(&mut Response, &str) -> FixtureResult<Zeroizing<String>>,
+) -> FixtureResult<(Zeroizing<String>, Zeroizing<String>, u64)> {
+    service.configure_native_v6_storage(crate::configuration::NativeStorageProfile::File)?;
+    let mut now = 100;
+    let mut initialized = call(
+        service,
+        &mut now,
+        "",
+        "POST",
+        "sys/init",
+        json!({"secret_shares":1,"secret_threshold":1}),
+    )?;
+    status(&initialized, 200);
+    let key = Zeroizing::new(text(&initialized, "/keys/0")?);
+    let admin = secret(&mut initialized, "/root_token")?;
+    status(
+        &call(
+            service,
+            &mut now,
+            "",
+            "POST",
+            "sys/unseal",
+            json!({"key":key.as_str()}),
+        )?,
+        200,
+    );
+    status(
+        &call(service, &mut now, &admin, "POST", "sys/init/ack", json!({}))?,
+        204,
+    );
+    Ok((key, admin, now))
+}
+
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn idle_native_fixture(
+    service: &mut Service,
+    fixture_now: &mut u64,
+    now: u64,
+) -> FixtureResult<bool> {
+    *fixture_now = now;
+    let started = Instant::now();
+    let clock = RequestClock::anchored(Duration::from_secs(now), started)?;
+    let _deadline =
+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
+    Ok(service.maintain_native_transit_with_clock_for_test(now, clock)?)
 }

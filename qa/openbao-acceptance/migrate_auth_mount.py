@@ -13,12 +13,9 @@ resolved only by authoritative target readback and is never blindly retried.
 """
 from __future__ import annotations
 
-import fcntl
 import json
-import os
 from pathlib import Path
 import re
-import stat
 
 from bao_http import (
     BaoError,
@@ -30,6 +27,7 @@ from bao_http import (
     private_json,
     private_write,
 )
+from migration_checkpoint import CheckpointLock
 
 SCHEMA = "heptabao.auth-mount-recreation.v1"
 CHECKPOINT_SCHEMA = "heptabao.auth-mount-recreation-checkpoint.v1"
@@ -231,37 +229,6 @@ def coherent_target_tune(target, record, state, expected_revision, *, stored_con
     return original_stored if stored_config else observed
 
 
-class CheckpointLock:
-    def __init__(self, filename):
-        self.filename = str(filename) + ".lock"
-        self.fd = None
-
-    def __enter__(self):
-        try:
-            self.fd = os.open(
-                self.filename,
-                os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW,
-                0o600,
-            )
-            info = os.fstat(self.fd)
-            if (
-                not stat.S_ISREG(info.st_mode)
-                or info.st_uid != os.geteuid()
-                or info.st_mode & 0o077
-            ):
-                raise BaoError("checkpoint_lock_not_private_regular_file")
-            fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except (OSError, BaoError):
-            if self.fd is not None:
-                os.close(self.fd)
-                self.fd = None
-            raise BaoError("checkpoint_locked_or_inaccessible") from None
-        return self
-
-    def __exit__(self, *_):
-        if self.fd is not None:
-            os.close(self.fd)
-            self.fd = None
 
 
 class Checkpoint:

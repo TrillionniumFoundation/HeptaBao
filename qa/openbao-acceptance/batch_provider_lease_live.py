@@ -8,16 +8,14 @@ from __future__ import annotations
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import shutil
 import time
 
 from core_isolation import ROOT
-from online_evidence import admit_output, complete_checks, publish, source_identity
+from online_evidence import admit_output, publish, source_identity
 from postgres_live import Postgres, Instance
 from ldap_openldap_live import Directory, private
 from openldap_secret_live import BASE, CREATION, DELETION, bind_result, entry_marker, read_entry

@@ -56,24 +56,7 @@ fn only_roles(
     next: &RecordStateRootV6,
     roles: &[OwnerDomain],
 ) -> Result<()> {
-    prior.validate().map_err(|_| rejected())?;
-    next.validate().map_err(|_| rejected())?;
-    if next.state_schema < prior.state_schema
-        || next.reader_floor.minimum_state_schema < prior.reader_floor.minimum_state_schema
-    {
-        return Err(rejected());
-    }
-    let mut normalized = next.clone();
-    normalized.state_schema = prior.state_schema;
-    normalized.reader_floor.minimum_state_schema = prior.reader_floor.minimum_state_schema;
-    for (old, new) in prior.owners.iter().zip(&mut normalized.owners) {
-        if old.domain == new.domain && roles.contains(&old.domain) {
-            *new = old.clone();
-        }
-    }
-    same_root(prior, &normalized)?
-        .then_some(())
-        .ok_or_else(rejected)
+    super::native_root_guard::only_owners_changed(prior, next, roles, rejected)
 }
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum Registry {
@@ -89,14 +72,7 @@ enum Scope {
     Maintenance,
 }
 fn registry_target(path: &str) -> Result<(String, bool)> {
-    let path = path
-        .strip_prefix("sys/mounts/")
-        .ok_or_else(rejected)?
-        .trim_end_matches('/');
-    let (path, tune) = path
-        .strip_suffix("/tune")
-        .map_or((path, false), |p| (p, true));
-    Ok((format!("{}/", canonical_secret_mount(path)?), tune))
+    native_registry_target(path, rejected)
 }
 
 pub(crate) struct NativePkiEngineOwner {

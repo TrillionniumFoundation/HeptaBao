@@ -2,6 +2,7 @@
 //! separate Service's normal AES Transit owner, not a provider verification ack.
 use super::tests::{Root, bootstrap, call, limited_token};
 use super::*;
+use crate::service::tests::return_original_fixture_leader as wrapping_return_to_original_leader;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
 use std::io::{BufReader, Read, Write};
@@ -2524,27 +2525,6 @@ fn wrapping_ha(
         .sync_from_ha()
         .map_err(|_| "actual wrapped Transit HA seed")?;
     Ok(cluster)
-}
-
-fn wrapping_return_to_original_leader(
-    cluster: &crate::ha::snapshot_test_support::Cluster,
-) -> TestResult<u64> {
-    let next = cluster.processes[0]
-        .lock()
-        .map_err(|_| "original mutex")?
-        .step_down()?;
-    assert_ne!(next, 1);
-    let returned = cluster.processes[(next - 1) as usize]
-        .lock()
-        .map_err(|_| "successor mutex")?
-        .step_down()?;
-    assert_eq!(returned, 1);
-    let actual = cluster.processes[0]
-        .lock()
-        .map_err(|_| "returned mutex")?
-        .leader_status()?;
-    assert!(actual.local_is_leader && actual.leader == Some(1));
-    Ok(actual.term)
 }
 
 #[test]

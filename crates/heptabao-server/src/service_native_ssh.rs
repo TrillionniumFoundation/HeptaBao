@@ -7,28 +7,13 @@ use super::*;
 fn unavailable() -> Response {
     Response::error(503, "native local SSH publication or delivery unavailable")
 }
-fn owner_digest<T: serde::Serialize>(owner: &T) -> Result<[u8; 32], Response> {
-    let bytes = owner_store::serialize_owner(owner).map_err(|_| unavailable())?;
-    Ok(crypto::digest(&bytes))
-}
+
 fn unchanged_state_owners(
     source: &State,
     candidate: &State,
     allow_auth: bool,
 ) -> Result<(), Response> {
-    if candidate.cluster_id != source.cluster_id
-        || candidate.replay_epoch != source.replay_epoch
-        || candidate.global_lossless_json_format != source.global_lossless_json_format
-        || candidate.namespace_protected.is_some()
-        || !candidate.namespace_leases.is_empty()
-        || owner_digest(&candidate.namespaces)? != owner_digest(&source.namespaces)?
-        || owner_digest(&candidate.database)? != owner_digest(&source.database)?
-        || owner_digest(&candidate.raft_admin)? != owner_digest(&source.raft_admin)?
-        || !allow_auth && owner_digest(&candidate.auth)? != owner_digest(&source.auth)?
-    {
-        return Err(unavailable());
-    }
-    Ok(())
+    super::unchanged_non_engine_owners(source, candidate, allow_auth, unavailable)
 }
 
 pub(super) struct NativeSshOwner {

@@ -3,7 +3,6 @@ import argparse
 import copy
 import gzip
 import io
-import json
 from pathlib import Path
 import tarfile
 import unittest

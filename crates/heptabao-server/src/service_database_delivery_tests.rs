@@ -2,35 +2,10 @@
 //! These tests never execute a provider, plugin, or external network request.
 use super::super::tests::{Root, bootstrap, call};
 use super::*;
+use crate::service::tests::begin_delivery_fixture as request;
 use std::time::{Duration, Instant};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
-
-fn request(
-    service: &mut Service,
-    method: &str,
-    path: &str,
-    namespace: &str,
-    token: &str,
-    body: Value,
-) -> RequestExecution {
-    service.begin_at_mode_started(
-        RequestDispatch {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            now: 100,
-            allow_forward: true,
-            enforce_namespace: true,
-            wrap_ttl_seconds: None,
-            origin_peer: None,
-            client_certificates: None,
-        },
-        Instant::now(),
-    )
-}
 
 fn complete(execution: RequestExecution, expected: u16) -> TestResult<Response> {
     match execution {

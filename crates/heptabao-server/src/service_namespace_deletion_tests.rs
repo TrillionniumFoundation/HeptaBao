@@ -1,31 +1,8 @@
 use super::*;
+use crate::service::tests::owned_request_fixture as native;
 use crate::service::tests::{Root, bootstrap_unmounted};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
-fn native(
-    service: &mut Service,
-    method: &str,
-    path: &str,
-    namespace: &str,
-    token: &str,
-    body: Value,
-) -> Response {
-    let execution = service.begin_request_before(
-        ServiceRequest {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            wrap_ttl_seconds: None,
-            origin_peer: None,
-            client_certificates: None,
-        },
-        Instant::now() + Duration::from_secs(15),
-        false,
-    );
-    service.finish_synchronous_request(execution)
-}
 fn clock() -> TestResult<RequestClock> {
     Ok(RequestClock::anchored(
         SystemTime::now().duration_since(UNIX_EPOCH)?,

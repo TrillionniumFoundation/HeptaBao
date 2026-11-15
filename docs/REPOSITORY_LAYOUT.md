@@ -102,6 +102,13 @@ Android r4 top-level copies while preserving their identical evidence originals.
 Its [recovery manifest](audits/2026-11-15-repository-cleanup-round3/retired-sources.json)
 is bound to `2b6cf2c68dd953fd935a3fd94780aba6ae62c6d1` and uses the same command.
 
+The [fourth cleanup audit](audits/2026-11-15-repository-cleanup-round4/README.md)
+follows the remaining duplicate and unused-code candidates through their real
+consumers. It consolidates shared Rust/Python implementations and the PostgreSQL
+fresh-install definitions while retaining ordered upgrades, typed owners and
+closed replay packages. Its candidate register records a disposition for every
+reviewed group and distinguishes code reductions from validation/audit additions.
+
 ## Adding future work
 
 Keep reusable source in its maintained directory, with tests next to the relevant

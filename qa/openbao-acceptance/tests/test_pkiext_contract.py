@@ -1,7 +1,6 @@
 """Bounded PKI extension configuration remains versioned and scoped."""
 import json
 from pathlib import Path
-import re
 import sys
 import unittest
 
