@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+"""Observe the existing ACL wildcard fixture on one pinned official oracle only."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import socket
+import subprocess
+import sys
+import time
+
+REPOSITORY = Path('/workspace/scratch/2f4a29078f7f/HeptaBao')
+INPUT = Path('/tmp/heptabao-oracle271-audit-20261116-r1')
+OUTPUT = Path('/workspace/scratch/2f4a29078f7f/oracle271-policy-template-observation.json')
+sys.path.insert(0, str(REPOSITORY / 'qa/openbao-acceptance'))
+from bao_http import Client, private_read
+from core_isolation import ScenarioFailure
+import official_openbao_launcher as official
+import policy_templates_live as profile
+
+
+def sha(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def port_pair():
+    for _ in range(16):
+        with socket.socket() as first, socket.socket() as second:
+            first.bind(('127.0.0.1', 0))
+            port = first.getsockname()[1]
+            if not 1024 <= port <= 65534:
+                continue
+            try:
+                second.bind(('127.0.0.1', port + 1))
+            except OSError:
+                continue
+            return port
+    raise RuntimeError('private_loopback_port_pair_unavailable')
+
+
+class ObservedClient:
+    def __init__(self, client):
+        self.client = client
+        self.logins = []
+
+    def request(self, method, path, payload=None, *, token=None, **kwargs):
+        response = self.client.request(method, path, payload, token=token, **kwargs)
+        if method == 'POST' and path == '/v1/auth/acl-template-login/login' and response.status == 200:
+            self.logins.append(response.body['auth'])
+        return response
+
+
+def main():
+    if OUTPUT.exists():
+        raise RuntimeError('observation_output_exists')
+    work = INPUT / 'private-oracle-work'
+    work.mkdir(mode=0o700, exist_ok=False)
+    os.environ['HB_ORACLE_BINARY'] = str(INPUT / 'bao')
+    os.environ['HB_ORACLE_ARCHIVE'] = str(INPUT / 'oracle-official.tar.gz')
+    os.environ['HB_ORACLE_WORK_ROOT'] = str(work)
+    old_mask = os.umask(0o077)
+    report = {
+        'schema': 'heptabao.oracle271.acl-wildcard-observation.v1',
+        'status': 'not_completed',
+        'version_selected': '2.7.1',
+        'official_pins': official.pinned_artifact(version='2.7.1'),
+        'launcher_sha256': sha(official.__file__),
+        'historical_profile_sha256': sha(profile.__file__),
+        'probe_sha256': sha(__file__),
+        'source_commit': subprocess.check_output(['git', '-C', str(REPOSITORY), 'rev-parse', 'HEAD'], text=True).strip(),
+        'source_tree': subprocess.check_output(['git', '-C', str(REPOSITORY), 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+        'started_unix': time.time(),
+        'historical_270_fixture_modified': False,
+        'candidate_executed': False,
+        'oracle_only': True,
+        'synthetic_only': True,
+        'production_qualified': False,
+        'full_acl_qualified': False,
+        'independent_qualification': False,
+        'wildcards': [],
+    }
+    oracle = None
+    try:
+        binary = official.verify_inputs(version='2.7.1')
+        version = subprocess.run([str(binary), 'version'], env=official.oracle_environment(work),
+                                 stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, timeout=10, check=True)
+        report['binary_version_stdout'] = version.stdout.decode().strip()
+        report['archive_sha256_observed'] = sha(INPUT / 'oracle-official.tar.gz')
+        report['binary_sha256_observed'] = sha(binary)
+        oracle = official.start_oracle(port_pair(), version='2.7.1')
+        client = Client(oracle['address'], oracle['ca_file'],
+                        private_read(oracle['token_file'], 8192).decode().strip())
+        health = client.health()
+        identity = official.verify_selected_oracle(oracle, health, version='2.7.1')
+        report['live_oracle'] = {key: identity[key] for key in (
+            'product', 'version', 'artifact_sha256', 'binary_sha256', 'provenance_url',
+            'archive_member_matches_executable', 'server_mode', 'storage', 'tls_verified', 'synthetic_only')}
+        report['live_oracle']['cluster_id_sha256'] = hashlib.sha256(health['cluster_id'].encode()).hexdigest()
+        observed = ObservedClient(client)
+        rows = []
+        report['historical_270_fixture_rows'] = rows
+        try:
+            profile.run_scenarios_270(observed, rows)
+            report['historical_270_fixture_outcome'] = 'completed_original_expectations'
+        except ScenarioFailure as error:
+            report['historical_270_fixture_outcome'] = 'original_expectation_failed'
+            report['historical_270_fixture_failure_case'] = str(error)
+            if not str(error).startswith('acl_templates.injected_'):
+                raise
+        if len(observed.logins) != 2:
+            raise RuntimeError('exact_original_service_and_batch_context_missing')
+        service, batch = observed.logins
+        if service['entity_id'] != batch['entity_id']:
+            raise RuntimeError('original_identity_mismatch')
+        entity_path = '/v1/identity/entity/id/' + service['entity_id']
+        path = '/v1/acl-template/team/red/item'
+        original = {'synthetic': 'original'}
+        restore = client.request('POST', entity_path, {'metadata': {'team': 'red'}})
+        baseline = {
+            'metadata_http_status': restore.status,
+            'service_get_http_status': client.request('GET', path, token=service['client_token']).status,
+            'batch_get_http_status': client.request('GET', path, token=batch['client_token']).status,
+            'root_readback_matches_original': client.request('GET', path).body.get('data') == original,
+        }
+        report['positive_control'] = baseline
+        if baseline != {'metadata_http_status': 204, 'service_get_http_status': 200,
+                        'batch_get_http_status': 200, 'root_readback_matches_original': True}:
+            raise RuntimeError('positive_control_failed')
+        for label, value in [('star', '*'), ('segment', '+'), ('suffix', 'red*')]:
+            injection = client.request('POST', entity_path, {'metadata': {'team': value}})
+            if injection.status != 204:
+                raise RuntimeError('metadata_injection_not_acknowledged')
+            service_read = client.request('GET', path, token=service['client_token'])
+            batch_read = client.request('GET', path, token=batch['client_token'])
+            service_write = client.request('POST', path, {'synthetic': 'must-not-publish'},
+                                           token=service['client_token'])
+            root_readback = client.request('GET', path)
+            inspected = client.request('POST', '/v1/sys/capabilities',
+                                       {'token': service['client_token'], 'path': 'acl-template/team/red/item'})
+            report['wildcards'].append({
+                'label': label,
+                'metadata_http_status': injection.status,
+                'service_get_http_status': service_read.status,
+                'batch_get_http_status': batch_read.status,
+                'service_post_http_status': service_write.status,
+                'root_readback_http_status': root_readback.status,
+                'denied_write_no_effect': root_readback.body.get('data') == original,
+                'root_capabilities_http_status': inspected.status,
+                'service_error_envelope_present': bool(service_read.body.get('errors')),
+            })
+        restored = client.request('POST', entity_path, {'metadata': {'team': 'red'}})
+        report['restored_positive_control'] = {
+            'metadata_http_status': restored.status,
+            'service_get_http_status': client.request('GET', path, token=service['client_token']).status,
+            'batch_get_http_status': client.request('GET', path, token=batch['client_token']).status,
+        }
+        report['status'] = 'observation_completed'
+    except Exception as error:
+        report['status'] = 'observation_failed'
+        report['failure_class'] = type(error).__name__
+        if isinstance(error, (official.BaoError, ScenarioFailure)):
+            report['safe_failure_code'] = str(error)
+    finally:
+        profile._RESTART_STATE.clear()
+        if oracle is not None:
+            process = oracle['process']
+            try:
+                official.stop_oracle(oracle)
+                report['original_oracle_exit_code'] = process.returncode
+                if process.returncode != 0:
+                    raise RuntimeError('original_oracle_exit_not_zero')
+                shutil.rmtree(oracle['root'])
+                report['private_oracle_root_removed'] = True
+            except Exception as error:
+                report['status'] = 'observation_cleanup_failed'
+                report['cleanup_failure_class'] = type(error).__name__
+                report['private_oracle_root_removed'] = False
+        report['finished_unix'] = time.time()
+        descriptor = os.open(OUTPUT, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(descriptor, 'w') as stream:
+            json.dump(report, stream, indent=2, sort_keys=True)
+            stream.write('\n')
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.umask(old_mask)
+        print(json.dumps({key: report.get(key) for key in (
+            'status', 'binary_version_stdout', 'historical_270_fixture_outcome',
+            'historical_270_fixture_failure_case', 'positive_control', 'wildcards',
+            'restored_positive_control', 'original_oracle_exit_code',
+            'private_oracle_root_removed', 'failure_class', 'safe_failure_code')}))
+    return 0 if report['status'] == 'observation_completed' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

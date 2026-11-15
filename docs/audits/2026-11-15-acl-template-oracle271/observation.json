@@ -1,0 +1,609 @@
+{
+  "archive_sha256_observed": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+  "binary_sha256_observed": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+  "binary_version_stdout": "OpenBao v2.7.1 (a5db72cef75c24b920ade02065b18dd8eb666bac), committed 2026-10-01T15:32:54Z",
+  "candidate_executed": false,
+  "finished_unix": 1794711124.524072,
+  "full_acl_qualified": false,
+  "historical_270_fixture_modified": false,
+  "historical_270_fixture_outcome": "completed_original_expectations",
+  "historical_270_fixture_rows": [
+    {
+      "case": "acl_templates.mount_kv",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.mount_auth",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.mount_accessor",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.create_role",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.role_id",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.secret_id",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.login_service",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_role",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.login_batch",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_same_identity",
+      "passed": true
+    },
+    {
+      "case": "acl_templates.entity_alias",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.unique_mount_alias",
+      "passed": true
+    },
+    {
+      "case": "acl_templates.custom_alias_metadata",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.direct_group",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.parent_group",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.nonmember_group",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.policy_accepted",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.identity_projection",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.seed_entity",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_entity",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_entity",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_name",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_name",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_name",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_team",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_team",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_team",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_alias-id",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_alias-id",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_alias-id",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_alias-name",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_alias-name",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_alias-name",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_login-meta",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_login-meta",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_login-meta",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_custom-meta",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_custom-meta",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_custom-meta",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_group-id",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_group-id",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_group-id",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_group-name",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_group-name",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_group-name",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_group-zone",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_group-zone",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_group-zone",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_parent",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.service_parent",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.batch_parent",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.seed_peer",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.peer_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.seed_nonmember",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.nonmember_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.inspect_target",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.inspected_target_not_root_identity",
+      "passed": true
+    },
+    {
+      "case": "acl_templates.inspect_self",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.self_and_dispatch_agree",
+      "passed": true
+    },
+    {
+      "case": "acl_templates.allowed_parameter",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.denied_parameter",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.required_parameter",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.denied_parameter_no_effect",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.unbound_token",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.unbound_identity_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.rename_and_change_metadata",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.old_name_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.old_team_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.seed_new_name",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.seed_new_team",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.new_name_current_token",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.new_team_current_batch",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.inject_star",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.injected_star_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_star_batch_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_star_write_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_star_write_no_effect",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.injected_star_inspection_rejected",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.inject_segment",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.injected_segment_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_segment_batch_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_segment_write_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_segment_write_no_effect",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.injected_segment_inspection_rejected",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.inject_suffix",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.injected_suffix_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_suffix_batch_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_suffix_write_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "acl_templates.injected_suffix_write_no_effect",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.injected_suffix_inspection_rejected",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.restore_team",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.remove_direct_membership",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.direct_group_revoked",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.parent_group_revoked",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.change_alias_metadata",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.old_alias_metadata_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl_templates.seed_new_alias_metadata",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "acl_templates.new_alias_metadata_allowed",
+      "data_matches": true,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "acl_templates.pre_restart_complete",
+      "passed": true
+    }
+  ],
+  "historical_profile_sha256": "f4b439d7d384d17aee4e09e8a91d2f5c4f80d137894dc3d8332fe759ce68d1a7",
+  "independent_qualification": false,
+  "launcher_sha256": "cafed4b33b071ec72da917fe0150d72a396e4bb8a46b4cc2ed9f7b95cc7619cc",
+  "live_oracle": {
+    "archive_member_matches_executable": true,
+    "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "cluster_id_sha256": "7acac041ba2400106be8f3d1b3a85e5ff9d46aff89371568a37b44d3931093ae",
+    "product": "OpenBao",
+    "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
+    "server_mode": "server_not_dev",
+    "storage": "pebbledb",
+    "synthetic_only": true,
+    "tls_verified": true,
+    "version": "2.7.1"
+  },
+  "official_pins": {
+    "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
+  },
+  "oracle_only": true,
+  "original_oracle_exit_code": 0,
+  "positive_control": {
+    "batch_get_http_status": 200,
+    "metadata_http_status": 204,
+    "root_readback_matches_original": true,
+    "service_get_http_status": 200
+  },
+  "private_oracle_root_removed": true,
+  "probe_sha256": "2106277391e13de3048e56756e595e24911b29143f5295dda8acddec4502340d",
+  "production_qualified": false,
+  "restored_positive_control": {
+    "batch_get_http_status": 200,
+    "metadata_http_status": 204,
+    "service_get_http_status": 200
+  },
+  "schema": "heptabao.oracle271.acl-wildcard-observation.v1",
+  "source_commit": "21f9c5fa032fbdba6b7d9289c94b890581fea2fa",
+  "source_tree": "bef921020c7ccb4e4f3601132aa4030d18443fef",
+  "started_unix": 1794711120.485527,
+  "status": "observation_completed",
+  "synthetic_only": true,
+  "version_selected": "2.7.1",
+  "wildcards": [
+    {
+      "batch_get_http_status": 400,
+      "denied_write_no_effect": true,
+      "label": "star",
+      "metadata_http_status": 204,
+      "root_capabilities_http_status": 403,
+      "root_readback_http_status": 200,
+      "service_error_envelope_present": true,
+      "service_get_http_status": 400,
+      "service_post_http_status": 400
+    },
+    {
+      "batch_get_http_status": 400,
+      "denied_write_no_effect": true,
+      "label": "segment",
+      "metadata_http_status": 204,
+      "root_capabilities_http_status": 403,
+      "root_readback_http_status": 200,
+      "service_error_envelope_present": true,
+      "service_get_http_status": 400,
+      "service_post_http_status": 400
+    },
+    {
+      "batch_get_http_status": 400,
+      "denied_write_no_effect": true,
+      "label": "suffix",
+      "metadata_http_status": 204,
+      "root_capabilities_http_status": 403,
+      "root_readback_http_status": 200,
+      "service_error_envelope_present": true,
+      "service_get_http_status": 400,
+      "service_post_http_status": 400
+    }
+  ]
+}

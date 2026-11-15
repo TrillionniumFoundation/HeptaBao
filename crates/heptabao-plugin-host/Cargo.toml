@@ -17,10 +17,10 @@ zeroize = "=1.8.1"
 heptabao-linux-parent-death = { path = "../heptabao-linux-parent-death" }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-rustix = { version = "=1.1.4", features = ["fs", "process", "time"] }
+rustix = { version = "=1.1.6", features = ["fs", "process", "time"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
-rustix = { version = "=1.1.4", features = ["fs", "process", "time"] }
+rustix = { version = "=1.1.6", features = ["fs", "process", "time"] }
 
 [lints]
 workspace = true

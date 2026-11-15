@@ -1,0 +1,62 @@
+ Downloading crates ...
+  Downloaded anyhow v1.0.103
+  Downloaded ctutils v0.4.4
+  Downloaded rustls-webpki v0.103.16
+  Downloaded rustls v0.23.46
+  Downloaded tokio v1.53.3
+   Compiling rustix v1.1.6
+    Checking heptabao-filesystem-guard v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-filesystem-guard)
+    Checking tokio v1.53.3
+    Checking heptabao-durable-service v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-durable-service)
+    Checking ctutils v0.4.4
+    Checking heptabao-linux-parent-death v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-linux-parent-death)
+    Checking hybrid-array v0.4.15
+    Checking heptabao-plugin-host v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-plugin-host)
+    Checking tokio-util v0.7.11
+   Compiling anyhow v1.0.103
+   Compiling rustls v0.23.46
+    Checking openraft-rt-tokio v0.10.0-alpha.34
+    Checking crypto-common v0.2.2
+    Checking rustls-webpki v0.103.16
+    Checking h2 v0.4.19
+    Checking openraft v0.10.0-alpha.34
+    Checking hyper v1.11.1
+    Checking openraft-legacy v0.10.0-alpha.34
+    Checking tokio-rustls v0.26.6
+    Checking hyper-util v0.1.20
+    Checking openraft-memstore v0.10.0-alpha.34
+    Checking tower v0.5.3
+    Checking axum v0.8.9
+   Compiling prost-derive v0.14.4
+    Checking hyper-timeout v0.5.2
+    Checking digest v0.11.3
+    Checking inout v0.2.2
+    Checking tokio-stream v0.1.19
+    Checking tonic v0.14.6
+    Checking cipher v0.5.2
+    Checking prost v0.14.4
+    Checking tokio-openssl v0.6.5
+    Checking heptabao-raft-runtime v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-raft-runtime)
+    Checking shake v0.1.0
+    Checking blowfish v0.10.0
+    Checking signature v3.0.0
+    Checking module-lattice v0.2.3
+    Checking ml-dsa v0.1.1
+    Checking bcrypt v0.19.3 (/workspace/scratch/2f4a29078f7f/HeptaBao/vendor/bcrypt-0.19.3)
+    Checking cross-krb5 v0.5.0
+    Checking heptabao-ha-service v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-ha-service)
+    Checking heptabao-openbao-grpc v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-openbao-grpc)
+    Checking heptabao-personal-vault v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-personal-vault)
+    Checking heptabao-server v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-server)
+    Checking xattr v1.6.1
+    Checking tar v0.4.45
+    Checking heptabao-personal-edge v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-personal-edge)
+    Checking heptabao-credential-broker v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-credential-broker)
+    Checking heptabao-agent-renderer v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-agent-renderer)
+    Checking heptabao-migration v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-migration)
+    Checking heptabao-p0-server v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-p0-server)
+    Checking heptabao-single-node-journal v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-single-node-journal)
+    Checking heptabao-single-node-store v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-single-node-store)
+    Checking heptabao-journaled-core v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-journaled-core)
+    Checking heptabao-runtime-service v0.1.0 (/workspace/scratch/2f4a29078f7f/HeptaBao/crates/heptabao-runtime-service)
+    Finished `dev` profile [optimized + debuginfo] target(s) in 3m 37s

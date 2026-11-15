@@ -214,17 +214,14 @@ pub(super) fn render_with_options<'a>(
                     return Ok(None);
                 }
                 if !allow_wildcards && value.contains(['*', '+']) {
-                    // The pinned 2.7.0 oracle classifies an invalid present
-                    // binding as bad input, not a normal policy denial. Still
-                    // abort the entire evaluation; never echo Identity data.
-                    return Err(if empty_is_missing {
-                        super::err(
-                            403,
-                            "ACL Identity substitution contains a forbidden wildcard",
-                        )
-                    } else {
-                        bad("ACL Identity substitution contains a forbidden wildcard")
-                    });
+                    // Actual pinned 2.7.0 and 2.7.1 ordinary requests return
+                    // 400 for this invalid present binding. Empty-value
+                    // semantics do not change that error classification.
+                    // Abort the entire ACL; never echo Identity data.
+                    // Capabilities inspection maps this failure to 403.
+                    return Err(bad(
+                        "ACL Identity substitution contains a forbidden wildcard",
+                    ));
                 }
                 if !allow_slashes && value.contains('/') {
                     return Err(super::err(
@@ -330,17 +327,26 @@ mod tests {
     }
 
     #[test]
-    fn openbao270_forbidden_wildcard_binding_is_a_redacted_bad_request() {
+    fn openbao270_and_271_forbidden_wildcard_binding_is_a_redacted_bad_request() {
         for value in ["*", "+", "synthetic-private-team*", "synthetic+private"] {
             let mut values = IdentityTemplateValues::default();
             values.insert("identity.entity.metadata.team", value);
-            assert!(
-                render("secret/{{identity.entity.metadata.team}}/item", &values).is_err_and(
-                    |error| error.status == 400
+            // Legacy records, current defaults and current slash opt-in all
+            // reject a forbidden wildcard before any rule can be omitted.
+            for (allow_slashes, empty_is_missing) in [(true, false), (false, true), (true, true)] {
+                assert!(
+                    render_with_options(
+                        "secret/{{identity.entity.metadata.team}}/item",
+                        &values,
+                        allow_slashes,
+                        false,
+                        empty_is_missing,
+                    )
+                    .is_err_and(|error| error.status == 400
                         && error.message
-                            == "ACL Identity substitution contains a forbidden wildcard"
-                )
-            );
+                            == "ACL Identity substitution contains a forbidden wildcard")
+                );
+            }
         }
     }
 

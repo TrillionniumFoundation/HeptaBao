@@ -18,10 +18,10 @@ experimental-v6-peer-ingress = ["native-v6-peer-ingress", "heptabao-raft-runtime
 
 [dependencies]
 zeroize = "=1.8.1"
-rustls = { version = "=0.23.44", default-features = false, features = ["ring", "std", "tls12"] }
+rustls = { version = "=0.23.46", default-features = false, features = ["ring", "std", "tls12"] }
 ring = "0.17.14"
 heptabao-raft-runtime = { path = "../heptabao-raft-runtime", optional = true }
-tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util"], optional = true }
+tokio = { version = "=1.53.3", default-features = false, features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util"], optional = true }
 tokio-rustls = { version = "=0.26.6", default-features = false, features = ["ring", "tls12"], optional = true }
 
 [dev-dependencies]

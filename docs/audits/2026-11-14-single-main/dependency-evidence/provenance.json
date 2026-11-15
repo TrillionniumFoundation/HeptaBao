@@ -1,0 +1,5 @@
+{
+  "sha": "4ef2df8e806a65e2f1ecc14f56f51249062b23d6",
+  "commit": "2026-11-13T13:33:03+01:00 Assigned RUSTSEC-2026-0523 to quinn-proto, RUSTSEC-2026-0524 to quinn-proto, RUSTSEC-2026-0525 to libp2p-quic, RUSTSEC-2026-0526 to libp2p-rendezvous, RUSTSEC-2026-0527 to libp2p-rendezvous, RUSTSEC-2026-0528 to ref-swap and 13 more",
+  "tool": "cargo-audit-audit 0.23.0"
+}

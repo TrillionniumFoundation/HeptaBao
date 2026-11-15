@@ -636,7 +636,7 @@ fn security141_acl_actual_authorization_uses_both_template_flags() {
             .err()
             .unwrap()
             .status,
-        403
+        400
     );
     call(
         &mut state,
@@ -702,6 +702,6 @@ fn security141_forbidden_template_cannot_remove_a_deny_and_leave_a_broad_grant()
             .err()
             .unwrap()
             .status,
-        403
+        400
     );
 }

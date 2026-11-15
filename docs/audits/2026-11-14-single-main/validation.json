@@ -234,6 +234,99 @@
       "result": "passed",
       "passed": 35,
       "note": "Includes actual subprocess invalid-version rejection before file creation or external cluster programs. Common oracle guards and pinned artifacts unchanged."
+    },
+    {
+      "check": "final integrated workspace compilation after ACL and dependency fixes",
+      "command": "cargo check --locked --workspace --all-targets",
+      "result": "passed",
+      "log": "logs/check-final-deps.log"
+    },
+    {
+      "check": "final integrated strict workspace Clippy after ACL and dependency fixes",
+      "command": "cargo clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+      "result": "passed",
+      "log": "logs/clippy-final-deps.log"
+    },
+    {
+      "check": "final integrated repository Python suite",
+      "result": "passed",
+      "passed": 304,
+      "log": "logs/repository-final-integrated.log"
+    },
+    {
+      "check": "final integrated workflow security suite",
+      "result": "passed",
+      "passed": 80,
+      "log": "logs/security-final-integrated.log"
+    },
+    {
+      "check": "final integrated module closure",
+      "result": "passed",
+      "modules": 53,
+      "log": "logs/modules-final-integrated.log"
+    },
+    {
+      "check": "final integrated Rust formatting, delivery ownership and workflow trust validators",
+      "result": "passed"
+    },
+    {
+      "check": "observed official 2.7.1 ACL wildcard contract",
+      "result": "passed_oracle_observation",
+      "historical_profile_pre_restart_checks": 99,
+      "source": "../2026-11-15-acl-template-oracle271/observation.json",
+      "candidate_executed": false
+    },
+    {
+      "check": "actual ACL renderer isolated regressions",
+      "result": "passed",
+      "passed": 7,
+      "negative_control": "restoring only the old wildcard branch causes the new regression to fail",
+      "note": "Complete Service cases compile but were not executed in this isolated check."
+    },
+    {
+      "check": "final current-workspace RustSec scan including refreshed registry index",
+      "result": "failed_remaining_advisories",
+      "packages": 443,
+      "registry_packages": 387,
+      "vulnerability_records": 2,
+      "unmaintained_warnings": 1,
+      "yanked_entries": 0,
+      "source": "dependency-evidence/cargo-audit-after-with-yanked.json"
+    },
+    {
+      "check": "cryptography 50.0.0 isolated acceptance compatibility",
+      "result": "failed_environment_admission",
+      "tests": 1768,
+      "passed": 1763,
+      "skipped": 3,
+      "errors": 2,
+      "note": "Same AF_UNIX and system-loader ownership errors; no additional crypto fixture error.",
+      "log": "dependency-evidence/python50-acceptance.log"
+    },
+    {
+      "check": "published 21f candidate exact-head/prospective-merge trust and Python gates",
+      "result": "passed_completed_phases",
+      "candidate": "21f9c5fa032fbdba6b7d9289c94b890581fea2fa",
+      "trust_url": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/43669454755",
+      "full_url": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/43669454756",
+      "note": "Only completed source identity, trust and Python phases are passed. The full workspace/runtime qualification was still running when this source was superseded; consult PR165 for final run state."
+    },
+    {
+      "check": "published 21f personal credentials synthetic core",
+      "result": "passed",
+      "candidate": "21f9c5fa032fbdba6b7d9289c94b890581fea2fa",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/43669454682",
+      "native_credential_tests_passed": 34,
+      "firefox_native_scenarios_passed": 13
+    },
+    {
+      "check": "complete initial Git graph secret-pattern audit and post-fix match-set verification",
+      "result": "matches_reported_all_classified",
+      "findings": 4128,
+      "unresolved_classifications": 0,
+      "summary": "secret-history-summary.json",
+      "locations": "secret-history-locations.json",
+      "note": "No raw values published; no secret-free or complete-binary-history claim."
     }
   ],
   "retained_logs": [
@@ -342,6 +435,36 @@
       "path": "logs/pr165-repository-recheck.log",
       "bytes": 5311,
       "sha256": "205a12840217ea7a7bfea62bb6bc9ba2c4b1c603f2f6d30d5c142d650b90791e"
+    },
+    {
+      "path": "logs/check-final-deps.log",
+      "bytes": 3566,
+      "sha256": "67aabf926b98fb342716a9c67b970f141c7d7ec093f42280c1d2f19b909e304b"
+    },
+    {
+      "path": "logs/clippy-final-deps.log",
+      "bytes": 2173,
+      "sha256": "1f7fadcecdbb953b3a47a693031091b5f93f545c5b4c4f7c9f3780186cada871"
+    },
+    {
+      "path": "logs/repository-final-integrated.log",
+      "bytes": 54827,
+      "sha256": "f2e26f7b43354d581370ee8788643a8f73d3d08055148af31b578db7303de3f9"
+    },
+    {
+      "path": "logs/security-final-integrated.log",
+      "bytes": 10989,
+      "sha256": "ba885ec353e39e551942a489521c54c634cc15d8bb50dc406569e2dc3c72e0b3"
+    },
+    {
+      "path": "logs/modules-final-integrated.log",
+      "bytes": 4021,
+      "sha256": "43a681014ed589a69a1fd3ef3a5a6db5945e06a3abbe3ed66fae458294b46958"
+    },
+    {
+      "path": "logs/secret-history-scan.log",
+      "bytes": 120,
+      "sha256": "39717a07d50685bf56f9bb6b8626337e649283752af8cb6537c812a12ada6474"
     }
   ],
   "historical_failed_runs": [
@@ -349,5 +472,7 @@
     "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42338444046",
     "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42320223033"
   ],
-  "qualification": "Development-source consolidation only; full workspace executable, physical HA, provider and production qualification are not claimed."
+  "qualification": "Development-source consolidation only; full workspace executable, physical HA, provider and production qualification are not claimed.",
+  "final_local_product_source_commit": "65711f0e5ff25349e41966e77bf43e17433b2c9c",
+  "final_source_note": "Includes the observed ACL wildcard mapping correction and all compatible dependency updates. Final publication additionally contains diagnostic inventory and audit records; its complete tree is verified against the uploaded Git tree before ref update."
 }

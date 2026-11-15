@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "source_before": "21f9c5fa032fbdba6b7d9289c94b890581fea2fa",
+  "observed_utc": "2026-11-15T03:04:25.588671+00:00",
+  "cargo_audit_version": "0.23.0",
+  "tool_release": "https://github.com/rustsec/rustsec/releases/tag/cargo-audit/v0.23.0",
+  "tool_archive_sha256": "4f01c74ed84b2dffd0b1d37012a62cdf2a92c96e25bdf8eec7fcc0d4d3eb7811",
+  "rustsec_database": "4ef2df8e806a65e2f1ecc14f56f51249062b23d6",
+  "advisory_count": 1509,
+  "after_cargo_lock_sha256": "25ca249c868aece0f70eadbb99f6e689509c9164e860aeb9cce4de8dec88e48e",
+  "after_requirements_plan_sha256": "1ebea707775544ef5ddf24b958475e946bbfea81ca0994ec9911a12b7de5c75a",
+  "before_commands": "cargo-audit audit --db <pinned official database> --no-fetch --no-yanked --json --file <each tracked lockfile>",
+  "after_command": "cargo-audit audit --db <official database> --json --file Cargo.lock",
+  "after_scan_exit_code": 1,
+  "after_scan_explanation": "Two unsuppressed vulnerability records remain; one unmaintained warning. Fresh advisory/index fetch completed and no yanked entries or scan errors were reported.",
+  "metadata_check": {
+    "command": "cargo metadata --locked --format-version 1 --no-deps",
+    "exit_code": 0
+  },
+  "python_osv_queries": {
+    "endpoint": "https://api.osv.dev/v1/querybatch",
+    "initial": [
+      {
+        "name": "PyYAML",
+        "ecosystem": "PyPI",
+        "version": "6.0.2"
+      },
+      {
+        "name": "jsonschema",
+        "ecosystem": "PyPI",
+        "version": "4.23.0"
+      },
+      {
+        "name": "cryptography",
+        "ecosystem": "PyPI",
+        "version": "46.0.4"
+      }
+    ],
+    "followup": {
+      "endpoint": "https://api.osv.dev/v1/query",
+      "package": {
+        "name": "cryptography",
+        "ecosystem": "PyPI"
+      },
+      "version": "50.0.0"
+    }
+  },
+  "python_validation": {
+    "command": "python -m unittest discover -s qa/openbao-acceptance/tests -p test_*.py",
+    "interpreter": "isolated Python 3.12 environment",
+    "exit_code": 1,
+    "total": 1768,
+    "passed": 1763,
+    "skipped": 3,
+    "errors": 2,
+    "errors_explanation": "Existing host AF_UNIX creation refusal and system-loader UID admission; no new crypto fixture error"
+  },
+  "files": [
+    {
+      "path": "inventory.json",
+      "bytes": 5741,
+      "sha256": "80fae51c8254476263d1becca6d70766a4cd5e7024c9251cdfb085856fa518e7"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 368,
+      "sha256": "e8806112a6968b6e2eb4fead69a50b9eb2c0aa2ae42c16bfa1474a15374f94c2"
+    },
+    {
+      "path": "cargo-audit-0.json",
+      "bytes": 33489,
+      "sha256": "43242ceaa84552ea044935b215cdcbf427ca2dc7a742ca61cc07232b56952707"
+    },
+    {
+      "path": "cargo-audit-1.json",
+      "bytes": 3885,
+      "sha256": "11f88281c69323e3f8c0c9bf2d1ae2ee50626d838fb4c17256529010b0c3fbb4"
+    },
+    {
+      "path": "cargo-audit-2.json",
+      "bytes": 11774,
+      "sha256": "0a461ef62ffbd844f76cd7edebf18838755f476f683efb6f33446f1b34c7b772"
+    },
+    {
+      "path": "cargo-audit-3.json",
+      "bytes": 11653,
+      "sha256": "4752148396cef31d330bfa91245b4f94322de4340cb5f5c71a05ace1fc303ca9"
+    },
+    {
+      "path": "cargo-audit-after-with-yanked.json",
+      "bytes": 7272,
+      "sha256": "5a6efc9ca86b9ad943855174d7d619cb3aa462ca1c476fd0e9578755c30ccf76"
+    },
+    {
+      "path": "python-osv-response.json",
+      "bytes": 913,
+      "sha256": "2df2c4eacdacafcd08dbfe985cdca6ddc27b9b4440a3d27782b7ad15c4968857"
+    },
+    {
+      "path": "cryptography50-osv.json",
+      "bytes": 2,
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "python50-environment.json",
+      "bytes": 828,
+      "sha256": "d2cfeb1ce98487f0187bfbaf39c156749688fdc703d649c21b44f9c21877b486"
+    },
+    {
+      "path": "python50-acceptance.log",
+      "bytes": 5680,
+      "sha256": "c1d71133f11fccb873077cf933ddfdf0f9e060e6757a75d45c50b05642d1293d"
+    },
+    {
+      "path": "cargo-update.log",
+      "bytes": 666,
+      "sha256": "f01ca084bcde92f504583b0cf0301d0b8346c788cf1c3376f9271cfcd5e7fa15"
+    }
+  ]
+}

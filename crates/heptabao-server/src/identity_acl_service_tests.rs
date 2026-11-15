@@ -253,6 +253,8 @@ fn acl_identity_templates_reject_metadata_wildcards_and_missing_identity_without
     f.grant(r#"path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["create","read","update"] }"#);
     f.seed("idtest/blue/item");
     f.seed("idtest/peer/item");
+    assert_eq!(f.read("idtest/blue/item"), 200);
+    assert_eq!(f.read("idtest/peer/item"), 403);
     let orphan = call(
         &mut f.service,
         "",
@@ -275,16 +277,16 @@ fn acl_identity_templates_reject_metadata_wildcards_and_missing_identity_without
         .status,
         403
     );
-    for value in [
-        "*",
-        "+",
-        "blue*",
-        "../peer",
-        "%2e%2e",
-        "{{identity.entity.id}}",
+    for (value, expected_status) in [
+        ("*", 400),
+        ("+", 400),
+        ("blue*", 400),
+        ("../peer", 403),
+        ("%2e%2e", 403),
+        ("{{identity.entity.id}}", 403),
     ] {
-        // Current policies use the 2.7.1 full-evaluation forbidden contract.
-        let expected_status = 403;
+        // Pinned 2.7.0 and 2.7.1 reject present wildcard bindings as HTTP 400.
+        // Other denied bindings and ordinary permission denials remain 403.
         update_entity(
             &mut f.service,
             "",
@@ -605,7 +607,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
             );
             assert_eq!(
                 f.read("idtest/peer/item"),
-                403,
+                400,
                 "invalid substitution must fail the full ACL evaluation, not erase deny: batch={batch}"
             );
             let before = f
@@ -622,7 +624,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
                     json!({"synthetic":"forbidden"})
                 )
                 .status,
-                403
+                400
             );
             assert_eq!(
                 f.service
@@ -656,7 +658,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
             );
         }
         f.restart()?;
-        assert_eq!(f.read("idtest/peer/item"), 403);
+        assert_eq!(f.read("idtest/peer/item"), 400);
         update_entity(
             &mut f.service,
             "",

@@ -1,0 +1,14 @@
+    Updating crates.io index
+    Updating rustix v1.1.4 -> v1.1.6
+    Updating rustls v0.23.44 -> v0.23.46
+    Updating tokio v1.53.1 -> v1.53.3 (available: v1.54.1)
+note: pass `--verbose` to see 105 unchanged dependencies behind latest
+    Updating crates.io index
+    Updating rustls-webpki v0.103.15 -> v0.103.16
+note: pass `--verbose` to see 105 unchanged dependencies behind latest
+    Updating crates.io index
+    Updating ctutils v0.4.2 -> v0.4.4
+note: pass `--verbose` to see 105 unchanged dependencies behind latest
+    Updating crates.io index
+    Updating anyhow v1.0.100 -> v1.0.103
+note: pass `--verbose` to see 105 unchanged dependencies behind latest
