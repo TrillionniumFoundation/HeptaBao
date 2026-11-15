@@ -1,0 +1,416 @@
+{
+  "schema": "heptabao.postgresql-durable-backend.v1",
+  "status": "passed_scoped_backend",
+  "source_sha": "f31b98eadf145332ab4e472c5a5973d3e0804017",
+  "source_dirty": false,
+  "candidate_probe_sha256": "78167efce5a6c45a0ec7fec341bd1a8c4f13d637962e5d27d04285958bcd6645",
+  "runner_sha256": "82677845cd263f0b8f88cb32c1dccb56b455950c8c759d16f40eb8e30602c625",
+  "observed_at_unix": 1789919919,
+  "checks": [
+    {
+      "case": "fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
+      "passed": true
+    },
+    {
+      "case": "durable_initialize_empty",
+      "passed": true
+    },
+    {
+      "case": "durable_initialize_empty_rejects_existing_scope",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_retry_matches_exact_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_retry_rejects_different_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_conflict_preserves_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_bundle_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "durable_append_returns_exact_length",
+      "passed": true
+    },
+    {
+      "case": "durable_append_replay_bytes_exact",
+      "passed": true
+    },
+    {
+      "case": "durable_append_rejects_stale_length",
+      "passed": true
+    },
+    {
+      "case": "durable_checkpoint_atomic_publish",
+      "passed": true
+    },
+    {
+      "case": "durable_basic_probe",
+      "passed": true
+    },
+    {
+      "case": "durable_reopen_bundle_present",
+      "passed": true
+    },
+    {
+      "case": "durable_reopen_probe",
+      "passed": true
+    },
+    {
+      "case": "orphan_chunk_fixture_created",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_rejects_orphan_chunks",
+      "passed": true
+    },
+    {
+      "case": "orphan_scope_initialization_rejected",
+      "passed": true
+    },
+    {
+      "case": "orphan_chunk_bytes_preserved",
+      "passed": true
+    },
+    {
+      "case": "orphan_scope_manifest_not_created",
+      "passed": true
+    },
+    {
+      "case": "idle_writer_session_can_append_after_old_deadline",
+      "passed": true
+    },
+    {
+      "case": "idle_writer_session_load_preserves_appended_bytes",
+      "passed": true
+    },
+    {
+      "case": "idle_session_operation_deadline_renewal",
+      "passed": true
+    },
+    {
+      "case": "maximum_64mib_artifact_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "maximum_journal_append_one_byte_rejected",
+      "passed": true
+    },
+    {
+      "case": "maximum_plus_one_initialization_rejected",
+      "passed": true
+    },
+    {
+      "case": "maximum_plus_one_checkpoint_rejected",
+      "passed": true
+    },
+    {
+      "case": "maximum_64mib_artifact_reopen_unchanged_after_rejections",
+      "passed": true
+    },
+    {
+      "case": "maximum_artifact_boundary",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_0_length",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_0_bytes",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_1_length",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_1_bytes",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_2_length",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_2_bytes",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_3_length",
+      "passed": true
+    },
+    {
+      "case": "append_boundary_3_bytes",
+      "passed": true
+    },
+    {
+      "case": "append_chunk_boundary_cases",
+      "passed": true
+    },
+    {
+      "case": "large_artifacts_above_wire_result_bound_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "large_artifacts_fresh_session_reopen",
+      "passed": true
+    },
+    {
+      "case": "large_artifact_seed_and_reopen",
+      "passed": true
+    },
+    {
+      "case": "large_append_prefix_recorded",
+      "passed": true
+    },
+    {
+      "case": "large_append_prefix_rewrite_guard_installed",
+      "passed": true
+    },
+    {
+      "case": "large_journal_small_append_crosses_chunk_boundary",
+      "passed": true
+    },
+    {
+      "case": "large_journal_small_append_exact_bytes",
+      "passed": true
+    },
+    {
+      "case": "large_append_stale_length_rejected",
+      "passed": true
+    },
+    {
+      "case": "large_append_empty_frame_no_change",
+      "passed": true
+    },
+    {
+      "case": "large_append_fresh_session_reopen",
+      "passed": true
+    },
+    {
+      "case": "large_journal_incremental_append",
+      "passed": true
+    },
+    {
+      "case": "large_append_existing_prefix_bytes_and_revisions_unchanged",
+      "passed": true
+    },
+    {
+      "case": "large_append_prefix_rewrite_guard_removed",
+      "passed": true
+    },
+    {
+      "case": "large_checkpoint_exact_bytes",
+      "passed": true
+    },
+    {
+      "case": "large_checkpoint_stale_bundle_rejected",
+      "passed": true
+    },
+    {
+      "case": "large_checkpoint_fresh_session_reopen",
+      "passed": true
+    },
+    {
+      "case": "large_journal_truncate_remains_readable",
+      "passed": true
+    },
+    {
+      "case": "large_checkpoint_and_truncate",
+      "passed": true
+    },
+    {
+      "case": "gap/large_artifacts_above_wire_result_bound_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "gap/large_artifacts_fresh_session_reopen",
+      "passed": true
+    },
+    {
+      "case": "gap/seed",
+      "passed": true
+    },
+    {
+      "case": "gap/corruption_injected",
+      "passed": true
+    },
+    {
+      "case": "gap/large_corrupt_layout_rejected_on_load",
+      "passed": true
+    },
+    {
+      "case": "gap/large_corrupt_layout_rejected_on_append",
+      "passed": true
+    },
+    {
+      "case": "gap/rejected",
+      "passed": true
+    },
+    {
+      "case": "gap/bytes_and_manifest_preserved",
+      "passed": true
+    },
+    {
+      "case": "future_revision/large_artifacts_above_wire_result_bound_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "future_revision/large_artifacts_fresh_session_reopen",
+      "passed": true
+    },
+    {
+      "case": "future_revision/seed",
+      "passed": true
+    },
+    {
+      "case": "future_revision/corruption_injected",
+      "passed": true
+    },
+    {
+      "case": "future_revision/large_corrupt_layout_rejected_on_load",
+      "passed": true
+    },
+    {
+      "case": "future_revision/large_corrupt_layout_rejected_on_append",
+      "passed": true
+    },
+    {
+      "case": "future_revision/rejected",
+      "passed": true
+    },
+    {
+      "case": "future_revision/bytes_and_manifest_preserved",
+      "passed": true
+    },
+    {
+      "case": "short_interior/large_artifacts_above_wire_result_bound_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "short_interior/large_artifacts_fresh_session_reopen",
+      "passed": true
+    },
+    {
+      "case": "short_interior/seed",
+      "passed": true
+    },
+    {
+      "case": "short_interior/corruption_injected",
+      "passed": true
+    },
+    {
+      "case": "short_interior/large_corrupt_layout_rejected_on_load",
+      "passed": true
+    },
+    {
+      "case": "short_interior/large_corrupt_layout_rejected_on_append",
+      "passed": true
+    },
+    {
+      "case": "short_interior/rejected",
+      "passed": true
+    },
+    {
+      "case": "short_interior/bytes_and_manifest_preserved",
+      "passed": true
+    },
+    {
+      "case": "deferred_commit_gate_installed",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_probe_started",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_commit_reached_and_blocked",
+      "passed": true
+    },
+    {
+      "case": "lost_commit/lost_commit_fences_unknown_outcome",
+      "passed": true
+    },
+    {
+      "case": "lost_commit/unknown_commit_session_cannot_be_renewed_or_reused",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_probe_exited_cleanly",
+      "passed": true
+    },
+    {
+      "case": "durable_lost_commit_replayed_exactly_once",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_reopen_exactly_once",
+      "passed": true
+    },
+    {
+      "case": "durable_writer_fence_acquired",
+      "passed": true
+    },
+    {
+      "case": "durable_second_writer_rejected_without_blocking",
+      "passed": true
+    },
+    {
+      "case": "durable_second_writer_rejected",
+      "passed": true
+    },
+    {
+      "case": "unlogged_durable_table_installed",
+      "passed": true
+    },
+    {
+      "case": "unlogged/durable_schema_fault_rejected",
+      "passed": true
+    },
+    {
+      "case": "unlogged_durable_table_rejected",
+      "passed": true
+    },
+    {
+      "case": "logged_durable_table_restored",
+      "passed": true
+    },
+    {
+      "case": "weakened_durable_check_installed",
+      "passed": true
+    },
+    {
+      "case": "weakened/durable_schema_fault_rejected",
+      "passed": true
+    },
+    {
+      "case": "weakened_durable_check_rejected",
+      "passed": true
+    },
+    {
+      "case": "durable_check_restored",
+      "passed": true
+    },
+    {
+      "case": "durable_untrusted_connection_rejected",
+      "passed": true
+    },
+    {
+      "case": "wrong_durable_password_rejected",
+      "passed": true
+    }
+  ],
+  "server_storage_integrated": false,
+  "full_openbao_compatibility": false,
+  "production_qualified": false,
+  "independent_reproduction": false,
+  "postgresql_version": "postgres (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)"
+}

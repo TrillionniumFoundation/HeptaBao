@@ -1,0 +1,73 @@
+{
+  "adb_calls": 0,
+  "android_device_qualified": false,
+  "ast_nodes_independently_compared_unchanged": [
+    "_window_details",
+    "_popup_parent",
+    "_bound_parent",
+    "_top_resumed_bound",
+    "autofill_popup_metadata",
+    "Device.ui",
+    "Device.wait",
+    "Device.tap",
+    "Device.authentication",
+    "Device.auth_task",
+    "Device.node_geometry",
+    "Device.command",
+    "main",
+    "restore",
+    "validate_journal"
+  ],
+  "author_host_suite_receipt_read": {
+    "breakdown": [
+      46,
+      8,
+      12
+    ],
+    "passed": 66,
+    "repeated_by_this_reviewer": false,
+    "sha256": "3506f2da0a8e056783871f76c9a2a4f4a462401eb8b0860abe568a5bbb943491"
+  },
+  "boundaries": [
+    "This is internal source review, not an external independent security audit.",
+    "The fixed server-only top-resumed command, independent WMS owner/parent/token/display checks and final focus check are unchanged.",
+    "Original twelve device cases, one-touch behavior, one-second freshness limit, and compare-before-restore are unchanged.",
+    "r8 specific ActivityRecord shape remains unproven and its failure must not be relabeled.",
+    "Host controls do not establish actual OEM compatibility or successful Autofill delivery."
+  ],
+  "builds": 0,
+  "candidate_tests_executed_by_this_review": false,
+  "expected_device_cases_unchanged": 12,
+  "external_review": false,
+  "no_new_static_blocker": true,
+  "official_sources": [
+    {
+      "blob": "aa8d93e991328f9fcfa8e99a3cc431fda9596a47",
+      "fact": "toString appends the identity-hash int directly; finishing/exiting and first-invocation incomplete forms are kept rejected.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/android16-qpr2-release/services/core/java/com/android/server/wm/ActivityRecord.java"
+    },
+    {
+      "blob": "27427724f0c3e53be33611e83f840b9d1184f777",
+      "fact": "The dump prints its focused app once as an object value; no source evidence justifies accepting duplicate focused-app fields.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/android16-qpr2-release/services/core/java/com/android/server/wm/DisplayContent.java"
+    }
+  ],
+  "production_qualified": false,
+  "schema": 1,
+  "scope": "internal_independent_read_only_QA12_review",
+  "source_and_evidence_sha256": {
+    "android_live.py": "7443b8115260ac08feb23dbdd8c9e14ed448933380642b0c53d5f4d60cf10c9c",
+    "android_popup_guard_tests.py": "dece8e0830dfeecfc414e52752f2de7f7bf87603f3c5ae1e6ac5fda404ec6e44",
+    "qa12-from-qa11.changes.patch": "b7bbebf99a4ffc02a759d572ffd14849c82e432a0d1a012848849eb8f9617358",
+    "receipt.public.json": "3506f2da0a8e056783871f76c9a2a4f4a462401eb8b0860abe568a5bbb943491"
+  },
+  "static_checks": {
+    "diagnostics_are_fixed_enums_and_booleans_only": true,
+    "finishing_exiting_incomplete_records_refused": true,
+    "missing_duplicate_null_focused_app_refused": true,
+    "new_decimal_identity_is_canonical_signed_int32": true,
+    "no_decimal_hex_normalization": true,
+    "no_raw_ID_task_component_or_intent_in_new_diagnostics": true,
+    "original_identity_token_preserved_for_equality": true
+  }
+}

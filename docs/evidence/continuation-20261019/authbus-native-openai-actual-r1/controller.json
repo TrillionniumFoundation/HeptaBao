@@ -1,0 +1,1775 @@
+{
+  "schema": "heptabao.authbus-native-openai-r1-once-controller.v1",
+  "status": "passed",
+  "controllerPid": 2113053,
+  "startedUtc": "2026-10-19T09:10:10.494998+00:00",
+  "startedNs": 508524993698536,
+  "originalDeadlineNs": 508704993698536,
+  "originalBudgetSeconds": 180,
+  "submissionCount": 1,
+  "automaticRetry": false,
+  "frozenOverlaySha256": "236bc6d9d93263077b0d550f2fb3be8c3864c9db2c51f6366e1609482cd237b5",
+  "sourcePacketSha256": "8d28e749fa6eae979092387cdb65c8b5c31d5a1f9d794f889c614914556243b6",
+  "sourceManifestSha256": "fec7c304c098f36da547a664173900415d1330f5cbe37a1cdcc0c098ac1b7139",
+  "sdkInputManifestSha256": "b4aad3e15807db250900505d3cf5ab0e1d319d762c08cdb5a839edf214fb3a65",
+  "actualNativeHeptaBao": true,
+  "realExternalProvider": false,
+  "realCredentials": false,
+  "productionMutation": false,
+  "controllerScriptSha256": "4269b742b8a52119c88977fcfe5339873eac3518f867037eea2d933b2b86f4f8",
+  "interruptionSignals": [],
+  "journalSequence": 6,
+  "controllerIdentity": {
+    "pid": 2113053,
+    "ppid": 1123966,
+    "pgid": 2113053,
+    "sid": 2113053,
+    "start_ticks": 50852485,
+    "uid": 1000,
+    "state": "R"
+  },
+  "bootId": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+  "packetInput": {
+    "bytes": 103129,
+    "sha256": "8d28e749fa6eae979092387cdb65c8b5c31d5a1f9d794f889c614914556243b6",
+    "identity": [
+      2050,
+      50116650,
+      103129,
+      1792401010412800240,
+      1792401010412800240,
+      33152,
+      1000,
+      1
+    ]
+  },
+  "productBefore": {
+    "sourceCommit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "sourceTree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "sourceFiles": 3142,
+    "buildReceipt": {
+      "bytes": 54396,
+      "sha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+      "identity": [
+        2050,
+        53907973,
+        54396,
+        1792399145202954598,
+        1792399145207954469,
+        33152,
+        1000,
+        1
+      ]
+    },
+    "sourceManifest": {
+      "bytes": 663186,
+      "sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+      "identity": [
+        2050,
+        50116647,
+        663186,
+        1792397960216231846,
+        1792397960216231846,
+        33152,
+        1000,
+        1
+      ]
+    },
+    "binary": {
+      "bytes": 779962728,
+      "sha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+      "identity": [
+        2050,
+        53907971,
+        779962728,
+        1792399121712559404,
+        1792399123090524024,
+        33216,
+        1000,
+        1
+      ]
+    },
+    "artifactSizeLimitScope": "exact_pinned_debug_binary_only_no_product_request_limit_change"
+  },
+  "sdkBefore": {
+    "jsModules": 35,
+    "activationMetadata": 1,
+    "packageDiscoveryFiles": 2,
+    "files": [
+      {
+        "relative": "dist/order-CeBlX0NH.js",
+        "bytes": 11008,
+        "sha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000062,
+          11008,
+          1790401194648082975,
+          1792293266244748582,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/model-auth-CJEm9SNp.js",
+        "bytes": 46788,
+        "sha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999728,
+          46788,
+          1790401192851657143,
+          1792293266174444810,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/oauth-B4aOCsid.js",
+        "bytes": 34532,
+        "sha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999939,
+          34532,
+          1790401193981054578,
+          1792293266217530617,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/stream-BcRkg2P0.js",
+        "bytes": 31052,
+        "sha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005934,
+          31052,
+          1790401200076461801,
+          1792293266560180472,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/fetch-guard-6VNcgVVc.js",
+        "bytes": 18164,
+        "sha256": "ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999003,
+          18164,
+          1790401186801820566,
+          1792293266020801555,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/store-DH33UrUj.js",
+        "bytes": 40383,
+        "sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005926,
+          40383,
+          1790401200050462504,
+          1792293266559093943,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/source-check-ZSz5NzGW.js",
+        "bytes": 41853,
+        "sha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005770,
+          41853,
+          1790401199904456812,
+          1792293266527980573,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/profiles-DyU-YCq2.js",
+        "bytes": 8580,
+        "sha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004027,
+          8580,
+          1790401195513049634,
+          1792293266301696704,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/credential-state-BY-oz-QV.js",
+        "bytes": 3781,
+        "sha256": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998118,
+          3781,
+          1790401180812179425,
+          1792293265887828277,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/sqlite-B1ze-fre.js",
+        "bytes": 6663,
+        "sha256": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005797,
+          6663,
+          1790401199931122418,
+          1792293266533720110,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/runtime-snapshots-D6VA-VN8.js",
+        "bytes": 6837,
+        "sha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005328,
+          6837,
+          1790401197920306124,
+          1792293266428596097,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/bundled-dir-DKbeVv7V.js",
+        "bytes": 8673,
+        "sha256": "cf0976b5d6cf61faf8ceb10a43035a44dcd4f4c20557febc2428bde3fcb61b6d",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52996462,
+          8673,
+          1790401172634202729,
+          1792293265766833277,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openclaw-root-_Kkan8Lf.js",
+        "bytes": 4791,
+        "sha256": "b38ffc9ed9d1de4b79213bf9aab474985ae62127ba5f148b14433d8cbb51b7b9",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000041,
+          4791,
+          1790401194223077149,
+          1792293266239908226,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/oauth-BcZS_BvC.js",
+        "bytes": 29096,
+        "sha256": "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999940,
+          29096,
+          1790401193981626604,
+          1792293266217618523,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/chutes-oauth-YFvuN1-a.js",
+        "bytes": 6408,
+        "sha256": "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52997724,
+          6408,
+          1790401176774091138,
+          1792293265810152026,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/provider-runtime.runtime--yRUs3av.js",
+        "bytes": 2041,
+        "sha256": "93be7eb924cb45f84505f03696e5c6545a1e0e885b584b12c7357d98d729c9ab",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004166,
+          2041,
+          1790401195766435068,
+          1792293266327699184,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/provider-runtime-CLQOjLJ6.js",
+        "bytes": 22593,
+        "sha256": "6daf266a90294162eb45ce8c9402ce15743df0ee1cc951e4e95602a3c6122338",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004163,
+          22593,
+          1790401195763578434,
+          1792293266327291676,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/extensions/openai/api.js",
+        "bytes": 1420,
+        "sha256": "5490ab62c857124e421570502596f5189a228e44513d8ee18b11b6f3b47198f5",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52994301,
+          1420,
+          1790401168101218243,
+          1792293265236657276,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-provider.runtime-DGoPIR1g.js",
+        "bytes": 1513,
+        "sha256": "c9248524ab3c9bf1226096ddd76d31a755518de1ff763e3c24245912b7aed92f",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000028,
+          1513,
+          1790401194187621036,
+          1792293266237818065,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-oauth-flow.runtime.js",
+        "bytes": 65,
+        "sha256": "183d0ad3b17da4acae91ede7add0c3293eed186d0c0b29741fcab891c5743d3b",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000020,
+          65,
+          1790401194178621279,
+          1792293266237194892,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js",
+        "bytes": 15711,
+        "sha256": "e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000019,
+          15711,
+          1790401194177621306,
+          1792293266237126417,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-auth-identity-DrQLjrg2.js",
+        "bytes": 2364,
+        "sha256": "94d48f2fee6a6fc139438d53d1adbadb61dd9791febe11ea0ec1c960e30e3765",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000014,
+          2364,
+          1790401194172436272,
+          1792293266236666430,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/undici-global-dispatcher-DeobtFo9.js",
+        "bytes": 9631,
+        "sha256": "a8e81ea3c77cee197800a4ff9006dd0de56127e3103a85449685e928745b1e23",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53006315,
+          9631,
+          1790401201958410886,
+          1792293266660070215,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/runtime-fetch-k5Zth7kk.js",
+        "bytes": 2437,
+        "sha256": "9bf76247c5901725af5db78bbab2830a5e0fd7caf19953b095be74d4382db611",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005279,
+          2437,
+          1790401197777998107,
+          1792293266420982183,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/facade-runtime-Dce8fe3v.js",
+        "bytes": 6683,
+        "sha256": "febd9b83ff5a398545f4ce350e49d2084b1704bdd01d467dbec889f4bfbe77f4",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998985,
+          6683,
+          1790401186791820836,
+          1792293266018085579,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/facade-loader-ClPyIgA5.js",
+        "bytes": 5997,
+        "sha256": "5062ff2347de145c1f1253acd60c45c66cddb92825519c2dec277d93fe7d44d7",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998983,
+          5997,
+          1790401186790820863,
+          1792293266017904384,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/facade-activation-check.runtime.js",
+        "bytes": 8789,
+        "sha256": "289f0f2efe2eaa482289692f8f58513ca0c1c9198ca4db11f32b95a6c107df9a",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998982,
+          8789,
+          1790401186788820917,
+          1792293266017824886,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/plugin-module-loader-cache-uqaaAPup.js",
+        "bytes": 22712,
+        "sha256": "af5dc41aba74bb7eab264d1544d16a86906401bfe1c24a0ad53ae25bb8f1d2ac",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000481,
+          22712,
+          1790401195257592113,
+          1792293266271810480,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/config-state-CtMlHVRM.js",
+        "bytes": 4565,
+        "sha256": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998008,
+          4565,
+          1790401180286996395,
+          1792293265869378302,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/sdk-alias-BJSUcD8n.js",
+        "bytes": 53058,
+        "sha256": "a08f997f961d42aedf70699cfcb52b2785861412131cd718234aa31eca1dcb32",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005390,
+          53058,
+          1790401198083483430,
+          1792293266442887465,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/undici-runtime-BL8ZN-Ey.js",
+        "bytes": 9835,
+        "sha256": "3528db33bb716a2e30fe895cd93c4027750c2da57379c8107d0b748cb0857978",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53006317,
+          9835,
+          1790401201959999055,
+          1792293266660452219,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/ssrf-BayeDjCv.js",
+        "bytes": 16675,
+        "sha256": "dd29e02505654eb7aac62519013fe9cdd883b56f78855806f6d643aadadc4295",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005818,
+          16675,
+          1790401199952932900,
+          1792293266540265936,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/proxy-env-Bf6oQCTF.js",
+        "bytes": 7754,
+        "sha256": "5167b8055ce85f341e3df69a8d3c1e7877430fbcba63bcc052ad21abebb52bca",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004204,
+          7754,
+          1790401196035922513,
+          1792293266333151467,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/managed-proxy-undici-RiF2s48t.js",
+        "bytes": 4992,
+        "sha256": "74b9478c30f20653068c1fc7f62b62ae805c1810d097150d5f8caeb08834a989",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999555,
+          4992,
+          1790401191120354072,
+          1792293266134973367,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/active-proxy-state-DJLhrP_Z.js",
+        "bytes": 3345,
+        "sha256": "6723ab658f0df2dd3b833a1e8c9d35ee76001864ca93097f9919cf62ac3fa185",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52995908,
+          3345,
+          1790401164346328024,
+          1792293265639001372,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "package.json",
+        "bytes": 116017,
+        "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53007379,
+          116017,
+          1790401202587393866,
+          1792293267168948242,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "openclaw.mjs",
+        "bytes": 23463,
+        "sha256": "f643b005d6db233a0b45204e8d8e943256874ccc6897b8a6e0cf42a9b376a188",
+        "mode": "0775",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53007389,
+          23463,
+          1790401205812306580,
+          1792293267171421471,
+          33277,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/extensions/openai/openclaw.plugin.json",
+        "bytes": 16632,
+        "sha256": "0db880f0e5a77ad809ec4cf57767416364db021d617569c48fdb2703c8c9485f",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52994341,
+          16632,
+          1790401202320401091,
+          1792293265245723607,
+          33204,
+          1000,
+          1
+        ]
+      }
+    ],
+    "privateAncestor": "/home/qian-qi/heptabao-next-gates-20261017",
+    "privateAncestorMode": "0700",
+    "groupWritableInputsConfinedToPrivateAncestor": true,
+    "directoryCustody": [
+      {
+        "relativeToPrivateAncestor": ".",
+        "device": 2050,
+        "inode": 50090607,
+        "mode": "0700",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01",
+        "device": 2050,
+        "inode": 52993649,
+        "mode": "0700",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw",
+        "device": 2050,
+        "inode": 52993651,
+        "mode": "0775",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw/dist",
+        "device": 2050,
+        "inode": 52993655,
+        "mode": "0775",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw/dist/extensions",
+        "device": 2050,
+        "inode": 52993656,
+        "mode": "0775",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw/dist/extensions/openai",
+        "device": 2050,
+        "inode": 52994300,
+        "mode": "0775",
+        "uid": 1000
+      }
+    ],
+    "recursiveInstalledSdkTreeAttested": false
+  },
+  "nodeInput": {
+    "path": "/usr/bin/node",
+    "bytes": 124827920,
+    "sha256": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+    "identity": [
+      2050,
+      36443506,
+      124827920,
+      1790150208000000000,
+      1790390025643809291,
+      33261,
+      0,
+      1
+    ],
+    "versionFromSuccessfulNativeR1": "v22.23.3"
+  },
+  "sourceBefore": {
+    "runtimeFiles": 22,
+    "manifestFiles": 1,
+    "exactClosedTree": true,
+    "allPinsMatched": true
+  },
+  "driverPythonInput": {
+    "path": "/usr/bin/python3.12",
+    "bytes": 8020928,
+    "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "identity": [
+      2050,
+      36451609,
+      8020928,
+      1788171506000000000,
+      1789164879262713172,
+      33261,
+      0,
+      1
+    ]
+  },
+  "argv": [
+    "/usr/bin/python3.12",
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-openai-r1-actual-20261019-01/source/qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py",
+    "--binary",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server",
+    "--binary-sha256",
+    "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+    "--node",
+    "/usr/bin/node",
+    "--openclaw-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw",
+    "--source-manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-openai-r1-actual-20261019-01/source/source-manifest.json",
+    "--work-dir",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-openai-r1-actual-20261019-01/fixture",
+    "--original-deadline-ns",
+    "508704993698536"
+  ],
+  "childPid": 2113153,
+  "ownedSessionIdentity": {
+    "pid": 2113153,
+    "ppid": 2113053,
+    "pgid": 2113153,
+    "sid": 2113153,
+    "start_ticks": 50852803,
+    "uid": 1000
+  },
+  "observedChildExitCode": 0,
+  "childExitObservedNs": 508588531964112,
+  "cleanup": {
+    "leaderPid": 2113153,
+    "ownedSessionIdentity": {
+      "pid": 2113153,
+      "ppid": 2113053,
+      "pgid": 2113153,
+      "sid": 2113153,
+      "start_ticks": 50852803,
+      "uid": 1000
+    },
+    "leaderReaped": true,
+    "ownedLiveSessionEmpty": true,
+    "signals": [],
+    "cleanupOnlySeconds": 10,
+    "cleanupDoesNotExtendPassingDeadline": true,
+    "observationFailures": [],
+    "liveMembersBefore": [],
+    "liveMembersBeforeLeaderReap": [],
+    "leaderExitCode": 0,
+    "sameOriginalPopenWaitCount": 1,
+    "elapsedSeconds": 0.103306693
+  },
+  "executionFinishedNs": 508588635637557,
+  "childExitCode": 0,
+  "publicReceipt": {
+    "path": "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-openai-r1-actual-20261019-01/fixture/public-receipt.json",
+    "bytes": 61139,
+    "sha256": "58885c70d7bfb068f8e8197a1d80c3adca9c53b4ad9431b8b6754c650a2e06dc",
+    "identity": [
+      2050,
+      53908390,
+      61139,
+      1792401074005984318,
+      1792401074005984318,
+      33152,
+      1000,
+      1
+    ]
+  },
+  "actualResult": {
+    "cases": 5,
+    "controllerChecks": 141,
+    "workerQualifications": [
+      {
+        "phase": "warm",
+        "pid": 2113979,
+        "checks": 87,
+        "receipt": {
+          "bytes": 24678,
+          "sha256": "53d8faaa7c0b0d14901347ed6f7d2fad3d8ec87d11de78657b13bcbade50a694",
+          "identity": [
+            2050,
+            53908344,
+            24678,
+            1792401038249434915,
+            1792401038250434892,
+            33152,
+            1000,
+            1
+          ]
+        }
+      },
+      {
+        "phase": "cold-before-server",
+        "pid": 2114677,
+        "checks": 80,
+        "receipt": {
+          "bytes": 24398,
+          "sha256": "823051707e4f5d93ccbaaeb619412e07b322b9d75ac5d0e2526709d021f79cee",
+          "identity": [
+            2050,
+            53908364,
+            24398,
+            1792401052544111235,
+            1792401052546111189,
+            33152,
+            1000,
+            1
+          ]
+        }
+      },
+      {
+        "phase": "cold-after-server",
+        "pid": 2116317,
+        "checks": 80,
+        "receipt": {
+          "bytes": 24397,
+          "sha256": "11e8c2aa085286f4b1ee9e8e3b84ea6947a6e67c257622eedc58090733e1aba6",
+          "identity": [
+            2050,
+            53908388,
+            24397,
+            1792401070437703344,
+            1792401070438703321,
+            33152,
+            1000,
+            1
+          ]
+        }
+      }
+    ],
+    "actualUndiciCases": 5,
+    "actualNativeHeptaBao": true,
+    "actualNativeSigkillRecovery": true,
+    "actualColdSdkProcesses": 2,
+    "realExternalProvider": false,
+    "originalNative120ResultInherited": false,
+    "sdk32ResultInherited": false
+  },
+  "sourceAfter": {
+    "runtimeFiles": 22,
+    "manifestFiles": 1,
+    "exactClosedTree": true,
+    "allPinsMatched": true
+  },
+  "sourceUnchanged": true,
+  "productAfter": {
+    "sourceCommit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "sourceTree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "sourceFiles": 3142,
+    "buildReceipt": {
+      "bytes": 54396,
+      "sha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+      "identity": [
+        2050,
+        53907973,
+        54396,
+        1792399145202954598,
+        1792399145207954469,
+        33152,
+        1000,
+        1
+      ]
+    },
+    "sourceManifest": {
+      "bytes": 663186,
+      "sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+      "identity": [
+        2050,
+        50116647,
+        663186,
+        1792397960216231846,
+        1792397960216231846,
+        33152,
+        1000,
+        1
+      ]
+    },
+    "binary": {
+      "bytes": 779962728,
+      "sha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+      "identity": [
+        2050,
+        53907971,
+        779962728,
+        1792399121712559404,
+        1792399123090524024,
+        33216,
+        1000,
+        1
+      ]
+    },
+    "artifactSizeLimitScope": "exact_pinned_debug_binary_only_no_product_request_limit_change"
+  },
+  "productUnchanged": true,
+  "sdkAfter": {
+    "jsModules": 35,
+    "activationMetadata": 1,
+    "packageDiscoveryFiles": 2,
+    "files": [
+      {
+        "relative": "dist/order-CeBlX0NH.js",
+        "bytes": 11008,
+        "sha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000062,
+          11008,
+          1790401194648082975,
+          1792293266244748582,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/model-auth-CJEm9SNp.js",
+        "bytes": 46788,
+        "sha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999728,
+          46788,
+          1790401192851657143,
+          1792293266174444810,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/oauth-B4aOCsid.js",
+        "bytes": 34532,
+        "sha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999939,
+          34532,
+          1790401193981054578,
+          1792293266217530617,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/stream-BcRkg2P0.js",
+        "bytes": 31052,
+        "sha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005934,
+          31052,
+          1790401200076461801,
+          1792293266560180472,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/fetch-guard-6VNcgVVc.js",
+        "bytes": 18164,
+        "sha256": "ef4befea09e2fbf0bece7bfc5cc46102843ee1070182fdab5b98f3c632a88bfc",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999003,
+          18164,
+          1790401186801820566,
+          1792293266020801555,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/store-DH33UrUj.js",
+        "bytes": 40383,
+        "sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005926,
+          40383,
+          1790401200050462504,
+          1792293266559093943,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/source-check-ZSz5NzGW.js",
+        "bytes": 41853,
+        "sha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005770,
+          41853,
+          1790401199904456812,
+          1792293266527980573,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/profiles-DyU-YCq2.js",
+        "bytes": 8580,
+        "sha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004027,
+          8580,
+          1790401195513049634,
+          1792293266301696704,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/credential-state-BY-oz-QV.js",
+        "bytes": 3781,
+        "sha256": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998118,
+          3781,
+          1790401180812179425,
+          1792293265887828277,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/sqlite-B1ze-fre.js",
+        "bytes": 6663,
+        "sha256": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005797,
+          6663,
+          1790401199931122418,
+          1792293266533720110,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/runtime-snapshots-D6VA-VN8.js",
+        "bytes": 6837,
+        "sha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005328,
+          6837,
+          1790401197920306124,
+          1792293266428596097,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/bundled-dir-DKbeVv7V.js",
+        "bytes": 8673,
+        "sha256": "cf0976b5d6cf61faf8ceb10a43035a44dcd4f4c20557febc2428bde3fcb61b6d",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52996462,
+          8673,
+          1790401172634202729,
+          1792293265766833277,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openclaw-root-_Kkan8Lf.js",
+        "bytes": 4791,
+        "sha256": "b38ffc9ed9d1de4b79213bf9aab474985ae62127ba5f148b14433d8cbb51b7b9",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000041,
+          4791,
+          1790401194223077149,
+          1792293266239908226,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/oauth-BcZS_BvC.js",
+        "bytes": 29096,
+        "sha256": "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999940,
+          29096,
+          1790401193981626604,
+          1792293266217618523,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/chutes-oauth-YFvuN1-a.js",
+        "bytes": 6408,
+        "sha256": "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52997724,
+          6408,
+          1790401176774091138,
+          1792293265810152026,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/provider-runtime.runtime--yRUs3av.js",
+        "bytes": 2041,
+        "sha256": "93be7eb924cb45f84505f03696e5c6545a1e0e885b584b12c7357d98d729c9ab",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004166,
+          2041,
+          1790401195766435068,
+          1792293266327699184,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/provider-runtime-CLQOjLJ6.js",
+        "bytes": 22593,
+        "sha256": "6daf266a90294162eb45ce8c9402ce15743df0ee1cc951e4e95602a3c6122338",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004163,
+          22593,
+          1790401195763578434,
+          1792293266327291676,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/extensions/openai/api.js",
+        "bytes": 1420,
+        "sha256": "5490ab62c857124e421570502596f5189a228e44513d8ee18b11b6f3b47198f5",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52994301,
+          1420,
+          1790401168101218243,
+          1792293265236657276,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-provider.runtime-DGoPIR1g.js",
+        "bytes": 1513,
+        "sha256": "c9248524ab3c9bf1226096ddd76d31a755518de1ff763e3c24245912b7aed92f",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000028,
+          1513,
+          1790401194187621036,
+          1792293266237818065,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-oauth-flow.runtime.js",
+        "bytes": 65,
+        "sha256": "183d0ad3b17da4acae91ede7add0c3293eed186d0c0b29741fcab891c5743d3b",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000020,
+          65,
+          1790401194178621279,
+          1792293266237194892,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js",
+        "bytes": 15711,
+        "sha256": "e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000019,
+          15711,
+          1790401194177621306,
+          1792293266237126417,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/openai-chatgpt-auth-identity-DrQLjrg2.js",
+        "bytes": 2364,
+        "sha256": "94d48f2fee6a6fc139438d53d1adbadb61dd9791febe11ea0ec1c960e30e3765",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000014,
+          2364,
+          1790401194172436272,
+          1792293266236666430,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/undici-global-dispatcher-DeobtFo9.js",
+        "bytes": 9631,
+        "sha256": "a8e81ea3c77cee197800a4ff9006dd0de56127e3103a85449685e928745b1e23",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53006315,
+          9631,
+          1790401201958410886,
+          1792293266660070215,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/runtime-fetch-k5Zth7kk.js",
+        "bytes": 2437,
+        "sha256": "9bf76247c5901725af5db78bbab2830a5e0fd7caf19953b095be74d4382db611",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005279,
+          2437,
+          1790401197777998107,
+          1792293266420982183,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/facade-runtime-Dce8fe3v.js",
+        "bytes": 6683,
+        "sha256": "febd9b83ff5a398545f4ce350e49d2084b1704bdd01d467dbec889f4bfbe77f4",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998985,
+          6683,
+          1790401186791820836,
+          1792293266018085579,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/facade-loader-ClPyIgA5.js",
+        "bytes": 5997,
+        "sha256": "5062ff2347de145c1f1253acd60c45c66cddb92825519c2dec277d93fe7d44d7",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998983,
+          5997,
+          1790401186790820863,
+          1792293266017904384,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/facade-activation-check.runtime.js",
+        "bytes": 8789,
+        "sha256": "289f0f2efe2eaa482289692f8f58513ca0c1c9198ca4db11f32b95a6c107df9a",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998982,
+          8789,
+          1790401186788820917,
+          1792293266017824886,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/plugin-module-loader-cache-uqaaAPup.js",
+        "bytes": 22712,
+        "sha256": "af5dc41aba74bb7eab264d1544d16a86906401bfe1c24a0ad53ae25bb8f1d2ac",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53000481,
+          22712,
+          1790401195257592113,
+          1792293266271810480,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/config-state-CtMlHVRM.js",
+        "bytes": 4565,
+        "sha256": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52998008,
+          4565,
+          1790401180286996395,
+          1792293265869378302,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/sdk-alias-BJSUcD8n.js",
+        "bytes": 53058,
+        "sha256": "a08f997f961d42aedf70699cfcb52b2785861412131cd718234aa31eca1dcb32",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005390,
+          53058,
+          1790401198083483430,
+          1792293266442887465,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/undici-runtime-BL8ZN-Ey.js",
+        "bytes": 9835,
+        "sha256": "3528db33bb716a2e30fe895cd93c4027750c2da57379c8107d0b748cb0857978",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53006317,
+          9835,
+          1790401201959999055,
+          1792293266660452219,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/ssrf-BayeDjCv.js",
+        "bytes": 16675,
+        "sha256": "dd29e02505654eb7aac62519013fe9cdd883b56f78855806f6d643aadadc4295",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53005818,
+          16675,
+          1790401199952932900,
+          1792293266540265936,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/proxy-env-Bf6oQCTF.js",
+        "bytes": 7754,
+        "sha256": "5167b8055ce85f341e3df69a8d3c1e7877430fbcba63bcc052ad21abebb52bca",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53004204,
+          7754,
+          1790401196035922513,
+          1792293266333151467,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/managed-proxy-undici-RiF2s48t.js",
+        "bytes": 4992,
+        "sha256": "74b9478c30f20653068c1fc7f62b62ae805c1810d097150d5f8caeb08834a989",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52999555,
+          4992,
+          1790401191120354072,
+          1792293266134973367,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/active-proxy-state-DJLhrP_Z.js",
+        "bytes": 3345,
+        "sha256": "6723ab658f0df2dd3b833a1e8c9d35ee76001864ca93097f9919cf62ac3fa185",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52995908,
+          3345,
+          1790401164346328024,
+          1792293265639001372,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "package.json",
+        "bytes": 116017,
+        "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53007379,
+          116017,
+          1790401202587393866,
+          1792293267168948242,
+          33204,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "openclaw.mjs",
+        "bytes": 23463,
+        "sha256": "f643b005d6db233a0b45204e8d8e943256874ccc6897b8a6e0cf42a9b376a188",
+        "mode": "0775",
+        "uid": 1000,
+        "identity": [
+          2050,
+          53007389,
+          23463,
+          1790401205812306580,
+          1792293267171421471,
+          33277,
+          1000,
+          1
+        ]
+      },
+      {
+        "relative": "dist/extensions/openai/openclaw.plugin.json",
+        "bytes": 16632,
+        "sha256": "0db880f0e5a77ad809ec4cf57767416364db021d617569c48fdb2703c8c9485f",
+        "mode": "0664",
+        "uid": 1000,
+        "identity": [
+          2050,
+          52994341,
+          16632,
+          1790401202320401091,
+          1792293265245723607,
+          33204,
+          1000,
+          1
+        ]
+      }
+    ],
+    "privateAncestor": "/home/qian-qi/heptabao-next-gates-20261017",
+    "privateAncestorMode": "0700",
+    "groupWritableInputsConfinedToPrivateAncestor": true,
+    "directoryCustody": [
+      {
+        "relativeToPrivateAncestor": ".",
+        "device": 2050,
+        "inode": 50090607,
+        "mode": "0700",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01",
+        "device": 2050,
+        "inode": 52993649,
+        "mode": "0700",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw",
+        "device": 2050,
+        "inode": 52993651,
+        "mode": "0775",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw/dist",
+        "device": 2050,
+        "inode": 52993655,
+        "mode": "0775",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw/dist/extensions",
+        "device": 2050,
+        "inode": 52993656,
+        "mode": "0775",
+        "uid": 1000
+      },
+      {
+        "relativeToPrivateAncestor": "authbus-admission-sdk-20261018-01/openclaw/dist/extensions/openai",
+        "device": 2050,
+        "inode": 52994300,
+        "mode": "0775",
+        "uid": 1000
+      }
+    ],
+    "recursiveInstalledSdkTreeAttested": false
+  },
+  "sdkUnchanged": true,
+  "stdout": {
+    "bytes": 125,
+    "sha256": "a71bd5fbf250f050a1ac65a49d54f49b846bf90031fa279bd67bb846e1d8d7b1",
+    "identity": [
+      2050,
+      53908153,
+      125,
+      1792401074006621637,
+      1792401074006621637,
+      33152,
+      1000,
+      1
+    ]
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "identity": [
+      2050,
+      53908184,
+      0,
+      1792401013533989830,
+      1792401013533989830,
+      33152,
+      1000,
+      1
+    ]
+  },
+  "originalPublicReceipt": {
+    "bytes": 61139,
+    "sha256": "58885c70d7bfb068f8e8197a1d80c3adca9c53b4ad9431b8b6754c650a2e06dc",
+    "identity": [
+      2050,
+      53908390,
+      61139,
+      1792401074005984318,
+      1792401074005984318,
+      33152,
+      1000,
+      1
+    ]
+  },
+  "finishedNs": 508591293081621,
+  "finishedUtc": "2026-10-19T09:11:16.792634+00:00",
+  "elapsedSeconds": 66.299383085,
+  "withinOriginal180Seconds": true
+}

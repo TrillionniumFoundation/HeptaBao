@@ -1,0 +1,33 @@
+{
+  "files": [
+    {
+      "bytes": 18736,
+      "local_name": "summary.json",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/summary.json",
+      "sha256": "38b5ff9949b53bc2c21755ea71f3d5378e0a5956115e0f8a11df4f517e041026",
+      "tool_eof": true,
+      "tool_version": "16777244:66385925:18736:1792399406450353433:1792399406451804743"
+    },
+    {
+      "bytes": 911,
+      "local_name": "snapshot-json-accept-history.log",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-history.log",
+      "sha256": "516711e6ef2d07a080c21cb820543aab2645210aeb69adbd4cd7bc695819820c",
+      "tool_eof": true,
+      "tool_version": "16777244:66385627:911:1792399404214311229:1792399404214311229"
+    },
+    {
+      "bytes": 920,
+      "local_name": "snapshot-json-accept-refusals.log",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-refusals.log",
+      "sha256": "76857f7b451e63ddb858fe1e30826e3805c2a8e45c170d729ed956a04e04d301",
+      "tool_eof": true,
+      "tool_version": "16777244:66385756:920:1792399406008727240:1792399406008727240"
+    }
+  ],
+  "normalization_performed": false,
+  "retrieval_bytes": 23212,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-physical-followthrough-r1/mac-http3-actual-retrieval.json",
+  "retrieval_sha256": "184f4bd2c18e240cc7b663d156e521d15c8683566510a278917d8f8594039f59",
+  "schema": "heptabao.exact-returned-public-evidence-extraction.v1"
+}

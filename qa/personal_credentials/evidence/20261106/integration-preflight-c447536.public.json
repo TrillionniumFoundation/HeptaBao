@@ -1,0 +1,255 @@
+{
+  "android_exercised": false,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "/home/qq/heptabao-broker-ed25519-c447536",
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956260602028801,
+      "label": "clone-isolated",
+      "started_unix_ns": 1793956260006435081,
+      "stderr_sha256": "c7f8835f15305af45afd2c8db44173d7514c5897a65c1edd647c6753a7e47956",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "c447536ae0343731d84c18291d2dcd712b3bea08"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956260719341608,
+      "label": "checkout-frozen",
+      "started_unix_ns": 1793956260605139479,
+      "stderr_sha256": "7c152abc4bcd12cdff68ece36c096d0a647d0cd3b36847d6d6d22de97f12fb83",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "--unshallow",
+        "https://github.com/TrillionniumFoundation/HeptaBao.git",
+        "8f3dd8353aaf9642ad58f7716b0c14813d09983d"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956270452960146,
+      "label": "fetch-real-published-history",
+      "started_unix_ns": 1793956260829289319,
+      "stderr_sha256": "f504d80cf80df884eb4cc98d83d1d7e5ccc3c1d44f6c237656b7477807a2ca70",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "venv",
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956271690803484,
+      "label": "create-private-venv",
+      "started_unix_ns": 1793956270471476011,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--requirement",
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/requirements-plan.txt"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956323963380610,
+      "label": "install-declared-python-dependencies",
+      "started_unix_ns": 1793956271692117566,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0ea2beb67351b706b70bd9a1fa7c9ac00e47ef78299b95c1d5d6dcfcf1244b31"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "scripts/verify_python_environment.py"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956324039797137,
+      "label": "verify-python",
+      "started_unix_ns": 1793956323975101409,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5d7706e8b269f96f7114ca4dcdc813e36ada8e6a6d2b106ca40c9370190a2b97"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "scripts/validate_repository_v2.py"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956325558146375,
+      "label": "repository-validation",
+      "started_unix_ns": 1793956324041263855,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1dfe9a25dabfaef5da1298d5be6350ac9a53f8f08a6c3de22485f529d3d3d62b"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "scripts/validate_module_closure.py"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956325884765151,
+      "label": "module-closure",
+      "started_unix_ns": 1793956325569803127,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "dffbfbc20f1db50cf8a67a116a532cc61959e9479bfb9aad5c8a0778d96a6bcb"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "scripts/validate_openbao_271_release_denominator.py"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956325912112290,
+      "label": "release-denominator",
+      "started_unix_ns": 1793956325896394234,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "b164d3dcb2b0c25bdd944dd698d8206f4176b65410e1f0c48f03545d01bacc1b"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "scripts/surface_work.py"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956325944799146,
+      "label": "surface-work",
+      "started_unix_ns": 1793956325913173152,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0d8bd44f0fbe10ece595174e7bcd9f6271a9615c7204992b389c499fed1e90d5"
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/repository",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956352295952278,
+      "label": "repository-tests",
+      "started_unix_ns": 1793956325945788281,
+      "stderr_sha256": "11fd7ccc2695826f2af788348e59f35383f1dc690c6653b42496003cc0b22ab2",
+      "stdout_sha256": "f740f13a99137d65c9a3c98fca4b97d9146c7659f4e9d294d93bb9d579bbd16b",
+      "unittest_count": 300,
+      "unittest_elapsed_seconds": 26.183,
+      "unittest_summary": [
+        "OK"
+      ]
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/openbao-acceptance/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956381215810704,
+      "label": "acceptance-tests",
+      "started_unix_ns": 1793956352309737804,
+      "stderr_sha256": "4f2c5e60b72efb4efef921beef785b3350d8754123655677a99d7c1a254b6812",
+      "stdout_sha256": "3aa369ddf26e48a200dd274bac370c9da73f191c24192b36767fff11c5179306",
+      "unittest_count": 1510,
+      "unittest_elapsed_seconds": 27.988,
+      "unittest_summary": [
+        "OK (skipped=1)"
+      ]
+    },
+    {
+      "argv": [
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "clients/python/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793956382595009687,
+      "label": "python-client-tests",
+      "started_unix_ns": 1793956381228873615,
+      "stderr_sha256": "b33d0f7ff10c2448cd56c9bb563509673f7ac25e147890df69a7e0b164c4640b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unittest_count": 183,
+      "unittest_elapsed_seconds": 1.219,
+      "unittest_summary": [
+        "OK (skipped=4)"
+      ]
+    }
+  ],
+  "finished_unix_ns": 1793956382635486495,
+  "full_replacement_qualified": false,
+  "historical_ancestry": {
+    "schema55_generation": {
+      "commit": "85b2c963f730bc3c7492869a73ff02a9336b6451",
+      "exact_ancestor": true,
+      "expected_tree": "a9f59b9da58d5554983a4dd465ff5a924c581845",
+      "observed_tree": "a9f59b9da58d5554983a4dd465ff5a924c581845"
+    },
+    "schema56_root_rotation_statements": {
+      "commit": "f9fac608ffdad930e7debd01e2695ed150de4544",
+      "exact_ancestor": true,
+      "expected_tree": "e59d48130aba2ac5b236559a3cbaad7cc6688b5b",
+      "observed_tree": "e59d48130aba2ac5b236559a3cbaad7cc6688b5b"
+    }
+  },
+  "production_qualified": false,
+  "result": "passed",
+  "runner_sha256": "26cf94cd1f8c0aa0308f0b7a4a1c31017b7b4b143cca6c57cb44c0aa91d864ca",
+  "schema": "heptabao.personal-credentials.integration-preflight.v1",
+  "scope": "isolated_python_repository_and_acceptance_preflight",
+  "server_executed": false,
+  "source_after": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "c447536ae0343731d84c18291d2dcd712b3bea08",
+    "status_clean": true,
+    "tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2"
+  },
+  "source_before": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "c447536ae0343731d84c18291d2dcd712b3bea08",
+    "status_clean": true,
+    "tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2"
+  },
+  "source_expected": "c447536ae0343731d84c18291d2dcd712b3bea08",
+  "started_unix_ns": 1793956260006375493,
+  "synthetic_only": true,
+  "tree_expected": "50835fd4df6e7bdd2b551941a3fa012281c931c2",
+  "updated_unix_ns": 1793956382635488465
+}

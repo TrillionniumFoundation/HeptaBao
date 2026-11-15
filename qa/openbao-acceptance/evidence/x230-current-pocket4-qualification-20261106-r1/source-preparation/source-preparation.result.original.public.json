@@ -1,0 +1,2593 @@
+{
+  "automatic_retry": false,
+  "base_after": {
+    "cargo_lock": {
+      "bytes": 101193,
+      "identity": [
+        2053,
+        3057975,
+        1000,
+        1000,
+        33152,
+        1,
+        101193,
+        1793904534187654431,
+        1793904534187654431
+      ],
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "directory_identity": [
+      2053,
+      3057885,
+      1000,
+      1000,
+      16832
+    ],
+    "head": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "workspace_manifest": {
+      "bytes": 615,
+      "identity": [
+        2053,
+        3057976,
+        1000,
+        1000,
+        33152,
+        1,
+        615,
+        1793904534187654431,
+        1793904534187654431
+      ],
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "base_before": {
+    "cargo_lock": {
+      "bytes": 101193,
+      "identity": [
+        2053,
+        3057975,
+        1000,
+        1000,
+        33152,
+        1,
+        101193,
+        1793904534187654431,
+        1793904534187654431
+      ],
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "directory_identity": [
+      2053,
+      3057885,
+      1000,
+      1000,
+      16832
+    ],
+    "head": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "workspace_manifest": {
+      "bytes": 615,
+      "identity": [
+        2053,
+        3057976,
+        1000,
+        1000,
+        33152,
+        1,
+        615,
+        1793904534187654431,
+        1793904534187654431
+      ],
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "base_source": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+  "candidate": {
+    "cargo_lock": {
+      "bytes": 101193,
+      "identity": [
+        2053,
+        3330916,
+        1000,
+        1000,
+        33152,
+        1,
+        101193,
+        1793996436371535529,
+        1793996436371535529
+      ],
+      "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "directory_identity": [
+      2053,
+      3330823,
+      1000,
+      1000,
+      16832
+    ],
+    "head": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "workspace_manifest": {
+      "bytes": 615,
+      "identity": [
+        2053,
+        3330917,
+        1000,
+        1000,
+        33152,
+        1,
+        615,
+        1793996436371535529,
+        1793996436371535529
+      ],
+      "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "compiler_invocations": 0,
+  "deadline_renewed": false,
+  "elapsed_seconds": 13.875421730801463,
+  "formal_x230_runtime_qualified": false,
+  "inputs_before": {
+    "bundle": {
+      "bytes": 377715,
+      "identity": [
+        2053,
+        3330795,
+        1000,
+        1000,
+        33152,
+        1,
+        377715,
+        1793996147026038787,
+        1793996147030038784
+      ],
+      "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/provenance/candidate.bundle",
+      "sha256": "9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0"
+    },
+    "custody": {
+      "bytes": 26131,
+      "identity": [
+        2053,
+        3330804,
+        1000,
+        1000,
+        33152,
+        1,
+        26131,
+        1793996150788035681,
+        1793996150791035678
+      ],
+      "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/control/kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    "owned": {
+      "bytes": 28442,
+      "identity": [
+        2053,
+        3330808,
+        1000,
+        1000,
+        33152,
+        1,
+        28442,
+        1793996428777554449,
+        1793996428777554449
+      ],
+      "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/control/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    "qualifier": {
+      "bytes": 33147,
+      "identity": [
+        2053,
+        3330801,
+        1000,
+        1000,
+        33152,
+        1,
+        33147,
+        1793996149466036784,
+        1793996149469036782
+      ],
+      "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/control/x230_current_candidate_qualification.py",
+      "sha256": "448696002a72dbca1c9d2b070d826a34aac4ef0bc4ad7c3e77feab7a66fa7655"
+    }
+  },
+  "inputs_unchanged": true,
+  "no_hardlinks": true,
+  "original_base_preserved": true,
+  "process_custody": {
+    "children": [
+      {
+        "argv_sha256": "2b21bfef7f1e9b08c9ebfccf4c0ab544d5c4ce911c1ebc3ad0786433b2bce580",
+        "birth": {
+          "pgid": 316986,
+          "pid": 316986,
+          "ppid": 316983,
+          "sid": 316986,
+          "start_ticks": 269849070,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 316986,
+            "pid": 316986,
+            "ppid": 316983,
+            "sid": 316986,
+            "start_ticks": 269849070,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 316986,
+            "pid": 316986,
+            "ppid": 316983,
+            "sid": 316986,
+            "start_ticks": 269849070,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 316986,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "7d6ac12dbc6c34458a4453b187745a076f372c832b50e63b64c503ec77ccc3d6",
+        "birth": {
+          "pgid": 316987,
+          "pid": 316987,
+          "ppid": 316983,
+          "sid": 316987,
+          "start_ticks": 269849081,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 316987,
+            "pid": 316987,
+            "ppid": 316983,
+            "sid": 316987,
+            "start_ticks": 269849081,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 316987,
+            "pid": 316987,
+            "ppid": 316983,
+            "sid": 316987,
+            "start_ticks": 269849081,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 316987,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "7ae955cf9e17380ec4e078b9227482be80ba26d964c69d4bdb6b4b4cf822096f",
+        "birth": {
+          "pgid": 316995,
+          "pid": 316995,
+          "ppid": 316983,
+          "sid": 316995,
+          "start_ticks": 269849103,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 316995,
+            "pid": 316995,
+            "ppid": 316983,
+            "sid": 316995,
+            "start_ticks": 269849103,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 316995,
+            "pid": 316995,
+            "ppid": 316983,
+            "sid": 316995,
+            "start_ticks": 269849103,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 316995,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "737a34d408e1e3a945b32266e833122db14fadf7f6dc618715a9fecbccdd0a66",
+        "birth": {
+          "pgid": 316996,
+          "pid": 316996,
+          "ppid": 316983,
+          "sid": 316996,
+          "start_ticks": 269849114,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 316996,
+            "pid": 316996,
+            "ppid": 316983,
+            "sid": 316996,
+            "start_ticks": 269849114,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 316996,
+            "pid": 316996,
+            "ppid": 316983,
+            "sid": 316996,
+            "start_ticks": 269849114,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 316996,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "ee0bd3cfe12760363d5ea7efcb73cfa53d52d6012422ddd64a3d538f3b0fe49a",
+        "birth": {
+          "pgid": 316997,
+          "pid": 316997,
+          "ppid": 316983,
+          "sid": 316997,
+          "start_ticks": 269849124,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 316997,
+            "pid": 316997,
+            "ppid": 316983,
+            "sid": 316997,
+            "start_ticks": 269849124,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 316997,
+            "pid": 316997,
+            "ppid": 316983,
+            "sid": 316997,
+            "start_ticks": 269849124,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 316997,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "b621464a5093a7f33dc4236bd9a5ce0d8c4290522b05e49c3532f4033d90d7ff",
+        "birth": {
+          "pgid": 317007,
+          "pid": 317007,
+          "ppid": 316983,
+          "sid": 317007,
+          "start_ticks": 269849483,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317007,
+            "pid": 317007,
+            "ppid": 316983,
+            "sid": 317007,
+            "start_ticks": 269849483,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317007,
+            "pid": 317007,
+            "ppid": 316983,
+            "sid": 317007,
+            "start_ticks": 269849483,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317007,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "d635934f9f71a61d8407bb314907e5fff066ad28bd7d695f65f4b30a5436fcb9",
+        "birth": {
+          "pgid": 317020,
+          "pid": 317020,
+          "ppid": 316983,
+          "sid": 317020,
+          "start_ticks": 269849763,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317020,
+            "pid": 317020,
+            "ppid": 316983,
+            "sid": 317020,
+            "start_ticks": 269849763,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317020,
+            "pid": 317020,
+            "ppid": 316983,
+            "sid": 317020,
+            "start_ticks": 269849763,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317020,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "0700b6e5844c82faeed166a3cc8cc91d94842288f91d967f7c55d93d902f6505",
+        "birth": {
+          "pgid": 317022,
+          "pid": 317022,
+          "ppid": 316983,
+          "sid": 317022,
+          "start_ticks": 269849773,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317022,
+            "pid": 317022,
+            "ppid": 316983,
+            "sid": 317022,
+            "start_ticks": 269849773,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317022,
+            "pid": 317022,
+            "ppid": 316983,
+            "sid": 317022,
+            "start_ticks": 269849773,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317022,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "627d147506bb751e2706564b7c0015ab0bf0ea3e359ba9a152ce963cbf434f32",
+        "birth": {
+          "pgid": 317035,
+          "pid": 317035,
+          "ppid": 316983,
+          "sid": 317035,
+          "start_ticks": 269849803,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317035,
+            "pid": 317035,
+            "ppid": 316983,
+            "sid": 317035,
+            "start_ticks": 269849803,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317035,
+            "pid": 317035,
+            "ppid": 316983,
+            "sid": 317035,
+            "start_ticks": 269849803,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317035,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "4c964bb43a002f98f1b53e199a71840fb07aede915f0aabc44ea4dcb717f5667",
+        "birth": {
+          "pgid": 317038,
+          "pid": 317038,
+          "ppid": 316983,
+          "sid": 317038,
+          "start_ticks": 269849815,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317038,
+            "pid": 317038,
+            "ppid": 316983,
+            "sid": 317038,
+            "start_ticks": 269849815,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317038,
+            "pid": 317038,
+            "ppid": 316983,
+            "sid": 317038,
+            "start_ticks": 269849815,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317038,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "71140c847750ccadaf867af6d7c9ae6f5c7371853a456785af0ca0cc3f2b49c2",
+        "birth": {
+          "pgid": 317039,
+          "pid": 317039,
+          "ppid": 316983,
+          "sid": 317039,
+          "start_ticks": 269849875,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317039,
+            "pid": 317039,
+            "ppid": 316983,
+            "sid": 317039,
+            "start_ticks": 269849875,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317039,
+            "pid": 317039,
+            "ppid": 316983,
+            "sid": 317039,
+            "start_ticks": 269849875,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317039,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "66fcbd7066c4ab43fef58787e36fb2e94f2ce7eb0d4082b1c2b7b1f3fd4fb97d",
+        "birth": {
+          "pgid": 317043,
+          "pid": 317043,
+          "ppid": 316983,
+          "sid": 317043,
+          "start_ticks": 269850234,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317043,
+            "pid": 317043,
+            "ppid": 316983,
+            "sid": 317043,
+            "start_ticks": 269850234,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317043,
+            "pid": 317043,
+            "ppid": 316983,
+            "sid": 317043,
+            "start_ticks": 269850234,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317043,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "5febf87f0ebe35202da567ffe143c45b909aec0f17a4fe42dd2aa475a6ee28bc",
+        "birth": {
+          "pgid": 317044,
+          "pid": 317044,
+          "ppid": 316983,
+          "sid": 317044,
+          "start_ticks": 269850245,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317044,
+            "pid": 317044,
+            "ppid": 316983,
+            "sid": 317044,
+            "start_ticks": 269850245,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317044,
+            "pid": 317044,
+            "ppid": 316983,
+            "sid": 317044,
+            "start_ticks": 269850245,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317044,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "077d2426eba641e67ff8f6c9641ec2c3044d293d6663148bca0f75b1071ca77a",
+        "birth": {
+          "pgid": 317055,
+          "pid": 317055,
+          "ppid": 316983,
+          "sid": 317055,
+          "start_ticks": 269850290,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317055,
+            "pid": 317055,
+            "ppid": 316983,
+            "sid": 317055,
+            "start_ticks": 269850290,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317055,
+            "pid": 317055,
+            "ppid": 316983,
+            "sid": 317055,
+            "start_ticks": 269850290,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317055,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "a2d7aa71c0e7edd5f6fcd6817ff3db28d72cdfd4df23d8ec725fa5a64032e600",
+        "birth": {
+          "pgid": 317102,
+          "pid": 317102,
+          "ppid": 316983,
+          "sid": 317102,
+          "start_ticks": 269850302,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317102,
+            "pid": 317102,
+            "ppid": 316983,
+            "sid": 317102,
+            "start_ticks": 269850302,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317102,
+            "pid": 317102,
+            "ppid": 316983,
+            "sid": 317102,
+            "start_ticks": 269850302,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317102,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "77e3958d6322cc6150de0585d64454950e8f8b23772b508afd263d0d67a80311",
+        "birth": {
+          "pgid": 317110,
+          "pid": 317110,
+          "ppid": 316983,
+          "sid": 317110,
+          "start_ticks": 269850314,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317110,
+            "pid": 317110,
+            "ppid": 316983,
+            "sid": 317110,
+            "start_ticks": 269850314,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317110,
+            "pid": 317110,
+            "ppid": 316983,
+            "sid": 317110,
+            "start_ticks": 269850314,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317110,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "8373e5b441a5e84dfbf61b0bcdcd4e28b1c1ca271f15bc2d0333bc1338eee4f6",
+        "birth": {
+          "pgid": 317118,
+          "pid": 317118,
+          "ppid": 316983,
+          "sid": 317118,
+          "start_ticks": 269850328,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317118,
+            "pid": 317118,
+            "ppid": 316983,
+            "sid": 317118,
+            "start_ticks": 269850328,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317118,
+            "pid": 317118,
+            "ppid": 316983,
+            "sid": 317118,
+            "start_ticks": 269850328,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317118,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "2773b051e3e5de131dbd3c04c672d6556af4f73e28f6430f65bafb1dd40143ef",
+        "birth": {
+          "pgid": 317121,
+          "pid": 317121,
+          "ppid": 316983,
+          "sid": 317121,
+          "start_ticks": 269850340,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317121,
+            "pid": 317121,
+            "ppid": 316983,
+            "sid": 317121,
+            "start_ticks": 269850340,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317121,
+            "pid": 317121,
+            "ppid": 316983,
+            "sid": 317121,
+            "start_ticks": 269850340,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317121,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "cbeadd0ac8ae8f060d1480b75d45f61fb32df7455314a63a50c20187afa1923c",
+        "birth": {
+          "pgid": 317122,
+          "pid": 317122,
+          "ppid": 316983,
+          "sid": 317122,
+          "start_ticks": 269850348,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317122,
+            "pid": 317122,
+            "ppid": 316983,
+            "sid": 317122,
+            "start_ticks": 269850348,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317122,
+            "pid": 317122,
+            "ppid": 316983,
+            "sid": 317122,
+            "start_ticks": 269850348,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317122,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "4bcc3c7b3a82248004b926c0fc03a917062688ec60585b3cfb68dee31d561be0",
+        "birth": {
+          "pgid": 317131,
+          "pid": 317131,
+          "ppid": 316983,
+          "sid": 317131,
+          "start_ticks": 269850389,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317131,
+            "pid": 317131,
+            "ppid": 316983,
+            "sid": 317131,
+            "start_ticks": 269850389,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317131,
+            "pid": 317131,
+            "ppid": 316983,
+            "sid": 317131,
+            "start_ticks": 269850389,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317131,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "2b21bfef7f1e9b08c9ebfccf4c0ab544d5c4ce911c1ebc3ad0786433b2bce580",
+        "birth": {
+          "pgid": 317132,
+          "pid": 317132,
+          "ppid": 316983,
+          "sid": 317132,
+          "start_ticks": 269850424,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317132,
+            "pid": 317132,
+            "ppid": 316983,
+            "sid": 317132,
+            "start_ticks": 269850424,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317132,
+            "pid": 317132,
+            "ppid": 316983,
+            "sid": 317132,
+            "start_ticks": 269850424,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317132,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "7d6ac12dbc6c34458a4453b187745a076f372c832b50e63b64c503ec77ccc3d6",
+        "birth": {
+          "pgid": 317133,
+          "pid": 317133,
+          "ppid": 316983,
+          "sid": 317133,
+          "start_ticks": 269850433,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317133,
+            "pid": 317133,
+            "ppid": 316983,
+            "sid": 317133,
+            "start_ticks": 269850433,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317133,
+            "pid": 317133,
+            "ppid": 316983,
+            "sid": 317133,
+            "start_ticks": 269850433,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317133,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "7ae955cf9e17380ec4e078b9227482be80ba26d964c69d4bdb6b4b4cf822096f",
+        "birth": {
+          "pgid": 317141,
+          "pid": 317141,
+          "ppid": 316983,
+          "sid": 317141,
+          "start_ticks": 269850444,
+          "state": "R",
+          "uid": 1000
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 317141,
+            "pid": 317141,
+            "ppid": 316983,
+            "sid": 317141,
+            "start_ticks": 269850444,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 317141,
+            "pid": 317141,
+            "ppid": 316983,
+            "sid": 317141,
+            "start_ticks": 269850444,
+            "state": "Z",
+            "uid": 1000
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 317141,
+        "returncode": 0,
+        "signals": []
+      }
+    ],
+    "controls": [],
+    "escaped_session_containment_claim": false,
+    "failed": false,
+    "finished": true,
+    "interrupted": false,
+    "original_count": 23,
+    "passed_process_custody": true,
+    "platform": "linux",
+    "schema": "heptabao.dr-original-process-custody.v1",
+    "storage_or_production_authority": false,
+    "unreaped_original_is_signal_anchor": true
+  },
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "schema": "heptabao.x230-current-canonical-source-preparation.v1",
+  "source": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+  "source_budget_seconds": 300,
+  "source_clean": true,
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_dependency_snapshot": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "dependencies": {
+      "clients/python/heptabao/__init__.py": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2",
+      "clients/python/heptabao/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "clients/python/heptabao/agent.py": "a3e310abe0a5671f3ac463d812a821911dfc8c4cf8ec9ebf7a530c83d31e1d84",
+      "clients/python/heptabao/cli.py": "101bd1c293146b375a99efe1e7f5e9a3437ba734e2de295910661c47df3a3012",
+      "clients/python/heptabao/consistency.py": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe",
+      "clients/python/heptabao/deadline_transport.py": "b630ae7e1b49b8b22ae3764702d67416957d9a9e1ac9f9c9592f983345b704c3",
+      "clients/python/heptabao/kv_cli.py": "af8c08017bfff3455707b22cefe7a635312258c284b57ddc1c87b256484edbb7",
+      "clients/python/heptabao/local_api.py": "492440627266e43766cd1906830810467d65669fbfe3d36fe839f42e093e2b13",
+      "clients/python/heptabao/oidc_login.py": "c57861d480972260e52edda9bdf1e7ba841724b8f1b30d9dfd77eeda726fbbb0",
+      "clients/python/heptabao/private_state.py": "41e8d13c84f36fc7eff5e555edf0620c817053cfb06c98899074c35cdacf5d7f",
+      "clients/python/heptabao/proxy.py": "cc24f9dec5b7f2a41d94e8d70d6017706d437886f85e032e5b17a86daa9d3b6e",
+      "clients/python/heptabao/ssh_helper.py": "2aee5f4bc218b3f5a134db29ec47b0a78157083fc88c18c1cda6a8ca375152cb",
+      "clients/python/heptabao/transit_migration.py": "690c25db2edce632a5ffd55d9e1d52fd18e54b3ab2cb1bd3ed53e5f139211c56",
+      "clients/python/heptabao/transport.py": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f",
+      "qa/openbao-acceptance/acceptance.py": "8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d",
+      "qa/openbao-acceptance/agent_proxy_helper_live.py": "b922b6a94d0125dc05bc2f6cc54949c327fc15a9a2756a1500da4b9f4f05d9e3",
+      "qa/openbao-acceptance/agent_proxy_runtime_live.py": "79dca07437e6917fd96345e4469bc015d5690c5d70845e07b3c8071656b4cfd1",
+      "qa/openbao-acceptance/approle_271_security_live.py": "a4e94615780ad169d0c3e869a0b89494a9b58addc106a38b605f15e33dd745c1",
+      "qa/openbao-acceptance/approle_batch_ha.py": "1891a7c1a3976e251e4a1cb758ae2d732fb766b7d06498ac69d1de400b5b1922",
+      "qa/openbao-acceptance/approle_batch_live.py": "c475e3e76156b5990daca4e0f449a4ff1d2d5c05eb36144f9846f5a100eece6e",
+      "qa/openbao-acceptance/approle_batch_probe.py": "162041069c22029a4c62768667eeaf8675b151190e5b1fbcd6291977bf401d39",
+      "qa/openbao-acceptance/approle_cidrs_ha.py": "88b1d87fae6cb4b11fed1a7ba002fd2a32335415781da5f1950b765bca59ea7a",
+      "qa/openbao-acceptance/approle_cidrs_upgrade.py": "26e4a57f26aca836ce09c3b3e380ba3846a212ffd222edc8641801c825631ae9",
+      "qa/openbao-acceptance/approle_form_negative_live.py": "82d27f8f263befc95bc40e928e9e1381b3190be1a9e5bd0b5ff1ab7a76dd61da",
+      "qa/openbao-acceptance/approle_kubernetes_batch_upgrade.py": "2097ae8885e2ef324cf3ebe332041121386e00bdc138529897ebe9972cc5879b",
+      "qa/openbao-acceptance/approle_metadata_denial_probe.py": "1bf4364019c85620ff9c81530af45ec406c5b48750beabf13be225f14f0a4668",
+      "qa/openbao-acceptance/approle_metadata_partial_probe.py": "2055bdaf561b539e82c19bd9c3c21b9ab33afc48c83fc586641d6751e2af6c5a",
+      "qa/openbao-acceptance/approle_metadata_unicode_probe.py": "ed71f2de9d394174ff29bfbc601bb4bc48c404451ddb8a27f86ac93ae4a73518",
+      "qa/openbao-acceptance/approle_native_defaults_live.py": "29120268edc4724c8e5c6091b8105176c28c6461513fcf2f1e97ce384ba8ee8c",
+      "qa/openbao-acceptance/approle_native_defaults_upgrade.py": "56e45882a87010f33500362fc2be7a97a345b5a11ffeecfc2bc9413f55762e63",
+      "qa/openbao-acceptance/approle_no_default_271_live.py": "e20812383bf95d30182229eb7862413d4730edd631a88819d38ed2ceaa09d21c",
+      "qa/openbao-acceptance/approle_renewal_live.py": "5026fec5152eeca825b25cceced56e9e2ac15ff68aaefb68e7dbc231bf3801a8",
+      "qa/openbao-acceptance/approle_secret_cidrs_ha.py": "899d0f930fd4f1d47c8e828122c6bbe1b12e34660006e4530b60a3ae3e850960",
+      "qa/openbao-acceptance/approle_secret_cidrs_live.py": "0b372b96c05bbd565e3ba3a2572d037786f319c8110e6a597a87b24fa368df98",
+      "qa/openbao-acceptance/approle_secret_cidrs_probe.py": "ca9c2ab8963a73e1c01020b4904dd31781b4f81f5eae089ee5d8cef450e4ae0f",
+      "qa/openbao-acceptance/approle_secret_cidrs_upgrade.py": "d4f76e6addf01cb9b6f4ceac79222e913f0e683e8d8adafc3bdd0c74ea8cf771",
+      "qa/openbao-acceptance/approle_secret_cidrs_upgrade_contract.py": "54ca4bfee59b458f41bde2517f2033d123aaaa86b04ef18834814e587579e208",
+      "qa/openbao-acceptance/approle_secretid_metadata_ha.py": "a8cd11569c9cc0f1b38bbe78e06aa9a48312dd698f640b5851c8982265af40b7",
+      "qa/openbao-acceptance/approle_secretid_metadata_live.py": "711bf8b8a74bebab92eb5e598d283ef08b75800a71901027d130a44b54a86cfc",
+      "qa/openbao-acceptance/approle_secretid_metadata_probe.py": "7a1946c002aa55508927b891690f61d6559e0f7bf0e9d365345c12d9abba35c8",
+      "qa/openbao-acceptance/approle_secretid_metadata_supplement.py": "1a956d0783fba09967f072d17b5ba7d245f0febeef446382b025e137c1072f30",
+      "qa/openbao-acceptance/approle_secretid_metadata_upgrade.py": "0ffbc48d1a497754d9637fc8c9ab78631e933675665a4b6b70cd5aa05ff07d68",
+      "qa/openbao-acceptance/approle_secretid_overrides_ha.py": "3e56595f8e5219ac55fc16f726bf69064dac0a8ca29133dca1fefd630bd9809c",
+      "qa/openbao-acceptance/approle_secretid_overrides_live.py": "15390ce17c98c68c9cdfd4e4cd7601329352a593c8b6dc6ff974198fa2195904",
+      "qa/openbao-acceptance/approle_secretid_overrides_probe.py": "4859a95028bfb55da33eeccd82a0549ad89ff869dabc32d711728fe67333f8ee",
+      "qa/openbao-acceptance/approle_secretid_overrides_upgrade.py": "59337d057523b19a406eda1d83e64e6b87ab631a601c70d652d436ce3d06ae7a",
+      "qa/openbao-acceptance/approle_secretid_overrides_upgrade_contract.py": "7a9319329c0718ae5df4994fe1a0e7502d151a50d7b83c3053de604cf52d60e8",
+      "qa/openbao-acceptance/approle_token_cidrs_live.py": "e34e7697eb0b69ce9d2800d242e71b638f107f8206a352860be118ba3a6ee7b8",
+      "qa/openbao-acceptance/approle_token_cidrs_probe.py": "b60f57f345cfe9b72f83644de90616f21e97a191cb6583df174d2a836ccf5ef2",
+      "qa/openbao-acceptance/audit_file_live.py": "e1b270e4ae84fe06c8ee193968e31bef2e05e1eceae483ca2d9109551c8e7fda",
+      "qa/openbao-acceptance/audit_http_live.py": "2af1b2a2213f4adeb9a9d3e6ee9667faf67d3c6d2f9ccc374f3f9c1cf9e51250",
+      "qa/openbao-acceptance/audit_socket_live.py": "324d81b954321886e4bf6af725f03cad3e82ad344848c612d14b54ff7cd2f7d2",
+      "qa/openbao-acceptance/audit_syslog_live.py": "1f3c674163dabeda554224bd0f9bf69a7c1bb54d51fc799efa9918ad1599cab3",
+      "qa/openbao-acceptance/auth_mount_migration_live.py": "c6c23a91fbdb4646c54eb66565dbab9e4e377ee006765eb965cc6c1092cd8a1b",
+      "qa/openbao-acceptance/authbus/inspect_authbus_sdk_refresh_sources.py": "235a4f20473d770f367eb60f6ddaa306b0019824f0b6cfcce26d777b43c0d636",
+      "qa/openbao-acceptance/authbus_client_current_inventory.py": "f842c10c560d639eef67496fa9618a410345ec9744738e5b3c727b88bc0099c6",
+      "qa/openbao-acceptance/authbus_coordinator_contract_test.py": "b9f68666b93fbfec27c95177452e61f625eac6a89e598b33735705989a399eca",
+      "qa/openbao-acceptance/authbus_current_credential_stage.py": "1851ae94089dfb32c2f088164578044230a255239d11f598d41560899366936e",
+      "qa/openbao-acceptance/authbus_current_stage_custody.py": "00565c6d296df66444839be9c643121856bc1fde26cf57e4eb3c9bde04095975",
+      "qa/openbao-acceptance/authbus_fleet_credential_canary.py": "8c7ef51b1fb9978b07302151645b343bdf2f4c8303d6d4b490f248ae5a4537a1",
+      "qa/openbao-acceptance/authbus_google_source_prepare.py": "cc01ece1da77a0ac4c4c935b98a1bb59731d2d7fbcbcca09abaec2eca0d4336a",
+      "qa/openbao-acceptance/authbus_inbox_pagination_live.py": "90a78fbecf793036ded737010690b06f4b8ecb553fca3938e09275058808e8fb",
+      "qa/openbao-acceptance/authbus_inbox_resume_live.py": "622350f7c7af3327a343dcc17daa2565c27b7f6d3f2a1de3de790113f51ec818",
+      "qa/openbao-acceptance/authbus_lifecycle_live.py": "f93d04b01bf44acfbc160b15e11f77658383fe4d9998c189007398caf570ae2f",
+      "qa/openbao-acceptance/authbus_native_cold_r2_once.py": "a16477ce5c8ef06e6d46d4cdd4eb9ce3069179f95e3829fe393138e9f7fe8475",
+      "qa/openbao-acceptance/authbus_native_openai_once.py": "4269b742b8a52119c88977fcfe5339873eac3518f867037eea2d933b2b86f4f8",
+      "qa/openbao-acceptance/authbus_openai_sdk_once.py": "faee8f81f5ed4441284804579b1fe261aaf304a409078683a27beebc97eb20ec",
+      "qa/openbao-acceptance/authbus_pocket4_credential_canary_r2.py": "56630c073d77f460603a672a608b5cac01b4ecca7ca52996d205b57447bc7783",
+      "qa/openbao-acceptance/bao_http.py": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f",
+      "qa/openbao-acceptance/batch_lifecycle_contract.py": "528bfe84dae460fc6d599f77b0680d860540d98abdb30442ed8601cd827a53ab",
+      "qa/openbao-acceptance/batch_lifecycle_live.py": "af631543468d8a56304c00db4d14231cd1f4575c32636fff45be9beb1afe9bf8",
+      "qa/openbao-acceptance/batch_provider_ldap_gate.py": "22bc225c42d649a7156cbf49a53bc4a361d99b91fb2e9ce8df7c6ea0ce5320cb",
+      "qa/openbao-acceptance/batch_provider_lease_live.py": "957f3d62faa79bac4d2517b13b8c2316188610dd67efcff514a2d99f3194b54a",
+      "qa/openbao-acceptance/candidate_state_schema.py": "6b90dae44adf4c74abc8fe337b8dd3e3d710c87eb79d7af4556c7c39e973817b",
+      "qa/openbao-acceptance/capabilities_live.py": "d6f8bd4caaa9b83ed48ad8105cc74af2af077af80fd5881d43a0a7c283000e3f",
+      "qa/openbao-acceptance/capacity_ha_live.py": "dd5be8a78827545a3753fd312923c0060ba2f3ad42fa5875e9dac08054ace96d",
+      "qa/openbao-acceptance/capacity_live.py": "f70b835ad5062e8f3f452e794d8da65a4485325d24120eb2b966a09ce18aefc5",
+      "qa/openbao-acceptance/cassandra_live.py": "4e2f0d5c3d393bf3d1f8e4dee3c4ecf9474996fc74e086bb5196bdaa94cbf465",
+      "qa/openbao-acceptance/cert_auth_live.py": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9",
+      "qa/openbao-acceptance/cert_batch_probe.py": "2fe9b641298c9e34b8f56c6cdff151042916fca6ce85be28ab1781f64ea5f4b8",
+      "qa/openbao-acceptance/cert_native_ttl_probe.py": "12f54f12f3c2158d0c0753e8b26a42c4b8351943262a147efa9f92e7c3e49b23",
+      "qa/openbao-acceptance/cert_renewal_live.py": "51be6ce8bc1505f8627fef8e839b6e139dc09c24c7ee1c25b7c6fd10fc7a9146",
+      "qa/openbao-acceptance/cert_token_live.py": "02e2da0955cd549d5a7dfba7aae8dedd9fb0d79e301030c5a78e17c822acc453",
+      "qa/openbao-acceptance/client_consistency_live.py": "d2f09d54452f692ba93f494050a31b93a8bcbc62e9219aabc68db4afe827da77",
+      "qa/openbao-acceptance/client_live.py": "f67f4edd891cd864e56078fc1c8cb281cbfa1baf8b26755bd074a496168b0a8b",
+      "qa/openbao-acceptance/compare_operational_reports.py": "dba74c32a78130c990fe6b2554ddb6d39dce5f3b2c5de35d7d2cc392d0a68ece",
+      "qa/openbao-acceptance/consistency_headers_live.py": "fcc86b9639a883d1fcde8e01b5b2cad6acaea184267e61ffdb9ae18c0f0f9e4c",
+      "qa/openbao-acceptance/controlgroups_271_live.py": "8b9deae5ff837b44742bf2540b8008f66ea4d0fb6b4be9a378dd5c90691c2b03",
+      "qa/openbao-acceptance/controlgroups_271_wrap_replay.py": "f8f8cbdbb898703fe2813972c6350f7a52fbda46c80c62867593873bfec2be01",
+      "qa/openbao-acceptance/core_isolation.py": "4fd350a1587023b53fc2854335ddb9fd667cecf0aaadd137b9d16ea01b413c4c",
+      "qa/openbao-acceptance/database_config_completion_live.py": "8f4a292a4258235e0cf72735a00b0740437550bb8e8c536eb599678dfd20f4cc",
+      "qa/openbao-acceptance/database_delivery_live.py": "7bfd26ce059c9c913b770d869e7a00cf72c25347896c36aecf5d35019322ecd3",
+      "qa/openbao-acceptance/external_keys_live.py": "33c7fc0e2ea2dc0101529d907eb901c821e24a8cb28d08ae5b395d375289abc6",
+      "qa/openbao-acceptance/external_keys_provider_live.py": "fc3ac0c18d41f92dc864a1c09ca80dbee667fad7772c5d0a60193a34cf4bed5d",
+      "qa/openbao-acceptance/external_pki_consumer_live.py": "b67c0db49610d56f68f80e08ebb76d76a950adde94a9179d120b151ef894d190",
+      "qa/openbao-acceptance/external_pki_leaf_crl_live.py": "d421eff474c0fac2bc92f4a97d8fffb9e9aac8a57d27e47e4f62ea1432155c64",
+      "qa/openbao-acceptance/external_pki_public_live.py": "1427fdc5ccdc95e67c8a7e616f9884ba28535b670fb2a84ee96f0616559f214b",
+      "qa/openbao-acceptance/external_pki_root_consumer_live.py": "064b3aeed829ad30d4a85d0fdd9d26dc4b4599fe682955a5dfc160b48054ff25",
+      "qa/openbao-acceptance/external_tls_fixtures.py": "424f611f490449deb88fa791ef1847f65f8133fc1ac19e8e0b68df5ac8d0c1f9",
+      "qa/openbao-acceptance/external_transit_consumer_live.py": "b55b137e68beae854c5a579da4ae8a1c5678ca52ffb9ebe0fafc57a899de7330",
+      "qa/openbao-acceptance/fixture_mounts.py": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+      "qa/openbao-acceptance/fixture_transport_case.py": "ae1687032064ede4b0106b36d265e0ef346dab0a0e7140e5d092ff9885d32d2b",
+      "qa/openbao-acceptance/ha_acceptance.py": "9b7c252f7ae9e74273beb1bbc7b342ae6fd66d2779404b5bf046ef27bc10e913",
+      "qa/openbao-acceptance/ha_certificate_rotation.py": "7e2a9ba0e75656ac8e80cde2bbf8d3e7c212f974edbfd908e6d52ac7c82930f3",
+      "qa/openbao-acceptance/ha_destructive.py": "a5d2225a1f79c94ab54b5ae95868d4faba03a34e361f188db3773715d1febde0",
+      "qa/openbao-acceptance/ha_multihost_acl_live.py": "c1c2a56acbb30c68f90bc9857a4fd8a669b54d6da4655b530e782eed60046552",
+      "qa/openbao-acceptance/ha_multihost_autopilot_live.py": "e4548b6d7fdb1fd1086d0b179b24e2f54ae056ab6535cff33805eb3656c3aa56",
+      "qa/openbao-acceptance/ha_multihost_external_keys_live.py": "b65843f592b81fbc37a250c7bbaea2a9b89a0d9d444204175953716031ae4588",
+      "qa/openbao-acceptance/ha_multihost_live.py": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de",
+      "qa/openbao-acceptance/ha_multihost_load_live.py": "e12b2427fc296170aef2e28bbd4dde9cd1b26db78f74979e5c6d5146a1f93051",
+      "qa/openbao-acceptance/ha_network_partition.py": "f0bd16146322f58922eef57c35858a36acdbc6991ec3eedcfecd44e74a7960e9",
+      "qa/openbao-acceptance/ha_request_deadline_live.py": "9dd650f371fa620f3ce46318427f6cc477ce87030ab67ac04c97a0fd213782b8",
+      "qa/openbao-acceptance/ha_rolling_upgrade.py": "60d267e9b6613997da5428349b05a6894e75e02266a06afc076f3e110d443ed5",
+      "qa/openbao-acceptance/ha_step_down.py": "5fff5bc4d0366714f7d56374010f1f65de02f6bc8b81399ad75ac4a4c5499940",
+      "qa/openbao-acceptance/ha_three_host_loopback_live.py": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf",
+      "qa/openbao-acceptance/ha_verified_read_live.py": "3052c464131b5db2828d54e6ff27624e3e1adf3f555dfda6e7712ceaeb197ff0",
+      "qa/openbao-acceptance/identity_empty_metadata_probe.py": "c3e3f0bf416d4af310265fd8c12991c94e0c117a1b7e4eba1b32f0081454ca30",
+      "qa/openbao-acceptance/identity_live.py": "c947137e41a1b6cff799f2192d65beef418afd03379f1244eb8079fc4398edd5",
+      "qa/openbao-acceptance/identity_migration_live.py": "18642dd0fdba673b88b371932d749a33cffab262795457f3e5397b9dce6465bf",
+      "qa/openbao-acceptance/identity_upgrade.py": "5d45248bb592765e5f718ba5a3216682fe9b405cb92bc7b201e1553b0369507b",
+      "qa/openbao-acceptance/idle_lifecycle_ha.py": "6b4450c86f47658a5e5e7ff4dfad36913f8b9dcead64c29494925aff5abb1896",
+      "qa/openbao-acceptance/influxdb_live.py": "4cdf952cd1d305ff826338ada5f5927fe4e0977e3d6516ecbdb7ed8460af0bd9",
+      "qa/openbao-acceptance/jwt_api_tls_live.py": "8f93a15cb9af7278545d382d98fbdfcb8c39b3644a320197b1c84441008df848",
+      "qa/openbao-acceptance/jwt_api_tls_upgrade.py": "afa4a934338a5688e8415b561b31e2c808f0e56c3c4503d0dce1da96585e1ef7",
+      "qa/openbao-acceptance/jwt_batch_ha.py": "5278024245527d13a338d527348f6074e03d31a23bdf15452fbd99a8d80e051e",
+      "qa/openbao-acceptance/jwt_batch_live.py": "f4c4628a7b97b08e2698d28abc61a553a2e3030d540f53d31603859a8c15f191",
+      "qa/openbao-acceptance/jwt_batch_probe.py": "31057665b002b3dc99d2bf4c1c265cc6f9bee2228450c77cb7fa8752f7db4941",
+      "qa/openbao-acceptance/jwt_batch_upgrade.py": "ee90088ea94ede2b2b85e12cc4037634c058508fb6d5cee316bc4094055714f2",
+      "qa/openbao-acceptance/jwt_bound_claims_live.py": "d9c809299ab7eac118bf364cd84344e52e20992a2dfb85c30708609debcb9faa",
+      "qa/openbao-acceptance/jwt_bound_claims_upgrade.py": "6783daf72d5a84d4b06c0136e8a36041a95a3d65b8e77b2d4a2c1f334ff3c659",
+      "qa/openbao-acceptance/jwt_completion_clock_live.py": "bc14e0549f0e8c720721be4879e0b5e5829bfe4d1256f1834f3f09924bc1a48e",
+      "qa/openbao-acceptance/jwt_login_claims_live.py": "9b356d953e1784802694b0eeab4e622804a3654049fa11cab6ea9645b5ce4f03",
+      "qa/openbao-acceptance/jwt_native_ttl_live.py": "5d3b65269d6e6ffefdd92cd066eb84237635c43a59610fa77e0ec5dc80063297",
+      "qa/openbao-acceptance/jwt_native_ttl_upgrade.py": "4a4f5266a5df5e33e38687348718c49101349b51deec6a8a5cb341f3b9c9d219",
+      "qa/openbao-acceptance/jwt_native_upgrade.py": "f8a2a91c8db232e0f25744ffe1cc91e0b8b6699db8959347200a4da5800c3f91",
+      "qa/openbao-acceptance/jwt_remote_batch_live.py": "f6fac57c28538beddb5fcdf5a1d0d19119346407601710f3d9472b184452c22b",
+      "qa/openbao-acceptance/jwt_renewal_live.py": "fef2da648918e9f81dc58f5f612a2a587ca721ce657e774904e839d05c7b2f3e",
+      "qa/openbao-acceptance/jwt_split_phase_live.py": "397b6e51d7e9dcb1a191a8e9722117f4b78aa69d5a2f184c934f4f7e86b4d5fe",
+      "qa/openbao-acceptance/kerberos_mit_live.py": "996a8de8cb9d5b5c49c5e1cc8fd7c84f1317552c4e3a2a42e9218995ed5e9a35",
+      "qa/openbao-acceptance/kubernetes_api_tls_live.py": "b7b318488889c77e66393606f69c9ef294328ffadd532cd99a93e58e49a964fe",
+      "qa/openbao-acceptance/kubernetes_api_tls_upgrade.py": "9a50fdf1bc5631a5c4a9e6ea3652ebb91b79e8c1f2066134a6fb7e8ce8397441",
+      "qa/openbao-acceptance/kubernetes_batch_lease_live.py": "6586a8f1e60d15660b9693d5c36b3778f9103ae19a005a7425ba52725b82b98a",
+      "qa/openbao-acceptance/kubernetes_cidrs_ha.py": "5c662be43ea849e12f76f6196d7e3c1a8e4a2ee7c73de422249c95b456a88efe",
+      "qa/openbao-acceptance/kubernetes_cidrs_live.py": "bc007f2ae4434094d096cefbe18153913c74ef730c6358ac9e54cee26964654a",
+      "qa/openbao-acceptance/kubernetes_cidrs_upgrade.py": "2f046e3901a723a9666766ac61e060337ed8144972a47b62a3d1577be6b645f2",
+      "qa/openbao-acceptance/kubernetes_cluster_live.py": "66e4fc007683cfa07a908c7fe342d6c6652bd18ce8aa0e58070da1d71f48936a",
+      "qa/openbao-acceptance/kubernetes_native_upgrade.py": "e4976a2d03fe1b1c5d7d3f98ab387e0139f87133cbc20010be3fbfc878238b35",
+      "qa/openbao-acceptance/kubernetes_online.py": "6ddfc03d638b4d767250d8b5fa6c8d806a0865073e96c96bb22fc5bb44d352db",
+      "qa/openbao-acceptance/kubernetes_renewal_271_cluster_live.py": "c0cc5c587cde9cba487055606892264920525f1eaa9c51c4c6487b0af78983b2",
+      "qa/openbao-acceptance/kubernetes_renewal_live.py": "d5d0e3f532d4ec2347fb449d768780385a96257b5230b98cb2625b28f4bb9b3e",
+      "qa/openbao-acceptance/kv1_packed_upgrade.py": "545efb2298eb07c6edd273ca578f441d0c3fe677dfd5a5f95444265267e81620",
+      "qa/openbao-acceptance/kv1_record_backup_live.py": "bef8ad4b5e29b3e217ca6c9623a3ab04d28b4ee51b4c22a3e1459fd7b148264e",
+      "qa/openbao-acceptance/kv1_record_ha_live.py": "aa95678cf778550d86c9597e8be1f8ae607fecc6e847a6d29591ce08cbc7f931",
+      "qa/openbao-acceptance/kv1_record_scale_live.py": "ee8a44d6fc40c847eb4a1bb1cf97d276f574dd8bc0e78ae3d16cd1f08b6846c6",
+      "qa/openbao-acceptance/kv1_records_ha_upgrade.py": "03ae129f20d675c3845e56e5c20b1148aa3c5624a209b05bc6134ee668256875",
+      "qa/openbao-acceptance/kv1_records_upgrade.py": "a559af8c9281e754209f4a22212083dfd8cb98960807e56b8bf7bd3ec3e0ee27",
+      "qa/openbao-acceptance/kv2_271_large_live.py": "18db46e2a8e3bbccefe0dc419633c63129d99ac6abc29f24641a23f5265882c7",
+      "qa/openbao-acceptance/kv2_271_lossless_native_live.py": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "qa/openbao-acceptance/kv2_271_migration_boundary_probe.py": "e9da25d53d9dadb12747b16cb95d7f718a345e72b32e1d76bd952fec1127e496",
+      "qa/openbao-acceptance/kv2_271_numeric_boundaries.py": "cf1f7a475801b9d39072e8ba9878c912bf86f77d276395a43b8dc0c86e143305",
+      "qa/openbao-acceptance/kv2_271_numeric_raw_followup.py": "d8de2d02d902c525b715e8e9491d39df1114b280f738e33b78b9b2840e23a524",
+      "qa/openbao-acceptance/kv2_dr_process_custody.py": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+      "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": "388f763d810e1694ce9fe3d4ce52325318aad8ec4fa4d87ebbcd6cfbe7f1f5a0",
+      "qa/openbao-acceptance/kv_enumeration_live.py": "93ab9a18410d95bf949b7e60af79eaf2b83329d0dd76a043fbdb559d1984f289",
+      "qa/openbao-acceptance/kv_metadata_cas_live.py": "69100edfb86cdfba5dfe5fe995429fa7246f82e1ee2355adf1b611c626541b82",
+      "qa/openbao-acceptance/kv_metadata_patch_cli_live.py": "f07bffe4468bcaa849067c9363ffc3ff444362a9f816f9764e26394b4a2d5743",
+      "qa/openbao-acceptance/kv_read_scaling_live.py": "b9c2eecd3fc1ddcab2948ba43ab52680e5a0a41bc7cd84c93409f14055b205af",
+      "qa/openbao-acceptance/launch_lan98_b24c6de_once.py": "b6fb2e01e5c0b30ff25864985e098ec17fecf25efb7c5a17348bb4f1adf246f8",
+      "qa/openbao-acceptance/launch_main_pack_07a3dda_r1.py": "7516d120257beca868debe10e9d68fdcf543c9fbbaec7a803a53079743c99a2d",
+      "qa/openbao-acceptance/launch_main_pack_b24c6de_r1.py": "98ebfa9b225cb6589c7f10bd44d908b27f21380c353d7da391af82c1d4eeba32",
+      "qa/openbao-acceptance/launch_x230_handoff_07a3dda_r1.py": "156e726f79b77a7a3a8d6ba201ebb31c9fafbb12366ceef304ca4145971f105b",
+      "qa/openbao-acceptance/launch_x230_handoff_b24c6de_r1.py": "0441f1fd0cbf9397702129e8d502fa8dfd391ca61cbb9d9a196e35921c666f2b",
+      "qa/openbao-acceptance/ldap_bounded.py": "97043ffd72a64c39b85b44cfb5577a8c26361f150697d31953a4460dfa973c29",
+      "qa/openbao-acceptance/ldap_cidrs_live.py": "f42221e54a8c20535b2e36c119d8eab7ae62144f22fea6c36ef7c3daa3cdf50a",
+      "qa/openbao-acceptance/ldap_cidrs_upgrade.py": "f00b40a1168314727ef3f273294129ba6fb797d22e27463fc485a335c3918c6e",
+      "qa/openbao-acceptance/ldap_native_live.py": "e9e5c2c1230dec068d94a18ce748cb95392abdfbd14658cf1681af6a4b449e31",
+      "qa/openbao-acceptance/ldap_native_renewal_ha.py": "6d0315d00e9403a453a317545bd1568841db3dd179983c886eb89425f91d7ac5",
+      "qa/openbao-acceptance/ldap_native_upgrade.py": "823e227aedc26d09f5f3c5853edba48a7b3420534002f137d58337133a06ba62",
+      "qa/openbao-acceptance/ldap_no_default_live.py": "9b243ad446de34c200dcfb5ec5a20123980cc1fb2a148d74e23e9824803a5c93",
+      "qa/openbao-acceptance/ldap_no_default_upgrade.py": "3d467ee4ed117a60f578aba309b16062faaef84739e8513f2bbf74f29186c300",
+      "qa/openbao-acceptance/ldap_openldap_live.py": "c94c3cc23c3c26d94335e6a249bc503451d1ac291eda9fb223260973d535c221",
+      "qa/openbao-acceptance/ldap_renewal_live.py": "e5b3eb54b07a76feba86c25099ffa8f8b167a7b25d7d3b463e6c4b60ba9290bd",
+      "qa/openbao-acceptance/ldap_transport_tls_probe.py": "67a354dc85a587c07011e07e074ddf81306fd1c2d7ff3805fe5d1c505b4778b7",
+      "qa/openbao-acceptance/ldap_transport_upgrade.py": "60b73fd3197a80fb4ae24b8401fc272c3f3ba266b80b2cf1f1227191646ffe2a",
+      "qa/openbao-acceptance/live_migration_rehearsal.py": "d4951435987d3e8558cb345ded99d8889fedf4279b7cdaf6ed67baf10d589195",
+      "qa/openbao-acceptance/mac_lan_complete_http_live_20261019.py": "359f82fec28bb7f3bea01fce5149a00b001608fe9d0753b7b2011191524c0bda",
+      "qa/openbao-acceptance/macos_ssh_parent.py": "7f52a4d94d16760dedd2d9ece3ec3e43d59fc26bafa6a0aa713099199fe57b73",
+      "qa/openbao-acceptance/materialize_launch_07a3dda.py": "18428fa9c0bbab511559002ce88895263a8b45415b2a10ff1fedcf4e51122f4e",
+      "qa/openbao-acceptance/materialize_launch_b24c6de.py": "5a9f18122a7ba1a093302f05e0336a23d2d59be13b2822124634d56ee510e878",
+      "qa/openbao-acceptance/materialize_mac_git_07a3dda_r1.py": "15936c5b0e288edf72fac301ae1a595ea4da1192fad3b2c67f18b627b04ba52e",
+      "qa/openbao-acceptance/materialize_mac_git_b24c6de_r1.py": "e2ea90824fe91cae80823d410ed55dbad22a507149d85e606590ef9b58a87544",
+      "qa/openbao-acceptance/materialize_x230_07a3dda_r1.py": "49c11181bb4e75d0d589b9bab71e807663329dd774fb71b06aee441a95f5f290",
+      "qa/openbao-acceptance/materialize_x230_b24c6de_r1.py": "d301dee5b115e18b97324dcaa89bb51a796d1aab23f98bb211ee2ceb529ab4a7",
+      "qa/openbao-acceptance/migrate_auth_mount.py": "8a5b3d5f8a6300683645c29761fb43c77343cdd9039644d2ec7207ab85338365",
+      "qa/openbao-acceptance/migrate_identity.py": "8dee08f6aa277801e21714f5bf5037ff2ecedc018c2dc84583e81f156f637174",
+      "qa/openbao-acceptance/migrate_kv2.py": "5ff609bfaea6f2f98db3e8b0e7d6a18aa1c96cfc28826778231c025a4e1f88c8",
+      "qa/openbao-acceptance/migrate_policies.py": "c979a5714e180978bd78b39bb516570d04f94ff74905253ef9c9f8f82fe2905f",
+      "qa/openbao-acceptance/migrate_ssh_roles.py": "a54915ecbb6f00880fa7208b3250d7a3911de075b29a031288585ab647b62e45",
+      "qa/openbao-acceptance/migrate_transit.py": "0e9f13e626337827f41ffd4a6af0faab93febe20569e237fa551f2220efbf3b4",
+      "qa/openbao-acceptance/migration_preflight.py": "c2eb4bf0d4ef4a2ce00184cd2d70d89082a699f79e80fc9fb51a90fc725646f6",
+      "qa/openbao-acceptance/migration_preflight_live.py": "f85d1b55b2c658059097a9201a11778e3653ea573bf2669056b6ef1fbf948055",
+      "qa/openbao-acceptance/migration_snapshot_live.py": "4fec0bf24c3dd4460df381ac114dfb6f5dea1392a9acd64f9e94cdb59f70bd24",
+      "qa/openbao-acceptance/mount_discovery_live.py": "321690ec77bc3a5ba606fb6a08b6d5785a9b689176b3d2cbee421aab7b1ef087",
+      "qa/openbao-acceptance/mysql_live.py": "924f34471c264525628497c159be318bdba8d5fa96b7ff31114b6cda4dc93ec4",
+      "qa/openbao-acceptance/namespace_seal_live.py": "69e7345ee15d4c08fa1310f6fd18703ac4d9455e7355c5d936006a75a0829af2",
+      "qa/openbao-acceptance/namespace_tree_live.py": "16a1a6422fc535b15bb2b4a584368965ddad37fa28e9dd9754e683ac1bda6749",
+      "qa/openbao-acceptance/native_build_receipt_from_host_run.py": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+      "qa/openbao-acceptance/native_candidate_host_run.py": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06",
+      "qa/openbao-acceptance/native_fixture_recovery.py": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+      "qa/openbao-acceptance/native_ha_foreground_watchdog.py": "74925449ae1141848c2dcbbe798ed0030fbbf9b1f599187c211d02ec03d34d61",
+      "qa/openbao-acceptance/native_lan_tcp_diagnostic.py": "b68444472ab460c0fe6e5fafaa5536931619e3f22a116e34de1e9ce31fad947c",
+      "qa/openbao-acceptance/native_lan_tcp_diagnostic_agent.py": "196d4437811c6dc0798165e319e76fd2da4e26dd487171c1c02feb6f34ede5cd",
+      "qa/openbao-acceptance/native_linux_artifact_run.py": "9f7a530312cb8d92566da5c92b844d71b52a8fb74bd67268bcb816e35cb579e8",
+      "qa/openbao-acceptance/native_restore_fault_transport.py": "29779202b6b1bb5e0847a621dca905f24b0bc59a7f74d3a3ff128c82785c8495",
+      "qa/openbao-acceptance/native_restore_gate_controller.py": "c1265da7aca6a26c67f292f61899a34b95fc9021fad221bce7d668a74b9ed40a",
+      "qa/openbao-acceptance/native_service_only_compile.py": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+      "qa/openbao-acceptance/native_service_only_darwin_checks.py": "ddd2299be113a0ab2c5a70fc0337ef5787356d8fe833201eb7a974e821a6a225",
+      "qa/openbao-acceptance/native_snapshot_cli_live.py": "bad9b52056f5b6bcf1a9a98f87a3c4af50d0a68190c22bf5b7b91b9d2ca3bf08",
+      "qa/openbao-acceptance/native_snapshot_ha_live.py": "4610bec3e9096dab4298fa36d7182754ef3b52a69b16bb4173dbcb680c13a056",
+      "qa/openbao-acceptance/native_snapshot_ha_restore_fault_live.py": "d238ee3a0644b0af45d337a730c539fc93b0a42f29d6521099e95113c50dc855",
+      "qa/openbao-acceptance/native_snapshot_ha_restore_gated_live.py": "8bb9920f54c85d7efd0bf6c01bdae346b1da1ff01146c7dc6836d63fdca79c9d",
+      "qa/openbao-acceptance/native_snapshot_ha_restore_live.py": "b6d69539bf71fb136c274e0d3779b0a0c4dec741ce74fbd535732c3bf34a4059",
+      "qa/openbao-acceptance/native_snapshot_http_exact_run.py": "53cc6423e54aee23b33e85fb9746042ba3a7a507633ab24525469276db63bd4e",
+      "qa/openbao-acceptance/native_snapshot_http_exact_run_checks.py": "0c566800e47b4ed5c46ab31ac63eda19a043aeb50c79e3cc09f9ac4e606248b0",
+      "qa/openbao-acceptance/native_snapshot_redirect_live.py": "735336585a7797295d8563e6b8d5b0639a91ba59c921da1789425106181cce58",
+      "qa/openbao-acceptance/native_snapshot_rejection_live.py": "910b5ad05b32554dae5f8b856551f39ad4a11ac411cb5ae6feaebc5c32cf77a1",
+      "qa/openbao-acceptance/native_token_expiry.py": "94668e2a1a5e325ffd6cf71937c8cab973a8450048ff678dc3fb4fe8011d922f",
+      "qa/openbao-acceptance/native_v6_authbus_client_live.py": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e",
+      "qa/openbao-acceptance/native_v6_authbus_coordinator_live.py": "61c7720591995c64ab4c8f1d4a78be10b9569430f6bb52b86d95ddf13a277cad",
+      "qa/openbao-acceptance/native_v6_authbus_modes_live.py": "22da6b85f553b971d66a9303b971437853d13db217dc3caba153fa70ae9e5058",
+      "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py": "db58cf971b3d7bbdba76a8a81d1cb53477a22d8a58b0b688a70f306b68188fa8",
+      "qa/openbao-acceptance/native_v6_authbus_owned_source_live.py": "fb44eab74e56b5d098a8fe0656ff764332fcccca9fe6ab0c7bcc4f2dfe21c121",
+      "qa/openbao-acceptance/native_v6_authbus_refresh_live.py": "a1e284fda5a7aaf3615b50f46ade6bee58d67a302b0842b952eb5d69e2617f2f",
+      "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+      "qa/openbao-acceptance/native_v6_ha_multihost_live.py": "330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c",
+      "qa/openbao-acceptance/native_v6_ha_official_history_live.py": "758e5d6cc93900fd6c5de328446fce069f167fe1eb7c63fc1f2a8310231e04d5",
+      "qa/openbao-acceptance/native_v6_ha_official_history_wire.py": "15355994054c75d293a98f906b8762751b6edd59376a896267a9546ae8ceb080",
+      "qa/openbao-acceptance/native_v6_openclaw_authbus_live.py": "6d785c4d69ad800b7c9ac5f8510397031362ff5bca9947be024700e91235c98a",
+      "qa/openbao-acceptance/native_v6_paged128_lifecycle.py": "1fa7307f2241275510af3b74993cc70db19e02cb626b0aca4be5d1bb3d6f8020",
+      "qa/openbao-acceptance/native_v6_point_negative_http.py": "3327c6480c0375a19f5a4f24bafdc94f53f58cc0d857a0fdd005b0c39a1dac46",
+      "qa/openbao-acceptance/official_openbao_launcher.py": "b6bac1123e531ce69431105d01f26e987f151e7914365a7f1c637d38320d3535",
+      "qa/openbao-acceptance/oidc_code_live.py": "3ad8b9f40614d7f4640ffecf8910574c6175e967b2914e10a1ddff7b321ed6f7",
+      "qa/openbao-acceptance/oidc_native_upgrade.py": "9d8cb3d05991fcecd82cb2701a4205431e82b7bd7aafff6aa2fa4db458094afa",
+      "qa/openbao-acceptance/oidc_renewal_live.py": "272e746b25d7ca193764bf806fb497d67700543b20ba0020caaace821b679818",
+      "qa/openbao-acceptance/online_auth_ha.py": "cf5a2055be5c4672f5b9efad1588ff393517c4a981bb161e30ba598c6cc717d3",
+      "qa/openbao-acceptance/online_evidence.py": "3e15bc20dc4d1a75b4bd860252d887981020f1f9781be33d43a1c4ee26900ea9",
+      "qa/openbao-acceptance/openapi_live.py": "7a0eebefae1b0125fb48fe9f0d9e15f76c479ffd018d643feec19b560d93dee0",
+      "qa/openbao-acceptance/openldap_secret_live.py": "704772399d0a0d6290d5d9e6858e3b9de66388bf0292599aa7574060af11eb03",
+      "qa/openbao-acceptance/operators/next_gates_20261018/authbus_migration_gap_inventory_v3.py": "6e36468e50e6f458cd970779c2a1d7dda7aa761547381edacdb5e1d37e34d2ce",
+      "qa/openbao-acceptance/operators/next_gates_20261018/authbus_migration_gap_inventory_v3_tests.py": "2457096e0407ca233936dc207cb5611732b317bca3203de6bcf6f84edce00c17",
+      "qa/openbao-acceptance/operators/next_gates_20261018/authbus_migration_gap_v3_provenance_tests.py": "bb5554664d8bfecde3675ff17aceea18bfa18c1b4eebf1b0c0edd51df4f0c0b7",
+      "qa/openbao-acceptance/operators/next_gates_20261018/authbus_owned_source_r2_reconcile.py": "57f5f99ed41708945521480c005ed8438161aeda2c7051515d2ad91245e22642",
+      "qa/openbao-acceptance/operators/next_gates_20261018/freeze_archive_repair_r8m.py": "463cb139c4e1cd93c37fa42bdafc1814ba57b4334fd4174d8a0ab966bfba8c24",
+      "qa/openbao-acceptance/operators/next_gates_20261018/freeze_authbus_migration_gap_v3.py": "430dbd7528786d50f1989594e7d398e018151774665e573cfcc3160be3bbf5b0",
+      "qa/openbao-acceptance/operators/next_gates_20261018/freeze_native_shared_reuse_r8n.py": "7ef203b4468186298b008597ca7bb0463c90a4cce0889cdf2764484ec0a641f8",
+      "qa/openbao-acceptance/operators/next_gates_20261018/frozen_qa/test_native_v6_ha_multihost_live_query_r1.py": "adfaad3c846274069ffc720be4a9979bda9306f71c310f8a264418bced9de654",
+      "qa/openbao-acceptance/operators/next_gates_20261018/inspect_native_physical02_public.py": "27a8ab50dd2b3266ff98f8a3ddc4ed752bf6420b41a7507804994f58b0f656dd",
+      "qa/openbao-acceptance/operators/next_gates_20261018/inspect_native_physical02_public_r2.py": "f00edf4042e763edfc7d0a437e3c30b888fccf33bb1067d632a6b9f59d6c81f2",
+      "qa/openbao-acceptance/operators/next_gates_20261018/r8j_native_build_freeze.py": "1f90af9625d8efedf8e15ff42fed599f38b1b068ad968679012dd229b5453e84",
+      "qa/openbao-acceptance/operators/next_gates_20261018/r8j_native_physical_control.py": "3cd7c522faf091d7fdbd449641b1c45de4f10b9a07661862a3c6a34eeca9f997",
+      "qa/openbao-acceptance/operators/next_gates_20261018/r8j_native_physical_control_r2.py": "28c32d201b656e5bc68f9420bb72b1e9350c4ab408b18485ae0d1037c0501fef",
+      "qa/openbao-acceptance/operators/next_gates_20261018/rebuild_authbus_migration_gap_v3.py": "33cd50ea8c59f6d63812ad99dcdc72016af13e6cb3ceae9510a2b828ca03973a",
+      "qa/openbao-acceptance/operators/next_gates_20261018/recover_original_component_logs_r1.py": "27f2fd0adca2bcd00765064a72ce49bd755f0ad072ea48a06f58e0ef8332390a",
+      "qa/openbao-acceptance/operators/next_gates_20261018/run_archive_repair_r8m.py": "7b50253a449cf9815cea87236aed00d12e167de02caef6b2abd29bb59487caa4",
+      "qa/openbao-acceptance/operators/next_gates_20261018/run_authbus_migration_gap_v3_r1.py": "aec87e40852bf548982c92833eb75ec88ee1ecca108d7c8fe2dc26ee9061354d",
+      "qa/openbao-acceptance/operators/next_gates_20261018/run_authbus_migration_gap_v3_r1_tests.py": "9bb4dd5758f41a01133d19cadbcae4c8e3dc2e94e02aea42be809ee5b2e6a563",
+      "qa/openbao-acceptance/operators/next_gates_20261018/run_authbus_owned_source_actual_r2.py": "a5eb681bc5049693207a7583695883e870e1e88ce4acd69b516fd8b706d5995b",
+      "qa/openbao-acceptance/operators/next_gates_20261018/run_authbus_owned_source_actual_r2b.py": "e499bd67cae460aa1895805043194d22141f8890d6a08806fd3d9c93770d92db",
+      "qa/openbao-acceptance/operators/next_gates_20261018/run_native_shared_reuse_r8n_01.py": "e6bb00b8ce298a273b591e467a7352e10443cf9046f28473a9a61d4cce65a250",
+      "qa/openbao-acceptance/operators/next_gates_20261018/test_r8j_native_physical_control_r2.py": "a89d2f878d0f4bedbb355380ea699badf677c6b918b0323d001364cad03b3124",
+      "qa/openbao-acceptance/owned_process.py": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "qa/openbao-acceptance/physical_kv1_multihost_live.py": "2459169ecb9a426a5b02c3c6deb0018653397112f7a885d0e8bd90fc42f65f9e",
+      "qa/openbao-acceptance/pki_issuer_alias_strict_live.py": "cb0ec8a33af9d28394d221bf61525aea1e8584ad18c36060ceab0024b4d7e846",
+      "qa/openbao-acceptance/pki_live.py": "a7c839cf025a980dbd614d1cf613bced880c3ae6c1ad7ad43bc854b4509e4d45",
+      "qa/openbao-acceptance/pkiext_live.py": "275b757fc2562a1fe6601b01c9fa885fefefaaf998de620c3757c46cf0790ab9",
+      "qa/openbao-acceptance/plugin_auth_live.py": "6298040e30963bd647b47596ca2958f546dea495a2ab76a12b80ee31044aa9da",
+      "qa/openbao-acceptance/plugin_completion_live.py": "fec827f03d2a1b7bd70f13a4c0ff91b7514faa14e4638210651860cb1509945f",
+      "qa/openbao-acceptance/plugin_database_live.py": "8ddd81faa22881714e326235f44a21cc0cfde30a03d22b742424bce1a22f5ada",
+      "qa/openbao-acceptance/plugin_kms_live.py": "91a0f9732dd1689b036450818b1154927aa60e9867344bb887fd6b670bf97a06",
+      "qa/openbao-acceptance/plugin_secret_live.py": "04d19169f9cd00098a7e05d5bc4e479205c8c4e7f884490a13e1a063858c4c1b",
+      "qa/openbao-acceptance/policy_migration_live.py": "eb955437eb72fa25c8b33ac4d55e5a908aede2e58e423dc51a6e2179b78cb1bf",
+      "qa/openbao-acceptance/policy_parameters_live.py": "0b484b05e2491fd55b08e5826f1dcfec9c8c0675b34e2fa563be7610949e2d36",
+      "qa/openbao-acceptance/policy_templates_live.py": "f4b439d7d384d17aee4e09e8a91d2f5c4f80d137894dc3d8332fe759ce68d1a7",
+      "qa/openbao-acceptance/policy_wrapping_ttl_live.py": "d383ef3e826349959f02cab0f1617faf4c075e5799ef624009212de384ff1258",
+      "qa/openbao-acceptance/postgres_durable_live.py": "82677845cd263f0b8f88cb32c1dccb56b455950c8c759d16f40eb8e30602c625",
+      "qa/openbao-acceptance/postgres_generation_live.py": "f084c583981a9971b2cff56b524a732b0a3802a6dc87ac92de7aad4e5aecb92b",
+      "qa/openbao-acceptance/postgres_live.py": "2b83b716f3a2d64782accd93267e749b6a8df044aae8e5e2193917883c8cc622",
+      "qa/openbao-acceptance/postgres_password_authentication_live.py": "28be0e2006006217789b4dfd6c527ace4bc740d3f5dd0e5eddd52eb9c5637989",
+      "qa/openbao-acceptance/postgres_pipeline_ha.py": "295dd2384a575c5fbbfe21fa06a73c68e9d5ddff4896c22563e53b3d67f9c1aa",
+      "qa/openbao-acceptance/postgres_pipeline_simulated.py": "5f6ff66e76b0a1c8fe1cdb4f3f6a5355fff18529d92a9dbd7be177b16d7cee20",
+      "qa/openbao-acceptance/postgres_root_rotation_statements_live.py": "832369ee4b10c4cd8289f9605a45bc95043710e761c9d67e3dda04e017947d87",
+      "qa/openbao-acceptance/postgres_service_live.py": "32626c4e3503655e047479493d8bf0f448b011582100aef541fc320aa838e664",
+      "qa/openbao-acceptance/postgres_statement_templates_live.py": "5498919ed8605c03dc38d400adec9b93732d7ac8e8ad52fbbe1636e5b9227edb",
+      "qa/openbao-acceptance/postgres_static_rotation_live.py": "5f5db7746b1b0d2ba3e9bdcf0559841eb879140bd4e53ad29802cb2f19987410",
+      "qa/openbao-acceptance/postgres_storage_live.py": "26a9c28ba78947fe212063bc98434e8dbec09baaad20c9320b8c1e7f1a04eb27",
+      "qa/openbao-acceptance/postgres_wrapper_recovery_live.py": "8815f3b5d788fab486c95c8ca13c2720ba986b1612a837e11d40f724d529d312",
+      "qa/openbao-acceptance/prepare_snapshot_http3_config.py": "e92c8f5c9c0c3fe02603543ce459b6322f3d474cbe2d471af1ca3dccbece62a9",
+      "qa/openbao-acceptance/project_native_build_b24c6de_r1.py": "ab1c8e1a9f66eabaf92f58063b11d4e6a01ea90b35cadeec4522afd71095a95c",
+      "qa/openbao-acceptance/provider_concurrency_live.py": "62b2bfe5271917a2076c6e1978d1686071106bd57fe16a95c59f4695e0a4d2af",
+      "qa/openbao-acceptance/provider_login_wrapping_live.py": "9b0f3dcc81e3a5baca21a836edf296b071ecd792367d865202ba521da7baa3a6",
+      "qa/openbao-acceptance/provider_renewal_upgrade.py": "e92c0290ef5ff378835b9496c54c83e9d05791e0f047a74dea483a6b00158ba9",
+      "qa/openbao-acceptance/python_kv_cli_live.py": "3cc8d9c33cee4500b9848f82ec6c99b97ad2c6af8da905367548cb0059856632",
+      "qa/openbao-acceptance/quota_role_271_live.py": "ee068529e7f752502b5f3a687c871cd3c0cba30208c0f9bf59077e09ee650d4d",
+      "qa/openbao-acceptance/rabbitmq_live.py": "4cfb513cccfd388a6684736fc5cc2fcac87c5f89b2021bbe088ce8b57658d6de",
+      "qa/openbao-acceptance/radius_api_transport_upgrade.py": "269f7813ceb8c9d8b07277d87da41aa87b8704dbc31e079b924ddc7e7f061bb6",
+      "qa/openbao-acceptance/radius_bounded.py": "c2b236ebd4c7de778634b98409996d33cde88a9fcde58b205a9d52889b8160d7",
+      "qa/openbao-acceptance/radius_cidrs_ha.py": "d40816a379af79aef4306657d378e167b2c8caf9c615d47ec5804f3fdc779213",
+      "qa/openbao-acceptance/radius_cidrs_live.py": "b4fe3aaec8b652eb2a0cc4e58b5b1e10d8ca5c3c47a957fa1822e834de5ab221",
+      "qa/openbao-acceptance/radius_cidrs_upgrade.py": "a89c3801197f05f8d6c3d92745129b096ab6f9c172b07fee9a8bd5744e9fe46e",
+      "qa/openbao-acceptance/radius_config_native_upgrade.py": "0b3f04d8e0d70ea1d2c69241e3dabd179354034f60d77eb6b1b525947aa1d551",
+      "qa/openbao-acceptance/radius_native_live.py": "c06265544d5670016e3ef0eed6048b916e7efaa57dfa8522f8c611ef556925d9",
+      "qa/openbao-acceptance/radius_native_upgrade.py": "33cce0a88a02e617795a4340782ace5e3da6aecab10ceab9c4831adcb6f26285",
+      "qa/openbao-acceptance/radius_renewal_ha.py": "8553cb9efc65880820add47904aa2181ae1dd4337ad24fd3742cadaa3a296fc9",
+      "qa/openbao-acceptance/radius_renewal_live.py": "b678d2e60fb80edd66bc9109a70e5bee43da05f17b63e21fabbd093076a707ce",
+      "qa/openbao-acceptance/raft_membership_live.py": "300e9f48bc5d27ed0d5fcf4b05d07efdad72a43ca45c69934c5d71a3d96a2f93",
+      "qa/openbao-acceptance/raft_record_snapshot_observation.py": "d032f0096d88ecfb4dfd5bdc7110742780371ce8ce96da24c47f82674d95ef1b",
+      "qa/openbao-acceptance/raft_snapshot_observation.py": "b521c69fdd893f5b97790956016504ff0bcd2ba100ac49681c2c91cd86a37d84",
+      "qa/openbao-acceptance/raft_snapshot_upgrade.py": "82074d698a80d86ed68c55259b4d64777bb14351a0df0000ee6f0324cf72b97f",
+      "qa/openbao-acceptance/remote_jwks_compare.py": "1e32cab6eb176540e609618c3002642bf91ca2bf99a0499428eb8a1b09c23c42",
+      "qa/openbao-acceptance/remote_jwks_live.py": "e0076bcc703ee8cf5c641123e74514b73cffd0e4510ee779b53c1fe72fd90a18",
+      "qa/openbao-acceptance/renewal_cleanup.py": "cdbb31ef776b73003537923414be9faebf3523a347286d42945b8deaebf06bcb",
+      "qa/openbao-acceptance/replay_epoch_ha.py": "47cab46bd26d1b26ac3af53540ec23d9a4b2dfdf4266dc43934af77612c03577",
+      "qa/openbao-acceptance/response_wrapping.py": "366d2ce02fa51bbdc48d3fa160a116cf18c4cfaab47d126d36218676a44ba562",
+      "qa/openbao-acceptance/run_kv_metadata_patch_cli_bound.py": "1a7706b63ed834d7c6692886488041e1c94309b178837740d65d40f4eb13e320",
+      "qa/openbao-acceptance/run_official_comparison.py": "8c90828f19cadc9d5e5184fa01ef72bda5e7ca1b49079dcca756543d51efcff7",
+      "qa/openbao-acceptance/run_official_full34_mac_r1.py": "ed0e197b533775d55cf99194132b9317ad138b7a5ca237ba5acbb10e6980f8f5",
+      "qa/openbao-acceptance/sdk_storage_invalidation_multihost_live.py": "089a062023b7ca53555d07b241ff2d84645c804d00a7b33b356043be3d59df67",
+      "qa/openbao-acceptance/self_init_live.py": "78f7b69fbcdc29a2fa57ef8244f59aebb87fc36fabf3551dc02afcb4899b8ade",
+      "qa/openbao-acceptance/ssh_otp_ha.py": "e9f38cca8fb9fc06314e3f917f7853461a6f838bd23207d0bbdd064f713c6e5f",
+      "qa/openbao-acceptance/ssh_otp_live.py": "fc5b579129401549c2b5aef209c447878fb9743b345797c1e930e33157b7d957",
+      "qa/openbao-acceptance/ssh_role_migration_live.py": "c600a37f39ac1d53efe2a75742778002a2ab75e5620d90e7f057abc85b49e7a8",
+      "qa/openbao-acceptance/sys_leader_live.py": "33e0ff173c80929cc16ab7febc4fe4a35c5fa1b375e47391af06a48655f2d4f8",
+      "qa/openbao-acceptance/test_authbus_native_openai_once.py": "6954b186082a04d39a74bb989bd1c9d4db51dfa29836b1bf9e2c3c9882fd5efa",
+      "qa/openbao-acceptance/test_kv_metadata_cas_readiness.py": "24b335ed55b56e3cb8d960c4d8e5db43f24869e727cc2b582b0ad8cc41965986",
+      "qa/openbao-acceptance/test_native_v6_authbus_openai_refresh.py": "3be5fc6a14f394a9cef5953d16c53268422757a9e268423dbee955923ad1c1c3",
+      "qa/openbao-acceptance/test_native_v6_authbus_refresh.py": "0538692919adcc36b9569282aae253f225f7ed437e964fd97e8a23ce1615a0a7",
+      "qa/openbao-acceptance/test_native_v6_paged128_plan.py": "2361d5261647c43f591189a348d8fd8586c5529dca58bc776fcbc80984d33130",
+      "qa/openbao-acceptance/test_owned_process.py": "02833d14f5d48539e9f8f9a7f7dd22ead15102e677bf4fabf8176f804bf23195",
+      "qa/openbao-acceptance/test_pki_issuer_alias_strict_live.py": "88d98b824902f0dd4a2a05282bfd81d3427684d19d1049326a5d043e926fe372",
+      "qa/openbao-acceptance/test_transit_byok_live.py": "437263ada510498788408ff6e58d54a1a063b5f8cafe125c0e5ed8de5152f950",
+      "qa/openbao-acceptance/test_transit_derived_live.py": "a862cdd2b23f711d389b5ca69ee5dc4808c1ecc5657eb80b49c0ea18a7ef13a0",
+      "qa/openbao-acceptance/test_transit_transport_pending.py": "aaace6b130c870c287ff2dc142d9869bbe0611e4426e556b94c64e7e495f61a8",
+      "qa/openbao-acceptance/tls_complete_http_probe.py": "e8a060d7d6020f7d62f1db56fb07a82eda57987ae7d181dab1a3af88ebe0329a",
+      "qa/openbao-acceptance/token_child_lifetime_live.py": "ab64cb2d4194a415aa272657892b1912fcf3de2304109ae281669ba241a1521d",
+      "qa/openbao-acceptance/token_defaults_upgrade.py": "c13596ac69e91f12cadaf309bf6ed17e5e365c2c189f690e01dc198d7814bf47",
+      "qa/openbao-acceptance/token_mount_ttl_live.py": "5f259e4fed39661135b329947b05ec1db7a709e67b2a29f192cc5637e3dd5ff6",
+      "qa/openbao-acceptance/token_revoke_orphan_live.py": "510d2288513101ff3320e1ecced368e5c22ef8abd9b8e5bbeeebf7021c27f716",
+      "qa/openbao-acceptance/transit_asymmetric_live.py": "77fa4d8829fe160d79d30d8c26b3fe382719af69b078fa7e8173ba4b7e5b1c0f",
+      "qa/openbao-acceptance/transit_byok_live.py": "e789a0638ed3ce0a230c2025983cad0f5e63955aa1e95bd073e8731e3ebbc087",
+      "qa/openbao-acceptance/transit_convergent_aad_live.py": "c94bd64a5b4ab4ce54a3f4fde0fcd5ce357705e76b8a022ca6b2665e44052705",
+      "qa/openbao-acceptance/transit_derived_live.py": "5359b2769212986b977393ba60a9656999bfc2a6e8cc352b313cc6d32d4160fb",
+      "qa/openbao-acceptance/transit_migration_live.py": "b69e7a915e756a1537e06d71a913c142b672f9a1d4aa9fef73051a5c8e516743",
+      "qa/openbao-acceptance/transit_mldsa_live.py": "97267fc9693625bc564c931a4d2dd763584a7d29d2de3475a256b94ea24ff8a1",
+      "qa/openbao-acceptance/transit_xchacha_convergent_transport_focus.py": "3fca1ea8b761be085bf30aa156346e05ff7842e9efc24e336add611174bc6162",
+      "qa/openbao-acceptance/transit_xchacha_ordinary_transport_focus.py": "d1fab0e5011ee8fa8d90013317974b69f455d8eba49877c440fab24bdfd7ab59",
+      "qa/openbao-acceptance/userpass_alias_live.py": "614fd88ddca63fade5082f2c9b71520640193e7997c2e9802fa1534b4c40de44",
+      "qa/openbao-acceptance/userpass_batch_contract.py": "a606ad6941313d35be260e4b4501c3d3716f6eba8b649a1121a7b8061711678e",
+      "qa/openbao-acceptance/userpass_batch_ha.py": "ab89f5304805d8db31537be480569d6f745a9d630ce1891a773520ee23c1b5e7",
+      "qa/openbao-acceptance/userpass_batch_live.py": "12b64b2105da5d5ca147fea6e9574f8afa0891d694f2255d40800566ba443c56",
+      "qa/openbao-acceptance/userpass_batch_upgrade.py": "70eab261f29b27d0982ea54ef87b59d97e90f7aeb26d8270a10c57235c732c98",
+      "qa/openbao-acceptance/userpass_cidrs_live.py": "6fac178e0c12e03cfe48ef9440fe340e6c7325482965f26fa72117e9a26fbd5d",
+      "qa/openbao-acceptance/userpass_hash_live.py": "d2df94c94e22ce9ae91f8e3bda14bf88f7d736f834211332e4ddcce01234680b",
+      "qa/openbao-acceptance/userpass_names_ha.py": "74a735bdd6b57342c84a31c6583192e70687eed5430fe321d9dba0846a9bc653",
+      "qa/openbao-acceptance/userpass_names_live.py": "534fcbeb0b65067a72fd0c178da3361a0badfe7b8d2972fb979843313fc66da4",
+      "qa/openbao-acceptance/userpass_names_upgrade.py": "a14cbf47ab0accfc54399f851d92722df5e8b2aeb4b4d3f395cc88abd11cb8dc",
+      "qa/openbao-acceptance/userpass_native_ha.py": "33b87f6575551d0e30f2cefb8ff93a5c6340d4e736caae7d8d532a9e8620f248",
+      "qa/openbao-acceptance/userpass_native_live.py": "e3f1c1f48d6e2af3601bbc16133da37b5a14bca3b59565c01cc83a6df55e67d9",
+      "qa/openbao-acceptance/userpass_native_upgrade.py": "6e20dadbb451622db7daeb405bfa54edea68ef179547880b1c4b24d280d4f8e2",
+      "qa/openbao-acceptance/userpass_no_default_live.py": "81a0bc332a7afa2e6d839683c6a48a6225fdcd9ee8d4865fcdc49b211be1e8e0",
+      "qa/openbao-acceptance/userpass_params_ha.py": "6f324b6ae2c570c726e9ca8c4a86550d14d0c84ee329fe5087ee0976c24d226b",
+      "qa/openbao-acceptance/userpass_params_upgrade.py": "0d8c02b132885dbb30951d68fbd2bd364250ded700ab2c0598161d67052ed6da",
+      "qa/openbao-acceptance/userpass_password_live.py": "0e597045d2e17f28df4ab709ce1b8558947c1eaf40f1513e6af3b206bf87bef0",
+      "qa/openbao-acceptance/userpass_password_upgrade.py": "14a8a73b48668d57df3c3d0c351da9cc8b230b0b142383ab6723d55c50e8b222",
+      "qa/openbao-acceptance/userpass_variable_salt_live.py": "c300e9ad95c4d88a8b8baa29be0e1eda2622454132aec168e061a435bfb49b3b",
+      "qa/openbao-acceptance/valkey_live.py": "7d0128eec547d39a8d4c4161313e7cc301fef966be89924d9826f6415fac288a",
+      "qa/openbao-acceptance/workflow_live.py": "19cf0114b6dcdd169889dd929a64f4a7798898d0145922677a6dd69000abc961",
+      "qa/openbao-acceptance/wrapping_ha.py": "177ee8f3cd2f16d375af796b3abd56e0c72ead050d103f05a0957bccde0d6e37",
+      "qa/openbao-acceptance/wrapping_revoke_self_live.py": "8dce7dd889aff69c8fc3c91cb028cbc7c9561fc494a461e5718fcb39f2b2635f",
+      "qa/openbao-acceptance/wrapping_upgrade.py": "41e5e61eb6e61d2ee2c6d7f9f38a8ecb150fed1f5eab4b0c4b4b3a606c5ab33d",
+      "qa/single-node/smoke.py": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+      "tools/migration/kv2_http_once.py": "093cbbe1b2f293c946253bae3173eb280c4ae22512bbec741031951a63870412",
+      "tools/migration/kv2_lossless_raw.py": "633470fd47ca5d402fb2e175ecf57aaf43d9fa6c27b8ba4885d9fc43d4a989d2",
+      "tools/migration/kv2_native_large_http_once.py": "ea7b2e7c63e07ec0ae6035511a13f372d96081992022d3a9b2f4f3f39a13d455",
+      "tools/migration/openbao270_kv2_migrate.py": "7d49451fc876040ad1887de5170b6255a0a569d79894141e34c201d6d369f607",
+      "tools/migration/openbao270_kv2_snapshot_export.py": "56d35a6bcbd1c0b9615b0a27f7a3457cbfb67d2c8527abc2c9e3a06a45124eb2",
+      "tools/migration/openbao271_kv2_native_large_migrate.py": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d"
+    },
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e"
+  },
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.10360535234212875,
+      "exit_code": 0,
+      "label": "base-before-head-tree",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330812,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996428860554244,
+          1793996428860554244
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-before-head-tree.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 82,
+        "identity": [
+          2053,
+          3330811,
+          1000,
+          1000,
+          33152,
+          1,
+          82,
+          1793996428923554088,
+          1793996428923554088
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-before-head-tree.stdout",
+        "sha256": "2f4205cd7a34669628fe2626a0ba3abfcb97af58c4452092d94fe5d4abe3ff4d"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.22414144221693277,
+      "exit_code": 0,
+      "label": "base-before-clean",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330814,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996428964553987,
+          1793996428964553987
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-before-clean.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330813,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996428964553987,
+          1793996428964553987
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-before-clean.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "rev-parse",
+        "--is-shallow-repository"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.10700561106204987,
+      "exit_code": 0,
+      "label": "base-before-full",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330816,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996429188553432,
+          1793996429188553432
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-before-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6,
+        "identity": [
+          2053,
+          3330815,
+          1000,
+          1000,
+          33152,
+          1,
+          6,
+          1793996429244553293,
+          1793996429244553293
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-before-full.stdout",
+        "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "rev-parse",
+        "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c^{tree}"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.09473054576665163,
+      "exit_code": 0,
+      "label": "base-prerequisite",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330818,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996429297553162,
+          1793996429297553162
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-prerequisite.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "identity": [
+          2053,
+          3330817,
+          1000,
+          1000,
+          33152,
+          1,
+          41,
+          1793996429350553030,
+          1793996429350553030
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-prerequisite.stdout",
+        "sha256": "b2cec45720e59e9218f487ebb8b965b1f1fc5fccb8430d61c3a660fab40ead36"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 60,
+      "elapsed_seconds": 3.5901419278234243,
+      "exit_code": 0,
+      "label": "base-fsck",
+      "requested_cap_seconds": 60,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330820,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996429392552926,
+          1793996429392552926
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-fsck.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330819,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996429392552926,
+          1793996429392552926
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-fsck.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "clone",
+        "--no-hardlinks",
+        "--no-local",
+        "--no-checkout",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 90,
+      "elapsed_seconds": 2.7990024499595165,
+      "exit_code": 0,
+      "label": "clone",
+      "requested_cap_seconds": 90,
+      "stderr": {
+        "bytes": 99,
+        "identity": [
+          2053,
+          3330822,
+          1000,
+          1000,
+          33152,
+          1,
+          99,
+          1793996433039543862,
+          1793996433039543862
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/clone.stderr",
+        "sha256": "919aeff7f1871f779fecf8e211bb79599f965c9e43fa092b0a733184bdbda34a"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330821,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996432983544001,
+          1793996432983544001
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "bundle",
+        "verify",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/provenance/candidate.bundle"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 30,
+      "elapsed_seconds": 0.10523415403440595,
+      "exit_code": 0,
+      "label": "bundle-verify",
+      "requested_cap_seconds": 30,
+      "stderr": {
+        "bytes": 104,
+        "identity": [
+          2053,
+          3330855,
+          1000,
+          1000,
+          33152,
+          1,
+          104,
+          1793996435848536840,
+          1793996435848536840
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/bundle-verify.stderr",
+        "sha256": "ed49ef1d4c23c72834c3cafc064fc2117204f521f138ff88d0893ede20d30870"
+      },
+      "stdout": {
+        "bytes": 190,
+        "identity": [
+          2053,
+          3330847,
+          1000,
+          1000,
+          33152,
+          1,
+          190,
+          1793996435848536840,
+          1793996435848536840
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/bundle-verify.stdout",
+        "sha256": "cdcb8c8e2943052b375b7a8e2c5396a8cf4bfcb16ab19c638f4e74ad97d0f6f2"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "fetch",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/provenance/candidate.bundle",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 30,
+      "elapsed_seconds": 0.29842590680345893,
+      "exit_code": 0,
+      "label": "fetch-canonical",
+      "requested_cap_seconds": 30,
+      "stderr": {
+        "bytes": 149,
+        "identity": [
+          2053,
+          3330861,
+          1000,
+          1000,
+          33152,
+          1,
+          149,
+          1793996436141536105,
+          1793996436141536105
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/fetch-canonical.stderr",
+        "sha256": "467edd54db1d5e813cd9f8633d93457a497b6a7d1151128f12724f22788972c0"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330860,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996435888536740,
+          1793996435888536740
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/fetch-canonical.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "rev-parse",
+        "FETCH_HEAD"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.12029952881857753,
+      "exit_code": 0,
+      "label": "fetched-head",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330867,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996436187535990,
+          1793996436187535990
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/fetched-head.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "identity": [
+          2053,
+          3330866,
+          1000,
+          1000,
+          33152,
+          1,
+          41,
+          1793996436263535799,
+          1793996436263535799
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/fetched-head.stdout",
+        "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "checkout",
+        "--detach",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 30,
+      "elapsed_seconds": 0.599025767762214,
+      "exit_code": 0,
+      "label": "checkout",
+      "requested_cap_seconds": 30,
+      "stderr": {
+        "bytes": 198,
+        "identity": [
+          2053,
+          3330869,
+          1000,
+          1000,
+          33152,
+          1,
+          198,
+          1793996436808534432,
+          1793996436808534432
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/checkout.stderr",
+        "sha256": "b093fbb41e3aed82e5026c054e6f46faf22effcc2248fe3398f412e6c8313095"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330868,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996436308535687,
+          1793996436308535687
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/checkout.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 60,
+      "elapsed_seconds": 3.588848204817623,
+      "exit_code": 0,
+      "label": "candidate-fsck",
+      "requested_cap_seconds": 60,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335336,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996436907534184,
+          1793996436907534184
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-fsck.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3330856,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996436907534184,
+          1793996436907534184
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-fsck.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.10920931631699204,
+      "exit_code": 0,
+      "label": "candidate-head-tree",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335338,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996440497525143,
+          1793996440497525143
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-head-tree.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 82,
+        "identity": [
+          2053,
+          3335337,
+          1000,
+          1000,
+          33152,
+          1,
+          82,
+          1793996440553525001,
+          1793996440553525001
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-head-tree.stdout",
+        "sha256": "82fc52231f1c941f34ffb41327b1c18965fe20fd6c64e3fd899049b40062bc66"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.44710261980071664,
+      "exit_code": 0,
+      "label": "candidate-clean",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335340,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996440606524867,
+          1793996440606524867
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-clean.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335339,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996440606524867,
+          1793996440606524867
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-clean.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "rev-parse",
+        "--is-shallow-repository"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.12319743912667036,
+      "exit_code": 0,
+      "label": "candidate-full",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335342,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996441054523735,
+          1793996441054523735
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6,
+        "identity": [
+          2053,
+          3335341,
+          1000,
+          1000,
+          33152,
+          1,
+          6,
+          1793996441126523553,
+          1793996441126523553
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-full.stdout",
+        "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "rev-parse",
+        "HEAD^"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.11954554868862033,
+      "exit_code": 0,
+      "label": "candidate-parent",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335344,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996441178523422,
+          1793996441178523422
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-parent.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "identity": [
+          2053,
+          3335343,
+          1000,
+          1000,
+          33152,
+          1,
+          41,
+          1793996441233523283,
+          1793996441233523283
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-parent.stdout",
+        "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-4bde9",
+        "diff",
+        "--name-only",
+        "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.13708605710417032,
+      "exit_code": 0,
+      "label": "candidate-test-diff",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335346,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996441298523118,
+          1793996441298523118
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-test-diff.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 55,
+        "identity": [
+          2053,
+          3335345,
+          1000,
+          1000,
+          33152,
+          1,
+          55,
+          1793996441391522883,
+          1793996441391522883
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/candidate-test-diff.stdout",
+        "sha256": "5c522fba7d6fe07efdc0ac1237e8755176c3c3ac9e368dd9ab87a7f638169065"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.09572176914662123,
+      "exit_code": 0,
+      "label": "base-after-head-tree",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335348,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996442392520348,
+          1793996442392520348
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-after-head-tree.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 82,
+        "identity": [
+          2053,
+          3335347,
+          1000,
+          1000,
+          33152,
+          1,
+          82,
+          1793996442442520221,
+          1793996442442520221
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-after-head-tree.stdout",
+        "sha256": "2f4205cd7a34669628fe2626a0ba3abfcb97af58c4452092d94fe5d4abe3ff4d"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.10724628297612071,
+      "exit_code": 0,
+      "label": "base-after-clean",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335350,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996442489520102,
+          1793996442489520102
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-after-clean.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335349,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996442489520102,
+          1793996442489520102
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-after-clean.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+        "rev-parse",
+        "--is-shallow-repository"
+      ],
+      "attempts": 1,
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.09510178631171584,
+      "exit_code": 0,
+      "label": "base-after-full",
+      "requested_cap_seconds": 15,
+      "stderr": {
+        "bytes": 0,
+        "identity": [
+          2053,
+          3335352,
+          1000,
+          1000,
+          33152,
+          1,
+          0,
+          1793996442596519831,
+          1793996442596519831
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-after-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6,
+        "identity": [
+          2053,
+          3335351,
+          1000,
+          1000,
+          33152,
+          1,
+          6,
+          1793996442647519702,
+          1793996442647519702
+        ],
+        "path": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/source-preparation-r1/base-after-full.stdout",
+        "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+      },
+      "timed_out": false
+    }
+  ]
+}

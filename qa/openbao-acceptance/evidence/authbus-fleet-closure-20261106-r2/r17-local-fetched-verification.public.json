@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.r17-local-fetched-verification.r1",
+  "head": "6d9dadcfc9b90ca33822f63320a5f961332dc3a9",
+  "tree": "891754a69b54e2bfb220f00274dddacbaf303e04",
+  "rootFilesExact": 34,
+  "agentBlobFilesExact": 205,
+  "outsideQaDocsProductChanges": [],
+  "workingTreeStatus": [],
+  "allExpectedBytesVerified": true
+}

@@ -1,0 +1,9 @@
+{
+  "capsule_sha256": "c91ce0e4a7f465ff3db1748905413cfc9c5ca3b736124fcc890a4872bf50ec62",
+  "ciphertext_sha256": "bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917",
+  "peer_public_key_sha256": "8cfb95be3707303b5f2a9bfc2ddc090d75c97b2a5960cc6dbfbfc59a331efe53",
+  "schema": 1,
+  "scope": "synthetic_fixture_transport_only",
+  "vault_binary_sha256": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+  "vault_id": "GAUCEkJXBim6YJXO3Gg9kg"
+}

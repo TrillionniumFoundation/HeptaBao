@@ -1,0 +1,14 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/mac_rust_tls_worker_stack_r1.py": "ce89e5f4b3091ee8224bd2773dae1705cf58f53f",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/mac_rust_tls_coordinator_stack_r1.body.py": "9735e1eb9dba23f8fb8cf35fb0eb6483ab6ac6e2",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/mac_rust_tls_coordinator_stack_r1.py": "c0e7a0dd283e44d36009ad0f739b2280de324396",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/mac-rust-tls-stack-minimal.diff": "d557fa387b78040dfaae014044dbe7f18ced434c",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/test_mac_rust_tls_stack_projection.py": "71cd26ca9e5490bb4bb0a22a30ed903ab63fb774",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/sample-tool-info.original.json": "88c89381765e6200b445a5c4dfac3e38cf1a5fb4",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/lsof-tool-info.original.json": "1613a2ee9c70ce12f6d2481c5a5cf38a8f469a1e",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/sample-usage/request.public.json": "798668dd6a3f69ec28db63d4cae3e965430dc875",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/sample-usage/runtime-launch.original.json": "b97ff44a76717644b530030b084120edd9835eeb",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/sample-usage/runtime-status.original.json": "f63653c797182a8011184b956236893cf1100207",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/sample-usage/runtime-read.original.json": "7bf14d5665ce137c08faf008745fe4f105b4b97c",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/preparation.public.json": "1a803323cf56dcca47ffb08a5ef0c8cc9e0c74b2"
+}

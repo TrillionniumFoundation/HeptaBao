@@ -1,0 +1,154 @@
+{
+  "allowlist_canonical_sha256": "a37331721a7560b60029c08db9423dd5eda57dc3855c889c492a4a6b79729644",
+  "controller_admission_budget_seconds": 210,
+  "controller_root": "/home/qian-qi/heptabao-next-gates-20261017/authbus-migration-gap-v3-r1-controller",
+  "hosts": [
+    {
+      "expected_home": "/home/qian-qi",
+      "expected_platform": "Linux",
+      "expected_uid": 1000,
+      "host": "main",
+      "operation_root": "/home/qian-qi/heptabao-next-gates-20261017/authbus-migration-gap-v3-r1-main",
+      "reference_counts": {
+        "backup_runtime": 17,
+        "binding_files": 3,
+        "missing_agents": 2,
+        "relay_dependencies": 0,
+        "relay_startups": 0,
+        "secretrefs": 0
+      },
+      "scanner_argv_tail": [
+        "-I",
+        "-B",
+        "/home/qian-qi/heptabao-next-gates-20261017/authbus-migration-gap-v3-r1-main/authbus_migration_gap_inventory_v3.py",
+        "--host",
+        "main"
+      ],
+      "transport": "runtime_main_local"
+    },
+    {
+      "expected_home": "/Users/qianqi",
+      "expected_platform": "Darwin",
+      "expected_uid": 501,
+      "host": "macbook-pro",
+      "operation_root": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-migration-gap-v3-r1",
+      "reference_counts": {
+        "backup_runtime": 10,
+        "binding_files": 3,
+        "missing_agents": 0,
+        "relay_dependencies": 8,
+        "relay_startups": 4,
+        "secretrefs": 9
+      },
+      "scanner_argv_tail": [
+        "-I",
+        "-B",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-migration-gap-v3-r1/authbus_migration_gap_inventory_v3.py",
+        "--host",
+        "macbook-pro"
+      ],
+      "transport": "strict_ssh_alias"
+    },
+    {
+      "expected_home": "/home/qian-qi",
+      "expected_platform": "Linux",
+      "expected_uid": 1000,
+      "host": "rog",
+      "operation_root": "/home/qian-qi/heptabao-authbus-migration-gap-v3-r1",
+      "reference_counts": {
+        "backup_runtime": 3,
+        "binding_files": 3,
+        "missing_agents": 0,
+        "relay_dependencies": 0,
+        "relay_startups": 0,
+        "secretrefs": 2
+      },
+      "scanner_argv_tail": [
+        "-I",
+        "-B",
+        "/home/qian-qi/heptabao-authbus-migration-gap-v3-r1/authbus_migration_gap_inventory_v3.py",
+        "--host",
+        "rog"
+      ],
+      "transport": "strict_ssh_alias"
+    },
+    {
+      "expected_home": "/home/alex",
+      "expected_platform": "Linux",
+      "expected_uid": 1000,
+      "host": "pocket4",
+      "operation_root": "/home/alex/heptabao-authbus-migration-gap-v3-r1",
+      "reference_counts": {
+        "backup_runtime": 8,
+        "binding_files": 3,
+        "missing_agents": 0,
+        "relay_dependencies": 0,
+        "relay_startups": 0,
+        "secretrefs": 8
+      },
+      "scanner_argv_tail": [
+        "-I",
+        "-B",
+        "/home/alex/heptabao-authbus-migration-gap-v3-r1/authbus_migration_gap_inventory_v3.py",
+        "--host",
+        "pocket4"
+      ],
+      "transport": "strict_ssh_alias"
+    }
+  ],
+  "maximum_scanner_stdout_bytes": 8388608,
+  "maximum_transport_stdout_bytes": 12582912,
+  "mode": "plan_only",
+  "owned_transport_cleanup_grace_seconds": 5,
+  "per_host_transport_timeout_seconds": 45,
+  "production_mutation": false,
+  "qualification": {
+    "allClientsAndBackupsMigrated": false,
+    "backupRestoreQualified": false,
+    "legacyCleanupQualified": false,
+    "metadataOnly": true,
+    "productionCutoverQualified": false,
+    "providerLivenessQualified": false
+  },
+  "receipt_part_decoded_bytes": 36000,
+  "receipt_set_sha256": "bf03a5819e325fac277a2de74768c2639dcb9650cf47285d87e77d26a2f1068c",
+  "remote_called": false,
+  "required_outer_runtime_timeout_seconds": 300,
+  "scanner_timeout_seconds": 30,
+  "schema": "authbus-migration-gap-controller-v3-r1",
+  "source": {
+    "bytes": 114576,
+    "name": "authbus_migration_gap_inventory_v3.py",
+    "sha256": "6e36468e50e6f458cd970779c2a1d7dda7aa761547381edacdb5e1d37e34d2ce"
+  },
+  "ssh_options": [
+    "ssh",
+    "-T",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "ConnectTimeout=10",
+    "-o",
+    "ServerAliveInterval=5",
+    "-o",
+    "ServerAliveCountMax=2",
+    "-o",
+    "ClearAllForwardings=yes",
+    "-o",
+    "ForwardAgent=no",
+    "-o",
+    "PermitLocalCommand=no",
+    "-o",
+    "ProxyCommand=none",
+    "-o",
+    "ProxyJump=none",
+    "-o",
+    "ControlMaster=no",
+    "-o",
+    "ControlPath=none",
+    "-o",
+    "LogLevel=ERROR"
+  ]
+}

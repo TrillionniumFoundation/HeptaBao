@@ -121,7 +121,7 @@ SHA_EXPRESSIONS = frozenset("".join(value.split()) for value in (
     "${{ matrix.source_kind == 'merge' && github.sha || (github.event.pull_request.head.sha || github.sha) }}",
 ))
 HISTORICAL_READ_TOKEN_FILE = "plan-v1.3.1-head-and-merge-closure.yml"
-HISTORICAL_READ_TOKEN_DIGEST = "738b38909dc8bc44a8e848252bf7dc30c3a540a7641da8f6002c9a263b39017d"
+HISTORICAL_READ_TOKEN_DIGEST = "5542b4ed6012fa26e06c9281a63bc7191ce372173bc1b4c5a8b365189af5a071"
 HISTORICAL_READ_TOKEN_LOCATIONS = frozenset({
     "workflow.jobs.full-technical-matrix.steps[1].env.GH_TOKEN",
     "workflow.jobs.full-technical-matrix.steps[11].env.GH_TOKEN",

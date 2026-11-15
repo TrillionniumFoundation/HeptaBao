@@ -1,0 +1,51 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1",
+  "executable": "/usr/bin/python3",
+  "host": "pocket4",
+  "idempotency_key": "pocket4-current4b-public-artifact-export-inputs-20261106-r1",
+  "source_pins": [
+    {
+      "bytes": 33147,
+      "name": "x230_current_candidate_qualification.py",
+      "sha256": "448696002a72dbca1c9d2b070d826a34aac4ef0bc4ad7c3e77feab7a66fa7655"
+    },
+    {
+      "bytes": 22881,
+      "name": "x230_native_abi_capture.py",
+      "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63"
+    },
+    {
+      "bytes": 14323,
+      "name": "x230_native_abi_admission.py",
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    {
+      "bytes": 26131,
+      "name": "kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "bytes": 729,
+      "name": "producer-abi.terminal.exact-tool-text.json",
+      "sha256": "0f71a30b723ec5a58882d95bfbe88395553c97f4cd038058bdbc10cdf32e6051"
+    },
+    {
+      "bytes": 729,
+      "name": "x230-static-abi.terminal.exact-tool-text.json",
+      "sha256": "083e3abfb39cbe4edb4270ebb5802906a59cb322192500723820bd6a51771f1c"
+    },
+    {
+      "bytes": 8158,
+      "name": "transfer.manifest.public.json",
+      "sha256": "782e3048c803228436ee0a8a0b71b61794c59df0b4e1707a4b2e2d0a0f26ca02"
+    }
+  ],
+  "stdin_sha256": "f85502debff8019703871e8e9a67180213a4b028f28951cc67c0962945b05cca",
+  "timeout_seconds": 30
+}

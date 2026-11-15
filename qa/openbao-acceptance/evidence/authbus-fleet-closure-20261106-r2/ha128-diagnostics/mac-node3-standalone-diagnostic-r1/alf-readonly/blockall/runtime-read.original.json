@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1b338b679-fc05-812c",
+  "stderr": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  },
+  "stdout": {
+    "bytes_hex": "4669726577616c6c2068617320626c6f636b20616c6c2073746174652073657420746f2064697361626c65642e0a",
+    "eof": true,
+    "next_offset": 46,
+    "offset": 0,
+    "size": 46,
+    "text": "Firewall has block all state set to disabled.\n"
+  }
+}

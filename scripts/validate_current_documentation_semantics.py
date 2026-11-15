@@ -58,6 +58,14 @@ def runtime_closure(root: Path, packages: dict[str, dict]) -> set[str]:
                     continue
                 dependency = value.get("package", alias)
                 if dependency not in packages:
+                    # The current runtime map covers HeptaBao workspace crates.
+                    # Vendored third-party path packages (for example the pinned
+                    # QR encoder under vendor/) are still locked source inputs,
+                    # but are not HeptaBao modules that need a module guide.
+                    dependency_root = (root / value["path"]).resolve()
+                    workspace_crates = (root / "crates").resolve()
+                    if workspace_crates not in dependency_root.parents:
+                        continue
                     raise ValueError(f"unmapped runtime path dependency: {dependency}")
                 if dependency not in closure:
                     closure.add(dependency)
@@ -65,16 +73,45 @@ def runtime_closure(root: Path, packages: dict[str, dict]) -> set[str]:
     return closure
 
 
+def current_packages(root: Path, inventory_module, details: dict[str, dict]) -> dict[str, dict]:
+    """Reconstruct package navigation from manifests, independent of compact snapshot shape."""
+    packages: dict[str, dict] = {}
+    for member in inventory_module.members(root):
+        manifest = tomllib.loads((root / member / "Cargo.toml").read_text())
+        name = manifest["package"]["name"]
+        if name in packages:
+            raise ValueError(f"duplicate current package: {name}")
+        packages[name] = {
+            "package": name,
+            "root": member,
+            "guide": f"docs/modules/{name}.md",
+        }
+    if set(packages) != set(details):
+        raise ValueError("compact inventory details differ from current workspace package set")
+    return packages
+
+
 def validate(root: Path = ROOT) -> list[str]:
-    errors: list[str] = []
+    coverage_spec = importlib.util.spec_from_file_location("documentation_coverage", Path(__file__).with_name("current_compatibility_coverage.py"))
+    if coverage_spec is None or coverage_spec.loader is None:
+        return ["cannot load compatibility documentation coverage guard"]
+    coverage_module = importlib.util.module_from_spec(coverage_spec)
+    coverage_spec.loader.exec_module(coverage_module)
+    errors: list[str] = coverage_module.validate(root)
+    truth_spec = importlib.util.spec_from_file_location("runtime_doc_truth", Path(__file__).with_name("validate_runtime_doc_truth.py"))
+    if truth_spec is None or truth_spec.loader is None:
+        return errors + ["cannot load current runtime documentation guard"]
+    truth_module = importlib.util.module_from_spec(truth_spec)
+    truth_spec.loader.exec_module(truth_module)
+    errors.extend(truth_module.validate(root))
     spec = importlib.util.spec_from_file_location("semantic_inventory", root / "scripts/current_source_inventory.py")
     if spec is None or spec.loader is None:
         return ["cannot load current inventory for documentation semantics"]
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     try:
-        snapshot, details = module.inventory(root)
-        packages = {row["package"]: row for row in snapshot["modules"]}
+        _snapshot, details = module.inventory(root)
+        packages = current_packages(root, module, details)
         closure = runtime_closure(root, packages)
         for name, row in packages.items():
             text = (root / row["guide"]).read_text()

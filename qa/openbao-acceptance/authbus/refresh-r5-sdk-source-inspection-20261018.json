@@ -1,0 +1,534 @@
+{
+  "schema": "authbus-r5-sdk-source-inspection",
+  "sdk_root": "/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw",
+  "package_name": "openclaw",
+  "package_version": "2026.7.1-2",
+  "sdk_code_executed": false,
+  "credential_files_read": false,
+  "discovery": "three-known-R4-files-and-relevant-static-imports",
+  "global_dist_scan_performed": false,
+  "unresolved_external_imports": [],
+  "skipped": [],
+  "file_count": 15,
+  "source_bytes": 210424,
+  "all_expected_bindings_match": true,
+  "files": [
+    {
+      "path": "dist/oauth-B4aOCsid.js",
+      "reason": "known-R4-boundary",
+      "size": 34532,
+      "sha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+      "expected_sha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+      "matches_R4_binding": true,
+      "imports": [
+        {
+          "specifier": "./string-coerce-DW4mBlAt.js",
+          "clause": "{ a as normalizeLowercaseStringOrEmpty }"
+        },
+        {
+          "specifier": "./redact-B9QQ4Wyz.js",
+          "clause": "{ c as redactSensitiveText }"
+        },
+        {
+          "specifier": "./number-coercion-CJQ8TR--.js",
+          "clause": "{ o as asDateTimestampMs }"
+        },
+        {
+          "specifier": "./errors-sMD712F3.js",
+          "clause": "{ i as formatErrorMessage }"
+        },
+        {
+          "specifier": "./types.secrets-OocW4TQ1.js",
+          "clause": "{ p as normalizeSecretInputString, s as coerceSecretRef }"
+        },
+        {
+          "specifier": "./provider-id-Dq06Bcx6.js",
+          "clause": "{ i as normalizeProviderId }"
+        },
+        {
+          "specifier": "./resolve-ZNWkJyct.js",
+          "clause": "{ n as resolveSecretRefString }"
+        },
+        {
+          "specifier": "./keyed-async-queue-CTreGrmR.js",
+          "clause": "{ t as KeyedAsyncQueue }"
+        },
+        {
+          "specifier": "./io-By0s-a_s.js",
+          "clause": "{ i as getRuntimeConfig }"
+        },
+        {
+          "specifier": "./provider-auth-aliases-Cp2PXhsh.js",
+          "clause": "{ r as resolveProviderIdForAuth }"
+        },
+        {
+          "specifier": "./file-lock-B0CJDvN6.js",
+          "clause": "{ o as withFileLock }"
+        },
+        {
+          "specifier": "./runtime-snapshots-D6VA-VN8.js",
+          "clause": "{ f as resolveOAuthRefreshLockPath, i as hasRuntimeAuthProfileStoreSnapshot, l as resolveAuthStorePath, n as getRuntimeAuthProfileStoreSnapshot, o as setRuntimeAuthProfileStoreSnapshot }"
+        },
+        {
+          "specifier": "./source-check-ZSz5NzGW.js",
+          "clause": "{ E as shouldMirrorRefreshedOAuthCredential, M as OAUTH_REFRESH_LOCK_OPTIONS, P as log, S as shouldBootstrapFromExternalCliCredential, _ as areOAuthCredentialsEquivalent, b as isSafeToAdoptMainStoreOAuthIdentity, j as OAUTH_REFRESH_CALL_TIMEOUT_MS, v as hasUsableOAuthCredential, w as shouldReplaceStoredOAuthCredential, y as isSafeToAdoptBootstrapOAuthIdentity }"
+        },
+        {
+          "specifier": "./credential-state-BY-oz-QV.js",
+          "clause": "{ a as resolveTokenExpiryState, n as evaluateStoredCredentialEligibility }"
+        },
+        {
+          "specifier": "./store-DH33UrUj.js",
+          "clause": "{ f as resolvePersistedAuthProfileOwnerAgentDir, h as readExternalCliBootstrapCredential, i as ensureAuthProfileStoreWithoutExternalProfiles, l as loadAuthProfileStoreForSecretsRuntime, m as updateAuthProfileStoreWithLock, u as loadAuthProfileStoreWithoutExternalProfiles }"
+        },
+        {
+          "specifier": "./provider-runtime.runtime.js",
+          "clause": "{ i as formatProviderAuthProfileApiKeyWithPlugin, n as buildProviderAuthDoctorHintWithPlugin, o as refreshProviderOAuthCredentialWithPlugin }"
+        },
+        {
+          "specifier": "./oauth-BcZS_BvC.js",
+          "clause": "{ r as getOAuthProviders, t as getOAuthApiKey }"
+        },
+        {
+          "specifier": "./normalize-secret-input-Df_qhWv_.js",
+          "clause": "{ t as normalizeOptionalSecretInput }"
+        },
+        {
+          "specifier": "./chutes-oauth-YFvuN1-a.js",
+          "clause": "{ a as refreshChutesTokens }"
+        },
+        {
+          "specifier": "./oauth-refresh-failure-Df54GmgP.js",
+          "clause": "{ t as OAuthRefreshFailureError }"
+        },
+        {
+          "specifier": "./policy-NS6r94Bl.js",
+          "clause": "{ t as assertNoOAuthSecretRefPolicyViolations }"
+        },
+        {
+          "specifier": "./profiles-DyU-YCq2.js",
+          "clause": "{ t as clearLastGoodProfileWithLock }"
+        },
+        {
+          "specifier": "./repair-BOGHSorR.js",
+          "clause": "{ n as suggestOAuthProfileIdForLegacyDefault }"
+        }
+      ]
+    },
+    {
+      "path": "dist/profiles-DyU-YCq2.js",
+      "reason": "known-R4-boundary",
+      "size": 8580,
+      "sha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "expected_sha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "matches_R4_binding": true,
+      "imports": [
+        {
+          "specifier": "./string-normalization-CRyoFBPt.js",
+          "clause": "{ l as normalizeStringEntries }"
+        },
+        {
+          "specifier": "./provider-id-Dq06Bcx6.js",
+          "clause": "{ i as normalizeProviderId, t as findNormalizedProviderKey }"
+        },
+        {
+          "specifier": "./provider-auth-aliases-Cp2PXhsh.js",
+          "clause": "{ r as resolveProviderIdForAuth }"
+        },
+        {
+          "specifier": "./store-DH33UrUj.js",
+          "clause": "{ m as updateAuthProfileStoreWithLock, p as saveAuthProfileStore, r as ensureAuthProfileStoreForLocalUpdate }"
+        },
+        {
+          "specifier": "./normalize-secret-input-Df_qhWv_.js",
+          "clause": "{ n as normalizeSecretInput }"
+        },
+        {
+          "specifier": "./profile-list-XT2LKXsd.js",
+          "clause": "{ n as listProfilesForProvider, t as dedupeProfileIds }"
+        }
+      ]
+    },
+    {
+      "path": "dist/store-DH33UrUj.js",
+      "reason": "known-R4-boundary",
+      "size": 40383,
+      "sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "expected_sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "matches_R4_binding": true,
+      "imports": [
+        {
+          "specifier": "./number-coercion-CJQ8TR--.js",
+          "clause": "{ o as asDateTimestampMs }"
+        },
+        {
+          "specifier": "./utils-CRO4LGEB.js",
+          "clause": "{ c as isRecord }"
+        },
+        {
+          "specifier": "./provider-id-Dq06Bcx6.js",
+          "clause": "{ i as normalizeProviderId }"
+        },
+        {
+          "specifier": "./runtime-snapshots-D6VA-VN8.js",
+          "clause": "{ a as replaceRuntimeAuthProfileStoreSnapshots$1, g as cloneAuthProfileStore, i as hasRuntimeAuthProfileStoreSnapshot, l as resolveAuthStorePath, n as getRuntimeAuthProfileStoreSnapshot$1, o as setRuntimeAuthProfileStoreSnapshot, t as clearRuntimeAuthProfileStoreSnapshots$1 }"
+        },
+        {
+          "specifier": "./source-check-ZSz5NzGW.js",
+          "clause": "{ A as MINIMAX_CLI_PROFILE_ID, C as shouldPersistRuntimeExternalOAuthProfile, D as CLAUDE_CLI_PROFILE_ID, N as OPENAI_CODEX_DEFAULT_PROFILE_ID, P as log, S as shouldBootstrapFromExternalCliCredential, T as isSafeToCopyOAuthIdentity, _ as areOAuthCredentialsEquivalent, a as buildPersistedAuthProfileSecretsStore, b as isSafeToAdoptMainStoreOAuthIdentity, c as loadPersistedAuthProfileStore, d as buildPersistedAuthProfileState, k as EXTERNAL_CLI_SYNC_TTL_MS, l as mergeAuthProfileStores, m as savePersistedAuthProfileState, p as loadPersistedAuthProfileState, u as mergeOAuthFileIntoStore, v as hasUsableOAuthCredential, x as overlayRuntimeExternalOAuthProfiles, y as isSafeToAdoptBootstrapOAuthIdentity }"
+        },
+        {
+          "specifier": "./provider-runtime-CLQOjLJ6.js",
+          "clause": "{ S as resolveExternalAuthProfilesWithPlugins }"
+        },
+        {
+          "specifier": "./cli-credentials-B074Y7I_.js",
+          "clause": "{ i as readMiniMaxCliCredentialsCached, n as readCodexCliCredentialsCached, t as readClaudeCliCredentialsCached }"
+        },
+        {
+          "specifier": "./sqlite-B1ze-fre.js",
+          "clause": "{ c as writePersistedAuthProfileStoreRaw, o as runAuthProfileWriteTransaction, r as readPersistedAuthProfileStoreRaw, s as writePersistedAuthProfileStateRaw }"
+        },
+        {
+          "specifier": "node:util",
+          "clause": "{ isDeepStrictEqual }"
+        }
+      ]
+    },
+    {
+      "path": "dist/runtime-snapshots-D6VA-VN8.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 6837,
+      "sha256": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./paths-BMBAvkNf.js",
+          "clause": "{ v as resolveStateDir }"
+        },
+        {
+          "specifier": "./utils-CRO4LGEB.js",
+          "clause": "{ m as resolveUserPath }"
+        },
+        {
+          "specifier": "./agent-scope-config-BxAUeF6t.js",
+          "clause": "{ s as resolveDefaultAgentDir }"
+        },
+        {
+          "specifier": "./sqlite-B1ze-fre.js",
+          "clause": "{ a as resolveAuthProfileDatabasePath }"
+        },
+        {
+          "specifier": "node:path",
+          "clause": "path"
+        }
+      ]
+    },
+    {
+      "path": "dist/source-check-ZSz5NzGW.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 41853,
+      "sha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./string-coerce-DW4mBlAt.js",
+          "clause": "{ c as normalizeOptionalString }"
+        },
+        {
+          "specifier": "./record-coerce-DHZ4bFlT.js",
+          "clause": "{ o as isRecord }"
+        },
+        {
+          "specifier": "./number-coercion-CJQ8TR--.js",
+          "clause": "{ o as asDateTimestampMs, s as asFiniteNumber }"
+        },
+        {
+          "specifier": "./paths-BMBAvkNf.js",
+          "clause": "{ _ as resolveOAuthPath }"
+        },
+        {
+          "specifier": "./string-normalization-CRyoFBPt.js",
+          "clause": "{ _ as uniqueStrings, d as normalizeTrimmedStringList }"
+        },
+        {
+          "specifier": "./types.secrets-OocW4TQ1.js",
+          "clause": "{ s as coerceSecretRef }"
+        },
+        {
+          "specifier": "./subsystem-C3fiUGN1.js",
+          "clause": "{ t as createSubsystemLogger }"
+        },
+        {
+          "specifier": "./provider-id-Dq06Bcx6.js",
+          "clause": "{ i as normalizeProviderId }"
+        },
+        {
+          "specifier": "./boolean-CrriykWV.js",
+          "clause": "{ t as asBoolean }"
+        },
+        {
+          "specifier": "./runtime-snapshots-D6VA-VN8.js",
+          "clause": "{ d as resolveLegacyAuthStorePath, g as cloneAuthProfileStore, l as resolveAuthStorePath, n as getRuntimeAuthProfileStoreSnapshot, r as hasAnyRuntimeAuthProfileStoreSource, s as resolveAuthStatePath }"
+        },
+        {
+          "specifier": "./json-file-BDBAJUrO.js",
+          "clause": "{ t as loadJsonFile }"
+        },
+        {
+          "specifier": "./credential-state-BY-oz-QV.js",
+          "clause": "{ n as evaluateStoredCredentialEligibility, r as hasUsableOAuthCredential$1 }"
+        },
+        {
+          "specifier": "./sqlite-B1ze-fre.js",
+          "clause": "{ n as readPersistedAuthProfileStateRaw, r as readPersistedAuthProfileStoreRaw, s as writePersistedAuthProfileStateRaw }"
+        },
+        {
+          "specifier": "node:fs",
+          "clause": "fs"
+        },
+        {
+          "specifier": "node:util",
+          "clause": "{ isDeepStrictEqual }"
+        }
+      ]
+    },
+    {
+      "path": "dist/provider-runtime.runtime.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 56,
+      "sha256": "01408453c3cf8eede84251b529e122a1f9660018e642f490548740a55e60fdaa",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": []
+    },
+    {
+      "path": "dist/oauth-BcZS_BvC.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 29096,
+      "sha256": "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./number-coercion-CJQ8TR--.js",
+          "clause": "{ E as resolveExpiresAtMsFromEpochSeconds, T as resolveExpiresAtMsFromDurationSeconds, h as nonNegativeSecondsToSafeMilliseconds, j as resolveTimerTimeoutMs, x as positiveSecondsToSafeMilliseconds }"
+        },
+        {
+          "specifier": "./error-coercion-DgxlWC0n.js",
+          "clause": "{ t as toErrorObject }"
+        },
+        {
+          "specifier": "./http-body-CHWaxK2e.js",
+          "clause": "{ u as readResponseWithLimit }"
+        },
+        {
+          "specifier": "./provider-http-errors-HGLTiqMh.js",
+          "clause": "{ h as readProviderTextResponse, m as readProviderJsonResponse }"
+        },
+        {
+          "specifier": "./facade-runtime-Dce8fe3v.js",
+          "clause": "{ r as loadActivatedBundledPluginPublicSurfaceModuleSync }"
+        },
+        {
+          "specifier": "./provider-oauth-runtime-Bl5CxvHn.js",
+          "clause": "{ a as oauthErrorHtml, c as resolveOAuthTokenExpiresAt, d as withOAuthLoginAbort, i as generatePKCE, n as createOAuthLoginCancelledError, o as oauthSuccessHtml, r as generateOAuthState, s as parseOAuthAuthorizationInput, t as buildOAuthRequestSignal, u as throwIfOAuthLoginAborted }"
+        }
+      ]
+    },
+    {
+      "path": "dist/chutes-oauth-YFvuN1-a.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 6408,
+      "sha256": "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./string-coerce-DW4mBlAt.js",
+          "clause": "{ c as normalizeOptionalString }"
+        },
+        {
+          "specifier": "./number-coercion-CJQ8TR--.js",
+          "clause": "{ T as resolveExpiresAtMsFromDurationSeconds }"
+        },
+        {
+          "specifier": "./crypto-digest-CNeb2i19.js",
+          "clause": "{ n as sha256Base64Url }"
+        },
+        {
+          "specifier": "./provider-http-errors-HGLTiqMh.js",
+          "clause": "{ g as readResponseTextLimited, m as readProviderJsonResponse }"
+        },
+        {
+          "specifier": "node:crypto",
+          "clause": "{ randomBytes }"
+        }
+      ]
+    },
+    {
+      "path": "dist/oauth-refresh-failure-Df54GmgP.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 6352,
+      "sha256": "ef80c2af319f685cecb906a181c259f2ec71110de6fc849920f76bc36bc6fcd2",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./ansi-D1GK_odF.js",
+          "clause": "{ t as sanitizeForLog }"
+        },
+        {
+          "specifier": "./command-format-H_Arqann.js",
+          "clause": "{ t as formatCliCommand }"
+        },
+        {
+          "specifier": "./provider-id-Dq06Bcx6.js",
+          "clause": "{ i as normalizeProviderId }"
+        },
+        {
+          "specifier": "./markdown-code-Buzx6wvi.js",
+          "clause": "{ n as formatInlineCodeSpan }"
+        }
+      ]
+    },
+    {
+      "path": "dist/policy-NS6r94Bl.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 2908,
+      "sha256": "45fbaf84ca7988897423c5efd9408e5c646dc2679d5921ea3679f65fac51bf70",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./types.secrets-OocW4TQ1.js",
+          "clause": "{ g as resolveSecretInputRef, s as coerceSecretRef }"
+        }
+      ]
+    },
+    {
+      "path": "dist/repair-BOGHSorR.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 4735,
+      "sha256": "1c62ebb1b037b55747fab71acbc9ec329d17bb38bc01fc1bde85b95c816ae3cf",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./provider-id-Dq06Bcx6.js",
+          "clause": "{ i as normalizeProviderId, t as findNormalizedProviderKey }"
+        },
+        {
+          "specifier": "./identity-B__O0Fk8.js",
+          "clause": "{ n as resolveAuthProfileMetadata }"
+        },
+        {
+          "specifier": "./profile-list-XT2LKXsd.js",
+          "clause": "{ n as listProfilesForProvider, t as dedupeProfileIds }"
+        }
+      ]
+    },
+    {
+      "path": "dist/sqlite-B1ze-fre.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 6663,
+      "sha256": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./utils-CRO4LGEB.js",
+          "clause": "{ m as resolveUserPath }"
+        },
+        {
+          "specifier": "./crypto-digest-CNeb2i19.js",
+          "clause": "{ o as sha256HexPrefix }"
+        },
+        {
+          "specifier": "./openclaw-state-db-DzSsA9Ji.js",
+          "clause": "{ _ as executeSqliteQueryTakeFirstSync, f as resolveSqliteDatabaseFilePaths, g as executeSqliteQuerySync, h as clearNodeSqliteKyselyCacheForDatabase, m as requireNodeSqlite, t as OPENCLAW_SQLITE_BUSY_TIMEOUT_MS, v as getNodeSqliteKysely }"
+        },
+        {
+          "specifier": "./agent-scope-config-BxAUeF6t.js",
+          "clause": "{ s as resolveDefaultAgentDir, u as resolveRegisteredAgentIdForDir }"
+        },
+        {
+          "specifier": "./openclaw-agent-db-DKpxi-Ll.js",
+          "clause": "{ n as runOpenClawAgentWriteTransaction }"
+        },
+        {
+          "specifier": "node:fs",
+          "clause": "fs"
+        },
+        {
+          "specifier": "node:path",
+          "clause": "path"
+        }
+      ]
+    },
+    {
+      "path": "dist/paths-BMBAvkNf.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 10131,
+      "sha256": "099ff305aa7662710b2b0f1f925c99b203f30d283ab6b2ada34233a8188fab77",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./home-dir-CJKEsOtx.js",
+          "clause": "{ o as resolveRequiredHomeDir, r as resolveHomeRelativePath }"
+        },
+        {
+          "specifier": "./tcp-port-DPgvEEt3.js",
+          "clause": "{ n as parseTcpPort }"
+        },
+        {
+          "specifier": "node:fs",
+          "clause": "fs"
+        },
+        {
+          "specifier": "node:path",
+          "clause": "path"
+        },
+        {
+          "specifier": "node:os",
+          "clause": "os"
+        }
+      ]
+    },
+    {
+      "path": "dist/credential-state-BY-oz-QV.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 3781,
+      "sha256": "596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./types.secrets-OocW4TQ1.js",
+          "clause": "{ p as normalizeSecretInputString, s as coerceSecretRef }"
+        }
+      ]
+    },
+    {
+      "path": "dist/provider-oauth-runtime-Bl5CxvHn.js",
+      "reason": "static-refresh-or-owner-import",
+      "size": 8109,
+      "sha256": "72815eec3eb285768cd7fbe1495e9e3e34f309e6d828cc844322b1e411fb0b64",
+      "expected_sha256": null,
+      "matches_R4_binding": null,
+      "imports": [
+        {
+          "specifier": "./number-coercion-CJQ8TR--.js",
+          "clause": "{ C as resolveExpiresAtMsFromDurationMs, j as resolveTimerTimeoutMs, x as positiveSecondsToSafeMilliseconds }"
+        },
+        {
+          "specifier": "./error-coercion-DgxlWC0n.js",
+          "clause": "{ t as toErrorObject }"
+        }
+      ]
+    }
+  ]
+}

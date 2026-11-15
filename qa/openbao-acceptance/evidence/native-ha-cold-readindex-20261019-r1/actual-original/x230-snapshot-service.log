@@ -1,0 +1,85 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-9770-main-capsule-20261019-r1/server", "native_ha_snapshot_", "--nocapture", "--test-threads=1", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-9770/crates/heptabao-server"}
+
+running 7 tests
+test service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-STAGE phase=receiver_handler_result category=OutcomeUnknown
+HBHA-PRIVATE-RECEIVER phase=receiver_result kind=native category=OutcomeUnknown
+HBHA-PRIVATE-STAGE phase=frame_read_length category=Transport io_kind=UnexpectedEof
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=pre_vote source=2 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=vote source=2 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=2 target=1 bytes=19951 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-COLD-NATIVE phase=committed_read reason="remote Raft consensus failed: ReadIndex leadership changed"
+HBHA-DIAG-UNSEAL route_status=503 state_loaded=false recovery_required=false barrier_loaded=false record_root=false activation=false original_deadline_present=true
+native HA Service pipeline path=sys/unseal status=503 errors=["native V6 HA local publication is unavailable"]
+native HA Service pipeline path=actual-Service-cold-unseal status=503 errors=["native V6 HA local publication is unavailable"]
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+Error: "native HA Service pipeline stage=actual-Service-cold-unseal: expected HTTP 200, observed 503"
+FAILED
+test service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+ok
+test service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+ok
+test service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBV6-ARCHIVE-MIDDLE-FLIP same_decoded_payload=false compressed_bytes=30835 decoded_bytes=35328
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+ok
+test service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits ... ok
+test service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+ok
+test service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+ok
+
+failures:
+
+failures:
+    service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 2919 filtered out; finished in 39.79s
+

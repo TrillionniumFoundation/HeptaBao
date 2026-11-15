@@ -1,0 +1,9 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-log-review/x230.process-log.original.txt": "71e82dea866727a4e7494f94a2cb383575c2b07f",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-log-review/x230.process-log.read.original.json": "fd5324d62e823fc859d6507a62c7838a85d01092",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-log-review/ai395.process-log.original.txt": "2fe1179daeab19995a80e5e8d3097bbf605db67e",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-log-review/ai395.process-log.read.original.json": "4bcb199ed004bc75a329133dd3f337f6ce5a7eed",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-log-review/mac.process-log.original.txt": "81e8c5ed93b2fbe0b7622cd40c29e0bcd02718aa",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-log-review/mac.process-log.read.original.json": "3a17d4af634a45c42b5e759f2553a67ce8c27cd2",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-log-review/read-only-review.public.json": "dab9d2689728b6c932829191d1b193839a4f5a4c"
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.codex-backend-exact-public-source.r1",
+  "sources": [
+    {
+      "name": "core-config-mod.rs",
+      "bytes": 161998,
+      "sha256": "db1d361d2d8a3c902b6a5e249c01332a4da9a416e5f4693f3d76b62c46550a1b",
+      "officialGitBlob": "75bcf5aa3cb7cded31de1ad565b7222e3301a2ee",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/core/src/config/mod.rs"
+    },
+    {
+      "name": "config-toml.rs",
+      "bytes": 40004,
+      "sha256": "39b505f0c89fba7f3e6f9eb812fe23cf5360b078c8b2c78a2c15f4fe742893f7",
+      "officialGitBlob": "a4d384b5f39e3d56d252afa6dd0437c02469aab8",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/config/src/config_toml.rs"
+    },
+    {
+      "name": "config-types.rs",
+      "bytes": 34918,
+      "sha256": "bf063a3414ae273327dab6a1eb15aa0f2bd4811a6e378621d178431362605e77",
+      "officialGitBlob": "c7d0a5876b7daf81d50b7cfa6a1cf8f601155428",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/config/src/types.rs"
+    },
+    {
+      "name": "config-loader-mod.rs",
+      "bytes": 55173,
+      "sha256": "bfefb8ed27c19db216984d69520a5b8a48062ebd6d3a9a42b657e114cc64c131",
+      "officialGitBlob": "49df306abbb9a7f5b82fbb3623463949c46fd5c4",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/config/src/loader/mod.rs"
+    },
+    {
+      "name": "auth-storage.rs",
+      "bytes": 11856,
+      "sha256": "b4a8784d25a1139204374bbc377b076c5757fdebaf1a92a8f56ef6dbbd7c6951",
+      "officialGitBlob": "3a1c8ae6aa530e287e479837c7dec47c96ead15c",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/login/src/auth/storage.rs"
+    },
+    {
+      "name": "auth-mod.rs",
+      "bytes": 324,
+      "sha256": "92b56466f052a412816f852ff27513a1dd4aeba36f3bad1dee9c6ec76da0c9c7",
+      "officialGitBlob": "167ccd3f75bdf1f51c478fb249f41ac1fa39ac84",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/login/src/auth/mod.rs"
+    },
+    {
+      "name": "profile-toml.rs",
+      "bytes": 4197,
+      "sha256": "fa073a87c07e95c3caf684e8d0be4ba55699d69f6b374c8a8bc390d7e371b9b6",
+      "officialGitBlob": "5f4c8d62f910fd79f1486d5ae4c6276cd09a367c",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/config/src/profile_toml.rs"
+    },
+    {
+      "name": "config-state.rs",
+      "bytes": 20663,
+      "sha256": "4e6787ed1645889d56efb6256d3684a7715f751ca6dcda522a23d0ad2166f5b2",
+      "officialGitBlob": "3ec0bfb314947d7a6b3b502c473b4b418fd7ccd3",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/config/src/state.rs"
+    },
+    {
+      "name": "cli-main.rs",
+      "bytes": 122229,
+      "sha256": "8fafe2905f4ad26db8256f3bbe73bf187d2e4cfd94fe91967368c271d6b23cc7",
+      "officialGitBlob": "95873191b936aa338043e57c59a86c411c7bee96",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/cli/src/main.rs"
+    },
+    {
+      "name": "auth-manager.rs",
+      "bytes": 68018,
+      "sha256": "80622d4a5ef07b960ef31248cd7ed083944c8a5e5ddb4aca9a447c94f00dd07c",
+      "officialGitBlob": "a2e4e8e0d8669dcb47efd70908109dbac04fe33a",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/login/src/auth/manager.rs"
+    },
+    {
+      "name": "token-data.rs",
+      "bytes": 5505,
+      "sha256": "cbb2403b8db562c9e285c1fbd8589b6130d5e36b631d1d8ba66525a6d9dd67c8",
+      "officialGitBlob": "2952ecb2a7cb50fb7c1b1d462eb6f2f16231baf3",
+      "url": "https://github.com/openai/codex/blob/rust-v0.133.0/codex-rs/login/src/token_data.rs"
+    }
+  ],
+  "tag": "rust-v0.133.0",
+  "installedStandaloneVersion": "0.133.0",
+  "chatgptNativeVersionBound": false,
+  "runtimeEffectiveBackendObserved": false
+}

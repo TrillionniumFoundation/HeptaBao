@@ -1,0 +1,29 @@
+✔ existing DELETE state migrates without changing binding or revision; WAL keeps FULL and lock keeps DELETE (33.646709ms)
+✔ SIGKILL at prepared preserves durable intent and never repeats an uncertain write (239.289042ms)
+✔ SIGKILL at dispatched preserves durable intent and never repeats an uncertain write (133.378333ms)
+✔ SIGKILL at server_confirmed preserves durable intent and never repeats an uncertain write (189.00275ms)
+✔ SIGKILL at confirmed preserves durable intent and never repeats an uncertain write (186.644292ms)
+✔ quiescent backup after SIGKILL includes uncheckpointed WAL and restores exact confirmation without replay (136.964667ms)
+✔ two actual processes competing at the same local CAS revision produce one winner (123.019333ms)
+✔ OS-held operation lock excludes another process and releases after SIGKILL (177.858292ms)
+✔ known remote CAS rejection is durable and never retried after reopen (128.633583ms)
+✔ expired persisted active lease performs one fresh AppRole login and a real TLS KV read (41.802209ms)
+✔ valid active lease is reused by explicit login without dispatching another authentication (62.301417ms)
+✔ expired metadata never permits clearing an unresolved login-dispatched (23.342584ms)
+✔ expired metadata never permits clearing an unresolved renew-dispatched (15.331875ms)
+✔ expired metadata never permits clearing an unresolved revoke-dispatched (19.411459ms)
+✔ known rejected authentication intent and invalid active lease remain unchanged (30.926708ms)
+✔ persisted clock high-water failure cannot be recast as expired-lease recovery (18.108209ms)
+✔ production read restarts an expired bearer before actual control and KV reads (46.542041ms)
+✔ expired caller deadline dispatches no renewal, reauthentication, read, or publication (24.923791ms)
+✔ renewal reply beyond the caller deadline leaves one unresolved attempt and performs no later reads (531.682208ms)
+✔ renewal and expiry recovery receive the exact original absolute deadline (0.144708ms)
+✔ fixed-slot outbox rejects the caller deadline before taking an operation lock (0.150959ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1412.886458

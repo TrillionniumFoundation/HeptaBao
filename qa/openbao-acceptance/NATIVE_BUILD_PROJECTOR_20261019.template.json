@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.native-build-projector-input-template.v1",
+  "execute_on": "main / actual hostname qian-qi",
+  "driver_path": null,
+  "argv": [
+    "--summary",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/summary.json",
+    "--summary-sha256",
+    "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9",
+    "--manifest",
+    null,
+    "--source-commit",
+    "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "--source-tree",
+    "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "--runner-sha256",
+    "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+    "--output",
+    null
+  ],
+  "required_actual_manifest_sha256": "907f00844a01412f1779466b62888f5651ee0ab34f6fef6ff9914acd7d9f06a3",
+  "maximum_actual_binary_bytes": 2147483648,
+  "original_binary_bytes": 776397280,
+  "original_binary_sha256": "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2",
+  "new_output_required": true,
+  "unresolved_values_must_not_be_guessed": true
+}

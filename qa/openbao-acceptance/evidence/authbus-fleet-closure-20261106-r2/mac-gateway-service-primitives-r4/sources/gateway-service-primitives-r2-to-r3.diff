@@ -1,0 +1,81 @@
+--- mac_gateway_service_primitives_r2.py
++++ mac_gateway_service_primitives_r3.py
+@@ -9,9 +9,9 @@
+ import ctypes,errno,hashlib,json,os,plistlib,re,stat,time
+ from pathlib import Path
+ 
+-ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r2')
++ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r3')
+ DOMAIN='gui/501'
+-LABEL='org.heptabao.qa.gateway-maintenance-actions-20261106-r2'
++LABEL='org.heptabao.qa.gateway-maintenance-actions-20261106-r3'
+ TARGET=DOMAIN+'/'+LABEL
+ SLEEP='/bin/sleep'
+ ARGS=[SLEEP,'30']
+@@ -56,7 +56,7 @@
+   self.root_identity=identity(ROOT.lstat());self.events=[];self.mutations={};self.identities=[]
+   self.active_generation=None;self.unknown=False;self.finished=False;self.generation_closed=set()
+   self.plists={};self.public_commands=[]
+-  self.report={'schema':'heptabao.mac-gateway-service-primitives.r2','ok':False,
++  self.report={'schema':'heptabao.mac-gateway-service-primitives.r3','ok':False,
+    'productionServiceChanged':False,'providerCalls':0,'credentialReads':0,'configurationReads':0,
+    'keepAliveFalseSyntheticServiceOnly':True,'actualGatewayRegistrationQualified':False,
+    'productionKeepAliveRollbackQualified':False,'fullDisabledDomainOutputPublished':False,
+@@ -66,7 +66,7 @@
+   left=self.until-time.monotonic();need(left>0,'original_service_primitives_deadline');return min(cap,left)
+  def check_root(self):
+   self.remaining();s=ROOT.lstat()
+-  need(stat.S_ISDIR(s.st_mode) and s.st_uid==501 and stat.S_IMODE(s.st_mode)==0o700 and identity(s)[:6]==self.root_identity[:6],
++  need(stat.S_ISDIR(s.st_mode) and s.st_uid==501 and stat.S_IMODE(s.st_mode)==0o700 and identity(s)[:5]==self.root_identity[:5],
+    'fixed_owned_service_root')
+  def write(self,name,raw):
+   self.check_root();need(isinstance(name,str) and re.fullmatch(r'[a-z0-9.-]{1,100}',name),'fixed_owned_service_artifact_name')
+--- launch_gateway_service_primitives_r2.template.py
++++ launch_gateway_service_primitives_r3.template.py
+@@ -9,7 +9,7 @@
+ from pathlib import Path
+ 
+ START=time.monotonic();UNTIL=START+45.0
+-ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r2')
++ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-service-primitives-20261106-r3')
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+ # PAYLOAD_PLACEHOLDER
+ RUNTIME_PINS={
+@@ -19,8 +19,8 @@
+  '/bin/ps':(170432,'3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c',0o4755)}
+ SOURCE_NAMES=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',
+  'mac_native_process_observer_r1.py','mac_owned_launchd_r3.py',
+- 'mac_gateway_service_primitives_r2.py')
+-report={'schema':'heptabao.actual-mac-gateway-service-primitives-launcher.r2','ok':False,
++ 'mac_gateway_service_primitives_r3.py')
++report={'schema':'heptabao.actual-mac-gateway-service-primitives-launcher.r3','ok':False,
+  'sharedSeconds':45,'supervisorSeconds':70,'automaticRetry':False,
+  'actualProductionGatewayChanged':False,'credentialOrConfigurationReads':0,
+  'providerCalls':0,'originalMutationsExpected':6,'sleepServiceGenerationsExpected':2,
+@@ -77,7 +77,7 @@
+  for path,item,original in anchors:
+   need(ident(os.fstat(item[0]))[:6]==original[:6]==ident(path.lstat())[:6],'same_service_parent_components')
+  if root_fd is not None:
+-  need(ident(os.fstat(root_fd[0]))[:6]==root_identity[:6]==ident(ROOT.lstat())[:6],'same_service_created_root')
++  need(ident(os.fstat(root_fd[0]))[:5]==root_identity[:5]==ident(ROOT.lstat())[:5],'same_service_created_root')
+ def parent_after_owned_mkdir(before,after):
+  # Only the immediately containing, retained directory is rebased once after
+  # this launcher's own known mkdir. Other anchors remain exact. Neither inode,
+@@ -109,7 +109,7 @@
+  need(sys.platform=='darwin' and os.getuid()==501 and os.geteuid()==501
+   and str(Path(sys.executable).resolve())==PYTHON,'exact_service_qualification_host_and_interpreter')
+  os.umask(0o077);sys.dont_write_bytecode=True
+- need(set(PAYLOAD)=={'schema','sources','parserNames'} and PAYLOAD['schema']=='heptabao.gateway-service-primitives.payload.r2'
++ need(set(PAYLOAD)=={'schema','sources','parserNames'} and PAYLOAD['schema']=='heptabao.gateway-service-primitives.payload.r3'
+   and set(PAYLOAD['sources'])==set(SOURCE_NAMES)
+   and PAYLOAD['parserNames']==['ManagerRefused','need','parse_print','missing_service'],'fixed_embedded_service_source_scope')
+  for name,value in PAYLOAD['sources'].items():
+@@ -141,7 +141,7 @@
+  unreaped=import_exact('mac_owned_unreaped_r1');unreaped.require_waitid()
+  command_module=import_exact('mac_owned_commands_r1')
+  observer=import_exact('mac_native_process_observer_r1')
+- core=import_exact('mac_gateway_service_primitives_r2')
++ core=import_exact('mac_gateway_service_primitives_r3')
+  manager_raw,_=read(ROOT/'mac_owned_launchd_r3.py',expected=source_bindings['mac_owned_launchd_r3.py'])
+  parsed=ast.parse(manager_raw);selected=[n for n in parsed.body if isinstance(n,(ast.ClassDef,ast.FunctionDef)) and n.name in PAYLOAD['parserNames']]
+  need([n.name for n in selected]==PAYLOAD['parserNames'],'exact_qualified_parser_excerpt_nodes')

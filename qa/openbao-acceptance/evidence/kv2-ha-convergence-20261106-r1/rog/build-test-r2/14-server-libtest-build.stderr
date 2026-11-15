@@ -1,0 +1,32 @@
+   Compiling heptabao-server v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-server)
+error[E0063]: missing fields `snapshot_forward_handler` and `snapshot_server_pins` in initializer of `ha::HaProcess`
+  --> crates/heptabao-server/src/ha_request_deadline_tests.rs:64:8
+   |
+64 |     Ok(HaProcess {
+   |        ^^^^^^^^^ missing `snapshot_forward_handler` and `snapshot_server_pins`
+
+error[E0063]: missing fields `snapshot_forward_handler` and `snapshot_server_pins` in initializer of `ha::HaProcess`
+   --> crates/heptabao-server/src/ha_snapshot_test_support.rs:124:48
+    |
+124 |             processes.push(Arc::new(Mutex::new(HaProcess {
+    |                                                ^^^^^^^^^ missing `snapshot_forward_handler` and `snapshot_server_pins`
+
+error[E0658]: use of unstable library feature `exact_size_is_empty`
+   --> crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs:157:42
+    |
+157 |     assert!(before.1.epoch_transitions().is_empty());
+    |                                          ^^^^^^^^
+    |
+    = note: see issue #35428 <https://github.com/rust-lang/rust/issues/35428> for more information
+
+error[E0658]: use of unstable library feature `exact_size_is_empty`
+   --> crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs:411:41
+    |
+411 |     assert!(after.1.epoch_transitions().is_empty());
+    |                                         ^^^^^^^^
+    |
+    = note: see issue #35428 <https://github.com/rust-lang/rust/issues/35428> for more information
+
+Some errors have detailed explanations: E0063, E0658.
+For more information about an error, try `rustc --explain E0063`.
+error: could not compile `heptabao-server` (lib test) due to 4 previous errors

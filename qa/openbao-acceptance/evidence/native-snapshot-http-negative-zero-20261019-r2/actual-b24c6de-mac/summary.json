@@ -1,0 +1,524 @@
+{
+  "schema": "heptabao.native-snapshot-http3-run.v1",
+  "status": "failed_or_blocked",
+  "started_utc": "2026-10-19T08:43:22.470110+00:00",
+  "controller_sha256": "53cc6423e54aee23b33e85fb9746042ba3a7a507633ab24525469276db63bd4e",
+  "config_sha256": "48afbf97d9475bd41c1289c6f2e5ea7ffd151ab54ed09c1f96888ec3dfda987c",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "manifest_sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+  "source_runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "owned_runner_sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+  "target_dir": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+  "target_lock_acquired": true,
+  "producer_summary_sha256": "2aabd021e20e5de6e640e4a88e1496dafb7e0a25d0a14de10a8efad9e322c79a",
+  "producer_original_status": "passed_scoped_host_recovery",
+  "build_profile": {
+    "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+    "rustc": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+    "rust_release": "1.98.0",
+    "server_features": "experimental-native-v6-ha,private-ha-forward-diagnostic",
+    "compiler_resource_profile": {
+      "low_memory_requested": false,
+      "explicit_build_jobs_requested": 2,
+      "logical_cpus_observed": 10,
+      "cargo_build_jobs": "2",
+      "cmake_build_parallel_level": "2",
+      "dev_debug": null,
+      "test_debug": null,
+      "incremental": null,
+      "test_selectors_and_original_deadlines_unchanged": true
+    }
+  },
+  "libtest": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8",
+  "libtest_sha256": "f58a157951bc8f3596bd5fa470cd1ac2f1f4611d89d4dab7308581ae0f43a84a",
+  "hostname": "MacBook-Pro.local",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "uname": [
+    "Darwin",
+    "MacBook-Pro.local",
+    "25.6.0",
+    "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142",
+    "arm64"
+  ],
+  "runner_pid": 53534,
+  "required_additional_test_count": 3,
+  "original_host_test_count": 55,
+  "original_full34_required_checks": 31,
+  "original_command_deadline_seconds": 1800,
+  "compiler_invocations": 0,
+  "commands": [
+    {
+      "label": "snapshot-json-accept-history-list",
+      "argv": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8",
+        "http::snapshot_accept_tests::native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T08:43:22.625107+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "snapshot-json-accept-history-list.log",
+      "pid": 53543,
+      "pgid": 53543,
+      "sid": 53543,
+      "darwin_leader_identity": {
+        "pid": 53543,
+        "ppid": 53534,
+        "pgid": 53543,
+        "uid": 501,
+        "lstart": "Mon Oct 19 16:43:22 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 53543,
+            "ppid": 53534,
+            "pgid": 53543,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:22 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 53543,
+            "ppid": 53534,
+            "pgid": 53543,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:22 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T08:43:22.949000+00:00",
+      "elapsed_seconds": 0.321,
+      "log_sha256": "26a2a6b1eb6c154111c3c7b662e15dac9bc6e5e026074f3226775ca3b698ea07",
+      "log_bytes": 136,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    },
+    {
+      "label": "snapshot-json-accept-history",
+      "argv": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8",
+        "http::snapshot_accept_tests::native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T08:43:22.949690+00:00",
+      "status": "failed",
+      "budget_seconds": 1800,
+      "log": "snapshot-json-accept-history.log",
+      "pid": 53550,
+      "pgid": 53550,
+      "sid": 53550,
+      "darwin_leader_identity": {
+        "pid": 53550,
+        "ppid": 53534,
+        "pgid": 53550,
+        "uid": 501,
+        "lstart": "Mon Oct 19 16:43:22 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 53550,
+            "ppid": 53534,
+            "pgid": 53550,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:22 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 53550,
+            "ppid": 53534,
+            "pgid": 53550,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:22 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 101
+      },
+      "exit_code": 101,
+      "finished_utc": "2026-10-19T08:43:24.290221+00:00",
+      "elapsed_seconds": 1.34,
+      "log_sha256": "516711e6ef2d07a080c21cb820543aab2645210aeb69adbd4cd7bc695819820c",
+      "log_bytes": 911,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    },
+    {
+      "label": "snapshot-json-accept-refusals-list",
+      "argv": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8",
+        "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T08:43:24.291364+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "snapshot-json-accept-refusals-list.log",
+      "pid": 53566,
+      "pgid": 53566,
+      "sid": 53566,
+      "darwin_leader_identity": {
+        "pid": 53566,
+        "ppid": 53534,
+        "pgid": 53566,
+        "uid": 501,
+        "lstart": "Mon Oct 19 16:43:24 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 53566,
+            "ppid": 53534,
+            "pgid": 53566,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:24 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 53566,
+            "ppid": 53534,
+            "pgid": 53566,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:24 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T08:43:24.366510+00:00",
+      "elapsed_seconds": 0.075,
+      "log_sha256": "d59a549eb0740630f7b36ab1b291f8428a13bd6a3b937e23b48918ef9432c5ae",
+      "log_bytes": 139,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    },
+    {
+      "label": "snapshot-json-accept-refusals",
+      "argv": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8",
+        "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T08:43:24.367068+00:00",
+      "status": "failed",
+      "budget_seconds": 1800,
+      "log": "snapshot-json-accept-refusals.log",
+      "pid": 53574,
+      "pgid": 53574,
+      "sid": 53574,
+      "darwin_leader_identity": {
+        "pid": 53574,
+        "ppid": 53534,
+        "pgid": 53574,
+        "uid": 501,
+        "lstart": "Mon Oct 19 16:43:24 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 53574,
+            "ppid": 53534,
+            "pgid": 53574,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:24 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 53574,
+            "ppid": 53534,
+            "pgid": 53574,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:24 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 101
+      },
+      "exit_code": 101,
+      "finished_utc": "2026-10-19T08:43:26.139833+00:00",
+      "elapsed_seconds": 1.772,
+      "log_sha256": "76857f7b451e63ddb858fe1e30826e3805c2a8e45c170d729ed956a04e04d301",
+      "log_bytes": 920,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    },
+    {
+      "label": "snapshot-json-accept-framing-list",
+      "argv": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8",
+        "http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary",
+        "--exact",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T08:43:26.141130+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "snapshot-json-accept-framing-list.log",
+      "pid": 53580,
+      "pgid": 53580,
+      "sid": 53580,
+      "darwin_leader_identity": {
+        "pid": 53580,
+        "ppid": 53534,
+        "pgid": 53580,
+        "uid": 501,
+        "lstart": "Mon Oct 19 16:43:26 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 53580,
+            "ppid": 53534,
+            "pgid": 53580,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:26 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 53580,
+            "ppid": 53534,
+            "pgid": 53580,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:26 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T08:43:26.216581+00:00",
+      "elapsed_seconds": 0.075,
+      "log_sha256": "d69ecf50948fa6eecb9b1dd91550834c61088baf4363c1d3a430859914be9da0",
+      "log_bytes": 122,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    },
+    {
+      "label": "snapshot-json-accept-framing",
+      "argv": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8",
+        "http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T08:43:26.217187+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "snapshot-json-accept-framing.log",
+      "pid": 53588,
+      "pgid": 53588,
+      "sid": 53588,
+      "darwin_leader_identity": {
+        "pid": 53588,
+        "ppid": 53534,
+        "pgid": 53588,
+        "uid": 501,
+        "lstart": "Mon Oct 19 16:43:26 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 53588,
+            "ppid": 53534,
+            "pgid": 53588,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:26 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 53588,
+            "ppid": 53534,
+            "pgid": 53588,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 16:43:26 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T08:43:26.293513+00:00",
+      "elapsed_seconds": 0.076,
+      "log_sha256": "7eb9c1820e2d262df12137cb40fe01a93ff9b2519c8dee27d16c52d4c31fc82c",
+      "log_bytes": 221,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    }
+  ],
+  "tests": [
+    {
+      "label": "snapshot-json-accept-history",
+      "exact_name": "http::snapshot_accept_tests::native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+      "expected_count": 1,
+      "status": "failed",
+      "actual_selected_test_names": [
+        "http::snapshot_accept_tests::native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history"
+      ],
+      "observed_test_result": {
+        "status": "FAILED",
+        "passed": 0,
+        "failed": 1,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 101,
+      "log_sha256": "516711e6ef2d07a080c21cb820543aab2645210aeb69adbd4cd7bc695819820c"
+    },
+    {
+      "label": "snapshot-json-accept-refusals",
+      "exact_name": "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+      "expected_count": 1,
+      "status": "failed",
+      "actual_selected_test_names": [
+        "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals"
+      ],
+      "observed_test_result": {
+        "status": "FAILED",
+        "passed": 0,
+        "failed": 1,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 101,
+      "log_sha256": "76857f7b451e63ddb858fe1e30826e3805c2a8e45c170d729ed956a04e04d301"
+    },
+    {
+      "label": "snapshot-json-accept-framing",
+      "exact_name": "http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary",
+      "expected_count": 1,
+      "status": "passed",
+      "actual_selected_test_names": [
+        "http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary"
+      ],
+      "observed_test_result": {
+        "status": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0
+      },
+      "exit_code": 0,
+      "log_sha256": "7eb9c1820e2d262df12137cb40fe01a93ff9b2519c8dee27d16c52d4c31fc82c"
+    }
+  ],
+  "verified_input_pins": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de-manifest.json",
+      "sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de/qa/openbao-acceptance/native_service_only_compile.py",
+      "sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/summary.json",
+      "sha256": "2aabd021e20e5de6e640e4a88e1496dafb7e0a25d0a14de10a8efad9e322c79a"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/compile-server-tests.log",
+      "sha256": "0683771ee08b12a9d0a3ff2d611903739470502812a8303c6cd8e5602bf8c37c"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/cargo-version.log",
+      "sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/rustc-version.log",
+      "sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/b24-physical-followthrough-r1/http3-config.json",
+      "sha256": "48afbf97d9475bd41c1289c6f2e5ea7ffd151ab54ed09c1f96888ec3dfda987c"
+    }
+  ],
+  "physical_lan_fault_validation_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "source_before": {
+    "verified_at_utc": "2026-10-19T08:43:22.587469+00:00",
+    "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "verified_files": 3142
+  },
+  "libtest_before_sha256": "f58a157951bc8f3596bd5fa470cd1ac2f1f4611d89d4dab7308581ae0f43a84a",
+  "runtime_environment": {
+    "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/tmp",
+    "CARGO_MANIFEST_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de/crates/heptabao-server",
+    "CARGO_TARGET_TMPDIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/tmp",
+    "RUST_TEST_THREADS": "1"
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-19T08:43:26.412973+00:00",
+    "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "verified_files": 3142
+  },
+  "source_unchanged": true,
+  "libtest_after_sha256": "f58a157951bc8f3596bd5fa470cd1ac2f1f4611d89d4dab7308581ae0f43a84a",
+  "libtest_unchanged": true,
+  "input_pins_unchanged": true,
+  "finished_utc": "2026-10-19T08:43:26.450210+00:00",
+  "actual_passed_test_count": 1
+}

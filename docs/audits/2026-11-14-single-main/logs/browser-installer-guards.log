@@ -1,0 +1,22 @@
+test_executable_cannot_be_replaced_through_writable_parent (__main__.BrowserInstallerGuards.test_executable_cannot_be_replaced_through_writable_parent) ... ok
+test_existing_manifest_directory_must_be_private (__main__.BrowserInstallerGuards.test_existing_manifest_directory_must_be_private) ... ok
+test_nonprivate_installation_parent_refused (__main__.BrowserInstallerGuards.test_nonprivate_installation_parent_refused) ... ok
+test_nonregular_executable_is_refused_without_a_blocking_read (__main__.BrowserInstallerGuards.test_nonregular_executable_is_refused_without_a_blocking_read) ... ok
+test_private_install_preserves_exact_caller_and_create_only_contract (__main__.BrowserInstallerGuards.test_private_install_preserves_exact_caller_and_create_only_contract) ... ok
+test_private_leaf_does_not_hide_a_replaceable_ancestor (__main__.BrowserInstallerGuards.test_private_leaf_does_not_hide_a_replaceable_ancestor) ... ok
+test_same_bytes_replacement_during_install_cannot_publish_success (__main__.BrowserInstallerGuards.test_same_bytes_replacement_during_install_cannot_publish_success) ... ok
+test_symlink_ancestor_is_refused (__main__.BrowserInstallerGuards.test_symlink_ancestor_is_refused) ... ok
+test_symlink_and_dangling_link_never_become_executable_inputs (__main__.BrowserInstallerGuards.test_symlink_and_dangling_link_never_become_executable_inputs) ... ok
+test_writable_and_setid_executables_refused_before_publication (__main__.BrowserInstallerGuards.test_writable_and_setid_executables_refused_before_publication) ... ok
+test_writable_installation_parent_refused_before_publication (__main__.BrowserInstallerGuards.test_writable_installation_parent_refused_before_publication) ... ok
+test_foreign_owned_executable_is_refused_by_both_installers (__main__.FirefoxInstallerPathGuards.test_foreign_owned_executable_is_refused_by_both_installers) ... ok
+test_nonregular_input_is_rejected_without_blocking (__main__.FirefoxInstallerPathGuards.test_nonregular_input_is_rejected_without_blocking) ... ok
+test_owned_sticky_ancestor_keeps_protected_private_install_supported (__main__.FirefoxInstallerPathGuards.test_owned_sticky_ancestor_keeps_protected_private_install_supported) ... ok
+test_private_leaf_under_replaceable_ancestor_refused (__main__.FirefoxInstallerPathGuards.test_private_leaf_under_replaceable_ancestor_refused) ... ok
+test_same_bytes_replacement_cannot_publish_success (__main__.FirefoxInstallerPathGuards.test_same_bytes_replacement_cannot_publish_success) ... ok
+test_symlink_replacement_during_install_is_refused (__main__.FirefoxInstallerPathGuards.test_symlink_replacement_during_install_is_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.011s
+
+OK

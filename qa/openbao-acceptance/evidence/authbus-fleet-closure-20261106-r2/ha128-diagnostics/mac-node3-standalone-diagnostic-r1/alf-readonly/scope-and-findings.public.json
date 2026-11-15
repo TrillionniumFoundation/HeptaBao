@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.mac-node3-alf-readonly.r1",
+  "exactBinary": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/native-ha-4bde9-authbus-node-r2/heptabao-server",
+  "normalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "exactTool": "/usr/libexec/ApplicationFirewall/socketfilterfw",
+  "priorObservedToolPin": {
+    "bytes": 553680,
+    "sha256": "865bd93ae5cd3065367c3ffc2ee7bbfa3f6e10dec80d7dd86039dbdd8ace485c"
+  },
+  "findings": {
+    "exactApplicationIncoming": "permitted",
+    "globalState": "enabled",
+    "blockAll": "disabled",
+    "automaticallyAllowBuiltinSigned": "enabled",
+    "automaticallyAllowDownloadedSigned": "enabled"
+  },
+  "operations": {
+    "readOnlyQueries": 4,
+    "newProductProcesses": 0,
+    "newTlsProbes": 0,
+    "firewallWrites": 0,
+    "alfWrites": 0,
+    "pfWrites": 0,
+    "warpWrites": 0
+  },
+  "allFourTerminalSucceeded": true,
+  "allFourOriginalStdoutComplete": true,
+  "conclusions": {
+    "applicationBlockNotObserved": true,
+    "networkOrProductCauseEstablished": false,
+    "haQualified": false,
+    "earlierFailuresReclassified": false
+  },
+  "retainedTemporaryAi395Rules": {
+    "count": 2,
+    "reason": "Root explicitly retained exact QA peer rules for concrete Mac node3 listener/TLS diagnosis.",
+    "removalPerformed": false
+  }
+}

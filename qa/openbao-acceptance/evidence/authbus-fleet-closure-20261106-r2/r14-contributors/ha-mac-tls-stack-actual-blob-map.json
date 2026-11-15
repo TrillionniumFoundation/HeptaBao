@@ -1,0 +1,12 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/runtime-launch.original.json": "d08ea53de3fa5067ca585e50687259c6332038a6",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/runtime-status.original.json": "722b48672397e1af4a0002c225b8b455c3cbb462",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/runtime-read.original.json": "886a2e34c4fec17bb4b592b314cc20180e150c57",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/stdout.original.json": "40d8507e890a428b6ad9f1b4cf031f1747f373ea",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/request.public.json": "8efd059a95f4f4de332e51a7967ecd11b22e3500",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/launch-intent.public.json": "9912ed64755bdbc63af824972eead6686dd9893c",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/sample-file-info.original.json": "b660b6f8ecb7699f311d8b54f167954f7f213890",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/offline-sample-projection.local-exec.original.json": "5031bc0301375e91b0ec38f8461acbc1b80c519e",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/offline-sample-projection.public.json": "3b027f25e2eb8f36083188a3ccdc6ad6e11c39c4",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/actual/project_existing_mac_sample_header_r1.py": "147a5d87316c2f4a561cfb0cbe06c4fb7049f9d6"
+}

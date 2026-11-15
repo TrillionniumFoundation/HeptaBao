@@ -1,0 +1,7 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "current_root_repair_retains_binary_header_admission_and_bounded_json_lane", "--nocapture", "--test-threads=1", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+
+running 1 test
+test http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2927 filtered out; finished in 0.00s
+

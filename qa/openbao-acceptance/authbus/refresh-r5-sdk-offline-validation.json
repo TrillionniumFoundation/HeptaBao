@@ -1,0 +1,41 @@
+{
+  "schema": "authbus-r5-sdk-extension-offline-validation",
+  "actualSdkImported": false,
+  "actualNativeHeptaBao": false,
+  "actualProviderRefresh": false,
+  "hostExecutionBlocked": "root observed tunnel_client_not_connected; SDK root unavailable to this executor",
+  "nodeSyntaxChecks": {
+    "registry": true,
+    "overlayModule": true,
+    "generatedCommitExport": true,
+    "actualSdkRunner": true
+  },
+  "pythonBytecodeCompilation": true,
+  "files": [
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_registry_candidate.mjs",
+      "sha256": "dcd8a9c7d18b7dfb1cd6fc341b31db0f52e60056c54ca8a8e688f453f29aadf5"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_store_sdk_candidate.mjs",
+      "sha256": "2e1cc9a336b4781fc13abe75fe09658f618f9d6ad1dbfe29dff0a644e59561de"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_store_live.mjs",
+      "sha256": "0f074404b73a5687982bba3f3c9b7f6f3012505c06a63a1ae9cfe4c3f5c4134d"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/inspect_authbus_sdk_refresh_sources.py",
+      "sha256": "4d776e117c1dc7b61ec7fd4abb59cc50e79572c5d85d4057c2db9feb807eb453"
+    }
+  ],
+  "syntheticContract": {
+    "passed": true,
+    "scenarios": 13,
+    "checksPassed": 52,
+    "receiptSha256": "d52b3b317f8fed0d853412c9a82cb1bdbde0cf690a83e335be0b132bcb05ffd9",
+    "actualSdk": false,
+    "actualNativeHeptaBao": false
+  },
+  "generatedExportSyntaxCheckSha256": "48ce2dec42b35a43878e8cbda3130df719d421131aaba91fc2e03cf713d47fd1"
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "23bd2f",
+  "wall_time_seconds": 0.000030745,
+  "exit_code": 0,
+  "original_token_count": 224,
+  "output": "{\"actualHaExecution\": false, \"cases\": [\"original_required_checks_and_mutation_read_cleanup_check_methods_inherited_unchanged\", \"entire_original_execute_ast_runs_seventeen_writes_and_all_later_stages_once\", \"same_x230_transport_error_gets_one_snapshot_then_same_exception\", \"other_node_failure_does_not_expand_x230_snapshot_scope\", \"stopped_or_unowned_x230_never_snapshot_target\", \"nontransport_failure_unchanged_without_snapshot\", \"snapshot_refusal_cannot_replace_original_transport_failure\", \"original_restarts_keep_latest_known_pid_and_discard_pid_on_unknown_start\", \"main_delegates_original_parser_driver_and_restores_api_after_success\", \"original_driver_failure_restores_api_without_replay\", \"single_snapshot_method_ast_exactly_matches_reviewed_history10\"], \"networkCalls\": 0, \"passed\": 11, \"productExecutions\": 0, \"required\": 11, \"schema\": \"heptabao.ha128-observed-adapter-local-tests.v1\"}\n"
+}

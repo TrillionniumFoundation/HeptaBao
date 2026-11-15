@@ -1,0 +1,170 @@
+{
+  "actual_case_calls": [
+    "rust_ciphertext_import",
+    "locked_fill_refused",
+    "wrong_master_refused",
+    "actual_system_fill_and_login",
+    "system_cached_plaintext_not_reusable",
+    "explicit_lock_refused",
+    "expired_authorization_refused",
+    "cancelled_authorization_refused",
+    "background_authorization_refused",
+    "independent_process_restart_locked_and_recovered",
+    "wrong_package_same_certificate_refused",
+    "same_package_wrong_certificate_refused"
+  ],
+  "adb_calls": 0,
+  "baseline_sha256": "8fc8ddff71ef534fc95d7c5fae1fcb707e7ee0c687a234212aab68fdbd5905f2",
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_popup_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/848006513f75/HeptaBao",
+      "exit_code": 0,
+      "finished_unix_ns": 1793962959172565026,
+      "name": "popup_guards",
+      "started_unix_ns": 1793962959009201675,
+      "stderr": "popup_guards.stderr",
+      "stderr_sha256": "b1cfec56251997199686b931deb3c3ded95a1cd8aed33c3d9de383d19f513bcb",
+      "stdout": "popup_guards.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests_passed": 37
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_driver_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/848006513f75/HeptaBao",
+      "exit_code": 0,
+      "finished_unix_ns": 1793962959323390281,
+      "name": "restore_guards",
+      "started_unix_ns": 1793962959172820815,
+      "stderr": "restore_guards.stderr",
+      "stderr_sha256": "1c1c199aad32a864d4e4cf0a78d6e10b4d1ddaf4d93d5b16690649cba74e3122",
+      "stdout": "restore_guards.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests_passed": 8
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_diagnostic_guard_tests.py",
+        "--driver",
+        "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/848006513f75/HeptaBao",
+      "exit_code": 0,
+      "finished_unix_ns": 1793962959495966296,
+      "name": "diagnostic_guards",
+      "started_unix_ns": 1793962959323626579,
+      "stderr": "diagnostic_guards.stderr",
+      "stderr_sha256": "7de70946e37e43e539f4967c492d8e61f18a756ab28eef0e83f897c3d07cf4a1",
+      "stdout": "diagnostic_guards.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests_passed": 12
+    }
+  ],
+  "defect_regression": {
+    "path": "qa10-defect-regression.public.json",
+    "sha256": "704d4a2a6f26fb7ddcca53961fd4fc1cfa433009fb49ccd69c7479e85b982bf6"
+  },
+  "device_qualification": false,
+  "expected_phone_cases": [
+    "rust_ciphertext_import",
+    "locked_fill_refused",
+    "wrong_master_refused",
+    "actual_system_fill_and_login",
+    "system_cached_plaintext_not_reusable",
+    "explicit_lock_refused",
+    "expired_authorization_refused",
+    "cancelled_authorization_refused",
+    "background_authorization_refused",
+    "independent_process_restart_locked_and_recovered",
+    "wrong_package_same_certificate_refused",
+    "same_package_wrong_certificate_refused"
+  ],
+  "limits": [
+    "No OEM metadata or phone operation has yet been qualified.",
+    "Exact system popup and parent chain must close before server top-record query.",
+    "Unknown format, duplicated generic field prefixes, wrong state and parent-window mismatch fail closed.",
+    "No raw window/ActivityRecord IDs, UID, intents, task labels or other AMS fields are serialized.",
+    "Existing 12 phone cases, one normal touch and one-second menu-age ceiling remain."
+  ],
+  "patch": {
+    "path": "qa11-from-qa10.changes.patch",
+    "sha256": "0d4781b879369ed518a7299400d7283a5bf1a7596b42d188e4b4568a2b3e71a9"
+  },
+  "phone_case_inventory_unchanged": true,
+  "qa10_withheld_due_to_client_dump_source_defect": true,
+  "references": [
+    {
+      "blob": "afa7ea136c77bd3ece38a79142e0ddd3a48dda5f",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/wm/ActivityTaskManagerService.java"
+    },
+    {
+      "blob": "29c14c6f84f88acb3a21ef3f897d86f46a7f786e",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/wm/ActivityRecord.java"
+    },
+    {
+      "blob": "cca73c574951e3a25ba25f5bc920db89b72334a8",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/wm/WindowToken.java"
+    },
+    {
+      "blob": "2f25587ee91feb509a05d1a491db44d9986753c0",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/android16-qpr2-release/services/core/java/com/android/server/wm/WindowState.java"
+    }
+  ],
+  "revision": "QA11",
+  "schema": 1,
+  "scope": "offline server-only top-resumed and exact WMS parent guards; constructed upstream-format inputs",
+  "source_hashes_after": {
+    "diagnostic_guards": "e489b8c72f1a287b751ca80c9bbd36e8cdcc59477d9b8c35b95936027ce03b31",
+    "driver": "8a6fcd3959ef3d428ffc3888b0118c6cb381ee8afb7b7eba50a06a344a9ad3a9",
+    "popup_guards": "53471f14b5eb3939e44a04711ed0edb43e55abc0e76b9f9602923375fdd9ec9f",
+    "restore_guards": "c3ed49de97b4a8c3e81d74e6abe14eacd7b8c7051b2de4481410684b70e0424f"
+  },
+  "sources": {
+    "diagnostic_guards": {
+      "path": "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_diagnostic_guard_tests.py",
+      "sha256": "e489b8c72f1a287b751ca80c9bbd36e8cdcc59477d9b8c35b95936027ce03b31",
+      "size": 7120,
+      "snapshot": "android_diagnostic_guard_tests.py"
+    },
+    "driver": {
+      "path": "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_live.py",
+      "sha256": "8a6fcd3959ef3d428ffc3888b0118c6cb381ee8afb7b7eba50a06a344a9ad3a9",
+      "size": 58812,
+      "snapshot": "android_live.py"
+    },
+    "popup_guards": {
+      "path": "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_popup_guard_tests.py",
+      "sha256": "53471f14b5eb3939e44a04711ed0edb43e55abc0e76b9f9602923375fdd9ec9f",
+      "size": 16071,
+      "snapshot": "android_popup_guard_tests.py"
+    },
+    "restore_guards": {
+      "path": "/workspace/scratch/848006513f75/HeptaBao/qa/personal_credentials/android_driver_guard_tests.py",
+      "sha256": "c3ed49de97b4a8c3e81d74e6abe14eacd7b8c7051b2de4481410684b70e0424f",
+      "size": 4538,
+      "snapshot": "android_driver_guard_tests.py"
+    }
+  },
+  "synthetic_only": true,
+  "system_query": [
+    "dumpsys",
+    "activity",
+    "top-resumed"
+  ],
+  "system_query_scope": "one current server-owned top ActivityRecord, without package filtering or client callback",
+  "total_offline_tests_passed": 57
+}

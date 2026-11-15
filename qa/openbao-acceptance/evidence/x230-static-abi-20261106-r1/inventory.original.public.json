@@ -1,0 +1,482 @@
+{
+  "actual_candidate_requirements_not_yet_available": true,
+  "at_utc": "2026-11-06T16:45:52.702203+00:00",
+  "candidate_abi_qualified": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "--version"
+      ],
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.004090638365596533,
+      "exit_code": 0,
+      "label": "readelf-version",
+      "requested_cap_seconds": 15,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 288,
+      "stdout_sha256": "6aca4321453ac381865f3d353ea7896b150c05026483cb9db0047eee6916723d",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/sbin/ldconfig",
+        "-p"
+      ],
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.009167721029371023,
+      "exit_code": 0,
+      "label": "ldconfig-cache",
+      "requested_cap_seconds": 15,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 97842,
+      "stdout_sha256": "d7ca75505f24bd3a3ed9fc4cfed3b3389fa003fa9bb62393e49ff63e6726e7b4",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "-W",
+        "-h",
+        "-l",
+        "-d",
+        "--version-info",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+      ],
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.0028634341433644295,
+      "exit_code": 0,
+      "label": "provider-ld-linux-x86-64.so.2",
+      "requested_cap_seconds": 15,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 5352,
+      "stdout_sha256": "c3e2b9f2f5b271675a0a4a4bec0fce07b7d841c0d171ccaa9f5329f11a1662df",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "-W",
+        "-h",
+        "-l",
+        "-d",
+        "--version-info",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6"
+      ],
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.048005832359194756,
+      "exit_code": 0,
+      "label": "provider-libc.so.6",
+      "requested_cap_seconds": 15,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 72268,
+      "stdout_sha256": "eb5c7939ea2c02d20094e0a03630896b792113ea5ec8c91005ad45dfc93ecd6f",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "-W",
+        "-h",
+        "-l",
+        "-d",
+        "--version-info",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+      ],
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.008017156273126602,
+      "exit_code": 0,
+      "label": "provider-libgcc_s.so.1",
+      "requested_cap_seconds": 15,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 11107,
+      "stdout_sha256": "1ea1264c7e807235347016b9f7ee030c3911bd8a4fbbec30182c520f19790867",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "-W",
+        "-h",
+        "-l",
+        "-d",
+        "--version-info",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6"
+      ],
+      "effective_cap_seconds": 15,
+      "elapsed_seconds": 0.0223946338519454,
+      "exit_code": 0,
+      "label": "provider-libm.so.6",
+      "requested_cap_seconds": 15,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 31082,
+      "stdout_sha256": "c660df10d3b8c8134af67562b6e8b052fa316bf8d7f45d1518ded971d16da5a2",
+      "timed_out": false
+    }
+  ],
+  "elapsed_seconds": 0.1613802402280271,
+  "hostname": "qian-ThinkPad-X230",
+  "interpreter": {
+    "pin": {
+      "bytes": 236616,
+      "identity": [
+        2053,
+        655675,
+        0,
+        0,
+        33261,
+        1,
+        1788444912000000000,
+        1789078327068437795
+      ],
+      "path": "/lib64/ld-linux-x86-64.so.2",
+      "resolved": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+    },
+    "requested_path": "/lib64/ld-linux-x86-64.so.2",
+    "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+  },
+  "machine": "x86_64",
+  "platform": "Linux",
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "providers": {
+    "ld-linux-x86-64.so.2": {
+      "after": {
+        "bytes": 236616,
+        "identity": [
+          2053,
+          655675,
+          0,
+          0,
+          33261,
+          1,
+          1788444912000000000,
+          1789078327068437795
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "resolved": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+      },
+      "before": {
+        "bytes": 236616,
+        "identity": [
+          2053,
+          655675,
+          0,
+          0,
+          33261,
+          1,
+          1788444912000000000,
+          1789078327068437795
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "resolved": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+      },
+      "header_hex": "7f454c4602010103000000000000000003003e000100000040f50100000000004000000000000000489603000000000000000000400038000b00400018001700",
+      "lookup_candidates": [
+        "/lib64/ld-linux-x86-64.so.2",
+        "/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+      ],
+      "raw_readelf_file": "provider-ld-linux-x86-64.so.2.stdout",
+      "raw_readelf_sha256": "c3e2b9f2f5b271675a0a4a4bec0fce07b7d841c0d171ccaa9f5329f11a1662df",
+      "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "version_name_union_for_inventory_only": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.3",
+        "GLIBC_2.34",
+        "GLIBC_2.35",
+        "GLIBC_2.4",
+        "GLIBC_PRIVATE"
+      ]
+    },
+    "libc.so.6": {
+      "after": {
+        "bytes": 2129424,
+        "identity": [
+          2053,
+          656503,
+          0,
+          0,
+          33261,
+          2,
+          1788444912000000000,
+          1793497265469085979
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "resolved": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+      },
+      "before": {
+        "bytes": 2129424,
+        "identity": [
+          2053,
+          656503,
+          0,
+          0,
+          33261,
+          2,
+          1788444912000000000,
+          1793497265469085979
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "resolved": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+      },
+      "header_hex": "7f454c4602010103000000000000000003003e000100000090a30200000000004000000000000000106e20000000000000000000400038000e00400040003f00",
+      "lookup_candidates": [
+        "/lib/x86_64-linux-gnu/libc.so.6"
+      ],
+      "raw_readelf_file": "provider-libc.so.6.stdout",
+      "raw_readelf_sha256": "eb5c7939ea2c02d20094e0a03630896b792113ea5ec8c91005ad45dfc93ecd6f",
+      "resolved_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "version_name_union_for_inventory_only": [
+        "GLIBC_2.10",
+        "GLIBC_2.11",
+        "GLIBC_2.12",
+        "GLIBC_2.13",
+        "GLIBC_2.14",
+        "GLIBC_2.15",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.2.6",
+        "GLIBC_2.22",
+        "GLIBC_2.23",
+        "GLIBC_2.24",
+        "GLIBC_2.25",
+        "GLIBC_2.26",
+        "GLIBC_2.27",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.31",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.35",
+        "GLIBC_2.36",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_2.5",
+        "GLIBC_2.6",
+        "GLIBC_2.7",
+        "GLIBC_2.8",
+        "GLIBC_2.9",
+        "GLIBC_ABI_DT_RELR",
+        "GLIBC_PRIVATE"
+      ]
+    },
+    "libgcc_s.so.1": {
+      "after": {
+        "bytes": 183024,
+        "identity": [
+          2053,
+          658926,
+          0,
+          0,
+          33188,
+          1,
+          1766093810000000000,
+          1775782341406769323
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "resolved": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+      },
+      "before": {
+        "bytes": 183024,
+        "identity": [
+          2053,
+          658926,
+          0,
+          0,
+          33188,
+          1,
+          1766093810000000000,
+          1775782341406769323
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "resolved": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+      },
+      "header_hex": "7f454c4602010100000000000000000003003e00010000000000000000000000400000000000000030c302000000000000000000400038000c0040001f001e00",
+      "lookup_candidates": [
+        "/lib/x86_64-linux-gnu/libgcc_s.so.1"
+      ],
+      "raw_readelf_file": "provider-libgcc_s.so.1.stdout",
+      "raw_readelf_sha256": "1ea1264c7e807235347016b9f7ee030c3911bd8a4fbbec30182c520f19790867",
+      "resolved_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "version_name_union_for_inventory_only": [
+        "GCC_12.0.0",
+        "GCC_13.0.0",
+        "GCC_14.0.0",
+        "GCC_3.0",
+        "GCC_3.3",
+        "GCC_3.3.1",
+        "GCC_3.4",
+        "GCC_3.4.2",
+        "GCC_3.4.4",
+        "GCC_4.0.0",
+        "GCC_4.2.0",
+        "GCC_4.3.0",
+        "GCC_4.7.0",
+        "GCC_4.8.0",
+        "GCC_7.0.0",
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.34",
+        "GLIBC_2.35"
+      ]
+    },
+    "libm.so.6": {
+      "after": {
+        "bytes": 952616,
+        "identity": [
+          2053,
+          657404,
+          0,
+          0,
+          33188,
+          1,
+          1788444912000000000,
+          1789078327068437795
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "resolved": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+      },
+      "before": {
+        "bytes": 952616,
+        "identity": [
+          2053,
+          657404,
+          0,
+          0,
+          33188,
+          1,
+          1788444912000000000,
+          1789078327068437795
+        ],
+        "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "resolved": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+      },
+      "header_hex": "7f454c4602010103000000000000000003003e00010000000000000000000000400000000000000068810e000000000000000000400038000b0040001f001e00",
+      "lookup_candidates": [
+        "/lib/x86_64-linux-gnu/libm.so.6"
+      ],
+      "raw_readelf_file": "provider-libm.so.6.stdout",
+      "raw_readelf_sha256": "c660df10d3b8c8134af67562b6e8b052fa316bf8d7f45d1518ded971d16da5a2",
+      "resolved_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "version_name_union_for_inventory_only": [
+        "GLIBC_2.15",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.23",
+        "GLIBC_2.24",
+        "GLIBC_2.25",
+        "GLIBC_2.26",
+        "GLIBC_2.27",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.31",
+        "GLIBC_2.32",
+        "GLIBC_2.35",
+        "GLIBC_2.36",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_ABI_DT_RELR",
+        "GLIBC_PRIVATE"
+      ]
+    }
+  },
+  "readelf_version": "GNU readelf (GNU Binutils for Ubuntu) 2.42",
+  "schema": "heptabao.x230-existing-loader-provider-inventory.v1",
+  "status": "passed",
+  "tools_after": {
+    "ldconfig": {
+      "bytes": 387,
+      "identity": [
+        2053,
+        658461,
+        0,
+        0,
+        33261,
+        1,
+        1788444912000000000,
+        1789078327685443331
+      ],
+      "path": "/usr/sbin/ldconfig",
+      "resolved": "/usr/sbin/ldconfig",
+      "sha256": "bfd5df90c7f070feab584435f106f254ffffaa268a04de5b5c3bd61d59c092f3"
+    },
+    "readelf": {
+      "bytes": 789280,
+      "identity": [
+        2053,
+        659566,
+        0,
+        0,
+        33261,
+        1,
+        1770671008000000000,
+        1775782929354224601
+      ],
+      "path": "/usr/bin/readelf",
+      "resolved": "/usr/bin/x86_64-linux-gnu-readelf",
+      "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0"
+    }
+  },
+  "tools_before": {
+    "ldconfig": {
+      "bytes": 387,
+      "identity": [
+        2053,
+        658461,
+        0,
+        0,
+        33261,
+        1,
+        1788444912000000000,
+        1789078327685443331
+      ],
+      "path": "/usr/sbin/ldconfig",
+      "resolved": "/usr/sbin/ldconfig",
+      "sha256": "bfd5df90c7f070feab584435f106f254ffffaa268a04de5b5c3bd61d59c092f3"
+    },
+    "readelf": {
+      "bytes": 789280,
+      "identity": [
+        2053,
+        659566,
+        0,
+        0,
+        33261,
+        1,
+        1770671008000000000,
+        1775782929354224601
+      ],
+      "path": "/usr/bin/readelf",
+      "resolved": "/usr/bin/x86_64-linux-gnu-readelf",
+      "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0"
+    }
+  }
+}

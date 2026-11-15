@@ -1,0 +1,281 @@
+{
+  "schema": "heptabao.production-plugin-real-sdk-preparation.r1",
+  "status": "source-only",
+  "executed": false,
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "evidenceBaseCommit": "7d9e933d5ccab83d51c4de9ae7f028fe70e92302",
+  "rootCheckpointAfterIndependentObservations": "576e9fda5866b47a1c280920cf48ba81e21a4a32",
+  "purpose": "Qualify the complete prepared production plugin r2 with the real installed SDK and its real production transport against a separately owned normal HeptaBao instance, using synthetic credentials only.",
+  "existingEvidence": [
+    {
+      "kind": "old-plugin-real-sdk",
+      "sourceBlob": "8fb908dec688edb42f9bff6ae31be89d30a57bce",
+      "sourceSha256": "4a67ca8ec0effa91e35cde4d92eaaa28a18a58b8cab647e4e9ac4315b476b383",
+      "outerChecks": 52,
+      "sdkChecks": 165,
+      "newPluginCovered": false
+    },
+    {
+      "kind": "production-plugin-local-wiring",
+      "sourceBlob": "908178e781730db0e51af071d9a33e756cb90612",
+      "passed": 18,
+      "sdkSubstituted": true,
+      "transportSubstituted": true,
+      "newActualSdkCovered": false
+    },
+    {
+      "kind": "actual-fixed-slot-coordinator",
+      "jobId": "1a1b41e9232-fc05-865b",
+      "checks": 52,
+      "completeTlsRequests": 255,
+      "actualInstalledSdkImported": false
+    }
+  ],
+  "pluginVariants": {
+    "mac-rog": {
+      "parentIndexSha256": "31b2f098547880484e7c3b254540863f6c6488b7dff122276911874d04e40b54",
+      "preparedFiles": {
+        "bad-refresh-quarantine.js": {
+          "bytes": 5438,
+          "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286"
+        },
+        "codex-client-recycler.js": {
+          "bytes": 2120,
+          "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+        },
+        "index.js": {
+          "bytes": 53695,
+          "sha256": "ae3efea5c6412116942a9d18ebc5110150d18b16b06b3a25add4f5a626ad9bfb"
+        },
+        "lease-assignments.js": {
+          "bytes": 6932,
+          "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7"
+        },
+        "openclaw.plugin.json": {
+          "bytes": 3312,
+          "sha256": "e52d970e271e2ed0f8c7038d51f799acfabd710b2ec320f971597e4aec16e5a4"
+        },
+        "order-policy.js": {
+          "bytes": 7376,
+          "sha256": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301"
+        },
+        "package.json": {
+          "bytes": 1019,
+          "sha256": "b3beb5e08a9ff969c0081264f8539e4731ed12ba974a8d5099ead6f8415005c4"
+        },
+        "production-transport/bounded-outbox.js": {
+          "bytes": 18043,
+          "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+        },
+        "production-transport/private-outbox-store.js": {
+          "bytes": 8660,
+          "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+        },
+        "production-transport/production-client.js": {
+          "bytes": 3434,
+          "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+        },
+        "production-transport/strict-bao-client.js": {
+          "bytes": 26161,
+          "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+        },
+        "provider-error-classifier.js": {
+          "bytes": 4670,
+          "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77"
+        },
+        "runtime-refresh-policy.js": {
+          "bytes": 956,
+          "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+        }
+      }
+    },
+    "pocket4": {
+      "parentIndexSha256": "6326a8342634c8a61a4d57e1b862ae5bce4d24939a4a1f4f9095ba119b40e30f",
+      "preparedFiles": {
+        "bad-refresh-quarantine.js": {
+          "bytes": 5438,
+          "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286"
+        },
+        "codex-client-recycler.js": {
+          "bytes": 2120,
+          "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+        },
+        "index.js": {
+          "bytes": 53818,
+          "sha256": "655b74a413ae982112d5ab36e7ac1c82a34e994c8687feda18396a5ccf6a8393"
+        },
+        "lease-assignments.js": {
+          "bytes": 6932,
+          "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7"
+        },
+        "openclaw.plugin.json": {
+          "bytes": 3312,
+          "sha256": "e52d970e271e2ed0f8c7038d51f799acfabd710b2ec320f971597e4aec16e5a4"
+        },
+        "order-policy.js": {
+          "bytes": 8506,
+          "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82"
+        },
+        "package.json": {
+          "bytes": 1019,
+          "sha256": "02efa23ffe8a786078b16be04485a61d1ba0b3552c78e75c2b16762de2338fa5"
+        },
+        "production-transport/bounded-outbox.js": {
+          "bytes": 18043,
+          "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+        },
+        "production-transport/private-outbox-store.js": {
+          "bytes": 8660,
+          "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+        },
+        "production-transport/production-client.js": {
+          "bytes": 3434,
+          "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+        },
+        "production-transport/strict-bao-client.js": {
+          "bytes": 26161,
+          "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+        },
+        "provider-error-classifier.js": {
+          "bytes": 4670,
+          "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77"
+        },
+        "runtime-refresh-policy.js": {
+          "bytes": 956,
+          "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+        }
+      }
+    }
+  },
+  "sdkPackageObservedBinding": {
+    "bytes": 116017,
+    "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+    "observedOn": [
+      "mac",
+      "rog",
+      "pocket4"
+    ],
+    "packageWholeByteEqualityIsTransitiveDependencyEquality": false,
+    "packageWholeByteEqualityIsRunningProcessImageProof": false
+  },
+  "hostScope": [
+    {
+      "host": "mac",
+      "sdkRoot": "/opt/homebrew/lib/node_modules/openclaw",
+      "node": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+      "pluginVariant": "mac-rog",
+      "kernelBoundary": "Existing actual Mac sandbox scope with new private state, literal cwd ancestors, one local TCP port, independent strict IPv4/CA/leaf binding.",
+      "realSdkBoundaryAvailable": true
+    },
+    {
+      "host": "rog",
+      "sdkRoot": "/home/qian-qi/.npm-global/lib/node_modules/openclaw",
+      "pluginVariant": "mac-rog",
+      "packageAuthorityBlob": "c46349810891492e7cd48aaeef5f2add83a44a0a",
+      "kernelBoundary": "No previously qualified complete Linux SDK-write sandbox has been identified; must establish its finite private fixture boundary before this worker is admitted.",
+      "realSdkBoundaryAvailable": false
+    },
+    {
+      "host": "pocket4",
+      "sdkRoot": "/home/alex/.npm-global/lib/node_modules/openclaw",
+      "pluginVariant": "pocket4",
+      "packageAuthorityBlob": "5a58942956bd5aeb42ab3eab280aa489f378634a",
+      "kernelBoundary": "No previously qualified complete Linux SDK-write sandbox has been identified; preserve existing gateway inactive hold.",
+      "realSdkBoundaryAvailable": false
+    }
+  ],
+  "macFixture": {
+    "homeRoot": "/Users/qianqi/heptabao-production-plugin-sdk-normal-20261107-r1",
+    "dataRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/production-plugin-sdk-normal-20261107-r1",
+    "listen": "127.0.0.1:31128",
+    "product": "qualified normal 4bde9 initially, or separately qualified final 5f source with exact binary/source binding before dispatch",
+    "rustGenerations": 2,
+    "nodeGenerations": 2,
+    "parentSeconds": 600,
+    "nodePhaseSeconds": 120,
+    "strictClientRequestMs": 15000,
+    "transportOperationMs": 30000,
+    "supervisorSeconds": 630,
+    "productionServiceRegistrations": 0,
+    "syntheticOAuthOwners": 3,
+    "syntheticAgents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "syntheticConsumerReferences": 15,
+    "coordinatorBootstrapProfileCount": 3,
+    "coordinatorSlots": 2,
+    "consumerTokenTtlSeconds": 60,
+    "coordinatorTokenTtlSeconds": 1200,
+    "consumerLeader": false,
+    "providerCalls": 0,
+    "sourceCredentialReads": 0,
+    "roles": "Fresh independent coordinator and producer AppRoles. Producer can only read canonical/control/ack/profile/order/scheduler keys and CAS its enrolled slots/reports. Root material stays in the original Python parent."
+  },
+  "changesFromOldHarness": [
+    {
+      "component": "wire",
+      "reason": "The old Agent-based adapter rejects StrictBaoClient's original tls.connect -> verified createConnection socket transfer and only recognizes legacy inbox routes.",
+      "change": "Observe the original strict TLS socket and original https.request without replacing its agent, socket or cleanup. Use the already actual coordinator observer as the base; add exact finite production routes, private role/token attribution and complete closure evidence."
+    },
+    {
+      "component": "SQLite scope",
+      "reason": "The real new transport creates two durable SQLite files absent from the old six-database scope.",
+      "change": "Allow exactly private STATE/authbus/production-transport/state.sqlite and operation.sqlite, plus the fixture coordinator's two files; track original constructor/close once. Never allow production paths."
+    },
+    {
+      "component": "source fixture",
+      "reason": "No new real credential read is needed to test integration.",
+      "change": "Replace old current-capsule capture with explicitly synthetic three-owner bytes, retaining real SDK load, local owner, ordering and persistence assertions. Do not assert synthetic owner maps came from a current SDK selection."
+    },
+    {
+      "component": "control plane",
+      "reason": "The new client requires actual fixed-slot enrollment and bound canonical control.",
+      "change": "Use the already qualified coordinator to initialize, authorize and bootstrap exactly three synthetic profiles, enroll two slots and five reports, then feed actual SDK-loaded plugin cycles."
+    },
+    {
+      "component": "SDK inverse",
+      "reason": "An absent authbus baseline cannot be recreated by deleting a directory containing durable transport history.",
+      "change": "Precreate the private authbus directory before the empty six-cache baseline. Restore only the five original auth stores/two auth tables/stamps and six caches; keep both transport databases, their settled auth history and outbox records intact. Never claim whole production rollback."
+    },
+    {
+      "component": "token lifecycle",
+      "reason": "Old plugin stop did not revoke and outer assertions expected its token to remain active.",
+      "change": "Assert actual new producer login, due renewal of the same bearer, stop-driven durable revoke, server denial for old bearer, and one fresh cold-process login only from known revoked state. No relogin after unresolved intent."
+    }
+  ],
+  "actualAssertions": [
+    "Actual installed SDK module exports and all selected public source pins, not VM SyntheticModule substitutes.",
+    "Full prepared plugin registration, startup reconciliation before first cycle, five real fixture SDK stores with three exact imported objects and actual main ownership/order.",
+    "Actual fixed-slot and report writes through the plugin's ProductionTransportClient, private SQLite CAS, canonical coordinator health acknowledgement and cold reconciliation.",
+    "Complete original strict TLS responses, unchanged verified socket binding, request/response/socket closure and no unexpected destination.",
+    "Original scoped AppRole login, automatic due renewal, same bearer on renewal, stop-driven revoke and old token denial.",
+    "New Rust process and new Node process, unchanged private SDK candidate before cold cycle, durable original outbox records reopened.",
+    "One exact private SDK/cache inverse while post-cycle transport ledger bytes and epoch remain preserved.",
+    "Original SDK cache exit callback invoked exactly once, shared-state close once, all raw/transport/coordinator SQLite handles and original explicit descriptors closed."
+  ],
+  "negativeScope": [
+    "Missing enrollment/wrong control or wrong leaf fails before business writes.",
+    "An unresolved existing transport intent is retained, prevents a new mutation/key, and cannot be erased by the SDK inverse.",
+    "First plugin manifest/SDK failure propagates through the original stop path; no periodic success claim is substituted.",
+    "Provider endpoint, production profile path and unrelated network/file access remain denied."
+  ],
+  "qualificationNotYetRun": {
+    "sourceSyntax": false,
+    "localSynthetic": false,
+    "actualMac": false,
+    "actualRog": false,
+    "actualPocket4": false,
+    "productionInstalled": false,
+    "productionCutover": false
+  },
+  "remainingBeforeDispatch": [
+    "Freeze the complete new worker/observer/parent bundle and minimal derivation against immutable source blobs.",
+    "Bind the exact selected normal server artifact and actual current SDK public modules; do not infer loaded application image from package metadata.",
+    "Review new private SQLite scope and strict socket observation delta, preserve all original deadlines and UNKNOWN behavior.",
+    "Run only after explicit shared controller/product window and exact approved source are available."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "sourceBytes": 6324,
+  "sourceSha256": "582e5d64b9aaa9aea08a7d9a029697d2806ca2c06f7356be53672c2d29bc2e6f",
+  "job": "1a1b40910e8-fc05-85ef",
+  "outputBytes": 939,
+  "hexWholeBytesEqual": true,
+  "terminalSucceeded0": true,
+  "observedOriginalLogsBothEmpty": true,
+  "exactOriginalPlist": true,
+  "allEightDescriptorsClosed": true,
+  "serviceActionCount": 0,
+  "listenerCauseKnown": false
+}

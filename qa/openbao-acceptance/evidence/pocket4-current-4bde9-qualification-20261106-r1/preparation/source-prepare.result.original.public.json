@@ -1,0 +1,638 @@
+{
+  "automatic_retry": false,
+  "base_source": "/home/alex/heptabao-replacement-unified-20261105-r5/source",
+  "base_source_after": {
+    "cargo_lock": {
+      "bytes": 101193,
+      "path": "/home/alex/heptabao-replacement-unified-20261105-r5/source/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "clean": true,
+    "head": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+    "tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a",
+    "workspace_manifest": {
+      "bytes": 615,
+      "path": "/home/alex/heptabao-replacement-unified-20261105-r5/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "base_source_before": {
+    "cargo_lock": {
+      "bytes": 101193,
+      "path": "/home/alex/heptabao-replacement-unified-20261105-r5/source/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "clean": true,
+    "head": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+    "tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a",
+    "workspace_manifest": {
+      "bytes": 615,
+      "path": "/home/alex/heptabao-replacement-unified-20261105-r5/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "bundle": {
+    "bytes": 377715,
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle",
+    "sha256": "9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0"
+  },
+  "changed_test_file": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+  "changed_test_file_sha256": "1571d88838fb127509cdbe24a7e7b5402453ec4cb1dbb784d56753aa2f49e584",
+  "elapsed_seconds": 2.90155,
+  "finished_at_unix": 1793985755.3977132,
+  "formal_107_qualified": false,
+  "full_replacement_qualified": false,
+  "no_hardlinks": true,
+  "offline_registry": {
+    "all_lock_dependencies_offline_available": false,
+    "all_lock_registry_archives_verified": false,
+    "cargo_lock": {
+      "bytes": 101193,
+      "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "cargo_or_rustc_executed": false,
+    "git_dependency_count": 0,
+    "matching_archive_count": 267,
+    "mismatched_archives": [],
+    "missing_archives": [
+      {
+        "name": "android_system_properties",
+        "version": "0.1.6"
+      },
+      {
+        "name": "antlr4rust",
+        "version": "0.5.2"
+      },
+      {
+        "name": "anyerror",
+        "version": "0.1.13"
+      },
+      {
+        "name": "anyhow",
+        "version": "1.0.100"
+      },
+      {
+        "name": "async-trait",
+        "version": "0.1.89"
+      },
+      {
+        "name": "aws-lc-sys",
+        "version": "0.41.0"
+      },
+      {
+        "name": "backoff-series",
+        "version": "0.1.1"
+      },
+      {
+        "name": "base16ct",
+        "version": "0.2.0"
+      },
+      {
+        "name": "base2histogram",
+        "version": "0.2.3"
+      },
+      {
+        "name": "base64ct",
+        "version": "1.6.0"
+      },
+      {
+        "name": "better_any",
+        "version": "0.2.1"
+      },
+      {
+        "name": "bindgen",
+        "version": "0.71.1"
+      },
+      {
+        "name": "blowfish",
+        "version": "0.10.0"
+      },
+      {
+        "name": "cc",
+        "version": "1.4.5"
+      },
+      {
+        "name": "cel",
+        "version": "0.13.0"
+      },
+      {
+        "name": "chrono-tz",
+        "version": "0.8.6"
+      },
+      {
+        "name": "chrono-tz-build",
+        "version": "0.2.1"
+      },
+      {
+        "name": "clap",
+        "version": "4.6.6"
+      },
+      {
+        "name": "clap_builder",
+        "version": "4.6.6"
+      },
+      {
+        "name": "clap_derive",
+        "version": "4.6.4"
+      },
+      {
+        "name": "cross-krb5",
+        "version": "0.5.0"
+      },
+      {
+        "name": "crypto-bigint",
+        "version": "0.5.5"
+      },
+      {
+        "name": "ctutils",
+        "version": "0.4.2"
+      },
+      {
+        "name": "display-more",
+        "version": "0.2.6"
+      },
+      {
+        "name": "ecdsa",
+        "version": "0.16.9"
+      },
+      {
+        "name": "ed25519-dalek",
+        "version": "2.1.1"
+      },
+      {
+        "name": "either",
+        "version": "1.18.0"
+      },
+      {
+        "name": "elliptic-curve",
+        "version": "0.13.8"
+      },
+      {
+        "name": "ff",
+        "version": "0.13.1"
+      },
+      {
+        "name": "find-msvc-tools",
+        "version": "0.1.12"
+      },
+      {
+        "name": "group",
+        "version": "0.13.0"
+      },
+      {
+        "name": "h2",
+        "version": "0.4.19"
+      },
+      {
+        "name": "hyper",
+        "version": "1.11.1"
+      },
+      {
+        "name": "icu_collections",
+        "version": "1.5.0"
+      },
+      {
+        "name": "icu_locid",
+        "version": "1.5.0"
+      },
+      {
+        "name": "icu_locid_transform",
+        "version": "1.5.0"
+      },
+      {
+        "name": "icu_locid_transform_data",
+        "version": "1.5.1"
+      },
+      {
+        "name": "icu_normalizer",
+        "version": "1.5.0"
+      },
+      {
+        "name": "icu_normalizer_data",
+        "version": "1.5.1"
+      },
+      {
+        "name": "icu_properties",
+        "version": "1.5.1"
+      },
+      {
+        "name": "icu_properties_data",
+        "version": "1.5.1"
+      },
+      {
+        "name": "icu_provider",
+        "version": "1.5.0"
+      },
+      {
+        "name": "icu_provider_macros",
+        "version": "1.5.0"
+      },
+      {
+        "name": "idna_adapter",
+        "version": "1.2.0"
+      },
+      {
+        "name": "indexmap",
+        "version": "2.11.4"
+      },
+      {
+        "name": "js-sys",
+        "version": "0.3.105"
+      },
+      {
+        "name": "libc",
+        "version": "0.2.189"
+      },
+      {
+        "name": "libgssapi",
+        "version": "0.11.0"
+      },
+      {
+        "name": "libgssapi-sys",
+        "version": "0.3.4"
+      },
+      {
+        "name": "libloading",
+        "version": "0.8.8"
+      },
+      {
+        "name": "libredox",
+        "version": "0.1.24"
+      },
+      {
+        "name": "litemap",
+        "version": "0.7.3"
+      },
+      {
+        "name": "lock_api",
+        "version": "0.4.13"
+      },
+      {
+        "name": "mio",
+        "version": "1.2.3"
+      },
+      {
+        "name": "murmur3",
+        "version": "0.4.1"
+      },
+      {
+        "name": "num-bigint-dig",
+        "version": "0.8.6"
+      },
+      {
+        "name": "openraft",
+        "version": "0.10.0-alpha.34"
+      },
+      {
+        "name": "openraft-legacy",
+        "version": "0.10.0-alpha.34"
+      },
+      {
+        "name": "openraft-macros",
+        "version": "0.10.0-alpha.34"
+      },
+      {
+        "name": "openraft-memstore",
+        "version": "0.10.0-alpha.34"
+      },
+      {
+        "name": "openraft-rt",
+        "version": "0.10.0-alpha.34"
+      },
+      {
+        "name": "openraft-rt-tokio",
+        "version": "0.10.0-alpha.34"
+      },
+      {
+        "name": "p256",
+        "version": "0.13.2"
+      },
+      {
+        "name": "p384",
+        "version": "0.13.1"
+      },
+      {
+        "name": "p521",
+        "version": "0.13.3"
+      },
+      {
+        "name": "parking_lot",
+        "version": "0.12.4"
+      },
+      {
+        "name": "parking_lot_core",
+        "version": "0.9.11"
+      },
+      {
+        "name": "parse-size",
+        "version": "1.1.0"
+      },
+      {
+        "name": "parse-zoneinfo",
+        "version": "0.3.1"
+      },
+      {
+        "name": "peel-off",
+        "version": "0.1.1"
+      },
+      {
+        "name": "pkcs1",
+        "version": "0.7.5"
+      },
+      {
+        "name": "plain",
+        "version": "0.2.3"
+      },
+      {
+        "name": "primeorder",
+        "version": "0.13.6"
+      },
+      {
+        "name": "rand",
+        "version": "0.10.2"
+      },
+      {
+        "name": "redox_syscall",
+        "version": "0.9.4"
+      },
+      {
+        "name": "rfc6979",
+        "version": "0.4.0"
+      },
+      {
+        "name": "rsa",
+        "version": "0.9.10"
+      },
+      {
+        "name": "rustls",
+        "version": "0.23.44"
+      },
+      {
+        "name": "rustls-native-certs",
+        "version": "0.8.2"
+      },
+      {
+        "name": "rustls-pemfile",
+        "version": "2.2.0"
+      },
+      {
+        "name": "rustls-webpki",
+        "version": "0.103.15"
+      },
+      {
+        "name": "schannel",
+        "version": "0.1.27"
+      },
+      {
+        "name": "sec1",
+        "version": "0.7.3"
+      },
+      {
+        "name": "security-framework",
+        "version": "3.7.0"
+      },
+      {
+        "name": "security-framework-sys",
+        "version": "2.17.0"
+      },
+      {
+        "name": "smallvec",
+        "version": "1.16.0"
+      },
+      {
+        "name": "spki",
+        "version": "0.8.0"
+      },
+      {
+        "name": "ssh-cipher",
+        "version": "0.2.0"
+      },
+      {
+        "name": "ssh-encoding",
+        "version": "0.2.0"
+      },
+      {
+        "name": "ssh-key",
+        "version": "0.6.7"
+      },
+      {
+        "name": "syn",
+        "version": "3.0.6"
+      },
+      {
+        "name": "thiserror",
+        "version": "2.0.20"
+      },
+      {
+        "name": "thiserror-impl",
+        "version": "2.0.20"
+      },
+      {
+        "name": "tinystr",
+        "version": "0.7.6"
+      },
+      {
+        "name": "tokio-openssl",
+        "version": "0.6.5"
+      },
+      {
+        "name": "tokio-util",
+        "version": "0.7.11"
+      },
+      {
+        "name": "typed-arena",
+        "version": "2.0.2"
+      },
+      {
+        "name": "utf16_iter",
+        "version": "1.0.5"
+      },
+      {
+        "name": "uuid",
+        "version": "1.20.0"
+      },
+      {
+        "name": "validit",
+        "version": "0.2.6"
+      },
+      {
+        "name": "wasip2",
+        "version": "1.0.4+wasi-0.2.12"
+      },
+      {
+        "name": "wasm-bindgen",
+        "version": "0.2.128"
+      },
+      {
+        "name": "wasm-bindgen-macro",
+        "version": "0.2.128"
+      },
+      {
+        "name": "wasm-bindgen-macro-support",
+        "version": "0.2.128"
+      },
+      {
+        "name": "wasm-bindgen-shared",
+        "version": "0.2.128"
+      },
+      {
+        "name": "wit-bindgen",
+        "version": "0.57.1"
+      },
+      {
+        "name": "write16",
+        "version": "1.0.0"
+      },
+      {
+        "name": "writeable",
+        "version": "0.5.5"
+      },
+      {
+        "name": "xattr",
+        "version": "1.6.1"
+      },
+      {
+        "name": "yoke",
+        "version": "0.7.4"
+      },
+      {
+        "name": "yoke-derive",
+        "version": "0.7.5"
+      },
+      {
+        "name": "zerocopy",
+        "version": "0.8.62"
+      },
+      {
+        "name": "zerocopy-derive",
+        "version": "0.8.62"
+      },
+      {
+        "name": "zerofrom",
+        "version": "0.1.4"
+      },
+      {
+        "name": "zeroize",
+        "version": "1.8.1"
+      },
+      {
+        "name": "zerovec",
+        "version": "0.10.4"
+      },
+      {
+        "name": "zerovec-derive",
+        "version": "0.10.4"
+      }
+    ],
+    "missing_unused_target_packages_are_not_a_product_test_failure": true,
+    "registry_packages": 384,
+    "registry_source_names_redacted": true
+  },
+  "original_base_source_preserved": true,
+  "preparation_script_sha256": "ec549c490deb29bfc3bdf819f21d9aba6ddbb3d7afa15fc1e0982dcd7723cb59",
+  "production_changed": false,
+  "rog_unknown_preparation_replayed": false,
+  "rust_build_executed": false,
+  "schema": "heptabao.pocket4-canonical-source-preparation.v1",
+  "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+  "source_Cargo_lock": {
+    "bytes": 101193,
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.lock",
+    "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+  },
+  "source_at_exact_published_commit": true,
+  "source_clean": true,
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_parent": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "source_workspace_manifest": {
+    "bytes": 615,
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.toml",
+    "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+  },
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "clone",
+        "--no-hardlinks",
+        "--no-local",
+        "--no-checkout",
+        "/home/alex/heptabao-replacement-unified-20261105-r5/source",
+        "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9"
+      ],
+      "exit_code": 0,
+      "label": "prepare-clone",
+      "original_cap_seconds": 180,
+      "seconds": 0.865784,
+      "stderr_sha256": "7a445c5ff557fc69b69ed41cdb797b2c518ff9bab1a14a54536422d3a5f3bc9d",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "bundle",
+        "verify",
+        "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle"
+      ],
+      "exit_code": 0,
+      "label": "prepare-bundle-verify",
+      "original_cap_seconds": 30,
+      "seconds": 0.008951,
+      "stderr_sha256": "49568cfe026e8116fc5d56821fc5b6f636d3409ccea20c85dd0be96eadd86993",
+      "stdout_sha256": "cdcb8c8e2943052b375b7a8e2c5396a8cf4bfcb16ab19c638f4e74ad97d0f6f2"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "fetch",
+        "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "prepare-fetch",
+      "original_cap_seconds": 30,
+      "seconds": 0.114678,
+      "stderr_sha256": "da5560e514d0a37542947f679e68e68bd3338f1cafbab115cf8672aa255a7033",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "checkout",
+        "--detach",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249"
+      ],
+      "exit_code": 0,
+      "label": "prepare-checkout",
+      "original_cap_seconds": 30,
+      "seconds": 0.216906,
+      "stderr_sha256": "a643ae1ea8207002efd1b9783d1dcf093bad885989883b85a7cbd22bd6b210c1",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "label": "prepare-fsck",
+      "original_cap_seconds": 60,
+      "seconds": 1.416746,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

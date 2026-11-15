@@ -1,0 +1,36 @@
+{
+  "label": "actual-local-undici-final",
+  "exitCode": 0,
+  "elapsedSeconds": 0.36503850600274745,
+  "stdoutSha256": "9295f10d5b58b25464252416df69bcad45aac8f8b4641f2142c329d4349c2f1f",
+  "stderrSha256": "1c8d92e211ff4008f85a92a5df13566f3ba1214b4b39a1182c4650061ff391c4",
+  "public": {
+    "schema": "heptabao.authbus-openai-undici-connect-regression.v1",
+    "actualSdkExecution": false,
+    "actualNativeHeptaBao": false,
+    "actualOAuthRefresh": false,
+    "realExternalProvider": false,
+    "actualInstalledUndiciDispatch": true,
+    "actualOwnedConnectAndTls": true,
+    "credentialInput": false,
+    "library": {
+      "name": "undici",
+      "version": "6.28.0",
+      "packageSha256": "f529aa8b145f6e270a72700ceb6c8dd3b87f742313078ea9f774a9d2ce8c865d"
+    },
+    "nodeVersion": "v24.19.0",
+    "checksPassed": 5,
+    "checks": [
+      "ProxyAgent:actual_dispatch_verified_tls_exact_authority",
+      "EnvHttpProxyAgent:actual_dispatch_verified_tls_exact_authority",
+      "both_actual_library_dispatchers_used_only_owned_connect",
+      "owned_proxy_sockets_and_process_ca_closed_restored",
+      "library_package_metadata_unchanged"
+    ],
+    "observations": {
+      "connections": 2,
+      "denials": 0,
+      "upstreamFailures": 0
+    }
+  }
+}

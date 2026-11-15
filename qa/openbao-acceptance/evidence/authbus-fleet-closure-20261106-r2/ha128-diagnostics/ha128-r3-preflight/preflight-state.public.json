@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.ha128-r3-preflight-state.r1",
+  "phase": "known-launched-no-product-result-asserted",
+  "job": "1a1b357f5e0-fc05-8241",
+  "allFreshPreflightsKnownPassed": true,
+  "ports": [
+    31040,
+    31041
+  ],
+  "newHaRoots": 5,
+  "apiOrRaftBudgetChanged": false,
+  "caseDenominator": 128,
+  "temporaryAi395RulesRetained": 2,
+  "temporaryRulesAddedAgain": false,
+  "firewallWritesThisAttempt": 0,
+  "priorFailureReclassified": false,
+  "snapshotDoesNotReservePorts": true,
+  "privateFirewallArchiveScope": "host private root /home/qq/heptabao-ha-ufw-peer-ports-20261106-r2/before-ha-r3 contains full original configs and kernel archives; no raw unrelated rules published",
+  "naturalPtyExitAuthority": "original known-zero complete archived terminal+EOF; already_exited close acknowledgement is preserved as unknown and is not claimed to prove termination",
+  "haQualified": false,
+  "fullReplacementQualified": false
+}

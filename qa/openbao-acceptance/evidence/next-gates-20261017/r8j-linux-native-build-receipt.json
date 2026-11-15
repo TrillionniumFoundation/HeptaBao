@@ -1,0 +1,48 @@
+{
+  "binary_abi_evidence": {
+    "cpu": "x86_64",
+    "format": "ELF64",
+    "interpreter": "/lib64/ld-linux-x86-64.so.2"
+  },
+  "binary_has_independent_inode": true,
+  "binary_path": "/home/qian-qi/heptabao-next-gates-20261017/native-r8j-linux-freeze-01/heptabao-server",
+  "binary_sha256": "c0821bae2a8435eddea8506311a09cd3e1f0533948b8489f1e606e210a073560",
+  "build_exit_code": 0,
+  "build_log_sha256": "b728314bb6a8e4d3d5f775d4f161f14b566dd449c45fda91abb2c7ca2b35c2db",
+  "cargo_artifact_log_sha256": "0c0c4f3f1528df4cf688d5beb4271d12646e42cc6d1958f07d171fa7f0b8576d",
+  "cargo_artifact_path": "/home/qian-qi/heptabao-next-gates-20261017/target/debug/heptabao-server",
+  "cargo_home": "/home/qian-qi/.cargo",
+  "cargo_version": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--features",
+    "experimental-native-v6-ha",
+    "--message-format=json"
+  ],
+  "copied_binary_readback_verified": true,
+  "elapsed_seconds": 903.212,
+  "features": [
+    "experimental-native-v6-ha"
+  ],
+  "freezer_sha256": "1f90af9625d8efedf8e15ff42fed599f38b1b068ad968679012dd229b5453e84",
+  "github_saved_commit_same_tree": "675d842e3f086b84512e398368d9ffd38071c636",
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "production_cutover": false,
+  "rustc_verbose_version": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "4f0bacd59be21d204783d69b500d2a19ef6af55a",
+  "source_files": 2582,
+  "source_freeze_verified": true,
+  "source_manifest_sha256": "676ca7874714d3113b45a880fea4e898f9d8d42aefb16e3d733e7e7fc0efda8f",
+  "source_root": "/home/qian-qi/heptabao-next-gates-20261017/source-r8j",
+  "source_tree": "9514b66b8cda559938e135d6c7c5b9606296fd4a",
+  "source_verified_before_and_after": true,
+  "target_dir": "/home/qian-qi/heptabao-next-gates-20261017/target"
+}

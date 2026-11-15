@@ -1,0 +1,639 @@
+{
+  "files": [
+    {
+      "bytes": 446,
+      "header_argv_matches_original_summary": true,
+      "label": "cargo-version",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/cargo-version.log",
+      "sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1",
+      "tool_eof": true,
+      "tool_version": "16777244:66369810:446:1792398015522512858:1792398015522512858"
+    },
+    {
+      "bytes": 303,
+      "header_argv_matches_original_summary": true,
+      "label": "rustc-version",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/rustc-version.log",
+      "sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e",
+      "tool_eof": true,
+      "tool_version": "16777244:66369814:303:1792398015568675926:1792398015568675926"
+    },
+    {
+      "bytes": 2890,
+      "header_argv_matches_original_summary": true,
+      "label": "compile-server-tests",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/compile-server-tests.log",
+      "sha256": "0683771ee08b12a9d0a3ff2d611903739470502812a8303c6cd8e5602bf8c37c",
+      "tool_eof": true,
+      "tool_version": "16777244:66369819:2890:1792398358504899874:1792398358504899874"
+    },
+    {
+      "bytes": 474,
+      "header_argv_matches_original_summary": true,
+      "label": "compile-peer-tests",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/compile-peer-tests.log",
+      "sha256": "0bed221075ab77a044ae8cf3decea16df3b255969aef16fd80ec5615aedba675",
+      "tool_eof": true,
+      "tool_version": "16777244:66380445:474:1792398358874939681:1792398358874939681"
+    },
+    {
+      "bytes": 2384,
+      "header_argv_matches_original_summary": true,
+      "label": "build-server",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/build-server.log",
+      "sha256": "0a4dbbf6df431a8b0522cd31b06ad0ea4df0c4932f0f8dd98da6e52c7973bd94",
+      "tool_eof": true,
+      "tool_version": "16777244:66382945:2384:1792398735180466530:1792398735180466530"
+    },
+    {
+      "bytes": 281,
+      "header_argv_matches_original_summary": true,
+      "label": "built-binary-format",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/built-binary-format.log",
+      "sha256": "d106fc7578b9ea40a4ff6119d9ee03b09ab656ad846fd1ec89bb2b04933156d6",
+      "tool_eof": true,
+      "tool_version": "16777244:66384882:281:1792398735617130951:1792398735617130951"
+    },
+    {
+      "bytes": 6228,
+      "expected_count": 8,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-import",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "8",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-kv2-import.log",
+      "sha256": "c7c1d1722fc6e3282a5f367b9e0540ed527968154313021e6d949e477cccdf50",
+      "tool_eof": true,
+      "tool_version": "16777244:66381599:6228:1792398374769876764:1792398374769876764"
+    },
+    {
+      "bytes": 7623,
+      "expected_count": 15,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-large",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "15",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-kv2-large.log",
+      "sha256": "80e817c8b85cc10f6da47dc5e053ad62467afabb4a77c1cdc33e99754895e331",
+      "tool_eof": true,
+      "tool_version": "16777244:66381688:7623:1792398399371907358:1792398399371907358"
+    },
+    {
+      "bytes": 3381,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-original-unseal-veto",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/forward-original-unseal-veto.log",
+      "sha256": "213fee8bb5667cc61da15e6975aa7d97dcba17b6756731b97ba3b7e04a3754dc",
+      "tool_eof": true,
+      "tool_version": "16777244:66381775:3381:1792398401068114456:1792398401068114456"
+    },
+    {
+      "bytes": 3326,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-no-second-floor",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/forward-no-second-floor.log",
+      "sha256": "ac6ac5a44045fd22d6a00e2932ac6bb680366f83fc3c8ab0413989cf6a1b7062",
+      "tool_eof": true,
+      "tool_version": "16777244:66381862:3326:1792398402751129773:1792398402751129773"
+    },
+    {
+      "bytes": 45587,
+      "expected_count": 6,
+      "header_argv_matches_original_summary": true,
+      "label": "historical-service",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "6",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/historical-service.log",
+      "sha256": "ee19f80f1ccfad869d6dcb66281b775fa5cbb3128949ce335dc5a269a86723cb",
+      "tool_eof": true,
+      "tool_version": "16777244:66381949:45587:1792398476924739226:1792398476924739226"
+    },
+    {
+      "bytes": 10643,
+      "expected_count": 7,
+      "header_argv_matches_original_summary": true,
+      "label": "snapshot-service",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "7",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/snapshot-service.log",
+      "sha256": "0ee7dbf53aedef2508e98f637f0c6a537343cdad174d5e2fe31c3a88fb03479b",
+      "tool_eof": true,
+      "tool_version": "16777244:66382036:10643:1792398505679741794:1792398505679741794"
+    },
+    {
+      "bytes": 3276,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "archive-34mib",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/archive-34mib.log",
+      "sha256": "5d341de716e23c0f82514cca2711ecf2a902566e682bc9325e3f1f91bb39d26d",
+      "tool_eof": true,
+      "tool_version": "16777244:66382123:3276:1792398527324566835:1792398527324566835"
+    },
+    {
+      "bytes": 3096,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-repair-admission",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/http-repair-admission.log",
+      "sha256": "f4f5cf7bec5e4a4dc0cacd0fbf7975b7a3dcbdaad2f1690249cc67ae0002d1d2",
+      "tool_eof": true,
+      "tool_version": "16777244:66382210:3096:1792398527678587586:1792398527678587586"
+    },
+    {
+      "bytes": 3114,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-pending-admission",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/http-pending-admission.log",
+      "sha256": "32f0775b42f3715af4688b57badf537fa4fd88b72749785c5aa5db6ca98c74fe",
+      "tool_eof": true,
+      "tool_version": "16777244:66382297:3114:1792398527967235445:1792398527967235445"
+    },
+    {
+      "bytes": 1267,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-transport-diagnostic",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/private-transport-diagnostic.log",
+      "sha256": "083551313aea9eb9349618135995cf67af960d5f5648fbf18be063979230d59f",
+      "tool_eof": true,
+      "tool_version": "16777244:66382361:1267:1792398528256574968:1792398528256574968"
+    },
+    {
+      "bytes": 1267,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-frame-diagnostic",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/private-frame-diagnostic.log",
+      "sha256": "26ad9e0d13e39472f2a649e6936f73769d4a112fd7cff0eec229ec7873ff27cb",
+      "tool_eof": true,
+      "tool_version": "16777244:66382402:1267:1792398528411983165:1792398528411983165"
+    },
+    {
+      "bytes": 3270,
+      "expected_count": 3,
+      "header_argv_matches_original_summary": true,
+      "label": "kv2-api-271-numbers",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "3",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/kv2-api-271-numbers.log",
+      "sha256": "08991cd42448752076a48bc1e15d22bc962992b82c0986560b568154d228d52c",
+      "tool_eof": true,
+      "tool_version": "16777244:66382466:3270:1792398528744560395:1792398528744560395"
+    },
+    {
+      "bytes": 5366,
+      "expected_count": 5,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-storage-witness",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "5",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-kv2-storage-witness.log",
+      "sha256": "462645899fc8bbadd0d572fc3bd8ac0b0c4d13dcecbf070666dfb808867e1580",
+      "tool_eof": true,
+      "tool_version": "16777244:66382553:5366:1792398544367569303:1792398544367569303"
+    },
+    {
+      "bytes": 3137,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-json-private-tags",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/lossless-json-private-tags.log",
+      "sha256": "f1be393abc954f2b720b91567771962f728fa81abe11e9cf6b77016a13162c40",
+      "tool_eof": true,
+      "tool_version": "16777244:66382640:3137:1792398544694060352:1792398544694060352"
+    },
+    {
+      "bytes": 3113,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-kv1-conversion",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/lossless-kv1-conversion.log",
+      "sha256": "24bd8ef75c2ac28bfb5065fd9077cb34be76704d2b638d9486b395debcc3d03a",
+      "tool_eof": true,
+      "tool_version": "16777244:66382727:3113:1792398544982325983:1792398544982325983"
+    },
+    {
+      "bytes": 3133,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-token-equivalence",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/lossless-token-equivalence.log",
+      "sha256": "ec7078f64ead790cc04970155f24042acf05266fd6fb899a23a4a14ff3e86712",
+      "tool_eof": true,
+      "tool_version": "16777244:66382814:3133:1792398545257714829:1792398545257714829"
+    },
+    {
+      "bytes": 3141,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "native-raw-private-tags",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-raw-private-tags.log",
+      "sha256": "bc1065233dcf77aabc1fdf3f660083a6a6966303e89a80a5000f82c1ede351f4",
+      "tool_eof": true,
+      "tool_version": "16777244:66382901:3141:1792398545543969376:1792398545543969376"
+    },
+    {
+      "bytes": 3795,
+      "exact_selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "expected_count": 8,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-import-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-kv2-import-list.log",
+      "sha256": "380bd1448ca021b6e2154ab361a6192dfa6774e52f8a978663af5289149d3ea9",
+      "tool_eof": true,
+      "tool_version": "16777244:66380486:3795:1792398363590182827:1792398363590182827"
+    },
+    {
+      "bytes": 4609,
+      "exact_selected_test_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ],
+      "expected_count": 15,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-large-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-kv2-large-list.log",
+      "sha256": "61b97536aaa5e37fec19d6845835c2e1852bf898128ae18769b0ceb960c48c34",
+      "tool_eof": true,
+      "tool_version": "16777244:66381645:4609:1792398374951513075:1792398374951513075"
+    },
+    {
+      "bytes": 2965,
+      "exact_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-original-unseal-veto-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/forward-original-unseal-veto-list.log",
+      "sha256": "84c1de5fed8205fe599abe330f21bb59d1d769ef401783aa2e4027643038f461",
+      "tool_eof": true,
+      "tool_version": "16777244:66381732:2965:1792398399568515685:1792398399568515685"
+    },
+    {
+      "bytes": 2975,
+      "exact_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-no-second-floor-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/forward-no-second-floor-list.log",
+      "sha256": "82240a35e27ac17ad1bc1cdcefb9f10a53657048b0b7ce37e0bd835b7dd152ba",
+      "tool_eof": true,
+      "tool_version": "16777244:66381819:2975:1792398401251982967:1792398401251982967"
+    },
+    {
+      "bytes": 3776,
+      "exact_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "expected_count": 6,
+      "header_argv_matches_original_summary": true,
+      "label": "historical-service-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/historical-service-list.log",
+      "sha256": "2a829fe32148f34ccf0054d27bbe5b1bee376d4ef47f717d97fbb600448a6566",
+      "tool_eof": true,
+      "tool_version": "16777244:66381906:3776:1792398402970857073:1792398402970857073"
+    },
+    {
+      "bytes": 3848,
+      "exact_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ],
+      "expected_count": 7,
+      "header_argv_matches_original_summary": true,
+      "label": "snapshot-service-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/snapshot-service-list.log",
+      "sha256": "3e48c3f7066eac666e8d5fde8b2f08f50912cca9f3be8864e46c8e8065ccbfcc",
+      "tool_eof": true,
+      "tool_version": "16777244:66381993:3848:1792398477068717482:1792398477068717482"
+    },
+    {
+      "bytes": 2989,
+      "exact_selected_test_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "archive-34mib-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/archive-34mib-list.log",
+      "sha256": "f22c60ec2d7df6fbf3aee5a8a41b813458f450c5df7a494c24858051003ffebd",
+      "tool_eof": true,
+      "tool_version": "16777244:66382080:2989:1792398505824244362:1792398505824244362"
+    },
+    {
+      "bytes": 2972,
+      "exact_selected_test_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-repair-admission-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/http-repair-admission-list.log",
+      "sha256": "93bbbcc0c020d2b29b7f334c876b6d284891f4c9294ccb81eba3ca31e4185bee",
+      "tool_eof": true,
+      "tool_version": "16777244:66382167:2972:1792398527522366445:1792398527522366445"
+    },
+    {
+      "bytes": 2990,
+      "exact_selected_test_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-pending-admission-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/http-pending-admission-list.log",
+      "sha256": "3e8363db6da1e391c8105a600de47a790bdd6da48cfe079bf73716b4a89e833c",
+      "tool_eof": true,
+      "tool_version": "16777244:66382254:2990:1792398527823991351:1792398527823991351"
+    },
+    {
+      "bytes": 673,
+      "exact_selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-transport-diagnostic-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/private-transport-diagnostic-list.log",
+      "sha256": "3f260bdb9c0c63f9ba2b91a2f5608dc5b065bf64d9301ca7a9b16892dfd69e0c",
+      "tool_eof": true,
+      "tool_version": "16777244:66382341:673:1792398528168015098:1792398528168015098"
+    },
+    {
+      "bytes": 665,
+      "exact_selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-frame-diagnostic-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/private-frame-diagnostic-list.log",
+      "sha256": "03ff245e4c16a1f67473922bfdca6d19339fe2967f2214c221da04f9b6b93036",
+      "tool_eof": true,
+      "tool_version": "16777244:66382382:665:1792398528333582116:1792398528333582116"
+    },
+    {
+      "bytes": 3134,
+      "exact_selected_test_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ],
+      "expected_count": 3,
+      "header_argv_matches_original_summary": true,
+      "label": "kv2-api-271-numbers-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/kv2-api-271-numbers-list.log",
+      "sha256": "7c2f54f423366a1b173df41c42c40fb3b80fa92902b72f84e1f54efed470a702",
+      "tool_eof": true,
+      "tool_version": "16777244:66382423:3134:1792398528559103370:1792398528559103370"
+    },
+    {
+      "bytes": 3514,
+      "exact_selected_test_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ],
+      "expected_count": 5,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-storage-witness-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-kv2-storage-witness-list.log",
+      "sha256": "5ab2e9767ded1b26bf452e395e3ece935592a967191aeadbfc9843082d161fde",
+      "tool_eof": true,
+      "tool_version": "16777244:66382510:3514:1792398528881325692:1792398528881325692"
+    },
+    {
+      "bytes": 3013,
+      "exact_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-json-private-tags-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/lossless-json-private-tags-list.log",
+      "sha256": "3467420c1b07aac2a466bb3ebb08e5c316bb72e7ed497a783e281311d8c82998",
+      "tool_eof": true,
+      "tool_version": "16777244:66382597:3013:1792398544515244248:1792398544515244248"
+    },
+    {
+      "bytes": 2989,
+      "exact_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-kv1-conversion-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/lossless-kv1-conversion-list.log",
+      "sha256": "cb645ae7252505ec9565048cf2c8cb7865b5ad2269da75a3674a54df09b1671c",
+      "tool_eof": true,
+      "tool_version": "16777244:66382684:2989:1792398544838903536:1792398544838903536"
+    },
+    {
+      "bytes": 3009,
+      "exact_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-token-equivalence-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/lossless-token-equivalence-list.log",
+      "sha256": "140457d17f019c84b3e07c08cb39f0dc6af421aeb84457844701219dfd965bfd",
+      "tool_eof": true,
+      "tool_version": "16777244:66382771:3009:1792398545116894515:1792398545116894515"
+    },
+    {
+      "bytes": 3017,
+      "exact_selected_test_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "native-raw-private-tags-list",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/native-raw-private-tags-list.log",
+      "sha256": "e922403e445ca7c23cfd01e841cef25e60dd7cd83e667eff9acdd4e79f887977",
+      "tool_eof": true,
+      "tool_version": "16777244:66382858:3017:1792398545400819144:1792398545400819144"
+    }
+  ],
+  "host": "mac",
+  "new_test_execution_performed": false,
+  "original_result_files_rewritten": false,
+  "raw_exact_selector_groups": 17,
+  "raw_failed_test_total": 0,
+  "raw_ignored_test_total": 0,
+  "raw_log_bytes": 167679,
+  "raw_log_files": 40,
+  "raw_passed_test_total": 55,
+  "retrieval_bytes": 184280,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-physical-followthrough-r1/mac-40-raw-logs-retrieval.json",
+  "retrieval_sha256": "f5b008cd13083be4576a8a4fa50a91d3dda6634ba911d61c49e1b8f074f2eca8",
+  "schema": "heptabao.exact-r5-native55-raw-log-crosscheck.v1",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "summary_sha256": "2aabd021e20e5de6e640e4a88e1496dafb7e0a25d0a14de10a8efad9e322c79a"
+}

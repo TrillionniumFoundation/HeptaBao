@@ -1,28 +1,7 @@
 name: plan-v1.4.3-descriptor-fencing
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - codex/plan-v1.4.2-recovery-foundation-v1
-    paths:
-      - Cargo.toml
-      - Cargo.lock
-      - crates/heptabao-filesystem-guard/**
-      - crates/heptabao-single-node-store/Cargo.toml
-      - crates/heptabao-single-node-store/src/lib.rs
-      - crates/heptabao-single-node-journal/Cargo.toml
-      - crates/heptabao-single-node-journal/src/lib.rs
-      - docs/plan/HEPTABAO_PLAN_V1_4_3_DESCRIPTOR_ANCHOR_AND_WRITER_FENCING.md
-      - docs/storage/HEPTABAO_DESCRIPTOR_ANCHOR_AND_WRITER_FENCE_V1.md
-      - planning/HEPTABAO_BLOCKER_REGISTER_V1_4_3.yaml
-      - planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_3.yaml
-      - planning/HEPTABAO_V1_4_3_DESCRIPTOR_FENCING_STATUS.yaml
-      - schemas/heptabao_normative_document_manifest_v1_4_3.schema.json
-      - scripts/validate_plan_v1_4_3.py
-      - scripts/validate_v1_4_3_inherited_surface.py
-      - tests/plan/test_plan_v1_4_3.py
-      - .github/workflows/plan-v1.4.3-descriptor-fencing.yml
+  # Historical V1.4.3 gate; run on demand for forensic evidence only.
   workflow_dispatch:
 
 permissions:

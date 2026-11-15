@@ -1,0 +1,34 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1794003292531,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1b2edd173-fc05-8035",
+    "idempotency_key": "heptabao-pocket4-current-input-observation-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b2edd173-fc05-8035",
+    "request_digest": "9306e7998849a5def6a58a372177f6274dae0e8c64589fba1cf092e7314c2348",
+    "request_fingerprint": 10594409820038211038,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b2edd173-fc05-8035"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b2edd173-fc05-8035"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

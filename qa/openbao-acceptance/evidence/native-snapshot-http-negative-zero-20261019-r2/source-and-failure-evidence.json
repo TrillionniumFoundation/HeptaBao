@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.local-incremental-base.v1",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "git_blob": "60e85159a376834e0e0bc0c90c54262b206ec5e8",
+      "sha256": "c6595bd1453a06bd2bb5bd46a4254177098358077d2d4a7601aa817e37add142",
+      "size": 24172
+    },
+    {
+      "path": "crates/heptabao-server/src/http_logical.rs",
+      "git_blob": "065f3a5cc95fb2e45578a001dddb71413292a3a2",
+      "sha256": "0adc3cdbecab87e1ad99e5a23d517eaa9a5015873ac70a8a19002e2d8e2dc1fc",
+      "size": 14240
+    },
+    {
+      "path": "crates/heptabao-domain/src/json.rs",
+      "git_blob": "24eeeb3455a544a5a80ceb4af69d31a44466050c",
+      "sha256": "b82497f96b3a0598c27f3d616be77dad10fbbb60c0ec8c249926521c02ad7ac1",
+      "size": 8451
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_wrapping.rs",
+      "git_blob": "16d6d5c71a8ca9a245eb077c6f9fe23f0b30f0d8",
+      "sha256": "7fbfe3ed55502b3ded72d0e47bcb958d519cfacea5cdf67f328122880035c17e",
+      "size": 32929
+    },
+    {
+      "path": "crates/heptabao-server/src/http_ocsp.rs",
+      "git_blob": "128d37924dc160549b687e652408f678bc88b1fd",
+      "sha256": "138157f061568873df7bb737717b7a06089007f3060a7c75681766c03c09be69",
+      "size": 32358
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_wrapped_reply110.rs",
+      "git_blob": "6884d18f1d79033a7d9968bee65ed3e4585091c1",
+      "size": 106716,
+      "sha256": "ed416351e8cfb13b143771ec087c1c6eb778fa1c7f0493e7ec187204ec1e2b90"
+    }
+  ],
+  "actual_receipts": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/summary.json",
+      "size": 18736,
+      "sha256": "38b5ff9949b53bc2c21755ea71f3d5378e0a5956115e0f8a11df4f517e041026"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-history.log",
+      "size": 911,
+      "sha256": "516711e6ef2d07a080c21cb820543aab2645210aeb69adbd4cd7bc695819820c"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-refusals.log",
+      "size": 920,
+      "sha256": "76857f7b451e63ddb858fe1e30826e3805c2a8e45c170d729ed956a04e04d301"
+    }
+  ],
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "status": "source_review_complete_rust_compile_and_actual_execution_pending",
+  "actual_failed_http_tests": {
+    "passed": 1,
+    "required": 3
+  },
+  "original_existing_tests": 55,
+  "original_full34_checks": 31,
+  "source_files_changed": [
+    "crates/heptabao-server/src/auth_wrapped_reply110.rs",
+    "crates/heptabao-server/src/http_snapshot_accept_tests.rs"
+  ],
+  "canonical_negative_zero": {
+    "typed_json": "{\"n\":-0.0}",
+    "bytes": 10,
+    "sha256": "a8a313cade05001e69f7ddb5db01e1e2d06fb8f6913ab492cc4506d4e65d465a",
+    "public_json": "{\"n\":-0}"
+  },
+  "original_receipt_copies": [
+    {
+      "path": "qa/openbao-acceptance/evidence/native-snapshot-http-negative-zero-20261019-r2/actual-b24c6de-mac/summary.json",
+      "size": 18736,
+      "sha256": "38b5ff9949b53bc2c21755ea71f3d5378e0a5956115e0f8a11df4f517e041026"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-snapshot-http-negative-zero-20261019-r2/actual-b24c6de-mac/snapshot-json-accept-history.log",
+      "size": 911,
+      "sha256": "516711e6ef2d07a080c21cb820543aab2645210aeb69adbd4cd7bc695819820c"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-snapshot-http-negative-zero-20261019-r2/actual-b24c6de-mac/snapshot-json-accept-refusals.log",
+      "size": 920,
+      "sha256": "76857f7b451e63ddb858fe1e30826e3805c2a8e45c170d729ed956a04e04d301"
+    }
+  ],
+  "new_test_names": 0,
+  "existing_test_names_and_15_second_request_budget_unchanged": true,
+  "local_rust_compilation_performed": false,
+  "local_remote_operations_performed": false
+}

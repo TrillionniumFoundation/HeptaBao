@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/qualify_codex_candidate_inputs_local_r1.py", line 137, in <module>
+    run('I01_two_complete_private_files_and_closed_full9', complete)
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/qualify_codex_candidate_inputs_local_r1.py", line 84, in run
+    fn(); cases.append({'name': name, 'passed': True})
+    ^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/qualify_codex_candidate_inputs_local_r1.py", line 89, in complete
+    report = inputs.capture(selected)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_codex_fixed_candidate_inputs_r1.py", line 141, in capture
+    parent = self.directory(SOURCE, optional=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_codex_fixed_candidate_inputs_r1.py", line 75, in directory
+    parent = None if path == Path('/') else self.directory(path.parent)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_codex_fixed_candidate_inputs_r1.py", line 75, in directory
+    parent = None if path == Path('/') else self.directory(path.parent)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_codex_fixed_candidate_inputs_r1.py", line 75, in directory
+    parent = None if path == Path('/') else self.directory(path.parent)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 1 more time]
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_codex_fixed_candidate_inputs_r1.py", line 84, in directory
+    need(stat.S_ISDIR(value.st_mode) and value.st_uid == wanted
+  File "/workspace/scratch/c9fe536787d9/authbus-refresh-work/mac_codex_fixed_candidate_inputs_r1.py", line 35, in need
+    raise InputsRefused(code)
+mac_codex_fixed_candidate_inputs_r1.InputsRefused: candidate_private_nonsymlink_owned_directory

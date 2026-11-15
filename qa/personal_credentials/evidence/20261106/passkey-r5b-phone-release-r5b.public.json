@@ -1,0 +1,119 @@
+{
+  "blocked_cases": 16,
+  "candidate": "r5b",
+  "case_ledger_sha256": "fc6335001eeb1a8cf7709671f06fd76e6710245de5760c68e14628a8c2d5fc55",
+  "cleanup_sha256": "85b81a59adad6efc8b2427f54e48c94fd122b18557f6e7b5047631fa913761ac",
+  "created_unix_ns": 1793960695879159975,
+  "credential_manager_exercised": false,
+  "device_sha256": "41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1",
+  "executed_cases": 2,
+  "expected_cases": 18,
+  "failed_cases": 1,
+  "jobs": [
+    {
+      "exit_code": 0,
+      "job_id": "1a1b04bb376-fc05-6f92",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b04c9fee-fc05-6f96",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 1,
+      "job_id": "1a1b04eec01-fc05-6fa6",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b050cf26-fc05-6fb5",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b053bd63-fc05-6fc0",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b054cabf-fc05-6fc6",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b056306b-fc05-6fcc",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b05c4cee-fc05-6ff4",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 1,
+      "job_id": "1a1b05d47cc-fc05-6fff",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b05ab5af-fc05-6fe7",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b05efdcc-fc05-700a",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b06124cd-fc05-7019",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded"
+    },
+    {
+      "exit_code": 0,
+      "job_id": "1a1b04b5aab-fc05-6f8e",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "cancelled"
+    }
+  ],
+  "master_entered": false,
+  "missing_cases": 0,
+  "no_further_phone_access_until_next_root_handoff": true,
+  "owned_documents_and_media_index_absent": true,
+  "owned_packages_absent_including_retained_records": true,
+  "owned_reverse_absent": true,
+  "p4_qualified": false,
+  "passed_cases": 1,
+  "phone_adb_ui_jobs_terminal": true,
+  "production_qualified": false,
+  "rp_job_stopped": true,
+  "schema": 1,
+  "scope": "phone_exclusive_window_release",
+  "settings_match_original": true
+}

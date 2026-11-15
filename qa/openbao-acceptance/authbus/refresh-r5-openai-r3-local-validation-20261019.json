@@ -1,0 +1,259 @@
+{
+  "schema": "heptabao.authbus.openai-r3.local-validation.v1",
+  "status": "local checks passed; 32-scenario actual installed-SDK run pending",
+  "localNodeVersion": "v24.19.0",
+  "ticketChecksPassed": 30,
+  "ownedConnectTlsChecksPassed": 11,
+  "localBehaviorChecksPassed": 41,
+  "qaSyntax": [
+    {
+      "name": "authbus_refresh_sdk_candidate.mjs",
+      "sha256": "42d91742365526b548c49d0a900d88ccfaf7d93ab57fa61bff3d97a86df663d3",
+      "syntaxPassed": true
+    },
+    {
+      "name": "authbus_refresh_sdk_registry_candidate.mjs",
+      "sha256": "c7985bd4c07c2143009802f74392adc92ec9b5388b909b51d2f7709ac7ddd01d",
+      "syntaxPassed": true
+    },
+    {
+      "name": "authbus_refresh_sdk_openai_live.mjs",
+      "sha256": "ed93a34eb74d5c673469dee18f76fd3a4816018e0c94b2d8c54fad5e079fc749",
+      "syntaxPassed": true
+    },
+    {
+      "name": "authbus_refresh_sdk_openai_fixture.mjs",
+      "sha256": "c249a014bd837d3af5e13844ddb12f201afa87f63fb0a6de7320c53503e97084",
+      "syntaxPassed": true
+    },
+    {
+      "name": "authbus_refresh_sdk_ticket_boundary_test.mjs",
+      "sha256": "1f0a4bade6ed79713e31b92da7ba32065683bc2f57e36d35124393c8dcac8fa8",
+      "syntaxPassed": true
+    },
+    {
+      "name": "authbus_refresh_sdk_openai_fixture_test.mjs",
+      "sha256": "9365b942983b9057e642cf07c34708c655d4bb32de4cb0a1f2798e902b6f0a9b",
+      "syntaxPassed": true
+    }
+  ],
+  "sdkSourceRendering": {
+    "bound": 35,
+    "availableRenderedAndSyntaxPassed": 32,
+    "unavailableLocally": [
+      {
+        "relative": "dist/order-CeBlX0NH.js",
+        "originalSha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732"
+      },
+      {
+        "relative": "dist/model-auth-CJEm9SNp.js",
+        "originalSha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7"
+      },
+      {
+        "relative": "dist/stream-BcRkg2P0.js",
+        "originalSha256": "0224b5cf2a5338c423fa48417c74f0df36ec432111dc0f59c5e701ff7b2c781e"
+      }
+    ],
+    "unchangedActivationMetadataBound": 1
+  },
+  "sourceRenderingIsActualSdkExecution": false,
+  "oldUnfrozenDraftGetterFailureReproduced": {
+    "schema": "authbus-openai-unfrozen-draft-getter-reproduction",
+    "status": "expected_failure_reproduced",
+    "oldDraftRegistrySha256": "88e53cad88a206e65d6666c7e1c55ea62708041c70f27a5eda23d6498226139f",
+    "testSha256": "1f0a4bade6ed79713e31b92da7ba32065683bc2f57e36d35124393c8dcac8fa8",
+    "exitCode": 1,
+    "stderrSha256": "f189dc9abf24346f9f1899cdc9584637b69b399831da643fe041fd2d2a52e6bf",
+    "failure": "old draft validates first init.body value and sends the second getter value",
+    "actualSdkExecution": false,
+    "actualNativeHeptaBao": false
+  },
+  "originalOwnerR5CallerByteUnchanged": true,
+  "originalOwnerR5DiscoveryFunctionByteUnchanged": true,
+  "nativeFourCaseR1FrozenSevenFilesUnchanged": true,
+  "runtimeQaFileCount": 15,
+  "expectedActualScenarioCount": 32,
+  "scenarioInventory": [
+    {
+      "scenario": "usable-own-store",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "manager-success",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "intent-ack-lost",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "provider-ack-lost",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "sqlite-abort",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "sdk-change-before-send",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "local-fence-change",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "duplicate-final-send",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "late-after-rejection",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "original-deadline",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "cross-provider-entry",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-usable-own-store",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-manager-success",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-intent-ack-lost",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-provider-ack-lost",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-sqlite-abort",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-sdk-change-before-send",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-local-fence-change",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-duplicate-final-send",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-late-after-rejection",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-original-deadline",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-cross-provider-entry",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-guard-after-await",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-runtime-without-ticket",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-runtime-or-mock-without-ticket",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-runtime-factory-replacement",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-redirect",
+      "transport": "sdk-mapped-owned-https"
+    },
+    {
+      "scenario": "openai-undici-manager-success",
+      "transport": "actual-sdk-undici-owned-connect"
+    },
+    {
+      "scenario": "openai-undici-intent-ack-lost",
+      "transport": "actual-sdk-undici-owned-connect"
+    },
+    {
+      "scenario": "openai-undici-provider-ack-lost",
+      "transport": "actual-sdk-undici-owned-connect"
+    },
+    {
+      "scenario": "openai-undici-sqlite-abort",
+      "transport": "actual-sdk-undici-owned-connect"
+    },
+    {
+      "scenario": "openai-undici-guard-after-await",
+      "transport": "actual-sdk-undici-owned-connect"
+    }
+  ],
+  "originalOuterExecutionBudgetSeconds": 180,
+  "originalCoordinatorLeaseMs": 10000,
+  "deadlineExpiryFaultWaitMs": 11000,
+  "originalSdkRefreshCallTimeoutMs": 30000,
+  "qualification": {
+    "actualSdkExecution": false,
+    "actualOpenAiFacadeExecution": false,
+    "actualUndiciRefreshTransport": false,
+    "actualOwnedConnectAndTlsUnit": true,
+    "actualNativeHeptaBao": false,
+    "actualColdSdkProcess": false,
+    "realCredentialMigration": false,
+    "realExternalProvider": false,
+    "productionMutation": false
+  },
+  "localReceiptPins": [
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-ticket-unit-20261019.json",
+      "mode": "100644",
+      "bytes": 1525,
+      "sha256": "41b311dbe3f093be274bd9196028fa501be91373773f1a42ae683f4d6364790c",
+      "git_blob": "54baba660b681da4632a870fea3d32c1fdeef018"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-proxy-unit-20261019.json",
+      "mode": "100644",
+      "bytes": 891,
+      "sha256": "27a1b1dda06483a3ac2ce1cc15d5cac3a0ddf01b3509f6cfb2ae30d702f1a4c9",
+      "git_blob": "3478efd00380f3e5e3d7d4e1630d3d210af7b799"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-source-preflight-20261019.json",
+      "mode": "100644",
+      "bytes": 10035,
+      "sha256": "2183c73261e8f61d4ce217fc21d15f239a9a31ff1bd9877109a8cce5dc8fff0c",
+      "git_blob": "520a13938338dedb9e48086bc8f32d7884c1a038"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-old-draft-getter-20261019.json",
+      "mode": "100644",
+      "bytes": 550,
+      "sha256": "6f4841c4df0a0aaad169b46c68522b3cd0d978e8871f72df50da8bca923a452c",
+      "git_blob": "278f961404b4fac7db5bbed89eef26a852e42d75"
+    }
+  ],
+  "sandbox": {
+    "loopbackUnitRequiredLocalListenEscalation": true,
+    "approvedLocalTestOnly": true,
+    "remoteHostCalls": 0,
+    "tlsVerificationDisabled": false,
+    "tlsTrustRestorationComparison": "exact-DER-certificate-set"
+  },
+  "actualRunGate": "New owned fixture, original 180-second controller, all 32 completed, exact 5 Undici rows and total 3 CONNECT/provider TLS requests with zero mapped fetch in those rows; all side-effect counters zero; source, SDK, config, trust, proxy and environment custody checks pass."
+}

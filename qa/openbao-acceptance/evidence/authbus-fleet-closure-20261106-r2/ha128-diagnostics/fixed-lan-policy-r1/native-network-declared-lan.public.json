@@ -1,0 +1,83 @@
+{
+  "linkAddressesPublished": false,
+  "macHostRouteInterface": "en0",
+  "macNeighborFor192_168_0_13MatchesX230Enp0s25": true,
+  "nativeInspectionIsNotActiveConnectivityProof": true,
+  "networkOrServiceMutated": false,
+  "schema": "heptabao.declared-lan-native-inspection-projection.r1",
+  "sourceBytePins": {
+    "main": {
+      "bytes": 32273,
+      "rawSourcePrivateNotPublished": true,
+      "sha256": "18f682779bb88837f3004362e5c955ad711602f7e33c97b23f63325871e66948"
+    },
+    "x230": {
+      "bytes": 879430,
+      "rawSourcePrivateNotPublished": true,
+      "sha256": "5f6be0b6929c177083a1212a8ed6b5b78bee4e21dbab103d14158a097936ff8d"
+    }
+  },
+  "unrelatedRoutesListenersInterfacesOmitted": true,
+  "x230DeclaredLanInterfaces": [
+    {
+      "declaredLanAddresses": [
+        {
+          "family": "inet",
+          "local": "192.168.0.13",
+          "prefixlen": 24
+        }
+      ],
+      "flags": [
+        "BROADCAST",
+        "MULTICAST",
+        "UP",
+        "LOWER_UP"
+      ],
+      "interface": "enp0s25",
+      "state": "UP"
+    },
+    {
+      "declaredLanAddresses": [
+        {
+          "family": "inet",
+          "local": "192.168.0.3",
+          "prefixlen": 24
+        }
+      ],
+      "flags": [
+        "BROADCAST",
+        "MULTICAST",
+        "UP",
+        "LOWER_UP"
+      ],
+      "interface": "wlp3s0",
+      "state": "UP"
+    }
+  ],
+  "x230DeclaredSubnetRoutes": [
+    {
+      "dev": "wlp3s0",
+      "dst": "192.168.0.0/24",
+      "prefsrc": "192.168.0.3",
+      "protocol": "static",
+      "scope": "link",
+      "table": "4503"
+    },
+    {
+      "dev": "enp0s25",
+      "dst": "192.168.0.0/24",
+      "metric": 10,
+      "prefsrc": "192.168.0.13",
+      "protocol": "kernel",
+      "scope": "link"
+    },
+    {
+      "dev": "wlp3s0",
+      "dst": "192.168.0.0/24",
+      "metric": 30000,
+      "prefsrc": "192.168.0.3",
+      "protocol": "kernel",
+      "scope": "link"
+    }
+  ]
+}

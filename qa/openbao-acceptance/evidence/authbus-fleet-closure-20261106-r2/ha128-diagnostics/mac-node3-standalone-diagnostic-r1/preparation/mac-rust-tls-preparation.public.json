@@ -1,0 +1,45 @@
+{
+  "allExistingCleanupAndProtocolCodeUnchanged": true,
+  "budgetsSeconds": {
+    "coordinator": 100,
+    "eachTcpTlsHttp": 1.5,
+    "finish": 15,
+    "outer": 120,
+    "ready": 45,
+    "worker": 85
+  },
+  "existingOldRootOnlyReadInputs": [
+    "heptabao-server",
+    "ca.crt",
+    "tls.crt",
+    "tls.key_metadata_no_digest"
+  ],
+  "existingSshAlias": "hepta-mac-local",
+  "files": {
+    "mac_rust_tls_coordinator_r1.body.py": {
+      "bytes": 12427,
+      "sha256": "d7c3e1784fe59355ec49f9f9d3fddba0e35caa7278d87b68d6b5f135c51c2fa1"
+    },
+    "mac_rust_tls_coordinator_r1.py": {
+      "bytes": 27788,
+      "sha256": "cc5a9af2a009126085e0a72731638b0de456a59be70a0da532caa963ac7f2334"
+    },
+    "mac_rust_tls_worker_r1.py": {
+      "bytes": 14712,
+      "sha256": "3b00e1444d264eb3942c256e2c694daf16a4a93705a0511bd47cd03e9c1c465c"
+    }
+  },
+  "initOrTokenRequests": 0,
+  "localVerification": "Python AST compilation and exact bounded replacement assertions; no actual Mac diagnostic yet",
+  "nativeHaNotQualifiedByDiagnostic": true,
+  "newFixtureRoots": [
+    "ha128-mac-rust-tls-worker-20261106-r1",
+    "ha128-mac-rust-tls-control-20261106-r1"
+  ],
+  "oneNormalRustChildAndOneOwnedSshChild": true,
+  "originalHaR2FailureUnchanged": true,
+  "schema": "heptabao.mac-node3-tls-diagnostic-preparation.r1",
+  "singleNodeStorage": "new_empty_owned_directory",
+  "status": "prepared_not_executed",
+  "strictPeerAndCertificateChecksUnchanged": true
+}

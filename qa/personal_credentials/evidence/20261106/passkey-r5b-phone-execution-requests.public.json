@@ -1,0 +1,406 @@
+{
+  "schema": 1,
+  "scope": "synthetic_phone_public_execution_inputs_no_secrets_or_raw_ui",
+  "requests": [
+    {
+      "job_id": "1a1b04bb376-fc05-6f92",
+      "case": "SETUP",
+      "steps": [
+        {
+          "phase": "preflight"
+        },
+        {
+          "phase": "install"
+        },
+        {
+          "phase": "reverse"
+        },
+        {
+          "phase": "settings-arm-primary-system-bridge"
+        },
+        {
+          "phase": "launch-provider"
+        },
+        {
+          "phase": "inspect"
+        }
+      ],
+      "argv": [
+        "/home/alex/HeptaBaoPasskey-20261106-r5/run_phases.public.py",
+        "--case",
+        "SETUP",
+        "--steps",
+        "[{\"phase\":\"preflight\"},{\"phase\":\"install\"},{\"phase\":\"reverse\"},{\"phase\":\"settings-arm-primary-system-bridge\"},{\"phase\":\"launch-provider\"},{\"phase\":\"inspect\"}]"
+      ],
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b04c9fee-fc05-6f96",
+      "case": "SETUP",
+      "steps": [
+        {
+          "phase": "tap",
+          "selector": "OPEN PROVIDER SETTINGS"
+        },
+        {
+          "phase": "inspect"
+        }
+      ],
+      "argv": [
+        "/home/alex/HeptaBaoPasskey-20261106-r5/run_phases.public.py",
+        "--case",
+        "SETUP",
+        "--steps",
+        "[{\"phase\":\"tap\",\"selector\":\"OPEN PROVIDER SETTINGS\"},{\"phase\":\"inspect\"}]"
+      ],
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b04eec01-fc05-6fa6",
+      "case": "SETUP",
+      "steps": [
+        {
+          "phase": "tap",
+          "selector_kind": "id",
+          "selector": "com.android.settings:id/change_button"
+        },
+        {
+          "phase": "inspect"
+        },
+        {
+          "phase": "tap",
+          "selector": "HeptaBao Passkey Preview"
+        },
+        {
+          "phase": "inspect"
+        }
+      ],
+      "argv": [
+        "/home/alex/HeptaBaoPasskey-20261106-r5/run_phases.public.py",
+        "--case",
+        "SETUP",
+        "--steps",
+        "[{\"phase\":\"tap\",\"selector_kind\":\"id\",\"selector\":\"com.android.settings:id/change_button\"},{\"phase\":\"inspect\"},{\"phase\":\"tap\",\"selector\":\"HeptaBao Passkey Preview\"},{\"phase\":\"inspect\"}]"
+      ],
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b050cf26-fc05-6fb5",
+      "case": "SETUP",
+      "steps": [
+        {
+          "phase": "tap",
+          "selector": "HeptaBao synthetic passkeys"
+        },
+        {
+          "phase": "inspect"
+        }
+      ],
+      "argv": [
+        "/home/alex/HeptaBaoPasskey-20261106-r5/run_phases.public.py",
+        "--case",
+        "SETUP",
+        "--steps",
+        "[{\"phase\":\"tap\",\"selector\":\"HeptaBao synthetic passkeys\"},{\"phase\":\"inspect\"}]"
+      ],
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b053bd63-fc05-6fc0",
+      "case": "SETUP",
+      "steps": [
+        {
+          "phase": "tap",
+          "selector_kind": "id",
+          "selector": "android:id/button1"
+        },
+        {
+          "phase": "settings-selected"
+        },
+        {
+          "phase": "launch-provider"
+        }
+      ],
+      "argv": [
+        "/home/alex/HeptaBaoPasskey-20261106-r5/run_phases.public.py",
+        "--case",
+        "SETUP",
+        "--steps",
+        "[{\"phase\":\"tap\",\"selector_kind\":\"id\",\"selector\":\"android:id/button1\"},{\"phase\":\"settings-selected\"},{\"phase\":\"launch-provider\"}]"
+      ],
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b054cabf-fc05-6fc6",
+      "case": "M01",
+      "steps": [
+        {
+          "phase": "documents-prepare"
+        },
+        {
+          "phase": "tap",
+          "selector": "CHOOSE ENCRYPTED VAULT FILE"
+        },
+        {
+          "phase": "inspect"
+        }
+      ],
+      "program_source": "import pathlib,hashlib,os,json,runpy,fcntl,subprocess,sys,time\nos.umask(0o077);b=pathlib.Path(\"/home/alex/HeptaBaoPasskey-20261106-r5\");driver=b/\"passkey_live.r5.py\"\nassert hashlib.sha256(driver.read_bytes()).hexdigest()==\"e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd\"\nm=runpy.run_path(str(driver));root=b/\"live-r5\";d=m[\"Device\"](pathlib.Path(\"/home/alex/.local/bin/adb\"))\nlock=os.open(root/\"driver.lock\",os.O_RDWR|os.O_NOFOLLOW);fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)\ntry:\n j=json.loads(m[\"private_file\"](root/\"journal.private.json\",8*1024*1024));build=json.loads((b/\"artifacts/build.receipt.json\").read_bytes());m[\"validate_journal\"](j,build,\"b46691b4da0fc2f461801ff7b8e3abf64cb461a55a03d2624f24d4713f20fc40\")\n assert {k:d.setting(k) for k in m[\"SETTING_KEYS\"]}==j[\"owned_settings\"]\n profile=(b/\"profile.public.json\").read_bytes();assert hashlib.sha256(profile).hexdigest()==\"79632f9c91877bdcec9285fe7b893196e1029008d7185cf0a2618dc158bb1c9f\"\n with (root/\"profile.public.json\").open(\"xb\") as f:f.write(profile);f.flush();os.fsync(f.fileno())\n directory=\"/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5\";destination=directory+\"/heptabao-passkey-qa-r5-seed.hbv\"\n source=b/\"artifacts/seed.hbv\";raw=source.read_bytes();digest=hashlib.sha256(raw).hexdigest();assert digest==\"bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917\"\n assert d.shell(\"test\",\"-d\",\"/sdcard/Download\")==\"\"\n q=d.adb_call(\"shell\",\"if [ -e \"+directory+\" ] || [ -L \"+directory+\" ]; then printf EXISTS; else printf ABSENT; fi\")\n assert q.returncode==0 and q.stdout==b\"ABSENT\" and q.stderr==b\"\"\n side=root/\"documents.private.json\";assert not side.exists()\n plan={\"schema\":1,\"device_sha256\":m[\"DEVICE_SHA256\"],\"directory\":directory,\"initial_directory_absent\":True,\"mkdir_intent\":True,\"directory_created\":False,\"files\":[{\"path\":destination,\"sha256\":digest,\"bytes\":len(raw),\"initial_absent\":True,\"write_intent\":True,\"written\":False}],\"started_unix_ns\":time.time_ns()}\n m[\"atomic\"](side,plan)\n assert d.shell(\"mkdir\",directory)==\"\"\n plan[\"directory_created\"]=True;m[\"atomic\"](side,plan)\n # Newly created owned directory; only ciphertext is copied and later removed by its exact digest.\n d.adb_call(\"push\",source,destination,timeout=30)\n assert d.shell(\"sha256sum\",destination).split()[0]==digest\n assert int(d.shell(\"stat\",\"-c\",\"%s\",destination))==len(raw)\n plan[\"files\"][0][\"written\"]=True;m[\"atomic\"](side,plan)\n d.shell(\"am\",\"broadcast\",\"--user\",\"0\",\"-a\",\"android.intent.action.MEDIA_SCANNER_SCAN_FILE\",\"-d\",\"file://\"+destination)\n public={\"ok\":True,\"scope\":\"synthetic_ciphertext_file_staging_only\",\"directory_initial_absent\":True,\"directory\":directory,\"seed_sha256\":digest,\"seed_bytes\":len(raw),\"single_owned_file_media_scan_requested\":True,\"documents_journal_sha256\":hashlib.sha256(side.read_bytes()).hexdigest(),\"profile_public_sha256\":hashlib.sha256(profile).hexdigest()}\n m[\"atomic\"](root/\"documents-prepared.public.json\",public);print(json.dumps(public,sort_keys=True),flush=True)\nfinally:os.close(lock)\nsteps=[{\"phase\":\"tap\",\"selector\":\"CHOOSE ENCRYPTED VAULT FILE\"},{\"phase\":\"inspect\"}]\nr=subprocess.run([\"/usr/bin/python3\",str(b/\"run_phases.public.py\"),\"--case\",\"M01\",\"--steps\",json.dumps(steps)],check=False)\nraise SystemExit(r.returncode)\n",
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b056306b-fc05-6fcc",
+      "case": "M01",
+      "steps": [
+        {
+          "phase": "tap",
+          "selector_kind": "description",
+          "selector": "\u663e\u793a\u6839\u76ee\u5f55"
+        },
+        {
+          "phase": "tap",
+          "selector": "\u4e0b\u8f7d"
+        },
+        {
+          "phase": "tap",
+          "selector": "HeptaBao-Passkey-QA-20261106-r5"
+        },
+        {
+          "phase": "tap",
+          "selector": "heptabao-passkey-qa-r5-seed.hbv"
+        },
+        {
+          "phase": "inspect"
+        }
+      ],
+      "argv": [
+        "/home/alex/HeptaBaoPasskey-20261106-r5/run_phases.public.py",
+        "--case",
+        "M01",
+        "--steps",
+        "[{\"phase\":\"tap\",\"selector_kind\":\"description\",\"selector\":\"\u663e\u793a\u6839\u76ee\u5f55\"},{\"phase\":\"tap\",\"selector\":\"\u4e0b\u8f7d\"},{\"phase\":\"tap\",\"selector\":\"HeptaBao-Passkey-QA-20261106-r5\"},{\"phase\":\"tap\",\"selector\":\"heptabao-passkey-qa-r5-seed.hbv\"},{\"phase\":\"inspect\"}]"
+      ],
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b05c4cee-fc05-6ff4",
+      "case": "M07",
+      "steps": [
+        {
+          "phase": "restore"
+        }
+      ],
+      "argv": [
+        "/home/alex/HeptaBaoPasskey-20261106-r5/run_phases.public.py",
+        "--case",
+        "M07",
+        "--steps",
+        "[{\"phase\":\"restore\"}]"
+      ],
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b05d47cc-fc05-6fff",
+      "case": "M07",
+      "program_source": "import runpy,pathlib,json,hashlib,os,fcntl,re,stat,time,urllib.request\nos.umask(0o077);b=pathlib.Path(\"/home/alex/HeptaBaoPasskey-20261106-r5\");driver=b/\"passkey_live.r5.py\"\nassert hashlib.sha256(driver.read_bytes()).hexdigest()==\"e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd\"\nm=runpy.run_path(str(driver));root=b/\"live-r5\";d=m[\"Device\"](pathlib.Path(\"/home/alex/.local/bin/adb\"));lock=os.open(root/\"driver.lock\",os.O_RDWR|os.O_NOFOLLOW);fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)\ntry:\n journal=json.loads(m[\"private_file\"](root/\"journal.private.json\",8*1024*1024))\n assert all(v==\"restored_original\" for v in journal[\"restoration\"].values())\n assert {k:d.setting(k) for k in m[\"SETTING_KEYS\"]}==journal[\"original_settings\"]\n assert all(d.package_hash(p) is None for p in m[\"OWNED\"])\n assert not any(\"tcp:38491\" in row for row in d.adb_call(\"reverse\",\"--list\").stdout.decode().splitlines())\n side=root/\"documents.private.json\";raw=m[\"private_file\"](side,65536);plan=json.loads(raw)\n with (root/\"documents.before-cleanup.private.json\").open(\"xb\") as f:f.write(raw);f.flush();os.fsync(f.fileno())\n directory=\"/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5\";path=directory+\"/heptabao-passkey-qa-r5-seed.hbv\"\n assert plan[\"directory\"]==directory and plan[\"initial_directory_absent\"] is True and plan[\"directory_created\"] is True\n assert len(plan[\"files\"])==1 and plan[\"files\"][0][\"path\"]==path and plan[\"files\"][0][\"sha256\"]==\"bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917\"\n f=plan[\"files\"][0]; info=d.shell(\"stat\",\"-c\",\"%f %s\",path).split();assert len(info)==2 and stat.S_ISREG(int(info[0],16)) and int(info[1])==f[\"bytes\"]\n assert d.shell(\"sha256sum\",path).split()[0]==f[\"sha256\"]\n plan[\"cleanup_intent_unix_ns\"]=time.time_ns();m[\"atomic\"](side,plan)\n d.shell(\"rm\",\"--\",path)\n absent=d.adb_call(\"shell\",\"if [ -e \"+path+\" ] || [ -L \"+path+\" ]; then printf EXISTS; else printf ABSENT; fi\");assert absent.returncode==0 and absent.stdout==b\"ABSENT\" and absent.stderr==b\"\"\n removed=d.shell(\"content\",\"delete\",\"--uri\",\"content://media/external/file\",\"--where\",\"_data='\"+path+\"'\")\n assert re.fullmatch(r\"Deleted [0-9]+ rows\\\\.?\",removed) or removed in (\"Deleted 0 rows.\",\"Deleted 1 rows.\",\"Deleted 0 rows\",\"Deleted 1 rows\")\n query=d.shell(\"content\",\"query\",\"--uri\",\"content://media/external/file\",\"--projection\",\"_id\",\"--where\",\"_data='\"+path+\"'\")\n assert query in (\"No result found.\",\"No result found\")\n assert d.shell(\"ls\",\"-A\",directory)==\"\";d.shell(\"rmdir\",directory)\n empty=d.adb_call(\"shell\",\"if [ -e \"+directory+\" ] || [ -L \"+directory+\" ]; then printf EXISTS; else printf ABSENT; fi\");assert empty.returncode==0 and empty.stdout==b\"ABSENT\" and empty.stderr==b\"\"\n final_settings={k:d.setting(k) for k in m[\"SETTING_KEYS\"]};assert final_settings==journal[\"original_settings\"]\n assert all(d.package_hash(p) is None for p in m[\"OWNED\"])\n assert not any(\"tcp:38491\" in row for row in d.adb_call(\"reverse\",\"--list\").stdout.decode().splitlines())\n with urllib.request.urlopen(\"http://127.0.0.1:38491/state\",timeout=5) as response:rp=json.load(response)\n assert rp[\"credential_count\"]==0 and rp[\"counters\"][\"options\"]==0 and rp[\"counters\"][\"registrations\"]==0 and rp[\"counters\"][\"authentications\"]==0\n plan[\"cleanup_complete\"]=True;plan[\"cleaned_unix_ns\"]=time.time_ns();m[\"atomic\"](side,plan)\n report={\"schema\":1,\"ok\":True,\"scope\":\"r5b_synthetic_phone_cleanup\",\"settings_match_original\":True,\"settings_sha256\":{k:hashlib.sha256(v.encode()).hexdigest() for k,v in final_settings.items()},\"packages_absent\":True,\"owned_packages\":sorted(m[\"OWNED\"]),\"retained_package_records_checked\":True,\"reverse_absent\":True,\"owned_documents_absent\":True,\"owned_media_index_absent\":True,\"empty_owned_directory_removed\":True,\"master_entered\":False,\"credential_manager_exercised\":False,\"rp\":rp,\"production_qualified\":False,\"completed_unix_ns\":time.time_ns()}\n m[\"atomic\"](root/\"cleanup.result.public.json\",report)\n phases=[]\n for q in sorted((b/\"attempts\").glob(\"*.result.public.json\")):\n  item=json.loads(q.read_bytes());phases.append({\"file\":q.name,\"sha256\":hashlib.sha256(q.read_bytes()).hexdigest(),\"case\":item[\"case\"],\"phase\":item[\"phase\"],\"exit_code\":item[\"exit_code\"],\"error\":item[\"result\"].get(\"error\")})\n assert not any(x[\"phase\"]==\"input-master\" for x in phases)\n ledger=json.loads((b/\"case-results.public.json\").read_bytes())\n for row in ledger[\"cases\"]:\n  if row[\"id\"]==\"M01\":\n   row.update(status=\"failed\",executed=True,evidence=[{\"job\":\"1a1b056306b-fc05-6fcc\",\"ui_code\":\"operation_failed\",\"ordinary_saf_seed_selected\":True,\"master_entered\":False,\"seed_sha256\":\"bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917\"}])\n  elif row[\"id\"]==\"M07\":row.update(status=\"passed\",executed=True,evidence=[{\"cleanup_sha256\":hashlib.sha256((root/\"cleanup.result.public.json\").read_bytes()).hexdigest()}])\n  else:row.update(status=\"blocked\",executed=False,evidence=[{\"prerequisite\":\"M01\",\"reason\":\"fixed_candidate_import_staging_failed\"}])\n ledger.update(expected=18,executed=2,passed=1,failed=1,blocked=16,missing=0,master_entered=False,credential_manager_exercised=False,p4_qualified=False,production_qualified=False,phase_evidence=phases,setup_failures=[x for x in phases if x[\"case\"]==\"SETUP\" and x[\"exit_code\"]!=0],cleanup_sha256=hashlib.sha256((root/\"cleanup.result.public.json\").read_bytes()).hexdigest(),runtime_source_bundle_sha256=\"e84c3768271be8b908f7f9a505c3d96abdc98fd9e3bba4ed3d5d9557e13322be\",provider_apk_sha256=\"9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a\")\n m[\"atomic\"](b/\"case-results.public.json\",ledger)\n print(json.dumps({\"ok\":True,\"cleanup_path\":str(root/\"cleanup.result.public.json\"),\"cleanup_sha256\":hashlib.sha256((root/\"cleanup.result.public.json\").read_bytes()).hexdigest(),\"ledger_path\":str(b/\"case-results.public.json\"),\"ledger_sha256\":hashlib.sha256((b/\"case-results.public.json\").read_bytes()).hexdigest(),\"expected\":18,\"executed\":2,\"passed\":1,\"failed\":1,\"blocked\":16,\"missing\":0,\"settings_match_original\":True,\"packages_absent\":True,\"reverse_absent\":True,\"owned_documents_absent\":True,\"owned_media_index_absent\":True,\"master_entered\":False,\"credential_manager_exercised\":False},sort_keys=True))\nfinally:os.close(lock)\n",
+      "provenance": "retained_exact_process_start_input_at_dispatch"
+    },
+    {
+      "job_id": "1a1b05ab5af-fc05-6fe7",
+      "executable": "/usr/bin/python3",
+      "argv": [
+        "-c",
+        "import runpy,pathlib,json,hashlib,os,fcntl,re,time\nos.umask(0o077);b=pathlib.Path(\"/home/alex/HeptaBaoPasskey-20261106-r5\");driver=b/\"passkey_live.r5.py\"\nassert hashlib.sha256(driver.read_bytes()).hexdigest()==\"e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd\"\nm=runpy.run_path(str(driver));root=b/\"live-r5\";d=m[\"Device\"](pathlib.Path(\"/home/alex/.local/bin/adb\"))\nlock=os.open(root/\"driver.lock\",os.O_RDWR|os.O_NOFOLLOW);fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)\ntry:\n assert d.package_hash(m[\"PROVIDER\"])==\"9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a\"\n pid=d.shell(\"pidof\",m[\"PROVIDER\"]);assert re.fullmatch(r\"[1-9][0-9]*\",pid)\n raw=d.adb_call(\"logcat\",\"-d\",\"-v\",\"brief\",\"--pid=\"+pid,\"-t\",\"200\",timeout=20).stdout\n assert len(raw)<=262144\n path=root/\"m01-owned-logcat.private.txt\"\n with path.open(\"xb\") as f:f.write(raw);f.flush();os.fsync(f.fileno())\n known=[\"ErrnoException\",\"IOException\",\"EACCES\",\"EPERM\",\"EBADF\",\"EINVAL\",\"ENOENT\",\"SecurityException\",\"NonWritableChannelException\",\"FATAL EXCEPTION\",\"operation_failed\",\"avc: denied\"]\n text=raw.decode(\"utf-8\",\"replace\")\n public={\"schema\":1,\"scope\":\"owned_provider_pid_logcat_only\",\"provider_apk_sha256\":d.package_hash(m[\"PROVIDER\"]),\"pid_sha256\":hashlib.sha256(pid.encode()).hexdigest(),\"bytes\":len(raw),\"raw_sha256\":hashlib.sha256(raw).hexdigest(),\"fixed_diagnostic_counts\":{s:text.count(s) for s in known},\"master_entered\":False,\"credential_manager_exercised\":False}\n m[\"atomic\"](root/\"m01-owned-logcat.public.json\",public);print(json.dumps(public,sort_keys=True))\nfinally:os.close(lock)\n"
+      ],
+      "request_digest": "2246c42d2abb6a31b6962c4eedc1bc0071f4649023b04373bb92f8bd0bca7093",
+      "provenance": "original_process_start_response_job_metadata"
+    },
+    {
+      "job_id": "1a1b05efdcc-fc05-700a",
+      "executable": "/usr/bin/python3",
+      "argv": [
+        "-c",
+        "import runpy,pathlib,hashlib,json,re,fcntl,os\nb=pathlib.Path(\"/home/alex/HeptaBaoPasskey-20261106-r5\");m=runpy.run_path(str(b/\"passkey_live.r5.py\"));d=m[\"Device\"](pathlib.Path(\"/home/alex/.local/bin/adb\"));r=b/\"live-r5\"\nlock=os.open(r/\"driver.lock\",os.O_RDWR|os.O_NOFOLLOW);fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)\ntry:\n directory=\"/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5\";path=directory+\"/heptabao-passkey-qa-r5-seed.hbv\"\n a=d.adb_call(\"shell\",\"if [ -e \"+path+\" ] || [ -L \"+path+\" ]; then printf EXISTS; else printf ABSENT; fi\")\n q=d.adb_call(\"shell\",\"content query --uri content://media/external/file --projection _id --where \"+__import__(\"shlex\").quote(\"_data='\"+path+\"'\"),allow_failure=True)\n assert len(q.stdout)<8192 and len(q.stderr)<8192\n print(json.dumps({\"file_presence_exit\":a.returncode,\"file_presence\":a.stdout.decode(),\"query_exit\":q.returncode,\"query_stdout\":q.stdout.decode(),\"query_stderr\":q.stderr.decode(),\"directory_entries\":d.shell(\"ls\",\"-A\",directory)}))\nfinally:os.close(lock)\n"
+      ],
+      "request_digest": "a980f6c77f60cbceb2fdc9c81b16a1c284c8d49acbafb4676760d60d6b78d23c",
+      "provenance": "original_process_start_response_job_metadata"
+    },
+    {
+      "job_id": "1a1b06124cd-fc05-7019",
+      "executable": "/usr/bin/python3",
+      "argv": [
+        "-c",
+        "import runpy,pathlib,json,hashlib,os,fcntl,time,urllib.request\nos.umask(0o077);b=pathlib.Path(\"/home/alex/HeptaBaoPasskey-20261106-r5\");driver=b/\"passkey_live.r5.py\"\nassert hashlib.sha256(driver.read_bytes()).hexdigest()==\"e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd\"\nm=runpy.run_path(str(driver));root=b/\"live-r5\";d=m[\"Device\"](pathlib.Path(\"/home/alex/.local/bin/adb\"));lock=os.open(root/\"driver.lock\",os.O_RDWR|os.O_NOFOLLOW);fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)\ntry:\n journal=json.loads(m[\"private_file\"](root/\"journal.private.json\",8*1024*1024))\n assert {k:d.setting(k) for k in m[\"SETTING_KEYS\"]}==journal[\"original_settings\"]\n assert all(d.package_hash(p) is None for p in m[\"OWNED\"])\n assert not any(\"tcp:38491\" in row for row in d.adb_call(\"reverse\",\"--list\").stdout.decode().splitlines())\n side=root/\"documents.private.json\";plan=json.loads(m[\"private_file\"](side,65536))\n directory=\"/sdcard/Download/HeptaBao-Passkey-QA-20261106-r5\";path=directory+\"/heptabao-passkey-qa-r5-seed.hbv\"\n assert plan[\"directory\"]==directory and plan[\"initial_directory_absent\"] is True and plan[\"directory_created\"] is True\n assert len(plan[\"files\"])==1 and plan[\"files\"][0][\"path\"]==path and plan[\"files\"][0][\"sha256\"]==\"bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917\"\n def absent(p):\n  r=d.adb_call(\"shell\",\"if [ -e \"+p+\" ] || [ -L \"+p+\" ]; then printf EXISTS; else printf ABSENT; fi\")\n  assert r.returncode==0 and r.stdout==b\"ABSENT\" and r.stderr==b\"\"\n def media_absent():\n  q=d.shell(\"content\",\"query\",\"--uri\",\"content://media/external/file\",\"--projection\",\"_id\",\"--where\",\"_data='\"+path+\"'\")\n  assert q==\"No result found.\"\n absent(path);media_absent();assert d.shell(\"ls\",\"-A\",directory)==\"\"\n plan[\"empty_directory_removal_intent_unix_ns\"]=time.time_ns();m[\"atomic\"](side,plan)\n d.shell(\"rmdir\",directory);absent(directory);absent(path);media_absent()\n final_settings={k:d.setting(k) for k in m[\"SETTING_KEYS\"]};assert final_settings==journal[\"original_settings\"]\n assert all(d.package_hash(p) is None for p in m[\"OWNED\"])\n assert not any(\"tcp:38491\" in row for row in d.adb_call(\"reverse\",\"--list\").stdout.decode().splitlines())\n with urllib.request.urlopen(\"http://127.0.0.1:38491/state\",timeout=5) as response:rp=json.load(response)\n assert rp[\"credential_count\"]==0 and rp[\"counters\"][\"options\"]==0 and rp[\"counters\"][\"registrations\"]==0 and rp[\"counters\"][\"authentications\"]==0\n plan[\"cleanup_complete\"]=True;plan[\"cleaned_unix_ns\"]=time.time_ns();m[\"atomic\"](side,plan)\n report={\"schema\":1,\"ok\":True,\"scope\":\"r5b_synthetic_phone_cleanup\",\"settings_match_original\":True,\"settings_sha256\":{k:hashlib.sha256(v.encode()).hexdigest() for k,v in final_settings.items()},\"packages_absent\":True,\"owned_packages\":sorted(m[\"OWNED\"]),\"retained_package_records_checked\":True,\"reverse_absent\":True,\"owned_documents_absent\":True,\"owned_media_index_absent\":True,\"empty_owned_directory_removed\":True,\"master_entered\":False,\"credential_manager_exercised\":False,\"rp\":rp,\"production_qualified\":False,\"completed_unix_ns\":time.time_ns(),\"prior_attempt\":{\"job\":\"1a1b05d47cc-fc05-6fff\",\"outcome\":\"format_assertion_failed_after_file_delete\",\"retained\":True},\"read_only_reconciliation_job\":\"1a1b05efdcc-fc05-700a\",\"file_and_media_deletion_redispatched\":False}\n m[\"atomic\"](root/\"cleanup.result.public.json\",report)\n phases=[]\n for q in sorted((b/\"attempts\").glob(\"*.result.public.json\")):\n  item=json.loads(q.read_bytes());phases.append({\"file\":q.name,\"sha256\":hashlib.sha256(q.read_bytes()).hexdigest(),\"case\":item[\"case\"],\"phase\":item[\"phase\"],\"exit_code\":item[\"exit_code\"],\"error\":item[\"result\"].get(\"error\")})\n assert not any(x[\"phase\"]==\"input-master\" for x in phases)\n ledger=json.loads((b/\"case-results.public.json\").read_bytes())\n for row in ledger[\"cases\"]:\n  if row[\"id\"]==\"M01\":\n   row.update(status=\"failed\",executed=True,evidence=[{\"job\":\"1a1b056306b-fc05-6fcc\",\"ui_code\":\"operation_failed\",\"ordinary_saf_seed_selected\":True,\"master_entered\":False,\"seed_sha256\":\"bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917\"}])\n  elif row[\"id\"]==\"M07\":row.update(status=\"passed\",executed=True,evidence=[{\"cleanup_sha256\":hashlib.sha256((root/\"cleanup.result.public.json\").read_bytes()).hexdigest()}])\n  else:row.update(status=\"blocked\",executed=False,evidence=[{\"prerequisite\":\"M01\",\"reason\":\"fixed_candidate_import_staging_failed\"}])\n ledger.update(expected=18,executed=2,passed=1,failed=1,blocked=16,missing=0,master_entered=False,credential_manager_exercised=False,p4_qualified=False,production_qualified=False,phase_evidence=phases,setup_failures=[x for x in phases if x[\"case\"]==\"SETUP\" and x[\"exit_code\"]!=0],cleanup_sha256=hashlib.sha256((root/\"cleanup.result.public.json\").read_bytes()).hexdigest(),runtime_source_bundle_sha256=\"e84c3768271be8b908f7f9a505c3d96abdc98fd9e3bba4ed3d5d9557e13322be\",provider_apk_sha256=\"9985457ba13ddef5c286c6017d6c675cb0e64bafa97f119516a3fc4fcce5fc3a\")\n ledger[\"cleanup_attempt_history\"]=[{\"job\":\"1a1b05d47cc-fc05-6fff\",\"status\":\"failed\",\"reason\":\"content_delete_output_format_assertion\"},{\"job\":\"1a1b05efdcc-fc05-700a\",\"status\":\"read_only_reconciled\",\"file_absent\":True,\"media_index_absent\":True,\"directory_empty\":True}]\n m[\"atomic\"](b/\"case-results.public.json\",ledger)\n print(json.dumps({\"ok\":True,\"cleanup_path\":str(root/\"cleanup.result.public.json\"),\"cleanup_sha256\":hashlib.sha256((root/\"cleanup.result.public.json\").read_bytes()).hexdigest(),\"ledger_path\":str(b/\"case-results.public.json\"),\"ledger_sha256\":hashlib.sha256((b/\"case-results.public.json\").read_bytes()).hexdigest(),\"expected\":18,\"executed\":2,\"passed\":1,\"failed\":1,\"blocked\":16,\"missing\":0,\"settings_match_original\":True,\"packages_absent\":True,\"reverse_absent\":True,\"owned_documents_absent\":True,\"owned_media_index_absent\":True,\"master_entered\":False,\"credential_manager_exercised\":False},sort_keys=True))\nfinally:os.close(lock)\n"
+      ],
+      "request_digest": "9e144acd35ec712d37045cdf36c61f0004ec6bb7390d331c2148af6132286e62",
+      "provenance": "original_process_start_response_job_metadata"
+    },
+    {
+      "job_id": "1a1b04b5aab-fc05-6f8e",
+      "executable": "/usr/bin/python3",
+      "argv": [
+        "-B",
+        "/home/alex/HeptaBaoPasskey-20261106-r5/artifacts/passkey_rp.py",
+        "--root",
+        "/home/alex/HeptaBaoPasskey-20261106-r5/rp-r5",
+        "--fixture-cert-sha256",
+        "3a3d3406393e840f4a5779a9caa2c20a51c8ad77dba4213cdf391823ca8416f3",
+        "--port",
+        "38491",
+        "--challenge-ttl",
+        "180",
+        "--crypto-backend",
+        "openssl"
+      ],
+      "request_digest": "0e0755333c87fcc3c0c10b2e406b395351204d160605abafe59b9da3d60f1f36",
+      "provenance": "original_process_start_response_job_metadata"
+    },
+    {
+      "job_id": "1a1b063c8a9-fc05-702d",
+      "executable": "/usr/bin/python3",
+      "argv": [
+        "-c",
+        "JOBS = \"[{\\\"job_id\\\":\\\"1a1b04bb376-fc05-6f92\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b04c9fee-fc05-6f96\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b04eec01-fc05-6fa6\\\",\\\"state\\\":\\\"failed\\\",\\\"exit_code\\\":1,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b050cf26-fc05-6fb5\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b053bd63-fc05-6fc0\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b054cabf-fc05-6fc6\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b056306b-fc05-6fcc\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b05c4cee-fc05-6ff4\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b05d47cc-fc05-6fff\\\",\\\"state\\\":\\\"failed\\\",\\\"exit_code\\\":1,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b05ab5af-fc05-6fe7\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b05efdcc-fc05-700a\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b06124cd-fc05-7019\\\",\\\"state\\\":\\\"succeeded\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true},{\\\"job_id\\\":\\\"1a1b04b5aab-fc05-6f8e\\\",\\\"state\\\":\\\"cancelled\\\",\\\"exit_code\\\":0,\\\"output_durable\\\":true,\\\"output_complete\\\":true}]\"\nimport pathlib,json,hashlib,os,time\nos.umask(0o077);b=pathlib.Path(\"/home/alex/HeptaBaoPasskey-20261106-r5\");c=b/\"live-r5/cleanup.result.public.json\";l=b/\"case-results.public.json\"\nassert hashlib.sha256(c.read_bytes()).hexdigest()==\"85b81a59adad6efc8b2427f54e48c94fd122b18557f6e7b5047631fa913761ac\"\nassert hashlib.sha256(l.read_bytes()).hexdigest()==\"fc6335001eeb1a8cf7709671f06fd76e6710245de5760c68e14628a8c2d5fc55\"\ncleanup=json.loads(c.read_bytes());jobs=json.loads(JOBS)\nassert cleanup[\"ok\"] and all(cleanup[k] is True for k in (\"settings_match_original\",\"packages_absent\",\"reverse_absent\",\"owned_documents_absent\",\"owned_media_index_absent\"))\nassert all(j[\"state\"]in(\"succeeded\",\"failed\",\"cancelled\") and j[\"output_durable\"] and j[\"output_complete\"] for j in jobs)\nout=b/\"release-r5b.public.json\"\nreport={\"schema\":1,\"scope\":\"phone_exclusive_window_release\",\"candidate\":\"r5b\",\"device_sha256\":\"41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1\",\"cleanup_sha256\":hashlib.sha256(c.read_bytes()).hexdigest(),\"case_ledger_sha256\":hashlib.sha256(l.read_bytes()).hexdigest(),\"phone_adb_ui_jobs_terminal\":True,\"no_further_phone_access_until_next_root_handoff\":True,\"rp_job_stopped\":True,\"jobs\":jobs,\"settings_match_original\":True,\"owned_packages_absent_including_retained_records\":True,\"owned_reverse_absent\":True,\"owned_documents_and_media_index_absent\":True,\"expected_cases\":18,\"executed_cases\":2,\"passed_cases\":1,\"failed_cases\":1,\"blocked_cases\":16,\"missing_cases\":0,\"master_entered\":False,\"credential_manager_exercised\":False,\"p4_qualified\":False,\"production_qualified\":False,\"created_unix_ns\":time.time_ns()}\nwith out.open(\"xb\") as f:f.write((json.dumps(report,sort_keys=True,indent=2)+\"\\n\").encode());f.flush();os.fsync(f.fileno())\nfd=os.open(b,os.O_RDONLY|os.O_DIRECTORY);os.fsync(fd);os.close(fd)\nprint(json.dumps({\"ok\":True,\"path\":str(out),\"sha256\":hashlib.sha256(out.read_bytes()).hexdigest(),\"phone_window_released\":True}))\n"
+      ],
+      "request_digest": "0e3040799f8bb8a1860af6b7a9d07d016489c51d4df2cc4192a19bc3f2920203",
+      "provenance": "original_process_start_response_job_metadata"
+    }
+  ],
+  "terminal_jobs": [
+    {
+      "job_id": "1a1b04bb376-fc05-6f92",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b04c9fee-fc05-6f96",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b04eec01-fc05-6fa6",
+      "state": "failed",
+      "exit_code": 1,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b050cf26-fc05-6fb5",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b053bd63-fc05-6fc0",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b054cabf-fc05-6fc6",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b056306b-fc05-6fcc",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b05c4cee-fc05-6ff4",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b05d47cc-fc05-6fff",
+      "state": "failed",
+      "exit_code": 1,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b05ab5af-fc05-6fe7",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b05efdcc-fc05-700a",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b06124cd-fc05-7019",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    },
+    {
+      "job_id": "1a1b04b5aab-fc05-6f8e",
+      "state": "cancelled",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true
+    }
+  ],
+  "original_logs": [
+    {
+      "name": "cleanup-first.stdout.public.txt",
+      "job_id": "1a1b05d47cc-fc05-6fff",
+      "bytes_hex": "",
+      "source_offset": 0,
+      "source_size": 0
+    },
+    {
+      "name": "cleanup-first.stderr.public.txt",
+      "job_id": "1a1b05d47cc-fc05-6fff",
+      "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e652032322c20696e203c6d6f64756c653e0a202020206173736572742072652e66756c6c6d6174636828722244656c65746564205b302d395d2b20726f77735c5c2e3f222c72656d6f76656429206f722072656d6f76656420696e20282244656c65746564203020726f77732e222c2244656c65746564203120726f77732e222c2244656c65746564203020726f7773222c2244656c65746564203120726f777322290a20202020202020202020205e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0a417373657274696f6e4572726f720a",
+      "source_offset": 0,
+      "source_size": 382
+    },
+    {
+      "name": "cleanup-readonly-reconcile.stdout.public.txt",
+      "job_id": "1a1b05efdcc-fc05-700a",
+      "bytes_hex": "7b2266696c655f70726573656e63655f65786974223a20302c202266696c655f70726573656e6365223a2022414253454e54222c202271756572795f65786974223a20302c202271756572795f7374646f7574223a20224e6f20726573756c7420666f756e642e5c6e222c202271756572795f737464657272223a2022222c20226469726563746f72795f656e7472696573223a2022227d0a",
+      "source_offset": 0,
+      "source_size": 153
+    },
+    {
+      "name": "cleanup-readonly-reconcile.stderr.public.txt",
+      "job_id": "1a1b05efdcc-fc05-700a",
+      "bytes_hex": "",
+      "source_offset": 0,
+      "source_size": 0
+    },
+    {
+      "name": "cleanup-final.stdout.public.txt",
+      "job_id": "1a1b06124cd-fc05-7019",
+      "bytes_hex": "7b22626c6f636b6564223a2031362c2022636c65616e75705f70617468223a20222f686f6d652f616c65782f486570746142616f506173736b65792d32303236313130362d72352f6c6976652d72352f636c65616e75702e726573756c742e7075626c69632e6a736f6e222c2022636c65616e75705f736861323536223a202238356238316135396164616436656663386232343237663534653438633934666431323262313835353766366537623530343736333166613931333736316163222c202263726564656e7469616c5f6d616e616765725f657865726369736564223a2066616c73652c20226578656375746564223a20322c20226578706563746564223a2031382c20226661696c6564223a20312c20226c65646765725f70617468223a20222f686f6d652f616c65782f486570746142616f506173736b65792d32303236313130362d72352f636173652d726573756c74732e7075626c69632e6a736f6e222c20226c65646765725f736861323536223a202266633633333530303165656231613863663737303936373166303666643736653637313032343564653537363063363865313436323861386332643566633535222c20226d61737465725f656e7465726564223a2066616c73652c20226d697373696e67223a20302c20226f6b223a20747275652c20226f776e65645f646f63756d656e74735f616273656e74223a20747275652c20226f776e65645f6d656469615f696e6465785f616273656e74223a20747275652c20227061636b616765735f616273656e74223a20747275652c2022706173736564223a20312c2022726576657273655f616273656e74223a20747275652c202273657474696e67735f6d617463685f6f726967696e616c223a20747275657d0a",
+      "source_offset": 0,
+      "source_size": 657
+    },
+    {
+      "name": "cleanup-final.stderr.public.txt",
+      "job_id": "1a1b06124cd-fc05-7019",
+      "bytes_hex": "",
+      "source_offset": 0,
+      "source_size": 0
+    }
+  ]
+}

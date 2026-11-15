@@ -1,0 +1,32 @@
+{
+  "commands": [
+    {
+      "label": "synthetic-python",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "import subprocess,sys; p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(60)']); print('child='+str(p.pid),flush=True)"
+      ],
+      "started_utc": "2026-10-19T07:25:29.943778+00:00",
+      "status": "failed",
+      "budget_seconds": 10,
+      "log": "synthetic-python.log",
+      "pid": 44246,
+      "pgid": 44246,
+      "sid": 44246,
+      "darwin_leader_identity": {
+        "pid": 44246,
+        "ppid": 44245,
+        "pgid": 44246,
+        "lstart": "Mon Oct 19 15:25:29 2026"
+      },
+      "cleanup_error": "owned Darwin zombie has no matching child exit event",
+      "finished_utc": "2026-10-19T07:25:30.212468+00:00",
+      "elapsed_seconds": 0.268,
+      "log_sha256": "51cba9a6d3daac0f41c8ea160cdfe640aa02129764d081f48842e75f6ef56071",
+      "log_bytes": 12,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    }
+  ]
+}

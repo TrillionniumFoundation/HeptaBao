@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.startup-tcc-observation-interpretation.r1",
+  "exactPidAndBinaryBound": true,
+  "originalPid": 19077,
+  "events": {
+    "allFiles": {
+      "ordinal": 23,
+      "authRight": "Denied (Service Policy)",
+      "promptType": 1,
+      "dbAction": "None"
+    },
+    "removableVolumes": {
+      "ordinal": 29,
+      "authRight": "Unknown (None)",
+      "promptType": 1,
+      "dbAction": "None"
+    }
+  },
+  "userDeniedPromptProven": false,
+  "fullDiskAccessRequiredProven": false,
+  "startupCausalityEstablished": false,
+  "serviceStillStopped": true,
+  "automaticStartupInstalled": false,
+  "settingsChanged": false,
+  "nextNarrowRead": {
+    "messageId": "9253.2991",
+    "historicalWindowEpoch": [
+      1794021555,
+      1794021590
+    ]
+  }
+}

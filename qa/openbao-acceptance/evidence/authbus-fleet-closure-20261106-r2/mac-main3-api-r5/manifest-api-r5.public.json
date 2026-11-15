@@ -1,0 +1,232 @@
+{
+  "schema": "heptabao.mac-main3-api-source-derivation.r5",
+  "qualifiedR2OriginalPins": {
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_owned_commands_r1.py": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530",
+    "mac_t5_volume_guard_r1.py": "9d5a6ea743e5abe87f6f84bcbcf6ddb7ba9f080fd3f51e54040d56122159394a",
+    "mac_owned_launchd_r3.py": "9209144dd581ed547478e5210fffc8e1c75e7bc5511637ba02aed18a63129354",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_current_server_owner_r1.py": "c7eaf0a36bcfac4355c778d93e27bdff58fbcc0cba625987cee6e98e72909be5",
+    "mac_public_code_pin_excerpt_r1.py": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f",
+    "tls_complete_http_probe.py": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc",
+    "fresh_synthetic_controller_r1.py": "4697eb12c7af0b88fc8faec697518e0397cc8f620cf2581f301b18206f54f42c",
+    "test_fresh_synthetic_controller_r1.py": "5b4d3f2cc67196ef2eab036467493edcb90db5e5902e92619b5d78236f754e7a",
+    "test_suid_ps_tls_r2.py": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+  },
+  "sourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "bytes": 13385,
+      "sha256": "7ed83dee5d8880829f6d70d590c205f69631f42d14e03374bc3de85e338568f0"
+    },
+    "mac_owned_launchd_r3.py": {
+      "bytes": 58613,
+      "sha256": "19c131fa1952a48e99f521fee024bb9ef34ccc94901cc604b0c75c7424689031"
+    },
+    "mac_native_process_observer_r1.py": {
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_current_server_owner_r1.py": {
+      "bytes": 16143,
+      "sha256": "ab714671a5850ad5eae4370a596a2a5b8e7e39447665f591339639e840aa58d7"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "tls_complete_http_probe.py": {
+      "bytes": 4750,
+      "sha256": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc"
+    },
+    "main3_api_controller.py": {
+      "bytes": 32986,
+      "sha256": "d2a9b7575e1be7d2a591660d89df3659fed39c1bbdf54ab49c3be57c0eb27c9f"
+    },
+    "test_main3_api_controller.py": {
+      "bytes": 11340,
+      "sha256": "47dfa875d51c2247f03759adcf5e2591891b8a4c09856c65a64a06f79bfc1b7f"
+    },
+    "test_suid_ps_tls_r2.py": {
+      "bytes": 16309,
+      "sha256": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+    },
+    "main3_source_fence.py": {
+      "bytes": 16577,
+      "sha256": "3db6da4050714ac3040d7c025e5669aaaaec7d682b6982aed882465565391a5f"
+    },
+    "main3_api_cycle.py": {
+      "bytes": 17862,
+      "sha256": "daa35b0d913467c0a82137ff0e6fc0c41df282deb4f2cf80e04caf91949ad3a4"
+    },
+    "test_main3_api_guards.py": {
+      "bytes": 15130,
+      "sha256": "14f273d329325dd173e6ae995c309a62d0959595d144b85c04f31d83fc7148b6"
+    },
+    "main3_source_authority.py": {
+      "bytes": 2406,
+      "sha256": "1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290"
+    },
+    "main3_capture_payload_0.py": {
+      "bytes": 60008,
+      "sha256": "220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8"
+    },
+    "main3_capture_payload_1.py": {
+      "bytes": 60008,
+      "sha256": "db753ad41d5735c1edc8063703fba21dc7c5f97df348bafd763fadff5c4206b6"
+    },
+    "main3_capture_payload_2.py": {
+      "bytes": 60008,
+      "sha256": "178460f586fbc6d01db2078f950803ddbb58349d87223fdb687be906c36275da"
+    },
+    "main3_capture_payload_3.py": {
+      "bytes": 36660,
+      "sha256": "fb4d96b6fb312325cf90ea3c3d6e5ee884a89005ff4c41c1bcdbcfbcf1949b28"
+    },
+    "main3_capture_launcher.py": {
+      "bytes": 30677,
+      "sha256": "61e1525374b9e86c1eca4eb778b07831182d71431dd3282c2fc98367c9a765b7"
+    },
+    "main3_inline_capture.py": {
+      "bytes": 15727,
+      "sha256": "952c1b442d88fc30d1cd8c32a692e8a3be8138ebdca1ac8edc71c5d877ee7f62"
+    },
+    "test_main3_inline_capture.py": {
+      "bytes": 9229,
+      "sha256": "359ec016949a867ce9f01bcee7ffc041e97d10243e8fc90d21c7859096a54d5f"
+    },
+    "main3_http_complete.py": {
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    },
+    "test_main3_http_complete.py": {
+      "bytes": 10216,
+      "sha256": "2aaaa0225a1720f7bad4f1f4b2d9a0d1ed9a33469b45ed24cf951dc23a6a9f6c"
+    },
+    "qualify_main3_http_tls.py": {
+      "bytes": 8195,
+      "sha256": "85955fd71a7ec8a350e08d2022cfd8dd84066eeaa10655342ac5851763c44308"
+    }
+  },
+  "preparer": {
+    "bytes": 16199,
+    "sha256": "d7341c8fa66a7cd33cf2e3c13360c7137e3fdfc69083fa9fb83f59dc16c8c5c0"
+  },
+  "canonicalCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "canonicalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "budgets": {
+    "outer": 600,
+    "phase": 120,
+    "sourceObservationMaximum": 45,
+    "wrapperReady": 30,
+    "execObservation": 10,
+    "health": 15,
+    "singleOtherHttp": 10,
+    "failureCleanup": 60
+  },
+  "signalOwnershipUnchanged": true,
+  "psSuidExceptionUnchanged": true,
+  "actualCredentialScope": 3,
+  "providerValid": false,
+  "productionCutover": false,
+  "actualPluginSdkQualified": false,
+  "publicCredentialValuesOrDigests": false,
+  "productionClientRollbackQualified": false,
+  "retainedR1Status": {
+    "stagingJob": "1a1b1cc2471-fc05-7adb",
+    "stagingSucceeded": true,
+    "qualificationAttempted": false,
+    "serviceActions": 0,
+    "apiRequests": 0
+  },
+  "normalNativeStorageProfile": "native_v6_file",
+  "normalActivationPath": "sys/storage/native-v6/activate",
+  "fixtureOptionsEnabled": false,
+  "sourceAuthorityIntegratedIntoPinnedFence": true,
+  "privateCapsuleQualificationIdentityBoundWithoutHash": true,
+  "currentCapture": {
+    "operationKey": "heptabao-mac-authbus-main3-api-inline-capture-20261106-r5",
+    "capsuleRoot": "/Users/qianqi/heptabao-authbus-main3-api-inline-capsule-20261106-r5",
+    "authorityKind": "original_direct_child_wait_and_closed_owned_inner_children",
+    "sourcePins": {
+      "CAPTURE_WORKER_SHA": "e4d87f369828a1c9da9dd1ad5684cb0895ba54694348c99f593b4de895227936",
+      "CAPTURE_LAUNCHER_SHA": "61e1525374b9e86c1eca4eb778b07831182d71431dd3282c2fc98367c9a765b7",
+      "CAPTURE_GUARD_SHA": "f5fb13e04b394320a44b6687b474f06c0bb49b2ef1e194b956f528e454453d1f",
+      "CAPTURE_REGISTRY_SHA": "2e9bfc28e468f20f577a2813411d434973b01009e20c6c9f87c277e5ebf3d237",
+      "CAPTURE_PAYLOAD_SHA": "05d1c85ff2a1d1936f3950ec50da81b960699675d04112f12ad29ad4ca5e0196"
+    },
+    "payloadParts": {
+      "main3_capture_payload_0.py": {
+        "bytes": 60008,
+        "sha256": "220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8"
+      },
+      "main3_capture_payload_1.py": {
+        "bytes": 60008,
+        "sha256": "db753ad41d5735c1edc8063703fba21dc7c5f97df348bafd763fadff5c4206b6"
+      },
+      "main3_capture_payload_2.py": {
+        "bytes": 60008,
+        "sha256": "178460f586fbc6d01db2078f950803ddbb58349d87223fdb687be906c36275da"
+      },
+      "main3_capture_payload_3.py": {
+        "bytes": 36660,
+        "sha256": "fb4d96b6fb312325cf90ea3c3d6e5ee884a89005ff4c41c1bcdbcfbcf1949b28"
+      }
+    },
+    "payloadBytes": 162489,
+    "runtimeJobTerminalAssumed": false,
+    "sameOuter600Seconds": true,
+    "captureMaximumSeconds": 45
+  },
+  "retainedR2Status": {
+    "preflightJob": "1a1b1dc7351-fc05-7b2e",
+    "terminal": "failed",
+    "exitCode": 1,
+    "guardsPassed": 108,
+    "serviceActions": 0,
+    "httpRequests": 0,
+    "errorCode": "current_source_full_generation_exact"
+  },
+  "previousPrivateQualificationBindingModified": false,
+  "fullNineFieldGenerationRuleUnchanged": true,
+  "retainedR3Status": {
+    "preflightJob": "1a1b1f0702c-fc05-7b97",
+    "terminal": "failed",
+    "exitCode": 1,
+    "guardsPassed": 108,
+    "serviceActions": 0,
+    "httpRequests": 0,
+    "errorCode": "current_source_full_generation_exact"
+  },
+  "preflightDoesNotCaptureCredentials": true,
+  "captureRequiresImmediateFull9BeforeAnyService": true,
+  "registryMutationActorIdentified": false,
+  "retainedR4Status": {
+    "job": "1a1b208cac2-fc05-7c20",
+    "terminal": "failed",
+    "exitCode": 1,
+    "httpDispatches": 14,
+    "completeHttpResponses": 13,
+    "lastStatus": 200,
+    "lastResponseComplete": false,
+    "lastResponseUnknown": true,
+    "originalResponseHeadersRecorded": false,
+    "originalFramingCauseProven": false,
+    "independentAbsenceJob": "1a1b20cff32-fc05-7c34"
+  },
+  "canonicalLargeJsonChunkedCapabilityGapConfirmedInSource": true,
+  "businessRequestSeconds": 10,
+  "readinessSeconds": 15,
+  "phaseSeconds": 120,
+  "outerSeconds": 600,
+  "decodedBodyLimit": 1048576,
+  "httpTlsRequestsRetried": false,
+  "priorAttemptDataOrReceiptsModified": false
+}

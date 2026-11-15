@@ -1,0 +1,12 @@
+{
+  "name": "heptabao-fixed-slot-coordinator-candidate",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}

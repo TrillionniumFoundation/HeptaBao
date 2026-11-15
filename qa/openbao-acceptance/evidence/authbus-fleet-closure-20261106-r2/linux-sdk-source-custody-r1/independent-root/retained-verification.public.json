@@ -1,0 +1,39 @@
+{
+  "credentialValuesOrHashesRead": false,
+  "hosts": [
+    {
+      "actualExecutableDependencyClosureQualified": false,
+      "additionalWritableNonCodeFiles": 17949,
+      "allOriginalFdsClosedOnce": 13992,
+      "allOriginalTextAndHexBytesEqual": true,
+      "completeOriginalRangeReceiptsVerified": 48,
+      "groupOrOtherWritableCodeAndDirectoryCandidates": 15903,
+      "host": "pocket4",
+      "jobId": "1a1b2fd4226-fc05-805e",
+      "observedSdkEntries": 33869,
+      "originalStdoutBytes": 770594,
+      "originalStdoutGitBlob": "f51e47c57b2ae92d600f1e3d943cd05dac6fe029",
+      "originalStdoutSha256": "7c00bfb495ae5835e4f0d40fc41a0abbdd340d37dcbd36050cfe2790fb471f0d",
+      "productionQualification": false
+    },
+    {
+      "actualExecutableDependencyClosureQualified": false,
+      "additionalWritableNonCodeFiles": 17949,
+      "allOriginalFdsClosedOnce": 13990,
+      "allOriginalTextAndHexBytesEqual": true,
+      "completeOriginalRangeReceiptsVerified": 48,
+      "groupOrOtherWritableCodeAndDirectoryCandidates": 15900,
+      "host": "rog",
+      "jobId": "1a1b2fd8256-fc05-805f",
+      "observedSdkEntries": 33869,
+      "originalStdoutBytes": 770423,
+      "originalStdoutGitBlob": "f0239200b9274ef685fa714bb2a5d7d5acde79f2",
+      "originalStdoutSha256": "4e90b2c16d5ee37a2da86a403f1665197d03992e95fe2ef3c4460a5d62f3e550",
+      "productionQualification": false
+    }
+  ],
+  "ok": true,
+  "permissionChangesPerformed": false,
+  "schema": "heptabao.root-retained-linux-sdk-permission-verification.r1",
+  "sourceSha256": "904643f4bf3ab8eda134fcee3b4a6949bf5b64edf4f295d9136acd0d12c35a0f"
+}

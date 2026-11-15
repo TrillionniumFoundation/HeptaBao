@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.fixed-slot-normal-qualification-preparation.r1",
+  "actualExecuted": false,
+  "launcher": {
+    "bytes": 242236,
+    "sha256": "0399270ee35c5c47d3431e263d9a338028393c1b4ebf09babbb23d9fa7923752"
+  },
+  "body": {
+    "bytes": 42959,
+    "sha256": "17a24012c8aa07609f5151f664799caa1f79e4ce93ff6459269952a7d3b0d9b9"
+  },
+  "template": {
+    "bytes": 47802,
+    "sha256": "0abe20fbaf06d90fd11dc22872e350ee2b4421f7a74d0f9672c0963dc6d84547"
+  },
+  "qualifiedBootstrapLauncherOriginal": {
+    "bytes": 82341,
+    "sha256": "2780c5fcef1aebd7b7fffa406af39521dc9cab02c372321df9ef4322bab46422"
+  },
+  "operationsOriginalDefinitions": [
+    "Refused",
+    "need",
+    "remaining",
+    "full9",
+    "encoded",
+    "own",
+    "close",
+    "open_fd",
+    "PrivateOperations"
+  ],
+  "operationsDelta": "four fixed intent/result category labels only",
+  "pythonSourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_fixedslot_t5_guard_r1.py": {
+      "bytes": 13393,
+      "sha256": "a10dbbad79a0be44028594e3c25c7139097890e97a4f51ab2d4cf06b6a0bee9c"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "main3_http_complete.py": {
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    },
+    "fixedslot_actual_api_r1.py": {
+      "bytes": 7208,
+      "sha256": "51a3a0b9432e664530a320a31ba7ccf79f746f2855050fb2de7bfbcc5615cf8b"
+    }
+  },
+  "nodeAssetPins": {
+    "cli.mjs": {
+      "bytes": 2959,
+      "sha256": "9c36c47e2a8c0f3ea567321f53b2bde4506a018a6d1905ebd14752ac50553458"
+    },
+    "coordinator.mjs": {
+      "bytes": 27398,
+      "sha256": "2788c8ba026db045a2961c633aad83762ddceb125b174bcd56c0f782da598a77"
+    },
+    "private-journal.mjs": {
+      "bytes": 6004,
+      "sha256": "068b240c36aa30eef04020036685c81d90598f82e598522990bda9c0c0f11315"
+    },
+    "protocol.mjs": {
+      "bytes": 12155,
+      "sha256": "1afa3a7dfaef49003a63edfa2fa48bfb5381a6b0c5cd4d5890c677e824dcdb7c"
+    },
+    "source-verification.mjs": {
+      "bytes": 2008,
+      "sha256": "0a4469d52afa7ada171cb85a41a7102244bf36e3220e80e8e92e1ecb6138f0c1"
+    },
+    "transport/bounded-outbox.js": {
+      "bytes": 18043,
+      "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+    },
+    "transport/private-outbox-store.js": {
+      "bytes": 8660,
+      "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+    },
+    "transport/production-client.js": {
+      "bytes": 3434,
+      "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+    },
+    "transport/strict-bao-client.js": {
+      "bytes": 26161,
+      "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+    },
+    "package.json": {
+      "bytes": 224,
+      "sha256": "16e20a08d18e63788873553c23d9fe14306d016a80981ec938e9dd135f1df737"
+    },
+    "mac_coordinator_actual_worker_r1.mjs": {
+      "bytes": 28397,
+      "sha256": "8692f3b9d5986aad2405f3781c9f8c99989f54aca02f65129f16e6759025056b"
+    }
+  },
+  "derivations": [
+    {
+      "originalName": "mac_production_t5_guard_r1.py",
+      "originalSha256": "9f0b032264c4dd5db45478f08c1cdbc92354ac3153b2ed4d18ef2aab30b139f1",
+      "derivedName": "mac_fixedslot_t5_guard_r1.py",
+      "derivedSha256": "a10dbbad79a0be44028594e3c25c7139097890e97a4f51ab2d4cf06b6a0bee9c",
+      "changes": "fixed fixture root and CA path only; all logic unchanged"
+    },
+    {
+      "originalName": "permanent_bootstrap_api_r1.py",
+      "originalSha256": "ce40d15a5b837e1f8fe12c8c925a16241c0bca8f3b751dc5c445bf36bec88b09",
+      "derivedName": "fixedslot_actual_api_r1.py",
+      "derivedSha256": "51a3a0b9432e664530a320a31ba7ccf79f746f2855050fb2de7bfbcc5615cf8b",
+      "changes": "fixed fixture root and CA path only; all logic unchanged"
+    }
+  ],
+  "nineCoordinatorRuntimeFilesUnchanged": true,
+  "originalProductionTransportFilesUnchanged": true,
+  "implementationSha256": "248057b53a13708cc0650b73c83bc86729a7572e0d1bf24768ea94b8d3fd8265",
+  "productCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "normalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "parentSeconds": 600,
+  "nodePhaseSeconds": 120,
+  "eachApiPhaseSeconds": 120,
+  "strictClientRequestMs": 15000,
+  "coordinatorOperationMs": 30000,
+  "pythonHttpSeconds": 10,
+  "readinessSeconds": 15,
+  "supervisorSeconds": 630,
+  "newHomeRoot": "/Users/qianqi/heptabao-fixed-slot-coordinator-normal-20261107-r1",
+  "newT5Root": "/Volumes/T5/hepta-vnext-recovery-20261013/fixed-slot-coordinator-normal-20261107-r1",
+  "port": 31126,
+  "rustGenerations": 2,
+  "originalNodeWorkers": 2,
+  "nativeCryptoCommands": 4,
+  "newCaAndServerKeyOnly": true,
+  "leafSkiAndAkiRequired": true,
+  "strictTls501BeforeInit": true,
+  "initializationMaximum": 1,
+  "localReceiptGapAfterReturnedAck": true,
+  "networkLossNotClaimed": true,
+  "unknownOriginalReceiptRetained": true,
+  "noUnknownPreimageReplay": true,
+  "kernelLocalSinglePortNotIpv4Only": true,
+  "originalStrictClientFixedIpv4": true,
+  "productionCredentialReads": 0,
+  "sdkImported": false,
+  "providerCalls": 0,
+  "productionActions": 0
+}

@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,json,os,stat,sys,time,types,unittest\nfrom pathlib import Path\nQA=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3/qa')\npath=QA/'main3_api_controller.py'\ndef identity(s):return tuple(str(getattr(s,k)) for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))\nfd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)\ntry:\n before=os.fstat(fd)\n assert stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600\n raw=os.read(fd,1048576)\n assert len(raw)==32340 and hashlib.sha256(raw).hexdigest()=='74daa03bfc8edcb4d577c47dc4d664cbd5fc065adc4c79a46d2d9f822eae483f'\n assert os.read(fd,1)==b'' and identity(before)==identity(os.fstat(fd))==identity(path.lstat())\nfinally:os.close(fd)\nmodule=types.ModuleType('main3_api_controller');module.__file__=str(path)\nsys.modules[module.__name__]=module\nexec(compile(raw,str(path),'exec'),module.__dict__)\nplan,pin=module.load_inputs()\nassert pin=='18798417435d55eea5c48823162e079bfdf910d1f36dcbd91f61993106353216'\nsys.path.insert(0,str(QA))\nnames=['test_main3_api_controller','test_suid_ps_tls_r2','test_main3_api_guards']\nsuite=unittest.defaultTestLoader.loadTestsFromNames(names)\nassert suite.countTestCases()==108\nstarted=time.monotonic()\nr=unittest.TextTestRunner(verbosity=2).run(suite)\npassed=r.wasSuccessful() and r.testsRun==108 and not r.skipped\nprint(json.dumps({'schema':'heptabao.main3-mac-qa-guards.r3','ok':passed,'testCount':r.testsRun,\n 'skipCount':len(r.skipped),'sourcePins':plan['sourcePins'],'normalStorageConfigAlreadyVerified':True,\n 'serviceActions':[],'providerCalled':False,'productionChanged':False,\n 'elapsedSeconds':time.monotonic()-started},sort_keys=True),flush=True)\nif not passed:raise SystemExit(1)\nsys.argv=[str(path),'--mode','preflight']\nraise SystemExit(module.main())\n"
+    ],
+    "created_unix_ms": 1793986687020,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b1f0702c-fc05-7b97",
+    "idempotency_key": "heptabao-mac-authbus-main3-api-guards-preflight-20261106-r3",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b1f0702c-fc05-7b97",
+    "request_digest": "1b5a5b69be3a197b3636c851ae20df16bee8794a4f224ae13e65e16fbf210007",
+    "request_fingerprint": 1970988296649185659,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b1f0702c-fc05-7b97"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 99428,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b1f0702c-fc05-7b97"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

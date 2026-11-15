@@ -1,0 +1,20 @@
+--- permanent_bootstrap_api_r1.py
++++ fixedslot_actual_api_r1.py
+@@ -1,7 +1,7 @@
+ import errno,hashlib,http.client,json,re,socket,ssl,time
+ from pathlib import Path
+ from main3_http_complete import DeadlineSocket,CompleteHTTPResponse,read_complete_body,safe_failure_code
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production')
++ROOT=Path('/Users/qianqi/heptabao-fixed-slot-coordinator-normal-20261107-r1')
+ MAX_HTTP=192
+ MAX_BODY=1048576
+ class Refused(RuntimeError):pass
+@@ -13,7 +13,7 @@
+         need(type(plan['port']) is int and 1024<=plan['port']<=65535
+              and re.fullmatch(r'[0-9a-f]{64}',plan['certificateLeafSha256']),'fixed_owned_tls_endpoint')
+         self.plan=plan;self.phase=phase;self.until=phase_until;self.journal=journal;self.guard=guard
+-        self.context=ssl.create_default_context(cafile=str(ROOT/'tls/ca.crt'))
++        self.context=ssl.create_default_context(cafile=str(ROOT/'pki/ca.crt'))
+         self.rows=[];self.checks=[];self.unknown=False;self.root_token=None;self.sensitive=[]
+     def remaining(self,cap):
+         left=self.until-time.monotonic();need(left>0,'original_api_phase_120_seconds');return min(left,cap)

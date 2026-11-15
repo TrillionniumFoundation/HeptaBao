@@ -1,0 +1,13 @@
+[package]
+name = "heptabao-agent-renderer"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+gotmpl = { package = "heptabao-workflow-template", path = "../../third_party/workflow-gotmpl", default-features = false, features = ["std"] }
+serde_json = { version = "=1.0.151", features = ["arbitrary_precision"] }
+
+[lints]
+workspace = true

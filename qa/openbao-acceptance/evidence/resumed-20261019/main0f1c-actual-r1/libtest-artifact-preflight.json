@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.main-built-libtest-artifact-preflight.v1",
+  "producer_host": "main",
+  "source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "compiler_log_sha256": "2433da7948f0108f1679eeebae8d3fd18504e735b235edf4e85b6f47a696a94a",
+  "artifact_path": "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_server-c2b13f8f8869a962",
+  "artifact_bytes": 1086680200,
+  "artifact_sha256": "ba8316997f9cc015e466a74d8d05896aacd7f59d52f5386bbd8ac8f5680fb4b0",
+  "artifact_unchanged_during_read": true,
+  "metadata": {
+    "file": {
+      "returncode": 0,
+      "stdout": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=55cabc45dace231d4a6a702420a6f921d51cf2b0, with debug_info, not stripped\n",
+      "stderr": ""
+    },
+    "ldd": {
+      "returncode": 0,
+      "stdout": "\tlinux-vdso.so.1 (0x0000724b0d384000)\n\tlibgssapi_krb5.so.2 => /lib/x86_64-linux-gnu/libgssapi_krb5.so.2 (0x0000724b0d2fe000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x0000724b0d2d0000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000724b0d1e7000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000724b06a00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x0000724b0d386000)\n\tlibkrb5.so.3 => /lib/x86_64-linux-gnu/libkrb5.so.3 (0x0000724b06d37000)\n\tlibk5crypto.so.3 => /lib/x86_64-linux-gnu/libk5crypto.so.3 (0x0000724b0d1b9000)\n\tlibcom_err.so.2 => /lib/x86_64-linux-gnu/libcom_err.so.2 (0x0000724b0d1b3000)\n\tlibkrb5support.so.0 => /lib/x86_64-linux-gnu/libkrb5support.so.0 (0x0000724b0d1a6000)\n\tlibkeyutils.so.1 => /lib/x86_64-linux-gnu/libkeyutils.so.1 (0x0000724b0d19f000)\n\tlibresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x0000724b0d18d000)\n",
+      "stderr": ""
+    },
+    "readelf_version": {
+      "returncode": 0,
+      "stdout": [
+        "GCC_3.0",
+        "GCC_3.3",
+        "GCC_4.2.0",
+        "GLIBC_2.10",
+        "GLIBC_2.14",
+        "GLIBC_2.15",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.27",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_2.5",
+        "GLIBC_2.7",
+        "GLIBC_2.9",
+        "gssapi_krb5_2_MIT"
+      ],
+      "stderr": ""
+    }
+  },
+  "observed_runner_compile_flags": {},
+  "x230_execution_performed": false,
+  "created_unix": 1792387084.454459
+}

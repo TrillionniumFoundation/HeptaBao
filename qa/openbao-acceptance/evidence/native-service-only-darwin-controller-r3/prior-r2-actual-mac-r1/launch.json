@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.native-only-darwin-r2-actual-once.v1",
+  "status": "smoke_failed_compile_not_started",
+  "automatic_retry": false,
+  "submissions": [
+    {
+      "label": "mac-smoke",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_darwin_checks.py",
+        "--controller",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-service-only-9770-r2-controller/native_service_only_compile.py",
+        "--expected-controller-sha256",
+        "e7f74cab6110333c00517e993ad8157eaa3886c1a704b8738261d2cee646c7ec",
+        "--output",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-only-darwin-r2-mac-smoke-20261019-r1",
+        "--mac-smoke"
+      ],
+      "status": "completed",
+      "submission_count": 1,
+      "pid": 44245,
+      "started_utc": "2026-10-19T07:25:29.888628+00:00",
+      "exit_code": 1,
+      "owned_child_reaped": true,
+      "finished_utc": "2026-10-19T07:25:30.509317+00:00"
+    }
+  ],
+  "controller_sha256": "e7f74cab6110333c00517e993ad8157eaa3886c1a704b8738261d2cee646c7ec",
+  "checks_sha256": "ae0748fad0d76f84bec572bdc390ce2c28ffcad2b395af694d88111186af1ef7",
+  "completed55_sha256": "31a540e5208c5059be63f6975e5fc9d174517cd6d5afbc2687913f1748bcf800"
+}

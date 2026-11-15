@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.ha128.r3.original-log-review.v1",
+  "sourceCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "qaCommit": "af91ec0cecbb1c0bd717095d6d8696a3f73a1cee",
+  "originalJob": "1a1b357f5e0-fc05-8241",
+  "originalStatus": "failed",
+  "passed": 51,
+  "required": 128,
+  "mutationIntents": 23,
+  "mutationResponses": 23,
+  "unknownMutationOutcomes": 0,
+  "actualKnownWrites": 10,
+  "bytesPerWrite": 2097152,
+  "lastKnownWrittenVersion": 12,
+  "sourceDerivedFailedOperation": {
+    "method": "GET",
+    "routeClass": "kv2-data-history",
+    "version": 12,
+    "requestSeconds": 15,
+    "afterWriteNumber": 10,
+    "beforeNextMutationIntent": true
+  },
+  "failureType": "URLError",
+  "exceptionReasonPreserved": false,
+  "exactTransportPhaseProven": false,
+  "notes": [
+    "The exact af91 loop performs one strict exact_read immediately after each successful write check. No eleventh write intent exists.",
+    "The three complete stopped-fixture process logs contain no per-line wall clock timestamps; short native-sync expired diagnostics are not bound to the failed GET.",
+    "Leader X230 records repeated append transport failures toward node 3 at the original 150 ms budget; Mac records pre-vote transport failures toward node 1 at 750 ms.",
+    "No new candidate, mutation replay, credential read, firewall change or fixture restart was performed to obtain these process logs.",
+    "Native blob operation admission uses an atomic counter with immediate conflict refusal, not a recursive blocking reader/writer lock.",
+    "The underlying URLError.reason and errno were not preserved by the original GET wrapper. The next read-only source/cold-state diagnosis must not invent them."
+  ],
+  "originalOwnedProcessesClosed": true,
+  "readOnlyCollection": true,
+  "productRootCauseEstablished": false
+}

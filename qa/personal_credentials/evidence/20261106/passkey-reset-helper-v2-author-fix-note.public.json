@@ -1,0 +1,20 @@
+{
+  "author_is_independent_reviewer": false,
+  "author_self_test": {
+    "adb_calls": 0,
+    "network_calls": 0,
+    "new_cases": "Two host fault injections; termination is an in-process simulation, not a phone crash test.",
+    "passed": 46,
+    "receipt_sha256": "eab627415074b0108c81cdf3b64c893b4d572b4e2283deffa1efbebd26a5f135"
+  },
+  "external_review": false,
+  "finding": "Success rename could remain visible after directory fsync failure if failure reporting also failed or execution terminated. The original 44-case test did not cover those two windows.",
+  "finding_reporter": "parent agent /root",
+  "phone_qualified": false,
+  "production_qualified": false,
+  "repair": "Create a hash-bound completion witness only after result atomic persistence returns successfully; require and re-sync an existing valid witness before accepting prior success. Never manufacture a missing witness or repeat pm clear.",
+  "schema": 1,
+  "scope": "author_fix_and_host_stub_evidence_only",
+  "source_after_sha256": "2a21f7bcc013abab41f3eba38f612afb6ec869933aee438053a7a5abc81cf48b",
+  "source_before_sha256": "6c938dd1f0a9cad41a48db12ea0a80282d9123d5d9f48cf9f249fdf5c31e6dc0"
+}

@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HeptaBao</title><link rel="stylesheet" href="popup.css"></head>
+<body><main><header><span class="mark">H</span><div><h1>HeptaBao</h1><p>本地个人密码库 · Preview</p></div></header>
+<p id="status" role="status">仅在当前 HTTPS 页面明确填充。关闭窗口即锁定。</p>
+<form id="unlock-form"><label for="master">主密码</label><input id="master" type="password" autocomplete="off" maxlength="4096" required><button type="submit">解锁当前页面</button></form>
+<section id="matches" hidden><p id="origin"></p><label for="items">匹配的登录条目</label><select id="items"></select><button id="fill">填充并锁定</button></section>
+<button id="lock" class="secondary">立即锁定</button><p class="note">精确域名匹配。填充后由你提交登录。</p>
+</main><script type="module" src="popup.js"></script></body></html>

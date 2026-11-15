@@ -3,6 +3,8 @@
 
 //! Shared bounded identifiers, canonical paths, monotonic ticks and secret values.
 
+pub mod json;
+
 use std::error::Error;
 use std::fmt;
 use zeroize::Zeroize;

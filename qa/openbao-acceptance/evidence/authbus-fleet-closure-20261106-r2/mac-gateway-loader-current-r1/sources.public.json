@@ -1,0 +1,261 @@
+{
+  "actualRegistrationQualification": false,
+  "files": [
+    {
+      "bytes": 3348,
+      "name": "README.md",
+      "role": "scope-note",
+      "sha256": "c4f76e64b3c636641353e2c293aded2cc6dca029abca9c55b3bc8222a8c6a99c"
+    },
+    {
+      "bytes": 2764,
+      "name": "authbus-manifest-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "3fb2a87214beac55a018a28506f74c8188a08a409f7e3010878026c19fa4d9cf"
+    },
+    {
+      "bytes": 8348,
+      "name": "config-env-vars-DlUfO5Q_.js",
+      "role": "public-source",
+      "sha256": "fae1abf063f57a2f08dc9217238ac219f2b1c30a594efaf88c47ac57837db225"
+    },
+    {
+      "bytes": 159,
+      "name": "dotenv-global-BWJcNSxD.js",
+      "role": "public-source",
+      "sha256": "1d604bf0fc86323004f4196ec78d0ddf29b9c5665db5bc2371b72415b682fbfd"
+    },
+    {
+      "bytes": 4282,
+      "name": "dotenv-global-mWLbBl_z.js",
+      "role": "public-source",
+      "sha256": "d88c53bfbb63ca5a107e2c1c8cdd2f51c52fa8c212f621cf7a0b9f051f6ddb32"
+    },
+    {
+      "bytes": 92,
+      "name": "env-vars-BcrpQK0x.js",
+      "role": "public-source",
+      "sha256": "f01fceb663252b92df9a917fde906b040bea6968fbc3b42ead5f113b1fec2a04"
+    },
+    {
+      "bytes": 552,
+      "name": "env-vars-CxBOhHoc.js",
+      "role": "public-source",
+      "sha256": "dcdfda2ef68d9a3564f78d8763668c776096dbdfa97d682a02a10bfa65c65a34"
+    },
+    {
+      "bytes": 43619,
+      "name": "hook-runner-global-BmIrGlLG.js",
+      "role": "public-source",
+      "sha256": "c066170e97a2355603f0bdd3079a687bf835632856a741fa9a92683d7d4b2750"
+    },
+    {
+      "bytes": 2188,
+      "name": "library-CqCP71YW.js",
+      "role": "public-source",
+      "sha256": "d57067dc9913e029573b93638939bda5646a124ea127f61ef35dfa20f39fb858"
+    },
+    {
+      "bytes": 116680,
+      "name": "loader-D8d2EvVh.js",
+      "role": "public-source",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7"
+    },
+    {
+      "bytes": 31444,
+      "name": "manifest-registry--UiRn6nq.js",
+      "role": "public-source",
+      "sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4"
+    },
+    {
+      "bytes": 21576,
+      "name": "next-two-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "8d6f768726d10beb58c3c77ac34871cff6cd6e232faf7cb040f92c1240b1561f"
+    },
+    {
+      "bytes": 1594,
+      "name": "openclaw.plugin.json",
+      "role": "public-source",
+      "sha256": "eac949fc687dfec38a1b647a9973fd0de901af3d4a0cd8b9de8d712a6aa454a5"
+    },
+    {
+      "bytes": 845,
+      "name": "paths-C6ahtu79.js",
+      "role": "public-source",
+      "sha256": "46a7ab46a5611f9c47b9aa8c027e1b033c4b10a1844aa8823fcb808a94523b94"
+    },
+    {
+      "bytes": 3212,
+      "name": "plugin-activation-runtime-config-CAjq5WJb.js",
+      "role": "public-source",
+      "sha256": "e303c994d9085fb3375ac8c49894c64293bab4062483b9cc56b085d31da8127c"
+    },
+    {
+      "bytes": 38226,
+      "name": "plugin-auto-enable-B2g1v2k7.js",
+      "role": "public-source",
+      "sha256": "e33dfb6fa526241233ec3150d4b46f83026f23057547e7440c7304089c9144a5"
+    },
+    {
+      "bytes": 13516,
+      "name": "plugin-bootstrap-two-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "e974deb9c80d65fd81df77d4e8e4374ec7278c222c3874fe905a2bd31740c739"
+    },
+    {
+      "bytes": 76838,
+      "name": "plugin-load-three-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "0d3ef219e3125672abf9f996c743dc8e836a50680fa4020ca3f93e286e204633"
+    },
+    {
+      "bytes": 19467,
+      "name": "pre-bootstrap-8G8HyMEQ.js",
+      "role": "public-source",
+      "sha256": "f2fb01d9d339e0d6261b4c51b751016a11c67eeb274a8624a88a93c148c00cd8"
+    },
+    {
+      "bytes": 616,
+      "name": "real-loader.original-info.json",
+      "role": "original-file-read",
+      "sha256": "9d7a83e19c17ebd5bf84dacbc22c8ed34a2d68b47f13d3a0881bf8a0c68f25ad"
+    },
+    {
+      "bytes": 87839,
+      "name": "real-loader.original-read-0.json",
+      "role": "original-file-read",
+      "sha256": "01fec8145bd9d9cb02f022019e20b842e0d40d255b1aa8d3132dcbc8cfd58a20"
+    },
+    {
+      "bytes": 68651,
+      "name": "real-loader.original-read-1.json",
+      "role": "original-file-read",
+      "sha256": "503348ecebbbeac5aeacbb388ed14e2845f1a456b5befb903adcd5ffb8be7e67"
+    },
+    {
+      "bytes": 125216,
+      "name": "registration-three-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "bdeedf76f9bd806e5d2c83cc44c460ab90f61814615136346346483c9c0bc77d"
+    },
+    {
+      "bytes": 64479,
+      "name": "run-CSvF3r1e.js",
+      "role": "public-source",
+      "sha256": "cb009c05e3792738403a97e82c65112f806c0b2fa9483996276d61772f74be35"
+    },
+    {
+      "bytes": 2505,
+      "name": "run-command-BndCI7AS.js",
+      "role": "public-source",
+      "sha256": "2dda92f207bc3d0acd7b9f1f85411f60a6c2b9bc0921a14c3da68e822413673d"
+    },
+    {
+      "bytes": 104,
+      "name": "run-command-DtjbCDeW.js",
+      "role": "public-source",
+      "sha256": "c366c17449a9bc0523f967cc879fd0413f9ae8aaa553b5e23debb84124c97c81"
+    },
+    {
+      "bytes": 3057,
+      "name": "run-command-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "360e6d8357cb4475d5e91a88348e25e4e0ad3f1224268c72e3a7b6dcbb0645eb"
+    },
+    {
+      "bytes": 46158,
+      "name": "run-main.js",
+      "role": "public-source",
+      "sha256": "25d6840bdf6395afa0462b097648d39b82d46d6b37ca2c618204c374e2604831"
+    },
+    {
+      "bytes": 70682,
+      "name": "run-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "cce6aa74b2ddeed80df4004efe11cda42844a16ec8d5df80d3e691f24077a6fe"
+    },
+    {
+      "bytes": 33052,
+      "name": "runtime-D0xGMZdc.js",
+      "role": "public-source",
+      "sha256": "a050a101e3c352345179b77f8c304da99596238fcde95cf03319ebc11dea8791"
+    },
+    {
+      "bytes": 19706,
+      "name": "selector-core-four-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "508f8cd81e08b46ea1bdb273a21123fbba42f76c58e6aebf580c91b73471fe54"
+    },
+    {
+      "bytes": 1138,
+      "name": "server-BnSQQ3Aa.js",
+      "role": "public-source",
+      "sha256": "f1e68d8731b1477e114b0ff2ac6a9aa9941ffed59ae0298c37363bb472726bf1"
+    },
+    {
+      "bytes": 87844,
+      "name": "server-impl.original-read-0.json",
+      "role": "original-file-read",
+      "sha256": "d17407f8f688890af09b8a961b5b31f59380ac230757f5ba6892bf76418bd2be"
+    },
+    {
+      "bytes": 70712,
+      "name": "server-impl.original-read-1.json",
+      "role": "original-file-read",
+      "sha256": "e8eb1d0f0208a0bac08064b39082abecf2aaa2de410d78f296ee7cbdf0d81094"
+    },
+    {
+      "bytes": 3974,
+      "name": "server-plugin-bootstrap-CtU_XTUf.js",
+      "role": "public-source",
+      "sha256": "a5e1ca52087063ead49e98bcf608a6fef026d050fdb74f3f002fb34ee0473632"
+    },
+    {
+      "bytes": 25691,
+      "name": "server-plugins-XoQmHCe9.js",
+      "role": "public-source",
+      "sha256": "5f9842ae09566a1d9aa57ea12f2132cfd843301d1323ca58d9d251d18eefc50b"
+    },
+    {
+      "bytes": 4210,
+      "name": "server-selector-four-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "a611c2c5f8069db4cfedb0c958ddef58f8e4e9547b5d63a62c6b4a5e977ab83d"
+    },
+    {
+      "bytes": 2510,
+      "name": "server-sleep-launchctl-info.original.json",
+      "role": "original-file-read",
+      "sha256": "7fafc1e4cf2c83ad26e359b06f74ec3b92be011b0c979a8e9aa81754e988b62b"
+    },
+    {
+      "bytes": 7504,
+      "name": "server-startup-plugins-CaPrk84k.js",
+      "role": "public-source",
+      "sha256": "8b70e55b14e975707054ae2a0c96cdddd4f42d75d9a38ac570b7da6a1693ccf6"
+    },
+    {
+      "bytes": 118221,
+      "name": "server.impl-qYPVZMND.js",
+      "role": "public-source",
+      "sha256": "d1d033e41ee27222a5b743a7a5a2e54f8f963d335a2599be3cb5243f9fe8c877"
+    },
+    {
+      "bytes": 3577,
+      "name": "state-dir-dotenv-COuz1wV3.js",
+      "role": "public-source",
+      "sha256": "1084f1322326d4207b35be9034eb9b2090f8bd671c36f08294ce977db2e7eb0a"
+    },
+    {
+      "bytes": 52315,
+      "name": "two-original-file-response.json",
+      "role": "original-file-read",
+      "sha256": "0c5af60c65c8ed3400eb4386c77bd7c9a5bf1f76f6703a2efea65d3fa0cc4616"
+    }
+  ],
+  "productionGatewayMemoryProved": false,
+  "providerCalls": 0,
+  "schema": "heptabao.current-mac-gateway-loader-public-sources.r1",
+  "serviceMutations": 0
+}

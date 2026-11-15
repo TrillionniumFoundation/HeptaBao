@@ -1,0 +1,1 @@
+{"macExecution": false, "passed": true, "platform": "local-linux", "productionInputsRead": false, "schema": "heptabao.whole-sqlite-streaming-boundary-qualification.r1", "sqlite": "3.53.1", "testsRun": 11}

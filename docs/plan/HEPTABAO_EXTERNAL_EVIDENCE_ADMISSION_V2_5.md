@@ -149,6 +149,19 @@ Required signing roles: platform qualifier and storage qualifier.
 
 Required signing roles: two distinct independent reproducers.
 
+### `HB-BLK-EXT-008` — plugin sandbox and provider qualification
+
+- Linux sandbox provider qualification;
+- macOS sandbox provider qualification;
+- Windows sandbox provider qualification;
+- process-tree termination;
+- authenticated multiplexed transport;
+- real database/cloud provider connectors;
+- rolling plugin upgrade and rollback;
+- destructive provider qualification.
+
+Required signing roles: plugin qualifier and provider reviewer.
+
 ## Invocation
 
 The structural command validates the envelope without claiming cryptographic

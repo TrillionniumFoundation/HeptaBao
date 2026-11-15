@@ -1,0 +1,134 @@
+diff --git a/crates/heptabao-server/src/service_native_pki.rs b/crates/heptabao-server/src/service_native_pki.rs
+index 281f742..b11309e 100644
+--- a/crates/heptabao-server/src/service_native_pki.rs
++++ b/crates/heptabao-server/src/service_native_pki.rs
+@@ -281,6 +281,7 @@ impl NativePkiOwner {
+                     request.client_certificates,
+                     request.origin_peer,
+                     &mut consumption,
++                    None,
+                 )
+             };
+             let checked = (|| -> Result<(), Response> {
+diff --git a/crates/heptabao-server/src/service_native_ssh.rs b/crates/heptabao-server/src/service_native_ssh.rs
+index 3b03ce4..6d34777 100644
+--- a/crates/heptabao-server/src/service_native_ssh.rs
++++ b/crates/heptabao-server/src/service_native_ssh.rs
+@@ -337,6 +337,7 @@ impl NativeSshOwner {
+                     request.client_certificates,
+                     request.origin_peer,
+                     &mut consumption,
++                    None,
+                 )
+             };
+             let checked = (|| -> Result<(), Response> {
+diff --git a/crates/heptabao-server/src/service_snapshot_forward_client.rs b/crates/heptabao-server/src/service_snapshot_forward_client.rs
+index a8a0009..1fc1d41 100644
+--- a/crates/heptabao-server/src/service_snapshot_forward_client.rs
++++ b/crates/heptabao-server/src/service_snapshot_forward_client.rs
+@@ -1,5 +1,6 @@
+ //! The ingress owns one selected peer and stages all binary response bytes.
+ use super::*;
++use crate::request_deadline::lock_until;
+ 
+ pub(crate) struct SnapshotForwardPlan {
+     endpoint: Option<crate::ha::SnapshotEndpoint>,
+@@ -265,8 +266,7 @@ impl SnapshotForwardPlan {
+         // A failed exchange is never treated as proof that the leader did no work.
+         self.transport_attempted = true;
+         let exchange = endpoint.exchange(&self.metadata, upload, &mut file, limits, |metadata| {
+-            let mut writer = service
+-                .lock_for_request()
++            let mut writer = lock_until(service, self.owner.deadline)
+                 .map_err(|_| heptabao_ha_service::HaError::Transport)?;
+             let checkpoint = self
+                 .accept_ready(&mut writer, metadata)
+@@ -299,7 +299,8 @@ impl SnapshotForwardPlan {
+             }
+         };
+         let completion: Result<CompletedSnapshotForward, Response> = (|| {
+-            let mut writer = service.lock_for_request().map_err(|_| unavailable())?;
++            let mut writer =
++                lock_until(service, self.owner.deadline).map_err(|_| unavailable())?;
+             self.owner.check(&writer)?;
+             let wire: wire::CompletionWire = wire::decode(result.metadata())?;
+             if wire.reply.status != result.status() {
+@@ -359,7 +360,7 @@ impl SnapshotForwardPlan {
+         service: &Arc<Mutex<Service>>,
+         response: Response,
+     ) -> CompletedSnapshotForward {
+-        match service.lock_for_request() {
++        match lock_until(service, self.owner.deadline) {
+             Ok(mut writer) => self.audit_failure(&mut writer, response, None),
+             Err(_) => CompletedSnapshotForward {
+                 response: self.audit_veto_response(None),
+diff --git a/crates/heptabao-server/src/service_snapshot_forward_source.rs b/crates/heptabao-server/src/service_snapshot_forward_source.rs
+index 7178177..6c84942 100644
+--- a/crates/heptabao-server/src/service_snapshot_forward_source.rs
++++ b/crates/heptabao-server/src/service_snapshot_forward_source.rs
+@@ -1,5 +1,6 @@
+ //! Source-side original native plan, original Actor and binary publication.
+ use super::*;
++use crate::request_deadline::lock_until;
+ 
+ struct AdmittedSource {
+     ready: wire::AdmissionWire,
+@@ -58,8 +59,7 @@ impl Service {
+             return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
+         }
+         let execution = {
+-            let mut writer = service
+-                .lock_for_request()
++            let mut writer = lock_until(service, deadline)
+                 .map_err(|_| heptabao_ha_service::HaError::Transport)?;
+             if !writer.native_ha_snapshot_transport_enabled()
+                 || writer
+@@ -102,16 +102,14 @@ impl Service {
+             RequestExecution::External(pending) => pending,
+         };
+         let admitted = {
+-            let mut writer = service
+-                .lock_for_request()
++            let mut writer = lock_until(service, deadline)
+                 .map_err(|_| heptabao_ha_service::HaError::Transport)?;
+             writer.snapshot_peer_admission(&pending, &request, &metadata, operation)
+         };
+         let admitted = match admitted {
+             Ok(admitted) => admitted,
+             Err(error) => {
+-                let response = service
+-                    .lock_for_request()
++                let response = lock_until(service, deadline)
+                     .map_err(|_| heptabao_ha_service::HaError::Transport)?
+                     .finish_external_request(
+                         *pending,
+@@ -143,8 +141,7 @@ impl Service {
+         // error must still take the original failure finalizer, never complete.
+         if !matches!(&result, ExternalEffectResult::SnapshotTransfer(Ok(_))) {
+             drop(file);
+-            let response = service
+-                .lock_for_request()
++            let response = lock_until(service, deadline)
+                 .map_err(|_| heptabao_ha_service::HaError::Transport)?
+                 .finish_external_request(*pending, result);
+             return reject(peer, &request, &metadata, response);
+@@ -159,8 +156,7 @@ impl Service {
+         let mut file = match prepared_file {
+             Ok(file) => file,
+             Err(error) => {
+-                let response = service
+-                    .lock_for_request()
++                let response = lock_until(service, deadline)
+                     .map_err(|_| heptabao_ha_service::HaError::Transport)?
+                     .finish_external_request(
+                         *pending,
+@@ -174,8 +170,7 @@ impl Service {
+             wire::BodyDescriptor::empty,
+             file::SealedSnapshotFile::descriptor,
+         );
+-        let completion = service
+-            .lock_for_request()
++        let completion = lock_until(service, deadline)
+             .map_err(|_| heptabao_ha_service::HaError::Transport)?
+             .finish_snapshot_peer_request(*pending, result, &admitted, &verified, downloaded);
+         let (status, completion) = match completion {

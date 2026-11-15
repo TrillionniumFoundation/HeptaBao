@@ -1,0 +1,1568 @@
+{
+  "schema": "heptabao.personal-credentials.evidence-index.v1",
+  "synthetic_only": true,
+  "production_qualified": false,
+  "entries": [
+    {
+      "file": "ai395-core-build.public.json",
+      "sha256": "1726602e78f1fd04cd953996d3b3a70158743b815d38d40c4d870539af5658aa",
+      "bytes": 14046,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "ai395-core-final-artifacts.public.json",
+      "sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+      "bytes": 11000,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "android-c4-build.public.json",
+      "sha256": "3dbf8fd47edea4342e92dfac309d0d9ccae47796fc255166e5a612c4555db135",
+      "bytes": 56499,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "android-c4-phone-r1.public.json",
+      "sha256": "c2a2e1bd171d1b274b88e0af82a012c0fc7955b1215e0f141bc8a3f943f0ca6b",
+      "bytes": 2637,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r2.public.json",
+      "sha256": "4e2de7ecb9d8919a74d2ab46103435570ceec5f3def0afc6763d67ee84cbcf71",
+      "bytes": 2693,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r3.public.json",
+      "sha256": "c2e28f2b61fc393e805e1607695fb8b10bc131b049aed7e665595505f43d0630",
+      "bytes": 3035,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r4.public.json",
+      "sha256": "ab5731144c26f87f3a3f530512f113e2462e419cfef275ae424b51366a7e6fa4",
+      "bytes": 3095,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r5.public.json",
+      "sha256": "bcbed79b08d191e1cf93525538c4d4d88057a651add81a6766df8b7475767d1c",
+      "bytes": 3118,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-release-r5.public.json",
+      "sha256": "458f0c9bc8ab6ba6d5544ea456c35cef9fd4367cc898990c24bff42eac8ec087",
+      "bytes": 490,
+      "transformation": "byte-identical reconstruction from public transport envelope, verified against original file SHA-256"
+    },
+    {
+      "file": "android-c4-to-c5-source-difference.public.json",
+      "sha256": "114ba2b7314837e03e0a5c8b1b1771661d64ea9d5bf87039e2bb4b7123956283",
+      "bytes": 1396,
+      "transformation": "derived comparison of original build source inventories; does not grant device qualification"
+    },
+    {
+      "file": "android-c5-artifact-review.public.json",
+      "sha256": "ae076522cc4c9bb24f2262296c05f7c07d4eea3ddf87ddbd767dc16784106bad",
+      "bytes": 906,
+      "transformation": "none; byte-identical original decoded-artifact review"
+    },
+    {
+      "file": "android-c5-before-phone-readiness.public.json",
+      "sha256": "e65d251050be7c0a760f7cf0170430265bb25b25e9080a95f0b8b951e85532aa",
+      "bytes": 1639,
+      "transformation": "none; byte-identical original readiness snapshot before its first phone run; not current qualification"
+    },
+    {
+      "file": "android-c5-build.public.json",
+      "sha256": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047",
+      "bytes": 56499,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "android-c5-phone-r6.public.json",
+      "sha256": "a5e914d2fb0c0e5749128d8c731f2c51055fed10f33798ae89ea556489be570b",
+      "bytes": 3589,
+      "transformation": "none; byte-identical original failed 1-of-12 device receipt"
+    },
+    {
+      "file": "android-c5-r6-framework-diagnostic.public.json",
+      "sha256": "8b4b3ba66d37a069475b3ed5e55f64065a5ffafc17354489261a28a831e255f4",
+      "bytes": 564,
+      "transformation": "none; byte-identical original read-only owned-process diagnostic; no proven root cause"
+    },
+    {
+      "file": "android-c5-r6-framework-diagnostic.py",
+      "sha256": "1e6d91f6242118015cd305284ac2b9b7129c2e3ac4a9667f4b575a8256ed87ca",
+      "bytes": 3937,
+      "transformation": "none; byte-identical original read-only diagnostic script"
+    },
+    {
+      "file": "android-c5-r6-readonly-diagnostic.public.json",
+      "sha256": "1cc9652f1593b510416868912a4ee7e2180210ef07581e4c16aa5042eb4e2715",
+      "bytes": 4301,
+      "transformation": "none; byte-identical original read-only diagnostic; no proven root cause"
+    },
+    {
+      "file": "android-c5-r7-packet.manifest.public.json",
+      "sha256": "b8a81fb29c3572c64f919528e507a43ca383ef9cf4c96ae2f8cd782b7fa328e1",
+      "bytes": 3013,
+      "transformation": "none; byte-identical original fourteen-file r7 packet index"
+    },
+    {
+      "file": "android-c5-r7-phone-report-r7.json",
+      "sha256": "be859adb806b91a57f8cf206e5880e5b995e596641b3caca8a321bd29b2af251",
+      "bytes": 7296,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-release-r7.json",
+      "sha256": "a37086bd5cf49be3896ad1e6dd82e0ed7b2bed1f7fc3bf429ca24347d028b9af",
+      "bytes": 1200,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-release-r7.readonly.py",
+      "sha256": "87b6ce7f2f40ae22ce0172ec6ceabb914efbe1562e686a52a36d12f3c27aa14a",
+      "bytes": 2543,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-release-r7.runtime-start.raw.json",
+      "sha256": "19f49dd3ddbd11af2fe02e86bd5bf7d41cfdb1b8205920ceca1dd2221fd3747a",
+      "bytes": 1337,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-release-r7.runtime-start.request.json",
+      "sha256": "313d87f4943e65a863bac9d418725db961e3f6c8bc6754a7b7c08bc2db5f2e31",
+      "bytes": 334,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-release-r7.runtime-status.json",
+      "sha256": "7699fe05d78d821dfcaeafcd305900d0bfd2c41244dc8ce12d3a823f58ee4975",
+      "bytes": 730,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-release-r7.runtime.stdout",
+      "sha256": "bf389ec708ea3594344f5c447e1fa1c3485af0c5cea0d5d9fe168a7099e8afc2",
+      "bytes": 170,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-run-r7.execution.public.json",
+      "sha256": "0132fac2a321fc23a12d70852a69bda79f23f146e5e90194e37fba4c53e6ab49",
+      "bytes": 2677,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-run-r7.launch.public.json",
+      "sha256": "f92efc883e3a4b90a5c79c8d399cb6e69d8fac3ec3e1b8535d141cb795d0224a",
+      "bytes": 2039,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-run-r7.runtime-start.raw.json",
+      "sha256": "de556c316ee143f00ccc190b9a85e23698845053703cb6e9cb089c69f98c9ce1",
+      "bytes": 1337,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-run-r7.runtime-start.request.json",
+      "sha256": "89fb8deaaea63a35f0658d32b688d3d31e0b0fce433670a1b210c932a6b4958e",
+      "bytes": 336,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-run-r7.runtime-status.json",
+      "sha256": "4ccd6095ed9ae23d0bc2e9946044868ff739b9b139d8bbd05c6676bd01a26937",
+      "bytes": 727,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-run-r7.runtime.stdout",
+      "sha256": "bf2c0774aeb88e5c80205aa11153affa9c7e020e4836dbfa7723588640296f28",
+      "bytes": 817,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-r7-run-r7.wrapper.actual.py",
+      "sha256": "2112bf11a314961047928ac1e8578c265c28b01a1253d29d0e9a4d02c729ec56",
+      "bytes": 3392,
+      "transformation": "none; byte-identical original r7 diagnostic/failed-run/cleanup packet member"
+    },
+    {
+      "file": "android-c5-release-r6.public.json",
+      "sha256": "88286461b8775ac8dc53be12a7e9793a798cffce8e9eb9b122f4adb541d01aeb",
+      "bytes": 790,
+      "transformation": "none; byte-identical original final device release proof"
+    },
+    {
+      "file": "android-c6-artifact-review.public.json",
+      "sha256": "9ef1698dfe6deafb77cd495fa48039652e61303968232da90b899c4170d4a148",
+      "bytes": 13197,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
+    },
+    {
+      "file": "android-c6-author-host-check.public.json",
+      "sha256": "d963ab6a500c15d5b7130e9c7495358fe43b6d0ac2ce3913957ac9bd5f8706fe",
+      "bytes": 6820,
+      "transformation": "none; byte-identical original c6 host-stub lifecycle qualification artifact"
+    },
+    {
+      "file": "android-c6-build-originals.manifest.public.json",
+      "sha256": "345d86b55ba90e2085881fe9449a03b2e58f24f5d4b5c431ced81c5ab81f67e7",
+      "bytes": 5803,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
+    },
+    {
+      "file": "android-c6-build-originals.tar.gz",
+      "sha256": "0eef5193b12b8cae9716b21f4050fb40801a10abfb7a603089f49b5dba0331cd",
+      "bytes": 1345547,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
+    },
+    {
+      "file": "android-c6-build.public.json",
+      "sha256": "327060e7d1a5bb5edd3634307a448d9e87c3cb578a3a2b5e09cc1b256760a33e",
+      "bytes": 56499,
+      "transformation": "none; byte-identical candidate6 public original; host/build/static-artifact evidence only"
+    },
+    {
+      "file": "android-c6-changes.patch",
+      "sha256": "0b5c79584a766d73760bcbc82477ffa378da673ef99f76926f7ed78eeb298321",
+      "bytes": 4397,
+      "transformation": "none; byte-identical original c6 host-stub lifecycle qualification artifact"
+    },
+    {
+      "file": "android-c6-host-check.stdout.original.json",
+      "sha256": "4aa6e89f7b41982959e4588f3384a1ebd2f4308a70e2916327c4e535be1fe871",
+      "bytes": 1079,
+      "transformation": "none; byte-identical original c6 host-stub lifecycle qualification artifact"
+    },
+    {
+      "file": "android-c6-host_check.py",
+      "sha256": "85261e1ef5bbccc74ee6a75b4e5ac3d4e68f807d022414435502ba41452c2b01",
+      "bytes": 27038,
+      "transformation": "none; byte-identical original c6 host-stub lifecycle qualification artifact"
+    },
+    {
+      "file": "android-c6-internal-review.public.json",
+      "sha256": "0ec7119cea399d65c4af419a46f895201f9bfdf658c8200da736a6da7f28c619",
+      "bytes": 1322,
+      "transformation": "derived internal review; independent host rerun is separate from Android framework/device qualification"
+    },
+    {
+      "file": "android-c6-phone-r8-originals.manifest.public.json",
+      "sha256": "da4cd707ade5ad4b39b37a588a647451fa859ca4e19058448b8ea7c877a42123",
+      "bytes": 7396,
+      "transformation": "new explicit archive index; no source member bytes transformed; failed original 1/12 phone run, no menu touch or master entry after guard refusal, complete cleanup"
+    },
+    {
+      "file": "android-c6-phone-r8-originals.tar.gz",
+      "sha256": "82d08cb41cefbfdf3c0a5ec7f7b35e55b89a4b90505ecfd71bde994c81fae6a1",
+      "bytes": 10997,
+      "transformation": "deterministic tar/gzip container; every listed member byte-identical; failed original 1/12 phone run, no menu touch or master entry after guard refusal, complete cleanup"
+    },
+    {
+      "file": "android-c6-phone-r8-release.public.json",
+      "sha256": "8374fc47df7fa059a919344a19f98246a1786373bc435650fbd21c03e87817b1",
+      "bytes": 1200,
+      "transformation": "none; byte-identical original r8 failed phone observation or independent release"
+    },
+    {
+      "file": "android-c6-phone-r8.public.json",
+      "sha256": "c2a67ae10815f7e4351c776dc2c556ed3332d803a1c9d6a718ac453fe85444be",
+      "bytes": 7966,
+      "transformation": "none; byte-identical original r8 failed phone observation or independent release"
+    },
+    {
+      "file": "android-c6-root-host-check.public.json",
+      "sha256": "339a3c1e5a9f16eb0691edfba1b76c3a6a5fac872c7903f6c5861d75d2fdb6cc",
+      "bytes": 6820,
+      "transformation": "none; byte-identical original c6 host-stub lifecycle qualification artifact"
+    },
+    {
+      "file": "android-posix-fd-close.public.json",
+      "sha256": "4586c5b3ffd7bae91b3a4641a5de205b9b2aefe4a132fc9c5274156a713e16bf",
+      "bytes": 825,
+      "transformation": "none; original Linux process-lock descriptor-close experiment; not an Android OEM result or cause proof"
+    },
+    {
+      "file": "android-qa10-author-host.public.json",
+      "sha256": "b76a180e0ef0cec7edb85ec518b683ccd919be693b4c3dff1beaa9a4ad7e88ed",
+      "bytes": 6267,
+      "transformation": "none; byte-identical original 44-check host receipt, superseded for phone admission by reproduced source defect"
+    },
+    {
+      "file": "android-qa10-counterexample-reproduce.py",
+      "sha256": "48cd01b259a5392b1e8a185462fd50808686fed379f271e285cbed75a8782e59",
+      "bytes": 3223,
+      "transformation": "none; byte-identical original internal reproduction source"
+    },
+    {
+      "file": "android-qa10-counterexample.stdout.original.json",
+      "sha256": "1bb9967df9f1813eb4ab3530fd707f81b3f6261029fe2e2da2640e0b8f74376a",
+      "bytes": 1211,
+      "transformation": "none; byte-identical original synthetic client-origin false-acceptance reproduction"
+    },
+    {
+      "file": "android-qa10-internal-review.public.json",
+      "sha256": "9d48d2345bfa204cce1e18e12df6b7ff445fd2476f9d5c3cd25b53e37a83be0a",
+      "bytes": 4940,
+      "transformation": "none; byte-identical original independent internal review and blocking finding"
+    },
+    {
+      "file": "android-qa10-originals.manifest.public.json",
+      "sha256": "a6305cb46bd642842c392fed44089e2256564339da1cecf406b9790ca6354590",
+      "bytes": 4445,
+      "transformation": "derived index of the original QA10 packet; records reproduced false acceptance and HOLD"
+    },
+    {
+      "file": "android-qa10-originals.tar.gz",
+      "sha256": "debd46f6a79f266acb243d81a48fca233e1cc6c476a27fbe01e9ebdf48bddbd8",
+      "bytes": 42410,
+      "transformation": "derived deterministic container of twenty-four byte-identical original source, host and defect-review files; not a passing phone candidate"
+    },
+    {
+      "file": "android-qa11-author-host.public.json",
+      "sha256": "83764546e417a88899b6ae4a5683f37418b9c8731cee8f6ab3eb7fdc22db2baa",
+      "bytes": 7426,
+      "transformation": "none; byte-identical original QA11 host-only review; no OEM qualification"
+    },
+    {
+      "file": "android-qa11-internal-review.public.json",
+      "sha256": "28eca28fb0d6e6704f5b01804eaa2435744eeb974e3acad0ee364b73b80c62ad",
+      "bytes": 2550,
+      "transformation": "none; byte-identical original QA11 host-only review; no OEM qualification"
+    },
+    {
+      "file": "android-qa11-originals.manifest.public.json",
+      "sha256": "82a8e43fc39b8cc84dafead00af08a96f41337f4f2acdd14060467b9a96e60ea",
+      "bytes": 6082,
+      "transformation": "new explicit archive index; no source member bytes transformed; QA10 client-dump defect correction; author and root 57 host checks, internal reviewer two targeted controls; phone r8 separately failed"
+    },
+    {
+      "file": "android-qa11-originals.tar.gz",
+      "sha256": "f9a073bb851fa7ac419cf43cfbfd5e7d07678b5de7c4fba92e2beffcb417b327",
+      "bytes": 29882,
+      "transformation": "deterministic tar/gzip container; every listed member byte-identical; QA10 client-dump defect correction; author and root 57 host checks, internal reviewer two targeted controls; phone r8 separately failed"
+    },
+    {
+      "file": "android-qa11-root-host.public.json",
+      "sha256": "e547c7427f6f51c5e788c30886e6c629ca16d119635313a752330614ac67eedf",
+      "bytes": 3475,
+      "transformation": "none; byte-identical original QA11 host-only review; no OEM qualification"
+    },
+    {
+      "file": "android-qa12-author-host.public.json",
+      "sha256": "3506f2da0a8e056783871f76c9a2a4f4a462401eb8b0860abe568a5bbb943491",
+      "bytes": 7484,
+      "transformation": "none; byte-identical original QA12 host review; no phone qualification"
+    },
+    {
+      "file": "android-qa12-internal-review.public.json",
+      "sha256": "433a005777b83e7df26a861926c7a5aae518af841cc60d780d0bb37edb914b79",
+      "bytes": 3144,
+      "transformation": "none; byte-identical original QA12 host review; no phone qualification"
+    },
+    {
+      "file": "android-qa12-originals.manifest.public.json",
+      "sha256": "7dd1279aeb01c518f13296ee312c35558e41ecb9953c3bb365a0a95a61a8f6ba",
+      "bytes": 5814,
+      "transformation": "new explicit index of byte-identical QA12 originals; no OEM qualification"
+    },
+    {
+      "file": "android-qa12-originals.tar.gz",
+      "sha256": "ab6492d49c344b7e0cab2dafc10ffdf7803d0ecda09129b6fa7154cf16433753",
+      "bytes": 31803,
+      "transformation": "deterministic tar/gzip container; listed original source/review bytes unchanged; host-only"
+    },
+    {
+      "file": "android-qa12-root-host.public.json",
+      "sha256": "ee168264eb0f0782e072cc7d07fb575da4ae7bb2b51ba31c31926c679b179411",
+      "bytes": 2827,
+      "transformation": "none; byte-identical original QA12 host review; no phone qualification"
+    },
+    {
+      "file": "android-qa8-guard-tests.public.json",
+      "sha256": "b3fba2d2e42a4c196809576a2c3c9ec6fa263305b89a81d17e4261be034d85e2",
+      "bytes": 479,
+      "transformation": "none; byte-identical original eight host-only driver guard tests"
+    },
+    {
+      "file": "android-qa9-before-phone-source-binding.public.json",
+      "sha256": "c785e79de3181b566e4af54ed0e8321f416f5c605d123fbeff32b817f3ac426f",
+      "bytes": 3009,
+      "transformation": "none; byte-identical original QA9 source binding before its first device run"
+    },
+    {
+      "file": "android-qa9-offline-guards.public.json",
+      "sha256": "623d218fa8f256f5f39deaf57bc2012e7a293faf96166c0b04d5130e246114bd",
+      "bytes": 5578,
+      "transformation": "none; byte-identical original 45 host-only guard observations across Android and Passkey drivers; no device qualification"
+    },
+    {
+      "file": "broker-ed25519-build-and-tests.public.json",
+      "sha256": "d29fff92ecbcdab6e52c905e6a4a96217d4c712f2c453dd5c63214e47c0e88bb",
+      "bytes": 33544,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "broker-ed25519-build-first-failed.public.json",
+      "sha256": "53edc60020e3e538b2d23644f83912c6be0f3ceeeff43db15486921d17c54396",
+      "bytes": 13028,
+      "transformation": "none; byte-identical original failed runner receipt; no tests executed"
+    },
+    {
+      "file": "broker-ed25519-build-runner.py",
+      "sha256": "de6b79f3f261a44f6be80a14af96fac8ea3e058e33ac3be490739fa471e7814e",
+      "bytes": 13364,
+      "transformation": "none; byte-identical original synthetic builder"
+    },
+    {
+      "file": "broker-ed25519-compiler-artifacts.jsonl",
+      "sha256": "7c2cc2e6d34335ae2ac96b9530b671860d6655415dfe9340933bc264673031e5",
+      "bytes": 68290,
+      "transformation": "none; byte-identical original Cargo compiler-artifact stream"
+    },
+    {
+      "file": "broker-ed25519-continuation-runner.py",
+      "sha256": "77b35c50a5ce5addf53f513bcd54aa6ba5061888a43de4692207c078e7a82fac",
+      "bytes": 9104,
+      "transformation": "none; byte-identical original continuation runner"
+    },
+    {
+      "file": "broker-ed25519-internal-evidence-review.public.json",
+      "sha256": "9de07f5e4ac33cacc088d75b93b83a230c30b9596c4e26ee87ff0eea410437b5",
+      "bytes": 8592,
+      "transformation": "none; byte-identical original internal read-only evidence-consistency review; no new runtime execution or external audit"
+    },
+    {
+      "file": "broker-ed25519-linux-normal-graph.txt",
+      "sha256": "d22582bf4a8b42e26480255dd55bdc9c7f814370b8910e9b74ca1811da6ae512",
+      "bytes": 4133,
+      "transformation": "none; byte-identical original selected normal dependency graph"
+    },
+    {
+      "file": "broker-ed25519-macos-normal-graph.txt",
+      "sha256": "7fd4908fa66b5d1138be86a2abfb50552d1756139560d0cca66bccaaf8ca0883",
+      "bytes": 3937,
+      "transformation": "none; byte-identical original selected normal dependency graph; target executable not run"
+    },
+    {
+      "file": "broker-ed25519-policy2.stdout.txt",
+      "sha256": "8163bd6a9d747c8b92ff55c84e3e695fb611e3e860c71dc2230b5b011d5712a0",
+      "bytes": 221,
+      "transformation": "none; byte-identical original test output"
+    },
+    {
+      "file": "broker-ed25519-process11.stdout.txt",
+      "sha256": "3bd0f3665435635a9ed7c88a3832e2407a041c7eb74a1f55660157d6c97fda1b",
+      "bytes": 895,
+      "transformation": "none; byte-identical original test output"
+    },
+    {
+      "file": "broker-ed25519-root-graph-check.public.json",
+      "sha256": "b4ba9ec5f791254d5a33f7e8115983ffc7349d202506ca43d9c86b69d3ff62ce",
+      "bytes": 2687,
+      "transformation": "none; byte-identical original separate root-side graph observation"
+    },
+    {
+      "file": "broker-ed25519-workspace-graph-failed.stderr.txt",
+      "sha256": "6ed706716a9ed84c8c6235bf5c6bc0728dc9a4c27267cc2c26100bb8f1f366d5",
+      "bytes": 119,
+      "transformation": "none; byte-identical original failed offline workspace graph output"
+    },
+    {
+      "file": "browser-headed-driver-r10.public.json",
+      "sha256": "4a17028cd0683d0bca13c000af42a8425f7098f0ec201691a3fa696698cce99b",
+      "bytes": 1125,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r5.public.json",
+      "sha256": "6b4e2347e7890889756b1b4fb302b58d0061f3f9e0c840eb78071531a44c95df",
+      "bytes": 690,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r6.public.json",
+      "sha256": "b09abe0c41ce576cbc4e9a1d1c337581b6775e348536aa992e18f3138e300d43",
+      "bytes": 1758,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r8.public.json",
+      "sha256": "b3c86aa6beac736e2cd13905458075a2ddcdcb4d46fdc9c69b2e9edbe172841d",
+      "bytes": 1658,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-headed-driver-r9.public.json",
+      "sha256": "5bb38873403816f64d990daca5a7a958631462a6e47b57808ddcf5d7e3ceda6f",
+      "bytes": 2487,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r1.public.json",
+      "sha256": "f86041a346aa534d8163ef3e0ace87d141f6f58b81983be9db9de312ff845f9a",
+      "bytes": 870,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r10.public.json",
+      "sha256": "9517ac358ca1b9ff8ef9cf2f0b497f4a9f2da9a923b808736a004311a174b4a7",
+      "bytes": 6813,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r2.public.json",
+      "sha256": "b32fd26558a4c3d3e409465d24ac43d3f5ad1a79b714075a09f7e1c20264b61a",
+      "bytes": 6374,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r3.public.json",
+      "sha256": "898a5766efd57f1dd065d1ee3a291e0bce2b5dcbf1709d9e8e127c7ab482884b",
+      "bytes": 5862,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r4.public.json",
+      "sha256": "914550840c3cace40aeca8a8420f74a2d6297595e9b9f736a81ec54900e318ce",
+      "bytes": 6596,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r6.public.json",
+      "sha256": "6fd57756916b063a36cb9f37d7cbbd1f1941ab53cd919767d885c1e195230237",
+      "bytes": 6594,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r8.public.json",
+      "sha256": "05a36029a4e32042a50bd460067de1101f4e345ae2e34336254a1bf67ec254f0",
+      "bytes": 6450,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-r9.public.json",
+      "sha256": "d14c693bef8b8a02de586756c53c38817baf33dbce3a6089ae369576ea443795",
+      "bytes": 7233,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "browser-worker64.public.json",
+      "sha256": "6882ce5229e94a9e604151585bf0eb0aaee23ac68cdc36250446b6b1adcf2900",
+      "bytes": 928,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "github-ci-0a0bed8-build.public.json",
+      "sha256": "b97bfb40d3d474a428e32cf75779ce2156e0b28aeac1f51efded69fa39154483",
+      "bytes": 1846,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42181992169,
+      "github_job_id": 127773479397
+    },
+    {
+      "file": "github-ci-0a0bed8-native-backpressure.public.json",
+      "sha256": "4e1dfd7d51d98b3e28aea5eeb6debfea6a3bc00fd59dd1ba02688a88f1699b2f",
+      "bytes": 1926,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42181992169,
+      "github_job_id": 127773479397
+    },
+    {
+      "file": "github-ci-0a0bed8-result.public.json",
+      "sha256": "40b2bb89c3a4579455cd1af5fb65bdcf1ad7a36b244519865b29a50114e66190",
+      "bytes": 1913,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42181992169,
+      "github_job_id": 127773479397
+    },
+    {
+      "file": "github-ci-2280c36-build.public.json",
+      "sha256": "64b6b99f1668b5ca44a1f06c074477bc7f4cff98aef265f03dee641a78f45586",
+      "bytes": 1912,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42186444165,
+      "github_job_id": 127787818002
+    },
+    {
+      "file": "github-ci-2280c36-native-backpressure.public.json",
+      "sha256": "5001f8b31af19ddcb11a6286ebc1e6285a5c5d2be875ab0c69c7b95a6f05280e",
+      "bytes": 1926,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42186444165,
+      "github_job_id": 127787818002
+    },
+    {
+      "file": "github-ci-2280c36-result.public.json",
+      "sha256": "ab456cd3db1ca4bfbb0ad156b1e15cfed5a20a50301d46488c00acc099a46bc2",
+      "bytes": 1979,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42186444165,
+      "github_job_id": 127787818002
+    },
+    {
+      "file": "github-ci-a38dab7-build.public.json",
+      "sha256": "56f7b0e58575a0da37918025759ac33d8fcf1b457736f7284e833422bfbe635a",
+      "bytes": 1846,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42179532002,
+      "github_job_id": 127765661138
+    },
+    {
+      "file": "github-ci-a38dab7-native-backpressure.public.json",
+      "sha256": "f952564292df5e82b90e5517e6a30cc8904b33dadb14e7b9a3fce99b7fccade4",
+      "bytes": 1925,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42179532002,
+      "github_job_id": 127765661138
+    },
+    {
+      "file": "github-ci-a38dab7-result.public.json",
+      "sha256": "a51ea609a45f0da534e403923cd618e0b8ae59590b16aa9a6d8c3a76c8e2bec2",
+      "bytes": 1913,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42179532002,
+      "github_job_id": 127765661138
+    },
+    {
+      "file": "github-ci-e6d7871-build.public.json",
+      "sha256": "bb5bb7c2b31e3df77bc5d1bc97226c053ba29b5e4d37b691eebc2919ea8dadb4",
+      "bytes": 1846,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "github-ci-e6d7871-native-backpressure.public.json",
+      "sha256": "3ce6329b05c047c46254c490e00f5e25c33bbe52899abc704419f75da098cd8b",
+      "bytes": 1926,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "github-ci-e6d7871-result.public.json",
+      "sha256": "94d66a19def9efb595a6aa18ed3ac65c32f7d63b807ba210cb5e335bc022fee9",
+      "bytes": 1913,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "integration-preflight-c447536-acceptance-tests.stderr.txt",
+      "sha256": "4f2c5e60b72efb4efef921beef785b3350d8754123655677a99d7c1a254b6812",
+      "bytes": 277278,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-acceptance-tests.stdout.txt",
+      "sha256": "3aa369ddf26e48a200dd274bac370c9da73f191c24192b36767fff11c5179306",
+      "bytes": 294,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-python-client-tests.stderr.txt",
+      "sha256": "b33d0f7ff10c2448cd56c9bb563509673f7ac25e147890df69a7e0b164c4640b",
+      "bytes": 29430,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-python-client-tests.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-repository-tests.stderr.txt",
+      "sha256": "11fd7ccc2695826f2af788348e59f35383f1dc690c6653b42496003cc0b22ab2",
+      "bytes": 49302,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-repository-tests.stdout.txt",
+      "sha256": "f740f13a99137d65c9a3c98fca4b97d9146c7659f4e9d294d93bb9d579bbd16b",
+      "bytes": 4683,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-runner.py",
+      "sha256": "26cf94cd1f8c0aa0308f0b7a4a1c31017b7b4b143cca6c57cb44c0aa91d864ca",
+      "bytes": 6920,
+      "transformation": "none; byte-identical original preflight runner"
+    },
+    {
+      "file": "integration-preflight-c447536-verify-python.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536-verify-python.stdout.txt",
+      "sha256": "5d7706e8b269f96f7114ca4dcdc813e36ada8e6a6d2b106ca40c9370190a2b97",
+      "bytes": 389,
+      "transformation": "none; byte-identical original preflight command output"
+    },
+    {
+      "file": "integration-preflight-c447536.public.json",
+      "sha256": "b417b8fcb718fc539fb09f6f04f022f2e4fbca42d620a166da10b95614c80da6",
+      "bytes": 9305,
+      "transformation": "none; byte-identical original isolated Python preflight receipt; not server or full replacement qualification"
+    },
+    {
+      "file": "local-preflight-earlier-acceptance.log.txt",
+      "sha256": "0f887415bdc0c18654a716d5dd48ed9164484cd1af5af45a58e34a3645d418eb",
+      "bytes": 282953,
+      "transformation": "none; byte-identical original earlier local test output including retained errors"
+    },
+    {
+      "file": "local-preflight-earlier-environment-errors.public.json",
+      "sha256": "d390ddb50671ce2c8c0e76117f8bca28823a63698389065757c9507783f29d2b",
+      "bytes": 3021,
+      "transformation": "none; byte-identical original earlier local result; independent source identity not recorded in this receipt"
+    },
+    {
+      "file": "local-preflight-earlier-python-client.log.txt",
+      "sha256": "b07b0300b5e7bce8669d1b725230077a15d3041d19b969bf55044d5d6e844e94",
+      "bytes": 31206,
+      "transformation": "none; byte-identical original earlier local test output including retained errors"
+    },
+    {
+      "file": "local-preflight-earlier-repository.log.txt",
+      "sha256": "b7f163c32b40a84f3f92da2cdb4ffaa635d0b42a3a7c327450df355864de6241",
+      "bytes": 53963,
+      "transformation": "none; byte-identical original earlier local test output including retained errors"
+    },
+    {
+      "file": "native-backpressure-fixed.public.json",
+      "sha256": "7b3ccd812f2446b081e9cf91589ab259ee0c32c427c63e078feeda6a2416dbde",
+      "bytes": 1922,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-r4-build.public.json",
+      "sha256": "c7f84bd9ff3dcde9adf1bf7b24c641f393bb1274cb27e3b860f41845b98d107c",
+      "bytes": 59119,
+      "transformation": "none; byte-identical original public build receipt"
+    },
+    {
+      "file": "passkey-r4-host.public.json",
+      "sha256": "660e3213270540a5c79c55007ac6d770bd04c96cd70cefc4007289c5c6581cb5",
+      "bytes": 16154,
+      "transformation": "none; byte-identical original public host-only receipt"
+    },
+    {
+      "file": "passkey-r4-phone-attempt-index.public.json",
+      "sha256": "96893e13b5e6c495a73eccca55af363428a7d405ad3fba7cb97589137c2d7e9d",
+      "bytes": 14324,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-autofill-bridge-provenance.public.json",
+      "sha256": "c078a27fd760598d291e55775c4aece81cca580a43fc277edcb32bca2916b049",
+      "bytes": 1347,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-autofill-correction.result.public.json",
+      "sha256": "4d84f24da4ac8fe8cfd17ef0addebfa4cd8e02239a318fec20ddc44d0dd19369",
+      "bytes": 1228,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-case-results.public.json",
+      "sha256": "4c5c2d0678cbdbbfd0629e54782338c49e42726c1a19b8a63eac463889cf2b72",
+      "bytes": 13740,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-cleanup.result.public.json",
+      "sha256": "a89c4a4c0e3e3c24d4b6bde440ddd0a5094986fa8ff1a08370d00ccca270dd3d",
+      "bytes": 1276,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-packet-review.public.json",
+      "sha256": "45f2304868bae329422ec70cac0da15ad37aed9e9d9d7f61d8289879661fae74",
+      "bytes": 3408,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-packet.manifest.public.json",
+      "sha256": "c4594a2192b8d9b9256540a42ea866856404d73de2b84ecf2973a3d952b766bd",
+      "bytes": 992,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_live.final-r4.py",
+      "sha256": "67d7ab8dd282cec1e7f94796352b6c40bd2f14339acd1d2866dc75c3bd0f6000",
+      "bytes": 27781,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_live.localized-r4.py",
+      "sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a",
+      "bytes": 30991,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_live.primary-r4.py",
+      "sha256": "ae8d8cc6294b0583f94802250fe0704c8f01dca9e3c907a4204c2a1888f7b18d",
+      "bytes": 30448,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_phone_profile.r4.py",
+      "sha256": "6a26dbf2c4394becba2eb0c21192853afb5f176ede68f2e4dbf9d00ed9b1a7b0",
+      "bytes": 6303,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-passkey_restore_autofill_bridge.final-r4.py",
+      "sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d",
+      "bytes": 7289,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-phone-r4-public-evidence.tar.gz",
+      "sha256": "77dc53f7d944b94e14692817a8c974de658311d27b279325adafbd83a4d98bc5",
+      "bytes": 8131,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-profile.public.json",
+      "sha256": "ca294b7f04877b6662afe2b05d0653651161d2b7820c0d8c3f03c5ad203524e8",
+      "bytes": 6893,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-phone-transfer.manifest.public.json",
+      "sha256": "908617d8e450222bac72e1dfee9bd48dc47d45dac10792e6ebe13464b671a8c1",
+      "bytes": 4259,
+      "transformation": "none; byte-identical original failed r4 phone packet component; complete inline-wrapper argv is not established"
+    },
+    {
+      "file": "passkey-r4-rust-reopen-fixed-b0cc.public.json",
+      "sha256": "d6dd270dbc8be85e7d96622b0c5c2c8d29c72945adcdb9b811d365e2b48bf2e7",
+      "bytes": 1732,
+      "transformation": "none; byte-identical original fixed-core Rust recovery/read-back receipt"
+    },
+    {
+      "file": "passkey-r4-rust-reopen.public.json",
+      "sha256": "f3b724612b8bc216ded8c0b161be5d6ffab175ae32ae81a70f6f1ebf54112638",
+      "bytes": 592,
+      "transformation": "none; byte-identical original public Rust recovery/read-back receipt"
+    },
+    {
+      "file": "passkey-r4-seed-original.public.json",
+      "sha256": "8f4aa93fb4600a722ca34798d4f8364dba81c43da71a1c7cc2d30c95e2cd4b1b",
+      "bytes": 473,
+      "transformation": "none; byte-identical original seed receipt; its local producer build provenance remains unestablished"
+    },
+    {
+      "file": "passkey-r5-compile-failure-supplement.public.json",
+      "sha256": "e5a2062b3009bfd93d511e7bc3160b0340539ca6b233409595a2e8d969e8e053",
+      "bytes": 824,
+      "transformation": "none; byte-identical original failed compiler stderr or version-pinned retrieval receipt"
+    },
+    {
+      "file": "passkey-r5-first-build-receipt.failed.json",
+      "sha256": "d7a36b6292202d6487b4ae9c9c3252973256c9cbad6dd52e969d2eda29c79fb2",
+      "bytes": 18317,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5-first-provider-javac.stderr",
+      "sha256": "039fc9c4f9c21455f9044892dbb0602e7818437ecda301827e9c5dded0c60f17",
+      "bytes": 406,
+      "transformation": "none; byte-identical original failed compiler stderr or version-pinned retrieval receipt"
+    },
+    {
+      "file": "passkey-r5-provider-javac.stderr.original.txt",
+      "sha256": "039fc9c4f9c21455f9044892dbb0602e7818437ecda301827e9c5dded0c60f17",
+      "bytes": 406,
+      "transformation": "none; original failed SDK34 compiler stderr; O_DIRECTORY public stub absent; old failure retained"
+    },
+    {
+      "file": "passkey-r5b-build-receipt.public.json",
+      "sha256": "b46691b4da0fc2f461801ff7b8e3abf64cb461a55a03d2624f24d4713f20fc40",
+      "bytes": 59317,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-host-result.public.json",
+      "sha256": "4db33700c86cd4f185fa56c1e1fe92af291c8a50f6da48fae53682438fc92bb2",
+      "bytes": 16248,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-phone-actual-qa-run_phases.public.py",
+      "sha256": "0d3bae80db588f433d403f38ceaf1695c880f4bc4e1a336a6d71a3b7f081aa9a",
+      "bytes": 4573,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-case-results.public.json",
+      "sha256": "fc6335001eeb1a8cf7709671f06fd76e6710245de5760c68e14628a8c2d5fc55",
+      "bytes": 11650,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-cleanup.result.public.json",
+      "sha256": "85b81a59adad6efc8b2427f54e48c94fd122b18557f6e7b5047631fa913761ac",
+      "bytes": 1786,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-execution-requests.public.json",
+      "sha256": "90d1839d6a620609a5f1b2bdf222957185f00df4a4ec64c1ddcabbda600b362c",
+      "bytes": 36578,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-manifest.public.json",
+      "sha256": "22b15509ee5be76841de5ad63f9e218eb83aa93934e81d0ed45dccaa089c7036",
+      "bytes": 15485,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-original.tar.gz",
+      "sha256": "c2af06d6c3d676a3c48668e0411585f092db7f0fd03c48323361571b084612d7",
+      "bytes": 50995,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-phase-result-projections.public.json",
+      "sha256": "0b248776e76c32aad1971379f284c2d8b2ebb7340af33d6f5b2816b509fefdeb",
+      "bytes": 19907,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-profile.declared.json",
+      "sha256": "79632f9c91877bdcec9285fe7b893196e1029008d7185cf0a2618dc158bb1c9f",
+      "bytes": 12552,
+      "transformation": "deterministic output of frozen profile source 5e21b66be609f539ca7e6945752b66974933ac11639e7b0b9ccb6751a7ce5400; declares eighteen cases and does not prove execution"
+    },
+    {
+      "file": "passkey-r5b-phone-release-r5b.public.json",
+      "sha256": "89d8cdd189a7da58fcf251d8688202b8a9fb9fd82faa99421f478904b6044a71",
+      "bytes": 3096,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-phone-terminal-jobs.public.json",
+      "sha256": "75ef015a3f822671986528857f7bd9913bf1066b72c19383f9cfad8f7ca6dece",
+      "bytes": 1947,
+      "transformation": "none; byte-identical original public artifact; phase projections remain explicitly derived and do not contain raw UI"
+    },
+    {
+      "file": "passkey-r5b-public-packet.manifest.json",
+      "sha256": "7167caa81f48e4166e35aa2212b24767b4d37887c68d8400e5f284c5244f2a3d",
+      "bytes": 1842,
+      "transformation": "none; original retrieval and cross-file consistency manifest; not phone qualification"
+    },
+    {
+      "file": "passkey-r5b-seed-producer-wrapper.actual.py",
+      "sha256": "9fc9472b4995cd469b6157819432bfb98cd4a709d3d36f0abbe90f16eafb587f",
+      "bytes": 2621,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-seed-producer-wrapper.binding.public.json",
+      "sha256": "5bebf6fb697a12578b81eba278fcf5ca48f35cba2f82ff65605d7116a2ae518b",
+      "bytes": 553,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-seed-producer.public.json",
+      "sha256": "533cb27055640f2da05b7e362a6c767203894f0bc05fc80b55acb01310308eb8",
+      "bytes": 1372,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-seed-receipt.public.json",
+      "sha256": "ab16e81f85823b75bea71a4648b701be6072b41ee6096926c13ded5282a814d3",
+      "bytes": 473,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r5b-source-match.public.json",
+      "sha256": "81d3e675bb708fd8d18111feb8042eced5a38500e718c040c113f9d4212112e8",
+      "bytes": 8686,
+      "transformation": "derived exact comparison of source archive paths to repository files; no device qualification"
+    },
+    {
+      "file": "passkey-r5b-transfer.manifest.public.json",
+      "sha256": "115ccc878381063569d9f34f77c238287dc27d984ed18b7f35a56537c8c12799",
+      "bytes": 4273,
+      "transformation": "none; byte-identical original public receipt or observed wrapper source"
+    },
+    {
+      "file": "passkey-r6-artifact-review.public.json",
+      "sha256": "faad3d75617fe5544e49fcaed82679577637b89b10cfa06834d530f093995e89",
+      "bytes": 719,
+      "transformation": "derived internal consistency comparison of original source, build and host artifacts; not phone qualification"
+    },
+    {
+      "file": "passkey-r6-build.public.json",
+      "sha256": "cb70894ea9ea6f6216b015f978dab7be304ec9910969dca9a46eee2beee84190",
+      "bytes": 60215,
+      "transformation": "none; byte-identical original r6 candidate source/build/host or declared phone-profile artifact"
+    },
+    {
+      "file": "passkey-r6-host.public.json",
+      "sha256": "69a03e93b8aaad9edceffba5bdfc745db38626817289544ba2cdb82874afe7cc",
+      "bytes": 16208,
+      "transformation": "none; byte-identical original r6 candidate source/build/host or declared phone-profile artifact"
+    },
+    {
+      "file": "passkey-r6-line-check.public.json",
+      "sha256": "5caf6d0d6ef9fa5c04675f7743ea5ab7a96470ab9c2c861d8b81ec36b98e9818",
+      "bytes": 5716,
+      "transformation": "none; byte-identical original javac and final DEX line-table inspection; not phone qualification"
+    },
+    {
+      "file": "passkey-r6-phone-cases.public.json",
+      "sha256": "9c5743523313e3e430ec05aef09c7bd4926901759e862a9814e9826a76854d1b",
+      "bytes": 10543,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-cleanup.public.json",
+      "sha256": "f08275822034034834fd63d92eaf0e734bd3244322fcd7855594324b3376be3c",
+      "bytes": 2008,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-execution-inputs.public.json",
+      "sha256": "4e3566f704c4715b48d496049013ee97f4951241a244c6f3b79e5c0647a9ac26",
+      "bytes": 24943,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-originals.manifest.public.json",
+      "sha256": "55c8f72cf5fa28b94c26f52239f74d34973aeb8e0acff972901dc07479535541",
+      "bytes": 18662,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-originals.tar.gz",
+      "sha256": "61d6e50d6fe655262e94ae9d21d15eed51870419fd5185c504d334edbd68b177",
+      "bytes": 51483,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-release.public.json",
+      "sha256": "3d086e0521215337110331d4b675c4ac2de0c171b214628b0cbd10992c302d2e",
+      "bytes": 1963,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-phone-terminal-jobs.public.json",
+      "sha256": "235eafd5fc93e868755aad9cff7850ee7c8da1b59e8ec067ab8f27625ba6ab59",
+      "bytes": 1200,
+      "transformation": "none; byte-identical r6 original; M01 failed PUBLISH_LINK/EACCES, M07 cleanup passed, sixteen blocked; no CredentialManager qualification"
+    },
+    {
+      "file": "passkey-r6-profile.public.json",
+      "sha256": "45ddd9d2ae0c5558e6623fc03f1c594a7c9e8c315303e657c9a5b846ab592bed",
+      "bytes": 12566,
+      "transformation": "none; byte-identical original r6 candidate source/build/host or declared phone-profile artifact"
+    },
+    {
+      "file": "passkey-r6-source.tar.gz",
+      "sha256": "90d66751273ce8266014245a2f03bd5accb7e4794cc70128c91be3bfd88bf2a9",
+      "bytes": 63093,
+      "transformation": "none; byte-identical original r6 candidate source/build/host or declared phone-profile artifact"
+    },
+    {
+      "file": "passkey-r7-build-packet.manifest.public.json",
+      "sha256": "5852e605a49874bdec97ae4a18f0556c478f6389e2ad045fe91c42bb4e509942",
+      "bytes": 693,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-build.public.json",
+      "sha256": "e12bd68de3c606e03ce22a7a688ebb90c7b6ec4a951d15e5be233339e698042b",
+      "bytes": 60561,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-host.public.json",
+      "sha256": "173a3777dd928acb8b3a18f1e7bb81e995c74fd501c48cd35cdb702a2ade7c57",
+      "bytes": 16250,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-line-check.public.json",
+      "sha256": "1aa1b59249be927fa41c68d21015b9503903485d74fa1fd52f0497ba41479abc",
+      "bytes": 13911,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "passkey-r7-phone-profile.patch",
+      "sha256": "436e4e478c761f4a0f7ff5c6f66ab2953e4c0268dca0fecb2e307c02003e2d1d",
+      "bytes": 4932,
+      "transformation": "none; frozen r7 eighteen-case declaration and exact prior-profile diff; no execution result"
+    },
+    {
+      "file": "passkey-r7-phone-profile.public.json",
+      "sha256": "8a2c3e83c878ea5a6c6d646f94559d0de5154fd9b8210604bcdc879349a7165d",
+      "bytes": 13630,
+      "transformation": "none; frozen r7 eighteen-case declaration and exact prior-profile diff; no execution result"
+    },
+    {
+      "file": "passkey-r7-storage-host.public.json",
+      "sha256": "5f199c94bb8438fd102f736c704f1d552924b79f910312249799f5d4ff454bdf",
+      "bytes": 37525,
+      "transformation": "none; byte-identical original r7 host control-flow review; explicit Android API mocks and limits"
+    },
+    {
+      "file": "passkey-r7-storage-internal-review.public.json",
+      "sha256": "cb12a9401906bc32195a122ad46bb8bfd29d0ab5fccdb557146ed3bbda5845ca",
+      "bytes": 5254,
+      "transformation": "none; byte-identical original r7 host control-flow review; explicit Android API mocks and limits"
+    },
+    {
+      "file": "passkey-r7-storage-originals.manifest.public.json",
+      "sha256": "a301da845ca0a1260119efc8e46b5a1f0a74a836f37d5f7868f0e396212b4a03",
+      "bytes": 192356,
+      "transformation": "new explicit archive index; no source member bytes transformed; unchanged product VaultFiles/StageDiagnostics with explicit Android API fault mocks; 33 initial and 34 final internal checks plus root 34 rerun; no ART/OEM/crypto qualification"
+    },
+    {
+      "file": "passkey-r7-storage-originals.tar.gz",
+      "sha256": "55f6fd008d18d412d23045e5f9a78b38b634de01b4d9b63e5f82b958a393e3ca",
+      "bytes": 261602,
+      "transformation": "deterministic tar/gzip container; every listed member byte-identical; unchanged product VaultFiles/StageDiagnostics with explicit Android API fault mocks; 33 initial and 34 final internal checks plus root 34 rerun; no ART/OEM/crypto qualification"
+    },
+    {
+      "file": "passkey-r7-storage-root-host.public.json",
+      "sha256": "b7586f053db9ea4bfccfa236e7e4f6fe93159abbccb8ee8540c3a6108f3db5c3",
+      "bytes": 37792,
+      "transformation": "none; byte-identical original r7 host control-flow review; explicit Android API mocks and limits"
+    },
+    {
+      "file": "passkey-reset-helper-v1-input-schema.public.json",
+      "sha256": "e28824ab8bdbeefbfcf206f83cf7b0d5aa64692b45ddf37e6a698d633edf04ed",
+      "bytes": 6926,
+      "transformation": "none; original historical input template, not device evidence"
+    },
+    {
+      "file": "passkey-reset-helper-v1-self-test.public.json",
+      "sha256": "99280a415e5e03687a60692b3272b390f164061b756f98196605c8311d86dcaf",
+      "bytes": 1979,
+      "transformation": "none; original 44 host-only author tests before the independently found result-persistence gap"
+    },
+    {
+      "file": "passkey-reset-helper-v1-to-v2.patch",
+      "sha256": "91727ebb744ace276124b7dacbf3933963c5f83038792572c574313a2fa8671a",
+      "bytes": 15369,
+      "transformation": "none; original source diff reviewed internally"
+    },
+    {
+      "file": "passkey-reset-helper-v1.py",
+      "sha256": "6c938dd1f0a9cad41a48db12ea0a80282d9123d5d9f48cf9f249fdf5c31e6dc0",
+      "bytes": 57331,
+      "transformation": "none; original historical pre-review helper, not admitted for phone execution"
+    },
+    {
+      "file": "passkey-reset-helper-v2-author-fix-note.public.json",
+      "sha256": "d4586cfbea78d292b150158da2846efb8d00530c8b18e8716c12656f849bc487",
+      "bytes": 1172,
+      "transformation": "none; original author correction note; not independent or external review"
+    },
+    {
+      "file": "passkey-reset-helper-v2-input-schema.public.json",
+      "sha256": "71d8d58030255c540d19220ec1bb7e019f08a1f8ea760e0167653075b41359a7",
+      "bytes": 7290,
+      "transformation": "none; original input template, not device evidence"
+    },
+    {
+      "file": "passkey-reset-helper-v2-internal-review.public.json",
+      "sha256": "2baa88f9a7625ec0f860e7e915ebc2d94e9c870ab6d5e755ec8b30ac229a0073",
+      "bytes": 2042,
+      "transformation": "none; original internal root review and independent execution of the author host suite; not external audit"
+    },
+    {
+      "file": "passkey-reset-helper-v2-self-test.public.json",
+      "sha256": "eab627415074b0108c81cdf3b64c893b4d572b4e2283deffa1efbebd26a5f135",
+      "bytes": 2115,
+      "transformation": "none; original 46 host-only author tests, including two precise persistence failure regressions"
+    },
+    {
+      "file": "passkey-rp-http-21-r2.public.json",
+      "sha256": "4f87ee4f680132de137d01147b7135d9009038e6f4800b3455d0a8eff0dfcce8",
+      "bytes": 2390,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-rp-remote-openssl-68-r2.public.json",
+      "sha256": "299aa6283a43461f450bda9edc724a2aa67f4a0850f585888f474b4542a80f98",
+      "bytes": 4770,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-rp-selftest-cryptography.public.json",
+      "sha256": "d44c4ce3254acb9e811b51717661df1ae6dcd42c0abff872b00c21de28a2c8f7",
+      "bytes": 4719,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-rp-selftest-openssl.public.json",
+      "sha256": "874917df971de3b3d1e632fb9b65e9ee9db487ee21d8fd1ae43b363ec7cf3831",
+      "bytes": 4768,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-stage-diagnostic-changes.patch",
+      "sha256": "2b6ad87bd45319564e5d990952b40ba167c24e5ffe8879edaacaee1fc66dd268",
+      "bytes": 11092,
+      "transformation": "none; original diagnostic diff, host-stub test source or receipt; not an Android observation"
+    },
+    {
+      "file": "passkey-stage-diagnostic-host-check.public.json",
+      "sha256": "789c432dd7bc8103655688b3670a70e51e7e51ce59bbab3c6dbf065d6634f14c",
+      "bytes": 1868,
+      "transformation": "none; original diagnostic diff, host-stub test source or receipt; not an Android observation"
+    },
+    {
+      "file": "passkey-stage-diagnostic-host-check.stdout.original.json",
+      "sha256": "57e11690ab505db147acc1bcc697a776e197f2df0aecc5f3d1016231154e8f56",
+      "bytes": 477,
+      "transformation": "none; original diagnostic diff, host-stub test source or receipt; not an Android observation"
+    },
+    {
+      "file": "passkey-stage-diagnostic-host_check.py",
+      "sha256": "64e69cd8f9f97e7c63f92e6f89946962b14d18610501efd58557f7d6db136f68",
+      "bytes": 10255,
+      "transformation": "none; original diagnostic diff, host-stub test source or receipt; not an Android observation"
+    },
+    {
+      "file": "passkey-stage-diagnostic-internal-review.public.json",
+      "sha256": "367cf3699b8b2a3411be7862d4e6845b715b68a0c804913679453101afa8b17b",
+      "bytes": 1282,
+      "transformation": "none; original internal review and independent rerun of the author host-stub suite; not external audit"
+    },
+    {
+      "file": "rog-edge-build-a1b6ff.public.json",
+      "sha256": "9df70573ff4b7b02c689a8007cfdc0fdc236fd0ca8b0049369564f592e191ed3",
+      "bytes": 5519,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-57-a1b6ff.public.json",
+      "sha256": "289338861eaea104c296844a6553a5b4e55d3813577dd9a0d81cb8448b16a6f3",
+      "bytes": 7294,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-admission-a1b6ff.public.json",
+      "sha256": "96b26d9e222c66f5ddc2f176909b8b675ad383d4501785b517d15e94e774b38b",
+      "bytes": 4284,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-build-bound-a1b6ff.public.json",
+      "sha256": "a2798606458240e23f6fd99b9f1aaa6b41bc33583ccf1e6f44d1d970a6400f30",
+      "bytes": 4272,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-p0-original-process-a1b6ff.public.json",
+      "sha256": "4ca27ef723062e17a2daef15d30d88d107d40cf50b2858a855d6aeddb00b666f",
+      "bytes": 11266,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "rog-server-build-a1b6ff.public.json",
+      "sha256": "96bad2644072717e73e08440afe65470ff542d159a2d85340951581a4c17ead5",
+      "bytes": 5048,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "source-a1b6ff4.bundle",
+      "sha256": "5c28331b252478bb3072efcaf16f550f35b26b2510270862beaa5d99b265208e",
+      "bytes": 105505,
+      "base_required": "8f3dd8353aaf9642ad58f7716b0c14813d09983d",
+      "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be"
+    },
+    {
+      "file": "source-android-c4.tar.gz",
+      "sha256": "9146b0e7d82db43c1eb557dc4e6e75128612491eef8d5d221dfc84562fd92521",
+      "bytes": 31433,
+      "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
+    },
+    {
+      "file": "source-android-c5.tar.gz",
+      "sha256": "f465fc3230fdfbe144f31b95baa3e4964997884d314ef0724ea77074384cf256",
+      "bytes": 27122,
+      "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
+    },
+    {
+      "file": "source-android-passkey-r5-first-build-failed.tar.gz",
+      "sha256": "63765fb1361160fda0900bce977b1451ffe2add7cf52d3aa76ef92b8c0af2e15",
+      "bytes": 61618,
+      "transformation": "none; byte-identical first r5 source archive; SDK34 compile failed"
+    },
+    {
+      "file": "source-android-passkey-r5b.tar.gz",
+      "sha256": "e84c3768271be8b908f7f9a505c3d96abdc98fd9e3bba4ed3d5d9557e13322be",
+      "bytes": 61770,
+      "transformation": "none; byte-identical corrected r5b source archive"
+    },
+    {
+      "file": "source-broker-c447536.bundle",
+      "sha256": "4973eb63705f49f1950568c838d67e403463a3753d5eca8c5c91bb6f482a1d8e",
+      "bytes": 501591,
+      "base_required": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+      "source_commit": "c447536ae0343731d84c18291d2dcd712b3bea08"
+    },
+    {
+      "file": "source-browser-802c57c.bundle",
+      "sha256": "e521c19a4886ff0631d6491f73830000e7d897980e8683c75b0353e50c2cbedb",
+      "bytes": 14581,
+      "base_required": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+      "source_commit": "802c57cdf386e2dbfb4da9c20dbdd37700343197"
+    },
+    {
+      "file": "source-passkey-r4.tar.gz",
+      "sha256": "1b7af164b251f7075a1d54e3f950b96dc0581b5d2e14899d1857209a6e3118b0",
+      "bytes": 64367,
+      "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
+    },
+    {
+      "file": "source-passkey-r7-checkpoint.tar.gz",
+      "sha256": "93e1c7fa8013833844c6dc2405a7e9bf2be3ff523a51889a0379f523b6b50340",
+      "bytes": 66249,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "source-passkey-r7-final.tar.gz",
+      "sha256": "e2e79c7e35a507c11ba2a52a67c5a4882528d2447fa1c489977a64ad992f91b6",
+      "bytes": 66257,
+      "transformation": "none; byte-identical r7 source or SDK/host original; checkpoint and final README identities remain separate; no phone qualification"
+    },
+    {
+      "file": "two-device-sync-r4.public.json",
+      "sha256": "a2a2d98267afc4eb64f457722cd16c2846b60e9fd29b28f79bc92af3bf224f19",
+      "bytes": 84076,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "ha-cleanup-r1-remote-originals.tar.gz",
+      "bytes": 88964,
+      "sha256": "346e7cbd1e65149e1ae6a18c66e60653988c362d5a556c06c2cb5c41776b5de6",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "ha-snapshot-r2-remote-originals.tar.gz",
+      "bytes": 105047,
+      "sha256": "7eedfc768abe52b4f5f849a6ead1e8477e2c1a8b0b2d2d507c4749917129c9c7",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-phone-originals.tar.gz",
+      "bytes": 203579,
+      "sha256": "27847e9bf8d72245eaac9255fcd4703f6dec87b421f22b741bafd641d32a96dd",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r8-ingress-originals.tar.gz",
+      "bytes": 197320,
+      "sha256": "15f917a77be26b249984b18177532eb2ee5767ba06eff8e3a8c17a71b10a7ca2",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-controller-originals.tar.gz",
+      "bytes": 46216,
+      "sha256": "b5ec268c28c473abc4be2c69c36b1bb97ba0ac901f5258660e2ba539a30e8fbe",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-peer-review-originals.tar.gz",
+      "bytes": 87298,
+      "sha256": "92839240da30becc16818011764dc2040e3932df8d63b498a4a4b7028d610cc0",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-review-supplement-originals.tar.gz",
+      "bytes": 3985,
+      "sha256": "138fb164fa9107be52afa8ffd3dab66691d82e351b9a3240fd0c92f9fbf7ff06",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "broker-upgrade-r1-remote-originals.tar.gz",
+      "bytes": 13803,
+      "sha256": "45573d50fa424c8b79990b648c354702dffcdd5198f96ad258040af12868802e",
+      "transformation": "Byte-identical original remote public packet, recovered with pinned versions, EOF, exact length and SHA-256; retained failures are not converted to passing results."
+    },
+    {
+      "file": "passkey-r7-phone-cases.public.json",
+      "bytes": 90108,
+      "sha256": "45fb6826947ab46a0bf90cbdf86f9861fa1ad588f425aaadbda8a2b79a47dca5",
+      "transformation": "Byte-identical original public result also present in the corresponding recovered remote packet; qualification scope remains as recorded."
+    },
+    {
+      "file": "broker-upgrade-r1.public.json",
+      "bytes": 43769,
+      "sha256": "94b784a7e9cbcffc826d71a94b0cd1fabbd8f524999a1eb214b03366e6a6f5f0",
+      "transformation": "Byte-identical original public result also present in the corresponding recovered remote packet; qualification scope remains as recorded."
+    },
+    {
+      "file": "ha-snapshot-r2-real-profiles.public.json",
+      "bytes": 3242,
+      "sha256": "9acca09fb8f4fd32e6b58fb73b6fd094747a1e20ae221521624879f928fb01e2",
+      "transformation": "Byte-identical original public result also present in the corresponding recovered remote packet; qualification scope remains as recorded."
+    },
+    {
+      "file": "ci-2280-terminal-7e77-core-recovered-originals.tar.gz",
+      "bytes": 473804,
+      "sha256": "5e6f3041886d12110e66557e3765d8d1f3ae4d92f94d90b6235e5f4a32ef38fa",
+      "transformation": "New container assembled after executor replacement from preserved decoded GitHub log strings and original receipt envelopes; all three 7e77 core receipt hashes match. Full 2280 failures and in-progress 7e77 observations remain distinct."
+    },
+    {
+      "file": "ci-7e77-result.public.json",
+      "bytes": 1979,
+      "sha256": "c932d75fb40b03ea92fb6410ccb6a27e43aac044c9ebdb9106f45de412e55742",
+      "transformation": "Reconstructed from the original GitHub job-log JSON envelope using Python JSON number parsing and original formatting; exact original SHA-256 verified."
+    },
+    {
+      "file": "workspace-recovery-originals-and-limits.tar.gz",
+      "bytes": 800235,
+      "sha256": "2e553f225487eff204f4fca56b4ec4d0df69e0536503ad59aa9154af1dcfadab",
+      "transformation": "New recovery report with original pinned binary-read envelopes, restored source hashes, complete remote-packet member verification and explicit unavailable local-only originals. Recovery is not product qualification."
+    },
+    {
+      "file": "recovered-workflow-guards-new-run-originals.tar.gz",
+      "bytes": 2578,
+      "sha256": "76a3c7d6c85fe5719f641ad8a13aa3197fdd9272703b27f580897c7c8e0090c7",
+      "transformation": "New independent integration execution of the four added workflow commands on recovered exact r7/r8 reset/input sources; 49/20/55/20 author-defined host checks. Original outputs are new and do not reconstruct unavailable older runs."
+    },
+    {
+      "file": "mac-r2-r4-available-originals.tar.gz",
+      "bytes": 148917,
+      "sha256": "7a2fd970339a078c09a9092c9192cd85c018ed60d0ab434d8ce82dd03d0036a4",
+      "transformation": "New container of fifteen recovered exact Mac source/cache/failed-run originals plus retained tool-object metadata. No whole original log packet or successful Mac qualification is claimed."
+    },
+    {
+      "file": "android-c6-r9-available-originals.tar.gz",
+      "bytes": 63230,
+      "sha256": "241871ce5df0bd4161d68703554d66cae665ca46891a739ea1ec6f0cd4ad165f",
+      "transformation": "New container for eleven recovered r9 originals, the exact original carrier and root independent release observations. Missing local-only supplementary files are explicit; r9 remains failed after 1/12."
+    },
+    {
+      "file": "android-c6-r9-phone.public.json",
+      "bytes": 14836,
+      "sha256": "3c45a72bfe64100433ade75e598897335488802af5faa82636cab046669757f4",
+      "transformation": "Byte-identical original c6/QA12 r9 failed phone result recovered from pinned remote bytes; the original twelve-case denominator and all authorization time limits remain unchanged."
+    },
+    {
+      "file": "android-qa13-host-originals.tar.gz",
+      "bytes": 81951,
+      "sha256": "45ce47e4d660f40a08594404a6611ad5d41914846322bf6c778fc68b675251bc",
+      "transformation": "Byte-identical 34-member QA13 author packet, with all 33 member hashes verified; preserves held 100-check candidate, five actual counterexample failures and new 104-check candidate. Host evidence only, not a successful phone result."
+    },
+    {
+      "file": "ha-snapshot-r3-real-profiles.public.json",
+      "bytes": 6683,
+      "sha256": "42858ba2fe2b2441600a52eb584f24eea50ef7c806d0a40f18ff7341bb7c5ddb",
+      "transformation": "Byte-identical new r3 three-profile summary, cross-checked against every original execution/report digest and actual replay frontier. This fixes only the declared c27/QA combination, not the entire PR or full replacement gate."
+    },
+    {
+      "file": "ha-snapshot-r3-originals.tar.gz",
+      "bytes": 172714,
+      "sha256": "f53624030dbdb697120c7a8be6e0949a393de224685c67b1b0600dc28b3143a4",
+      "transformation": "Byte-identical newly completed original qualification/review packet; every manifest member length and SHA-256 verified, with original requests, source identities, outputs and explicit scope limits retained."
+    },
+    {
+      "file": "android-qa13-peer-review-originals.tar.gz",
+      "bytes": 44256,
+      "sha256": "546419bbabda93a8cdce6619d128082797663e9bfa306889ceed58d2d14b7469",
+      "transformation": "Byte-identical newly completed original qualification/review packet; every manifest member length and SHA-256 verified, with original requests, source identities, outputs and explicit scope limits retained."
+    },
+    {
+      "file": "android-r10-c7-r11-public-history.tar.gz",
+      "sha256": "572718b1b104639be990a9d2864f82d44e26b6fbb1a4225216deacdbd318ca6e",
+      "bytes": 367949,
+      "transformation": "Aggregate of six byte-identical original candidate/build/failed-phone/internal-review packets, original release and summary records, plus derived integrity and scope summaries; both phone profiles remain failed 2-of-12."
+    },
+    {
+      "file": "broker-poll-fix-linux-public-evidence.tar.gz",
+      "sha256": "d7ed5ab00f26758990283ef13c8b78f1206412d2b0127ad118614a7a9715f161",
+      "bytes": 608098,
+      "transformation": "Independent Linux execution of the final three-file bounded-read overlay: locked offline build and original13 plus six real socket regressions passed 19/19. Preserves controller r1 pre-build failure, complete selected compile/test outputs, sources and Runtime bindings. No Linux fmt/Clippy or whole-workspace qualification claimed."
+    },
+    {
+      "file": "ci-3ada-core-originals.tar.gz",
+      "sha256": "d2d48402f728369248f6a83b01a7b7d3131b3def75367228811bb93ce0322887",
+      "bytes": 27860,
+      "transformation": "New container of the original decoded core job log, three byte-identical reconstructed receipts and serialized observed tool status. Scope is source 3ada83a synthetic core only; no full replacement or mobile/macOS qualification.",
+      "github_job_id": 127944540662,
+      "github_run_id": 42233353626
+    },
+    {
+      "file": "ci-3ada-result.public.json",
+      "sha256": "73ff4b769c1491b96ea4d601055292a969ae7bdb36e18fba07e35425cded5d3b",
+      "bytes": 1979,
+      "transformation": "Original receipt bytes reconstructed from the decoded job-log envelope with its original SHA-256 verified. Exact source 3ada83a synthetic-core result; stronger qualification flags remain false.",
+      "github_job_id": 127944540662,
+      "github_run_id": 42233353626
+    },
+    {
+      "file": "mac-broker-read-fix-public-evidence.tar.gz",
+      "sha256": "ca795e2dbd4875cd8caa43d7a60dae861ca0722d56a80792db30a09895d94311",
+      "bytes": 655019,
+      "transformation": "Original Mac Unix/TCP read diagnostics and both fixed-source candidate executions; IPC-only 16/19 remains failed, final shared-deadline repair passed original13 plus six regressions 19/19. Includes exact Runtime source/output bindings; excludes binaries/private owner state and duplicate source tar outputs. No browser or production claim."
+    },
+    {
+      "file": "mac-preparation-and-original-selected-build-history.tar.gz",
+      "sha256": "6d7aa596ba3d92d476f819c88888dc624a550b69e3db1a1a9f39550423236e91",
+      "bytes": 250312,
+      "transformation": "New outer container preserving three unchanged public Mac originals: r5b prefetch 145/157, failed LAN12 with zero accepted connections, and selected-three-crate 375-cache build with original broker 4/13, vault 14/14 and edge 1 plus process 4 results. Linux-native eight unsupported; unavailable 037225 original not reconstructed. Later fixed-source 19-case results remain separate."
+    },
+    {
+      "file": "passkey-r8-final-internal-peer-review-r1.tar.gz",
+      "sha256": "04386b19f665122a539f398100ce7d08d9dfcc79a0a40d44dcce39de1befef94",
+      "bytes": 426809,
+      "transformation": "Internal synthesis preserving seven original peer packets, selected Runtime bindings, original failures and final release; 121 host-only consistency checks are not phone cases or external audit. Original profile 16/18 plus three separate supplements 3/3; P4 remains unqualified."
+    },
+    {
+      "file": "passkey-r8-final-public-evidence.tar.gz",
+      "sha256": "6c387d0ce79540abf24b13713da3b3c649f491c8eb59d8bdba4f3face28d2c9f",
+      "bytes": 1139206,
+      "transformation": "New grouping container retaining the unchanged 55facc phone packet, original receipts, local integrity verification and actual Runtime binding, plus explicit unapplied documentation drafts. Original 18-case ledger remains 16 passed/2 failed; three separate supplements passed 3/3. G08 causal limit, M05 audit gap, unobserved materializer terminal, same-device-only recovery and unqualified P4 scope remain."
+    },
+    {
+      "file": "android-c8-r12-public-evidence.tar.gz",
+      "sha256": "2f9a69b804222bdc1c38d2e18b40ddd7713deb4328fc2f8dbbe34d381098b32b",
+      "bytes": 377981,
+      "transformation": "Aggregate of the byte-identical c8 prephone packet, original r12 failed report and execution bindings, independent release, root readbacks and derived integrity/scope summaries; actual phone result remains failed 2-of-12."
+    },
+    {
+      "file": "broker-stability-30m-public-evidence.tar.gz",
+      "sha256": "302426d3637603a22d13b33f2550b6b72df293367bc11c7d9e640863ca9f6135",
+      "bytes": 309220,
+      "transformation": "Byte-identical public aggregate of the original 30-minute synthetic trial, 621 command pairs, original Runtime records, independent readbacks and internal source review; no long-term, production, external-review or attested-task qualification."
+    },
+    {
+      "file": "android-autofill-followup-public-evidence.tar.gz",
+      "sha256": "488aa8f09ee61b2aff02b9a69cd5ddeb4d81d0c602fa32dd3f46a469202089a3",
+      "bytes": 1605205,
+      "transformation": "Byte-identical r6 follow-up aggregate preserving exact r5 history and adding c10/QA19 r17 original 12-case device/report/Runtime/release records plus independent root readbacks. r17 passed 12/12 on the fixed Android 16 native fixture. Its new prebinding-popup branch had zero device events; r16 exact failure subcondition remains unknown. All earlier failed profiles remain separate and unchanged; release is independently confirmed. Internal review is not external security qualification."
+    },
+    {
+      "file": "validation-followup-public-evidence.tar.gz",
+      "bytes": 12286590,
+      "sha256": "a4a3755a4bd63087c580b67f92e9193c3fc5a5e2bc81b9d3454858123b78f66e",
+      "transformation": "Exact prior aggregate retained; original failed 3ada CI, fixed-profile OpenAPI20/RADIUS258 and Kubernetes mismatch, rolling49/membership41, Rust r1-r3 failures plus actual r4 four-test red/green, original Runtime records, narrow reviews and integration bindings. Separate profile denominators; no full-CI, new server or production qualification. Private journals excluded."
+    },
+    {
+      "file": "passkey-r9-final-evidence.public.tar.gz",
+      "bytes": 1902637,
+      "sha256": "04f9cfe978c2df7b4040a4a00155106d74208276cea45a3994a5ceeacfb20aad",
+      "transformation": "Unchanged r9 original 18-case ledger (17 passed, G07 blocked), independent G07 attempt2 blocked, actual Runtime/source/cleanup records and separately scoped host/native/Chrome support. No merged denominator or P4 qualification."
+    }
+  ]
+}

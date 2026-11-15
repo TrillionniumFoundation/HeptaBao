@@ -1,0 +1,85 @@
+{
+  "at_utc": "2026-11-06T17:11:12.084548+00:00",
+  "cargo_home": "/home/alex/.cargo",
+  "existing_heptabao_detached_sources": [
+    {
+      "detached_head": "502b9c3a5b69dda5238b0a9f3364f5faee3bc51a",
+      "source": "/home/alex/heptabao-actual-kubernetes-20261006-r01/source"
+    },
+    {
+      "detached_head": "f355efb00e7558294c6b80520e9b537e3600247d",
+      "source": "/home/alex/heptabao-ha-f355-input-20261015/source"
+    },
+    {
+      "detached_head": "4f7a3e169646f9eeec3c0f4022467dc5613ff478",
+      "source": "/home/alex/heptabao-native-validation-20261024/source-cg-read-r14-r1"
+    },
+    {
+      "detached_head": "e985e0e1ee1aa0f769c4831ba1a14e0182c1d437",
+      "source": "/home/alex/heptabao-native-validation-20261024/source-native-identity-raft-r15-r3"
+    },
+    {
+      "detached_head": "222f9cc8f6521de5625401a2540ee56c3ccc55fb",
+      "source": "/home/alex/heptabao-native-validation-20261024/source-native-integrated-r16-r1"
+    },
+    {
+      "detached_head": "acd5436d7f05f84a83aca27fc57f369440a5439c",
+      "source": "/home/alex/heptabao-native-validation-20261024/source-native-integrated-r16-r2"
+    },
+    {
+      "detached_head": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+      "source": "/home/alex/heptabao-replacement-unified-20261105-r5/source"
+    },
+    {
+      "detached_head": "e0b784a08000695e3676c406038af2a77bb5ff3a",
+      "source": "/home/alex/heptabao-v6-e0-same-source-20261015/source"
+    }
+  ],
+  "home": "/home/alex",
+  "hostname": "alex-G1628-04",
+  "machine": "x86_64",
+  "offline_selected_closure_still_required": true,
+  "platform": "Linux",
+  "platform_and_original_resource_and_tool_pins_ready": true,
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "registry_inventory": {
+    "archive_files": 1936,
+    "index_directories": 1,
+    "source_directories": 1896
+  },
+  "resources": {
+    "MemAvailable": 17030188,
+    "MemTotal": 25739556,
+    "SwapFree": 453748,
+    "compiler_processes": [],
+    "cpu_count": 24,
+    "disk_free_bytes": 414359789568,
+    "process_observation_errors": []
+  },
+  "rust_compilation_executed": false,
+  "schema": "heptabao.configured-pocket4-linux-normal107-readonly-feasibility.v1",
+  "status": "observed",
+  "toolchain": {
+    "cargo": {
+      "bytes": 40688400,
+      "exact_original_pin": true,
+      "path": "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24"
+    },
+    "rustc": {
+      "bytes": 645016,
+      "exact_original_pin": true,
+      "path": "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2"
+    },
+    "rustfmt": {
+      "bytes": 5255144,
+      "exact_original_pin": true,
+      "path": "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+    }
+  },
+  "toolchain_installed": false,
+  "uid": 1000
+}

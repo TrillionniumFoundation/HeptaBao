@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.root-pocket4-custody-qualification-actual.r1",
+  "jobId": "1a1b43df15c-fc05-86cb",
+  "nativeExitCode": 0,
+  "stdoutBytes": 21076,
+  "pages": 2,
+  "wholeHexEqual": true,
+  "bothStreamsAtEof": true,
+  "stderrBytes": 0,
+  "nativeCompleteAndDurable": true,
+  "stdout": {
+    "bytes": 21076,
+    "sha256": "c46810d09db717494046c2831e32bd8f56e5c4eac79fca1d7ca35b0e2a4dca5b"
+  },
+  "sourcePin": {
+    "bytes": 47009,
+    "sha256": "29ff9e609e251ed64c6566f99e1f17dccf78c89c8e1c6100e84a07f18dbbd24c"
+  },
+  "passedCases": 5,
+  "caseNames": [
+    "closed_success",
+    "timeout_rejected",
+    "post_wait_signal_rejected_without_syscall",
+    "unknown_group_rejected_without_syscall",
+    "inner_zero_with_live_original_rejected"
+  ],
+  "originalChildrenClosedOnce": 5,
+  "originalDescriptorsClosedOnce": 6,
+  "postWaitAndUnknownGroupNativeSignals": 0,
+  "expectedNegativeCustodyDiagnostics": [
+    [],
+    [],
+    [
+      "custody_raw_signal_after_original_retired"
+    ],
+    [],
+    [
+      "custody_needed_final_cleanup"
+    ]
+  ],
+  "qualificationElapsedSeconds": 2.834669282892719,
+  "totalElapsedSeconds": 2.8533751408103853,
+  "allPublicInputsUnchanged": true,
+  "normal107Qualified": false,
+  "rustCompilationExecuted": false,
+  "productExecuted": false,
+  "productionChanged": false,
+  "rootTakeoverAfterAgentPlatformFailure": true,
+  "uniqueOriginalIdempotencyKey": true
+}

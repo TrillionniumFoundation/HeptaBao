@@ -1,0 +1,12 @@
+{
+  "at_utc": "2026-11-06T17:51:39.844272+00:00",
+  "elapsed_seconds": 5.062995610991493,
+  "failure": "offline_error_is_not_missing_public_index",
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "rust_compilation_executed": false,
+  "schema": "heptabao.closed-linux-registry-export-result.v1",
+  "source_cache_modified": false,
+  "status": "failed",
+  "user_cargo_configuration_or_credentials_opened": false
+}

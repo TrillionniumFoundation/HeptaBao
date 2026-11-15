@@ -1,0 +1,14 @@
+{
+  "host": "main",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "timeout_seconds": 45,
+  "idempotency_key": "heptabao-permanent-authbus-backup-metadata-20261107-r1",
+  "stdinBytes": 70665,
+  "stdinSha256": "7d906dbb645072f7eadc1591d9ddb9513840896816812636cebffa58f6f240aa"
+}

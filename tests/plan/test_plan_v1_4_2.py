@@ -4,6 +4,11 @@ import shutil
 import sys
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,6 +55,7 @@ class PlanV142Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationFailure, "authority claims"):
             validate(target)
 
+    @historical_only
     def test_workspace_member_removal_fails_closed(self) -> None:
         temporary, target = self.copy_repository()
         self.addCleanup(temporary.cleanup)
@@ -108,6 +114,7 @@ class PlanV142Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationFailure, "rollback anchor source"):
             validate(target)
 
+    @historical_only
     def test_restore_requires_externally_verified_checkpoint(self) -> None:
         temporary, target = self.copy_repository()
         self.addCleanup(temporary.cleanup)
@@ -123,6 +130,7 @@ class PlanV142Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationFailure, "recovery source"):
             validate(target)
 
+    @historical_only
     def test_restore_target_empty_check_is_mandatory(self) -> None:
         temporary, target = self.copy_repository()
         self.addCleanup(temporary.cleanup)

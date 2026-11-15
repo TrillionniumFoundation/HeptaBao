@@ -1,0 +1,123 @@
+{
+  "at_utc": "2026-11-06T19:29:33.819761+00:00",
+  "child_processes_started": 0,
+  "elapsed_seconds": 0.05411274777725339,
+  "existing_parents": [
+    {
+      "available_bytes": 38760488960,
+      "device": 2053,
+      "mode": 493,
+      "path": "/home/qian",
+      "resolved_path": "/home/qian",
+      "uid": 1000,
+      "writable_for_current_uid": true
+    },
+    {
+      "available_bytes": 38760488960,
+      "device": 2053,
+      "mode": 448,
+      "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1",
+      "resolved_path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1",
+      "uid": 1000,
+      "writable_for_current_uid": true
+    }
+  ],
+  "existing_persistent_mounts": [
+    {
+      "available_bytes": 38760488960,
+      "device": 2053,
+      "filesystem": "ext4",
+      "kernel_device_number": "8:5",
+      "mode": 493,
+      "path": "/",
+      "read_only": false,
+      "resolved_path": "/",
+      "uid": 0,
+      "writable_for_current_uid": false
+    },
+    {
+      "available_bytes": 535801856,
+      "device": 2049,
+      "filesystem": "vfat",
+      "kernel_device_number": "8:1",
+      "mode": 448,
+      "path": "/boot/efi",
+      "read_only": false,
+      "resolved_path": "/boot/efi",
+      "uid": 0,
+      "writable_for_current_uid": false
+    }
+  ],
+  "hostname": "qian-ThinkPad-X230",
+  "loader_preload_file_present": false,
+  "memory_kib": {
+    "MemAvailable": 5899236,
+    "MemTotal": 7824912
+  },
+  "network_requests": 0,
+  "normal107_or_runtime_qualification_granted": false,
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "schema": "heptabao.x230-runtime-tool-and-dr-filesystem-observation.v1",
+  "status": "passed",
+  "tools": {
+    "ldconfig": {
+      "bytes": 1051280,
+      "elf_header_hex": "7f454c4602010103000000000000000003003e0001000000e0230000000000004000000000000000d00110000000000000000000400038000c00400023002200",
+      "identity": [
+        2053,
+        658466,
+        0,
+        0,
+        33261,
+        1,
+        1051280,
+        1788444912000000000,
+        1789078327685443331
+      ],
+      "mode": 493,
+      "path": "/usr/sbin/ldconfig.real",
+      "requested_path": "/sbin/ldconfig.real",
+      "sha256": "d879c9a8a41240aeb7fd0f3221116fc4cf41cc6c64c24e10541d1bafbe537ab1"
+    },
+    "python": {
+      "bytes": 8020928,
+      "elf_header_hex": "7f454c4602010100000000000000000002003e0001000000e0796500000000004000000000000000805b7a000000000000000000400038000e00400021002000",
+      "identity": [
+        2053,
+        656453,
+        0,
+        0,
+        33261,
+        1,
+        8020928,
+        1788171506000000000,
+        1789078373638846547
+      ],
+      "mode": 493,
+      "path": "/usr/bin/python3.12",
+      "requested_path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "readelf": {
+      "bytes": 789280,
+      "elf_header_hex": "7f454c4602010100000000000000000003003e000100000090650500000000004000000000000000a0030c000000000000000000400038000d0040001e001d00",
+      "identity": [
+        2053,
+        659566,
+        0,
+        0,
+        33261,
+        1,
+        789280,
+        1770671008000000000,
+        1775782929354224601
+      ],
+      "mode": 493,
+      "path": "/usr/bin/x86_64-linux-gnu-readelf",
+      "requested_path": "/usr/bin/readelf",
+      "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0"
+    }
+  },
+  "uid": 1000
+}

@@ -1,0 +1,28 @@
+{
+  "actual_framework_or_crypto_tested_by_host_stubs": false,
+  "build_candidate_authorized": true,
+  "external_security_review": false,
+  "host_cases": {
+    "expected": 16,
+    "failed": 0,
+    "passed": 16
+  },
+  "independent_host_receipt_sha256": "339a3c1e5a9f16eb0691edfba1b76c3a6a5fac872c7903f6c5861d75d2fdb6cc",
+  "patch_sha256": "0b5c79584a766d73760bcbc82477ffa378da673ef99f76926f7ed78eeb298321",
+  "phone_qualified": false,
+  "production_qualified": false,
+  "r7_root_cause_proved": false,
+  "reviewed_invariants": [
+    "trim clears plaintext and handoff while always advancing the KDF epoch",
+    "only the existing opaque request, timer, PendingIntent and original deadline are retained",
+    "cancel, expiry, import, replacement and Auth onPause retain complete invalidation",
+    "stale callback closes its result before permitting a fresh attempt on the same live foreground request",
+    "static trim category and state bits only; no input-derived identities, credentials, messages or raw levels"
+  ],
+  "reviewed_source_sha256": {
+    "AuthActivity.java": "8410b9b9c183c63d9b776086d0ce1b931eddc5aebff8908bff727a23a94ffc85",
+    "VaultApplication.java": "b6714fc013e82af862f85a0224ea23acdeea92ddd1747a472636d0951f677da1"
+  },
+  "schema": 1,
+  "scope": "internal_source_review_and_independent_host_rerun"
+}

@@ -1,0 +1,33 @@
+--- r1/template
++++ r2/template
+@@ -14,7 +14,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 45
+-ROOT = Path('/Users/qianqi/heptabao-authbus-finite-consumer-inodes-20261107-r1')
++ROOT = Path('/Users/qianqi/heptabao-authbus-finite-consumer-inodes-20261107-r2')
+ CALLER_HOME = Path('/Users/qianqi')
+ LIVE = CALLER_HOME / '.openclaw'
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+@@ -33,7 +33,7 @@
+ codes, fds = set(), []
+ commands = None
+ write_directories = {}
+-report = {'schema': 'heptabao.actual-finite-consumer-inode-observation.r1', 'ok': False,
++report = {'schema': 'heptabao.actual-finite-consumer-inode-observation.r2', 'ok': False,
+           'databaseContentsRead': False, 'credentialValuesRead': False, 'sqliteCalls': 0,
+           'keychainReads': 0, 'otherProcessArgumentsRead': False, 'otherProcessEnvironmentRead': False,
+           'networkRequests': 0, 'productionWrites': 0, 'serviceActions': 0,
+@@ -320,9 +320,10 @@
+     files.verify()
+     private(ROOT / 'output/source-bindings.private.json', encoded(files.packet()))
+     private(ROOT / 'output/process-before.private.json', encoded(before_processes))
+-    # -Di ignores the device cache; -nP prevents name/service resolution.
++    # The original known exit 1 established that this fixed Mac binary does not support -D.
++    # -nP prevents name/service resolution; no device-cache-ignore claim is made.
+     # Explicit fields omit n/c/L: no filenames, commands or login names.
+-    argv = [LSOF, '-nP', '-Di', '-p', ','.join(str(pid) for pid in sorted(before_processes)), '-F0pufatDi']
++    argv = [LSOF, '-nP', '-p', ','.join(str(pid) for pid in sorted(before_processes)), '-F0pufatDi']
+     row, out, err = commands.run('finite-current-file-inodes', argv,
+         until=min(UNTIL, time.monotonic() + 10), maximum=1048576)
+     private(ROOT / 'output/lsof.stdout.original', out)

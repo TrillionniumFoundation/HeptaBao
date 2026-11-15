@@ -1,0 +1,36 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "--getallowsigned"
+    ],
+    "created_unix_ms": 1794008253696,
+    "cwd": null,
+    "env_keys": [
+      "LANG",
+      "LC_ALL"
+    ],
+    "executable": "/usr/libexec/ApplicationFirewall/socketfilterfw",
+    "execution_mode": "operator",
+    "host": "main",
+    "id": "1a1b3398500-fc05-8133",
+    "idempotency_key": "mac-ha-node3-alf-allowsigned-readonly-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b3398500-fc05-8133",
+    "request_digest": "9fc23aa132af5cbf3907f6416801a9eb5f867b4de560993df3d2e1989a4e3f89",
+    "request_fingerprint": 11511828061526908095,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b3398500-fc05-8133"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 28256,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b3398500-fc05-8133"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

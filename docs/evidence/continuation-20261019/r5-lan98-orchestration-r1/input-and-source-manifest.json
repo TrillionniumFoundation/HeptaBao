@@ -1,0 +1,114 @@
+{
+  "actual_lan98_execution_performed": false,
+  "actual_mac_binary_sha256": null,
+  "actual_mac_build_receipt_sha256": null,
+  "actual_mac_summary_sha256": null,
+  "actual_main_binary_sha256": null,
+  "actual_main_build_receipt_sha256": null,
+  "actual_main_summary_sha256": null,
+  "actual_producer_runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "api_port": 46230,
+  "darwin_watchdog_python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "darwin_watchdog_python_sha256": "cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43",
+  "files": [
+    {
+      "bytes": 4073,
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r5-lan98-orchestration-r1/project_native_build_b24c6de_r1.py",
+      "sha256": "ab1c8e1a9f66eabaf92f58063b11d4e6a01ea90b35cadeec4522afd71095a95c"
+    },
+    {
+      "bytes": 8456,
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r5-lan98-orchestration-r1/launch_lan98_b24c6de_once.py",
+      "sha256": "b6fb2e01e5c0b30ff25864985e098ec17fecf25efb7c5a17348bb4f1adf246f8"
+    }
+  ],
+  "mac_receipt_public_copy_on_main": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-preflight-b24c6de-20261019-r1/mac-native-build-receipt.json",
+  "manifest_sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+  "native_build_projector_sha256": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+  "original_required_checks": 98,
+  "original_seconds": {
+    "election": 60,
+    "explicit_stop": 5,
+    "http": 15,
+    "listener": 45,
+    "process_start": 60,
+    "quorum_loss": 35,
+    "read_index": 8
+  },
+  "raft_port": 46231,
+  "runtime_files": [
+    {
+      "bytes": 13391,
+      "git_blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1",
+      "mode": "100644",
+      "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+      "sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197"
+    },
+    {
+      "bytes": 74145,
+      "git_blob": "b05277fe2fe00ca8ad6ee6acf963eed8b235fbf9",
+      "mode": "100644",
+      "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "sha256": "a6e0bb58b0b053653965b10b502f1193ddbe02f8cab01e40c5693621bd7c0e11"
+    },
+    {
+      "bytes": 36559,
+      "git_blob": "868d2139388cd3812cf686a851d5fb9939e12d32",
+      "mode": "100644",
+      "path": "qa/openbao-acceptance/native_ha_foreground_watchdog.py",
+      "sha256": "325293a3b99005080cc4268dbcb7a6a5c1967f49aad4d230ef8ea1e15f4bfc1c"
+    },
+    {
+      "bytes": 77577,
+      "git_blob": "fee033bc32126f5e29e0cb601f7a3211eee0be82",
+      "mode": "100644",
+      "path": "qa/openbao-acceptance/ha_multihost_live.py",
+      "sha256": "e0c26f9858713303f3f57fab08057f535c893090b21c8eb6648711a164803e6b"
+    },
+    {
+      "bytes": 5876,
+      "git_blob": "56259e65dc062744e296e0def7e5b75d612e1c4f",
+      "mode": "100644",
+      "path": "qa/openbao-acceptance/ha_three_host_loopback_live.py",
+      "sha256": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf"
+    },
+    {
+      "bytes": 9920,
+      "git_blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+      "mode": "100644",
+      "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3"
+    },
+    {
+      "bytes": 1560,
+      "git_blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd",
+      "mode": "100644",
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5"
+    },
+    {
+      "bytes": 10134,
+      "git_blob": "f2b8c018bcf10759ccca667cb74bbe65dfd64ef1",
+      "mode": "100644",
+      "path": "tools/physical_ha_loopback_mesh.py",
+      "sha256": "dfff07d56e0e6cd646b3ae003e9123d6506e651dd55bed19b972fafed9a26493"
+    },
+    {
+      "bytes": 8115,
+      "git_blob": "ef499e7c216feb5621a9f085ab63193e8d8b0c44",
+      "mode": "100644",
+      "path": "tools/physical_ha_peer_preflight.py",
+      "sha256": "701f432144677e30400937e9407832fa63c3ef05e425bb50216c1cd48a206227"
+    }
+  ],
+  "schema": "heptabao.r5-lan98-orchestration-input.v1",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "tcp_diagnostic_rerun_performed": false,
+  "template_not_execution_receipt": true,
+  "wrapper_validation": [
+    "two Python AST parses",
+    "nine actual runtime Git blobs and SHA256 match frozen b24 manifest",
+    "all original runtime files unchanged"
+  ]
+}

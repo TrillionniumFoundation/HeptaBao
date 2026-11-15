@@ -1,0 +1,178 @@
+{
+  "actual_current_candidate_compatibility_qualified": false,
+  "original_inventory_sha256": "58b1f3838d3ab032f7b07f0c01874e9374791f305bc026e29e118beaa0fc149a",
+  "original_job": "1a1b1c091e2-fc05-7aa5",
+  "parsed_providers": {
+    "ld-linux-x86-64.so.2": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_header_sha256": "fc4035d59d60e76282504ac0fdef7b9a87cff63bcc76639c761f1ebfe1e66285",
+      "interpreter": null,
+      "needed": [],
+      "readelf_stdout_sha256": "c3e2b9f2f5b271675a0a4a4bec0fce07b7d841c0d171ccaa9f5329f11a1662df",
+      "soname": "ld-linux-x86-64.so.2",
+      "type": "DYN",
+      "version_definitions": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.3",
+        "GLIBC_2.34",
+        "GLIBC_2.35",
+        "GLIBC_2.4",
+        "GLIBC_PRIVATE",
+        "ld-linux-x86-64.so.2"
+      ],
+      "version_needs": {}
+    },
+    "libc.so.6": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_header_sha256": "13ffc649e6ebf1724b5592b446332f59e7c68839eae9011d3220b66ae118f1b4",
+      "interpreter": "/lib64/ld-linux-x86-64.so.2",
+      "needed": [
+        "ld-linux-x86-64.so.2"
+      ],
+      "readelf_stdout_sha256": "eb5c7939ea2c02d20094e0a03630896b792113ea5ec8c91005ad45dfc93ecd6f",
+      "soname": "libc.so.6",
+      "type": "DYN",
+      "version_definitions": [
+        "GLIBC_2.10",
+        "GLIBC_2.11",
+        "GLIBC_2.12",
+        "GLIBC_2.13",
+        "GLIBC_2.14",
+        "GLIBC_2.15",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.2.6",
+        "GLIBC_2.22",
+        "GLIBC_2.23",
+        "GLIBC_2.24",
+        "GLIBC_2.25",
+        "GLIBC_2.26",
+        "GLIBC_2.27",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.31",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.35",
+        "GLIBC_2.36",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_2.5",
+        "GLIBC_2.6",
+        "GLIBC_2.7",
+        "GLIBC_2.8",
+        "GLIBC_2.9",
+        "GLIBC_ABI_DT_RELR",
+        "GLIBC_PRIVATE",
+        "libc.so.6"
+      ],
+      "version_needs": {
+        "ld-linux-x86-64.so.2": [
+          "GLIBC_2.2.5",
+          "GLIBC_2.3",
+          "GLIBC_PRIVATE"
+        ]
+      }
+    },
+    "libgcc_s.so.1": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_header_sha256": "297c7cf5b392a32bbc202ae24b6bb147e6143628b7d66af2ca8c5ffc9fb75429",
+      "interpreter": null,
+      "needed": [
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "readelf_stdout_sha256": "1ea1264c7e807235347016b9f7ee030c3911bd8a4fbbec30182c520f19790867",
+      "soname": "libgcc_s.so.1",
+      "type": "DYN",
+      "version_definitions": [
+        "GCC_12.0.0",
+        "GCC_13.0.0",
+        "GCC_14.0.0",
+        "GCC_3.0",
+        "GCC_3.3",
+        "GCC_3.3.1",
+        "GCC_3.4",
+        "GCC_3.4.2",
+        "GCC_3.4.4",
+        "GCC_4.0.0",
+        "GCC_4.2.0",
+        "GCC_4.3.0",
+        "GCC_4.7.0",
+        "GCC_4.8.0",
+        "GCC_7.0.0",
+        "libgcc_s.so.1"
+      ],
+      "version_needs": {
+        "ld-linux-x86-64.so.2": [
+          "GLIBC_2.3"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.14",
+          "GLIBC_2.2.5",
+          "GLIBC_2.3.2",
+          "GLIBC_2.3.4",
+          "GLIBC_2.34",
+          "GLIBC_2.35"
+        ]
+      }
+    },
+    "libm.so.6": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_header_sha256": "fa82cc3c76d36a0d3831547028eeb2ca828a7883379a208666e2ca81bf21c395",
+      "interpreter": null,
+      "needed": [
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "readelf_stdout_sha256": "c660df10d3b8c8134af67562b6e8b052fa316bf8d7f45d1518ded971d16da5a2",
+      "soname": "libm.so.6",
+      "type": "DYN",
+      "version_definitions": [
+        "GLIBC_2.15",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.23",
+        "GLIBC_2.24",
+        "GLIBC_2.25",
+        "GLIBC_2.26",
+        "GLIBC_2.27",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.31",
+        "GLIBC_2.32",
+        "GLIBC_2.35",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "libm.so.6"
+      ],
+      "version_needs": {
+        "ld-linux-x86-64.so.2": [
+          "GLIBC_PRIVATE"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.2.5",
+          "GLIBC_2.36",
+          "GLIBC_2.4",
+          "GLIBC_ABI_DT_RELR",
+          "GLIBC_PRIVATE"
+        ]
+      }
+    }
+  },
+  "parser_sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4",
+  "product_binary_executions": 0,
+  "runtime_workload_qualified": false,
+  "schema": "heptabao.actual-x230-provider-original-bytes-parse.v1",
+  "status": "passed"
+}

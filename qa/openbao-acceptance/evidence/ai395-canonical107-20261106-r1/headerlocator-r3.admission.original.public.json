@@ -1,0 +1,42 @@
+{
+  "admitted_to_one_controller_invocation": false,
+  "at_utc": "2026-11-06T16:34:02.185181+00:00",
+  "budget_renewed": false,
+  "closed_prior_failed_outputs": [
+    "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/progress.public.json",
+    "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json"
+  ],
+  "controller_invocation_planned": false,
+  "controller_original_budget_seconds": 12000,
+  "controller_sha256": "7dc5a72f2362b954f04d819ea22034602c64ed2e8c3c3664c66ceea006d1015a",
+  "formal_test_result_not_observed_by_admission": true,
+  "host": "ai395",
+  "other_canonical_campaigns": [],
+  "production_changed": false,
+  "resources": {
+    "compiler_processes": [
+      {
+        "comm": "cargo",
+        "pid": 731007
+      },
+      {
+        "comm": "cargo",
+        "pid": 732656
+      }
+    ],
+    "disk_free_bytes": 431549194240,
+    "load_average": [
+      2.205078125,
+      1.74658203125,
+      1.3544921875
+    ],
+    "mem_available_kib": 24511660,
+    "swap_free_kib": 236
+  },
+  "rog_unknown_preparation_replayed": false,
+  "schema": "heptabao.ai395-canonical107-launch-admission.v1",
+  "selection_sha256": "eaf290de034875266878d0094f261157d0c066752198521b5488ab7c763c7f5c",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "supervisor_timeout_seconds": 12000
+}

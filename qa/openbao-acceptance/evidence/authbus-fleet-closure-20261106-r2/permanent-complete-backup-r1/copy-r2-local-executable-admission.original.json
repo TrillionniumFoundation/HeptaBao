@@ -1,0 +1,7 @@
+{
+  "chunk_id": "9fbd57",
+  "wall_time_seconds": 0.000029614,
+  "exit_code": 0,
+  "original_token_count": 118,
+  "output": "{\"actualMacOrServerExecution\": false, \"cases\": [{\"case\": \"explicit-public-executable-copied-and-mode-preserved\", \"passed\": true}, {\"case\": \"executable-without-exact-path-authority-denied\", \"passed\": true}, {\"case\": \"wrong-whole-executable-pin-denied\", \"passed\": true}, {\"case\": \"missing-explicit-public-executable-denied\", \"passed\": true}], \"networkOrServiceActions\": 0, \"passed\": 4, \"required\": 4, \"schema\": \"heptabao.complete-runtime-copy-public-executable-local.r2\"}\n"
+}

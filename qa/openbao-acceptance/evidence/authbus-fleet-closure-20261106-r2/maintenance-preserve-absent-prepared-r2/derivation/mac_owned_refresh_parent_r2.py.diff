@@ -1,0 +1,32 @@
+--- retained/mac_owned_refresh_parent_r1.py
++++ prepared/mac_owned_refresh_parent_r2.py
+@@ -155,7 +155,7 @@
+         self.write_closure = write_closure
+         self.attempts, self.committed, self.profile_ids = [], [], None
+         self.blocked = self.closed = False
+-        self.report = {'schema': 'heptabao.owned-refresh-parent.public.r1', 'ok': False,
++        self.report = {'schema': 'heptabao.owned-refresh-parent.public.r2', 'ok': False,
+             'originalMaintenanceMaximumSeconds': 600, 'originalOwnerMaximumSeconds': 120,
+             'credentialValuesOrDigestsPublished': False, 'privateRequestNoncesPublished': False,
+             'sourceReadFromOldKeeper': False, 'writerAuthorityFromReceiptFile': False,
+@@ -171,6 +171,20 @@
+         need(re.fullmatch(r'owner-0[123]\.[a-z0-9.-]{1,130}', name) and len(raw) <= 2 * 1048576,
+              'parent_fixed_bounded_private_artifact')
+         self.write_private(name, raw)
++
++    def assert_no_provider_dispatch(self):
++        from mac_maintenance_private_files_r1 import MaintenancePrivateFiles
++        private = getattr(self.read_private, '__self__', None)
++        need(type(private) is MaintenancePrivateFiles and private.until == self.until
++             and not private.closed and not private.failed and not self.closed
++             and not self.attempts and not self.committed and self.maintenance.owned_refresh_child is None,
++             'parent_actual_private_owner_zero_original_attempts_before_restore')
++        self._within(self.until);self.source_fence()
++        ledger = private.directory(LEDGER)
++        need(os.listdir(ledger['fd']) == [], 'parent_fixed_once_ledger_still_empty_before_original_restore')
++        private.verify_parents()
++        self._within(self.until)
++        return True
+ 
+     def _ledger_commit(self, ordinal, once):
+         base = LEDGER / ('owner-0%d' % (ordinal + 1))

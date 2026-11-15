@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.native-linux-artifact58-cli-template.v1",
+  "controller_source_identity": {
+    "actual_driver_sha256": "3ca6b6dfee259436c725f8bff9e6b72d7af363aa5a6e08d50d50ebf74e9f9fe7",
+    "driver_git_commit": null,
+    "driver_git_tree": null,
+    "binary_product_cohort_is_separate": true
+  },
+  "required_profile": {
+    "required_test_count": 58,
+    "required_group_count": 18,
+    "required_mount_group": [
+      "native-kv2-mount",
+      "server",
+      "service::native_auth::mount_tests::native_kv2_mount_",
+      3
+    ],
+    "command_timeout_seconds": 1800,
+    "test_threads": 1
+  },
+  "pack": {
+    "actual_host": "qian-qi",
+    "prefix": [
+      "python3",
+      "-B",
+      null,
+      "pack"
+    ],
+    "argv": [
+      "--source",
+      null,
+      "--manifest",
+      null,
+      "--source-commit",
+      null,
+      "--source-tree",
+      null,
+      "--producer-runner-sha256",
+      null,
+      "--summary",
+      null,
+      "--summary-sha256",
+      null,
+      "--target-dir",
+      null,
+      "--output",
+      null
+    ]
+  },
+  "execute": {
+    "observed_prior_hostname": "qian-ThinkPad-X230",
+    "hostname_requires_fresh_confirmation": true,
+    "prefix": [
+      "python3",
+      "-B",
+      null,
+      "execute"
+    ],
+    "argv": [
+      "--source",
+      null,
+      "--manifest",
+      null,
+      "--source-commit",
+      null,
+      "--source-tree",
+      null,
+      "--producer-runner-sha256",
+      null,
+      "--capsule",
+      null,
+      "--capsule-sha256",
+      null,
+      "--expected-executor-hostname",
+      "qian-ThinkPad-X230",
+      "--output",
+      null
+    ],
+    "compiler_invocations": 0
+  },
+  "historical_profile": {
+    "required_group_count": 17,
+    "required_test_count": 55,
+    "supported_with_its_own_source_and_capsule_pins": true,
+    "may_satisfy_this_58_case_run": false
+  },
+  "all_null_fields_are_unresolved_not_safe_defaults": true,
+  "automatic_submission_or_remote_transport": false,
+  "new_owned_roots_only": true
+}

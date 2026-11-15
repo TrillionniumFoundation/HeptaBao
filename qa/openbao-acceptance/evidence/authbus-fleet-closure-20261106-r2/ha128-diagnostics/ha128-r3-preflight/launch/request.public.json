@@ -1,0 +1,18 @@
+{
+  "host": "main",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "idempotency_key": "mac-ha128-current-4bde9-authbus-20261106-r3",
+  "timeout_seconds": 1800,
+  "stdinSource": {
+    "repositoryPath": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-preparation/launch_ha128_current_r3.py",
+    "gitBlob": "12f7ce9b0f8a3f6edee809cbaa5a184265544e6f",
+    "sha256": "9d703c0b213e5fe9f4e5cd67f6127ca16dd303f870df85526b86e63893b27fd1",
+    "bytes": 106163
+  }
+}

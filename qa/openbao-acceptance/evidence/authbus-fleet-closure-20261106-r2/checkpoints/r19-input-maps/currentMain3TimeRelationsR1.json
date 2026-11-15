@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.evidence-path-blob-map.r1",
+  "scope": "current-main3-original-time-relations-r1",
+  "originalRelationMapBlob": "ffc935445ca0a8c51991fe03c20cae71e0b11f31",
+  "jobId": "1a1b429bfba-fc05-868a",
+  "entries": [
+    {
+      "path": "current-main3-original-time-relations-r1/launch.original.json",
+      "bytes": 1503,
+      "sha256": "3bd436b1eb06c63cd7b6fc36d703201cd2bccc22d09ba81b37db54a77b594cc8",
+      "blob": "276cec627856ce2a0cd05f21aab82dae4af0741a"
+    },
+    {
+      "path": "current-main3-original-time-relations-r1/read.original.json",
+      "bytes": 7700,
+      "sha256": "4386dd12e7f7c2af2a50abfd19bf3cd560cc4478613dab8ebc94f307d08ae835",
+      "blob": "a9620b40072baf069127366b53180fdfbe6aef83"
+    },
+    {
+      "path": "current-main3-original-time-relations-r1/source.py",
+      "bytes": 10376,
+      "sha256": "f100aee9981ca14ac5cd6993d202a8f1a6d1a1a18ed3562d3f7f52cf3edfe521",
+      "blob": "91e84426a3530edecd362c3e0357640b50bc227f"
+    },
+    {
+      "path": "current-main3-original-time-relations-r1/stdout.original.hex.txt",
+      "bytes": 4371,
+      "sha256": "cf5a0886e8909dcdab7ffd99cff7268ed37cd08b37e7cd83d7480ea9aef84006",
+      "blob": "ea5592bcc40f1845cdf069e9ced4cc3cf1faa917"
+    },
+    {
+      "path": "current-main3-original-time-relations-r1/stdout.original.json",
+      "bytes": 2185,
+      "sha256": "aad69a2c784379ccb81a8cd8fc0cd636e187766086a4315f0a54db790a1946b4",
+      "blob": "5007246d30724612a990611ca2306e020d35ff2e"
+    },
+    {
+      "path": "current-main3-original-time-relations-r1/terminal.original.json",
+      "bytes": 954,
+      "sha256": "b4aa039e38dcd663604b73b534f7ac39583f361ca1e093fba35f612726bbbddb",
+      "blob": "49d3678cd45836421f2462782492a276922a924e"
+    },
+    {
+      "path": "current-main3-original-time-relations-r1/verification.public.json",
+      "bytes": 777,
+      "sha256": "6d450bfbd4f4f7ca8f71a2c03962d207138a2575850d92fcbc52da40d268f893",
+      "blob": "762ac187481d618b5fda5cbcff787df54c9bd786"
+    }
+  ]
+}

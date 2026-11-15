@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.permanent-launchd-service-actual.r1",
+  "originalHost": "main",
+  "originalJob": "1a1b4048166-fc05-85db",
+  "stableKey": "heptabao-permanent-authbus-launchd-lifecycle-20261107-r1",
+  "sourceBytes": 176922,
+  "sourceSha256": "c6662eb86cc97edc07763f234bdc47d485f3f1ecde1b60d4830d64a6a1cbd181",
+  "state": "failed",
+  "exitCode": 1,
+  "stdoutBytes": 52660,
+  "completeDurableStdoutAndHexEqual": true,
+  "stderrBytes": 0,
+  "phaseCount": 1,
+  "apiRequestsDispatched": 0,
+  "initializationRequests": 0,
+  "explicitUnsealRequests": 0,
+  "firstGenerationExactBirth": {
+    "birthSec": 1794021564,
+    "birthUsec": 270575,
+    "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production/releases/4bde9aee03fcd27c59e13607e529b1cee594b249/heptabao-server",
+    "generation": "first",
+    "pgid": 19077,
+    "pid": 19077,
+    "ppid": 1,
+    "uid": 501
+  },
+  "originalServiceMutations": {
+    "bootout-first": {
+      "dispatched": true,
+      "exitCode": 0,
+      "intentPersisted": true,
+      "outcome": "complete"
+    },
+    "bootstrap-first": {
+      "dispatched": true,
+      "exitCode": 0,
+      "intentPersisted": true,
+      "outcome": "complete"
+    }
+  },
+  "disabledObservations": 6,
+  "disabledOverrideAlwaysAbsent": true,
+  "actualAbsenceRounds": [
+    {
+      "disabledOverrideAbsent": true,
+      "labelAbsent": true,
+      "originalPidEsrch": true,
+      "relatedRowsEmpty": true,
+      "round": 0
+    },
+    {
+      "disabledOverrideAbsent": true,
+      "labelAbsent": true,
+      "originalPidEsrch": true,
+      "relatedRowsEmpty": true,
+      "round": 1
+    }
+  ],
+  "knownOriginalGenerationFailureCloseAttempted": true,
+  "registeredServiceMayRemain": false,
+  "commandUnknownCount": 0,
+  "commandCount": 21,
+  "allOriginalCommandsClosed": true,
+  "allExplicitDescriptorsClosedOnce": true,
+  "explicitDescriptorCount": 22,
+  "t5AllClosed": true,
+  "elapsedSeconds": 16.808759958017617,
+  "parentDeadlinePassed": true,
+  "apiFailureCode": "http_original_deadline",
+  "tcpConnectionAttempts": 142,
+  "tcpConnectionRefusals": 141,
+  "listenerCauseKnown": false,
+  "productionClientChanges": 0,
+  "providerCalls": 0,
+  "legacyDeletion": 0,
+  "qualificationPassed": false
+}

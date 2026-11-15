@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.current-main3-candidate-relation-prepared.r1",
+  "sourceOnlyPrepared": true,
+  "source": "observe_current_main3_candidate_relation_r1.py",
+  "bytes": 141631,
+  "sha256": "c01bbba9b27101f3a72789e069fe4997a7767ac51428a274b552bcc29e9ca7f1",
+  "originalCandidateSourceBytes": 83443,
+  "originalCandidateSourceSha256": "595334506609bd51c746f1d2dd81482a54e8f6602218512ecac8cc73896f8d40",
+  "originalCandidateActualEvidenceMap": "0d02daa98cea1a18815f3d3ab0141312910d300d",
+  "readerPins": {
+    "main3_source_authority.py": "1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290",
+    "mac_current_selected_main3_r1.py": "4399399cda5fc6131583b461870f5c35906abe07625ca2df57a38d6c6c2a90cd",
+    "mac_codex_candidate_backend_r1.py": "90def9a5976b94efa6e1794a0fd2d26ea2615f00922f18291e2cd331af802b87",
+    "read_current_main3_candidate_relation_r1.py": "08ecb096bcb40995bc78db1a868cdd2f490ae708f10e89bbc3623c783db2b009"
+  },
+  "unchangedParentSourcePins": {
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_codex_backend_procargs_r1.py": "85fbf5a0502b9522e5df2a6dceef32c7cfc8fc263913b0c8b7661015355010be",
+    "mac_codex_candidate_backend_r1.py": "90def9a5976b94efa6e1794a0fd2d26ea2615f00922f18291e2cd331af802b87",
+    "mac_codex_fixed_candidate_inputs_r1.py": "b8fa9607c47635c3cd0b77d075a27b01ce689a3223075b8ce047b17f9935605e"
+  },
+  "qualifiedAuthReaderPins": {
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_registry_readonly_wal_r1.py": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+    "authbus_current_auth_wal.py": "ad443869e259da06de2be71131e5d1854680477d1cf77248e05a3c1704160f8c"
+  },
+  "custodyPins": {
+    "kv2_dr_process_custody.py": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+    "owned_process.py": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+  },
+  "parentSeconds": 45,
+  "candidateAndSqlWorkerSeconds": 20,
+  "originalAuthQuerySeconds": 3,
+  "supervisorSeconds": 70,
+  "originalReadonlyChildCount": 1,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "serviceActions": 0,
+  "keychainReads": 0,
+  "historicalCapsuleUsedOnlyForAuthorizedIds": true,
+  "historicalCredentialValuesUsedAsCurrent": false,
+  "effectiveRuntimeBackendQualified": false,
+  "runningCachedCredentialRelation": "unknown",
+  "productionRefreshAdmission": false
+}

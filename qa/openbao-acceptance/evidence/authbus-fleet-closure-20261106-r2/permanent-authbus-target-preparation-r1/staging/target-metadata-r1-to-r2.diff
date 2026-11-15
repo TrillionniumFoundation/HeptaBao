@@ -1,0 +1,21 @@
+--- inspect_mac_target_paths_r1.py
++++ inspect_mac_target_paths_r2.py
+@@ -21,7 +21,7 @@
+ )
+ rows = []
+ fd_rows = []
+-report = {'schema': 'heptabao.permanent-target-metadata.r1', 'ok': False,
++report = {'schema': 'heptabao.permanent-target-metadata.r2', 'ok': False,
+           'children': 0, 'networkOperations': 0, 'fileWrites': 0,
+           'serviceActions': 0, 'credentialReads': 0,
+           'provisioned': False, 'productionReady': False}
+@@ -61,7 +61,8 @@
+ 
+ def run():
+     try:
+-        need(os.getuid() == 501 and Path(sys.executable) == PYTHON, 'exact_native_python_identity')
++        need(os.getuid() == 501 and Path(sys.executable) == Path('/opt/homebrew/opt/python@3.14/bin/python3.14')
++             and Path(sys.executable).resolve(strict=True) == PYTHON, 'exact_native_python_identity')
+         fd = os.open(PYTHON, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+         row = {'closeAttempted': False, 'closed': False}
+         fd_rows.append(row)

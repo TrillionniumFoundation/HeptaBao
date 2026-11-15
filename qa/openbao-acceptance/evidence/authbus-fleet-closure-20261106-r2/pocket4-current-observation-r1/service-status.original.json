@@ -1,0 +1,126 @@
+{
+  "services": [
+    {
+      "exit_code": 0,
+      "name": "openclaw-gateway.service",
+      "observations": [
+        {
+          "exit_code": 0,
+          "observation_complete": true,
+          "properties": {
+            "ActiveState": "inactive",
+            "Description": "openclaw-gateway.service",
+            "ExecMainStatus": "0",
+            "InvocationID": "",
+            "LoadState": "not-found",
+            "MainPID": "0",
+            "Result": "success",
+            "SubState": "dead",
+            "UnitFileState": ""
+          },
+          "properties_truncated": [],
+          "scope": "system",
+          "stderr": "",
+          "stderr_truncated": false
+        },
+        {
+          "exit_code": 0,
+          "observation_complete": true,
+          "properties": {
+            "ActiveState": "inactive",
+            "Description": "OpenClaw Gateway (v2026.7.1-2)",
+            "ExecMainStatus": "0",
+            "InvocationID": "",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "Result": "success",
+            "SubState": "dead",
+            "UnitFileState": "enabled"
+          },
+          "properties_truncated": [],
+          "scope": "user",
+          "stderr": "",
+          "stderr_truncated": false
+        }
+      ],
+      "properties": {
+        "ActiveState": "inactive",
+        "Description": "OpenClaw Gateway (v2026.7.1-2)",
+        "ExecMainStatus": "0",
+        "InvocationID": "",
+        "LoadState": "loaded",
+        "MainPID": "0",
+        "Result": "success",
+        "SubState": "dead",
+        "UnitFileState": "enabled"
+      },
+      "properties_truncated": [],
+      "resolution": "unique",
+      "resolution_complete": true,
+      "scope": "user",
+      "stderr": "",
+      "stderr_truncated": false
+    },
+    {
+      "exit_code": 0,
+      "name": "openclaw-authbus-restart-when-idle.service",
+      "observations": [
+        {
+          "exit_code": 0,
+          "observation_complete": true,
+          "properties": {
+            "ActiveState": "inactive",
+            "Description": "openclaw-authbus-restart-when-idle.service",
+            "ExecMainStatus": "0",
+            "InvocationID": "",
+            "LoadState": "not-found",
+            "MainPID": "0",
+            "Result": "success",
+            "SubState": "dead",
+            "UnitFileState": ""
+          },
+          "properties_truncated": [],
+          "scope": "system",
+          "stderr": "",
+          "stderr_truncated": false
+        },
+        {
+          "exit_code": 0,
+          "observation_complete": true,
+          "properties": {
+            "ActiveState": "inactive",
+            "Description": "Restart OpenClaw gateway after all sessions become idle",
+            "ExecMainStatus": "0",
+            "InvocationID": "",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "Result": "success",
+            "SubState": "dead",
+            "UnitFileState": "static"
+          },
+          "properties_truncated": [],
+          "scope": "user",
+          "stderr": "",
+          "stderr_truncated": false
+        }
+      ],
+      "properties": {
+        "ActiveState": "inactive",
+        "Description": "Restart OpenClaw gateway after all sessions become idle",
+        "ExecMainStatus": "0",
+        "InvocationID": "",
+        "LoadState": "loaded",
+        "MainPID": "0",
+        "Result": "success",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      "properties_truncated": [],
+      "resolution": "unique",
+      "resolution_complete": true,
+      "scope": "user",
+      "stderr": "",
+      "stderr_truncated": false
+    }
+  ]
+}

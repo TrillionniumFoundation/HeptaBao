@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,os,stat\nfrom pathlib import Path\np=Path('/Users/qianqi/heptabao-mac-authbus-r2-recovery-preparation-20261106-r1/recover_r2_qa_once.py')\nfd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)\ntry:\n    first=os.fstat(fd)\n    assert stat.S_ISREG(first.st_mode) and first.st_uid==501 and first.st_nlink==1 and stat.S_IMODE(first.st_mode)==0o600\n    assert 0 < first.st_size <= 65536\n    raw=os.read(fd,65537)\n    ident=lambda s:(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\n    assert len(raw)==first.st_size and not os.read(fd,1) and ident(first)==ident(os.fstat(fd))==ident(p.lstat())\nfinally:\n    os.close(fd)\nassert hashlib.sha256(raw).hexdigest()=='30e507ca675b76568d6c21774ad16888322823d10c7f5077c7e3798036959b72'\nexec(compile(raw,str(p),'exec'),{'__name__':'__main__','__source_sha256__':'30e507ca675b76568d6c21774ad16888322823d10c7f5077c7e3798036959b72'})\n"
+    ],
+    "created_unix_ms": 1793972140222,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b11278be-fc05-7587",
+    "idempotency_key": "heptabao-mac-authbus-r2-owned-cleanup-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b11278be-fc05-7587",
+    "request_digest": "6dc736aa322a4582c9541093731b7efa96d985f92c824403d99edc2d238a0206",
+    "request_fingerprint": 7910351375113536898,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b11278be-fc05-7587"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 68610,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b11278be-fc05-7587"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,183 @@
+{
+  "schema": "heptabao.actual-native-mount-and-ha-phase-rustfmt.v1",
+  "status": "formatted_and_check_passed",
+  "host": "MacBook-Pro.local",
+  "rust_release": "1.98.0",
+  "source_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "packet_sha256": "136b7d727ae748f80b3856003d97378b63b78457b39a3a097568a977c5e1104a",
+  "created_utc": "2026-10-19T09:56:46.074787+00:00",
+  "files": [
+    {
+      "source_path": "crates/heptabao-server/src/engine_native_kv2_mount.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/engine_native_kv2_mount.rs",
+      "before_bytes": 16619,
+      "before_sha256": "771e6b82a6ea7a3145c8212d4105f8896c3ae2e85209c0ad7811921d59a420ab",
+      "expected_base_git_blob": null,
+      "after_bytes": 17605,
+      "after_sha256": "8d390bf662452c2926b8bd6e514ed0a3caa41f7f5e3dd9434561a2bfa7dad4d3",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/engine_native_kv2_mount.rs.chunk-0.json"
+      ]
+    },
+    {
+      "source_path": "crates/heptabao-server/src/engines.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/engines.rs",
+      "before_bytes": 149902,
+      "before_sha256": "01def59e8013859161f3494298dd035ecd40af244dd702374da476f58104349e",
+      "expected_base_git_blob": "96f36f9f6be1f13321f6115250cc6cb8278fac6f",
+      "after_bytes": 149902,
+      "after_sha256": "01def59e8013859161f3494298dd035ecd40af244dd702374da476f58104349e",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/engines.rs.chunk-0.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/engines.rs.chunk-1.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/engines.rs.chunk-2.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/engines.rs.chunk-3.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/engines.rs.chunk-4.json"
+      ]
+    },
+    {
+      "source_path": "crates/heptabao-server/src/service.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service.rs",
+      "before_bytes": 447426,
+      "before_sha256": "d660cb0f12ebd722aa465e5443d73694c6e496114ccfd4bfa6ed78688e7a87e8",
+      "expected_base_git_blob": "c8836ee2cada4e9f4446002b0cd75335adc1586f",
+      "after_bytes": 447652,
+      "after_sha256": "ab707bd26ef6621226a72cea21779c82e1b727bbbf12e8492ad18a49dd629d06",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-0.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-1.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-2.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-3.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-4.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-5.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-6.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-7.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-8.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-9.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-10.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-11.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-12.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-13.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service.rs.chunk-14.json"
+      ]
+    },
+    {
+      "source_path": "crates/heptabao-server/src/service_native_auth.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_auth.rs",
+      "before_bytes": 33060,
+      "before_sha256": "375e12c3d94f45784f1a4f6bb0e46ace863300d901bd81a926e164f72851b288",
+      "expected_base_git_blob": "7379a5c1e2d4bfb5b874197fcf5e96a8add69928",
+      "after_bytes": 33838,
+      "after_sha256": "fc84083a7187763c30ba2e9083a598f4660790057c388ea4f9a02f0726ff8a35",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service_native_auth.rs.chunk-0.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service_native_auth.rs.chunk-1.json"
+      ]
+    },
+    {
+      "source_path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_kv2_mount_tests.rs",
+      "before_bytes": 20354,
+      "before_sha256": "536068940482c7a62020d71a8b3c8c047163ae957f0c387db2e2ae6e0f7b725b",
+      "expected_base_git_blob": null,
+      "after_bytes": 24642,
+      "after_sha256": "300fc228103443a30f8f29b243b6e14ac9757b36b3a698b6e03a1c26c7021392",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service_native_kv2_mount_tests.rs.chunk-0.json"
+      ]
+    },
+    {
+      "source_path": "crates/heptabao-server/src/service_native_v6_ha_writer.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_v6_ha_writer.rs",
+      "before_bytes": 14770,
+      "before_sha256": "958d973e0db3e707258840a62a68092e5f74a043a93088afd076bc8b5550fcfe",
+      "expected_base_git_blob": "2dfa91471d8a79c9856badbe7c6f7c44c461c0b1",
+      "after_bytes": 14953,
+      "after_sha256": "9f489d3e4f45591111e506898116a3e8412a1d07071596b80ccd7b14af4145a4",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service_native_v6_ha_writer.rs.chunk-0.json"
+      ]
+    },
+    {
+      "source_path": "crates/heptabao-server/src/ha_native_v6_publication.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/ha_native_v6_publication.rs",
+      "before_bytes": 26879,
+      "before_sha256": "67e2064b81046ca3314a63a45de78d8d4b347527ed79a2ba3e49acf3cec96a42",
+      "expected_base_git_blob": "77820c87455030f9dc554a58e09870f0e6f5a0c6",
+      "after_bytes": 27171,
+      "after_sha256": "b8367b131d16e436b4dd8d61f4cafd1cce442d9127fd736684e0150ed9a65edb",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/ha_native_v6_publication.rs.chunk-0.json"
+      ]
+    },
+    {
+      "source_path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_v6_ha_install.rs",
+      "before_bytes": 53999,
+      "before_sha256": "f070942826d005dbb088db711abca18c1ec529104e122b4ed48906ead901c3b9",
+      "expected_base_git_blob": "745de97f5415bacde24703b770ab7bede95db1af",
+      "after_bytes": 54848,
+      "after_sha256": "a2ce74d1b32eca70fa6fb161473294dec491c6a36d6e986ead754ce9c3f1f9d8",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service_native_v6_ha_install.rs.chunk-0.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/service_native_v6_ha_install.rs.chunk-1.json"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "label": "version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "format",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/engine_native_kv2_mount.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/engines.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_auth.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_kv2_mount_tests.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_v6_ha_writer.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/ha_native_v6_publication.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_v6_ha_install.rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "check",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "--check",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/engine_native_kv2_mount.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/engines.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_auth.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_kv2_mount_tests.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_v6_ha_writer.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/ha_native_v6_publication.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/next-source-fmt-20261019-r1/formatted/service_native_v6_ha_install.rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "Rust_tests_executed": 0
+}

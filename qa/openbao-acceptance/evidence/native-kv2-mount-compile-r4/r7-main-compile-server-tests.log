@@ -1,0 +1,222 @@
+{"argv": ["/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "--no-run"]}
+   Compiling heptabao-server v0.1.0 (/home/qian-qi/heptabao-next-gates-20261017/source-720340e/crates/heptabao-server)
+error[E0369]: binary operation `!=` cannot be applied to type `Vec<state_record_root_v6::Kv2GraphRef>`
+   --> crates/heptabao-server/src/engine_native_kv2_mount.rs:330:31
+    |
+330 |             if normalized.kv2 != retained {
+    |                -------------- ^^ -------- Vec<state_record_root_v6::Kv2GraphRef>
+    |                |
+    |                Vec<state_record_root_v6::Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `state_record_root_v6::Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+error[E0369]: binary operation `!=` cannot be applied to type `Vec<state_record_root_v6::Kv2GraphRef>`
+   --> crates/heptabao-server/src/engine_native_kv2_mount.rs:335:27
+    |
+335 |         if normalized.kv2 != prior.kv2 {
+    |            -------------- ^^ --------- Vec<state_record_root_v6::Kv2GraphRef>
+    |            |
+    |            Vec<state_record_root_v6::Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `state_record_root_v6::Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+error[E0369]: binary operation `==` cannot be applied to type `Vec<state_record_root_v6::Kv2GraphRef>`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:362:5
+    |
+362 | /     assert_eq!(
+363 | |         unrelated, original_graphs,
+364 | |         "creating one mount cannot rewrite other payload graphs"
+365 | |     );
+    | |     ^
+    | |     |
+    | |_____Vec<state_record_root_v6::Kv2GraphRef>
+    |       Vec<state_record_root_v6::Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `state_record_root_v6::Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+error[E0277]: `state_record_root_v6::Kv2GraphRef` doesn't implement `Debug`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:362:5
+    |
+362 | /     assert_eq!(
+363 | |         unrelated, original_graphs,
+364 | |         "creating one mount cannot rewrite other payload graphs"
+365 | |     );
+    | |_____^ unsatisfied trait bound
+    |
+help: the trait `Debug` is not implemented for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: add `#[derive(Debug)]` to `state_record_root_v6::Kv2GraphRef` or manually `impl Debug for state_record_root_v6::Kv2GraphRef`
+help: the trait `Debug` is conditionally implemented for `Vec<T, A>`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/alloc/src/vec/mod.rs:4321:8
+    |
+    = note: unsatisfied requirement introduced here: `state_record_root_v6::Kv2GraphRef: Debug`
+
+error[E0369]: binary operation `==` cannot be applied to type `Vec<state_record_root_v6::Kv2GraphRef>`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:403:5
+    |
+403 | /     assert_eq!(
+404 | |         graphs(&service)?,
+405 | |         before_tune,
+406 | |         "tuning metadata cannot replace secret history"
+407 | |     );
+    | |     ^
+    | |     |
+    | |_____Vec<state_record_root_v6::Kv2GraphRef>
+    |       Vec<state_record_root_v6::Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `state_record_root_v6::Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+error[E0277]: `state_record_root_v6::Kv2GraphRef` doesn't implement `Debug`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:403:5
+    |
+403 | /     assert_eq!(
+404 | |         graphs(&service)?,
+405 | |         before_tune,
+406 | |         "tuning metadata cannot replace secret history"
+407 | |     );
+    | |_____^ unsatisfied trait bound
+    |
+help: the trait `Debug` is not implemented for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: add `#[derive(Debug)]` to `state_record_root_v6::Kv2GraphRef` or manually `impl Debug for state_record_root_v6::Kv2GraphRef`
+help: the trait `Debug` is conditionally implemented for `Vec<T, A>`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/alloc/src/vec/mod.rs:4321:8
+    |
+    = note: unsatisfied requirement introduced here: `state_record_root_v6::Kv2GraphRef: Debug`
+
+error[E0369]: binary operation `==` cannot be applied to type `Vec<state_record_root_v6::Kv2GraphRef>`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:594:5
+    |
+594 |     assert_eq!(graphs(&service)?, before);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |     |
+    |     Vec<state_record_root_v6::Kv2GraphRef>
+    |     Vec<state_record_root_v6::Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `state_record_root_v6::Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+error[E0277]: `state_record_root_v6::Kv2GraphRef` doesn't implement `Debug`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:594:5
+    |
+594 |     assert_eq!(graphs(&service)?, before);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
+    |
+help: the trait `Debug` is not implemented for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: add `#[derive(Debug)]` to `state_record_root_v6::Kv2GraphRef` or manually `impl Debug for state_record_root_v6::Kv2GraphRef`
+help: the trait `Debug` is conditionally implemented for `Vec<T, A>`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/alloc/src/vec/mod.rs:4321:8
+    |
+    = note: unsatisfied requirement introduced here: `state_record_root_v6::Kv2GraphRef: Debug`
+
+error[E0369]: binary operation `==` cannot be applied to type `Vec<state_record_root_v6::Kv2GraphRef>`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:677:5
+    |
+677 |     assert_eq!(graphs(&service)?, guarded);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |     |
+    |     Vec<state_record_root_v6::Kv2GraphRef>
+    |     Vec<state_record_root_v6::Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `state_record_root_v6::Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+error[E0277]: `state_record_root_v6::Kv2GraphRef` doesn't implement `Debug`
+   --> crates/heptabao-server/src/service_native_kv2_mount_tests.rs:677:5
+    |
+677 |     assert_eq!(graphs(&service)?, guarded);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
+    |
+help: the trait `Debug` is not implemented for `state_record_root_v6::Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: add `#[derive(Debug)]` to `state_record_root_v6::Kv2GraphRef` or manually `impl Debug for state_record_root_v6::Kv2GraphRef`
+help: the trait `Debug` is conditionally implemented for `Vec<T, A>`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/alloc/src/vec/mod.rs:4321:8
+    |
+    = note: unsatisfied requirement introduced here: `state_record_root_v6::Kv2GraphRef: Debug`
+
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+Some errors have detailed explanations: E0277, E0369.
+For more information about an error, try `rustc --explain E0277`.
+warning: `heptabao-server` (lib test) generated 1 warning
+error: could not compile `heptabao-server` (lib test) due to 14 previous errors; 1 warning emitted

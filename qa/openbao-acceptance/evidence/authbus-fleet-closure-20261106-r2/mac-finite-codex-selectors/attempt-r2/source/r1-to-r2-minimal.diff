@@ -1,0 +1,49 @@
+--- selector-r1-template
++++ selector-r2-template
+@@ -14,7 +14,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 20
+-ROOT = Path('/Users/qianqi/heptabao-authbus-finite-codex-selectors-20261107-r1')
++ROOT = Path('/Users/qianqi/heptabao-authbus-finite-codex-selectors-20261107-r2')
+ CALLER_HOME = Path('/Users/qianqi')
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+ PYTHON_PIN = (34640, 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13')
+@@ -23,7 +23,7 @@
+ # PAYLOAD_PLACEHOLDER
+ 
+ codes, descriptors, directories, received_signals = set(), [], {}, []
+-report = {'schema': 'heptabao.finite-codex-selector-observation.r1', 'ok': False,
++report = {'schema': 'heptabao.finite-codex-selector-observation.r2', 'ok': False,
+           'scope': 'four_prior_full_birth_processes', 'selectedPids': [66414, 66687, 89324, 89325],
+           'rawArgumentOrEnvironmentBytesPublished': False, 'rawArgumentOrEnvironmentBytesPersisted': False,
+           'onlyAllowlistedSourceSelectorValuesPersistedPrivately': True,
+@@ -164,10 +164,16 @@
+         maximum = ctypes.c_int()
+         length = ctypes.c_size_t(ctypes.sizeof(maximum))
+         self.call((1, 8), ctypes.byref(maximum), length)
+-        need(length.value == 4 and 4096 <= maximum.value <= 262144,
+-             'selector_exact_bounded_kernel_argument_budget')
+-        self.maximum = maximum.value + 4
++        need(length.value == 4 and maximum.value == 1048576,
++             'selector_actual_kernel_argument_budget')
++        # Preserve the original 256 KiB + argc allocation. XNU's insufficient
++        # buffer branch returns exactly the supplied size; reject that size
++        # rather than accepting possibly truncated data or enlarging the cap.
++        self.maximum = 262144 + 4
+         report['kernelArgumentBudget'] = maximum.value
++        report['maximumArgumentReadBytesIncludingArgc'] = self.maximum
++        report['kernelBudgetDiagnosticJob'] = '1a1b398a4c8-fc05-83c2'
++        report['originalReadAllocationCeilingUnchanged'] = True
+ 
+     def call(self, mib_values, out, length):
+         remaining()
+@@ -187,7 +193,7 @@
+         length = ctypes.c_size_t(self.maximum)
+         try:
+             self.call((1, 49, pid), memory, length)
+-            need(6 <= length.value <= self.maximum, 'selector_complete_returned_procargs_bound')
++            need(6 <= length.value < self.maximum, 'selector_complete_returned_procargs_strictly_below_cap')
+             raw = memory.raw[:length.value]
+             try:
+                 return parse_procargs(raw)

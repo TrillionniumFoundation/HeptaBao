@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.mac-node3-first-health-stack-diagnostic.preparation.r1",
+  "status": "prepared_not_executed",
+  "product": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "normalBinaryBytes": 92359328,
+    "normalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c"
+  },
+  "source": {
+    "workerBytes": 25811,
+    "workerSha256": "2509144773816358d7508267ed6b4bffd8917c2c25a6793117eeaf39ece6cbfa",
+    "bodyBytes": 12433,
+    "bodySha256": "9e9be3b8173375e6329cab54b320ac4c721bd9e64739a906e21d14bfa0055493",
+    "assembledBytes": 39333,
+    "assembledSha256": "b9f2726af5f2f9ec1e3f0e5330a93e8545d2c7f2c27b0cf86660d37b622ba389",
+    "exactWorkerEmbedded": true,
+    "localAstParsed": true
+  },
+  "validation": {
+    "localSyntheticProjectionTests": 8,
+    "localSyntheticProjectionPassed": 8,
+    "localSyntheticProjectionFailed": 0,
+    "liveProductRunStarted": false,
+    "taskSamplingPermissionProven": false
+  },
+  "scope": {
+    "newEmptyStandaloneRoot": true,
+    "originalFixtureRestarted": false,
+    "initRequests": 0,
+    "credentialsUsed": false,
+    "firstHealthRequests": 1,
+    "firstHealthBudgetSeconds": 1.5,
+    "sampleSeconds": 1,
+    "sampleIntervalMilliseconds": 1,
+    "originalWorkerBudgetSeconds": 85,
+    "originalCoordinatorBudgetSeconds": 100,
+    "outerBudgetSeconds": 120,
+    "readonlyObserverProcesses": 2,
+    "originalRustProcesses": 1,
+    "originalSshProcesses": 1,
+    "existingCleanupBudgetSeconds": 5,
+    "firewallWrites": 0
+  },
+  "custody": {
+    "originalUnreapedPidRequired": true,
+    "sameActualImageRequired": true,
+    "libprocOriginalBirthBeforeAfter": true,
+    "eachHelperOriginalGroupAndWait": true,
+    "healthThreadJoinRequired": true,
+    "fullPrivateSampleRetained": true,
+    "publicProjectionOnlyExactTarget": true,
+    "noSamplingPrivilegeEscalation": true,
+    "unknownNotReplayed": true
+  },
+  "findingsFromEarlierAttempt": {
+    "firstSelfHealthPrecededTcpOnlyProbe": true,
+    "firstSelfHealthTlsTimedOut": true,
+    "alfExactAppPermitted": true,
+    "alfBlockAll": false
+  },
+  "claim": {
+    "haQualified": false,
+    "fullyReplacesOpenBao": false
+  }
+}

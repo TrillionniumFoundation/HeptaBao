@@ -1,0 +1,26 @@
+{
+  "actual_dr25_executed": false,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id",
+    "-v"
+  ],
+  "elapsed_seconds": 0.26647946199955186,
+  "exit_code": 1,
+  "expected_old_implementation_failure": true,
+  "expected_tests": 1,
+  "log": "qa/openbao-acceptance/evidence/dr25-controller-local-20261106-r1/legacy-raw-killpg-regression-before-fix-r8.log",
+  "production_authority": false,
+  "production_servers_started": false,
+  "raw_group_signal_attempted_by_regression": false,
+  "reason": "New regression verifies the legacy raw killpg route is guarded after a real nonzero child has been waited. Old helper fails the hook-identity assertion before any raw signal is attempted. Original source migration failure finally would otherwise call the unguarded primitive.",
+  "schema": "heptabao.dr25-controller-regression-observation.v1",
+  "source_file_pins": {
+    "qa/openbao-acceptance/kv2_dr_process_custody.py": "c3d95e975f5eec7af5f39fd76a904bdc197bfd0415a9899974adbde081e86c17",
+    "qa/openbao-acceptance/tests/test_kv2_dr_process_custody.py": "870d8d24dcb03d138cd81ac3ecbf527067b10e39f67a760b7a081dda8f32af91"
+  },
+  "status": "failed"
+}

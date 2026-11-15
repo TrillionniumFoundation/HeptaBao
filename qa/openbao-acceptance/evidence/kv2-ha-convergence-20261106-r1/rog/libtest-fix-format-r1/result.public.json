@@ -1,0 +1,112 @@
+{
+  "base_commit": "1d63ec98ce0fc5cbc7d74a37f6307be148dd5aeb",
+  "compiler_started": false,
+  "formatted_patch_bytes": 2637,
+  "formatted_patch_sha256": "cdc1c0c4c91ed886130440cbdd52c4078c763707f546841f38da133c76e614dc",
+  "input_patch_sha256": "91d536d5a34ae377e7e278404c5d84c51826f2df5b411b1300452de45dd3c4bc",
+  "production_changed": false,
+  "schema": "heptabao.actual-libtest-fix-format.v1",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "00-head",
+      "seconds": 0.0026828930131159723,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "8c673bf42ca418a39d551e02c3dc5a797e60a505a303c0ed3c4110b111c70046"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "label": "01-clean",
+      "seconds": 0.025746906991116703,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--check",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/libtest-fix-format-r1/input.patch"
+      ],
+      "exit_code": 0,
+      "label": "02-apply-check",
+      "seconds": 0.0008740859921090305,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/libtest-fix-format-r1/input.patch"
+      ],
+      "exit_code": 0,
+      "label": "03-apply",
+      "seconds": 0.0018011020147241652,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "fmt",
+        "--all"
+      ],
+      "exit_code": 0,
+      "label": "04-fmt",
+      "seconds": 5.308455188001972,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "05-fmt-check",
+      "seconds": 5.450060190982185,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "06-diff-check",
+      "seconds": 0.0065556819899939,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--binary",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "07-formatted-patch",
+      "seconds": 0.0031347540207207203,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cdc1c0c4c91ed886130440cbdd52c4078c763707f546841f38da133c76e614dc"
+    }
+  ]
+}

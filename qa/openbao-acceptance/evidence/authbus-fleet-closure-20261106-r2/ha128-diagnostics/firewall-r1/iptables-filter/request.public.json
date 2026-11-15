@@ -1,0 +1,13 @@
+{
+  "host": "x230",
+  "executable": "/usr/sbin/iptables-save",
+  "args": [
+    "-c",
+    "-t",
+    "filter"
+  ],
+  "non_interactive": true,
+  "fresh_auth": false,
+  "rows": 40,
+  "cols": 160
+}

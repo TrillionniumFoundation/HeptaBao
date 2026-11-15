@@ -1,0 +1,6 @@
+test_final_gate_requires_complete_custody_receipt_even_without_failed_flag (test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_final_gate_requires_complete_custody_receipt_even_without_failed_flag) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.192s
+
+OK

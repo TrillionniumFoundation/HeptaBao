@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.mac-final-custody18-input-binding.v1",
+  "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab",
+  "source_bytes_match_git_blob": true,
+  "inputs": [
+    {
+      "relative": "kv2_dr_process_custody.py",
+      "bytes": 26131,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "relative": "tests/test_kv2_dr_process_custody.py",
+      "bytes": 17148,
+      "sha256": "41d3b0e079b2b17a0ece458f907adf380542cbdf96530213869636e81a447807"
+    },
+    {
+      "relative": "owned_process.py",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  ],
+  "runner_sha256": "63d7d1c8e7bb6192f8c365866974a7e96df7c05ba3ca95ff1c17e4b0be62655a",
+  "runner_bytes": 9741,
+  "launcher_sha256": "afa68e0a0624962e1d3e139715c01419c7696bd8baf8d04f57848fb5f000247b",
+  "expected_count": 18,
+  "outer_seconds": 60,
+  "original_test_timeouts_unchanged": true,
+  "old_evidence_relabelled": false,
+  "new_product_or_dr_run": false,
+  "local_precheck": "syntax and exact source binding only; not Mac execution"
+}

@@ -1,0 +1,210 @@
+{
+  "automatic_retry": false,
+  "base_source": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source",
+  "base_source_after": {
+    "cargo_lock": {
+      "bytes": 102584,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.lock",
+      "sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9"
+    },
+    "clean": true,
+    "head": "c447536ae0343731d84c18291d2dcd712b3bea08",
+    "tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2",
+    "workspace_manifest": {
+      "bytes": 615,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "base_source_before": {
+    "cargo_lock": {
+      "bytes": 102584,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.lock",
+      "sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9"
+    },
+    "clean": true,
+    "head": "c447536ae0343731d84c18291d2dcd712b3bea08",
+    "tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2",
+    "workspace_manifest": {
+      "bytes": 615,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "bundle": {
+    "bytes": 387689,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle",
+    "sha256": "a2e6cfdca310a4a05e6f4093a04969543b606bd9d7af0fcbe2f7a4189e7d0349"
+  },
+  "changed_test_file": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+  "changed_test_file_sha256": "1571d88838fb127509cdbe24a7e7b5402453ec4cb1dbb784d56753aa2f49e584",
+  "elapsed_seconds": 2.482197,
+  "finished_at_unix": 1793978456.601182,
+  "formal_107_qualified": false,
+  "full_replacement_qualified": false,
+  "no_hardlinks": true,
+  "offline_registry": {
+    "all_lock_dependencies_offline_available": false,
+    "all_lock_registry_archives_verified": false,
+    "cargo_lock": {
+      "bytes": 101193,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "cargo_or_rustc_executed": false,
+    "git_dependency_count": 0,
+    "matching_archive_count": 374,
+    "mismatched_archives": [],
+    "missing_archives": [
+      {
+        "name": "js-sys",
+        "version": "0.3.105"
+      },
+      {
+        "name": "libredox",
+        "version": "0.1.24"
+      },
+      {
+        "name": "redox_syscall",
+        "version": "0.9.4"
+      },
+      {
+        "name": "schannel",
+        "version": "0.1.27"
+      },
+      {
+        "name": "wasm-bindgen",
+        "version": "0.2.128"
+      },
+      {
+        "name": "wasm-bindgen-macro",
+        "version": "0.2.128"
+      },
+      {
+        "name": "wasm-bindgen-macro-support",
+        "version": "0.2.128"
+      },
+      {
+        "name": "wasm-bindgen-shared",
+        "version": "0.2.128"
+      },
+      {
+        "name": "xattr",
+        "version": "1.6.1"
+      },
+      {
+        "name": "zerocopy-derive",
+        "version": "0.8.62"
+      }
+    ],
+    "missing_unused_target_packages_are_not_a_product_test_failure": true,
+    "registry_packages": 384,
+    "registry_source_names_redacted": true
+  },
+  "original_base_source_preserved": true,
+  "preparation_script_sha256": "1db42ea51907e226f6cf708116e1b43cc06652c67e33b0d77409c4b2b0fe70ee",
+  "production_changed": false,
+  "rog_unknown_preparation_replayed": false,
+  "rust_build_executed": false,
+  "schema": "heptabao.ai395-canonical-source-preparation.v1",
+  "source": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+  "source_Cargo_lock": {
+    "bytes": 101193,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.lock",
+    "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+  },
+  "source_at_exact_published_commit": true,
+  "source_clean": true,
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_parent": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "source_workspace_manifest": {
+    "bytes": 615,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.toml",
+    "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+  },
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "clone",
+        "--no-hardlinks",
+        "--no-local",
+        "--no-checkout",
+        "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9"
+      ],
+      "exit_code": 0,
+      "label": "prepare-clone",
+      "original_cap_seconds": 180,
+      "seconds": 0.715784,
+      "stderr_sha256": "5245584fb09e3670c22afd7a604338b6db90f3d8dfe2fcd720bd98870ef61226",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "bundle",
+        "verify",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle"
+      ],
+      "exit_code": 0,
+      "label": "prepare-bundle-verify",
+      "original_cap_seconds": 30,
+      "seconds": 0.004746,
+      "stderr_sha256": "737a47bc35e0e4638316f3f4295b205b89607887e7e10d6f997eebc72d676fc6",
+      "stdout_sha256": "870a2735d15150cf5233a769b1a7d017aacce83124dd3c30db87d2474e8d2a48"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "fetch",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "prepare-fetch",
+      "original_cap_seconds": 30,
+      "seconds": 0.064044,
+      "stderr_sha256": "5a533c1324f6b730954e261a5d6eaea9034c21cdcfaeec52dcebd3872fcb54b3",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "checkout",
+        "--detach",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249"
+      ],
+      "exit_code": 0,
+      "label": "prepare-checkout",
+      "original_cap_seconds": 30,
+      "seconds": 0.216824,
+      "stderr_sha256": "f1507abdaad8b1024253dbcfaf8de7ff933d87df13b2b2abbb1242af66e38de0",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "label": "prepare-fsck",
+      "original_cap_seconds": 60,
+      "seconds": 1.217499,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

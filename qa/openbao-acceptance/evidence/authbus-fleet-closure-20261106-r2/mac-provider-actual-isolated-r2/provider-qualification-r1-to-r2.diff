@@ -1,0 +1,49 @@
+--- a/mac_refresh_provider_qualification_r1.mjs
++++ b/mac_refresh_provider_qualification_r2.mjs
+@@ -13,9 +13,9 @@
+ import {loadQualifiedMacProvider,makeProviderRegistry,observeOriginalDispatcherClosure,ProviderOnceRefused,
+   PROVIDER_SDK_ROOT,PROVIDER_SOURCE_PINS,PROVIDER_UNDICI_PINS,REGISTRY_SYMBOL,TOKEN_URL,CLIENT_ID} from "./mac_refresh_provider_hooks_r2.mjs";
+ 
+-const ROOT="/Users/qianqi/heptabao-authbus-provider-isolated-qualification-20261106-r1";
++const ROOT="/Users/qianqi/heptabao-authbus-provider-isolated-qualification-20261106-r2";
+ const started=process.hrtime.bigint(),budget=Number(process.argv[2]),until=started+BigInt(Math.trunc(budget*1000000));
+-const report={schema:"heptabao.actual-mac-provider-isolated-qualification.r1",ok:false,
++const report={schema:"heptabao.actual-mac-provider-isolated-qualification.r2",ok:false,
+   actualInstalledSdk:true,syntheticCredentialsOnly:true,productionCredentialReads:0,productionWrites:0,
+   actualProviderCalls:0,networkRequests:0,productionMutexAcquired:false,productionOnceLedgerOpened:false,
+   productionRefreshControllerExecuted:false,actualNativeSocketClosureClaimed:false,
+@@ -55,8 +55,12 @@
+ }
+ function agentRow(agent,kind){
+  const row={kind,terminalClosed:false,terminalDestroyed:false};report.agents.push(row);
+- return {agent,row,finish(){row.terminalClosed=agent.closed===true;row.terminalDestroyed=agent.destroyed===true;
+-  need(row.terminalClosed&&row.terminalDestroyed,"provider_fixture_original_agent_terminal_state");}};
++ return {agent,row,finish(expectedClosed=true){row.terminalClosed=agent.closed===true;row.terminalDestroyed=agent.destroyed===true;
++  // DispatcherBase.destroy sets kDestroyed; only close sets kClosed. The M04
++  // case separately requires the known fulfilled original destroy Promise.
++  row.expectedClosedFlag=expectedClosed;
++  need(row.terminalClosed===expectedClosed&&row.terminalDestroyed,"provider_fixture_original_agent_terminal_state");
++  row.terminalFlagsMatchedExpectation=true;}};
+ }
+ async function check(id,fn){
+  remaining();activeCase=id;await fn();report.cases.push({id,passed:true});activeCase=null;
+@@ -166,7 +170,7 @@
+   need(v.known&&v.receipt.originalDispatcherMethodCalls===4&&v.receipt.originalDispatcherPromiseCalls===2&&v.receipt.originalDispatcherInternalCallbackCalls===2,"provider_fixture_actual_close_shape");report.actualEmptyClose=v.receipt;
+  });
+  await check("M04_actual_empty_agent_destroy_and_callback_recursion",async()=>{
+-  const a=agentRow(runtime.t(),"actual-empty-destroy"),v=await originalObserver(a.agent,()=>a.agent.destroy());a.finish();
++  const a=agentRow(runtime.t(),"actual-empty-destroy"),v=await originalObserver(a.agent,()=>a.agent.destroy());a.finish(false);
+   need(v.known&&v.receipt.originalDispatcherMethodCalls===2&&v.receipt.originalDispatcherPromiseCalls===1&&v.receipt.originalDispatcherInternalCallbackCalls===1,"provider_fixture_actual_destroy_shape");
+  });
+  await check("M05_original_100ms_helper_return_with_delayed_ack",async()=>{
+@@ -205,8 +209,8 @@
+  process.stdout.write=oldOut;process.stderr.write=oldErr;
+  report.noFixtureRuntimeOverridesRemaining=!Object.hasOwn(globalThis,symbol)&&!Object.hasOwn(globalThis,override);
+  report.allRecordedFileDescriptorsClosedOnce=report.fileDescriptors.every(x=>x.closed&&x.closeAttempts===1);
+- report.allOriginalAgentsClosed=report.agents.every(x=>x.terminalClosed&&x.terminalDestroyed);
+- if(!report.noFixtureRuntimeOverridesRemaining||!report.allRecordedFileDescriptorsClosedOnce||!report.allOriginalAgentsClosed)report.ok=false;
++ report.allExpectedAgentTerminalStatesObserved=report.agents.every(x=>x.terminalFlagsMatchedExpectation===true);
++ if(!report.noFixtureRuntimeOverridesRemaining||!report.allRecordedFileDescriptorsClosedOnce||!report.allExpectedAgentTerminalStatesObserved)report.ok=false;
+  report.suppressedDiagnosticWrites=suppressedDiagnostics;report.executed=report.cases.length+(activeCase?1:0);report.passed=report.cases.filter(x=>x.passed).length;
+  report.elapsedSeconds=Number(process.hrtime.bigint()-started)/1e9;
+  emit(JSON.stringify(report)+"\n");if(!report.ok)process.exitCode=1;

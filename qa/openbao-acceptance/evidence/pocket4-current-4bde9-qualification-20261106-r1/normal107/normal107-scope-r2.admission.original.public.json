@@ -1,0 +1,41 @@
+{
+  "admitted_to_one_controller_invocation": true,
+  "at_utc": "2026-11-06T18:54:46.391372+00:00",
+  "budget_renewed": false,
+  "controller_invocation_planned": true,
+  "controller_original_budget_seconds": 12000,
+  "controller_sha256": "c8ef09b133312149eecc1886322cc96dcecda18c637b0db9fc3a5e917b3f6564",
+  "formal_test_result_not_observed_by_admission": true,
+  "host": "pocket4",
+  "other_canonical_campaigns": [],
+  "prior_admission_job": {
+    "controller_invoked": false,
+    "exit_code": 1,
+    "job_id": "1a1b229e173-fc05-7cbe",
+    "observed_authoritative_state": "failed",
+    "source_sha256": "ad3c5e84ca0959337797a9e0990ab9a1bb16ab56404fa024f62a533ac05cca86"
+  },
+  "process_observation_errors": [],
+  "process_scan_scope": "whole visible /proc; original compiler comm set and original current-COMMIT controller argv rule",
+  "production_changed": false,
+  "receipt_scan_roots": [
+    "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1"
+  ],
+  "resources": {
+    "compiler_processes": [],
+    "disk_free_bytes": 319643762688,
+    "load_average": [
+      2.1181640625,
+      2.466796875,
+      3.19970703125
+    ],
+    "mem_available_kib": 15216032,
+    "swap_free_kib": 1153016
+  },
+  "rog_unknown_preparation_replayed": false,
+  "schema": "heptabao.pocket4-canonical107-launch-admission.v1",
+  "selection_sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "supervisor_timeout_seconds": 12000
+}

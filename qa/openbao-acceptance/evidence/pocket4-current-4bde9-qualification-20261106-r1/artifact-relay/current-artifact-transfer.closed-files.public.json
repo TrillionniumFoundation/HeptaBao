@@ -1,0 +1,154 @@
+[
+  {
+    "bytes": 110799168,
+    "destination": "artifacts/heptabao-server",
+    "mode": 448,
+    "name": "heptabao-server",
+    "sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-server"
+  },
+  {
+    "bytes": 102211888,
+    "destination": "artifacts/heptabao-seed",
+    "mode": 448,
+    "name": "heptabao-seed",
+    "sha256": "434c32ed59201c13d8af498f5a6b19f10935e744b085a4f8029c241523f4d968",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-seed"
+  },
+  {
+    "bytes": 285431,
+    "destination": "provenance/normal107.result.original.public.json",
+    "mode": 384,
+    "name": "normal107.result.original.public.json",
+    "sha256": "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json"
+  },
+  {
+    "bytes": 142663,
+    "destination": "provenance/test-selection.public.json",
+    "mode": 384,
+    "name": "test-selection.public.json",
+    "sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/test-selection.public.json"
+  },
+  {
+    "bytes": 21718,
+    "destination": "provenance/normal107.controller.original.py",
+    "mode": 384,
+    "name": "normal107.controller.original.py",
+    "sha256": "c8ef09b133312149eecc1886322cc96dcecda18c637b0db9fc3a5e917b3f6564",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/controller.py"
+  },
+  {
+    "bytes": 733,
+    "destination": "provenance/normal107.terminal.exact-tool-text.json",
+    "mode": 384,
+    "name": "normal107.terminal.exact-tool-text.json",
+    "sha256": "8ec1de7b5b992112d479afa5f64233fd9196e83ab323581041b3f6f99670ef63",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/normal107.terminal.exact-tool-text.json"
+  },
+  {
+    "bytes": 377715,
+    "destination": "provenance/candidate.bundle",
+    "mode": 384,
+    "name": "candidate.bundle",
+    "sha256": "9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle"
+  },
+  {
+    "bytes": 3992,
+    "destination": "provenance/native-build.public.json",
+    "mode": 384,
+    "name": "native-build.public.json",
+    "sha256": "25263aa341d5525570da0c950ff519ed808110fc301c63fab7b1611015b7fa8e",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/native-build.public.json"
+  },
+  {
+    "bytes": 729,
+    "destination": "provenance/native-projection.terminal.exact-tool-text.json",
+    "mode": 384,
+    "name": "native-projection.terminal.exact-tool-text.json",
+    "sha256": "fa639c83f44a98ededc81a7a3deddb6a6c63a1db153972b573d6135990899d8f",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-static-abi-producer-r1/projection.terminal.exact-tool-text.json"
+  },
+  {
+    "bytes": 37794,
+    "destination": "provenance/producer-abi.result.original.public.json",
+    "mode": 384,
+    "name": "producer-abi.result.original.public.json",
+    "sha256": "d19c0efdebc27940a56ddef6c5ced9ff68bcc23465c2730d07d396fc915d1b4f",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-static-abi-producer-r1/capture/result.public.json"
+  },
+  {
+    "bytes": 426720,
+    "destination": "provenance/13-normal-release-build.stdout",
+    "mode": 384,
+    "name": "13-normal-release-build.stdout",
+    "sha256": "86d3c08fca966faa8c89030321be891b5585ed94bf4f73fd9e05059792995ca5",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/13-normal-release-build.stdout"
+  },
+  {
+    "bytes": 12124,
+    "destination": "provenance/13-normal-release-build.stderr",
+    "mode": 384,
+    "name": "13-normal-release-build.stderr",
+    "sha256": "3af0957a299738eed655d7b639971e05b8cf1c5462e44e66d49c70f1d2465ede",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/13-normal-release-build.stderr"
+  },
+  {
+    "bytes": 33147,
+    "destination": "control/x230_current_candidate_qualification.py",
+    "mode": 384,
+    "name": "x230_current_candidate_qualification.py",
+    "sha256": "448696002a72dbca1c9d2b070d826a34aac4ef0bc4ad7c3e77feab7a66fa7655",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/current-x230-public-artifact-export-r1/x230_current_candidate_qualification.py"
+  },
+  {
+    "bytes": 22881,
+    "destination": "control/x230_native_abi_capture.py",
+    "mode": 384,
+    "name": "x230_native_abi_capture.py",
+    "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/current-x230-public-artifact-export-r1/x230_native_abi_capture.py"
+  },
+  {
+    "bytes": 14323,
+    "destination": "control/x230_native_abi_admission.py",
+    "mode": 384,
+    "name": "x230_native_abi_admission.py",
+    "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/current-x230-public-artifact-export-r1/x230_native_abi_admission.py"
+  },
+  {
+    "bytes": 26131,
+    "destination": "control/kv2_dr_process_custody.py",
+    "mode": 384,
+    "name": "kv2_dr_process_custody.py",
+    "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/current-x230-public-artifact-export-r1/kv2_dr_process_custody.py"
+  },
+  {
+    "bytes": 729,
+    "destination": "provenance/producer-abi.terminal.exact-tool-text.json",
+    "mode": 384,
+    "name": "producer-abi.terminal.exact-tool-text.json",
+    "sha256": "0f71a30b723ec5a58882d95bfbe88395553c97f4cd038058bdbc10cdf32e6051",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/current-x230-public-artifact-export-r1/producer-abi.terminal.exact-tool-text.json"
+  },
+  {
+    "bytes": 729,
+    "destination": "provenance/x230-static-abi.terminal.exact-tool-text.json",
+    "mode": 384,
+    "name": "x230-static-abi.terminal.exact-tool-text.json",
+    "sha256": "083e3abfb39cbe4edb4270ebb5802906a59cb322192500723820bd6a51771f1c",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/current-x230-public-artifact-export-r1/x230-static-abi.terminal.exact-tool-text.json"
+  },
+  {
+    "bytes": 8158,
+    "destination": "provenance/transfer.manifest.public.json",
+    "mode": 384,
+    "name": "transfer.manifest.public.json",
+    "sha256": "782e3048c803228436ee0a8a0b71b61794c59df0b4e1707a4b2e2d0a0f26ca02",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/current-x230-public-artifact-export-r1/transfer.manifest.public.json"
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "changes": [
+    "new X230 owned root",
+    "new Mac owned root",
+    "API31040",
+    "Node metadata raft31041"
+  ],
+  "dispatched": false,
+  "files": {
+    "rust_tls_lan_coordinator_r2.body.py": {
+      "bytes": 12424,
+      "sha256": "ca25665e272fd827f37ab0d3dc44f98aeb4160f56dc867b52602138e89213a27"
+    },
+    "rust_tls_lan_coordinator_r2.py": {
+      "bytes": 26712,
+      "sha256": "8aea83e1f6e048ddc7ee77054718d2dd7760f1f909390ccea14fb63a0dbe0654"
+    },
+    "rust_tls_lan_worker_r2.py": {
+      "bytes": 13667,
+      "sha256": "a8abcdfb73c1156344ede0a032bf0627b4ca42b16efbc49f9504fab9dd7f6f61"
+    }
+  },
+  "old46230ResultRetainedFailedTransport": true,
+  "originalInner100Outer120AndRequest1_5AndFinish15BudgetsUnchanged": true,
+  "originalProductCaLeafKeySourcesAndProcessCustodyUnchanged": true,
+  "schema": "heptabao.port-only-rust-diagnostic-successor-preparation.r1"
+}

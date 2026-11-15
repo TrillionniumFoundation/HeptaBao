@@ -1,0 +1,35 @@
+--- retained/mac_refresh_capture_sequence_r1.py
++++ prepared/mac_refresh_capture_sequence_r2.py
+@@ -18,11 +18,11 @@
+ import time
+ import types
+ 
+-from mac_gateway_writer_maintenance_r1 import GatewayWriterMaintenance
++from mac_gateway_writer_maintenance_r2 import GatewayWriterMaintenance
+ from mac_maintenance_private_files_r1 import MaintenancePrivateFiles
+-from mac_owned_refresh_parent_r1 import OwnedRefreshParent, strict_json
++from mac_owned_refresh_parent_r2 import OwnedRefreshParent, strict_json
+ from mac_refresh_capture_authority_r1 import OWNER_CAPTURES
+-from mac_post_commit_epoch_r1 import PostCommitEpoch
++from mac_post_commit_epoch_r2 import PostCommitEpoch
+ 
+ ROOT = Path('/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1')
+ LEDGER = Path('/Users/qianqi/heptabao-authbus-refresh-once-ledger-20261106')
+@@ -134,7 +134,7 @@
+         self.attempted, self.accepted, self.loaded = [], [], []
+         self.failed, self.closed, self.preflight_completed = False, False, False
+         self.last_capsule_bytes = self.last_capsule_identity = self.current_epoch = None
+-        self.report = {'schema': 'heptabao.main3-same-parent-fresh-clone-refresh.public.r1',
++        self.report = {'schema': 'heptabao.main3-same-parent-fresh-clone-refresh.public.r2',
+             'ok': False, 'captureMaximumSeconds': 45, 'ownerMaximumSeconds': 120,
+             'sameParentMaximumSeconds': 600, 'captureAttempts': [],
+             'privateCredentialValuesPathsOrDigestsPublished': False,
+@@ -236,7 +236,7 @@
+         need(self.preflight_completed and type(ordinal) is int
+              and ordinal == len(self.attempted) == len(self.accepted) < 3
+              and len(self.refresh_parent.committed) == ordinal
+-             and self.maintenance.phase in ('safe-plist-published', 'refreshing')
++             and self.maintenance.phase in ('parked-for-refresh', 'refreshing')
+              and not self.refresh_parent.blocked, 'sequence_next_original_owner_only')
+         self.remaining()
+         self.source_fence()

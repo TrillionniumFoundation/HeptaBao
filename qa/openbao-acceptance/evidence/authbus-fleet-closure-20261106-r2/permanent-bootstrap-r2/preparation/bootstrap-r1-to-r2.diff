@@ -1,0 +1,71 @@
+--- bootstrap-r1-template
++++ bootstrap-r2-template
+@@ -22,16 +22,16 @@
+ ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-authbus-production')
+ CALLER_HOME = Path('/Users/qianqi')
+ CUSTODY = CALLER_HOME / 'heptabao-authbus-production-custody'
+-OPERATIONS = CUSTODY / 'bootstrap-r1'
++OPERATIONS = CUSTODY / 'bootstrap-r2'
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14')
+ PRODUCT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+ BINARY = ROOT / 'releases' / PRODUCT / 'heptabao-server'
+ BINARY_BYTES = 92359328
+ BINARY_SHA = '5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ CA_SHA = '456ea07b02ead7ac3397507a4e41befeaad822dcdd74695f6a38239029aac01f'
+-LEAF_SHA = '44b6927479f25f2eb9b2a1d0fb9b522066f03200ad03e0400dee76132c7e589c'
++LEAF_SHA = 'abaf8527105e19cbbe0da57a64c7a87d8e7f6e6ae15edc3636f5eee65eefd3bd'
+ PORT = 31080
+-CONFIG = ROOT / 'etc/server-bootstrap.json'
++CONFIG = ROOT / 'etc/server-bootstrap-r2.json'
+ ROLE = 'bootstrap-lifecycle-r1'
+ SECRET_PATH = '/v1/openclaw-auth/data/qualification/bootstrap-lifecycle-r1'
+ TOOL_PINS = {
+@@ -44,12 +44,14 @@
+ UNTIL = START + 300
+ FDS = []
+ CONTROL_SIGNALS = None
+-REPORT = {'schema': 'heptabao.permanent-bootstrap-lifecycle.r1', 'ok': False,
++REPORT = {'schema': 'heptabao.permanent-bootstrap-lifecycle.r2', 'ok': False,
+     'productCommit': PRODUCT, 'automaticRetry': False, 'currentCredentialReads': 0,
+     'providerCalls': 0, 'productionClientChanges': 0, 'launchAgentInstalled': False,
+     'legacyChanges': 0, 'j3160Requests': 0, 'rootKeyValuesOrDigestsPublished': False,
+     'productionCutoverQualified': False, 'productionBackupQualified': False,
+     'parentSeconds': 300, 'eachApiPhaseSeconds': 120, 'supervisorSeconds': 330,
++    'priorKnownNoHttpBootstrapJob': '1a1b386a389-fc05-836f',
++    'certificateCorrectionJob': '1a1b39336a2-fc05-83a7',
+     'permanentStoreInitialized': False, 'serverProcesses': [], 'apiPhases': []}
+ 
+ class Refused(RuntimeError):
+@@ -228,12 +230,12 @@
+         need(row['exitCode'] == 0 and not row['outcomeUnknown'] and not err, 'bootstrap_known_t5_volume')
+         guard.accept_diskutil(out)
+         expected_config = {'listen': '127.0.0.1:31080', 'data_dir': str(ROOT / 'data'),
+-            'audit_file': str(ROOT / 'log/audit.jsonl'), 'tls_cert_file': str(ROOT / 'tls/server.crt'),
++            'audit_file': str(ROOT / 'log/audit.jsonl'), 'tls_cert_file': str(ROOT / 'tls/server-r2.crt'),
+             'tls_key_file': str(ROOT / 'tls/server.key'), 'max_connections': 64, 'timeout_seconds': 15,
+             'rate_limit_per_second': 2000, 'rate_limit_burst': 4000, 'rate_limit_entries': 512,
+             'storage': {'native_v6_file': {'path': str(ROOT / 'data')}}}
+         need(json.loads(guard.read(CONFIG, 16384)) == expected_config, 'bootstrap_exact_loopback_configuration')
+-        for name, expected in (('ca.crt', CA_SHA), ('server.crt', LEAF_SHA)):
++        for name, expected in (('ca.crt', CA_SHA), ('server-r2.crt', LEAF_SHA)):
+             raw = guard.read(ROOT / 'tls' / name, 16384)
+             need(hashlib.sha256(ssl.PEM_cert_to_DER_cert(raw.decode('ascii'))).hexdigest() == expected,
+                  'bootstrap_original_independent_certificate')
+@@ -253,7 +255,7 @@
+         operations.write('source-pins.public.json', encoded(PAYLOAD['pins']))
+         operations.write('initial-config.private.json', encoded(expected_config))
+         protected = {path: full9(path.lstat()) for path in
+-            (BINARY, CONFIG, ROOT / 'tls/ca.crt', ROOT / 'tls/server.crt', ROOT / 'tls/server.key')}
++            (BINARY, CONFIG, ROOT / 'tls/ca.crt', ROOT / 'tls/server-r2.crt', ROOT / 'tls/server.key')}
+         class BoundGuard:
+             def check(self):
+                 guard.check(); operations.check()
+@@ -263,7 +265,7 @@
+         fence.check()
+         need(json.loads(guard.read(CONFIG, 16384)) == expected_config, 'bootstrap_config_readback_before_start')
+         need(binary_pin() == before_bin, 'bootstrap_same_original_binary_before_start')
+-        for name, expected in (('ca.crt', CA_SHA), ('server.crt', LEAF_SHA)):
++        for name, expected in (('ca.crt', CA_SHA), ('server-r2.crt', LEAF_SHA)):
+             raw = guard.read(ROOT / 'tls' / name, 16384)
+             need(hashlib.sha256(ssl.PEM_cert_to_DER_cert(raw.decode('ascii'))).hexdigest() == expected,
+                  'bootstrap_certificate_readback_before_start')

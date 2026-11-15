@@ -1,0 +1,33 @@
+{
+  "at_utc": "2026-11-06T14:19:08.856435+00:00",
+  "completed_upload_sidecars": 2,
+  "files_sha256": {
+    "candidate.bundle": "a4215353a3db4a2a8fea4611d732c384df81543498d7fb17fb1bbd4bbe1ca35c",
+    "preparation-claim.public.json": "bccdf83d2590ed89a5f08e202d374098e24acdaf3fb7f2702ba8b52f47a29ed7",
+    "preparation.result.public.json": "8d4b9befc07d0d24e51b91209438daae1b0eb9337f6bc038629609b0953ef3bf",
+    "prepare-bundle-verify.stderr": "786c690e76ad5586dee4848856fc2139da65b6e9a31e6c446f9985b4a2430e4c",
+    "prepare-bundle-verify.stdout": "d6531d6dcfacf482d7f37414da88656019e26af482b4a06e43e8d14b1ef28b40",
+    "prepare-checkout.stderr": "9eb22839a26ba735d8bc5f8732276fb33343dc51e07963f76883e67400b174a2",
+    "prepare-checkout.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepare-clone09.stderr": "ff01b48213a72bcf8845ddddb4042f3eb42200e29a50c47534988cbf83f9ab86",
+    "prepare-clone09.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepare-fetch.stderr": "86f93f61d104dee712ee16b4111c7cfc6846fe70a1f62a885df234dc42e494f0",
+    "prepare-fetch.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepare-fsck.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepare-fsck.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepare_source.py": "d71733e202dbfc53ab6f240ee74e73ba3b487246b270bdcffe2b4879ec703eee"
+  },
+  "first_move_guard_correctly_refused_unattributed_sidecars": true,
+  "formal_build_started": false,
+  "new_control": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-6d456-authbus-r1",
+  "old_control": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r9",
+  "old_location_in_original_receipts_is_historical": true,
+  "original_preparation_receipt_bytes_preserved": true,
+  "owned_payload_files": 14,
+  "production_changed": false,
+  "schema": "heptabao.owned-candidate-stage-relocation.v1",
+  "status": "passed",
+  "unregistered_files_found": false,
+  "upload_sidecar_bytes_preserved": true,
+  "upload_sidecars_match_original_commit_ack": true
+}

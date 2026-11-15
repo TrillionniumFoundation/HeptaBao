@@ -1,0 +1,88 @@
+{
+  "actual_host_result": {
+    "actual_frozen_classes_compiled_unchanged": true,
+    "diagnostic_mapping_entries_checked": 39,
+    "executed": 34,
+    "expected": 34,
+    "failed": 0,
+    "first_33_case_receipt_preserved": "run1/receipt.public.json",
+    "first_script_recovered_from_exact_patch_and_old_receipt_sha256_verified": true,
+    "missing": 0,
+    "passed": 34,
+    "receipt": "run2/receipt.public.json",
+    "receipt_sha256": "5f199c94bb8438fd102f736c704f1d552924b79f910312249799f5d4ff454bdf",
+    "script_sha256": "187185de4d36da28f61982b4ac4bacd44b8bd2e0fd4227a62a439681ba9052ab"
+  },
+  "adb_calls": 0,
+  "android_runtime_qualified": false,
+  "boundaries": [
+    "No claim of kernel NOREPLACE or isolation from same-UID code that ignores the cooperative lock.",
+    "The 33/34 host results exercise unchanged product control flow with explicit Android API mocks, not ART/OEM descriptor semantics or SAF behavior.",
+    "Hbv/Passkey/Session/DocumentIO compile dependencies are mocks; no password decryption, credential, CM or device qualification follows.",
+    "The actual r6 observation remains PUBLISH_LINK/ERRNO/EACCES; upstream sepolicy consistency is an inference, not an observed OEM AVC.",
+    "The separate Linux fcntl close experiment supports the admission design but is not an Android runtime result.",
+    "No external independent security review is claimed."
+  ],
+  "external_review": false,
+  "network_calls_in_host_verification": 0,
+  "official_references": [
+    {
+      "blob": "941472d374b73007e406641f038793ad69146661",
+      "supports": "Upstream untrusted-app hardlink restriction; OEM causality not independently observed.",
+      "url": "https://android.googlesource.com/platform/system/sepolicy/+/android16-qpr2-release/private/app_neverallows.te"
+    },
+    {
+      "supports": "The Android FileDescriptor constructor does not transfer descriptor ownership.",
+      "url": "https://developer.android.com/reference/java/io/FileInputStream"
+    },
+    {
+      "supports": "The Android FileDescriptor constructor does not transfer descriptor ownership.",
+      "url": "https://developer.android.com/reference/java/io/FileOutputStream"
+    },
+    {
+      "supports": "Advisory process-wide locking and possible release when another channel for the same file closes.",
+      "url": "https://developer.android.com/reference/java/nio/channels/FileLock"
+    },
+    {
+      "blob": "3e8e4f3e0f2d445a2c9d0829a52492c79381e2a6",
+      "supports": "FileChannel native lock implementation uses fcntl F_SETLK64.",
+      "url": "https://android.googlesource.com/platform/libcore/+/master/ojluni/src/main/native/FileDispatcherImpl.c"
+    },
+    {
+      "blob": "60eeb2b8b0d5787cd397bd4162e3da70488ddd5b",
+      "supports": "PFD dup and owning AutoClose stream cleanup behavior.",
+      "url": "https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/os/ParcelFileDescriptor.java"
+    }
+  ],
+  "phone_qualified": false,
+  "product_sources": {
+    "README.md": "be3053a9db7b53e5d01132337823d898b179b2fcb9618fe46b0233584d3659cc",
+    "StageDiagnostics.java": "1791431a579b62c66c31ae64e7749b5074ff1a3cc57f723acd708fb43c15b389",
+    "VaultFiles.java": "f19b24a8091bac11c92354922d5fe0db1d2d2d59d1afbc511387f2a9d19c2012"
+  },
+  "production_qualified": false,
+  "reproduce_argv": [
+    "python3",
+    "/workspace/scratch/848006513f75/passkey_storage_r7_review/host_check.py",
+    "--work",
+    "/workspace/scratch/848006513f75/passkey_storage_r7_root_review_r1"
+  ],
+  "result": "no_new_static_blocker_for_exact_candidate_build_and_authorized_device_experiment",
+  "review_checks": [
+    "The process-wide nonblocking admission token precedes all lockfile opens and remains owned through uncertain lock cleanup.",
+    "A second local Guard is rejected before any new descriptor can release the existing process fcntl lock.",
+    "Guard.close is cross-thread safe and idempotent; closing an older Guard again cannot clear a successor admission token.",
+    "The raw lock descriptor is closed before locking its owned PFD duplicate; constructor failures close known owners while preserving primary errors.",
+    "All publication call sites pass their actual live Guard; two target-hash/absence checks and the atomic rename occur under that cooperative protocol.",
+    "Short writes are completed and zero progress fails; a conflicting second CAS preserves the observed conflicting target.",
+    "An O_EXCL collision is never removed as if it were this operation\u2019s temporary file.",
+    "Post-rename directory sync, read and close errors report save_outcome_unknown.",
+    "A Transaction with an uncertain result rejects another commit on the same object, and reopening reads the committed bytes.",
+    "A fresh JVM reopens the same directory left by the prior fenced published-close case and establishes a new lock.",
+    "Ordinary data/directory close uncertainty is distinguished from lock-descriptor uncertainty; the former is not falsely reported leak-free.",
+    "The README now states cooperative-writer limits and explicitly narrows the persistent process fence to uncertain lock-descriptor cleanup."
+  ],
+  "schema": 1,
+  "scope": "internal_independent_r7_storage_review",
+  "sdk_or_apk_builds": 0
+}

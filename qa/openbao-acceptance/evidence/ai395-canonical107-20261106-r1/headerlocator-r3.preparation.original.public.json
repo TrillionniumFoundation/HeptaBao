@@ -1,0 +1,37 @@
+{
+  "all_retained_source_and_header_pins_verified": true,
+  "at_utc": "2026-11-06T16:31:50.074241+00:00",
+  "existing_failed_output_preserved": true,
+  "existing_failed_target_preserved": true,
+  "input_pins": {
+    "candidate.bundle": {
+      "bytes": 387689,
+      "sha256": "a2e6cfdca310a4a05e6f4093a04969543b606bd9d7af0fcbe2f7a4189e7d0349"
+    },
+    "controller.py": {
+      "bytes": 21726,
+      "sha256": "7dc5a72f2362b954f04d819ea22034602c64ed2e8c3c3664c66ceea006d1015a"
+    },
+    "launch-admission-r3.py": {
+      "bytes": 5842,
+      "sha256": "5fa698879944d2124621a46b1ab86a27403d0fdb2730c969a5a32faba88c2055"
+    },
+    "test-selection.public.json": {
+      "bytes": 97920,
+      "sha256": "eaf290de034875266878d0094f261157d0c066752198521b5488ab7c763c7f5c"
+    }
+  },
+  "new_target_empty": true,
+  "normal107_qualified": false,
+  "output": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-headerlocator-r3",
+  "production_changed": false,
+  "retained_pin_count": 171,
+  "rust_compilation_executed": false,
+  "rust_tests_executed": false,
+  "schema": "heptabao.ai395-header-locator-successor-preparation.v1",
+  "source_clean": true,
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "passed",
+  "target": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal-headerlocator-r3"
+}

@@ -1,0 +1,6 @@
+{"argv": ["cargo", "+1.98.0", "test", "--locked", "-p", "heptabao-ha-service", "--lib", "--features", "experimental-v6-peer-ingress,private-forward-stage-diagnostic", "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes", "--", "--list", "--color=never"]}
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.10s
+     Running unittests src/lib.rs (/Users/runner/work/_temp/heptabao-native-recovery-target/debug/deps/heptabao_ha_service-07ac00223532e21e)
+tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes: test
+
+1 test, 0 benchmarks

@@ -1,0 +1,101 @@
+--- a/current_gateway_argv_projection_r2.py
++++ b/current_gateway_argv_projection_r3.py
+@@ -2,15 +2,15 @@
+ """Read the already captured gateway restore record; publish safe syntax only.
+ No child, gateway API, provider, service mutation, auth DB, or profile inventory.
+ """
+-import hashlib,json,os,shlex,stat,sys,time
++import hashlib,json,os,re,shlex,stat,sys,time
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+30
+-ROOT=Path('/Users/qianqi/heptabao-authbus-current-gateway-argv-20261106-r2')
++ROOT=Path('/Users/qianqi/heptabao-authbus-current-gateway-argv-20261106-r3')
+ PRIOR=Path('/Users/qianqi/heptabao-authbus-current-gateway-lineage-20261106-r1')
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ LIVE=Path('/Users/qianqi/.openclaw')
+ codes=set();fd_rows=[];created=False
+-report={'schema':'heptabao.current-gateway-argv-safe-projection.r2','ok':False,'serviceMutations':0,'providerCalls':0,
++report={'schema':'heptabao.current-gateway-argv-safe-projection.r3','ok':False,'serviceMutations':0,'providerCalls':0,
+  'credentialStoresRead':0,'registryOpened':False,'childProcesses':0,'rawArgumentsOrDigestsPublished':False,
+  'rawConfigOrHashPublished':False,'runningPluginMemoryFlagsProven':False,'sameCurrentProcessReobserved':False,
+  'sourceObservationJob':'1a1b2348f45-fc05-7cf1','originalSeconds':30,'supervisorSeconds':45}
+@@ -42,6 +42,15 @@
+  fd=os.open(ROOT,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW);row={'fd':fd,'attempted':False,'closed':False};fd_rows.append(row)
+  try:os.fsync(fd)
+  finally:row['attempted']=True;os.close(fd);row['closed']=True
++def shell_switch(value):
++ # Only a closed set of documented short shell switches is classified. Unknown
++ # text is not published and does not authorize interpretation as shell code.
++ if not isinstance(value,str) or not 2<=len(value)<=8 or not value.startswith('-'):return None
++ letters=value[1:]
++ if 'c' not in letters or any(x not in 'cefluvx' for x in letters):return None
++ return {'commandString':True,'errexit':'e' in letters,'noglob':'f' in letters,
++  'login':'l' in letters,'nounset':'u' in letters,'verbose':'v' in letters,'xtrace':'x' in letters,
++  'duplicateFlagCount':len(letters)-len(set(letters))}
+ try:
+  os.umask(0o077);need(sys.platform=='darwin' and os.getuid()==501,'argv_actual_mac_owner')
+  original=read(PRIOR/'result.public.json',16384)[0]
+@@ -52,7 +61,7 @@
+  config=read(LIVE/'openclaw.json',1048576,True)
+  need(list(config[1])==value['configFull9'] and hashlib.sha256(config[0]).hexdigest()==value['configSha256'],'argv_same_current_config_generation')
+  args=value['arguments'];need(isinstance(args,list) and len(args)==8 and all(isinstance(x,str) for x in args),'argv_exact_original_eight_arguments')
+- switches=[i for i,x in enumerate(args) if x in ('-c','-lc','-cl')]
++ switches=[i for i,x in enumerate(args[:2]) if shell_switch(x) is not None]
+  need(len(switches)<=1,'argv_unambiguous_known_shell_switch')
+  script_index=switches[0]+1 if switches and switches[0]+1<len(args) else None
+  if script_index is not None:
+@@ -67,6 +76,7 @@
+  for i,arg in enumerate(args):
+   item={'position':i}
+   if i==script_index:item.update(kind='shell-code',recognizedTokens=safe_tokens,unknownTokenCount=sum(x not in safe for x in tokens))
++  elif i in switches:item.update(kind='known-shell-switches',flags=shell_switch(arg))
+   elif arg in atom_allow:item.update(kind='known-public-atom',value=arg)
+   elif i>0 and args[i-1]=='--port' and arg.isdecimal() and 1<=int(arg)<=65535:item.update(kind='explicit-listen-port',value=int(arg))
+   elif arg.startswith(str(SDK)+'/dist/') and Path(arg).suffix in ('.js','.mjs') and str(Path(arg))==arg and '..' not in Path(arg).parts:
+@@ -76,18 +86,39 @@
+   else:item.update(kind='private-or-unrecognized')
+   projected.append(item)
+  ROOT.mkdir(mode=0o700,exist_ok=False);created=True
+- entries=[]
++ entries=[];source_total=0;first_hop=[]
++ need(entry_paths==[SDK/'dist/index.js'],'exact_current_registered_public_entry')
+  for p in entry_paths:
+-  b,s=read(p,1048576);text=b.decode('utf-8','strict')
+-  # Public source only, saved with a code digest; never hash original argv.
+-  name=p.name;need(name not in ('.','..') and '/' not in name,'argv_public_code_leaf')
+-  new('public-entry-'+name,b)
++  b,ident_entry=read(p,1048576);text=b.decode('utf-8','strict');source_total+=len(b)
++  need(len(b)==3293 and hashlib.sha256(b).hexdigest()=='9832720dcaf85519d315dda624497e352588f0d65c5607390df0501cc2358985','same_current_entry_public_pin')
++  name=p.name;new('public-entry-'+name,b)
++  imports=re.findall(r"from\s+['\"]\./([A-Za-z0-9_.-]+\.js)['\"]",text)
++  need(len(imports)<=8 and len(set(imports))==len(imports),'finite_public_entry_first_hop')
+   entries.append({'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),
+-   'staticRelativeImportCount':text.count('from "./')+text.count("from './"),'sourceCopiedToOwnedPublicCodeFile':True})
++   'staticRelativeImportCount':len(imports),'sourceCopiedToOwnedPublicCodeFile':True})
++  for leaf in imports:
++   remaining();need(leaf not in ('.','..') and '..' not in Path(leaf).parts,'public_entry_import_leaf')
++   target=SDK/'dist'/leaf;raw_source,source_identity=read(target,1048576);source_total+=len(raw_source)
++   need(source_total<=2*1048576,'bounded_public_entry_first_hop_total')
++   source_text=raw_source.decode('utf-8','strict');new('public-import-'+leaf,raw_source)
++   first_hop.append({'path':str(target),'bytes':len(raw_source),'sha256':hashlib.sha256(raw_source).hexdigest(),
++    'mentionsConfigEnvironment':('OPENCLAW_CONFIG_PATH' in source_text),'mentionsStateEnvironment':('OPENCLAW_STATE_DIR' in source_text),
++    'sourceCopiedToOwnedPublicCodeFile':True})
++  need(read(p,1048576)==(b,ident_entry),'entry_public_source_unchanged_after_first_hop')
++ # These four exact public paths are named by the already captured installed
++ # state-db/plugin-registry/plugin-metadata sources; no directory search occurs.
++ support=[]
++ for leaf in ('paths-BMBAvkNf.js','config-state-CtMlHVRM.js','config-normalization-shared-w2iz0aeC.js','installed-plugin-index-N4jxqS0-.js'):
++  target=SDK/'dist'/leaf;code,code_identity=read(target,1048576);source_total+=len(code)
++  need(source_total<=2*1048576,'bounded_public_entry_first_hop_total');code.decode('utf-8','strict')
++  new('public-support-'+leaf,code)
++  support.append({'path':str(target),'bytes':len(code),'sha256':hashlib.sha256(code).hexdigest(),'sourceCopiedToOwnedPublicCodeFile':True})
++ report['publicConfigAndPluginSupport']=support
+  need(read(PRIOR/'restore-inputs.private.json',1048576,True)==(raw,ident),'argv_original_private_record_unchanged')
+  need(read(LIVE/'openclaw.json',1048576,True)==config,'argv_config_after_public_source_read')
+  report.update(ok=True,argumentProjection=projected,shellScriptPosition=script_index,shellTransparentExecPatternMatched=transparent,
+-  loginShellStartupFilesNotBound=any(x in ('-l','-lc','-cl','--login') for x in args[:script_index] if script_index is not None),
++  loginShellStartupFilesNotBound=(shell_switch(args[switches[0]])['login'] if switches else None),
++  shellSwitchClassified=bool(switches),publicEntryFirstHop=first_hop,publicCodeBytes=source_total,
+   recognizedShellOnly=script_index is not None and all(x in safe for x in tokens),publicEntries=entries,currentConfigFull9AndBytesStillExact=True,
+   originalRestoreRecordFull9AndBytesExact=True,publicEntrypointQualificationStillRequired=True)
+ except BaseException as e:

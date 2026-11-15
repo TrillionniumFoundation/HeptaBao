@@ -1,0 +1,11 @@
+{
+  "uname_a": "Darwin sat12-dp151-58b26db9-db4b-4f90-bfba-bca0d64f42a8-9A2E60CA6260.local 23.6.0 Darwin Kernel Version 23.6.0: Tue Jul 21 21:56:54 PDT 2026; root:xnu-10063.141.1.713.39~1/RELEASE_ARM64_VMAPPLE arm64",
+  "uname_m": "arm64",
+  "platform": "macOS-14.8.9-arm64-arm-64bit-Mach-O",
+  "python_version": "3.14.7",
+  "runner_os": "macOS",
+  "runner_arch": "ARM64",
+  "cargo_build_jobs": "2",
+  "cmake_build_parallel_level": "2",
+  "sw_vers": "ProductName:\t\tmacOS\nProductVersion:\t\t14.8.9\nBuildVersion:\t\t23J631"
+}

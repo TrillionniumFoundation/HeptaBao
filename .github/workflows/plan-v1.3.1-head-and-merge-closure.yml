@@ -1,10 +1,7 @@
 name: plan-v1.3.1-head-and-merge-closure
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - codex/plan-v1.3-gap-closure-v2
+  # Historical V1.3 closure; run on demand when its evidence is needed.
   workflow_dispatch:
 
 permissions:

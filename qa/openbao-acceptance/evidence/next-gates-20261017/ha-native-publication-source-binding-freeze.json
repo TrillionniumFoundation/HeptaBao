@@ -1,0 +1,10 @@
+{
+  "file": "crates/heptabao-server/src/ha_native_v6_publication.rs",
+  "sha256": "d38c74415f8d4ade25fc4f42b5bf93c67435ec38a28ed51862d0dce34ee63994",
+  "bytes": 22987,
+  "pre_root_proposal_intent_and_original_deadline_checked": true,
+  "root_call_uses_recovery_owned_intent_and_enrollment": true,
+  "reference_id_format_unchanged": "native-v6-<original random operation_digest hex>",
+  "publication_invocations": 1,
+  "validation": "Rust 1.98 rustfmt parse only; no cargo run; pending next immutable build"
+}

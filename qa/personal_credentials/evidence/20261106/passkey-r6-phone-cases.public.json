@@ -1,0 +1,397 @@
+{
+  "blocked": 16,
+  "candidate": "r6",
+  "cases": [
+    {
+      "evidence": [
+        {
+          "interpretation": "product_staging_failure_despite_successful_ui_phase_commands",
+          "job": "1a1b0810baf-fc05-70fc",
+          "master_entered": false,
+          "ordinary_saf_seed_selected": true,
+          "phase_result": {
+            "case": "M01",
+            "error": null,
+            "exit_code": 0,
+            "file": "1793962617663585884-255bd2dd-5.result.public.json",
+            "phase": "inspect",
+            "sha256": "5f6978722cf335eb27e5dc8da2fbe0b1f3ce50811b9cd6db5e5e00530fe21a0c"
+          },
+          "seed_sha256": "bb527d9aa00987a243b378ac31eb15d2caf203e106348a8e1ed60cff7f674917",
+          "ui_code": "stage_failed:PUBLISH_LINK:ERRNO:EACCES"
+        }
+      ],
+      "executed": true,
+      "id": "M01",
+      "status": "failed"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "M02",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "M03",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "M04",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "M05",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "M06",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G01",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G02",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G03",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G04",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G05",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G06",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G07",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G08",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G09",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G10",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M01",
+          "reason": "fixed_candidate_import_staging_failed"
+        }
+      ],
+      "executed": false,
+      "id": "G11",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "cleanup_sha256": "f08275822034034834fd63d92eaf0e734bd3244322fcd7855594324b3376be3c"
+        }
+      ],
+      "executed": true,
+      "id": "M07",
+      "status": "passed"
+    }
+  ],
+  "cleanup_sha256": "f08275822034034834fd63d92eaf0e734bd3244322fcd7855594324b3376be3c",
+  "credential_manager_exercised": false,
+  "executed": 2,
+  "expected": 18,
+  "failed": 1,
+  "master_entered": false,
+  "missing": 0,
+  "p4_qualified": false,
+  "passed": 1,
+  "phase_evidence": [
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-0.result.public.json",
+      "phase": "preflight",
+      "sha256": "58d062bc1a0e0eac5d83c26c0560c6de29dda4e371cddc8fbda243030aed9f13"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-1.result.public.json",
+      "phase": "install",
+      "sha256": "36957613bf06b17dec84e77d83fd2d3ea98722672e7f2ac9b559751f91fff6f4"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-10.result.public.json",
+      "phase": "launch-provider",
+      "sha256": "e1bdc37904bcbe9b516c5a73b5f934ff11cc26e3ad440183e8dedfc5bcba3697"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-11.result.public.json",
+      "phase": "inspect",
+      "sha256": "616cd57b564466f54a918de65c709e64bf5e6bf6144f38d76567f114605db58c"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-2.result.public.json",
+      "phase": "reverse",
+      "sha256": "4ed6d6f630a8157726418074fbda2e40dd699b2d0e6c1ed4e5f69111448f6a0c"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-3.result.public.json",
+      "phase": "settings-arm-primary-system-bridge",
+      "sha256": "bb55d4af88d91e508840ef54e60eb054a675dfa357c6f2a6483ec565f349037d"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-4.result.public.json",
+      "phase": "launch-provider",
+      "sha256": "d873e984943f62d7d43f8c63185d67803f46af67d2b10b1750a988d620e5abb8"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-5.result.public.json",
+      "phase": "tap",
+      "sha256": "1c0f3d27ee35828d0f02ceb0eeaa78362cdfb7e450f7c0827ddee09d47350a77"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-6.result.public.json",
+      "phase": "tap",
+      "sha256": "eff2e3792aa21ad833b9d6029187b3b41132552441061853e976cd8bb7036401"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-7.result.public.json",
+      "phase": "tap",
+      "sha256": "8006be3f5bafff29e4e178aa4eba1919e6988262b50e54dffe55eb69cebc6081"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-8.result.public.json",
+      "phase": "tap",
+      "sha256": "1902a0a898f84d71725e43286f9080909ad9e55ed3190c4329eb7fdc47c24bfd"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962209128297967-8e4d27b2-9.result.public.json",
+      "phase": "settings-selected",
+      "sha256": "c891f1bb06b233a09968850c3e8fb40d9933f921036946515844598808b722d1"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962617663585884-255bd2dd-0.result.public.json",
+      "phase": "tap",
+      "sha256": "4c9d0188e3c22e65661c4e5133e1051551440e5781bec0325cefb9066ebecd31"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962617663585884-255bd2dd-1.result.public.json",
+      "phase": "tap",
+      "sha256": "917e689e4975cf720fd3cc6077be8895e43960da7b309ecfe38178418cc097ad"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962617663585884-255bd2dd-2.result.public.json",
+      "phase": "tap",
+      "sha256": "97554b5f8608831d5aef859e08a243871bed503028a59e34260fa2bbf98dfb8b"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962617663585884-255bd2dd-3.result.public.json",
+      "phase": "tap",
+      "sha256": "26cb1a49627821516e2d9587de711f33c1e3658fc3cd464307795a509ecfb2c1"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962617663585884-255bd2dd-4.result.public.json",
+      "phase": "tap",
+      "sha256": "139a5b85d17d8d71cb2040804cd7e1cd0de44d1d93fc869249423fe51773c148"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962617663585884-255bd2dd-5.result.public.json",
+      "phase": "inspect",
+      "sha256": "5f6978722cf335eb27e5dc8da2fbe0b1f3ce50811b9cd6db5e5e00530fe21a0c"
+    },
+    {
+      "case": "M07",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793962779646991856-98a3d70f-0.result.public.json",
+      "phase": "restore",
+      "sha256": "0bcf9b4c0691a7a4923a133d6a86d05db5a95ddfc0b39b1a7936f6972b33f8c6"
+    }
+  ],
+  "preparation_attempt_history": [
+    {
+      "job": "1a1b07c7280-fc05-70d1",
+      "reason": "exact_alias_media_index_poll_timeout_before_ui",
+      "status": "failed"
+    },
+    {
+      "canonical_media_row_confirmed": true,
+      "job": "1a1b0805edd-fc05-70f2",
+      "mutating_replay": false,
+      "status": "read_only_reconciled"
+    }
+  ],
+  "production_qualified": false,
+  "profile_sha256": "b8c1d013b662dfb05ff526f0d409f00820dd1e037cf2d4307da02d50e121d439",
+  "provider_apk_sha256": "0240a545d9ed9518201cfda945a26c5f7dc8742534d1ab21d5e84f23bf9c4ac7",
+  "runtime_source_bundle_sha256": "90d66751273ce8266014245a2f03bd5accb7e4794cc70128c91be3bfd88bf2a9",
+  "schema": 1,
+  "setup_failures": []
+}

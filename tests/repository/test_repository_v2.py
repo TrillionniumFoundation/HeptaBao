@@ -5,6 +5,7 @@ import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -18,6 +19,37 @@ SPEC.loader.exec_module(VALIDATOR)
 class RepositoryV2Tests(unittest.TestCase):
     def test_current_repository_is_consistent(self) -> None:
         self.assertEqual([], VALIDATOR.validate())
+
+    def test_public_homepage_remains_intentionally_empty(self) -> None:
+        self.assertEqual(b"", VALIDATOR.README_PATH.read_bytes())
+
+    def test_current_portal_keeps_each_mandatory_validation_command(self) -> None:
+        state = VALIDATOR.read_yaml(VALIDATOR.STATE_PATH)
+        names = {
+            VALIDATOR.package_name(ROOT / member / "Cargo.toml")
+            for member in VALIDATOR.workspace_members()
+        }
+        original = VALIDATOR.CURRENT_DOCUMENTATION_PATH.read_text()
+        with tempfile.TemporaryDirectory() as temporary:
+            portal = Path(temporary) / "CURRENT_DOCUMENTATION.md"
+            with patch.object(VALIDATOR, "CURRENT_DOCUMENTATION_PATH", portal), patch.object(
+                VALIDATOR, "CURRENT_DOCUMENTS", (portal, VALIDATOR.MODULE_INDEX_PATH)
+            ):
+                for command in (
+                    "python scripts/validate_repository_v2.py",
+                    "cargo +1.98.0 fmt --all -- --check",
+                    "cargo +1.98.0 test --locked --workspace --all-targets",
+                    "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+                    "cargo +1.98.0 doc --locked --workspace --no-deps",
+                ):
+                    with self.subTest(command=command):
+                        self.assertIn(command, original)
+                        portal.write_text(original.replace(command, "removed-command"))
+                        errors = VALIDATOR.validate_current_documentation(state["plan_id"], names)
+                        self.assertTrue(any("missing current validation command" in e for e in errors))
+                portal.write_text(original.replace(f"**{len(names)} packages**", "**0 packages**"))
+                errors = VALIDATOR.validate_current_documentation(state["plan_id"], names)
+                self.assertTrue(any("exact current package count" in e for e in errors))
 
     def test_v3_guide_rejects_missing_semantic_sections(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

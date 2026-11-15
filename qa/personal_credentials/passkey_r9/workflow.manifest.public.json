@@ -1,0 +1,140 @@
+{
+  "adb_used": false,
+  "diff_sha256": "df95f861e2ba9cb12e5d1a48bb75920e15678f6c0b663e58808fb100880f8a3a",
+  "expected_case_ids": [
+    "M01",
+    "M02",
+    "M03",
+    "M04",
+    "M05",
+    "M06",
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "G09",
+    "G10",
+    "G11",
+    "M07"
+  ],
+  "files": [
+    {
+      "bytes": 6378,
+      "changes": "fresh namespace and component pins; create-only case admission before effects",
+      "original_path": "runtime-sources/M01-ordinary-saf-r8.py",
+      "original_sha256": "c70a850aa7fb9a1ca94cad151705167fe222226fc8345d894a614667ad43484c",
+      "path": "runtime-sources/M01-ordinary-saf-r9.py",
+      "sha256": "215a99236c454cafbf02b83b870109e4a5fe304c1c69f0dfe9427a5c67ef308f"
+    },
+    {
+      "bytes": 7477,
+      "changes": "fresh namespace and component pins; create-only case admission before effects",
+      "original_path": "runtime-sources/M02-real-cm-create-r8.py",
+      "original_sha256": "b55efa59807f213404563b7194ced115d99539ae96b544deaf978b5f0e3621c9",
+      "path": "runtime-sources/M02-real-cm-create-r9.py",
+      "sha256": "2c147e1d2b90e21fb18789138a4c936471fe2c377923b59f01dea6b4810a6ec5"
+    },
+    {
+      "bytes": 8059,
+      "changes": "fresh namespace and component pins; create-only case admission before effects",
+      "original_path": "runtime-sources/M03-real-cm-get-r8.py",
+      "original_sha256": "76056b73f3af3eee2d984d616fa992cfbe800f28644b08687dddac0833b4a531",
+      "path": "runtime-sources/M03-real-cm-get-r9.py",
+      "sha256": "2560ac82f4a35b3834cb938fc01a1deb928e38c7d3eac1912ecc4a994f3c4052"
+    },
+    {
+      "bytes": 11496,
+      "changes": "fresh namespace and component pins; create-only case admission before effects",
+      "original_path": "runtime-sources/M04-ordinary-saf-backup-r8.py",
+      "original_sha256": "a89f0f499e6320f109e140edff796601bbc3e1fe0290098589f27db1fde66c95",
+      "path": "runtime-sources/M04-ordinary-saf-backup-r9.py",
+      "sha256": "c49ec9c5473ce911c9df63066c6a49258f69b9bc9ca62846317765a88aa8d2c6"
+    },
+    {
+      "bytes": 392,
+      "changes": "fresh namespace and component pins; create-only case admission before effects",
+      "original_path": "runtime-sources/M07-core-compare-restore-r8.py",
+      "original_sha256": "21a0889ad4bf86c6bf35c74d31b96350350f4ec15b9c773610b02df054a31044",
+      "path": "runtime-sources/M07-core-compare-restore-r9.py",
+      "sha256": "b7b2ff3fc418f4fbac54116f49aff0b01d52906bdf94e6286acaed26cd281388"
+    },
+    {
+      "bytes": 8906,
+      "changes": "fresh namespace/pins and current-run original M05 RP bytes; no historical RP hash inheritance",
+      "original_path": "runtime-sources/M06-real-get-after-restore-r8.py",
+      "original_sha256": "01e04093e559d0e462d4bace7fc59d25921f6bc825b392a4fb907fc0517119e6",
+      "path": "runtime-sources/M06-real-get-after-restore-r9.py",
+      "sha256": "3b27a1cc7826e6d6898243a44633645dfcbf136d25413e91488895068ef586c5"
+    },
+    {
+      "bytes": 11954,
+      "changes": "fresh run; final summary references the actual current receipt, preserving the previous reference-error original",
+      "original_path": "runtime-sources/G11-current-ordinary-saf-backup-r8.py",
+      "original_sha256": "15a84836f6471ef3efa8a792db49ab04f5251e6c1ca3cbc9e772c772b7a626e9",
+      "path": "runtime-sources/G11-current-ordinary-saf-backup-r9.py",
+      "sha256": "6572507dfb9bdbea1af5285e59fd4574d7c9a29a54b51ac79a6022d7468e7e47"
+    },
+    {
+      "bytes": 5355,
+      "changes": "fresh four owned directories; bounded successful push progress is retained, with original actual ciphertext validation and no retry",
+      "original_path": "runtime-sources/documents-prepare-r8.py",
+      "original_sha256": "9c40c7435fba6cbb54aee857b066631b93e617baf7f9d7d729c50074da63b745",
+      "path": "runtime-sources/documents-prepare-r9.py",
+      "sha256": "4107b925ecf37f7930d3f1b06805e72e16b23fb3f593109eb6c050fff859cf89"
+    },
+    {
+      "bytes": 12149,
+      "changes": "new full-run G02-G06 with disjoint -control names; original callback families; bounded final observation gate and conservative original unlock origin",
+      "original_path": "runtime-sources/G03-G07-real-CM-guards-control-names-r8.py",
+      "original_sha256": "6742c30b5654d5539ba0d7648e0e51dabbdf78345d6004bbf2ff5aa5460dad65",
+      "path": "runtime-sources/G02-G06-real-CM-guards-r9.py",
+      "sha256": "c7c8baad3f9b26894f1bd7b4bded39cec95d776d5010e8d0299dc7c0ffb7a6b5"
+    },
+    {
+      "bytes": 13656,
+      "changes": "actual passed double-Back source with exact timers/ceremony gates, adapted from separate supplement to one new-run G07 row",
+      "original_path": "G07-retest-source-candidate-2/candidate.py",
+      "original_sha256": "ddd38fc035952771c5ef7d992aee0f7b4444129f559b7729bd3b2766d424af8c",
+      "path": "runtime-sources/G07-real-CM-cancel-r9.py",
+      "sha256": "c1b52486e9f8520612a5a845272b7b4acb14fc2c76acb7c7ef3f2620dea90c13"
+    },
+    {
+      "bytes": 15691,
+      "changes": "remove historical G07 observations; preserve G01/G09; integrate fresh unconsumed-target fixture from c71d with one push per case and explicit precondition gate",
+      "original_path": "runtime-sources/G01-G08-G09-G10-ordinary-SAF-guards-r8.py",
+      "original_sha256": "452184e7d825cc3e3a34720d8eda892c7e3544bd7e7e8faa066f9fbc16f3292e",
+      "path": "runtime-sources/G01-G08-G09-G10-ordinary-SAF-guards-r9.py",
+      "sha256": "ad9ac360041028c8522df1330ade5305cbd1f612cff03830ee92a238cb944444"
+    },
+    {
+      "bytes": 10814,
+      "changes": "new actual checkpoint/result/witness digest arguments; retain witness/restore/CM rules with fixed new-run profile/helper/build/device binding",
+      "original_path": "runtime-sources/M05-fresh-process-saf-restore-r8.py",
+      "original_sha256": "11c9cd7773ef223230a2a529691568fff2c35c013968ed0089a0e23dac263387",
+      "path": "runtime-sources/M05-fresh-process-saf-restore-r9.py",
+      "sha256": "6d3618c50bba58596aa65276b55255682c62b5aa3a2fd3ae546016eab2fa5e3b"
+    },
+    {
+      "bytes": 14185,
+      "changes": "new actual checkpoint/result/witness digest arguments; retain witness/restore/CM rules with fixed new-run profile/helper/build/device binding",
+      "original_path": "runtime-sources/G11-stale-saf-restore-real-cm-get-r8.py",
+      "original_sha256": "5f0a95551a9df45e3700ed5c9932d7372e8dab6ee585ac0aef1091c4a4029cab",
+      "path": "runtime-sources/G11-stale-saf-restore-real-cm-get-r9.py",
+      "sha256": "a03f794df6da0e09da423fbea87c32315e42d5d050a0d65d4f1bb71adcfab96f"
+    }
+  ],
+  "old_run_results_inherited": false,
+  "phone_executed": false,
+  "production_qualified": false,
+  "remaining_freeze_items": [
+    "host ingress",
+    "case-specific input checkpoint observer",
+    "final exact-owned cleanup and release"
+  ],
+  "schema": 1,
+  "scope": "frozen_r9_full_profile_workflow_sources_before_device_execution"
+}

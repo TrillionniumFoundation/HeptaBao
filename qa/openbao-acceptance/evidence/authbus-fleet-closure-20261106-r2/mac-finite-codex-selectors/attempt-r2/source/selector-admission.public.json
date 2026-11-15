@@ -1,0 +1,59 @@
+{
+  "publicFilePins": {
+    "/opt/homebrew/lib/node_modules/@openai/codex/package.json": [
+      977,
+      "1ddb42975de8a8a9088d609e2f639ee390f79dea9376ef04a97eac30bf586f5d"
+    ],
+    "/opt/homebrew/lib/node_modules/@openai/codex/bin/codex.js": [
+      6911,
+      "aa3c64b122c9d06bf48eaf988f5970aa69556d69506c3118cf07d10b2401b48a"
+    ],
+    "/opt/homebrew/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/package.json": [
+      517,
+      "f0d3c19a894d9dcf4e416665837db9f3dec2c2ab4df7d91a4dde2b83dd215bd2"
+    ],
+    "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/Info.plist": [
+      525,
+      "c40b0e6b87b94ef5a232ab8312678c5db2156428f57c3f3d6c32525373be7f59"
+    ]
+  },
+  "processes": [
+    {
+      "birthSec": 1793754254,
+      "birthUsec": 283080,
+      "pgid": 66293,
+      "pid": 66414,
+      "ppid": 66293,
+      "uid": 501
+    },
+    {
+      "birthSec": 1793754286,
+      "birthUsec": 107754,
+      "pgid": 66293,
+      "pid": 66687,
+      "ppid": 66293,
+      "uid": 501
+    },
+    {
+      "birthSec": 1793690098,
+      "birthUsec": 48673,
+      "pgid": 89322,
+      "pid": 89324,
+      "ppid": 89322,
+      "uid": 501
+    },
+    {
+      "birthSec": 1793690098,
+      "birthUsec": 720405,
+      "pgid": 89322,
+      "pid": 89325,
+      "ppid": 89324,
+      "uid": 501
+    }
+  ],
+  "priorAuthority": {
+    "jobId": "1a1b3804d06-fc05-8343",
+    "originalPublicStdoutSha256": "0ca56d604069315055ddda48cc5cd7e0d5151e852d72aa5a6c0898daefe52d72",
+    "originalPublicStdoutBlob": "a57a6a291d79b55366f732367eff10e56678439b"
+  }
+}

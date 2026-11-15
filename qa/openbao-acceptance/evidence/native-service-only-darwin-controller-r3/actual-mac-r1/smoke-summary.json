@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.native-only-darwin-custody-checks.v1",
+  "status": "passed",
+  "controller_sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+  "tests_run": 2,
+  "failures": 0,
+  "errors": 0,
+  "platform": "darwin",
+  "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "actual_mac_processes_tested": true,
+  "mocked_darwin_identity_boundaries": false,
+  "rust_compilation_performed": false,
+  "rust_tests_executed": 0,
+  "server_started": false,
+  "production_mutation": false
+}

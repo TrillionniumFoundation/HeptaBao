@@ -1,0 +1,36 @@
+{
+  "scope": "local Python adapter checks only; no Rust tests or remote operations",
+  "argv": [
+    "python3",
+    "/workspace/scratch/915e5e680008/compatibility-review-20261019/snapshot-http3-runner-r1/work/qa/openbao-acceptance/native_snapshot_http_exact_run_checks.py"
+  ],
+  "exit_code": 0,
+  "actual_test_count": 7,
+  "elapsed_seconds": 0.466,
+  "files": {
+    "checks.log": {
+      "bytes": 1600,
+      "sha256": "9762915dc471bd64ad60de889d260faa47d8128ee2a425cda10771408d32ad7f"
+    },
+    "owned-child.log": {
+      "bytes": 45,
+      "sha256": "9d1a17870b656559ea56ba7500ecab6584dc510bff833c76c5670f720f1d668e"
+    },
+    "owned-child-command.json": {
+      "bytes": 1268,
+      "sha256": "31fc5dbd1d24de6f5c63e25eaf89f6766d07dcdc6562bca1bc2c8407d53576cb"
+    }
+  },
+  "source_files": {
+    "native_snapshot_http_exact_run.py": {
+      "bytes": 17345,
+      "sha256": "53cc6423e54aee23b33e85fb9746042ba3a7a507633ab24525469276db63bd4e"
+    },
+    "native_snapshot_http_exact_run_checks.py": {
+      "bytes": 11676,
+      "sha256": "0c566800e47b4ed5c46ab31ac63eda19a043aeb50c79e3cc09f9ac4e606248b0"
+    }
+  },
+  "finished_utc": "2026-10-19T07:58:46.224162+00:00",
+  "permission_context": "approved local execution after preserved sandbox ps lookup-self failure; no weakened assertion"
+}

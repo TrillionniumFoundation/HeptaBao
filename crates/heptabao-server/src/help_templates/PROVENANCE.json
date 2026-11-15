@@ -1,0 +1,107 @@
+{
+  "license": "MPL-2.0",
+  "note": "Public help and OpenAPI documents; actual owner-relative Request line is rendered. No stored secret or issuer material is inspected. Finite backend coverage is listed per template. Dynamic caller id from auth/token/lookup-self is omitted from the compiled template and is inserted only after authenticating this exact request. It is compared to the current caller in memory; raw token-containing responses are private originals and never source material.",
+  "official_binary_sha256": "9403c2b121e13fe79b3182051320d2096d10519b597ee587e322dab5e359c51e",
+  "official_original_sha256": "21ecff40bcf79d6936aac6ac12b397fbaba9e3ec75669f5b972065e533bf1cd4",
+  "official_tag_commit": "ca305a02daa68b203325daa1b25c18d7a252d4b3",
+  "templates": [
+    {
+      "origin_case": "help-owner-kv1-root-root",
+      "original_bytes": 2049,
+      "original_sha256": "e48d46cc82abf1bf6f5bcd19070bbd6ae63229f75d672d1ecf511e9637c68876",
+      "template": "kv1-root.json",
+      "template_sha256": "00e907cf9144d322e55f73aca5528ee7f8229e6746d5974790eafeafe7d04d7a"
+    },
+    {
+      "origin_case": "help-owner-kv1-key-root",
+      "original_bytes": 1991,
+      "original_sha256": "fb66cf1aebe0bfc2105b35f169773d0279ecd7b671e889bad28a460d118461d4",
+      "template": "kv1-key.json",
+      "template_sha256": "95e0ae66fc2a3c1fb6cc87a601d44d24c869900a175c0e838227cb5f6b7b98ad"
+    },
+    {
+      "origin_case": "help-owner-kv2-root-root",
+      "original_bytes": 13023,
+      "original_sha256": "59ef9b976affd5c9bc2acf8e41f9b40338749b3c1e42eb352b09fb330fe3567e",
+      "template": "kv2-root.json",
+      "template_sha256": "97da032ee7356c5e099a2b1a7d025b7fce7ec177254e7e40f4c321cd57def962"
+    },
+    {
+      "origin_case": "help-owner-kv2-data-root",
+      "original_bytes": 4659,
+      "original_sha256": "033d72241a8d148c0c5971a5576b10841f1fcdcb71fba49d07117e5203cba063",
+      "template": "kv2-data.json",
+      "template_sha256": "7636519c6282932c289c6aa3bddb92d590e99d2d4e1bedf2a906900f2a10c4e4"
+    },
+    {
+      "origin_case": "help-owner-kv2-metadata-root",
+      "original_bytes": 6501,
+      "original_sha256": "69ce7212c31869975c6add2aa546c25b5ab52fb07af4709b7ae5d0fbe81a9d2a",
+      "template": "kv2-metadata.json",
+      "template_sha256": "b9136fdb0f2c8aa7c0bf6543800a7ef9f3401dc955246598a34975688150f97f"
+    },
+    {
+      "origin_case": "help-owner-kv2-delete-root",
+      "original_bytes": 1707,
+      "original_sha256": "705a17f2de17d5560892436b67ddc0da63c857404890eb2f55f9c1bbfc06aa7b",
+      "template": "kv2-delete.json",
+      "template_sha256": "4d2502c3c5a3c8ecaa6fe5f19e1c5c6ab78a2a1226de64aa1546ac2caa01f780"
+    },
+    {
+      "origin_case": "help-owner-kv2-undelete-root",
+      "original_bytes": 1597,
+      "original_sha256": "f426234fe5565726616e7cfaf6aa46b4f378510e0bd192a2135028ead5e3846f",
+      "template": "kv2-undelete.json",
+      "template_sha256": "12fd1dc8b7c445685248c22f7d7ce6ba04888a6c340ce9f144b31d2bae7b915d"
+    },
+    {
+      "origin_case": "help-owner-kv2-destroy-root",
+      "original_bytes": 1478,
+      "original_sha256": "0004691ed4d7de7e78f4080d28e4a603842d79056db991247d1c782bc7476876",
+      "template": "kv2-destroy.json",
+      "template_sha256": "544c1156724fa4606fbc1cb1486898e919a34677d33c9622839fa50cc5a6a1e5"
+    },
+    {
+      "origin_case": "help-owner-kv2-config-root",
+      "original_bytes": 2996,
+      "original_sha256": "42b96abeded7e3b918ef88d318cfa989eb9757267bdc7adf27f138a0f8f22499",
+      "template": "kv2-config.json",
+      "template_sha256": "46097b30ceff580f4bf5265b1411e6e2c00d5717626a64aabb0fbb92d597ca40"
+    },
+    {
+      "origin_case": "help-owner-kv2-unknown-root",
+      "original_bytes": 1702,
+      "original_sha256": "2ba7a9162bd7c12c1da02a50d480c1dcd7d643f685ccf0bc92a5de4a59311385",
+      "template": "kv2-unknown.json",
+      "template_sha256": "a47b1e79db33281f77b0e71a68a2911e2a0ad93f77d86fb9cf55de115612dcfb"
+    },
+    {
+      "origin_case": "help-owner-pki-ocsp-root",
+      "original_bytes": 766,
+      "original_sha256": "0b4cdb68290cea0e0651a57062764ba1ed95a10b818a72033ec00b0e34de1b1d",
+      "template": "pki-ocsp.json",
+      "template_sha256": "e83f76fe11740df680b9a0c0c1eb17e5b17cbf3d3dab7fff91f9cc871fdadfd8"
+    },
+    {
+      "origin_case": "help-owner-pki-ocsp-suffix-root",
+      "original_bytes": 1020,
+      "original_sha256": "0085e8c0a7147f390d7d7c6390c5c8a951ec4a3cbe86a721ad09279cb6d8deb7",
+      "template": "pki-ocsp-suffix.json",
+      "template_sha256": "2aa9b85c9bbde9e18c11f56c106f1393ae38eea108e005750954fa91f92a79c1"
+    },
+    {
+      "origin_case": "help-owner-sys-mounts-root",
+      "original_bytes": 1119,
+      "original_sha256": "fbf478d536944fc66e71e8924d82f5260538d7101d41e6b0183365acdacacf31",
+      "template": "sys-mounts.json",
+      "template_sha256": "8531929c3d5f4b59633e1b9cdb7d80b37edb9d14eac5c345a343595e30472614"
+    },
+    {
+      "origin_case": "help-owner-auth-lookup-root",
+      "original_bytes": 3787,
+      "original_sha256": "33d51f915c934d7e6b77b46a6742afdb0a8c7da4d2e01928d2c7e18b6988192b",
+      "template": "auth-lookup.json",
+      "template_sha256": "c75bf1f11cd01bd7307b649b916b69bf9c1772218f548884e8287bcac56f85ab"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"allDescriptorsClosedOnce": true, "children": 0, "credentialReads": 0, "descriptorCount": 1, "elapsedSeconds": 0.00011850008741021156, "errorClass": "RuntimeError", "errorCode": "canonical_protected_parent", "fileWrites": 0, "networkOperations": 0, "ok": false, "productionReady": false, "provisioned": false, "schema": "heptabao.permanent-target-metadata.r2", "serviceActions": 0}

@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.r9-independent-ha-source-review.v1",
+  "reviewed_at_utc": "2026-10-19T14:16:28.383788+00:00",
+  "base_commit": "e324563628ab3813dd31fde2f04da1279db8a80d",
+  "files": [
+    {
+      "filename": "v6_closure_batch.rs",
+      "sha256": "c7a786e92911e2e7506733cfb6882782ad1c8b59a6dc106ca228bf5e7b294370",
+      "bytes": 9063
+    },
+    {
+      "filename": "v6_closure_quorum.rs",
+      "sha256": "bc99dc429e8f370cf1a407986314a9fcc3b61c381b01b5294c4bcf242069d353",
+      "bytes": 30411
+    },
+    {
+      "filename": "v6_closure_quorum_tests.rs",
+      "sha256": "5d95144c1d6f3cbc4f909f1978f92aeba1638299647217d3bfbec46c65cb7aa0",
+      "bytes": 52551
+    },
+    {
+      "filename": "v6_closure_quorum_wire.rs",
+      "sha256": "909914d0b7f5bf4dee7e793e0dab49a4dc748256142d21f9bb3bad21debff2c5",
+      "bytes": 12930
+    },
+    {
+      "filename": "v6_replica_blobs.rs",
+      "sha256": "ca22f61945cc1d4106b863efb738ad621282746605617c49451f5f42c2b23734",
+      "bytes": 38802
+    }
+  ],
+  "review_type": "independent local source diff and exact caller/callee review; no new execution or production verdict",
+  "production_change": "EnsureBatch=7 obtains bound exact missing references before StageBatch; retained leaves still take checked read and exact real file/directory fsync",
+  "constraints_verified": [
+    "EnsureBatch reply remains on original pinned TLS socket and echoes full original request header including nonce, target, membership/enrollment/intent log identities, term and operation",
+    "Missing references are strictly ordered unique exact subset of original requested references; count and ciphertext bounds are unchanged",
+    "Only initial guarded NotFound is missing; late NotFound, corruption, permissions, identity or original admission/deadline failures remain errors",
+    "Existing leaves pass original stage_received_replica_checked path and original fsync/terminal admission; absence clears any old transfer bitmap bit and never grants one",
+    "Finalize still reopens every reference, verifies and fsyncs the canonical whole closure; no bitmap alone constructs custody",
+    "Uncertain/invalid EnsureBatch ACK does not automatically resend request or send ciphertext",
+    "Reconciliation uses FsyncExistingBatch only and cannot borrow missing-transfer permission",
+    "R2 changes fixture only: retained directory fd continues owning old inode after rename, while replacement pathname never acquires old authority",
+    "New quorum test exercises actual pinned mTLS, fresh staged Raft intents and real files; unavailable voter3 cannot mask forced loss of voter2 ACK"
+  ],
+  "blocking_source_findings": [],
+  "measured_limitations": [
+    "R9 prior actual Mac focused run was 15/16; R2 repair has not been executed by this reviewer",
+    "Last R8 actual LAN failed 48/98 at native_history_write_10 after observed root CAS and local install; previous unknown mutation must not be replayed",
+    "Expected network savings have not established same-deadline full 34MiB or failover success; all cold batches add an EnsureBatch round trip"
+  ],
+  "independent_review_recommendation": "Integrate reviewed five files with R2 fixture; run exact focused selectors plus same-source host58/build and LAN98 against fresh owned roots",
+  "remote_activity_by_reviewer": {
+    "writes": 0,
+    "service_actions": 0,
+    "tool_call_result": "aborted by user after about 1915 seconds",
+    "job_ids_returned": [],
+    "readonly_idempotency_keys": [
+      "heptabao-ha-audit-20261019-shallow-mac",
+      "heptabao-ha-audit-20261019-shallow-rog",
+      "heptabao-ha-audit-20261019-shallow-pocket4"
+    ]
+  }
+}

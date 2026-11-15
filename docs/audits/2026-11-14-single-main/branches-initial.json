@@ -1,0 +1,3602 @@
+[
+  {
+    "name": "agent/approle-no-default-token-20261017",
+    "sha": "8a79e6fb621d87167195d7255a84b0af63814754",
+    "date": "2026-10-17 07:18:23 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/authbus-lifecycle-20261103-r1",
+    "sha": "06759210bcabcae04b1fa7cb8e6008a60b3ab285",
+    "date": "2026-11-03 05:42:56 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "agent/barrier-rotation-preparation-20261014",
+    "sha": "6c99151a7c12e1f8b4738f15b754cc897da1b031",
+    "date": "2026-10-14 09:07:44 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/fix-v6-runtime-doc-ci-20261017",
+    "sha": "27d86bbf1f118667947d7ebcf1de99c082c104dd",
+    "date": "2026-10-17 17:48:18 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-archive-diagnostic-20261020-r1",
+    "sha": "eade36c89c5a010f10d8ed08d7da257f37210303",
+    "date": "2026-10-20 00:22:58 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-authbus-gateway-canary-20261020-r1",
+    "sha": "bbff55fc9bf432a89f9d01964ca72073178a4fa3",
+    "date": "2026-10-20 01:35:15 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-continuation-20261014",
+    "sha": "b9befa33dadc7bac0a9e9c8ffe33ff946207d577",
+    "date": "2026-10-14 06:26:22 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-continuation-20261018-r2",
+    "sha": "e324563628ab3813dd31fde2f04da1279db8a80d",
+    "date": "2026-10-19 06:41:29 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-e942-typed-io-scoped-20261015",
+    "sha": "e942ad8fa372f961704fa07904f80e2dd2d151ab",
+    "date": "2026-10-15 09:32:44 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-ha-quota-lifecycle-20261020-r1",
+    "sha": "ba3779e2b1b9a43883b308399c453c1687dea8a2",
+    "date": "2026-10-20 01:53:04 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-historical-raft-epoch-r1-20261018",
+    "sha": "dec3a93e6265189500b071b1bc168ad5b8786796",
+    "date": "2026-10-18 09:55:57 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-historical-service-r1-20261018",
+    "sha": "40b183000db486a677fadf9bd2fd34873a28c78e",
+    "date": "2026-10-18 10:14:34 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-next-gates-native-ha-authbus-20261017",
+    "sha": "64526d0ea7a756f98707b95931d5dfd91630644c",
+    "date": "2026-10-17 23:29:59 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-next-gates-r6-checkpoint-20261017",
+    "sha": "11934327475e1db8fd845edaa163634a260ec52b",
+    "date": "2026-10-17 07:33:43 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r11-evidence-20261020-r1",
+    "sha": "0ccb55da18ccdecadcbedebdbbc349b55cc8ffd3",
+    "date": "2026-10-20 01:12:18 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r12-evidence-20261020-r1",
+    "sha": "f623a039f21502ebaaf33c16c5cc22c26c197cc0",
+    "date": "2026-10-20 02:58:26 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r12-read-recovery-20261020-r1",
+    "sha": "dd82a68baac4386ede8b9ced4e89492024c19145",
+    "date": "2026-10-20 01:28:10 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r13-auth-quota-20261020-r1",
+    "sha": "0f1a91faf096da6ca1cb65f129123f4c8709ce06",
+    "date": "2026-10-20 02:13:05 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r14-evidence-20261020-r1",
+    "sha": "afcc2c3338b692170478c8cd6a478f8465e99424",
+    "date": "2026-10-20 06:37:48 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r14-publication-read-20261020-r1",
+    "sha": "7a552330df821b358161628120a8b5d064f37367",
+    "date": "2026-10-20 03:02:54 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r15-auth-quota-20261020-r1",
+    "sha": "47b96f44edf51c2b68f22ed83495bc70e84ae24d",
+    "date": "2026-10-20 06:34:27 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r15-evidence-20261020-r1",
+    "sha": "2c35ad823748b4d6bb2430b60b6ba0ea12c1d861",
+    "date": "2026-10-20 06:59:58 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r16-evidence-20261020-r1",
+    "sha": "83ce92bb3beadbcb7e59875d1a6f7a22d4470589",
+    "date": "2026-10-20 07:19:20 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r16-native-quota-routes-20261020-r1",
+    "sha": "289a7c80771ae39095be7aaae4e0f42cf009a726",
+    "date": "2026-10-20 06:54:28 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r17-native-step-down-20261020-r1",
+    "sha": "a19addb77088dbd65a2537277d203034ee2c6701",
+    "date": "2026-10-20 07:11:37 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r19-readonly-20261021",
+    "sha": "1e8adb8e313e2d7e991a696f29f2db5684fe7ff1",
+    "date": "2026-10-21 05:08:26 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r8o-forward-diagnostic-root-20261018",
+    "sha": "71063eec959a2bd6143f646dff7d3cbb5ce48412",
+    "date": "2026-10-18 09:38:19 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-r8o-replacement-20261018",
+    "sha": "77c43c0d1719658c7c2b693b3e222ae9ced18a6d",
+    "date": "2026-10-18 09:34:32 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-resume-20261020-r10-recovered",
+    "sha": "83d3b610c692483096650d2639966340dbbed1e7",
+    "date": "2026-10-19 23:50:56 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-resume-20261020-r11-ha",
+    "sha": "d1879d97aac65ac064f70b6408ab6dc61975a08f",
+    "date": "2026-10-20 00:09:46 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-successor-integration-20261014",
+    "sha": "bab4527851b4cf4558fa486e03e62fc0ffb121c8",
+    "date": "2026-10-14 10:13:27 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-v6-03428-linux66-20261015",
+    "sha": "03428ecaf4c4cb807378fb9f757748b39e0049bd",
+    "date": "2026-10-15 05:54:06 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-v6-03428eca-scoped-20261015",
+    "sha": "03428ecaf4c4cb807378fb9f757748b39e0049bd",
+    "date": "2026-10-15 05:54:06 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-v6-066b-mac66-20261015",
+    "sha": "066b108398ee2899054eed2ba39956263f8a9e70",
+    "date": "2026-10-15 16:30:28 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-v6-1423-scoped-20261015",
+    "sha": "1423aba9318cf3f0a01ac77853f94fa4ff449611",
+    "date": "2026-10-14 23:44:02 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/heptabao-v6-d150-scoped-mac66-20261015",
+    "sha": "d150348d77cb6ce854254aab5b4e69dd160f2608",
+    "date": "2026-10-15 14:26:11 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/native-snapshot-batched-20261014",
+    "sha": "e1c59a5b8284c698b17d16cf43b2f401e35916c2",
+    "date": "2026-10-14 18:27:54 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/pkcs11-observer-proof-20261014",
+    "sha": "d822945ed53993a09223cf6c7dbc40cac55a3181",
+    "date": "2026-10-14 13:05:39 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/raft-snapshot-observation-state-fence-20261015",
+    "sha": "f4e2f7941f623026feb8248054de86e371d45dd7",
+    "date": "2026-10-15 21:02:42 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/snapshot-timeout-evidence-gate-20261014",
+    "sha": "c1207a2ab317957db91759bff1417c8b0f10d66e",
+    "date": "2026-10-14 19:32:06 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-authenticated-peer-stage-envelope-20261016",
+    "sha": "831959df926f59a852bda02753e8fce810ccf67f",
+    "date": "2026-10-16 00:38:49 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-aws-sha256-bounded-original15-20261015",
+    "sha": "03428ecaf4c4cb807378fb9f757748b39e0049bd",
+    "date": "2026-10-15 05:54:06 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-client-server-leaf-pinning-20261016",
+    "sha": "856a0fbf6fda52fc979f50a8c282fd2231eae01d",
+    "date": "2026-10-16 07:17:31 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-durable-ciphertext-spool-20261016",
+    "sha": "1c17f78c91aad01f1d1ae61443bef14bae2db37b",
+    "date": "2026-10-15 20:18:54 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-durable-intent-compaction-proof-20261016",
+    "sha": "1960ca713db63b6ac4aff18bb26315e09f989f4c",
+    "date": "2026-10-17 00:11:31 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-exact-raft-intent-log-readonly-20261016",
+    "sha": "d770058ecc18b083f96e16d16327d29a974efcfe",
+    "date": "2026-10-16 21:09:14 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-ha-convergence-tree-20261015",
+    "sha": "a2a2c43419c476f2846b165f6a92c4a14fdb2876",
+    "date": "2026-10-15 16:11:38 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-ha-raft-stage-271-qa-mac-20261016",
+    "sha": "183dd3b282c35667bace6794c826f698cedea669",
+    "date": "2026-10-15 20:46:34 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-intent-pinned-mtls-readonly-custody-20261016",
+    "sha": "7a4e7a6c7bd163a3973ceb583f25b3be9b164e3a",
+    "date": "2026-10-16 20:38:32 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-intent-postcompaction-leader-failover-20261017",
+    "sha": "afe03008bbf246df0e71ffd20303fadeff53962f",
+    "date": "2026-10-17 00:48:11 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-kv2-271-2560k-live-20261015",
+    "sha": "09acdd1daef75a28d4555483122fdc4c90ad29eb",
+    "date": "2026-10-15 19:23:23 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-local-closure-physical-verification-20261016",
+    "sha": "bbf06bb4d28bd5c9d7c3e814af065b108a78cd1e",
+    "date": "2026-10-15 22:32:27 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-peer-replica-verified-ingress-20261016",
+    "sha": "591fe97bedf30aff80a279c0d8bd7ea1ef9ed802",
+    "date": "2026-10-15 23:40:21 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-physical-139m-mac-x230-mtls-20261016",
+    "sha": "82203467cb21d6f6bf9f371907d99bbcfb608e85",
+    "date": "2026-10-16 01:17:54 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-physical-ha-peer-preflight-20261017",
+    "sha": "d9f83bc5b8f2f7def7885d10a58af4dd1b78469c",
+    "date": "2026-10-17 05:21:10 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-physical-mac-x230-mtls-20261016",
+    "sha": "4dcfbb1d383fcbc12a06b736cbafe762d48b2477",
+    "date": "2026-10-16 01:17:01 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-physical-six-directed-mtls-matrix-20261017",
+    "sha": "541e90224078bab7d18df8518f607c7e3054a727",
+    "date": "2026-10-17 06:01:22 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-physical-third-node-rog-custody-20261016",
+    "sha": "2dacb80a8bb3bfd091a261123a0709c916aed8d8",
+    "date": "2026-10-16 08:30:45 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-physical-typed-intent-dual-mtls-proof-20261016",
+    "sha": "8255887499c0edf98546daf723c39117eb9985e1",
+    "date": "2026-10-16 20:43:42 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-pinned-mtls-readonly-reconcile-20261016",
+    "sha": "2a7b1749ec5ef11b07287cae1a72d644577c55c4",
+    "date": "2026-10-16 10:12:57 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-postcompaction-full-raft-leader-reopen-20261017",
+    "sha": "2aa03f28fc406e4462561e4a87c027ec20e66aef",
+    "date": "2026-10-17 01:45:35 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-pr128-current-docs-closure-20261016",
+    "sha": "0d133a8d34dc767fed5a08efdf6b3b50730200b5",
+    "date": "2026-10-16 09:31:51 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-raft-ciphertext-stage-20261015",
+    "sha": "6e9ddb83d5f9920c91fc8ee2c5ff5f7df2e880d7",
+    "date": "2026-10-15 16:23:40 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-raft-commit-authority-contract-20261015",
+    "sha": "26dda510893686b586a0c41863f16a9a8157b574",
+    "date": "2026-10-15 10:16:09 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-raft-composition-exact-witness-20261016",
+    "sha": "ff652c8d5f899815bb43f54839a0b28034fbb77b",
+    "date": "2026-10-15 21:53:51 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-raft-immutable-intent-prepublication-20261016",
+    "sha": "d2b990eb8e74ee8ba82a5ba1e1b7006c490c6f77",
+    "date": "2026-10-16 11:54:08 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-raft-intent-pinned-mtls-double-readindex-20261017",
+    "sha": "e63c69e995df0983627a717cebac38f029a93868",
+    "date": "2026-10-17 04:20:38 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-raft-kv2-271-integrated-20261016",
+    "sha": "71642559afd72f87a2cfd3373f0d035c9221fddd",
+    "date": "2026-10-15 19:40:22 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-replica-pinned-mtls-20261016",
+    "sha": "8801a2ad29131eaa014600f06671b5c600ffe647",
+    "date": "2026-10-16 00:46:20 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-root-intent-physical-closure-bound-20261016",
+    "sha": "8c7db8c2aa19f154c40827fe8640b8e1a40663eb",
+    "date": "2026-10-16 20:19:59 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-target-syscall-profiler-20261015",
+    "sha": "844a59558cd266927f2e5f2dc5b9d43429cdc528",
+    "date": "2026-10-15 10:17:48 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-two-pinned-recipient-custody-20261016",
+    "sha": "d0cd8ae4880b77c9c57e3dba5730b441fe0bc56a",
+    "date": "2026-10-16 09:22:21 -0400",
+    "merged_main": false
+  },
+  {
+    "name": "agent/v6-x230-139m-271-parity-20261016",
+    "sha": "7208c07e60e163aab61484f0361dac0041be36ae",
+    "date": "2026-10-15 22:18:21 -0700",
+    "merged_main": false
+  },
+  {
+    "name": "archive/library-source-preservation-20261103",
+    "sha": "92e01947aa40e801197dda7520db4bb0fe44ee37",
+    "date": "2026-11-03 15:44:17 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "backup/pr83-ha-composition-wip-20260911",
+    "sha": "60c21b43a4c6be64b32622a19e0e0a5a7588a306",
+    "date": "2026-09-11 18:02:16 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "candidate/heptabao-current-truth-20260911-r1",
+    "sha": "4bdd8a43e173d75583551d208d7408eb12e99983",
+    "date": "2026-09-11 02:45:49 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "checkpoint/personal-credentials-read-repair-20261106",
+    "sha": "aaf65962942ae292be931378630363086c770811",
+    "date": "2026-11-06 19:44:58 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/bao-service-closure-20260908",
+    "sha": "b798e88c98a7a9ab93a50abc1502c0a869233fda",
+    "date": "2026-09-08 07:11:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/ci-trust-boundary-closure-20260907",
+    "sha": "a5c5fcaae390fc6d3ea16a949286e453f40a016f",
+    "date": "2026-09-07 20:12:19 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/cleanup-and-replacement-20260919",
+    "sha": "e0695bdc4bf2b2c0d34506d62301f28305ce8987",
+    "date": "2026-10-07 11:38:59 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/closure-qualified-20260923",
+    "sha": "61e3a0ef94f3189914439883940c1d18c4334843",
+    "date": "2026-09-23 17:20:13 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/current-plan-remediation-20260912",
+    "sha": "689eb5ed4c9fdc28ed9449037fe1f42d94e88890",
+    "date": "2026-09-12 11:44:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/dynamic-secret-runtime",
+    "sha": "6fb6ac67e1ff374dade16da84f6f906da158825d",
+    "date": "2026-09-20 03:16:39 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/fix-pr63-workflow-generation-20260905",
+    "sha": "71a72e2f12f4514a683b2f6bf97b0e869ac5372b",
+    "date": "2026-09-05 18:01:56 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/full-convergence-20260917-r1",
+    "sha": "c7a3c93d9bd59096ee3f5cf3a8cd63e03f1eb6bd",
+    "date": "2026-09-18 15:42:27 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-gap-closure-20260916",
+    "sha": "40053ba816e56fdef4a038311fac8bcd224b6279",
+    "date": "2026-09-16 09:36:10 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-openbao-replacement-20260912",
+    "sha": "a08ffad2cd6da642b33d5da4cf9517e127241cda",
+    "date": "2026-09-13 00:33:27 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-remediation-20260916-r1",
+    "sha": "aa12d518198a6d7a7e3b6405d9762563e4dbe335",
+    "date": "2026-09-16 14:44:43 +0000",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-replacement-closure-20260917",
+    "sha": "c1589684bd68cf06bf44999bd137f6131b6a20cc",
+    "date": "2026-09-18 13:00:18 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-replacement-closure-20260917-r2",
+    "sha": "f190f96133a518c405120b1602890de2dc50e158",
+    "date": "2026-09-18 16:32:51 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-replacement-closure-20260918-r2",
+    "sha": "676a3e68af340b2cb7439dbc99c69dee550e5db9",
+    "date": "2026-09-19 02:19:13 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-replacement-hardening-20260918-r3",
+    "sha": "915ea97c1a6cc17c272b2a6429c56613e78d3c54",
+    "date": "2026-09-18 18:49:38 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-replacement-openldap-dynamic-20260919",
+    "sha": "77fff28cd694eb3c2cb50b76f58de77559605bf3",
+    "date": "2026-09-19 02:29:14 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-replacement-p0-auth-cow-20260919",
+    "sha": "3f2b3e03f3d85e27406b196de78d46fda2c72413",
+    "date": "2026-09-19 02:23:27 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/full-replacement-remediation-20260916",
+    "sha": "6cc6cf3131c9ba5f20309b972deb72e5259c927f",
+    "date": "2026-09-17 00:21:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/h01-h02-next-foundation",
+    "sha": "3b0bfa94f479184d99deea3d9c3cef802280941f",
+    "date": "2026-08-28 15:19:13 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h01-oracle-exact-execution-v1",
+    "sha": "2db1a9313f7df21c0bf67ded63b786538d28ea8c",
+    "date": "2026-08-29 14:01:22 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h01-oracle-foundation",
+    "sha": "36250c5ef839c47d245547b36aa501ec7e8240d6",
+    "date": "2026-08-28 13:22:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-blocker-closure-v1",
+    "sha": "9aeaf87a67cd009a5817d4fd81c4ec9e4061031d",
+    "date": "2026-08-28 23:17:28 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-byte-rehash-execution-v1",
+    "sha": "9d9363e28b0298703ae0e80e2bdb592ed4e9bb31",
+    "date": "2026-08-29 13:51:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-candidate-adapters-v1",
+    "sha": "e2b89c2e2064c999ced11bd3eb4084a4f44f2a8c",
+    "date": "2026-08-28 19:45:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-candidate-cross-platform-execution-v1",
+    "sha": "583f68e329b5f62d5adbdc312418ad42df1f7721",
+    "date": "2026-08-29 14:07:19 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-candidate-diagnostics-v1",
+    "sha": "0acf456db9848160d54c6df2dd52994af89504ba",
+    "date": "2026-08-29 14:14:11 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-candidate-msrv-macos-v1",
+    "sha": "9339e030d3a64ae6931bbe3b1343411e2983bca7",
+    "date": "2026-08-29 14:21:39 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-durable-multiprocess-closure-v2",
+    "sha": "59e68413c8c859962b22476769d32b759cca493c",
+    "date": "2026-08-29 19:11:53 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-final-gap-closure-v1",
+    "sha": "65a4ac09a3634a4f8cccc12c57b7f8297303e323",
+    "date": "2026-08-29 17:07:23 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-final-gap-closure-windows-preflight-v1",
+    "sha": "9d5bc0c9eab408b08dad45877463697e27900f2b",
+    "date": "2026-08-29 13:23:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-hostile-snapshot-noop-closure-v1",
+    "sha": "2b3f2e5e31396da9ceceafe76821babafc3035c9",
+    "date": "2026-08-30 02:40:00 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-openraft-cluster-macos-v1",
+    "sha": "4f0399909b54515c092f4aecad15c28cf7b2d51e",
+    "date": "2026-08-29 14:22:40 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-openraft-fault-macos-v1",
+    "sha": "95e658194426a69e732a96c6ddba0d6c53ba2564",
+    "date": "2026-08-29 14:23:26 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-openraft-hostile-faults-linearizability-v1",
+    "sha": "7430a5910c3f6e90488ccf895e39b76c384fe6b9",
+    "date": "2026-08-28 21:21:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-openraft-inmemory-cluster-v1",
+    "sha": "7757875fc104c493e031840cb24f2e8c2fce2d23",
+    "date": "2026-08-28 20:21:34 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-openraft-windows-diagnostics-v1",
+    "sha": "6bf44bf38fc0985cc333e9aad9faf21543656a4c",
+    "date": "2026-08-29 14:29:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-os-durable-clock-supplychain-v1",
+    "sha": "3aa58aeceaca39533e36bd4119bdaf8ed11835f6",
+    "date": "2026-08-28 23:44:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-probes-sbom-msrv",
+    "sha": "cc7200509bd8c0467c8d342792ccaaf02810a8ce",
+    "date": "2026-08-28 17:51:11 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-seeded-behavior-harnesses",
+    "sha": "7f47b5917c2f64a61cc3825d7bea29cfb31207e6",
+    "date": "2026-08-28 18:27:07 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-source-integrity-evidence",
+    "sha": "5bbebf0ea114d2df428deb9054b0fc70929642f1",
+    "date": "2026-08-28 17:13:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/h02-supply-chain-execution-v1",
+    "sha": "cf3809a95ea4a12fb5ab1adbf1ea4ea7ef0b7397",
+    "date": "2026-08-29 14:16:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/heptabao-authbus-fleet-closure-20261106-r2",
+    "sha": "b00819f12e501701bc2a065fb940aa276f1bc0c7",
+    "date": "2026-11-06 23:25:56 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-authbus-provider-recovery-61ff-20261104",
+    "sha": "988892fb8fbf0c7c5e0a8017d7f575c0fea3ac29",
+    "date": "2026-11-04 15:06:35 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-authbus-qa-20261104",
+    "sha": "15c5827dd7a8cfc06131d4901903ebf7e8090599",
+    "date": "2026-11-04 07:28:18 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-bao-acceptance-checkpoint-20261104",
+    "sha": "3ae8b5cf4f5753dbefc7c12b21369d952367be7e",
+    "date": "2026-11-04 14:41:02 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-blocker-closure-ci-20261104",
+    "sha": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "date": "2026-11-04 21:29:06 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-clippy-c133d7-20261105-r1",
+    "sha": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "date": "2026-11-04 23:37:25 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-clock-denied-61ff-20261104-r1",
+    "sha": "061f96a4b272b556329b89d461b918e370d21e45",
+    "date": "2026-11-04 12:44:59 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-cold-h2-normal-20261105-r1",
+    "sha": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "date": "2026-11-04 22:27:25 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-donor-e69e52-20261105-r1",
+    "sha": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "date": "2026-11-05 00:07:02 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-dr25-logical-history-20261106-r1",
+    "sha": "a25772377e9bfad91564cf6702a26e861fded16f",
+    "date": "2026-11-06 09:43:22 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-finalgate-19ba09-20261105-r1",
+    "sha": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "date": "2026-11-05 00:44:37 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-finalgate-rustfmt-6d02ceca-20261105-r1",
+    "sha": "6d02ceca629163e1c07480fa1f21520434407143",
+    "date": "2026-11-05 02:20:28 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-ha-immutable-kv-clock-61ff-20261104-r1",
+    "sha": "e263c3f8e49e11d2020f774122c9e2af7ecc0c37",
+    "date": "2026-11-04 14:39:32 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-ha-mac-snapshot-61ff-20261104-r1",
+    "sha": "b337f1013ef78c7842356539d986eadda04425dc",
+    "date": "2026-11-04 20:33:47 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-ha-namespace-test-assertions-20261104",
+    "sha": "c81021f9184ef9eecb5a48408b1284760c8c8071",
+    "date": "2026-11-04 12:31:06 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-ha-oracle-recovery-20261104",
+    "sha": "b4b3f8c22b225ab28af1d7625281d19b965acea6",
+    "date": "2026-11-04 13:34:06 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-immutable-kv-clock-transport-61ff-20261104-r1",
+    "sha": "cc4f948a69e028143a31b7822a3e5a27ea85c9dc",
+    "date": "2026-11-04 15:00:25 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-invalid-gzip-http-contract-61ff-20261104-r1",
+    "sha": "f4739a3e6cf3624bcf25cb8d29c3c217547b8941",
+    "date": "2026-11-04 15:04:05 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-jwt-pki-compile-fix-20261106",
+    "sha": "025b05a340de841b8161c1120344e86eae30eb97",
+    "date": "2026-11-06 05:40:36 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-evidence-20261106-r2",
+    "sha": "481ea7c41f038b5d8c6855999e48788bc97b41cb",
+    "date": "2026-11-06 08:53:37 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-evidence-20261106-r3",
+    "sha": "4da3582fb52b15b5c7a18d068fc0ca9d22d92945",
+    "date": "2026-11-06 09:41:18 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-evidence-20261106-r4",
+    "sha": "7f0e87292552521a56204acd44b895591662f1dc",
+    "date": "2026-11-06 11:11:58 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-evidence-20261106-r5",
+    "sha": "cfb6b8164aabc86e3f582736bdb72609be6383f6",
+    "date": "2026-11-06 12:16:22 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-evidence-20261106-r6",
+    "sha": "64ad14f596227788546a4524a9837e94e863d505",
+    "date": "2026-11-06 13:00:53 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-evidence-20261106-r7",
+    "sha": "f2f0d8e7d70794cd6bf8d425f7c24873d4e08fd1",
+    "date": "2026-11-06 14:18:06 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-evidence-20261106-r8",
+    "sha": "488b3aafa7cff78e316485bcb3e72d28a5684681",
+    "date": "2026-11-06 16:31:59 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-kv2-ha-convergence-20261106-r1",
+    "sha": "f0e4694e5637415d394916b7590e7deec81e9d71",
+    "date": "2026-11-06 15:59:46 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-ingress-observer-20261104",
+    "sha": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "date": "2026-11-04 16:59:18 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-jwt-pki-source-20261106",
+    "sha": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "date": "2026-11-06 02:19:25 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-jwt-r2-source-20261106",
+    "sha": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "date": "2026-11-06 01:04:19 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-snapshot-forward-r3-source-20261106",
+    "sha": "8c95fb0a8b2f61933a09b04986df2bafc9e7095c",
+    "date": "2026-11-06 01:36:57 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-snapshot-forward-r4-source-20261106",
+    "sha": "b6949024dc5d0922ca9b27d865923d28982286c3",
+    "date": "2026-11-06 02:41:31 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-snapshot-forward-r5-source-20261106",
+    "sha": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "date": "2026-11-06 03:27:25 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-ssh-http-20261104-r7",
+    "sha": "d76783b5fe9eb58f54c18a43075d1f4e374fd3d6",
+    "date": "2026-11-04 08:28:20 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-ssh-http-20261104-r8",
+    "sha": "051a9f47090dadf43a8329d3b7a7f0a3b8c79583",
+    "date": "2026-11-04 09:48:44 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-native-ssh-owner-20261104-r4",
+    "sha": "e44dcd87cd9249cf5459ab4d916161971f26222b",
+    "date": "2026-11-04 07:01:56 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-official271-corruption-oracle-61ff-20261104-r1",
+    "sha": "d7808dc736fb68cc5f60e3acaa817fc3f289f040",
+    "date": "2026-11-04 15:15:50 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-orphan-token-test-89b9dbb7-20261107",
+    "sha": "0c83ba2ff4527520e36d9529be8ea6209d76aaf5",
+    "date": "2026-11-06 23:03:05 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-plan-v1-2-closure",
+    "sha": "a7911c57c4ae64e4746a859f13cf570badb45ca0",
+    "date": "2026-08-30 03:25:39 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/heptabao-production-staging-20261104",
+    "sha": "babcd57eb9c9f8572702b21b7db9e83eb2625266",
+    "date": "2026-11-04 20:42:27 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-readindex-observation-20261105-r10",
+    "sha": "b33b8d0de9c7689ff89f8ed11cd2151726972f4f",
+    "date": "2026-11-05 09:13:16 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-readindex-observation-20261105-r11",
+    "sha": "23b689d3617db758657b87b66129d60cbd076f95",
+    "date": "2026-11-05 09:46:49 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-readindex-observation-20261105-r6",
+    "sha": "7a701bf203c2a30625eecbd8313d18889a351a4c",
+    "date": "2026-11-05 07:04:52 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-readindex-observation-20261105-r7",
+    "sha": "229f9687daa8359fd1857d500ef2474310480cb0",
+    "date": "2026-11-05 07:22:44 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-readindex-observation-20261105-r8",
+    "sha": "6905eaca4c9fe2b4a462fb2ba93fbcf3dd0d9f85",
+    "date": "2026-11-05 08:04:53 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-readindex-observation-20261105-r9",
+    "sha": "fa37c0fc6f28317d5f432bbbc2bbae062c4be064",
+    "date": "2026-11-05 08:30:18 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-replacement-20261104",
+    "sha": "054d17cd50951efa46d78db3911ad1d277a0c584",
+    "date": "2026-11-04 02:30:30 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-replacement-evidence-20261105-r1",
+    "sha": "77159cbfb404691193abd0eb91ef757663b3523a",
+    "date": "2026-11-05 09:43:39 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-retained-a-regression-eba5e650-20261105-r1",
+    "sha": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "date": "2026-11-05 05:28:30 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-same-root-publication-94ced21a-20261105-r1",
+    "sha": "1c66541993662f92cf717154e33717abedb2ea74",
+    "date": "2026-11-05 03:25:34 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-snapshot-acl-denial-61ff-20261104-r1",
+    "sha": "4609acf94695508ea49097039b8355897a1b20f2",
+    "date": "2026-11-04 13:48:26 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-snapshot-acl-denial-61ff-20261104-r2",
+    "sha": "a40bf5d972ecefcd03b754fd56d5456bfca72310",
+    "date": "2026-11-04 14:24:24 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-snapshot-api-origin-61ff-20261104-r1",
+    "sha": "21a521e3e59af291dd2abc6721e8559e06338657",
+    "date": "2026-11-04 15:38:58 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-snapshot-lock-jwt-batch-42477d62-20261106",
+    "sha": "5767739cd25e458ac052dc8d384019bab8688ae0",
+    "date": "2026-11-06 16:09:10 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-snapshot49-jwt147-9781e961-20261106",
+    "sha": "02b90762b3d6cc8699cc88bffb6f76cb1f07e270",
+    "date": "2026-11-06 13:20:21 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-test-fixture-f02dd113-20261106",
+    "sha": "4a49405b93c45ab1c25ecba11cde63a7ede20dce",
+    "date": "2026-11-06 18:05:56 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-unified-61ff-source-20261104-r6",
+    "sha": "c71b405970544682e7b9b25c91214f66351a767b",
+    "date": "2026-11-04 12:39:16 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-unified-replacement-20261105-r1",
+    "sha": "9208e0765f566f3bd7908e6567d2e39008156b9b",
+    "date": "2026-11-05 00:08:47 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-unified-replacement-20261105-r3",
+    "sha": "6b16a9292d046bbc42aec65045fa105aaa1ac5de",
+    "date": "2026-11-05 01:28:24 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-unified-replacement-20261105-r5",
+    "sha": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+    "date": "2026-11-05 03:00:24 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-unsupported-owner-regression-61ff-20261104-r1",
+    "sha": "c86f368f2c28401d1082895f10b99adad81266c9",
+    "date": "2026-11-04 14:46:25 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/heptabao-validation-20261104",
+    "sha": "1557729e8bd3a1bc90899951ae969904c5563616",
+    "date": "2026-11-06 21:53:33 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/integrate-remaining-20260923",
+    "sha": "a5427185af9e6d79462954bc5049ff841f712ff1",
+    "date": "2026-09-23 15:58:59 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/kerberos-20260923",
+    "sha": "0d2ff487e39fabaad028256ae55bf78e03315ff4",
+    "date": "2026-09-23 15:47:23 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/module-doc-closure-20260916",
+    "sha": "88249cfaaeebc2c57dacb6b442b0a0539b512d8d",
+    "date": "2026-09-16 10:37:33 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/module-source-truth-v2-closure-20260907",
+    "sha": "388661a4b3f6e009c219ff48820dfa4e27e27444",
+    "date": "2026-09-07 08:23:51 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/native-snapshot-http204-21a521-61ff8b-r1",
+    "sha": "0e3237fe287553c49e14109ddfbdf33b674e8a64",
+    "date": "2026-11-04 20:01:16 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/native-snapshot-http204-evidence-61ff8b-r1",
+    "sha": "d9c3b0155430c027df1d7c845135c406957b60fa",
+    "date": "2026-11-04 20:12:01 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "codex/next-round-product-closure-20260916",
+    "sha": "b7cd0c6dd2564a632c8caec998329cfaafd0ca77",
+    "date": "2026-09-16 21:34:14 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/openbao-2-6-production-replacement-closure-20260911-r1",
+    "sha": "3cb81a66d6b8b27035663128bda0691d89006d02",
+    "date": "2026-09-11 20:11:38 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-2.6-production-gap-closure-20260911",
+    "sha": "7d325b21e7ae385fdf940b4de6db6252f4b2b71b",
+    "date": "2026-09-11 19:12:47 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-26-jwt-composition-20260911",
+    "sha": "71e1ae70ff32427b3254e90b1c5fa026e8481698",
+    "date": "2026-09-11 17:26:17 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-analysis-export-20260908",
+    "sha": "b3601b57ad636ec81525e4220bf511d5e174b70c",
+    "date": "2026-09-08 11:57:19 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-complete-replacement-20260912",
+    "sha": "b316cb841868c64e27e62a5fc0c7306c98631a00",
+    "date": "2026-09-13 10:02:32 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/openbao-full-runtime-20260913",
+    "sha": "b316cb841868c64e27e62a5fc0c7306c98631a00",
+    "date": "2026-09-13 10:02:32 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/openbao-replacement-final-candidate-20260909",
+    "sha": "50aa8489846f921dc00697f62f5e56d66e5a492f",
+    "date": "2026-09-09 06:39:39 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-final-candidate-review-20260909",
+    "sha": "302951b5962d0b868a74bf1f2b609bbe509aabc2",
+    "date": "2026-09-09 06:39:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-final-candidate-review-pr-20260909",
+    "sha": "2869f6823f58c84777cae11502542272bfbff540",
+    "date": "2026-09-09 06:40:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-final-candidate-review-pr2-20260909",
+    "sha": "2869f6823f58c84777cae11502542272bfbff540",
+    "date": "2026-09-09 06:40:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-final-pr-20260909",
+    "sha": "a5b74debd810f30e0838b02d90d591a13d01b2d2",
+    "date": "2026-09-09 06:42:51 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-final-review-20260909",
+    "sha": "149f779fd005acaa245dbbb2be8b7a02b3cafd33",
+    "date": "2026-09-09 06:39:16 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-final-review-pr-20260909",
+    "sha": "672d82a34a22d2e9209eeec33f9861bfec83b2fb",
+    "date": "2026-09-09 06:39:28 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-full-closure-20260908",
+    "sha": "8c5f9151585309f79b62be47c3bbc2ca8002b126",
+    "date": "2026-09-08 16:03:43 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-gap-closure-r1-20260908",
+    "sha": "d0d32eabeb23b8c2ad07c2a72b7dde9e259ce306",
+    "date": "2026-09-08 15:11:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-gap-closure-r2-20260908",
+    "sha": "b798e88c98a7a9ab93a50abc1502c0a869233fda",
+    "date": "2026-09-08 07:11:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-rate-limit-20260908",
+    "sha": "82248057743b43c45e663299d41236897e9115d4",
+    "date": "2026-09-08 01:33:40 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-real-closure-20260918",
+    "sha": "8d955eee184c977a2d724a0613308ad89ff0226a",
+    "date": "2026-09-18 17:38:29 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/openbao-replacement-repository-candidate-20260909",
+    "sha": "7bbcbef8b97ba8af11556060a37caa958b2141c4",
+    "date": "2026-09-09 06:41:44 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-candidate-pr-20260909",
+    "sha": "5aeb290bd7423af9851d5a275781a9ba35213632",
+    "date": "2026-09-09 06:41:58 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-20260909",
+    "sha": "26ea1884ef9477caf62075e77d5694cd2dbe464c",
+    "date": "2026-09-09 06:45:11 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-20260909-staging",
+    "sha": "633848024e5315f3def23c035a1dec53f83a62b3",
+    "date": "2026-09-08 11:08:47 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-final-pr-20260909",
+    "sha": "f1716369e60c96d51593303513192075117e89a1",
+    "date": "2026-09-09 06:39:03 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-pr-20260909",
+    "sha": "f7f6746ea78498da0bbff4a8cd658e971155b86f",
+    "date": "2026-09-09 06:37:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-pr-final-20260909",
+    "sha": "e8e14eea4ee3ddd1b66ce9a3387738aa61c52e11",
+    "date": "2026-09-09 06:45:25 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-pr-review-20260909",
+    "sha": "359fc56ae858cfb80136f26cd46765db96826267",
+    "date": "2026-09-09 06:45:37 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-review-20260909",
+    "sha": "21605377e50ce77ba89fceb22179ac317da82dcc",
+    "date": "2026-09-09 06:38:38 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-review-head-20260909",
+    "sha": "5b5ef73462842e6a6d8eb5309db68fc131b80bb2",
+    "date": "2026-09-09 06:45:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-closure-review-pr-20260909",
+    "sha": "6e8dde1c9b5cf083bf7fb01af9037e6811bc0ab9",
+    "date": "2026-09-09 06:38:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-final-20260909",
+    "sha": "95f6af559cbf09db32092be9103a15bddfed8687",
+    "date": "2026-09-09 06:41:03 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-final-pr-20260909",
+    "sha": "563e1e728fe5c4ccbf002ae1a68187e924cf18a2",
+    "date": "2026-09-09 06:42:27 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-final-pr-head-20260909",
+    "sha": "7b55a1a1b231303152515e4a0a6c36d2dec0ba1d",
+    "date": "2026-09-09 06:42:11 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-final-review-20260909",
+    "sha": "236a07c5e56314504ba5b3d3918f8455ced271c4",
+    "date": "2026-09-09 06:41:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-final-review-pr-20260909",
+    "sha": "277db3ec9c71e6b866b10dfe8f60d08a74102eb5",
+    "date": "2026-09-09 06:41:28 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-pr-20260909",
+    "sha": "6761746c9eb35d40616f313974c2a40743f09d3c",
+    "date": "2026-09-09 06:42:39 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-repository-review-final-20260909",
+    "sha": "5b5ef73462842e6a6d8eb5309db68fc131b80bb2",
+    "date": "2026-09-09 06:45:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-review-final-20260909",
+    "sha": "fe591a03d3e8ed60f9b1a724099786f97e983f73",
+    "date": "2026-09-09 06:43:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-review-final-pr-20260909",
+    "sha": "b28e4adfc1649c51e397bce22dde116137077ed9",
+    "date": "2026-09-09 06:43:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-review-head-20260909",
+    "sha": "b64ed40e7cb3dbbcab96488e314646f31b046be0",
+    "date": "2026-09-09 06:43:33 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-review-pr-head-20260909",
+    "sha": "2abf5b31cc43b43fe3829c026ce301a5bb2085d9",
+    "date": "2026-09-09 06:43:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-total-gap-closure-20260908",
+    "sha": "633848024e5315f3def23c035a1dec53f83a62b3",
+    "date": "2026-09-08 11:08:47 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-authoritative-closure-20260909",
+    "sha": "004d1983d06f32701e64d9884bfeb08047a9da3e",
+    "date": "2026-09-10 13:44:45 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-blocker-closure-r1-20260909",
+    "sha": "2c6e7087b204be450b23311a87c6ec0a544ef2b2",
+    "date": "2026-09-09 09:28:46 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-compat-capture-source-20260909",
+    "sha": "3194fe003b574960db9a0da5d87431570c30871d",
+    "date": "2026-09-09 22:13:32 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-federated-auth-source-20260909",
+    "sha": "7f1ef5df325d17723dd607d225fed2fecc6f3f0b",
+    "date": "2026-09-09 22:18:43 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-migration-journal-source-20260909",
+    "sha": "dd1e8bb76d68c6ccdd60ac2fe077fef2ecec172a",
+    "date": "2026-09-09 22:04:46 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-migration-source-r3-20260909",
+    "sha": "418fb601a0082c99481970b9295cf81d278eb62f",
+    "date": "2026-09-09 22:05:48 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-provenance-candidate-20260909",
+    "sha": "f583cf18226fd4468116a29692c061bac380708f",
+    "date": "2026-09-09 01:46:40 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-v2.4-selected-provenance-20260909",
+    "sha": "85600f5d323388f6af95861a79f9eccc56df22f0",
+    "date": "2026-09-09 01:48:49 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/openbao-replacement-wrapping-20260908",
+    "sha": "dc4e4ec8363f98d72131425e122d21e9fb429c7c",
+    "date": "2026-09-08 11:59:23 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/phase5-60-surface-closure-20260916",
+    "sha": "e71ad8a2ebc98fb22cd51a561387a31c7ca2bbe0",
+    "date": "2026-09-16 12:13:00 +0000",
+    "merged_main": false
+  },
+  {
+    "name": "codex/pkiext-20260923",
+    "sha": "b860655a6bf31d1cd0d2900cbdb275877b3a0b4a",
+    "date": "2026-09-23 15:18:49 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/plan-v1.1-h00-execution",
+    "sha": "0b6b1ec93910895f425c275ecfc4cefe00cdfb22",
+    "date": "2026-08-28 13:01:07 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2-canonical-gap-closure-v1",
+    "sha": "f1d1a92783ef5fa8d69f12e1f8ccd7b9277422b3",
+    "date": "2026-08-29 23:21:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2-deepened-blocker-closure-v1",
+    "sha": "cb3adfc3aab2b935e4a7f57f459c9bd945b46a89",
+    "date": "2026-08-30 01:43:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2-execution-contracts-gap-closure-v1",
+    "sha": "cec73782662b724bc4cd112e7aa23cd6961ccf63",
+    "date": "2026-08-30 00:50:44 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2-landed-closure-v2",
+    "sha": "cad9aacab9f7d1ff6f7d081fa8c09e2b7f814243",
+    "date": "2026-08-30 01:55:24 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2.1-direct-generation-closure-v2",
+    "sha": "cd56d815f03c0a62ecb3572fb0ba635e9c5f6b93",
+    "date": "2026-08-29 22:04:08 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2.1-exact-head-matrix-closure-v1",
+    "sha": "8704dfa855a1bccde7453e92846f54658c205a79",
+    "date": "2026-08-30 03:44:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2.1-final-gap-closure-v1",
+    "sha": "cedb6c95a5323f7004551087d75e2f57a1ec484a",
+    "date": "2026-08-30 04:21:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2.1-initialized-generation-closure-v1",
+    "sha": "a7924398c2e2b2496c2fc08f3403b7c6258fcc92",
+    "date": "2026-08-30 03:53:44 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2.1-operational-gap-closure-v1",
+    "sha": "58b1e01bcfd90101189d3b769ec983806ce1c78f",
+    "date": "2026-08-30 03:01:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2.1-technical-gap-closure-v1",
+    "sha": "c954ad07a0dfadf2dc91131ea2c0a46ff62ce9e1",
+    "date": "2026-08-30 03:44:00 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.2.2-unified-gap-closure-v1",
+    "sha": "e8cfcbad3d73cd4ae764033a926418d9fac9502f",
+    "date": "2026-08-30 09:17:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3-foundation-closure-v1",
+    "sha": "7b957b4b5bc845735c0ccb57ac6e004bf8ca7187",
+    "date": "2026-08-30 04:30:43 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3-foundation-closure-v2",
+    "sha": "cedb6c95a5323f7004551087d75e2f57a1ec484a",
+    "date": "2026-08-30 04:21:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3-foundation-closure-windows-v1",
+    "sha": "1821c7e39c64bc737b02228958b1faab78d629cc",
+    "date": "2026-08-30 09:34:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3-full-gap-closure-v1",
+    "sha": "cedb6c95a5323f7004551087d75e2f57a1ec484a",
+    "date": "2026-08-30 04:21:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3-gap-closure-v2",
+    "sha": "a5b9739e46f4bed54dbb3edd0e32400481b3b12f",
+    "date": "2026-09-01 03:06:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3-unified-closure-v1",
+    "sha": "cedb6c95a5323f7004551087d75e2f57a1ec484a",
+    "date": "2026-08-30 04:21:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3-v122-delta-closure-v1",
+    "sha": "d1e8147ecf0acc5ef5a009ff62e7e7050f504320",
+    "date": "2026-08-30 10:42:34 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3.1-final-closure-stage",
+    "sha": "4ce51ba8e3f502d83766b529d40cd3b47d35bf78",
+    "date": "2026-08-30 19:31:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3.1-final-repository-closure-v1",
+    "sha": "352a5397d36a93e33715148de4616c5e43bc2bf1",
+    "date": "2026-08-30 15:48:53 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.3.1-residual-gap-closure-v1",
+    "sha": "7d1642495972e5481ddfa15ace0ee8573ad84b99",
+    "date": "2026-08-31 10:06:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4-full-gap-closure-v1",
+    "sha": "6b2c11d46c65603f1a1e8ded742335990b61a79b",
+    "date": "2026-09-01 10:26:18 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.2-recovery-foundation-v1",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.3-descriptor-fencing-clean-v1",
+    "sha": "3582fda50cd9b03ca39713814cdd8229462bbbd2",
+    "date": "2026-09-01 08:30:39 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.3-descriptor-fencing-v1",
+    "sha": "69b51b829262ff9ef19913846f09449fc6efd921",
+    "date": "2026-09-01 13:56:18 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.4-module-documentation-closure-v2",
+    "sha": "489a104450ff48c49e7fb61e167e566ea5e0e6c7",
+    "date": "2026-09-01 09:14:00 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.5-security-invariant-closure-clean-v1",
+    "sha": "936cb5599d206cea895de2ae04a1289a0b3a0326",
+    "date": "2026-09-02 00:18:40 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.5-security-invariant-closure-v1",
+    "sha": "936cb5599d206cea895de2ae04a1289a0b3a0326",
+    "date": "2026-09-02 00:18:40 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.6-authoritative-recovery-closure-clean-v1",
+    "sha": "837668cb879683bc60808584d2ebdedd42a397aa",
+    "date": "2026-09-02 08:28:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.6-authoritative-recovery-closure-v1",
+    "sha": "6dd945c3c2d9709d0749033dcd32ea2fa78bc0ac",
+    "date": "2026-09-01 17:28:04 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.4.7-post-merge-truth-and-external-admission-v1",
+    "sha": "0ce5f152684345b4f553c0519e381e55fa91cbec",
+    "date": "2026-09-04 14:21:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.5.0-control-plane-vertical-slice-v1",
+    "sha": "7396101fa06a447d677e8590995b8ef3cc675785",
+    "date": "2026-09-02 22:44:26 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.6.0-runtime-recovery-operations-v1",
+    "sha": "7396101fa06a447d677e8590995b8ef3cc675785",
+    "date": "2026-09-02 22:44:26 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.7.0-service-ha-plugin-compatibility-v1",
+    "sha": "8752e2797d3939b3d0f824ac4728f7b498707612",
+    "date": "2026-09-02 23:31:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.8.0-operational-service-v1",
+    "sha": "7396101fa06a447d677e8590995b8ef3cc675785",
+    "date": "2026-09-02 22:44:26 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/plan-v1.8.1-repository-scope-closure-v1",
+    "sha": "7396101fa06a447d677e8590995b8ef3cc675785",
+    "date": "2026-09-02 22:44:26 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/pr83-auth-composition-20260911-gpt56",
+    "sha": "938e9636a340762c7556cf997bd617f1b83c51d9",
+    "date": "2026-09-11 21:43:00 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/pr83-ha-compose-closure-20260911-gpt56",
+    "sha": "be93a3de0f0c81948c93b8678ae0d43fa875b0c3",
+    "date": "2026-09-12 07:08:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/profiles-workflows-20260923",
+    "sha": "094088616a72c45c1bdfebf557a3de37d15f8f12",
+    "date": "2026-09-23 14:20:52 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/rabbitmq-provider-20260923",
+    "sha": "ff53eee30d4566c78efb6e71646999e9446c9ae9",
+    "date": "2026-09-23 14:04:02 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/rep014-macos-clippy-fix-20260910",
+    "sha": "6300d63abfbffc25af12b8254882436eef15ef1c",
+    "date": "2026-09-10 02:24:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/runtime-deepening-20260907",
+    "sha": "311cb1a4a87094d4e269c8ceeaf0113c855e55ea",
+    "date": "2026-09-07 03:58:17 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/rust199-current-lane-20261004",
+    "sha": "acefab849388bdf4b2046bfda4f7aa2c2906e385",
+    "date": "2026-10-06 10:14:27 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/stacked-development-overhead-20261002",
+    "sha": "77a11a8d729014b2ae681582daf69783ef84fd63",
+    "date": "2026-10-03 02:59:02 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "codex/tmp-v1.2.2-parent-integrity-v1",
+    "sha": "54065c50909cbd4f54598a70fcb6ba955d5245fa",
+    "date": "2026-08-30 01:42:28 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-remaining-materialize",
+    "sha": "d2e124b5d1805bf38e24a7ff4d10a5257c72745e",
+    "date": "2026-08-29 23:55:10 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-remaining-materialize-arm",
+    "sha": "726be50333fbe34dca9377bf4af50af9cc9047a9",
+    "date": "2026-08-30 07:48:11 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-remaining-materialize-macos",
+    "sha": "0d5e6e6360b27534f6b6da7cdbcef16a4ba09837",
+    "date": "2026-08-29 23:59:49 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-remaining-materialize-slim",
+    "sha": "eca63bde9d9c7684d8c4cd914eef45845aeb6855",
+    "date": "2026-08-29 23:55:56 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-rustfmt",
+    "sha": "cf429f9e03581aea4b290d8bba9cb2854308d017",
+    "date": "2026-08-30 00:26:48 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-rustfmt-arm2",
+    "sha": "d1260699c5ee5b1da78f703714ce2d4dc43cb176",
+    "date": "2026-08-30 00:24:14 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-rustfmt-macos-arm",
+    "sha": "963715d75363ed711068f289287e2a30fe3b892e",
+    "date": "2026-08-30 08:23:16 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-rustfmt-patch",
+    "sha": "5d23148fd832c1c8b3abc37242129761b4d4bd91",
+    "date": "2026-08-30 00:27:31 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-rustfmt-windows",
+    "sha": "934265d07a7a52bd6cf56d51b5abe94250a7448f",
+    "date": "2026-08-30 08:15:25 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/tmp-v1.2.2-store-materialize",
+    "sha": "a4c8079bc7e933bfce04ef29f54753ea5314f8c7",
+    "date": "2026-08-30 07:41:54 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-org-migration-transport-20260831",
+    "sha": "d78ad155971a1206b9b3f015a5ce2d9de170dc9d",
+    "date": "2026-08-31 14:42:28 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-org-migration-transport-latest-20260831",
+    "sha": "1c431f54811b982e73b105b9fcf1fc45cb6bdbe3",
+    "date": "2026-08-31 14:48:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-org-migration-transport-slim-20260831",
+    "sha": "3745071e7f3e33aee511b5b5d8b6d29404ea7477",
+    "date": "2026-08-31 14:45:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-p0-saturation-closure-v1",
+    "sha": "24a3d93f3e1adecbeee23c3eaaddbd2c85f692d0",
+    "date": "2026-08-31 19:56:17 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-p0-saturation-validation-v1",
+    "sha": "9a9aacc4db0f985dcbb4b7b7d7f4ce2e55552333",
+    "date": "2026-08-31 19:58:06 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-slim-admission-diagnostic-v1",
+    "sha": "dffe09b1116b019ba5eb5ff10c48b7e22dc3d1e1",
+    "date": "2026-08-31 19:11:38 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-slim-full-lane-probe-v1",
+    "sha": "1e8885b40d80d6bea37c3809651697be39997036",
+    "date": "2026-08-31 19:16:57 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.3.1-workflow-arbitration-closure",
+    "sha": "77c64bd31c2bb6c3ae8f5110aadfa1b0aa656bc8",
+    "date": "2026-08-31 00:47:09 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.4-durable-single-node-foundation-v1",
+    "sha": "33e1c14c3e417ea1c9ea181e2181751736c7bce5",
+    "date": "2026-09-01 08:25:37 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.4.6-fence-outcome-closure-v1",
+    "sha": "837668cb879683bc60808584d2ebdedd42a397aa",
+    "date": "2026-09-02 08:28:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v1.4.7-remaining-blocker-closure-20260907",
+    "sha": "db331ae12af4a455d6495ccbcbb8a618960d7420",
+    "date": "2026-09-07 04:13:40 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v2-2-raft-runtime-20260908",
+    "sha": "7baf6c137b0162a16bcbf1295bdea74e4331d6b2",
+    "date": "2026-09-08 07:04:07 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v2.0-product-closure-20260907",
+    "sha": "89012e7d7991e084104e7030e4f8485c5667592e",
+    "date": "2026-09-07 19:10:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v2.1-main-convergence-durable-runtime-20260907",
+    "sha": "19b7633b1cd05796d0e7409a4eea66eaa472e3df",
+    "date": "2026-09-08 01:59:05 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "codex/v2.3-plugin-compat-gap-closure-20260908",
+    "sha": "beb981d2ac7f765162f025749447eceb249f4c03",
+    "date": "2026-09-08 16:34:23 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "evidence/v1.4.4-repository-controlled-pass-v1",
+    "sha": "46b9521222d20f270a0f370870eb6ad6113af554",
+    "date": "2026-09-01 09:17:04 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "exec/all-gaps-cargo-cache-20260908",
+    "sha": "6ac60d893a7ea814bc9c92fa5b48de74b26b27e6",
+    "date": "2026-09-08 20:27:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/compact-inventory-regenerate-20260917",
+    "sha": "40c459038d4c6b7e9b347816fac2698efae1df28",
+    "date": "2026-09-16 18:15:44 +0000",
+    "merged_main": false
+  },
+  {
+    "name": "exec/current-pr63-bundle-macos-v1",
+    "sha": "17fe578918097d012f80ea54e2033d49d4170fc1",
+    "date": "2026-09-05 04:51:20 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/export-pr45-head-72c-v1",
+    "sha": "854a08321b0ef09df2ae8442d712f656dac03132",
+    "date": "2026-08-30 12:38:24 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/fix-migration-clippy-20260916",
+    "sha": "f634270ffb3b3d540734e0c5494f0526baeac636",
+    "date": "2026-09-16 16:04:36 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/four-track-native-gate-20260915",
+    "sha": "6628ec3a7d213c88b9155ba6f72135e4220ab82c",
+    "date": "2026-09-15 13:52:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/full-gap-closure-source-export-v1",
+    "sha": "c18cb4701e39149ceaa192b5151d534c1d40988a",
+    "date": "2026-09-02 11:42:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/full-remediation-transport-20260916",
+    "sha": "afebeb50a3a908b2778f9f64ee06e46380a83fc4",
+    "date": "2026-09-16 22:45:06 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/full-remediation-transport-trigger-20260916",
+    "sha": "42c296231dddb724adc73b1a07d940c3ba151e1e",
+    "date": "2026-09-16 22:44:21 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/full-replacement-phase1-20260917",
+    "sha": "678de7e86e5e7f47154be786145567390759b4c6",
+    "date": "2026-09-17 02:08:42 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/h02-closure-linux-arm64-v1",
+    "sha": "b8fc6645b360b66dfb751a3a075999fba7c1032a",
+    "date": "2026-08-29 14:58:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-closure-macos-v1",
+    "sha": "6dac341accb1cd17b2881bb2c8be7c3564f7c73c",
+    "date": "2026-08-29 14:43:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-closure-macos-v2",
+    "sha": "69880055d00cf83a4504f157162460865527e06a",
+    "date": "2026-08-29 15:20:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-closure-serial-v1",
+    "sha": "e99555cdba8a4cbbfdae124d73b223a01f908c33",
+    "date": "2026-08-29 14:46:06 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-closure-unified-v2",
+    "sha": "b52aca206d8d125307826a0f86974f7c95192b65",
+    "date": "2026-08-29 15:15:18 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-closure-windows-v1",
+    "sha": "63744f00082b4086cfa9a6149bf6bc40bd18c84c",
+    "date": "2026-08-29 14:49:37 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-openraft-pinned-family-v2",
+    "sha": "8bb7276063a287dc0f25ba849146a5307afc9b9c",
+    "date": "2026-08-29 15:01:20 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-openraft-pinned-family-v3",
+    "sha": "7c2f817eefa942445791da1a332402f47a5b8e32",
+    "date": "2026-08-29 15:06:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-repair-67082-v1",
+    "sha": "20bd43fb1d263ce9a2f822c9bc371628ec8c7630",
+    "date": "2026-08-30 18:49:36 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/h02-repair-result-v1",
+    "sha": "077661e11fabaee29d149c5d14cb8a528b5a7077",
+    "date": "2026-08-30 10:52:18 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "exec/heptabao-object-transfer-20260919",
+    "sha": "9314d1bab63c706534f1603e348fd5a21bb93fcd",
+    "date": "2026-09-19 14:40:48 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/heptabao-remediation-objects-20260917-r1",
+    "sha": "8a80f859327948186b66dc16d9b6afaa3d3c47b4",
+    "date": "2026-09-17 21:45:07 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/heptabao-verified-inputs-20260918",
+    "sha": "0175b193b1ba63ad3bbd19fba721aeb6731c5ec2",
+    "date": "2026-09-18 22:24:17 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/kubernetes-native-inputs-20260915-r2",
+    "sha": "88dfee1a72e83612e20c7392b4634f7f2a228b9d",
+    "date": "2026-09-15 21:10:05 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-atomic-batch-20260916",
+    "sha": "d8e489022cdc7b3e623c2402b96113ad5c3cf68f",
+    "date": "2026-09-16 13:53:44 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-atomic-batch-20260916-actual",
+    "sha": "136fb1202aa855fd919d5a8a15602837ee77cd97",
+    "date": "2026-09-16 13:30:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-atomic-batch-20260916-do-not-use",
+    "sha": "136fb1202aa855fd919d5a8a15602837ee77cd97",
+    "date": "2026-09-16 13:30:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-atomic-batch-20260916-final",
+    "sha": "136fb1202aa855fd919d5a8a15602837ee77cd97",
+    "date": "2026-09-16 13:30:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-atomic-batch-20260916-run",
+    "sha": "136fb1202aa855fd919d5a8a15602837ee77cd97",
+    "date": "2026-09-16 13:30:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-atomic-batch-20260916-trigger",
+    "sha": "136fb1202aa855fd919d5a8a15602837ee77cd97",
+    "date": "2026-09-16 13:30:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-atomic-batch-20260916-workflow",
+    "sha": "136fb1202aa855fd919d5a8a15602837ee77cd97",
+    "date": "2026-09-16 13:30:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-replay-retirement-20260916",
+    "sha": "d295501f3e519b7865fb1c0399c6fdffb2a465ae",
+    "date": "2026-09-16 16:37:54 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-state-manifest-20260916",
+    "sha": "8ae2b18a6a06e68450559558c2788de6da7dc10e",
+    "date": "2026-09-16 14:26:43 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/materialize-v13-a1e894-slim-v1",
+    "sha": "a7c098225a4095e06db2cc638871f0728284acd2",
+    "date": "2026-08-30 10:17:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/openbao-gap-closure-cargo-cache-20260908",
+    "sha": "7f72402bb67d157cb328604df82c92e7b6778af6",
+    "date": "2026-09-08 21:15:28 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/openbao-oracle-binary-20260912",
+    "sha": "d76b70eaf65ed457785c8cc6d0292e66c7d3f38f",
+    "date": "2026-09-15 12:14:36 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/openbao-total-gap-source-export-20260909",
+    "sha": "a67483a904af4d149d04f14421d54e0360ece8b7",
+    "date": "2026-09-09 05:45:57 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/p0-transport-debug-077661-v2",
+    "sha": "86d5bd98a740265c3bd939f9e27b71dfe7902242",
+    "date": "2026-08-30 18:53:19 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/p0-transport-debug-67082-v1",
+    "sha": "90d5c177fa18ef566de6b2481e72c0aaa549f2d1",
+    "date": "2026-08-30 18:39:20 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/pr63-final-source-export-v1",
+    "sha": "64d7463d43b8f7587594d0173034171f6d5a77af",
+    "date": "2026-09-03 08:34:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/pr63-final-tuple-slim-observer-v1",
+    "sha": "48f0a92bde8f4e8d3cce53c1ce94d2dfc2fbdfd1",
+    "date": "2026-09-03 00:28:13 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/pr63-hardening-transfer-v1",
+    "sha": "84e4312385c1343ab1b7d32fa1c4c3ff14fff7fe",
+    "date": "2026-09-02 21:58:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/pr63-v2-body-sync-v1",
+    "sha": "80c8610d21895fe03675b1a3a49534d9c8c89097",
+    "date": "2026-09-03 09:15:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/raft-tcp-cache-20260908",
+    "sha": "8c5f9151585309f79b62be47c3bbc2ca8002b126",
+    "date": "2026-09-08 16:03:43 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/raft-transport-cargo-cache-20260908",
+    "sha": "1fe6528d466f963b399c63f4e22ffdeaf4eea6a4",
+    "date": "2026-09-08 21:55:44 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/recover-v24-convergence-controller-20260909",
+    "sha": "0ccfcf2946f4c6247ead5423b3f635ad53ea1064",
+    "date": "2026-09-09 14:44:01 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/recover-v24-feature-controllers-20260909",
+    "sha": "048a5896cd88da4deb84c50d72f4574fbf14ec07",
+    "date": "2026-09-09 14:49:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/review-chain-v2-preflight-v1",
+    "sha": "4ffd84b176751bcf1ec0e6c2d110e64dcd1e4bba",
+    "date": "2026-09-03 08:25:26 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/rust-1.98-local-closure-refresh-20260916",
+    "sha": "d7676b694234c4431e1e55f0cd3bf2ea969fc854",
+    "date": "2026-09-15 11:35:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/section6-source-transfer-20260915",
+    "sha": "5053adcb3029508bbf4c6bd5dff097a764c43f96",
+    "date": "2026-09-15 15:57:47 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/total-gap-source-cache-export-20260908",
+    "sha": "5f923e00d2b8d465a0d5d534fc74b2b06efdcfcc",
+    "date": "2026-09-08 21:19:37 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/total-gap-source-export-20260908",
+    "sha": "f43b730ffc92f0b9352b765444070288ae4bd4e3",
+    "date": "2026-09-08 22:04:19 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-2-1-lifecycle-materialize-arm64-v1",
+    "sha": "07ed667fe0eb3639dd6852cab8dda4190c28a10e",
+    "date": "2026-08-29 21:48:04 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-2-1-lifecycle-materialize-macos-v1",
+    "sha": "e34063abcd7f3df75eca9eb2380d269e90844029",
+    "date": "2026-08-30 04:37:03 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-2-1-source-export-windows-v1",
+    "sha": "ed802d5d9cda09fbabc84226467b0233c502ad98",
+    "date": "2026-08-30 03:37:42 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-2-2-cf429-exact-macos-v1",
+    "sha": "8e2111af590f7aea8d481d01973e5bfb93762667",
+    "date": "2026-08-30 08:50:31 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-2-2-cf429-exact-x64-v1",
+    "sha": "1de0423f50ac04a0d6e527a51bd7abda8f040929",
+    "date": "2026-08-30 09:49:21 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-deterministic-binding-077661-v1",
+    "sha": "7032783b996b596db84bb3162eeaa49a363f399a",
+    "date": "2026-08-30 18:59:36 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-exact-arm64-v1",
+    "sha": "220e53d0d874a8883a0a4a3e12fc15aaa405bd6a",
+    "date": "2026-08-30 12:40:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-exact-slim-v1",
+    "sha": "306506b54ea3d41938f486b008d03aa2c5caebd8",
+    "date": "2026-08-30 12:43:11 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-fa4ad-exact-slim-v1",
+    "sha": "d2a2eaebada9033326dc12b74f41ac1f61c191a0",
+    "date": "2026-08-30 17:36:56 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-arm64-v1",
+    "sha": "b0f9ed77d4754cbd27e05fe9dd6bb10b1a1afc9a",
+    "date": "2026-08-30 15:04:20 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-macos-v1",
+    "sha": "7a62225f028f5694cc39236eacbd12e462053ada",
+    "date": "2026-08-30 15:06:45 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-slim-v1",
+    "sha": "252f04cca3408621b603867738d1eb4a76926d8e",
+    "date": "2026-08-30 15:06:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-v2",
+    "sha": "171124f7e6dfbcccec23025f9ef69026a1118d17",
+    "date": "2026-08-30 15:56:42 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-windows-v2",
+    "sha": "29dfdfae9df50a3b4f0f9a064032de163dd89cbb",
+    "date": "2026-08-30 15:23:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-windows-v3",
+    "sha": "112bbc30533ecd32d4a38419ed25a630fed51b46",
+    "date": "2026-08-30 15:31:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-windows-v4",
+    "sha": "ab71e7ad8a077f71a72278ad0ab8b6c813216d1f",
+    "date": "2026-08-30 15:36:11 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-windows-v5",
+    "sha": "b0af8bf2bb093707c7a50fc7248bca2a0197b770",
+    "date": "2026-08-30 15:41:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-windows-v6",
+    "sha": "9706b173e54b71d55e07c05c5146f2c33650aa05",
+    "date": "2026-08-30 15:57:31 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-final-repository-closure-windows2022-v1",
+    "sha": "229d605a02837a09b2ffe1c9117a76e490d63e52",
+    "date": "2026-08-30 15:33:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-materialize-final-closure-slim-v1",
+    "sha": "e8cd0559946fb80fcf6c5be568ac7439d67ebab2",
+    "date": "2026-08-30 16:05:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-request-id-closure-v1",
+    "sha": "0a77be0fdeb541e8ecfbc7920d0069727b353ece",
+    "date": "2026-08-30 18:01:21 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-runner-admission-arm64-20260831",
+    "sha": "ac5ba01c3d2f6900583d70cfb161bc8a3c593e88",
+    "date": "2026-08-31 17:11:14 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-runner-admission-ubuntu22-20260831",
+    "sha": "78a91f4e26ebef9eeeff94cd6f5424fe1e6c0301",
+    "date": "2026-08-31 17:08:53 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-rustfmt-95805-v1",
+    "sha": "0c966adc636c38517e7b382fd75d70d96c2c6d28",
+    "date": "2026-08-30 18:23:31 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-rustfmt-result-v1",
+    "sha": "b56531e81b3842f3ebd1b2e9d661b22f94d0e48f",
+    "date": "2026-08-30 10:24:02 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-1-source-export-slim-v1",
+    "sha": "7294f2e5d1ad88952dae111ed2d830c45e580944",
+    "date": "2026-08-30 14:47:44 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-6-exact-materializer-v1",
+    "sha": "cedb6c95a5323f7004551087d75e2f57a1ec484a",
+    "date": "2026-08-30 04:21:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-materialize-arm-v1",
+    "sha": "9222b7af2f69f4d2a66d4fedae7c1c9a3d41b5c8",
+    "date": "2026-08-30 11:14:59 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-materialize-macos-v1",
+    "sha": "5d4bf7320fa7060fe818bac3b5b2d2ccdeded3bf",
+    "date": "2026-08-30 11:16:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-materialize-priority-v1",
+    "sha": "c402421aeb3f347ad65616e85a058ea4fd77a7f5",
+    "date": "2026-08-30 11:05:05 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-materialize-slim-v1",
+    "sha": "37bf816d58c43e1c7e00ef2c1648bfaef16d3906",
+    "date": "2026-08-30 11:30:14 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-protocol-hygiene-v1",
+    "sha": "d1d34e98612a414b391990cedd4d5756b15dabf7",
+    "date": "2026-08-30 10:13:59 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1-3-validator-hardening-v1",
+    "sha": "cfd719a23a32066af9ecb1a3b7a42d55e459e083",
+    "date": "2026-08-30 08:58:19 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-77c64bd-single-runner",
+    "sha": "5bde6460cfd17a38065a2b358edffe00e1549424",
+    "date": "2026-08-31 02:26:51 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-arm64-admission-probe",
+    "sha": "7f9f3f5dbe470308f5434016b2d83d6a57ee4495",
+    "date": "2026-08-31 09:07:42 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-cancellation-handoff-materialize",
+    "sha": "b975338b29a4143b3ab61456b17ec522c0a1166d",
+    "date": "2026-08-31 15:52:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-cancellation-handoff-materialize-2",
+    "sha": "b975338b29a4143b3ab61456b17ec522c0a1166d",
+    "date": "2026-08-31 15:52:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-cancellation-handoff-output",
+    "sha": "b975338b29a4143b3ab61456b17ec522c0a1166d",
+    "date": "2026-08-31 15:52:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-clippy-repair-arm64-v1",
+    "sha": "d57809070b4b7d6dde66da0c0b82813b4ab4ef20",
+    "date": "2026-08-30 19:52:03 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-diagnostic-macos-b975",
+    "sha": "8c789bf449f84fb2f798c39a311754eb61dff031",
+    "date": "2026-08-31 16:13:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-external-contracts-macos-20260831",
+    "sha": "b975338b29a4143b3ab61456b17ec522c0a1166d",
+    "date": "2026-08-31 15:52:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-final-closure-slim-v1",
+    "sha": "db67061b34c60a928d51daa983cf51de6998e4a9",
+    "date": "2026-08-30 19:44:47 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-repository-transfer-gap-closure-20260831",
+    "sha": "37e1b0f379085a5bad6e5c0493ff52b262626589",
+    "date": "2026-08-31 15:47:13 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-rust-arm64-preflight-v1",
+    "sha": "af3052985876a6a2d9c9e4eb7ed7ecd50d3439ad",
+    "date": "2026-08-30 19:46:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.3.1-trigger-admission-stage",
+    "sha": "ab58b58e1cc8a4bd4f4fe4e823ccdfdf9d1b10c0",
+    "date": "2026-08-31 12:00:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.2-exact-source-export-v1",
+    "sha": "5b57a966f3871dc686cb956ca0797953504a6a4e",
+    "date": "2026-09-01 12:08:34 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-20260901",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-canonical",
+    "sha": "133234fb96e26f1466a2d3e7009e0e920549ad4b",
+    "date": "2026-09-01 16:09:42 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-current",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-exec",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-final",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-run",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-v1",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-v2",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-clean-closure-v3",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-exact-head-observer-v1",
+    "sha": "825e9ed697fc808af17f448c43066c364d62a2f8",
+    "date": "2026-09-01 14:00:00 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-full-gap-closure-arm64-v1",
+    "sha": "83b124950880fd3c2cc920592fd8a95128fc9660",
+    "date": "2026-09-01 15:55:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-full-gap-closure-v2",
+    "sha": "c7a157f2c77bb5638ef67fc0cb160dd7a046b36f",
+    "date": "2026-09-01 15:48:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-materializer-v1",
+    "sha": "8dbcfaefb37ef82f69f535ecf89676b96668c825",
+    "date": "2026-09-01 14:03:16 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.3-repository-closure-v2",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.4-module-doc-closure-v1",
+    "sha": "623bf8c4ea692d6b713e74aec5e6dd974702122d",
+    "date": "2026-09-01 16:15:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.4-module-doc-closure-v2",
+    "sha": "f9e5f6eec25e95ef004ca4fc87321f3d2f4ab9e5",
+    "date": "2026-09-01 17:13:16 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.4-technical-observer-v1",
+    "sha": "44f20b50acaa48c771e25bb4bbd2ac3ff0155c87",
+    "date": "2026-09-01 17:16:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.5-external-action-materializer-v1",
+    "sha": "489a104450ff48c49e7fb61e167e566ea5e0e6c7",
+    "date": "2026-09-01 09:14:00 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.5-review-blocker-closure-v1",
+    "sha": "32623ade7e2c118f0cbc55dd1c0ad8eb55811ebd",
+    "date": "2026-09-02 02:58:40 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.5-review-blocker-trigger-v1",
+    "sha": "1406ecd5ef4474de3e54355998cb21bf5896f977",
+    "date": "2026-09-02 02:59:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.6-clean-materializer-trigger-v1",
+    "sha": "a4b594182c21c4ee011015850b6db06cce54d0c7",
+    "date": "2026-09-02 03:53:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.6-clean-materializer-v1",
+    "sha": "b44953d82ed99ca7d9ec5f024f6886f53a95fd8c",
+    "date": "2026-09-02 03:52:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.6-fence-outcome-materializer-v1",
+    "sha": "837668cb879683bc60808584d2ebdedd42a397aa",
+    "date": "2026-09-02 08:28:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.6-filesystem-test-isolation-stage-v1",
+    "sha": "be1bbf35fb5af41d8c8f8b7a51cbb878eca7e016",
+    "date": "2026-09-02 04:14:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.6-inherited-gate-fix-stage-v1",
+    "sha": "77483d27753d582022c6d13876474be203a8806a",
+    "date": "2026-09-02 04:03:31 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.7-post-merge-truth-materializer-v1",
+    "sha": "d1e7d526fb06722fa1f75daa9d4c9f62de046ad5",
+    "date": "2026-09-03 12:16:42 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.4.7-reviewed-integrator-v2",
+    "sha": "ed916925e5728101b199245e0fff25f6844a1b83",
+    "date": "2026-09-03 09:09:09 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.5.0-control-plane-materializer-v1",
+    "sha": "f88f2701313e466faa92b48d976e0aa1acecf5c7",
+    "date": "2026-09-02 23:05:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.5.0-control-plane-materializer-v2",
+    "sha": "f6c8512d368998a9b0f9998ceede9ff6e3ccd682",
+    "date": "2026-09-03 09:22:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.5.0-reviewed-integrator-v1",
+    "sha": "40fa85202908e2b3e03d06fad3238dfaeeff1d7f",
+    "date": "2026-09-02 16:30:46 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.5.0-reviewed-integrator-v2",
+    "sha": "345a35092d4311b1bb08f263c98a3e4edfa4b47f",
+    "date": "2026-09-03 07:57:05 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.5.0-source-preflight-v1",
+    "sha": "572d5089435fa3451748d0bf67d1c537798c6054",
+    "date": "2026-09-03 08:27:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.6.0-reviewed-integrator-v1",
+    "sha": "8ccb014ffd7c49a7e67a278367ab14321219e27d",
+    "date": "2026-09-02 16:42:20 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.6.0-reviewed-integrator-v2",
+    "sha": "7cc50aee54336f89d8a830610803fe7e48a560d8",
+    "date": "2026-09-03 07:59:17 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.6.0-runtime-operations-materializer-v1",
+    "sha": "9210e2d01fb63646b00359f63ff6bca11a4548ea",
+    "date": "2026-09-02 23:22:05 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.6.0-runtime-operations-materializer-v2",
+    "sha": "f3165b3d1c4d4c4e8fd923162efd8535dfa09548",
+    "date": "2026-09-03 09:24:45 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.7-assets-source-export-20260908-v1",
+    "sha": "c88d8f7deafa2696b5e7d7542ae09198d752b47a",
+    "date": "2026-09-08 16:06:27 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.7.0-reviewed-integrator-v1",
+    "sha": "b6c1b1591852d8ffec775b307fd4691713b69b51",
+    "date": "2026-09-03 00:40:51 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.7.0-reviewed-integrator-v2",
+    "sha": "376c097be0b1c42c7f45b92ef7bd0cffa90f49b1",
+    "date": "2026-09-03 07:59:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.7.0-service-materializer-v1",
+    "sha": "0c9568f3b8ec6f9a5bbece54dbc181a47958ab4c",
+    "date": "2026-09-03 07:37:23 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.7.0-service-materializer-v2",
+    "sha": "56aea04b4a081c89dd6f5b5ea74da25a2a0d6a8a",
+    "date": "2026-09-03 09:25:54 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.0-operational-service-materializer-v1",
+    "sha": "b1c85c334e84fb8863eae1c58a7fa2b776281bf1",
+    "date": "2026-09-02 23:24:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.0-operational-service-materializer-v2",
+    "sha": "cb2ac86a6cf54d0e8a52f50c817dd7e5accca017",
+    "date": "2026-09-03 09:27:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.0-reviewed-integrator-v1",
+    "sha": "5dabb0f2ee1ab26b50b1332d3040ff35e2aa731a",
+    "date": "2026-09-02 16:58:59 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.0-reviewed-integrator-v2",
+    "sha": "38f8016c3de1051c0310219e5ac8a576f1dfd6bd",
+    "date": "2026-09-03 07:59:39 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.1-repository-closure-materializer-v1",
+    "sha": "a6afbed27f6e047db0d59779ecc9b4bbdc49b444",
+    "date": "2026-09-02 23:26:53 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.1-repository-closure-materializer-v2",
+    "sha": "739e6517f2a594c081139c9a3b2581b4e59cff17",
+    "date": "2026-09-03 09:28:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.1-reviewed-integrator-v1",
+    "sha": "7531958a20c24f97a17600658df5857354562241",
+    "date": "2026-09-02 17:04:46 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.8.1-reviewed-integrator-v2",
+    "sha": "90fa4fb5065a92e7811d80c5ef2e36306529ce29",
+    "date": "2026-09-03 07:59:53 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.9.0-full-repository-convergence-v1",
+    "sha": "9be8cb5da341f65d0332a45036daa1f2e5d5999f",
+    "date": "2026-09-05 03:44:35 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v1.9.0-verified-publish-20260905",
+    "sha": "d656c015b085fc05e254e1eeb956c10324c7ff12",
+    "date": "2026-09-05 06:00:42 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2-controller-cleanup-v9-20260907",
+    "sha": "fe9911c17bf2f2c2d7af8f21901093b31373ffb0",
+    "date": "2026-09-07 16:51:34 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2-durable-g4-materialize-20260907",
+    "sha": "701e7bbf060e0cd48438fa17eacfd5b99b21d755",
+    "date": "2026-09-07 15:58:14 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-51-package-materializer-20260908",
+    "sha": "19b7633b1cd05796d0e7409a4eea66eaa472e3df",
+    "date": "2026-09-08 01:59:05 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-cargo-cache-export-20260908",
+    "sha": "a55d023b4897a357651b5fa45d71e89fa1c09a6e",
+    "date": "2026-09-08 04:57:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-pr75-admission-monitor-20260908",
+    "sha": "0fdf693690cc24dfcdaeeec848c453c12aea0147",
+    "date": "2026-09-08 02:21:36 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-pr75-g0-remediation-20260908",
+    "sha": "7816eca501328475114afbba60f90a5340f7d2db",
+    "date": "2026-09-08 02:14:53 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-pr75-g0-remediation-v2-20260908",
+    "sha": "5546ae7d7f8cdf5be5d1fc276550841d85b779f4",
+    "date": "2026-09-08 02:22:56 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-pr75-post-g0-source-export-20260908",
+    "sha": "5ce0472874c41b81b0e3bb880ea622a50df05291",
+    "date": "2026-09-08 02:01:45 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-pr75-source-export-20260908",
+    "sha": "fc0ccf490c19e570b11d1d3f5306ddd9ced50672",
+    "date": "2026-09-08 04:51:36 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-pr75-unified-convergence-20260908",
+    "sha": "154cc9dcdd0bcd6031950575cfd5381df5337dc4",
+    "date": "2026-09-08 02:25:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-recover-production-modules-20260908",
+    "sha": "09437a53aec1436a38ecbb7a18061e4be48036a3",
+    "date": "2026-09-08 02:19:17 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "exec/v2.1-rust-1.98-toolchain-export-20260908",
+    "sha": "38bc1eaecf3f544cbccb2f022d3a872cca6a37c7",
+    "date": "2026-09-16 13:56:37 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp",
+    "sha": "d7676b694234c4431e1e55f0cd3bf2ea969fc854",
+    "date": "2026-09-15 11:35:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp2",
+    "sha": "d7676b694234c4431e1e55f0cd3bf2ea969fc854",
+    "date": "2026-09-15 11:35:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp3",
+    "sha": "d7676b694234c4431e1e55f0cd3bf2ea969fc854",
+    "date": "2026-09-15 11:35:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp4",
+    "sha": "d7676b694234c4431e1e55f0cd3bf2ea969fc854",
+    "date": "2026-09-15 11:35:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp5",
+    "sha": "d7676b694234c4431e1e55f0cd3bf2ea969fc854",
+    "date": "2026-09-15 11:35:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "exec/v2.2-raft-source-export-20260908-v2",
+    "sha": "ec1fbb1b76eadfcc2671f8e61616f0c79b474299",
+    "date": "2026-09-08 15:57:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "feat/personal-agent-credentials-20261106",
+    "sha": "aaf65962942ae292be931378630363086c770811",
+    "date": "2026-11-06 19:44:58 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "fix/heptabao-owned-private-root-official-profiles-20261106-gpt6-01",
+    "sha": "acefd37014538c64a2c1e849bc97be8ad5a4d065",
+    "date": "2026-11-06 10:16:33 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "fix/heptabao-verified-startup-exit-cleanup-20261106-gpt6-01",
+    "sha": "5327ffe79c15e0967d6d4ef21118dba7044d81a1",
+    "date": "2026-11-07 04:40:56 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "fix/openbao-runtime-continuation-20260913",
+    "sha": "b316cb841868c64e27e62a5fc0c7306c98631a00",
+    "date": "2026-09-13 10:02:32 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "integration/section6-hardening-20260916",
+    "sha": "c3c83439baa9cc4f3a1e790847a0a0b4d697994f",
+    "date": "2026-09-16 03:50:01 +0000",
+    "merged_main": false
+  },
+  {
+    "name": "integration/v1.4.4-technical-candidate",
+    "sha": "49ac709f7ee762e22f6b81e7ff6313c4ac9256ee",
+    "date": "2026-09-07 20:22:22 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "main",
+    "sha": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+    "date": "2026-10-29 21:22:43 -0400",
+    "merged_main": true
+  },
+  {
+    "name": "ops/e928-ci-receipt-closure-transport",
+    "sha": "46a1b82047af1275905641aba99757f9fddcd310",
+    "date": "2026-08-31 23:57:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-authoritative-dispatch-20260910",
+    "sha": "1b43e0e694041a50b90fdb7022cd168d365c7d68",
+    "date": "2026-09-10 09:18:41 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-current-truth-materializer-20260911",
+    "sha": "8ac97e63e4c3f38558ee59941b50a2ca9d0716a4",
+    "date": "2026-09-11 10:35:34 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-exact-head-qualification-20260911",
+    "sha": "0f9ca731530a01b1fcb9c1acb224201a1d43fc4b",
+    "date": "2026-09-11 04:39:32 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-final-remediation-r1-20260910",
+    "sha": "596678b4f7ecac7046affb809d519ad80fa65bca",
+    "date": "2026-09-10 09:04:33 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-final-remediation-r2-20260910",
+    "sha": "6ece8e23e28707d885f5281f57d0a1a8940895de",
+    "date": "2026-09-10 09:05:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-linux-abi-flags-fix-20260909-r1",
+    "sha": "16d53a283b9b671ed4e917d6ec46ecd566b9fe9f",
+    "date": "2026-09-09 17:43:33 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-macos-descriptor-probe-20260909-r1",
+    "sha": "088b75cbe843827190d72543ecffd1d6939e443d",
+    "date": "2026-09-09 17:49:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-offline-vendor-export-20260910",
+    "sha": "727f5ff6d66a31717b1d35fd7f773dfe5289da7c",
+    "date": "2026-09-19 14:33:42 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "ops/heptabao-principal-scope-materializer-20260910",
+    "sha": "98bb9ac4bed449899793e591cbf32bd52e913b31",
+    "date": "2026-09-10 21:43:23 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-rep012-mfa-materializer-20260909",
+    "sha": "8d8d1282001de6d4aff39ec7bea99f7222d98f23",
+    "date": "2026-09-09 20:41:22 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-rep014-migration-materializer-20260909",
+    "sha": "de46af13b2f9fc2580e4188539fd5465191080ef",
+    "date": "2026-09-09 21:04:27 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/heptabao-validated-history-20260915",
+    "sha": "190ce290d1b7a0bbcd875b843d51c9d1d0912a55",
+    "date": "2026-09-15 09:49:31 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "ops/openbao-26-auth-mount-registry-20260911-r1",
+    "sha": "77087c72885615c6a8a385912183185c3dd1ba0f",
+    "date": "2026-09-11 15:11:31 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-26-ha-recovery-20260911-r1",
+    "sha": "be8963c7ea5e5649d8c92118f8803fbf6bbc85f8",
+    "date": "2026-09-11 14:42:47 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-26-ha-recovery-20260911-r2",
+    "sha": "dffea9f018a609656004eb9ac275a4e64f2be3b0",
+    "date": "2026-09-11 14:45:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-26-ha-registry-closure-20260911-r1",
+    "sha": "b07165d585e72c7cad37869b1404815622ee6a34",
+    "date": "2026-09-11 14:53:36 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-26-migration-truth-20260911-r1",
+    "sha": "4800c867261b69273f6662db3a54cee2a68c2a08",
+    "date": "2026-09-11 15:22:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-26-system-corpus-20260911-r1",
+    "sha": "4096bcab0dcf86362e268fae9eb8ce0ff79d76ee",
+    "date": "2026-09-11 15:27:15 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-26-totp-corpus-20260911-r1",
+    "sha": "04b70bf7f5b57bead80481317ad4701d0918352c",
+    "date": "2026-09-11 15:07:22 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-26-userpass-approle-corpus-20260911-r1",
+    "sha": "9d112b62389d73cea0566a36e0bb2306ee7e6004",
+    "date": "2026-09-11 15:16:03 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/openbao-parity-source-20260913",
+    "sha": "1ff7537d3d1638e92ac5d02e8c148f18868f8f01",
+    "date": "2026-09-13 00:53:51 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "ops/plugin-durable-materialize-20260908",
+    "sha": "48ebcd56c13dfbc14368c29ac4bb0b4b60efed79",
+    "date": "2026-09-08 19:06:49 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr83-rustfmt-diagnostic-20260911",
+    "sha": "ba31af3b751abba1b7966a38a256b9ad1fe29b7d",
+    "date": "2026-09-11 17:59:48 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-bootstrap-leader-barrier-20260911-gpt56",
+    "sha": "227ba13d50921270548ed2e93a05498389beed0f",
+    "date": "2026-09-11 13:02:34 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-destructive-ha-fixture-20260911-gpt56",
+    "sha": "b99a42f556b7caaf007fbfb7915d426dd349316b",
+    "date": "2026-09-11 20:47:54 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-destructive-ha-r2-20260911-gpt56",
+    "sha": "3ea481e5ca322c1c456255672ad54156b64cbaf8",
+    "date": "2026-09-11 20:57:09 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-destructive-ha-r3-20260911-gpt56",
+    "sha": "28995efcb7038468c88821e434b9971f01434677",
+    "date": "2026-09-11 21:07:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-destructive-ha-r4-20260911-gpt56",
+    "sha": "f0a7c599690c6c69c1a8be4627cf44ed244f6444",
+    "date": "2026-09-11 21:14:34 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-destructive-ha-r5-20260911-gpt56",
+    "sha": "075db2cf9998a04ff9304399ae68989a056f2466",
+    "date": "2026-09-11 21:41:59 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-destructive-ha-r6-20260911-gpt56",
+    "sha": "a6ebfb9559cbaf2dd1a7214bebb21f7dbb4830ca",
+    "date": "2026-09-11 21:48:25 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-forwarding-materializer-20260911-gpt56",
+    "sha": "7390f2640fb5155e19d238ac479ecad2df3283d3",
+    "date": "2026-09-11 21:27:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-forwarding-r3-20260911-gpt56",
+    "sha": "64b8ccce03b43ddf13537113874b532220db0aab",
+    "date": "2026-09-11 13:34:51 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-health-format-materializer-20260911-gpt56",
+    "sha": "cfccbd9bd3bf6a145374941108dc6d63b7298011",
+    "date": "2026-09-11 12:38:28 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-rustls-verifier-provider-20260911-gpt56",
+    "sha": "d789cf35dbc75eb7e546313a574120e0f6a65010",
+    "date": "2026-09-11 12:55:14 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-single-readindex-20260911-gpt56",
+    "sha": "bca09c22cf83199950236a9005c22da893e00af7",
+    "date": "2026-09-11 13:47:01 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "ops/pr88-standby-unseal-20260911-gpt56",
+    "sha": "82d054b7b9f3efe1b89eef5f5350f2d11dd75cac",
+    "date": "2026-09-11 13:13:23 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "ops/read-only-integration-source-20260913",
+    "sha": "2f1edd2954f4b5e494ca45789f35da970f0ff683",
+    "date": "2026-09-13 01:16:08 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "ops/section6-source-transport-20260915-v1",
+    "sha": "36a4516b200e6dd0e2cdb87f905f41ca1eb18b7c",
+    "date": "2026-09-15 23:38:03 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "ops/transfer-to-trillionnium-20260831",
+    "sha": "6d95a231f99d310ec87fa25acf93ab44bbc548a5",
+    "date": "2026-08-28 13:48:05 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v23-payload-inspection-20260908",
+    "sha": "eb42a4f954964f2ab750a05bcc674e6487c7af85",
+    "date": "2026-09-08 18:30:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v23-salvage-materialize-20260908",
+    "sha": "6e6847ca6d550ed6b386dc22cd712dcb731b1052",
+    "date": "2026-09-08 18:44:36 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-clean-republisher-r1-20260909",
+    "sha": "12427eb3d76fb12b5eb5a7a05489a7cca3057643",
+    "date": "2026-09-09 10:17:55 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-clean-republisher-r2-20260909",
+    "sha": "bfa76cad6e21e0f0fc56f3d2483d146b1b3fe218",
+    "date": "2026-09-09 10:28:02 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-clean-republisher-r3-20260909",
+    "sha": "b409a5265fa1b500c3ed53b0fc1ad395c0023774",
+    "date": "2026-09-10 05:44:47 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-compat-capture-r1-20260909",
+    "sha": "b29a64189c6fbd2829ebd89e8cb9cdff87218861",
+    "date": "2026-09-09 09:58:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-compat-capture-r2-20260909",
+    "sha": "64cf29a80c696fd41b3f9e85df77b03899a7754f",
+    "date": "2026-09-10 06:13:24 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-compat-signature-r1-20260909",
+    "sha": "c70cc81986bf8e162b504c32bb04ecb3dde7d103",
+    "date": "2026-09-09 10:26:28 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-compat-signature-r2-20260909",
+    "sha": "f85616f5283cc49f2813364043647ecfaf1bdbfe",
+    "date": "2026-09-10 06:15:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-controller-cleanup-r1-20260909",
+    "sha": "38668a216cf3675739ff74cb68f998335715a025",
+    "date": "2026-09-09 10:17:01 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-controller-cleanup-r2-20260909",
+    "sha": "71abfd1f3ac9ecae2a93050da41556ec7d910e4d",
+    "date": "2026-09-09 10:23:41 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-controller-cleanup-r3-20260909",
+    "sha": "4e4a479ecffacab4602d522963e55a1edeeea9d9",
+    "date": "2026-09-09 10:30:31 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-controller-cleanup-r4-20260909",
+    "sha": "380bed55b96ee72a9cb32dca551f42dc2d2f3c16",
+    "date": "2026-09-09 10:39:37 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-convergence-orchestrator-r1-20260909",
+    "sha": "33c4d21b0eb0a9aac2cc170c2b2e7dab19647a76",
+    "date": "2026-09-09 09:56:40 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-feature-lineage-materialize-r1-20260909",
+    "sha": "d1798df564efecbe0e27fea49c464aa72cc5c9bd",
+    "date": "2026-09-09 09:41:43 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-feature-lineage-materialize-r2-20260909",
+    "sha": "c72e5c367ede62da87667edb0dcd7a32f0ed37e8",
+    "date": "2026-09-09 09:42:57 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-federated-auth-r1-20260909",
+    "sha": "db77577dca611f4c6ad3f19b7a3627b5b230f817",
+    "date": "2026-09-09 09:52:52 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-federated-auth-r2-20260909",
+    "sha": "12f1916356578bab8128981640c6d10d0952d3db",
+    "date": "2026-09-10 06:18:03 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-federated-auth-r3-20260909",
+    "sha": "9b1f0728caff7bd1c7d2b289a384feaa42eef8e2",
+    "date": "2026-09-10 06:20:28 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-pr-opener-r1-20260909",
+    "sha": "f94c02bcdcab90af8185aea57da4733253ea3f78",
+    "date": "2026-09-09 10:20:25 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-pr-opener-r2-20260909",
+    "sha": "96555a80c340ce7ffb3c634630ab38e64c3190f2",
+    "date": "2026-09-09 10:22:51 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-pr-opener-r3-20260909",
+    "sha": "b88b8048568270772ede6048bb516d9f39bc95c5",
+    "date": "2026-09-09 10:29:24 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-pr-opener-r4-20260909",
+    "sha": "f881e5ec1ef9ec48e84b3900f37fa4443eeee9c2",
+    "date": "2026-09-09 10:39:10 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-qualifier-r1-20260909",
+    "sha": "a2574b3d6a98826b3adbbf91b5409af1580f0cc1",
+    "date": "2026-09-09 10:19:57 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-qualifier-r2-20260909",
+    "sha": "27098dce531870f859cec3d3fb8745b484a095d7",
+    "date": "2026-09-09 10:22:19 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-qualifier-r3-20260909",
+    "sha": "da0939f49c93bbac3e4090674edcf27f34955d69",
+    "date": "2026-09-09 10:28:42 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-clean-qualifier-r4-20260909",
+    "sha": "f5116c31fbb2287b5b7a20d4518e45fbd3ffc9db",
+    "date": "2026-09-10 05:44:58 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-pr-opener-r1-20260909",
+    "sha": "e29a6d0b282624d243d03fdc3ce158fe8d244135",
+    "date": "2026-09-09 10:12:31 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-final-qualifier-r1-20260909",
+    "sha": "4e232aa67923274e729e8fad786e76f8cdfabdce",
+    "date": "2026-09-09 10:06:04 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-ha-mtls-r3-20260909",
+    "sha": "ef7bff1f15fb679dfcfd813e07c43ea62f2e67f9",
+    "date": "2026-09-10 05:53:14 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-ha-service-r1-20260909",
+    "sha": "77230cfabcc212292ea1d941826e069a50f98f4f",
+    "date": "2026-09-09 09:55:30 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-ha-service-r2-20260909",
+    "sha": "deeb5145b165f2d2c0d18cb1cda7dbe90b3dd206",
+    "date": "2026-09-10 06:21:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-inplace-integration-r1-20260909",
+    "sha": "88cd618cc96642c14334444de006f5a69eb7b9c4",
+    "date": "2026-09-09 10:05:06 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-main-integrity-audit-r1-20260909",
+    "sha": "933281e7094752ef2588e61b208d0bb67a6f9f64",
+    "date": "2026-09-09 10:11:58 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-migration-inventory-r3-20260909",
+    "sha": "110a1a2b1e6c242a5136edff152c8f73170a83ea",
+    "date": "2026-09-10 05:53:44 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-migration-journal-r1-20260909",
+    "sha": "25dce79d68292f8a6bdbed05eb759274bbf01cf2",
+    "date": "2026-09-09 09:50:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-migration-journal-r2-20260909",
+    "sha": "e5bdff85d4c4afac29483acc83e65607529df126",
+    "date": "2026-09-10 06:04:21 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-plugin-attestation-r3-20260909",
+    "sha": "c00963bd47860375c9689aee574fd243f4914970",
+    "date": "2026-09-10 05:54:20 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-plugin-toctou-fix-r1-20260909",
+    "sha": "8dc6520b0b1bd4dbf01fb755df0aad9340248d63",
+    "date": "2026-09-09 09:48:01 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-plugin-toctou-fix-r2-20260909",
+    "sha": "47b42df70e74da241628041f7008feb1a438fc9b",
+    "date": "2026-09-10 06:09:53 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-provenance-select-r1-20260909",
+    "sha": "1c7e1266f5d687bb670e0e75e70ab75dc3d1693f",
+    "date": "2026-09-09 09:46:27 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-provenance-union-r1-20260909",
+    "sha": "200e3152bda57cd39ccc3b5264a89afbd35241d6",
+    "date": "2026-09-09 09:44:38 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-source-convergence-r1-20260909",
+    "sha": "e2759443e852b854245842871c1d19766a971c1b",
+    "date": "2026-09-09 10:06:59 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-source-convergence-r2-20260909",
+    "sha": "ab1c7caa81f60fe5aabf5a77095f84c3385ee0c9",
+    "date": "2026-09-09 10:14:13 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-source-convergence-r3-20260909",
+    "sha": "22330729158afec93ae0e635e9b52b29d1fd5315",
+    "date": "2026-09-09 10:27:22 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-source-convergence-r4-20260909",
+    "sha": "5f6317b294b3dbfed79ff6d69db2f974d2a49166",
+    "date": "2026-09-10 05:43:12 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "ops/v24-source-only-recovery-r1-20260909",
+    "sha": "d5ccb9b79f5cce79696b5c0cfcd339cc6dacd39a",
+    "date": "2026-09-09 10:03:20 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/check-v143-transport",
+    "sha": "e17127f8fd78e36b2f5ce1f11433698cc7b1141d",
+    "date": "2026-09-01 12:37:14 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/export-federated-auth-20260911",
+    "sha": "1c196b4ac0112d91381ee48e8b7b3ff501c82cf6",
+    "date": "2026-09-11 14:28:26 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-auth-mount-source-20260911-r1",
+    "sha": "d7676607458836a9ccdcaa23e1f580e22f46bd4b",
+    "date": "2026-09-11 07:12:53 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-ha-lock-refresh-20260911",
+    "sha": "e9ab38ee04f0b2cebbb57c21420c23cdbe8d6147",
+    "date": "2026-09-11 09:42:15 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-ha-mtls-source-20260911-r2",
+    "sha": "1fe5bbd8f4bb2319a7d58e1f0790d96fdbc41139",
+    "date": "2026-09-11 06:46:07 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-ha-registry-source-20260911-r1",
+    "sha": "d594fcb9868f04512b5846d73af37f037f17af07",
+    "date": "2026-09-11 06:54:27 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-migration-truth-source-20260911-r1",
+    "sha": "a7e1302565bad31286d7986178a395e8d7449c65",
+    "date": "2026-09-11 07:24:00 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-system-corpus-source-20260911-r1",
+    "sha": "5efcba89728a892d914c6e73aca2f89dede4ee72",
+    "date": "2026-09-11 07:28:03 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-totp-corpus-source-20260911-r1",
+    "sha": "3aeb52ecde50274bab0200ba235014f6bda90134",
+    "date": "2026-09-11 07:08:03 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/openbao-26-userpass-approle-corpus-source-20260911-r1",
+    "sha": "90f5df1fd8dc2dfb6b7bc676d41ad1bacae537d4",
+    "date": "2026-09-11 07:16:51 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/pr63-review-admission-v2-archive-stage",
+    "sha": "e956255f485fb2ba5bde1ddca3a0bb4668c9bfab",
+    "date": "2026-09-03 09:04:38 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/pr63-review-admission-v2-stage",
+    "sha": "7d06fe9f59a20cf5bdb22c99bc0b43e3977552db",
+    "date": "2026-09-03 08:58:08 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/v1.3.1-reviewed-tree-v1",
+    "sha": "0f405ca1c145029030a003a225c6590babed8150",
+    "date": "2026-08-30 11:46:19 +0000",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/v1.3.1-staging-input-v1",
+    "sha": "9d6589f8a6972bc2f94ea9b1ee10f18a3a0c3921",
+    "date": "2026-08-30 19:39:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/v143-candidate-transport-anchor",
+    "sha": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+    "date": "2026-09-01 12:05:29 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "tmp/workflow-blob-verification",
+    "sha": "5725414e78167d29055c2962ddb85aaf06b186c3",
+    "date": "2026-08-31 03:58:50 +0800",
+    "merged_main": true
+  },
+  {
+    "name": "work/20261105-snapshot-combined-61ff-r1",
+    "sha": "f80d2d54800ba7e932d91572c084f930af3e5714",
+    "date": "2026-11-04 20:02:44 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "work/20261105-snapshot-outer-restore-61ff-r1",
+    "sha": "c5fa9ac0142b10092331312d2e08f22cc07aff05",
+    "date": "2026-11-04 19:45:37 -0500",
+    "merged_main": false
+  },
+  {
+    "name": "work/heptabao-closure-20260914",
+    "sha": "b316cb841868c64e27e62a5fc0c7306c98631a00",
+    "date": "2026-09-13 10:02:32 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/heptabao-runtime-closure-20260914",
+    "sha": "c4bebb98886d8fe500edaf24ef315ef522954ebe",
+    "date": "2026-09-14 21:19:46 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/heptabao-validated-import-20260915",
+    "sha": "08d2954f7c6b2fc094f61b39ef73d1aa508e08b2",
+    "date": "2026-09-15 00:18:54 +0000",
+    "merged_main": false
+  },
+  {
+    "name": "work/identity-live-policy-closure-20260913-r2",
+    "sha": "b316cb841868c64e27e62a5fc0c7306c98631a00",
+    "date": "2026-09-13 10:02:32 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/openbao-core-isolation-20260913",
+    "sha": "012212f5bd274f68430d967f8b8e45a9810de976",
+    "date": "2026-09-13 09:08:47 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/openbao-readiness-closure-20260915",
+    "sha": "0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5",
+    "date": "2026-09-15 11:14:56 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/remaining-runtime-20260915",
+    "sha": "d555e6fddade9925fa3b0eefb9b804d9b551bca2",
+    "date": "2026-09-15 16:57:27 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/section6-continuation-20260915",
+    "sha": "1425b9e20fdbba0c78c75a67849feef418adbf1c",
+    "date": "2026-09-15 15:55:41 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/section6-integrated-remote-20260915",
+    "sha": "ef7d7c1c7167f7fa040a7b027eeed75ab8a3777f",
+    "date": "2026-09-15 23:36:35 +0800",
+    "merged_main": false
+  },
+  {
+    "name": "work/section6-storage-migration-20260915",
+    "sha": "1425b9e20fdbba0c78c75a67849feef418adbf1c",
+    "date": "2026-09-15 15:55:41 +0800",
+    "merged_main": false
+  }
+]

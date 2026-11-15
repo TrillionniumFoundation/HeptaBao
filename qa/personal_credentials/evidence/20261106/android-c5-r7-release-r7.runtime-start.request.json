@@ -1,0 +1,11 @@
+{
+  "host": "pocket4",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-u",
+    "/home/alex/heptabao-android-autofill-20261106-r1/release-r7.readonly.py"
+  ],
+  "cwd": "/home/alex/heptabao-android-autofill-20261106-r1",
+  "idempotency_key": "heptabao-android-autofill-qa9-r7-readonly-release-20261106",
+  "timeout_seconds": 90
+}

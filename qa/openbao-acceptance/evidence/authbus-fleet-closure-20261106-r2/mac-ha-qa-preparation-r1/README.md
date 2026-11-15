@@ -1,0 +1,15 @@
+# Actual Mac QA preparation for the pending physical HA run
+
+Job `1a1b1d4fbc9-fc05-7b0b` succeeded with exit 0, complete durable output, no timeout and no retry. Its internal preparation took **4.281330207828432 seconds** within its 60-second deadline. All 18 recorded Git children returned known exit 0. No product process, listener, provider request or credential read was performed.
+
+The create-only 1009233-byte offline bundle is bound to base `5ded017e1c858b8602a73678acc29df75386a84d`, QA commit `af91ec0cecbb1c0bd717095d6d8696a3f73a1cee`, tree `c3c5755344f407149b84bfaec285f1dba9be90f6`, and SHA-256 `28a2c91da4c77cdb40f015100c57cb7b741fac91a2f77a7950761fd9b6a72144`. The existing clean 5ded017 checkout was cloned without hard links into a new owned directory. The local bundle was fetched, the exact af91 checkout passed full strict fsck, and all product files outside `qa/` and `docs/` remained equal to canonical 4bde9. Original source and bundle bindings remained unchanged.
+
+The exact existing official full34 source was admitted **read-only** from `full34-dr25-authbus-r2/quarantine/original-closure`. Its original 92097-byte summary is pinned to `89448bf85f01828b05c4ad5f310502bd116d57ea2bb29b0f368577420b79603d`. The unchanged official-history adapter checked its 31-case baseline, actual OpenBao 2.7.1 release identity, the exact native-large bundle and all 19 source API observations. All 21 source files were rehashed after admission. No old closure was restored, removed from quarantine or modified; no DR case was rerun.
+
+The source defines 89 native loopback checks, 98 direct-LAN checks and 30 separate official-history checks. The pending integrated profile has **128 distinct obligations (98 + 30)**. This preparation executed **zero HA checks**. It does not borrow a separate loopback or physical-KV1 result and grants no runtime, production or replacement qualification.
+
+The relevant Mac IPv4 observation is retained separately: `en0` was active at `192.168.0.8/24`, and `bridge0` at `10.77.0.3/24`. Alongside the already retained X230 `192.168.0.13/24` and ai395 `192.168.0.11/24` observations, this supplies the proposed three-node direct-LAN topology. The observation does not prove future free ports, cross-host reachability, host identity at execution or successful peer mTLS; the actual fixture must establish those facts.
+
+`result.public.json` contains the original complete 17498-byte stdout, SHA-256 `0b960c85d2bf50eca0eece615f59bfa8b6646edd09e2aac9b20d605cbd981d1c`, and matches the separately read remote result file. Both raw runtime pages retain byte-exact hexadecimal data. The source preparer, original launch, authoritative terminal and create-only bundle write are retained. Git output sizes/hashes and original exit statuses are recorded in the result; post-root-creation command logs also remain at the remote preparation root.
+
+Linux normal107, actual receiver ABI admission, physical HA, current AuthBus lifecycle, per-client rollback/cutover and legacy cleanup remain separate gates.

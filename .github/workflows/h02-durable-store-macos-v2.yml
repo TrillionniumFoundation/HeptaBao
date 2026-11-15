@@ -1,10 +1,8 @@
 name: h02-durable-store-macos-v2
 
 on:
-  push:
-    branches: ["codex/h02-durable-multiprocess-closure-v2"]
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

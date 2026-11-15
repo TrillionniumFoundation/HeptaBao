@@ -1,0 +1,7 @@
+{
+  "chunk_id": "48eedd",
+  "wall_time_seconds": 0.000023534,
+  "exit_code": 0,
+  "original_token_count": 50,
+  "output": "{\"noPrefixStop\": true, \"original128ResultGateByteExact\": true, \"original613PinsExact\": true, \"runtimeCalls\": 0, \"schema\": \"heptabao.ha128-observed-assembly-guard.v1\", \"threePayloadsByteExact\": true}\n"
+}

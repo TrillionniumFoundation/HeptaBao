@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.personal-credentials.ci-build.v1",
+  "source_commit": "7e77aa3f4319e9e6c8fbc6e0d200dc2cde8af7c6",
+  "source_tree": "44b5f1ae9f0c7ff1994d096c26f2456bc4a75c06",
+  "source_dirty": false,
+  "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "build_argv": [
+    "cargo",
+    "+1.98.0",
+    "build",
+    "--locked",
+    "-p",
+    "heptabao-credential-broker",
+    "-p",
+    "heptabao-personal-vault",
+    "-p",
+    "heptabao-personal-edge",
+    "--bins"
+  ],
+  "build_env": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "runner": {
+    "system": "Linux",
+    "release": "7.0.0-1017-azure",
+    "machine": "x86_64"
+  },
+  "github_run_id": "42215657954",
+  "github_run_attempt": "1",
+  "binary_sha256": {
+    "heptabao-credential-broker": "5ce0015a8a086a1c3c613f73dca5143f1520a786dfbdb54bb5064fe4f7a757e4",
+    "heptabao-vault": "c0ea8238e835464cae75c433dfc06724119ce7df7c4060effe814d9c5b843d29",
+    "heptabao-browser": "10de162296bf5005b11e6c4c65742b54f63ea6a4bfacb18ee7c8280ff21610c6",
+    "heptabao-sync": "05d9e7f706a8cfe3caefcee74cbf0d44a14b1a6d7ccdd1f10d1d754bafe300cd"
+  },
+  "test_binaries_equal_to_post_test_build_asserted": false,
+  "synthetic_only": true,
+  "production_qualified": false,
+  "full_replacement_qualified": false,
+  "real_browser_qualified": false,
+  "android_qualified": false,
+  "physical_two_device_qualified": false,
+  "credential_manager_exercised": false,
+  "p4_qualified": false,
+  "independent_security_review": false,
+  "p0_profile_executed": false,
+  "p0_service_qualified": false,
+  "p5_qualified": false,
+  "synthetic_core_status": "passed",
+  "unchanged_binaries": true
+}

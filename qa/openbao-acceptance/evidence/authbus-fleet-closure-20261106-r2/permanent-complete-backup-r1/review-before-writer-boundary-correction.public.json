@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.permanent-complete-backup-source-review.r1",
+  "state": "reviewed-not-dispatched",
+  "launcherBytes": 116280,
+  "launcherSha256": "5055a466e83edbf7e9155e7d81db00c7ba5c4c03a16943189572edc3331d46b5",
+  "independentReview": "candidate_ha",
+  "wholeTemplateCoreAndApiReviewed": true,
+  "correctedFindings": [
+    "all final verifier descriptors each get exactly one close attempt even when another close fails; every failure blocks success",
+    "restored executable, CA, leaf, private key use original destination full-generation identities; recovery config and sandbox use original fsynced and read-back file identities; all restored parent namespaces remain bound across both exec/API/final phases"
+  ],
+  "sourceLibraries": {
+    "qualifiedUnchanged": 5,
+    "newApiHasOnlyExplicitPhasesAndRestoredCaPath": true,
+    "completeRuntimeCopyAdmitsOneExactPublicExecutablePin": true
+  },
+  "remainingQualification": "actual original Rust directory-lock interoperability, complete independent-filesystem backup and manifest-bound restore, kernel source denial, actual native-v6 decryption/cold lifecycle and every original terminal/resource closure",
+  "actualServerOrProductionExecution": false
+}

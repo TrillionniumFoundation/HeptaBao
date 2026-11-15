@@ -1,0 +1,2365 @@
+{
+  "$comment": "Metadata/projection nested objects intentionally allow producer-specific metadata fields. This is not a credential redactor. Accept public payloads only with the hash-frozen producer and strict controller source/scope/read validator; old reused arrays are equality-checked there.",
+  "$defs": {
+    "metadata": {
+      "properties": {
+        "contents_read": {
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "contents_read"
+      ],
+      "type": "object"
+    },
+    "read_operation": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "header_only": {
+                "const": false
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "profile": {
+                "enum": [
+                  "database_magic",
+                  "executable_magic"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "bytes": {
+                "maximum": 16
+              },
+              "header_only": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "profile": {
+                "const": "approved_metadata_projection"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "bytes": {
+                "maximum": 262144
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "bytes": {
+          "maximum": 2097152,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "header_only": {
+          "type": "boolean"
+        },
+        "path": {
+          "pattern": "^/",
+          "type": "string"
+        },
+        "profile": {
+          "enum": [
+            "database_magic",
+            "executable_magic",
+            "approved_config",
+            "approved_metadata_projection"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "profile",
+        "bytes",
+        "header_only"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:heptabao:authbus-migration-gap-metadata-v3",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "host_label": {
+            "const": "main"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authbus_binding_metadata": {
+            "items": false,
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/authbus/role_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/authbus/secret_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "backup_runtime_entries": {
+            "items": false,
+            "maxItems": 17,
+            "minItems": 17,
+            "prefixItems": [
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/authbus"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/backups"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/backups/authbus-fallback-reset-20260823T144330+0800"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.auth-admin2-lastgood-20260620T1143.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.backup-before-telegram-residents-20260506_171100"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.backup-before-telegram-residents-20260506_171116"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.bak.1"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.bak.2"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.bak.3"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.bak.4"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.pre-restore-telegram4-20260511_193137.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.telegram-dns-20260503_154420.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.telegram-fix-20260503_154311.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.telegram-ipv6-strict-20260503_154947.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.telegram-menu-20260503_155952.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/tmp-antigravity-pairing-backup"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "configuration_references": {
+            "properties": {
+              "path": {
+                "const": "/home/qian-qi/.openclaw/openclaw.json"
+              }
+            }
+          },
+          "missing_agents": {
+            "items": false,
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "properties": {
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "owner_sdk_inspection_qualified": {
+                    "const": false
+                  },
+                  "planned_agent_dir": {
+                    "const": "/data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/.openclaw/agents/trillionnium-os-agent/agent"
+                  }
+                },
+                "required": [
+                  "planned_agent_dir",
+                  "owner_sdk_inspection_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "owner_sdk_inspection_qualified": {
+                    "const": false
+                  },
+                  "planned_agent_dir": {
+                    "const": "/home/qian-qi/.openclaw/agents/hepta-luna-teacher/agent"
+                  }
+                },
+                "required": [
+                  "planned_agent_dir",
+                  "owner_sdk_inspection_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "relay_dependencies": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "relay_startups": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "secretref_metadata": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "source_binding": {
+            "const": {
+              "allowlist_canonical_sha256": "a37331721a7560b60029c08db9423dd5eda57dc3855c889c492a4a6b79729644",
+              "original_metadata_receipt": {
+                "bytes": 29580,
+                "created_at": "2026-10-17T14:19:44.727681+00:00",
+                "name": "authbus-current-inventory-r1-main.json",
+                "sha256": "a5083d6c99800054eb50155dafe033fd7429fdec48d8b440569eae5678e62452"
+              },
+              "receipt_set_sha256": "bf03a5819e325fac277a2de74768c2639dcb9650cf47285d87e77d26a2f1068c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "host_label": {
+            "const": "macbook-pro"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authbus_binding_metadata": {
+            "items": false,
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/authbus/role_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/authbus/secret_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "backup_runtime_entries": {
+            "items": false,
+            "maxItems": 10,
+            "minItems": 10,
+            "prefixItems": [
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/backups"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/openclaw.json.auth-admin2-lastgood-20260620T1143.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/openclaw.json.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/openclaw.json.bak.1"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/openclaw.json.bak.2"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/openclaw.json.bak.3"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/openclaw.json.bak.4"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/openclaw.json.r81-a2a-allow-backup-20260620T051653+0800"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "configuration_references": {
+            "properties": {
+              "path": {
+                "const": "/Users/qianqi/.openclaw/openclaw.json"
+              }
+            }
+          },
+          "missing_agents": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "relay_dependencies": {
+            "items": false,
+            "maxItems": 8,
+            "minItems": 8,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/auth/cliproxy.internal.key"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/auth/nodes.json"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/bin/cli-proxy-api"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/bin/egressguard"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/bin/relayfront"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/config/cliproxy.runtime.yaml"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/authbus-relay/state/bridge.json"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "relay_startups": {
+            "items": false,
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.bridge.plist"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.egressguard.plist"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.front.plist"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "path": {
+                    "const": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.proxy.plist"
+                  }
+                },
+                "required": [
+                  "path"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "secretref_metadata": {
+            "items": false,
+            "maxItems": 9,
+            "minItems": 9,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/gateway-auth-token.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/ollama-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/qwen-portal-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/google-websearch-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/discord-token.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/feishu-app-secret.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/google-authprofile-main.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/google-authprofile-hepta-ui.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/Users/qianqi/.openclaw/credentials/secretrefs/google-authprofile-trnm.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "source_binding": {
+            "const": {
+              "allowlist_canonical_sha256": "a37331721a7560b60029c08db9423dd5eda57dc3855c889c492a4a6b79729644",
+              "original_metadata_receipt": {
+                "bytes": 24261,
+                "created_at": "2026-10-17T14:19:44.679989+00:00",
+                "name": "authbus-current-inventory-r1-macbook-pro.json",
+                "sha256": "4445db0b874b12f27a11f2f9dab2d9d261dc6457acf827623f840e1705a560fd"
+              },
+              "receipt_set_sha256": "bf03a5819e325fac277a2de74768c2639dcb9650cf47285d87e77d26a2f1068c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "host_label": {
+            "const": "rog"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authbus_binding_metadata": {
+            "items": false,
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/authbus/role_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/authbus/secret_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "backup_runtime_entries": {
+            "items": false,
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/authbus"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/backups"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/openclaw.json.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "configuration_references": {
+            "properties": {
+              "path": {
+                "const": "/home/qian-qi/.openclaw/openclaw.json"
+              }
+            }
+          },
+          "missing_agents": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "relay_dependencies": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "relay_startups": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "secretref_metadata": {
+            "items": false,
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/secretrefs/gateway-auth-token.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/qian-qi/.openclaw/credentials/secretrefs/zbj-taskflow-webhook.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "source_binding": {
+            "const": {
+              "allowlist_canonical_sha256": "a37331721a7560b60029c08db9423dd5eda57dc3855c889c492a4a6b79729644",
+              "original_metadata_receipt": {
+                "bytes": 22917,
+                "created_at": "2026-10-17T14:19:45.018027+00:00",
+                "name": "authbus-current-inventory-r1-rog.json",
+                "sha256": "0a10171367de4b7588177f750e65bddef9219a5769615667b356ad0c1602440a"
+              },
+              "receipt_set_sha256": "bf03a5819e325fac277a2de74768c2639dcb9650cf47285d87e77d26a2f1068c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "host_label": {
+            "const": "pocket4"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authbus_binding_metadata": {
+            "items": false,
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/authbus/ca.crt"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/authbus/role_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/authbus/secret_id"
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "backup_runtime_entries": {
+            "items": false,
+            "maxItems": 8,
+            "minItems": 8,
+            "prefixItems": [
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/authbus"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/backups"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/openclaw.json.auth-admin2-lastgood-20260620T1143.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/openclaw.json.bak"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/openclaw.json.bak.1"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/openclaw.json.bak.2"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/openclaw.json.bak.3"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "backup_consistency_verified": {
+                    "const": false
+                  },
+                  "full_tree_enumerated": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/openclaw.json.bak.4"
+                  },
+                  "restore_qualified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "restore_qualified",
+                  "backup_consistency_verified"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "configuration_references": {
+            "properties": {
+              "path": {
+                "const": "/home/alex/.openclaw/openclaw.json"
+              }
+            }
+          },
+          "missing_agents": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "relay_dependencies": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "relay_startups": {
+            "maxItems": 0,
+            "minItems": 0,
+            "type": "array"
+          },
+          "secretref_metadata": {
+            "items": false,
+            "maxItems": 8,
+            "minItems": 8,
+            "prefixItems": [
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/gateway-auth-token.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/memorysearch-remote-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/google-websearch-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/tg8687951891-model-minimax-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/tg8687951891-model-minimax-cn-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/tg8687951891-authprofile-minimax-cn-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/env-gemini-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "contents_read": {
+                    "const": false
+                  },
+                  "credential_source_qualified": {
+                    "const": false
+                  },
+                  "migration_complete": {
+                    "const": false
+                  },
+                  "path": {
+                    "const": "/home/alex/.openclaw/credentials/secretrefs/env-google-api-key.secret"
+                  },
+                  "payload_opened": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "path",
+                  "contents_read",
+                  "payload_opened",
+                  "credential_source_qualified",
+                  "migration_complete"
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          },
+          "source_binding": {
+            "const": {
+              "allowlist_canonical_sha256": "a37331721a7560b60029c08db9423dd5eda57dc3855c889c492a4a6b79729644",
+              "original_metadata_receipt": {
+                "bytes": 17586,
+                "created_at": "2026-10-17T14:19:45.110303+00:00",
+                "name": "authbus-current-inventory-r1-pocket4.json",
+                "sha256": "7282f921223de2fb7ea32a7c39298322e65d22350f0a8e871ed87e3f3a8da293"
+              },
+              "receipt_set_sha256": "bf03a5819e325fac277a2de74768c2639dcb9650cf47285d87e77d26a2f1068c"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "authbus_binding_metadata": {
+      "type": "array"
+    },
+    "backup_runtime_entries": {
+      "type": "array"
+    },
+    "configuration_references": {
+      "$ref": "#/$defs/metadata"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "credential_file_payloads_read": {
+      "const": false
+    },
+    "credential_values_emitted": {
+      "const": false
+    },
+    "execution_bounds": {
+      "additionalProperties": false,
+      "properties": {
+        "bounds_hit": {
+          "items": {
+            "enum": [
+              "original_time_budget",
+              "total_read_bytes",
+              "total_directories",
+              "per_directory_entries",
+              "total_entries",
+              "maximum_depth"
+            ]
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "bytes_read": {
+          "maximum": 16777216,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "content_read_operations": {
+          "items": {
+            "$ref": "#/$defs/read_operation"
+          },
+          "type": "array"
+        },
+        "directories_enumerated": {
+          "maximum": 96,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "directory_entries_seen": {
+          "maximum": 2048,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "elapsed_seconds": {
+          "maximum": 31,
+          "minimum": 0,
+          "type": "number"
+        },
+        "filesystem_interruption_requires_caller_process_timeout": {
+          "const": true
+        },
+        "hard_alarm_seconds": {
+          "const": 24
+        },
+        "maximum_code_bytes": {
+          "const": 262144
+        },
+        "maximum_config_bytes": {
+          "const": 2097152
+        },
+        "maximum_depth": {
+          "const": 2
+        },
+        "maximum_json_depth": {
+          "const": 32
+        },
+        "maximum_json_nodes": {
+          "const": 20000
+        },
+        "per_directory_entries": {
+          "const": 64
+        },
+        "seconds": {
+          "const": 20
+        },
+        "sqlite_header_bytes": {
+          "const": 16
+        },
+        "total_directories": {
+          "const": 96
+        },
+        "total_entries": {
+          "const": 2048
+        },
+        "total_read_bytes": {
+          "const": 16777216
+        }
+      },
+      "required": [
+        "bounds_hit",
+        "bytes_read",
+        "content_read_operations",
+        "directories_enumerated",
+        "directory_entries_seen",
+        "elapsed_seconds",
+        "filesystem_interruption_requires_caller_process_timeout",
+        "hard_alarm_seconds",
+        "maximum_code_bytes",
+        "maximum_config_bytes",
+        "maximum_depth",
+        "maximum_json_depth",
+        "maximum_json_nodes",
+        "per_directory_entries",
+        "seconds",
+        "sqlite_header_bytes",
+        "total_directories",
+        "total_entries",
+        "total_read_bytes"
+      ],
+      "type": "object"
+    },
+    "gaps": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "host_label": {
+      "enum": [
+        "main",
+        "macbook-pro",
+        "rog",
+        "pocket4"
+      ]
+    },
+    "host_label_is_caller_asserted": {
+      "const": true
+    },
+    "missing_agents": {
+      "type": "array"
+    },
+    "network_called": {
+      "const": false
+    },
+    "pending_boundaries": {
+      "const": [
+        {
+          "basis": "Retained reviewed boundary; no verified owner/path receipt among these four inputs.",
+          "id": "x230_owner_source",
+          "paths": [],
+          "status": "pending_not_inspected"
+        },
+        {
+          "basis": "A configured provider reference does not inspect its host; no owner/path authority supplied.",
+          "id": "ai395_owner_source",
+          "paths": [],
+          "status": "pending_not_inspected"
+        },
+        {
+          "basis": "Retained reviewed boundary; no private-CI owner/path authority supplied.",
+          "id": "private_ci_client_sources",
+          "paths": [],
+          "status": "pending_not_inspected"
+        }
+      ]
+    },
+    "production_mutation": {
+      "const": false
+    },
+    "qualification": {
+      "const": {
+        "allClientsAndBackupsMigrated": false,
+        "backupRestoreQualified": false,
+        "legacyCleanupQualified": false,
+        "metadataOnly": true,
+        "productionCutoverQualified": false,
+        "providerLivenessQualified": false
+      }
+    },
+    "read_only": {
+      "const": true
+    },
+    "relay_dependencies": {
+      "type": "array"
+    },
+    "relay_startups": {
+      "type": "array"
+    },
+    "reused_evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "client_store_metadata": {
+          "type": "array"
+        },
+        "entrypoint_metadata": {
+          "type": "array"
+        },
+        "freshly_scanned": {
+          "const": false
+        },
+        "observed_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "freshly_scanned",
+        "observed_at",
+        "client_store_metadata",
+        "entrypoint_metadata"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "authbus-migration-gap-metadata-v3"
+    },
+    "sdk_imported": {
+      "const": false
+    },
+    "secretref_metadata": {
+      "type": "array"
+    },
+    "source_binding": {
+      "type": "object"
+    },
+    "sql_called": {
+      "const": false
+    },
+    "subprocess_called": {
+      "const": false
+    }
+  },
+  "required": [
+    "authbus_binding_metadata",
+    "backup_runtime_entries",
+    "configuration_references",
+    "created_at",
+    "credential_file_payloads_read",
+    "credential_values_emitted",
+    "execution_bounds",
+    "gaps",
+    "host_label",
+    "host_label_is_caller_asserted",
+    "missing_agents",
+    "network_called",
+    "pending_boundaries",
+    "production_mutation",
+    "qualification",
+    "read_only",
+    "relay_dependencies",
+    "relay_startups",
+    "reused_evidence",
+    "schema",
+    "sdk_imported",
+    "secretref_metadata",
+    "source_binding",
+    "sql_called",
+    "subprocess_called"
+  ],
+  "title": "New v3 bounded public metadata receipt",
+  "type": "object"
+}

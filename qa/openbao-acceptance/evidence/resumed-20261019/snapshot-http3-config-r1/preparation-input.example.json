@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.native-snapshot-http3-preparation.v1",
+  "source": "/absolute/exact/cohort/source",
+  "source_commit": "REPLACE_WITH_ACTUAL_COMMIT",
+  "source_tree": "REPLACE_WITH_ACTUAL_TREE",
+  "manifest": "/absolute/exact/cohort/manifest.json",
+  "manifest_sha256": "REPLACE_WITH_ACTUAL_MANIFEST_SHA256",
+  "target_dir": "/absolute/original/owned/target",
+  "output": "/absolute/new/additional-http3-output",
+  "source_runner_sha256": "REPLACE_WITH_EXACT_NATIVE_HOST_RUNNER_SHA256",
+  "owned_runner": "/absolute/verified/R3/native_service_only_compile.py",
+  "owned_runner_sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+  "producer_summary": "/absolute/completed/original55/summary.json",
+  "producer_summary_sha256": "REPLACE_WITH_ACTUAL_PRODUCER_SUMMARY_SHA256"
+}

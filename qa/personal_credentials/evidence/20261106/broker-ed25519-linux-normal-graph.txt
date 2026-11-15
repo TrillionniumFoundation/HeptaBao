@@ -1,0 +1,104 @@
+0heptabao-credential-broker v0.1.0 (/home/qq/heptabao-broker-ed25519-c447536/crates/heptabao-credential-broker) []
+1base64 v0.22.1 [alloc,default,std]
+1heptabao-filesystem-guard v0.1.0 (/home/qq/heptabao-broker-ed25519-c447536/crates/heptabao-filesystem-guard) []
+2libc v0.2.189 [default,std]
+2rustix v1.1.4 [alloc,default,fs,process,std]
+3bitflags v2.13.2 [std]
+3linux-raw-sys v0.12.1 [auxvec,elf,errno,general,ioctl,no_std,prctl]
+1ring v0.17.14 [alloc,default,dev_urandom_fallback]
+2cfg-if v1.0.4 []
+2getrandom v0.2.17 []
+3cfg-if v1.0.4 []
+3libc v0.2.189 [default,std]
+2untrusted v0.9.0 []
+1rustix v1.1.4 [alloc,default,fs,process,std] (*)
+1serde v1.0.229 [default,derive,serde_derive,std]
+2serde_core v1.0.229 [result,std]
+2serde_derive v1.0.229 (proc-macro) [default]
+3proc-macro2 v1.0.107 [default,proc-macro]
+4unicode-ident v1.0.24 []
+3quote v1.0.47 [default,proc-macro]
+4proc-macro2 v1.0.107 [default,proc-macro] (*)
+3syn v3.0.6 [clone-impls,derive,parsing,printing,proc-macro]
+4proc-macro2 v1.0.107 [default,proc-macro] (*)
+4quote v1.0.47 [default,proc-macro] (*)
+4unicode-ident v1.0.24 []
+1serde_json v1.0.151 [default,std]
+2itoa v1.0.18 []
+2memchr v2.8.3 [alloc,std]
+2serde_core v1.0.229 [result,std]
+2zmij v1.0.23 []
+1ssh-key v0.6.7 [alloc,ed25519,rand_core,std]
+2ed25519-dalek v2.1.1 []
+3curve25519-dalek v4.1.3 [digest]
+4cfg-if v1.0.4 []
+4cpufeatures v0.2.17 []
+4curve25519-dalek-derive v0.1.1 (proc-macro) []
+5proc-macro2 v1.0.107 [default,proc-macro] (*)
+5quote v1.0.47 [default,proc-macro] (*)
+5syn v2.0.119 [clone-impls,default,derive,full,parsing,printing,proc-macro]
+6proc-macro2 v1.0.107 [default,proc-macro] (*)
+6quote v1.0.47 [default,proc-macro] (*)
+6unicode-ident v1.0.24 []
+4digest v0.10.7 [alloc,block-buffer,core-api,default,mac,std,subtle]
+5block-buffer v0.10.4 []
+6generic-array v0.14.7 [more_lengths]
+7typenum v1.20.1 []
+5crypto-common v0.1.7 [std]
+6generic-array v0.14.7 [more_lengths] (*)
+6typenum v1.20.1 []
+5subtle v2.6.1 []
+4subtle v2.6.1 []
+3ed25519 v2.2.3 []
+4signature v2.2.0 [alloc,std]
+3sha2 v0.10.9 [std]
+4cfg-if v1.0.4 []
+4cpufeatures v0.2.17 []
+4digest v0.10.7 [alloc,block-buffer,core-api,default,mac,std,subtle] (*)
+3subtle v2.6.1 []
+2rand_core v0.6.4 []
+2sha2 v0.10.9 [std] (*)
+2signature v2.2.0 [alloc,std]
+2ssh-cipher v0.2.0 []
+3cipher v0.4.4 []
+4crypto-common v0.1.7 [std] (*)
+4inout v0.1.4 []
+5generic-array v0.14.7 [more_lengths] (*)
+3ssh-encoding v0.2.0 [alloc,base64,pem,sha2,std]
+4base64ct v1.6.0 [alloc,std]
+4pem-rfc7468 v0.7.0 [alloc,std]
+5base64ct v1.6.0 [alloc,std]
+4sha2 v0.10.9 [std] (*)
+2ssh-encoding v0.2.0 [alloc,base64,pem,sha2,std] (*)
+2subtle v2.6.1 []
+2zeroize v1.8.1 [alloc,default]
+1zeroize v1.8.1 [alloc,default]
+
+0heptabao-personal-edge v0.1.0 (/home/qq/heptabao-broker-ed25519-c447536/crates/heptabao-personal-edge) []
+1base64 v0.22.1 [alloc,default,std]
+1heptabao-filesystem-guard v0.1.0 (/home/qq/heptabao-broker-ed25519-c447536/crates/heptabao-filesystem-guard) [] (*)
+1heptabao-personal-vault v0.1.0 (/home/qq/heptabao-broker-ed25519-c447536/crates/heptabao-personal-vault) []
+2argon2 v0.5.3 [alloc,default,password-hash,rand,zeroize]
+3base64ct v1.6.0 [alloc,std]
+3blake2 v0.10.6 []
+4digest v0.10.7 [alloc,block-buffer,core-api,default,mac,std,subtle] (*)
+3cpufeatures v0.2.17 []
+3password-hash v0.5.0 [alloc,default,rand_core]
+4base64ct v1.6.0 [alloc,std]
+4rand_core v0.6.4 []
+4subtle v2.6.1 []
+3zeroize v1.8.1 [alloc,default]
+2base64 v0.22.1 [alloc,default,std]
+2heptabao-filesystem-guard v0.1.0 (/home/qq/heptabao-broker-ed25519-c447536/crates/heptabao-filesystem-guard) [] (*)
+2ring v0.17.14 [alloc,default,dev_urandom_fallback] (*)
+2rustix v1.1.4 [alloc,default,fs,process,std] (*)
+2serde v1.0.229 [default,derive,serde_derive,std] (*)
+2serde_json v1.0.151 [default,std] (*)
+2zeroize v1.8.1 [alloc,default]
+1ring v0.17.14 [alloc,default,dev_urandom_fallback] (*)
+1rustix v1.1.4 [alloc,default,fs,process,std] (*)
+1serde v1.0.229 [default,derive,serde_derive,std] (*)
+1serde_json v1.0.151 [default,std] (*)
+1zeroize v1.8.1 [alloc,default]
+
+0heptabao-personal-vault v0.1.0 (/home/qq/heptabao-broker-ed25519-c447536/crates/heptabao-personal-vault) [] (*)

@@ -1,0 +1,18 @@
+{
+  "actual_current_linux107_qualified_by_this_assessment": false,
+  "actual_failed_mac09_receipt_exercised_unchanged": true,
+  "actual_failed_mac09_receipt_sha256": "17d184d27c043a59e952ad3235497c066d8a2374d9a4d9fe816cee79eff80d0d",
+  "actual_guard_tests": 30,
+  "actual_product_executions": 0,
+  "actual_x230_runtime_qualified": false,
+  "original_receipt": {
+    "bytes": 4245,
+    "sha256": "b3de996d61102f5495f22564be7b33c1f96e552245d9bb5ece796b66d90eff3e"
+  },
+  "original_stderr": {
+    "bytes": 4839,
+    "sha256": "94452e7c1e5d20393a67b9f3f946cbfbf1263c3e23090ff3b42dc2d4f1556a5d"
+  },
+  "schema": "heptabao.current-pocket4-x230-admission-guard-assessment.v1",
+  "status": "passed"
+}

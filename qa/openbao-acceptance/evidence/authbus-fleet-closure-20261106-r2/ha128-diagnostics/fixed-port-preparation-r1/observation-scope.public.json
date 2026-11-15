@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.fixed-31040-31041-preparation-scope.r1",
+  "productionMutations": 0,
+  "firewallWrites": 0,
+  "newHaAttemptStarted": false,
+  "actualThreeHostCandidatePortsUnoccupied": true,
+  "staticX230InputAllowsBothCandidatePortsFromPeers": true,
+  "staticAi395UfwDropsBothCandidatePortsFromPeers": true,
+  "ai395WarpInputAllowsDeclaredLanSourcePrefix": true,
+  "macPfEnabled": true,
+  "macPfRecursiveReadExitedZeroButHasDiocgetrulesInvalidArgument": true,
+  "macPfFullPolicyQualification": false,
+  "macApplicationFirewallEnabled": true,
+  "macApplicationPerExecutableAdmissionNotProved": true,
+  "staticObservationIsNotSuccessfulProductConnectivity": true,
+  "original46230HaFailureRetained": true,
+  "ptyCloseAcknowledgementsUnknownAfterNaturalExit": true,
+  "originalAi395AndMacPtyPidsIndependentlyAbsent": true,
+  "privateUnrelatedRawRulesPublished": false
+}

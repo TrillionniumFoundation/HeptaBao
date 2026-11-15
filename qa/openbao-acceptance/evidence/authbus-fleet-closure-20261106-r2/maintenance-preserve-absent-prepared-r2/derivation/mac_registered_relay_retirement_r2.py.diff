@@ -1,0 +1,272 @@
+--- retained/mac_registered_relay_retirement_r1.py
++++ prepared/mac_registered_relay_retirement_r2.py
+@@ -43,15 +43,15 @@
+   self.parse_print,self.parse_disabled,self.missing_service=parse_print,parse_disabled,missing_service
+   self.until,self.source_fence,self.private_write,self.clock=until,source_fence,private_write,clock
+   self.actions=[];self.commands_public=[];self.phase='new';self.unknown=False;self.blocked=False;self.closed=False
+-  self.retired=[];self.disabled_confirmed=[];self.gateway_parent_handoff=None
++  self.retired=[];self.restored=[];self.parking=None
+   self.launchagents_snapshot=None
+-  self.report={'schema':'heptabao.fixed-four-relay-retirement.public.r1','ok':False,
++  self.report={'schema':'heptabao.fixed-four-relay-retirement.public.r2','ok':False,
+    'phase':'new','actions':self.actions,'commands':self.commands_public,
+-   'maximumOriginalServiceActions':8,'originalApplicationSignals':0,
++   'maximumOriginalServiceActions':8,'disabledOverrideMutations':0,'originalApplicationSignals':0,
+    'oldBinariesPlistsOrConfigurationDeleted':False,'credentialDatabaseReads':0,
+    'automaticRetry':False,'automaticCompensation':False,
+    'oldRelayRestartAfterProviderDispatchAllowed':False,
+-   'originalDisabledOverrideAbsenceRestored':False,
++   'originalDisabledOverrideAbsencePreserved':False,
+    'productionRollbackQualified':False,'allConsumersQuiesced':False,
+    'sourceValuesArgumentsEnvironmentOrDigestsPublished':False}
+ 
+@@ -68,7 +68,7 @@
+   except BaseException:self.unknown=True;raise
+  def _command(self,label,argv):
+   self.within();self.source_fence()
+-  need(len(self.commands_public)<256,'relay_retirement_finite_readonly_and_action_helpers')
++  need(len(self.commands_public)<(3*96+64)*6,'relay_retirement_finite_readonly_and_action_helpers')
+   ordinal=len(self.commands_public)
+   try:
+    row,out,err=self.commands.run(label,argv,until=min(self.until,self.clock()+8),maximum=262144)
+@@ -124,7 +124,9 @@
+    'relay_retirement_exact_original_groups_and_children')
+   return True
+  def _sources(self):
+-  self.within();self.inputs.verify_sources()
++  self.within()
++  if self.parking is None:self.inputs.verify_sources()
++  else:self.parking.verify()
+   need(len(self.inputs.packet['registrations'])==4 and all(
+    value['label']==LABELS[slot] and value['target']==DOMAIN+'/'+LABELS[slot]
+    for slot,value in enumerate(self.inputs.packet['registrations'])),
+@@ -158,7 +160,9 @@
+   self.phase='binding';self._sources();self.inputs.verify()
+   for slot,record in enumerate(self.inputs.packet['registrations']):
+    need(record['registeredProgramResolvesToKernelImage'] is True
+-    and record['plist'].get('AbandonProcessGroup',False) is False,
++    and record['plist'].get('AbandonProcessGroup',False) is False
++    and record['plist'].get('KeepAlive') is True
++    and record['originalDisabledOverride'] is None and record['originalPlistDisabled'] is False,
+     'relay_retirement_direct_registered_image_and_group_retirement')
+    need(self._disabled(slot) is record['originalDisabledOverride'],
+     'relay_retirement_same_original_override_including_absence')
+@@ -174,12 +178,15 @@
+   return self
+  def _intent(self,slot,operation):
+   self.within();self.source_fence();self._sources()
+-  need(slot==len(self.retired) and 0<=slot<4 and operation in ('disable','bootout')
++  need(0<=slot<4 and operation in ('bootout','bootstrap-original-before-provider')
+    and len(self.actions)<8 and not any(value['ordinal']==slot and value['operation']==operation for value in self.actions),
+    'relay_retirement_exact_ordinal_and_once_operation')
+   if operation=='bootout':
+-   need(slot in self.disabled_confirmed,'relay_retirement_disable_known_before_bootout')
+-  else:need(slot not in self.disabled_confirmed,'relay_retirement_disable_not_previously_confirmed')
++   need(slot==len(self.retired) and self.phase=='retiring','relay_retirement_original_next_bootout')
++  else:
++   need(slot==len(self.restored) and self.phase=='restoring-original'
++    and self.parking is not None and self.parking.phase=='restored',
++    'relay_retirement_only_explicit_known_pre_provider_restore')
+   value={'ordinal':slot,'operation':operation,'intentDurable':False,'outcome':'UNKNOWN'}
+   self.actions.append(value)
+   self._write('relay-%02d-%s-intent.private.json'%(slot+1,operation),
+@@ -201,22 +208,14 @@
+   record=self.inputs.packet['registrations'][slot]
+   return self._query(slot) is None and all(self._pid_absent(pid) for pid in record['originalFamilies']) and not self._related(slot)
+  def retire_next(self):
+-  need(self.phase in ('bound','retiring') and len(self.retired)<4,'relay_retirement_next_fixed_ordinal')
++  need(self.phase in ('bound','retiring') and len(self.retired)<4 and self.parking is not None,
++   'relay_retirement_next_fixed_ordinal_and_five_plists_bound')
+   slot=len(self.retired);self.phase='retiring'
+   try:
+    self._sources()
+    for previous in self.retired:self.verify_one_retired(previous)
+    for remaining_slot in range(slot,4):self._same_running(remaining_slot)
+-   actual=self._disabled(slot)
+-   need(actual is self.inputs.packet['registrations'][slot]['originalDisabledOverride'],
+-    'relay_retirement_original_override_before_action')
+-   if actual is not True:
+-    self._same_running(slot);self._dispatch(slot,'disable')
+-   else:
+-    self._write('relay-%02d-disable-already-true.private.json'%(slot+1),
+-     {'ordinal':slot,'observedOriginalOverrideTrue':True,'serviceActionDispatched':False})
+-   need(self._disabled(slot) is True,'relay_retirement_disabled_override_confirmed')
+-   self.disabled_confirmed.append(slot)
++   need(self._disabled(slot) is None,'relay_retirement_original_override_absent_before_action')
+    self._same_running(slot);self._dispatch(slot,'bootout')
+    deadline=min(self.until,self.clock()+15)
+    while not self._known_absence(slot):
+@@ -224,9 +223,9 @@
+     time.sleep(min(0.1,max(0,deadline-self.clock())))
+    rounds=[]
+    for number in range(2):
+-    need(self._disabled(slot) is True and self._known_absence(slot),
+-     'relay_retirement_two_complete_disabled_absence_rounds')
+-    rounds.append({'round':number,'disabledOverrideTrue':True,'exactLabelAbsent':True,
++    need(self._disabled(slot) is None and self._known_absence(slot),
++     'relay_retirement_two_complete_preserved_absence_rounds')
++    rounds.append({'round':number,'disabledOverrideAbsent':True,'exactLabelAbsent':True,
+      'allOriginalPidsEsrch':True,'allOriginalGroupsAndDirectChildrenAbsent':True})
+     if number==0:time.sleep(min(0.15,self.within()))
+    self._sources()
+@@ -237,89 +236,90 @@
+    if len(self.retired)==4:
+     self.phase='retired';self.verify_retired();self.report['ok']=True
+    return slot
+-  except BaseException:
+-   # Preserve whether an original action/closure was UNKNOWN. A source refusal
+-   # before another dispatch blocks the graph without inventing a new effect.
+-   self.blocked=True;raise
++  except BaseException:self.blocked=True;raise
+  def verify_one_retired(self,slot):
+   self.within();need(slot in self.retired,'relay_retirement_known_original_retired_ordinal')
+-  need(self._disabled(slot) is True and self._known_absence(slot),
+-   'relay_retirement_still_disabled_and_original_family_absent')
++  need(self._disabled(slot) is None and self._known_absence(slot),
++   'relay_retirement_override_still_absent_and_original_family_absent')
+   return True
+  def verify_retired(self):
+   need(self.phase=='retired' and self.retired==list(range(4)),
+    'relay_retirement_four_original_registrations_known_closed')
+   self._sources()
+-  for slot in self.retired:self.verify_one_retired(slot)
++  row,out,err=self._command('relay-retire-all-disabled',['/bin/launchctl','print-disabled',DOMAIN])
++  need(row['exitCode']==0 and not err and all(self.parse_disabled(out,label) is None for label in LABELS),
++   'relay_retirement_four_original_overrides_remain_absent')
++  originals={}
++  for slot,record in enumerate(self.inputs.packet['registrations']):
++   need(self._query(slot) is None and all(self._pid_absent(pid) for pid in record['originalFamilies']),
++    'relay_retirement_four_labels_and_original_pids_absent')
++   originals.update(record['originalFamilies'])
++  row,out,err=self._command('relay-retire-all-related',['/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat='])
++  need(row['exitCode']==0 and not err,'relay_retirement_complete_union_process_rows')
++  pids=set(originals);groups={value['pgid'] for value in originals.values()}
++  for line in out.decode('ascii','strict').splitlines():
++   fields=line.split()
++   need(len(fields)==5 and all(value.isdecimal() for value in fields[:3])
++    and (fields[3].isdecimal() or fields[3]=='-2'),'relay_retirement_typed_union_ps_fields')
++   pid,parent,group=map(int,fields[:3])
++   need(pid not in pids and parent not in pids and group not in groups,
++    'relay_retirement_all_original_groups_and_direct_children_absent')
+   self.report['fourRegisteredLegacyRelaysRetired']=True
+-  # This is deliberately not a statement about any independent Codex/app or
+-  # gateway consumer. The outer source-bound consumer fence covers those.
++  self.report['originalDisabledOverrideAbsencePreserved']=True
+   return True
+- def accept_known_gateway_directory_publication(self,gateway):
+-  """Rebind only the directory generation from the same owner's known rename.
+-
+-  All old directory entries retain their complete metadata except the one
+-  already registered gateway plist, whose actual replacement bytes/identity
+-  are checked by its original controller. Relay leaves and every other source
+-  ancestor remain unchanged. This is not a general directory drift exception.
+-  """
+-  from mac_gateway_writer_maintenance_r1 import GatewayWriterMaintenance,PLIST
+-  self.within();self.source_fence()
+-  need(type(gateway) is GatewayWriterMaintenance and gateway.commands is self.commands
+-   and gateway.reader is self.reader and gateway.until==self.until
+-   and gateway.phase=='safe-plist-published' and not gateway.unknown
+-   and gateway.owned_refresh_child is None and self.phase=='retired'
+-   and self.retired==list(range(4)) and self.gateway_parent_handoff is None,
+-   'relay_retirement_same_owner_single_gateway_publication')
+-  completion=gateway.actions.get('publish-safe-plist')
+-  need(type(completion) is dict and completion.get('intentDurable') is True
+-   and completion.get('outcome')=='COMPLETE'
+-   and PLIST==HOME/'Library/LaunchAgents/ai.openclaw.gateway.plist',
+-   'relay_retirement_known_exact_gateway_publication_complete')
+-  before=self.launchagents_snapshot
+-  need(type(before) is dict and tuple(gateway.binding['plistFull9'])==before['entries'][PLIST.name],
+-   'relay_retirement_gateway_original_entry_same_private_generation')
+-  after=self._launchagents_snapshot()
+-  need(before['directoryFull9'][:5]==after['directoryFull9'][:5]
+-   ==identity(os.fstat(gateway.original_parent['fd']))[:5]
+-   and set(before['entries'])==set(after['entries'])
+-   and all(after['entries'][name]==value for name,value in before['entries'].items() if name!=PLIST.name)
+-   and after['entries'][PLIST.name]==tuple(gateway.safe_plist_identity),
+-   'relay_retirement_only_known_gateway_directory_entry_changed')
+-  gateway._read_plist(gateway.safe_plist_identity,gateway.safe['plistBytes'])
+-  gateway._verify_fallback_files()
+-  changes=[]
+-  for plist in self.inputs.plists:
+-   for row in plist.rows:
+-    self.within();actual=identity(os.fstat(row['fd']))
+-    need(not row['closeAttempts'] and actual==identity(row['path'].lstat()),
+-     'relay_retirement_same_held_source_before_directory_handoff')
+-    if row['path']==PLIST.parent:
+-     need(row['expected']==before['directoryFull9'] and actual==after['directoryFull9'],
+-      'relay_retirement_only_original_launchagents_generation_handoff')
+-     changes.append(row)
+-    else:need(actual==row['expected'],'relay_retirement_other_source_generations_unchanged')
+-   leaf=plist.rows[-1]
+-   need(os.pread(leaf['fd'],leaf['expected'][6]+1,0)==plist.raw,
+-    'relay_retirement_whole_original_relay_plist_bytes_unchanged')
+-  need(len(changes)==4,'relay_retirement_exact_four_retained_directory_observers')
+-  for record in self.inputs.packet['registrations']:
+-   self.inputs._binary_metadata(record['originalExecutable'])
+-  self.source_fence();self.within()
+-  need(after==self._launchagents_snapshot(),'relay_retirement_gateway_directory_handoff_not_stale')
+-  self._write('four-relay-known-gateway-directory-handoff.private.json',
+-   {'cause':'same_original_gateway_publish_safe_plist_COMPLETE','before':before,'after':after,
+-    'relayLeavesAndAllOtherEntriesUnchanged':True})
+-  for row in changes:row['expected']=after['directoryFull9']
+-  self.gateway_parent_handoff=copy.deepcopy(after)
+-  self.report['gatewayOwnedDirectoryGenerationHandoffOnly']=True
+-  self.inputs.verify_sources();self.verify_retired()
+-  return True
++ def restore_originals_before_any_provider(self,parent):
++  from mac_owned_refresh_parent_r2 import OwnedRefreshParent
++  need(type(parent) is OwnedRefreshParent and parent.maintenance is self.parking.gateway
++   and parent.until==self.until and self.phase=='retired' and not self.restored
++   and self.parking is not None and self.parking.phase=='restored',
++   'relay_original_restore_only_same_parent_before_any_provider_attempt')
++  parent.assert_no_provider_dispatch();self.verify_retired();self.phase='restoring-original'
++  try:
++   for slot in range(4):
++    parent.assert_no_provider_dispatch();self._sources()
++    need(self._disabled(slot) is None and self._known_absence(slot),
++     'relay_original_restore_absent_before_bootstrap')
++    action=self._intent(slot,'bootstrap-original-before-provider')
++    result,_out,err=self._command('relay-restore-original',
++     ['/bin/launchctl','bootstrap',DOMAIN,self.inputs.packet['registrations'][slot]['plistPath']])
++    need(result['exitCode']==0 and not err,'relay_original_restore_known_bootstrap_zero')
++    self._write('relay-%02d-bootstrap-original-before-provider-complete.private.json'%(slot+1),
++     {'ordinal':slot,'originalCommand':result})
++    action['outcome']='COMPLETE'
++    deadline=min(self.until,self.clock()+15);current=None
++    while True:
++     current=self._query(slot)
++     if current is not None and current.get('state')=='running' and type(current.get('pid')) is int:break
++     need(self.clock()<deadline,'relay_original_restore_startup_budget')
++     time.sleep(min(.1,max(0,deadline-self.clock())))
++    record=self.inputs.packet['registrations'][slot];old=record['loadedSecond']
++    need(all(current.get(key)==old.get(key) for key in ('path','program','arguments')),
++     'relay_original_restore_exact_registered_configuration')
++    family,relations=self.inputs._family(current['pid'])
++    root=family[current['pid']]
++    need(current['pid'] not in record['originalFamilies']
++     and root['executable']==record['originalExecutable']['path']
++     and root not in record['originalFamilies'].values(),
++     'relay_original_restore_fresh_complete_birth_same_image')
++    for number in range(2):
++     parent.assert_no_provider_dispatch();self._sources()
++     need(self._disabled(slot) is None and self._query(slot)==current,
++      'relay_original_restore_two_same_registration_absent_override')
++     self.inputs._verify_family(family,relations)
++     if number==0:time.sleep(min(.15,self.within()))
++    self._write('relay-%02d-original-restored.private.json'%(slot+1),
++     {'ordinal':slot,'actualRegistration':current,'actualFamily':family,'relations':relations,
++      'originalOverrideAbsent':True,'credentialOrProviderLivenessClaimed':False})
++    self.restored.append(slot)
++   self.phase='originals-restored-before-provider'
++   self.report['knownOriginalRegistrationRestoredBeforeProviderCount']=4
++  except BaseException:self.unknown=self.blocked=True;raise
+  def close(self):
+   self.closed=True
+   self.report.update(phase=self.phase,unknown=self.unknown,operationGraphBlocked=self.blocked,
+    retiredCount=len(self.retired),originalServiceActionCount=len(self.actions),
+-   anyLegacyRelayMayRemainDisabledOrStopped=bool(self.actions),
++   anyLegacyRelayMayRemainStopped=bool(self.actions) and len(self.restored)<4,
++   originalDisabledNamespaceMutated=False,
+    automaticRestoreAttempted=False,sourceDescriptorsOwnedByOriginalInputs=True)
+   if self.unknown or self.blocked:self.report['ok']=False
+   return copy.deepcopy(self.report)

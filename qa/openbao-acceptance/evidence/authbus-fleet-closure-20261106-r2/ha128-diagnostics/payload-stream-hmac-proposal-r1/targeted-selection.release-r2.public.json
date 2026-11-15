@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.payload-stream-hmac-targeted-selection.v2",
+  "sourceCommit": "49d3bb88f548d7647c44cefe21e5e7ab75a77fe9",
+  "baseCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "patchSha256": "e6ac88eeeceec7093fdf42a20f3b4c8461ce87855f7d67f3c2d69e93a38501ab",
+  "expectedCases": [
+    "state_records::tests::address_hmac_preserves_independent_fixed_vectors_and_streamed_bytes",
+    "state_records::tests::address_hmac_matches_previous_backend_at_domain_and_block_boundaries",
+    "state_records::tests::address_hmac_rejects_every_changed_mac_byte_and_wrong_length_or_domain",
+    "state_records::tests::address_hmac_shared_key_keeps_concurrent_contexts_independent",
+    "state_records::tests::address_value_stream_matches_previous_domain_encoding_and_block_boundaries",
+    "state_records::tests::address_value_stream_rejects_length_bounds_producer_failure_and_ignored_overrun",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_memo_hits_still_read_every_actual_block_and_reject_corruption",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_memo_cannot_cover_original_gate_loss_or_format_change",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_memo_binds_scoped_key_and_rechecks_current_lossless_floor",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_transition_memo_hits_still_read_every_actual_block_and_reject_corruption",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_transition_memo_cannot_cover_original_gate_loss_or_format_change",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_transition_memo_binds_scoped_key_and_rechecks_current_lossless_floor",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_streamed_hit_rejects_other_fully_keyed_blocks_by_complete_payload_mac",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_streamed_hit_rejects_memo_entry_replaced_during_actual_read"
+  ],
+  "expectedCount": 15,
+  "newCases": 5,
+  "unchangedExistingCases": 10,
+  "buildCommandShape": [
+    "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--lib",
+    "--no-run",
+    "--message-format=json-render-diagnostics"
+  ],
+  "defaultFeatures": [
+    "native-v6-storage",
+    "native-v6-ha"
+  ],
+  "profile": "original separately qualified server-libtest release profile: Cargo JSON opt_level=3, debuginfo=0, debug_assertions=true, overflow_checks=true, test=true",
+  "runtimeCaseArgs": [
+    "<exact-test-case>",
+    "--exact",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "mustReject": [
+    "missing case",
+    "extra selected case",
+    "ignored case",
+    "unexecuted case",
+    "failed case",
+    "unknown/nonterminal build or test",
+    "changed before/after source or input pins",
+    "fixture/experimental build feature",
+    "changed build profile or Rust flags"
+  ],
+  "notExecuted": true,
+  "notReplacementForNormal107OrOriginal128": true,
+  "sourceTree": "ad35130626cbfa172dddfaffa1d09d081c7ff4dc",
+  "buildEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_HOME": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/cargo-home-public-linux-r1",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "actualArtifactMustComeFromNewSourceAndRetainedCompilerJson": true,
+  "priorUnexecutedDraftCorrection": {
+    "path": "targeted-selection.prepared.public.json",
+    "sha256": "21bcffbfade28ab6caadcb36529cfbf7244d5f65c1b7b5e9cd8e695ea36f2a9f",
+    "reason": "Unexecuted draft incorrectly described dev/test profile. Actual qualified Pocket4 libtest was --release with the original explicit environment. That draft grants no build/test pass."
+  },
+  "executionMode": "Run exact15 against retained newly built server-libtest after its current-source normal107 controller reaches known terminal, with a separate receipt; do not compile a second binary or mix15 into the original107 denominator.",
+  "sourceCommitRequiresActualFormatAndInputsAdmissionBeforeUse": true
+}

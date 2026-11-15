@@ -1,0 +1,7 @@
+{
+  "chunk_id": "bf8198",
+  "wall_time_seconds": 0.124355533,
+  "exit_code": 0,
+  "original_token_count": 237,
+  "output": "test_exactly_one_actual_qualified_tcp_localhost_rule (test_sdk_r3_delta.Delta.test_exactly_one_actual_qualified_tcp_localhost_rule) ... ok\ntest_explicit_new_operation_label_and_capture_payload (test_sdk_r3_delta.Delta.test_explicit_new_operation_label_and_capture_payload) ... ok\ntest_seed_policy_bytes_unchanged_after_root_mapping (test_sdk_r3_delta.Delta.test_seed_policy_bytes_unchanged_after_root_mapping) ... ok\ntest_unobserved_cwd_and_out_of_range_ports_still_refuse (test_sdk_r3_delta.Delta.test_unobserved_cwd_and_out_of_range_ports_still_refuse) ... ok\ntest_whole_prepared_package_pins_and_original_budgets (test_sdk_r3_delta.Delta.test_whole_prepared_package_pins_and_original_budgets) ... ok\ntest_worker_seed_plugin_and_wire_changes_are_scope_only (test_sdk_r3_delta.Delta.test_worker_seed_plugin_and_wire_changes_are_scope_only) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.070s\n\nOK\n"
+}

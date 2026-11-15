@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.pocket4-5f9d4-source-preparation.actual-verification.v1",
+  "source_commit": "5f9d4263b136685244aba93e45a69139cb8aba41",
+  "source_tree": "2c69f04159c112a883abe57f0d367a2627197c7a",
+  "create_job": "1a1b41c09c6-fc05-864f",
+  "create_known_succeeded": true,
+  "create_fds_closed": 5,
+  "sourceprep_job": "1a1b426459f-fc05-867c",
+  "sourceprep_known_succeeded": true,
+  "sourceprep_stdout_bytes": 27502,
+  "sourceprep_stdout_sha256": "2144a772dc937d12599b93a55c5f36acf07a7dd9772fb664b7d036f0de6497ec",
+  "all_pages_eof_and_hex_verified": true,
+  "stderr_bytes": 0,
+  "original_children_closed_once": 21,
+  "all_input_fds_closed_once": 753,
+  "source_clean": true,
+  "old_322_inputs_unchanged": true,
+  "actual_bundle_prerequisites": [
+    "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "09c14eae7a3b52dee8ce3af3175dad5900ac59ec"
+  ],
+  "bundle_known_committed": true,
+  "bundle_independent_whole_readback": true,
+  "rust_compilation_executed": false,
+  "rust_tests_executed": false,
+  "normal107_started": false,
+  "normal107_qualified": false,
+  "product_executions": 0,
+  "production_changed": false,
+  "prior49d_format_failure_preserved": true
+}

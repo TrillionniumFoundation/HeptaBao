@@ -1,0 +1,191 @@
+--- capture-reviewed-r1.py
++++ capture-terminal-alias-bounds-r2.py
+@@ -69,16 +69,19 @@
+          and not stat.S_IMODE(before.st_mode) & (0o022 if system else 0o077)
+          and (system or before.st_nlink == 1), "regular_owned_input_custody")
+     original = identity(before)
+-    digest, header, collected = hashlib.sha256(), b"", []
++    digest, header, collected, total = hashlib.sha256(), b"", [], 0
+     with open(resolved, "rb", opener=lambda p, flags: os.open(p, flags | os.O_NOFOLLOW)) as stream:
+         need(identity(os.fstat(stream.fileno())) == original, "input_changed_at_open")
+         for block in iter(lambda: stream.read(1024 * 1024), b""):
+             need(time.monotonic() < deadline, "capture_absolute_deadline")
++            total += len(block)
++            need(total <= before.st_size and total <= maximum, "input_grew_beyond_original_bound")
+             digest.update(block)
+             header = (header + block)[:64]
+             if contents:
+                 collected.append(block)
+-        need(identity(os.fstat(stream.fileno())) == original, "input_changed_while_reading")
++        need(total == before.st_size and identity(os.fstat(stream.fileno())) == original,
++             "input_changed_while_reading")
+     need(identity(resolved.lstat()) == original and path.resolve(strict=True) == resolved,
+          "input_named_identity_changed")
+     return {"path": str(resolved), "bytes": before.st_size, "sha256": digest.hexdigest(),
+@@ -167,6 +170,28 @@
+     resolved = {str(Path(path).resolve(strict=True)) for path in paths}
+     need(len(resolved) == 1, "ambiguous_receiver_provider")
+     return next(iter(resolved)), sorted(set(paths))
++
++
++def alias_binding(path, deadline):
++    """Observe logical lookup components; system file_pin supplies custody."""
++    path = Path(path)
++    need(path.is_absolute() and str(path) == os.path.normpath(path), "absolute_loader_alias")
++    components = []
++    for component in [*reversed(path.parents), path]:
++        need(time.monotonic() < deadline, "capture_absolute_deadline")
++        info = component.lstat()
++        # Directory mtime can change because an unrelated file was created;
++        # its own inode/owner/mode must remain stable. Symlinks bind full stat.
++        row = {"path": str(component), "identity": identity(info)[:5]}
++        if stat.S_ISLNK(info.st_mode):
++            row.update(identity=identity(info), target=os.readlink(component))
++        components.append(row)
++    return {"path": str(path), "resolved_path": str(path.resolve(strict=True)), "components": components}
++
++
++def recheck_alias_bindings(bindings, deadline):
++    for path, original in bindings.items():
++        need(alias_binding(path, deadline) == original, "actual_loader_lookup_alias_changed")
+ 
+ 
+ class Capture:
+@@ -232,6 +257,9 @@
+     def producer(self):
+         projection = self.input_json("native_projection")
+         require_terminal(self.input_json("projection_terminal"), self.manifest["projection_job_id"])
++        require_terminal(self.input_json("normal107_terminal"), self.manifest["normal107_job_id"])
++        require_pin(self.inputs["normal107_terminal"], projection.get("provenance", {}).get(
++            "original_inputs", {}).get("terminal"))
+         pins = projection_artifacts(projection, self.manifest["normal107_job_id"])
+         need(set(self.manifest["expected_artifacts"]) == NAMES, "two_manifest_artifacts_required")
+         for name, pin in pins.items():
+@@ -267,7 +295,7 @@
+         cache_before, _ = file_pin("/etc/ld.so.cache", self.deadline, system=True)
+         raw, _ = self.command("ldconfig-cache", [self.tool("ldconfig"), "-p"])
+         cache = parse_cache(raw)
+-        providers, lookup, pending = {}, {}, {Path(interpreter).name}
++        providers, lookup, aliases, pending = {}, {}, {}, {Path(interpreter).name}
+         for row in artifacts.values():
+             parsed = self.helper["parse_elf_observation"](row["header_hex"], row["raw_readelf"])
+             pending.update(parsed["needed"])
+@@ -275,6 +303,12 @@
+             need(len(pending) <= 32, "bounded_recursive_provider_closure")
+             name = sorted(pending - set(providers))[0]
+             path, candidates = choose_provider(name, cache, interpreter)
++            for candidate in candidates:
++                original = alias_binding(candidate, self.deadline)
++                need(original["resolved_path"] == path, "cache_alias_resolution_changed")
++                candidate_pin, _ = file_pin(candidate, self.deadline, system=True)
++                need(candidate_pin["path"] == path, "cache_alias_custody_changed")
++                aliases[candidate] = original
+             row = self.elf("provider-" + name, path, system=True)
+             need(row["elf"]["soname"] == name, "actual_receiver_provider_soname")
+             providers[name], lookup[name] = row, candidates
+@@ -286,6 +320,7 @@
+              and file_pin("/etc/ld.so.cache", self.deadline, system=True)[0] == cache_before,
+              "receiver_loader_or_cache_changed")
+         return {"artifacts": artifacts, "providers": providers, "provider_lookup_candidates": lookup,
++                "provider_alias_bindings": aliases,
+                 "interpreter_pin": loader, "loader_cache_pin": cache_before, "compatibility": result,
+                 "normal107_job_id": self.manifest["normal107_job_id"],
+                 "static_receiver_compatibility_qualified": True}
+@@ -301,6 +336,12 @@
+             need(file_pin(row["pin"]["path"], self.deadline,
+                           system=self.manifest["role"] == "receiver")[0] == row["pin"],
+                  "captured_elf_changed_before_completion")
++        if self.manifest["role"] == "receiver":
++            recheck_alias_bindings(result["provider_alias_bindings"], self.deadline)
++            need(file_pin(self.manifest["interpreter_path"], self.deadline, system=True)[0]
++                 == result["interpreter_pin"]
++                 and file_pin("/etc/ld.so.cache", self.deadline, system=True)[0] == result["loader_cache_pin"],
++                 "actual_loader_or_cache_changed_before_completion")
+ 
+ 
+ def main():
+--- test_capture-r1.py
++++ test_capture-r2.py
+@@ -90,6 +90,36 @@
+             row = projection(); mutation(row["provenance"]["actual_artifacts"])
+             with self.assertRaises(CAP.Refused): CAP.projection_artifacts(row, "normal107-job")
+ 
++    def test_producer_requires_actual_bound_normal107_terminal_before_readelf(self):
++        for outcome in ("succeeded", "running", "failed", "mismatched_projection_terminal_pin"):
++            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as folder:
++                root = Path(folder)
++                native, normal, projected = projection(), terminal(), terminal()
++                normal["job_id"] = "normal107-job"
++                if outcome in ("running", "failed"):
++                    normal.update(state=outcome, exit_code=None if outcome == "running" else 1)
++                def save(name, value):
++                    path = root / name; path.write_bytes(CAP.encode(value)); path.chmod(0o600)
++                    return CAP.file_pin(path, time.monotonic() + 5)[0]
++                normal_pin = save("normal-terminal.json", normal)
++                native["provenance"]["original_inputs"] = {"terminal": dict(normal_pin)}
++                if outcome == "mismatched_projection_terminal_pin":
++                    native["provenance"]["original_inputs"]["terminal"]["sha256"] = "0" * 64
++                manifest = {"native_projection": save("native.json", native),
++                            "normal107_terminal": normal_pin,
++                            "projection_terminal": save("projection-terminal.json", projected),
++                            "normal107_job_id": "normal107-job", "projection_job_id": "actual-projection-job",
++                            "expected_artifacts": native["provenance"]["actual_artifacts"]}
++                capture = CAP.Capture(manifest, root, time.monotonic() + 5, {})
++                with patch.object(capture, "elf", return_value={}) as readelf:
++                    if outcome == "succeeded":
++                        result = capture.producer()
++                        self.assertEqual(readelf.call_count, 2)
++                        self.assertFalse(result["static_receiver_compatibility_qualified"])
++                    else:
++                        with self.assertRaises(CAP.Refused): capture.producer()
++                        readelf.assert_not_called()
++
+ 
+ class LoaderCache(unittest.TestCase):
+     def cache(self):
+@@ -133,6 +163,20 @@
+                 CAP.choose_provider("libc.so.6", {"libc.so.6": list(map(str, paths))},
+                                     "/lib64/ld-linux-x86-64.so.2")
+ 
++    def test_lookup_alias_retarget_refused_when_old_provider_and_cache_unchanged(self):
++        with tempfile.TemporaryDirectory() as folder:
++            root = Path(folder); old, new, alias, cache = [root / name for name in ("old", "new", "alias", "cache")]
++            old.write_bytes(b"unchanged old provider"); new.write_bytes(b"new provider")
++            cache.write_bytes(b"unchanged loader cache mapping alias")
++            alias.symlink_to(old)
++            original = CAP.alias_binding(alias, time.monotonic() + 5)
++            old_bytes, cache_bytes = old.read_bytes(), cache.read_bytes()
++            CAP.recheck_alias_bindings({str(alias): original}, time.monotonic() + 5)
++            alias.unlink(); alias.symlink_to(new)
++            self.assertEqual(old.read_bytes(), old_bytes); self.assertEqual(cache.read_bytes(), cache_bytes)
++            with self.assertRaisesRegex(CAP.Refused, "actual_loader_lookup_alias_changed"):
++                CAP.recheck_alias_bindings({str(alias): original}, time.monotonic() + 5)
++
+ 
+ class FileAndToolCapture(unittest.TestCase):
+     def test_private_regular_file_pin_uses_real_bytes_and_header(self):
+@@ -159,6 +203,24 @@
+             changed = dict(pin, sha256="0" * 64)
+             with self.assertRaises(CAP.Refused): CAP.require_pin(pin, changed)
+             with self.assertRaises(CAP.Refused): CAP.file_pin(path, time.monotonic() - 1)
++
++    def test_growing_stream_refused_before_accumulating_past_original_size(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "input"; path.write_bytes(b"original"); path.chmod(0o600)
++            class GrowingStream:
++                calls = 0
++                def __init__(self, stream): self.stream = stream
++                def __enter__(self): return self
++                def __exit__(self, *args): self.stream.close()
++                def fileno(self): return self.stream.fileno()
++                def read(self, maximum):
++                    self.calls += 1
++                    return b"original+growth" if self.calls == 1 else b""
++            growing = GrowingStream(path.open("rb"))
++            with patch("builtins.open", return_value=growing), self.assertRaisesRegex(
++                    CAP.Refused, "input_grew_beyond_original_bound"):
++                CAP.file_pin(path, time.monotonic() + 5, contents=True)
++            self.assertEqual(growing.calls, 1)
+ 
+     def test_tool_environment_deadline_and_complete_output_capture(self):
+         with tempfile.TemporaryDirectory() as folder:

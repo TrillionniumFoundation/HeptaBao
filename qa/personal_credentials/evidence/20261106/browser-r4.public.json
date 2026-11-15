@@ -1,0 +1,181 @@
+{
+  "schema": 2,
+  "synthetic_only": true,
+  "real_browser": true,
+  "fixture_tls_trust_test": false,
+  "production_qualified": false,
+  "checks": [
+    {
+      "name": "vault_init",
+      "passed": true
+    },
+    {
+      "name": "vault_put",
+      "passed": true
+    },
+    {
+      "name": "expected_extension_loaded",
+      "passed": true
+    },
+    {
+      "name": "production_permissions_unchanged",
+      "passed": true
+    },
+    {
+      "name": "actual_action_popup",
+      "passed": true
+    },
+    {
+      "name": "exact_origin_item_selected",
+      "passed": true
+    }
+  ],
+  "identity_before": {
+    "source_commit": "4c2c9fd0c9dd94285c58d3d4620d886debe98485",
+    "source_tree": "ce8c11b3bb723c543eeefe67e05ba22edf287963",
+    "source_dirty": false,
+    "extension_sha256": {
+      "fill.js": "f2c02b6c1a1524e997336fc9aa4df978e38f94c21f63ae77a3eb7a30600e45f5",
+      "manifest.json": "a70a50e4a1b614cbbb9e5feacd83bb0ee13c66e7b80da4690435d118765e5153",
+      "popup.css": "4ce21a6cee946f38cc5ba45e244161647c0bd56cf1de3da0a0c45b32ba7e7138",
+      "popup.html": "5c62f0a83891acd663fb2986a313cb057fc3950e3d6a387d9cbb13c2b0b8e529",
+      "popup.js": "a66699bbbf5f4c167cb04415301ef5a145d61542eac7a9e608ee054f09258654",
+      "worker.js": "582041dd68349a735a0a805ccbd1cbe057122ae7f4ab1f0519f3aba81f5ce429"
+    },
+    "profile_sha256": "15b82895f38e5e6ea06d534b57be4a97dd018ba8d6abbb504cdbc0ad70023da4",
+    "installer_sha256": "b62dc389dc79fe9897f3ebae8d70c392d768592b78718e25be94a39029eda594",
+    "binary_sha256": {
+      "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+      "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d"
+    },
+    "browser_sha256": "41ea350a7f209da77c14d1df3924d71ac66988623e71d44459b49a3dceb1c14e"
+  },
+  "playwright_version": "1.57.0",
+  "headless": true,
+  "driver_attach_to_other_targets": true,
+  "action_invocations": [
+    "CDP Extensions.triggerAction on exact tab target"
+  ],
+  "renderer_component_world": "CDP isolated world",
+  "renderer_component_tests_are_extension_e2e": false,
+  "started_unix_ns": 1793945972466362260,
+  "launch_args": [
+    "--no-sandbox",
+    "--no-proxy-server",
+    "--disable-extensions-except=/home/qq/heptabao-personal-browser-source-20261106-r2/clients/chromium",
+    "--load-extension=/home/qq/heptabao-personal-browser-source-20261106-r2/clients/chromium",
+    "--host-resolver-rules=MAP *.example.test 127.0.0.1",
+    "--disable-dev-shm-usage"
+  ],
+  "extension_id": "goclokplbbognlhkbmbaoceeenphhjhb",
+  "browser_version": "157.0.8103.38",
+  "native_installation_sha256": {
+    "profile/NativeMessagingHosts/org.heptabao.personal_vault.json": "7ab34c721f6e318d675a69abc2b5b6a4f2aa5e3215f503ceab836a958e39d6dc",
+    "host/native-host": "c0dbf4a2f834a42d8bcfd3ed91459c490d52d99aa0ec2246a2f58ed5da78632b",
+    "host/config.json": "4d7b2f5a082e22c32ed26ed7ffc57dd759c2df2158f08e061dffc2a1e0cae41a"
+  },
+  "failure_browser_state": [
+    {
+      "tabId": 1148134096,
+      "url": "https://login.example.test:40893/",
+      "active": true,
+      "window": {
+        "alwaysOnTop": false,
+        "focused": false,
+        "height": 720,
+        "id": 1148134095,
+        "incognito": false,
+        "left": 10,
+        "state": "normal",
+        "top": 10,
+        "type": "normal",
+        "width": 1280
+      }
+    }
+  ],
+  "failure_popup_status": [
+    "\u8bf7\u6c42\u88ab\u62d2\u7edd\u6216\u5bc6\u7801\u5e93\u5df2\u9501\u5b9a\u3002\u8bf7\u68c0\u67e5\u9875\u9762\u548c\u672c\u5730\u914d\u7f6e\u3002"
+  ],
+  "failure_document_state": {
+    "visibility": "visible",
+    "focused": true,
+    "url": "https://login.example.test:40893/"
+  },
+  "status": "failed",
+  "error_type": "TimeoutError",
+  "failed_case": "browser_operation_failed",
+  "passed": 6,
+  "observed": 6,
+  "expected_count": 26,
+  "required_cases": [
+    "vault_init",
+    "vault_put",
+    "expected_extension_loaded",
+    "production_permissions_unchanged",
+    "actual_action_popup",
+    "exact_origin_item_selected",
+    "real_form_filled",
+    "no_automatic_submit",
+    "fill_then_lock_acknowledged",
+    "actual_login_accepted",
+    "locked_stale_fill_denied",
+    "fake_domain_empty_matches",
+    "fake_domain_stale_fill_denied",
+    "cross_origin_form_denied",
+    "get_form_denied",
+    "submit_override_denied",
+    "external_submit_override_denied",
+    "hidden_password_denied",
+    "ambiguous_password_denied",
+    "renderer_expired_authorization_denied",
+    "fake_domain_renderer_denied",
+    "child_frame_denied",
+    "renderer_positive_controls_complete",
+    "only_explicit_login_submitted",
+    "vault_list",
+    "identity_unchanged"
+  ],
+  "missing_cases": [
+    "actual_login_accepted",
+    "ambiguous_password_denied",
+    "child_frame_denied",
+    "cross_origin_form_denied",
+    "external_submit_override_denied",
+    "fake_domain_empty_matches",
+    "fake_domain_renderer_denied",
+    "fake_domain_stale_fill_denied",
+    "fill_then_lock_acknowledged",
+    "get_form_denied",
+    "hidden_password_denied",
+    "identity_unchanged",
+    "locked_stale_fill_denied",
+    "no_automatic_submit",
+    "only_explicit_login_submitted",
+    "real_form_filled",
+    "renderer_expired_authorization_denied",
+    "renderer_positive_controls_complete",
+    "submit_override_denied",
+    "vault_list"
+  ],
+  "identity_after": {
+    "source_commit": "4c2c9fd0c9dd94285c58d3d4620d886debe98485",
+    "source_tree": "ce8c11b3bb723c543eeefe67e05ba22edf287963",
+    "source_dirty": false,
+    "extension_sha256": {
+      "fill.js": "f2c02b6c1a1524e997336fc9aa4df978e38f94c21f63ae77a3eb7a30600e45f5",
+      "manifest.json": "a70a50e4a1b614cbbb9e5feacd83bb0ee13c66e7b80da4690435d118765e5153",
+      "popup.css": "4ce21a6cee946f38cc5ba45e244161647c0bd56cf1de3da0a0c45b32ba7e7138",
+      "popup.html": "5c62f0a83891acd663fb2986a313cb057fc3950e3d6a387d9cbb13c2b0b8e529",
+      "popup.js": "a66699bbbf5f4c167cb04415301ef5a145d61542eac7a9e608ee054f09258654",
+      "worker.js": "582041dd68349a735a0a805ccbd1cbe057122ae7f4ab1f0519f3aba81f5ce429"
+    },
+    "profile_sha256": "15b82895f38e5e6ea06d534b57be4a97dd018ba8d6abbb504cdbc0ad70023da4",
+    "installer_sha256": "b62dc389dc79fe9897f3ebae8d70c392d768592b78718e25be94a39029eda594",
+    "binary_sha256": {
+      "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+      "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d"
+    },
+    "browser_sha256": "41ea350a7f209da77c14d1df3924d71ac66988623e71d44459b49a3dceb1c14e"
+  },
+  "finished_unix_ns": 1793945984194005002
+}

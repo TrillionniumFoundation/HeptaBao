@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.mac-main3-api-source-derivation.r2",
+  "qualifiedR2OriginalPins": {
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_owned_commands_r1.py": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530",
+    "mac_t5_volume_guard_r1.py": "9d5a6ea743e5abe87f6f84bcbcf6ddb7ba9f080fd3f51e54040d56122159394a",
+    "mac_owned_launchd_r3.py": "9209144dd581ed547478e5210fffc8e1c75e7bc5511637ba02aed18a63129354",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_current_server_owner_r1.py": "c7eaf0a36bcfac4355c778d93e27bdff58fbcc0cba625987cee6e98e72909be5",
+    "mac_public_code_pin_excerpt_r1.py": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f",
+    "tls_complete_http_probe.py": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc",
+    "fresh_synthetic_controller_r1.py": "4697eb12c7af0b88fc8faec697518e0397cc8f620cf2581f301b18206f54f42c",
+    "test_fresh_synthetic_controller_r1.py": "5b4d3f2cc67196ef2eab036467493edcb90db5e5902e92619b5d78236f754e7a",
+    "test_suid_ps_tls_r2.py": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+  },
+  "sourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "bytes": 13385,
+      "sha256": "f94960e135a215b3772806fddd4a9375a735763ee889016af214fc53c9ba48ac"
+    },
+    "mac_owned_launchd_r3.py": {
+      "bytes": 58613,
+      "sha256": "499e2220e2494f3010f3cb04d2a9fe231bd5d7170ceead6e19fa91b925510208"
+    },
+    "mac_native_process_observer_r1.py": {
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_current_server_owner_r1.py": {
+      "bytes": 16143,
+      "sha256": "84bafa9c05da7a6e00d20df94a06cf98b1b4812b9a3409ca29a830f8dbb1d861"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "tls_complete_http_probe.py": {
+      "bytes": 4750,
+      "sha256": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc"
+    },
+    "main3_api_controller.py": {
+      "bytes": 32340,
+      "sha256": "6bf27db160301108340d371e32c0b5384205fe26db27aea878abf493f680a722"
+    },
+    "test_main3_api_controller.py": {
+      "bytes": 11340,
+      "sha256": "47dfa875d51c2247f03759adcf5e2591891b8a4c09856c65a64a06f79bfc1b7f"
+    },
+    "test_suid_ps_tls_r2.py": {
+      "bytes": 16309,
+      "sha256": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+    },
+    "main3_source_fence.py": {
+      "bytes": 15964,
+      "sha256": "6f6b022c2c5cf9f5fb30f75767b7ac85c44443b9aaeba12e40505d5b521532fe"
+    },
+    "main3_api_cycle.py": {
+      "bytes": 17881,
+      "sha256": "4f0710693cc2e7c4146691191a236450aa58e6f3f5a68698330f2ba016054b91"
+    },
+    "test_main3_api_guards.py": {
+      "bytes": 14915,
+      "sha256": "bdacecb327ee84b51630a1c3e3b1a3a79b41714c4949066c7c8e2367d14fd7fa"
+    },
+    "main3_source_authority.py": {
+      "bytes": 2406,
+      "sha256": "1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290"
+    }
+  },
+  "preparer": {
+    "bytes": 14948,
+    "sha256": "d9e1c7838afb553e91d098cd9cd040e57dc756f7a1520ad04f231e4069e509bd"
+  },
+  "canonicalCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "canonicalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "budgets": {
+    "outer": 600,
+    "phase": 120,
+    "sourceObservationMaximum": 45,
+    "wrapperReady": 30,
+    "execObservation": 10,
+    "health": 15,
+    "singleOtherHttp": 10,
+    "failureCleanup": 60
+  },
+  "signalOwnershipUnchanged": true,
+  "psSuidExceptionUnchanged": true,
+  "actualCredentialScope": 3,
+  "providerValid": false,
+  "productionCutover": false,
+  "actualPluginSdkQualified": false,
+  "publicCredentialValuesOrDigests": false,
+  "productionClientRollbackQualified": false,
+  "retainedR1Status": {
+    "stagingJob": "1a1b1cc2471-fc05-7adb",
+    "stagingSucceeded": true,
+    "qualificationAttempted": false,
+    "serviceActions": 0,
+    "apiRequests": 0
+  },
+  "normalNativeStorageProfile": "native_v6_file",
+  "normalActivationPath": "sys/storage/native-v6/activate",
+  "fixtureOptionsEnabled": false,
+  "sourceAuthorityIntegratedIntoPinnedFence": true,
+  "privateCapsuleQualificationIdentityBoundWithoutHash": true
+}

@@ -1,0 +1,129 @@
+--- a/qa/openbao-acceptance/authbus_openai_sdk_once.py
++++ b/qa/openbao-acceptance/authbus_openai_sdk_once.py
+@@ -232,21 +232,104 @@
+     return {"runtimeFiles": 15, "manifestFiles": 1, "exactClosedTree": True, "allPinsMatched": True}
+ 
+ 
++def read_pinned_sdk_input(path, *, maximum, expected, deadline_ns=None):
++    """Read only fixed SDK inputs protected by the existing private ancestor.
++
++    Actual SDK files retain group-write bits. The owner-only 0700 HOST_ROOT
++    prevents traversal to them by other users. Keep each directory fd and use
++    O_NOFOLLOW relative opens; no caller can apply this rule outside SDK_ROOT.
++    Generic inputs continue to use the unchanged stricter read_regular rule.
++    """
++    need(path.is_absolute() and path.is_relative_to(SDK_ROOT)
++         and SDK_ROOT.is_relative_to(HOST_ROOT) and SDK_ROOT != HOST_ROOT
++         and path.resolve(strict=True) == path, "fixed_sdk_private_read_scope_required")
++    need(isinstance(expected, str) and re.fullmatch(r"[0-9a-f]{64}", expected) is not None,
++         "pinned_sdk_hash_required")
++    relative = canonical_relative(path.relative_to(HOST_ROOT).as_posix())
++    need(HOST_ROOT.resolve(strict=True) == HOST_ROOT, "canonical_sdk_private_ancestor_required")
++    directories, descriptor = [], None
++
++    def directory_identity(info):
++        # Child creation in the shared task root can legitimately change its
++        # timestamps/link count; inode, UID and permissions must remain bound.
++        return (info.st_dev, info.st_ino, info.st_mode, info.st_uid)
++
++    def retain_directory(current, name=None):
++        if deadline_ns is not None:
++            check_deadline(deadline_ns)
++        fd = os.open(current if name is None else name,
++                     os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
++                     **({} if name is None else {"dir_fd": directories[-1][1]}))
++        directories.append((current, fd, None))
++        info = os.fstat(fd)
++        need(stat.S_ISDIR(info.st_mode) and info.st_uid == os.geteuid()
++             and not info.st_mode & 0o002, "sdk_directory_owner_custody_required")
++        if current == HOST_ROOT:
++            need(stat.S_IMODE(info.st_mode) == 0o700, "sdk_private_ancestor_0700_required")
++        bound = directory_identity(info)
++        need(bound == directory_identity(current.lstat()), "sdk_directory_alias_or_change")
++        directories[-1] = (current, fd, bound)
++
++    try:
++        retain_directory(HOST_ROOT)
++        current = HOST_ROOT
++        for component in relative.parts[:-1]:
++            current = current / component
++            retain_directory(current, component)
++        descriptor = os.open(relative.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
++                             dir_fd=directories[-1][1])
++        before = os.fstat(descriptor)
++        need(stat.S_ISREG(before.st_mode) and before.st_nlink == 1
++             and before.st_uid == os.geteuid() and not before.st_mode & 0o002
++             and 1 <= before.st_size <= maximum, "pinned_sdk_regular_custody_required")
++        chunks, size, digest = [], 0, hashlib.sha256()
++        while True:
++            if deadline_ns is not None:
++                check_deadline(deadline_ns)
++            chunk = os.read(descriptor, 262144)
++            if not chunk:
++                break
++            size += len(chunk)
++            need(size <= maximum, "bounded_file_grew")
++            digest.update(chunk)
++            chunks.append(chunk)
++        need(size == before.st_size and identity(before) == identity(os.fstat(descriptor))
++             == identity(os.stat(relative.name, dir_fd=directories[-1][1], follow_symlinks=False))
++             == identity(path.lstat()), "file_changed_during_checked_read")
++        evidence = []
++        for directory, fd, bound in directories:
++            need(bound == directory_identity(os.fstat(fd)) == directory_identity(directory.lstat())
++                 and directory.resolve(strict=True) == directory, "sdk_directory_changed_during_read")
++            evidence.append({"relativeToPrivateAncestor": directory.relative_to(HOST_ROOT).as_posix(),
++                             "device": bound[0], "inode": bound[1],
++                             "mode": format(stat.S_IMODE(bound[2]), "04o"), "uid": bound[3]})
++        need(digest.hexdigest() == expected, "file_hash_mismatch")
++        return b"".join(chunks), {"bytes": size, "sha256": digest.hexdigest(),
++                                  "identity": list(identity(before)),
++                                  "mode": format(stat.S_IMODE(before.st_mode), "04o"),
++                                  "uid": before.st_uid, "directories": evidence}
++    finally:
++        if descriptor is not None:
++            os.close(descriptor)
++        for _path, fd, _bound in reversed(directories):
++            os.close(fd)
++
++
+ def verify_sdk(sdk, manifest, deadline_ns=None):
+-    safe_directory(sdk)
++    need(sdk == SDK_ROOT, "fixed_sdk_root_required")
+     sdk_inputs = manifest["sdkInputs"]
+     modules, metadata, discovery = sdk_inputs["modules"], sdk_inputs["metadata"], sdk_inputs["discoveryBindings"]
+     need(len(modules) == 35 and len(metadata) == 1 and len(discovery) == 2,
+          "exact_sdk_input_inventory_required")
+     entries = [(item, MAX_SOURCE_FILE) for item in modules + discovery] + [(item, 65536) for item in metadata]
+     need(len({item["relative"] for item, _ in entries}) == 38, "unique_sdk_inputs_required")
+-    result = []
++    result, directories = [], {}
+     for item, limit in entries:
+         relative = canonical_relative(item["relative"])
+         path = sdk / str(relative)
+         need(path.resolve(strict=True) == path, "sdk_input_alias_forbidden")
+-        raw, observed = read_regular(path, maximum=limit, deadline_ns=deadline_ns,
+-                                     expected=item["originalSha256"])
++        raw, observed = read_pinned_sdk_input(path, maximum=limit, deadline_ns=deadline_ns,
++                                              expected=item["originalSha256"])
+         if item in metadata:
+             data = closed_json(raw)
+             need(data["id"] == "openai" and data["enabledByDefault"] is True,
+@@ -255,8 +338,16 @@
+             data = closed_json(raw)
+             need(data["name"] == "openclaw" and data["version"] == "2026.7.1-2"
+                  and data["bin"]["openclaw"] == "openclaw.mjs", "actual_sdk_package_binding_required")
+-        result.append({"relative": str(relative), "bytes": observed["bytes"], "sha256": observed["sha256"]})
++        result.append({"relative": str(relative), "bytes": observed["bytes"], "sha256": observed["sha256"],
++                       "mode": observed["mode"], "uid": observed["uid"], "identity": observed["identity"]})
++        for row in observed["directories"]:
++            name = row["relativeToPrivateAncestor"]
++            need(name not in directories or directories[name] == row, "sdk_directory_changed_between_inputs")
++            directories[name] = row
+     return {"jsModules": 35, "activationMetadata": 1, "packageDiscoveryFiles": 2, "files": result,
++            "privateAncestor": str(HOST_ROOT), "privateAncestorMode": "0700",
++            "groupWritableInputsConfinedToPrivateAncestor": True,
++            "directoryCustody": [directories[name] for name in sorted(directories)],
+             "recursiveInstalledSdkTreeAttested": False}
+ 
+ 

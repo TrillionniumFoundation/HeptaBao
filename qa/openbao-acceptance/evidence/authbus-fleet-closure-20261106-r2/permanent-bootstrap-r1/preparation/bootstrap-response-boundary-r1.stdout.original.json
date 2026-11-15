@@ -1,0 +1,35 @@
+{
+  "actualInitializationOrProviderRequests": 0,
+  "actualPermanentPathsOpened": false,
+  "actualTlsQualifiedByThisFixture": false,
+  "checks": [
+    {
+      "allFakeSocketsClosed": true,
+      "case": "complete_init_durable_before_parse",
+      "originalSends": 1,
+      "passed": true
+    },
+    {
+      "allFakeSocketsClosed": true,
+      "case": "complete_invalid_json_still_retained_no_replay",
+      "originalSends": 1,
+      "passed": true
+    },
+    {
+      "allFakeSocketsClosed": true,
+      "case": "private_fsync_failure_blocks_parsing_and_next_request",
+      "originalSends": 1,
+      "passed": true
+    },
+    {
+      "allFakeSocketsClosed": true,
+      "case": "known_denial_response_durable_and_closed",
+      "originalSends": 1,
+      "passed": true
+    }
+  ],
+  "ok": true,
+  "passed": 4,
+  "schema": "heptabao.bootstrap-response-durability-boundary.r1",
+  "wireAndPrivateJournalAreSubstituted": true
+}

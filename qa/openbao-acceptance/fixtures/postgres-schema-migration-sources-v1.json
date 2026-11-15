@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.postgresql-schema-migration-sources.v1",
+  "schema55_generation": {
+    "commit": "85b2c963f730bc3c7492869a73ff02a9336b6451",
+    "tree": "a9f59b9da58d5554983a4dd465ff5a924c581845"
+  },
+  "schema56_root_rotation_statements": {
+    "commit": "f9fac608ffdad930e7debd01e2695ed150de4544",
+    "tree": "e59d48130aba2ac5b236559a3cbaad7cc6688b5b"
+  },
+  "compatibility_claim": false,
+  "production_authority": false
+}

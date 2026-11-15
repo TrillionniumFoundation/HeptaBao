@@ -1,0 +1,65 @@
+{
+  "caps": {
+    "bundle_bytes": 16777216,
+    "http_leaf_input_bytes": 33554432,
+    "http_leaf_response_bytes": 2097152,
+    "migration_response_bytes": 2097152,
+    "raw_aggregate_bytes": 67108864,
+    "raw_record_bytes": 1048576
+  },
+  "cases": [
+    {
+      "case": "valid_small_raw_history_control",
+      "deleted_payload_retained": true,
+      "destroyed_payload_absent": true,
+      "retained_live_versions": 2,
+      "status": "passed"
+    },
+    {
+      "case": "valid_2mib_record_rejected",
+      "error": "record bound",
+      "maximum_raw_record_bytes": 2097191,
+      "status": "reproduced"
+    },
+    {
+      "bundle_bytes": 35662064,
+      "bundle_sha256": "df48e393cf08d8ccef6193d2357ad2875c12ad39fc7baf1dfedd4da60c4b1c11",
+      "case": "valid_34mib_small_record_bundle_rejected",
+      "decoder_completed": true,
+      "error": "JSON byte bound",
+      "maximum_raw_record_bytes": 524327,
+      "raw_total_bytes": 35655349,
+      "retained_payload_bytes": 35651584,
+      "status": "reproduced"
+    }
+  ],
+  "legacy_import_bounds": {
+    "checks": [
+      "whole incoming bundle",
+      "whole staged EngineState"
+    ],
+    "limit_symbol": "crate::MAX_APPLICATION_STATE_BYTES",
+    "route": "Service::kv2_import_route"
+  },
+  "native_import_executed": false,
+  "native_import_guard": {
+    "backend": "Backend::Kv2Native",
+    "message": "native KV2 aggregate import requires a dedicated graph import writer",
+    "method": "EngineState::stage_openbao_kv2_import",
+    "path": "crates/heptabao-server/src/engine_kv2_import.rs",
+    "status": 501
+  },
+  "official_openbao_271_executed": false,
+  "production_authority": false,
+  "schema": "heptabao.kv2-large-migration-boundary-reproduction.v1",
+  "server_501_basis": "source_guard_not_live_response",
+  "source_file_sha256": {
+    "crates/heptabao-server/src/engine_kv2_import.rs": "4fea0f0d40940cfaa435c19aa40f87b5d9cd8e245f5e432928eef96de76424f3",
+    "crates/heptabao-server/src/service_kv2_import.rs": "096f5d75fcee27616bee1d635b06aba2efd526bcffc52891611e4b3cac82418f",
+    "tools/migration/kv2_http_once.py": "801c0c441a0d22b68312f5733fe0fd9406fe8242e94671471bc002305741a0e6",
+    "tools/migration/kv2_lossless_raw.py": "1998bdb72a5895c54b360d7c96e6622844b435386bf8ee2a1939b376b238cf51",
+    "tools/migration/openbao270_kv2_migrate.py": "ff212337278f1ae1a587d0f49d3b95d6aa76c32bbfcc451294e8f9ca039146e4"
+  },
+  "status": "blockers_reproduced",
+  "two_process_migration_executed": false
+}

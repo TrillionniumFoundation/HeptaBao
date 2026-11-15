@@ -1,0 +1,29 @@
+{
+  "all_installed_files_sha256_readback_equal": true,
+  "cargo_home": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/cargo-home-public-linux-r1",
+  "cargo_lock_sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+  "counts": {
+    "linux_selected_crate": 321,
+    "offline_resolver_required_crate": 2,
+    "offline_resolver_required_sparse_index": 56,
+    "public_registry_config": 1,
+    "selected_package_sparse_index": 297
+  },
+  "existing_registry_namespace_reused": true,
+  "existing_user_cache_modified": false,
+  "finished_at_unix": 1793989722.5752492,
+  "installed_file_count": 677,
+  "manifest_sha256": "0d74878d414151a41fa85927ff0732ea2ab123dcdf0955aa8cd75c5be2216897",
+  "normal107_qualified": false,
+  "payload_bytes": 67880960,
+  "payload_sha256": "8e771190e6df05560f8a41bbf7992586137ee4ab730123301c6dba0d595759c9",
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "receiver_cargo_offline_tree_not_yet_executed": true,
+  "rust_compilation_executed": false,
+  "schema": "heptabao.pocket4-public-dependency-receipt.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "installed",
+  "user_configuration_or_credentials_opened": false
+}

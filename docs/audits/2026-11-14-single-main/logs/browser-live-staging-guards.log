@@ -1,0 +1,9 @@
+test_actual_fixture_stages_private_copies_and_installer_uses_them (__main__.BrowserFixtureStagingGuards.test_actual_fixture_stages_private_copies_and_installer_uses_them) ... ok
+test_fixture_does_not_overwrite_prior_staging (__main__.BrowserFixtureStagingGuards.test_fixture_does_not_overwrite_prior_staging) ... ok
+test_fixture_keeps_original_digest_binding (__main__.BrowserFixtureStagingGuards.test_fixture_keeps_original_digest_binding) ... ok
+test_fixture_requires_protected_work_even_with_private_leaf (__main__.BrowserFixtureStagingGuards.test_fixture_requires_protected_work_even_with_private_leaf) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.022s
+
+OK

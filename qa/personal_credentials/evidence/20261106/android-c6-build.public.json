@@ -1,0 +1,1132 @@
+{
+  "artifacts": {
+    "fixture-good": {
+      "bytes": 20814,
+      "generated_config_sha256": "25108b77f1da553291c31889153f84afe84456e5461678dd6368b86a02c192c7",
+      "package": "org.heptabao.synthetic.fixture",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-good.apk",
+      "sha256": "fe132993d1ffae96987af214456bd1804a5ed12b844e5ea9bbd0531109d8f035",
+      "signer_sha256": "42f36d91550b51847a8b362f8d7715b53f48db207a8b3f96de52570e78846a15"
+    },
+    "fixture-wrong-certificate": {
+      "bytes": 20814,
+      "generated_config_sha256": "25108b77f1da553291c31889153f84afe84456e5461678dd6368b86a02c192c7",
+      "package": "org.heptabao.synthetic.fixture",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-certificate.apk",
+      "sha256": "fea79164c6693ff393bbf8ec01a64302c919bb34c7f90ced13dd7963139aac3b",
+      "signer_sha256": "20fe112ad3f8765bb99eefaab367cf91449f315ce228ee9b9b8037c8ac8964e0"
+    },
+    "fixture-wrong-package": {
+      "bytes": 20814,
+      "generated_config_sha256": "25108b77f1da553291c31889153f84afe84456e5461678dd6368b86a02c192c7",
+      "package": "org.heptabao.synthetic.decoy",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-package.apk",
+      "sha256": "9c2e196fe270f87d373e32df0a63ff7773fdad25aca0db9c2f81acfac0609422",
+      "signer_sha256": "42f36d91550b51847a8b362f8d7715b53f48db207a8b3f96de52570e78846a15"
+    },
+    "provider": {
+      "bytes": 5673467,
+      "generated_config_sha256": "7851383a3d49af1140e461c3f07e2446b258ca0ae9426ec9d3bfeab83a3b6c10",
+      "package": "org.heptabao.personal.preview",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk",
+      "sha256": "10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a",
+      "signer_sha256": "011229f8f6ee83bfc2c913955eea2fddf62e9343fef2371d2b8a98351158e619"
+    }
+  },
+  "build_script_sha256": "138cd26f224f65b31871c2ab3da1c95b83717d883dfa56c6cf9417d3c95f4273",
+  "commands": [
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-version"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962533687025000,
+      "label": "java-version",
+      "started_unix_ns": 1793962533573399000,
+      "stderr_sha256": "059df2d27010f530703c826aee876e36e5cfcbebd27295aab40cdd72ad53b5c7",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962533859159000,
+      "label": "javac-version",
+      "started_unix_ns": 1793962533687109000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f55672524d9e90cc35d84c62a3e04ddf8f44560d1c6c3882153d1604fe48ccee"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "version"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962533866309000,
+      "label": "aapt2-version",
+      "started_unix_ns": 1793962533859241000,
+      "stderr_sha256": "4b9e13810a04fb9f54515d3d3056e32aa0382817cc8ef2116d423464a8d051ee",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/d8",
+        "--version"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962534024473000,
+      "label": "d8-version",
+      "started_unix_ns": 1793962533866364000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "06649c1e90733370c04c66ed6478114acbf1746b367f578d5434fba5bc3cbd96"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "version"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962534147456000,
+      "label": "apksigner-version",
+      "started_unix_ns": 1793962534024556000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a839ab0447b2d415fe1732387938b5e06aa9d5aba7ed0f0c927837f0e77027f2"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-cp",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.bouncycastle.LICENSE"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962534449460000,
+      "label": "bc-license",
+      "started_unix_ns": 1793962534147542000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "89e61e44dcdd5bf128446fcdb8b2adf41d597d5c5a3de25e91c0b682af710ed8"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "--release",
+        "17",
+        "-cp",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "-d",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/interop-classes",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/StrictJson.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/VaultCrypto.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/tests/org/heptabao/preview/CryptoInterop.java"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962536101015000,
+      "label": "compile-interop",
+      "started_unix_ns": 1793962534474422000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-cp",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/interop-classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.preview.CryptoInterop",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/private/fixture-r2"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962537132737000,
+      "label": "rust-java-interop",
+      "started_unix_ns": 1793962536101108000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "51b6dbcfb012a0102cad86d7279eed7c0646b2fc9b8be63b623e54708adae212"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/keytool",
+        "-genkeypair",
+        "-alias",
+        "synthetic",
+        "-keyalg",
+        "RSA",
+        "-keysize",
+        "3072",
+        "-validity",
+        "30",
+        "-dname",
+        "CN=HeptaBao synthetic provider",
+        "-keystore",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/provider.p12",
+        "-storetype",
+        "PKCS12",
+        "-storepass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "-keypass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/key.pass",
+        "-noprompt"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962537835138000,
+      "label": "keygen-provider",
+      "started_unix_ns": 1793962537133020000,
+      "stderr_sha256": "4f1bd33726e6ef260d6809705091d3fe449a03883659152ceec85265d60d5f2a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/keytool",
+        "-exportcert",
+        "-alias",
+        "synthetic",
+        "-keystore",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/provider.p12",
+        "-storepass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "-file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/provider.der"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962538268136000,
+      "label": "certificate-provider",
+      "started_unix_ns": 1793962537835234000,
+      "stderr_sha256": "6b3f7021cd1b9f10a412c5fbacd02a731d2e44209d0ee4ac54272a919804e8e4",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/keytool",
+        "-genkeypair",
+        "-alias",
+        "synthetic",
+        "-keyalg",
+        "RSA",
+        "-keysize",
+        "3072",
+        "-validity",
+        "30",
+        "-dname",
+        "CN=HeptaBao synthetic fixture-good",
+        "-keystore",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-good.p12",
+        "-storetype",
+        "PKCS12",
+        "-storepass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "-keypass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/key.pass",
+        "-noprompt"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962539277367000,
+      "label": "keygen-fixture-good",
+      "started_unix_ns": 1793962538268246000,
+      "stderr_sha256": "e41506890140163476711f28a918440e2660cf5e583363b40874aa1571b0f7bb",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/keytool",
+        "-exportcert",
+        "-alias",
+        "synthetic",
+        "-keystore",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-good.p12",
+        "-storepass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "-file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-good.der"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962539726425000,
+      "label": "certificate-fixture-good",
+      "started_unix_ns": 1793962539277450000,
+      "stderr_sha256": "df16a347e4cc99c25f809d19def8036d325af90efb59ad2e4522f0fd05ab0d3a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/keytool",
+        "-genkeypair",
+        "-alias",
+        "synthetic",
+        "-keyalg",
+        "RSA",
+        "-keysize",
+        "3072",
+        "-validity",
+        "30",
+        "-dname",
+        "CN=HeptaBao synthetic fixture-wrong",
+        "-keystore",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-wrong.p12",
+        "-storetype",
+        "PKCS12",
+        "-storepass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "-keypass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/key.pass",
+        "-noprompt"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962541238966000,
+      "label": "keygen-fixture-wrong",
+      "started_unix_ns": 1793962539726532000,
+      "stderr_sha256": "d735a5c9e7e22fc960e008b9ac5e4947f1e8c13a6c39bff6312f95eb3aa6c08a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/keytool",
+        "-exportcert",
+        "-alias",
+        "synthetic",
+        "-keystore",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-wrong.p12",
+        "-storepass:file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "-file",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-wrong.der"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962541666391000,
+      "label": "certificate-fixture-wrong",
+      "started_unix_ns": 1793962541239067000,
+      "stderr_sha256": "18ad32ca2cacffe647e68a3b0b1ef7b912af4f0e7db717f0f24d485f3090ceb6",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "compile",
+        "--dir",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/res",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/resources.zip"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962541674212000,
+      "label": "fixture-good-resources",
+      "started_unix_ns": 1793962541666753000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "link",
+        "-I",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--manifest",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/AndroidManifest.xml",
+        "--java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/generated",
+        "--custom-package",
+        "org.heptabao.fixture",
+        "--min-sdk-version",
+        "34",
+        "--target-sdk-version",
+        "34",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/linked.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/resources.zip",
+        "-A",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/assets"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962541729173000,
+      "label": "fixture-good-link",
+      "started_unix_ns": 1793962541674465000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "-d",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/classes",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/java/org/heptabao/fixture/CiphertextProvider.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/java/org/heptabao/fixture/FixtureActivity.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/generated/org/heptabao/fixture/BuildConfig.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/generated/org/heptabao/fixture/R.java"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962542965113000,
+      "label": "fixture-good-javac",
+      "started_unix_ns": 1793962541729820000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/d8",
+        "--min-api",
+        "34",
+        "--lib",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--output",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/dex",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/classes/org/heptabao/fixture/BuildConfig.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/classes/org/heptabao/fixture/CiphertextProvider.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/classes/org/heptabao/fixture/FixtureActivity.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/classes/org/heptabao/fixture/R$id.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/classes/org/heptabao/fixture/R$layout.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/classes/org/heptabao/fixture/R.class"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544188742000,
+      "label": "fixture-good-d8",
+      "started_unix_ns": 1793962542965522000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/zipalign",
+        "-f",
+        "4",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/unsigned.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544225329000,
+      "label": "fixture-good-zipalign",
+      "started_unix_ns": 1793962544189693000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "sign",
+        "--ks",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-good.p12",
+        "--ks-key-alias",
+        "synthetic",
+        "--ks-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "--key-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/key.pass",
+        "--v1-signing-enabled",
+        "false",
+        "--v2-signing-enabled",
+        "true",
+        "--v3-signing-enabled",
+        "true",
+        "--v4-signing-enabled",
+        "false",
+        "--out",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-good.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-good/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544660367000,
+      "label": "fixture-good-sign",
+      "started_unix_ns": 1793962544225393000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-good.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544872620000,
+      "label": "fixture-good-verify",
+      "started_unix_ns": 1793962544660444000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "68456690b8f75c9428db17ddbcb753c8079cc4d1fbc1ee41d7ac50d916ec7914"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "badging",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-good.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544879794000,
+      "label": "fixture-good-manifest-badging",
+      "started_unix_ns": 1793962544872697000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "98205bf09ed99a58c4c46725602601a21cfcacb6100cc13e458394147bc8c42d"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "xmltree",
+        "--file",
+        "AndroidManifest.xml",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-good.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544886443000,
+      "label": "fixture-good-manifest-tree",
+      "started_unix_ns": 1793962544879864000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c8dcd8ac0f087272e9a32dd1c6369d725e8aeda2d769861dc261989575fe8d9f"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "compile",
+        "--dir",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/res",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/resources.zip"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544894113000,
+      "label": "fixture-wrong-certificate-resources",
+      "started_unix_ns": 1793962544887104000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "link",
+        "-I",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--manifest",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/AndroidManifest.xml",
+        "--java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/generated",
+        "--custom-package",
+        "org.heptabao.fixture",
+        "--min-sdk-version",
+        "34",
+        "--target-sdk-version",
+        "34",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/linked.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/resources.zip",
+        "-A",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/assets"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962544938181000,
+      "label": "fixture-wrong-certificate-link",
+      "started_unix_ns": 1793962544894381000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "-d",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/classes",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/java/org/heptabao/fixture/CiphertextProvider.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/java/org/heptabao/fixture/FixtureActivity.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/generated/org/heptabao/fixture/BuildConfig.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/generated/org/heptabao/fixture/R.java"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962546175922000,
+      "label": "fixture-wrong-certificate-javac",
+      "started_unix_ns": 1793962544938778000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/d8",
+        "--min-api",
+        "34",
+        "--lib",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--output",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/dex",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/classes/org/heptabao/fixture/BuildConfig.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/classes/org/heptabao/fixture/CiphertextProvider.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/classes/org/heptabao/fixture/FixtureActivity.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/classes/org/heptabao/fixture/R$id.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/classes/org/heptabao/fixture/R$layout.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/classes/org/heptabao/fixture/R.class"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962547434411000,
+      "label": "fixture-wrong-certificate-d8",
+      "started_unix_ns": 1793962546176311000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/zipalign",
+        "-f",
+        "4",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/unsigned.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962547441438000,
+      "label": "fixture-wrong-certificate-zipalign",
+      "started_unix_ns": 1793962547434953000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "sign",
+        "--ks",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-wrong.p12",
+        "--ks-key-alias",
+        "synthetic",
+        "--ks-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "--key-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/key.pass",
+        "--v1-signing-enabled",
+        "false",
+        "--v2-signing-enabled",
+        "true",
+        "--v3-signing-enabled",
+        "true",
+        "--v4-signing-enabled",
+        "false",
+        "--out",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-certificate.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-certificate/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962547850132000,
+      "label": "fixture-wrong-certificate-sign",
+      "started_unix_ns": 1793962547441502000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-certificate.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962548057115000,
+      "label": "fixture-wrong-certificate-verify",
+      "started_unix_ns": 1793962547850201000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a12f8d9dd59538fb4c854f43a6c2c2afce657d99941aab8c625d66949a1dac3c"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "badging",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-certificate.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962548063940000,
+      "label": "fixture-wrong-certificate-manifest-badging",
+      "started_unix_ns": 1793962548057184000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "227bb861f73e5e74780f67430a6ee588cdc55490f003aadd2b72e9fa35254f7a"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "xmltree",
+        "--file",
+        "AndroidManifest.xml",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-certificate.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962548070186000,
+      "label": "fixture-wrong-certificate-manifest-tree",
+      "started_unix_ns": 1793962548064000000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f8b2c235a82c34a7ce3e2647345429af9dd5ee6bdcaff88e10713bdca51035df"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "compile",
+        "--dir",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/res",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/resources.zip"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962548077487000,
+      "label": "fixture-wrong-package-resources",
+      "started_unix_ns": 1793962548070754000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "link",
+        "-I",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--manifest",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/AndroidManifest.xml",
+        "--java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/generated",
+        "--custom-package",
+        "org.heptabao.fixture",
+        "--min-sdk-version",
+        "34",
+        "--target-sdk-version",
+        "34",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/linked.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/resources.zip",
+        "-A",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/assets"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962548121244000,
+      "label": "fixture-wrong-package-link",
+      "started_unix_ns": 1793962548077730000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "-d",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/classes",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/java/org/heptabao/fixture/CiphertextProvider.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/fixture/java/org/heptabao/fixture/FixtureActivity.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/generated/org/heptabao/fixture/BuildConfig.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/generated/org/heptabao/fixture/R.java"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962549376379000,
+      "label": "fixture-wrong-package-javac",
+      "started_unix_ns": 1793962548121817000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/d8",
+        "--min-api",
+        "34",
+        "--lib",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--output",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/dex",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/classes/org/heptabao/fixture/BuildConfig.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/classes/org/heptabao/fixture/CiphertextProvider.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/classes/org/heptabao/fixture/FixtureActivity.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/classes/org/heptabao/fixture/R$id.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/classes/org/heptabao/fixture/R$layout.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/classes/org/heptabao/fixture/R.class"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962550638087000,
+      "label": "fixture-wrong-package-d8",
+      "started_unix_ns": 1793962549376734000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/zipalign",
+        "-f",
+        "4",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/unsigned.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962550645613000,
+      "label": "fixture-wrong-package-zipalign",
+      "started_unix_ns": 1793962550638714000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "sign",
+        "--ks",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/fixture-good.p12",
+        "--ks-key-alias",
+        "synthetic",
+        "--ks-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "--key-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/key.pass",
+        "--v1-signing-enabled",
+        "false",
+        "--v2-signing-enabled",
+        "true",
+        "--v3-signing-enabled",
+        "true",
+        "--v4-signing-enabled",
+        "false",
+        "--out",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-package.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/fixture-wrong-package/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962551080977000,
+      "label": "fixture-wrong-package-sign",
+      "started_unix_ns": 1793962550645689000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-package.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962551297681000,
+      "label": "fixture-wrong-package-verify",
+      "started_unix_ns": 1793962551081065000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "68456690b8f75c9428db17ddbcb753c8079cc4d1fbc1ee41d7ac50d916ec7914"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "badging",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-package.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962551305099000,
+      "label": "fixture-wrong-package-manifest-badging",
+      "started_unix_ns": 1793962551297765000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "330e68bea03126e2bc1f0fc24e72417c004e313aad14b79e7baba24921e50d01"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "xmltree",
+        "--file",
+        "AndroidManifest.xml",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-package.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962551311959000,
+      "label": "fixture-wrong-package-manifest-tree",
+      "started_unix_ns": 1793962551305183000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cd142105203acc934e755a91c1bbfd5ddac4620e9bebd7c9c89442d2e37ad549"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "compile",
+        "--dir",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/res",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/resources.zip"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962551320229000,
+      "label": "provider-resources",
+      "started_unix_ns": 1793962551312615000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "link",
+        "-I",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--manifest",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/AndroidManifest.xml",
+        "--java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/generated",
+        "--custom-package",
+        "org.heptabao.preview",
+        "--min-sdk-version",
+        "34",
+        "--target-sdk-version",
+        "34",
+        "-o",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/linked.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/resources.zip",
+        "-A",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/assets"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962551364888000,
+      "label": "provider-link",
+      "started_unix_ns": 1793962551320424000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "-d",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/AuthActivity.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/MainActivity.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/StrictJson.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/TargetPolicy.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/VaultApplication.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/VaultAutofillService.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/VaultCrypto.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/source/round6/clients/android/provider/java/org/heptabao/preview/VaultFiles.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/generated/org/heptabao/preview/BuildConfig.java",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/generated/org/heptabao/preview/R.java"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962553637239000,
+      "label": "provider-javac",
+      "started_unix_ns": 1793962551365494000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/d8",
+        "--min-api",
+        "34",
+        "--lib",
+        "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+        "--output",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/dex",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/AuthActivity$1.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/AuthActivity.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/BuildConfig.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/MainActivity.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/R$id.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/R$layout.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/R$xml.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/R.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/StrictJson.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/TargetPolicy$Rejected.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/TargetPolicy$Target.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/TargetPolicy.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultApplication$Handoff.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultApplication$Pending.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultApplication.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultAutofillService.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultCrypto$Envelope.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultCrypto$Failure.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultCrypto$Login.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultCrypto$Sealed.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultCrypto.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/classes/org/heptabao/preview/VaultFiles.class",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962575181004000,
+      "label": "provider-d8",
+      "started_unix_ns": 1793962553637566000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/zipalign",
+        "-f",
+        "4",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/unsigned.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962575193573000,
+      "label": "provider-zipalign",
+      "started_unix_ns": 1793962575184759000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "sign",
+        "--ks",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/provider.p12",
+        "--ks-key-alias",
+        "synthetic",
+        "--ks-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/keystore.pass",
+        "--key-pass",
+        "file:/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/private/key.pass",
+        "--v1-signing-enabled",
+        "false",
+        "--v2-signing-enabled",
+        "true",
+        "--v3-signing-enabled",
+        "true",
+        "--v4-signing-enabled",
+        "false",
+        "--out",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/provider/aligned.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962575650171000,
+      "label": "provider-sign",
+      "started_unix_ns": 1793962575193637000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962575900299000,
+      "label": "provider-verify",
+      "started_unix_ns": 1793962575650247000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5f1303e97186de319c70ce85204dc81fc762c05d827a2371a6cb4b7f8bb41b02"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "badging",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962575907691000,
+      "label": "provider-manifest-badging",
+      "started_unix_ns": 1793962575900379000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6e631519d54aa74626de900f9629ac6ce69fe809b766065aee91288cca0bed93"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "xmltree",
+        "--file",
+        "AndroidManifest.xml",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk"
+      ],
+      "exit_code": 0,
+      "finished_unix_ns": 1793962575914429000,
+      "label": "provider-manifest-tree",
+      "started_unix_ns": 1793962575907775000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7a2f23c3590f99e15ab590c55fe55ecd22536af2e43137c97f7bc207497643cd"
+    }
+  ],
+  "crypto_interop": {
+    "checks": 12,
+    "kdf": "argon2id-v19-m65536-t3-p4",
+    "ok": true,
+    "rust_to_java_digest_match": true
+  },
+  "dependency": {
+    "name": "bcprov-jdk15to18-1.86.jar",
+    "sha256": "fc50334d4d87b4272e72fa95ca748ead05bdef02ef760a5b13f64ffee317cd81",
+    "source": "https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15to18/1.86/bcprov-jdk15to18-1.86.jar"
+  },
+  "finished_unix_ns": 1793962575919387000,
+  "fixture_public": {
+    "ciphertext_sha256": "8e1d65d338a6227c0ca3fde4970a76b52ea61fd4e8217990aa4599f81d1dd282",
+    "entry_id": "android-fixture",
+    "origin": "https://native-fixture.heptabao.invalid",
+    "password_sha256": "71dec1175438a17d61c2388c1747cbc45c83f19d0ef46b0d65a837716ddfb150",
+    "rust_vault_sha256": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+    "schema": 1,
+    "username_sha256": "42eb7a2296f85b16c7d399c50272c4306eb84be8453db711b19d97208b52790e"
+  },
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "purpose": "synthetic_android_autofill_build",
+  "result": "build_and_host_interop_passed_device_not_run",
+  "schema": 1,
+  "source_files_after": {
+    "README.md": "c55d868c3c9f7ef5c7b9ee6a16803725b98d85b7ac5c699539a30cc97842f7c2",
+    "fixture/AndroidManifest.xml": "27d5239184b585369629adef717ea1026b34de299ca068964ca4f78a913480ee",
+    "fixture/java/org/heptabao/fixture/CiphertextProvider.java": "e6a9eba48713ea7ce83b021d0a16808da048803915ce8ea31eefd764238170ef",
+    "fixture/java/org/heptabao/fixture/FixtureActivity.java": "921d208337bce033f523f9516fe282f034399d5e7c5b71cdbeaef836232023cb",
+    "fixture/res/layout/fixture.xml": "c8d9fa2e8b60dcfc01cbe87097fcc6340cb025368a36a42d1c3db48e84c31b67",
+    "provider/AndroidManifest.xml": "4867892e336da619ef787e7270ece2694b979cad2eddf00a5c82bb3c3cfacbeb",
+    "provider/java/org/heptabao/preview/AuthActivity.java": "8410b9b9c183c63d9b776086d0ce1b931eddc5aebff8908bff727a23a94ffc85",
+    "provider/java/org/heptabao/preview/MainActivity.java": "e18b75a03ca7bfd658716201e0d9cd9beaf88442ae9e920ed5a6f911885661c6",
+    "provider/java/org/heptabao/preview/StrictJson.java": "c591b6163076a5696c58a73c77cebff6ddc7c8c8213b25e231b730fa04ac15df",
+    "provider/java/org/heptabao/preview/TargetPolicy.java": "12e7b97a57c87f636de1886194ddc57870dbcc0b168b47238ca52668d86387db",
+    "provider/java/org/heptabao/preview/VaultApplication.java": "b6714fc013e82af862f85a0224ea23acdeea92ddd1747a472636d0951f677da1",
+    "provider/java/org/heptabao/preview/VaultAutofillService.java": "10eb92b71d769e03d503926d322d963ff50cd984d00af00d901a5349cad7678a",
+    "provider/java/org/heptabao/preview/VaultCrypto.java": "9a3874a0e969458207515b4db9ee9c9a159565a14a07cea2876da2616b90d1cd",
+    "provider/java/org/heptabao/preview/VaultFiles.java": "910792cf3346fabce49ca352b5e577753e1ce1f7bf5357c9729d4ac88e682a0e",
+    "provider/res/layout/presentation.xml": "1650b8cf9157cf8b59ff283d483d14761cf6f5f2b27764a7df4a506665b98f1d",
+    "provider/res/xml/autofill_service.xml": "43c179273b424145483f05b7434b424c821643c4bb3465b04ade980b205456c0",
+    "provider/res/xml/data_extraction_rules.xml": "73c5c3fb986b6277fc2140a66470d0ba8800f28c889720142ba55c6a0f613a14",
+    "tests/org/heptabao/preview/CryptoInterop.java": "8d775de9a5f008853c07176884a0d1682f6bf3384494d6ffbe820c8ab208f2b8"
+  },
+  "source_files_before": {
+    "README.md": "c55d868c3c9f7ef5c7b9ee6a16803725b98d85b7ac5c699539a30cc97842f7c2",
+    "fixture/AndroidManifest.xml": "27d5239184b585369629adef717ea1026b34de299ca068964ca4f78a913480ee",
+    "fixture/java/org/heptabao/fixture/CiphertextProvider.java": "e6a9eba48713ea7ce83b021d0a16808da048803915ce8ea31eefd764238170ef",
+    "fixture/java/org/heptabao/fixture/FixtureActivity.java": "921d208337bce033f523f9516fe282f034399d5e7c5b71cdbeaef836232023cb",
+    "fixture/res/layout/fixture.xml": "c8d9fa2e8b60dcfc01cbe87097fcc6340cb025368a36a42d1c3db48e84c31b67",
+    "provider/AndroidManifest.xml": "4867892e336da619ef787e7270ece2694b979cad2eddf00a5c82bb3c3cfacbeb",
+    "provider/java/org/heptabao/preview/AuthActivity.java": "8410b9b9c183c63d9b776086d0ce1b931eddc5aebff8908bff727a23a94ffc85",
+    "provider/java/org/heptabao/preview/MainActivity.java": "e18b75a03ca7bfd658716201e0d9cd9beaf88442ae9e920ed5a6f911885661c6",
+    "provider/java/org/heptabao/preview/StrictJson.java": "c591b6163076a5696c58a73c77cebff6ddc7c8c8213b25e231b730fa04ac15df",
+    "provider/java/org/heptabao/preview/TargetPolicy.java": "12e7b97a57c87f636de1886194ddc57870dbcc0b168b47238ca52668d86387db",
+    "provider/java/org/heptabao/preview/VaultApplication.java": "b6714fc013e82af862f85a0224ea23acdeea92ddd1747a472636d0951f677da1",
+    "provider/java/org/heptabao/preview/VaultAutofillService.java": "10eb92b71d769e03d503926d322d963ff50cd984d00af00d901a5349cad7678a",
+    "provider/java/org/heptabao/preview/VaultCrypto.java": "9a3874a0e969458207515b4db9ee9c9a159565a14a07cea2876da2616b90d1cd",
+    "provider/java/org/heptabao/preview/VaultFiles.java": "910792cf3346fabce49ca352b5e577753e1ce1f7bf5357c9729d4ac88e682a0e",
+    "provider/res/layout/presentation.xml": "1650b8cf9157cf8b59ff283d483d14761cf6f5f2b27764a7df4a506665b98f1d",
+    "provider/res/xml/autofill_service.xml": "43c179273b424145483f05b7434b424c821643c4bb3465b04ade980b205456c0",
+    "provider/res/xml/data_extraction_rules.xml": "73c5c3fb986b6277fc2140a66470d0ba8800f28c889720142ba55c6a0f613a14",
+    "tests/org/heptabao/preview/CryptoInterop.java": "8d775de9a5f008853c07176884a0d1682f6bf3384494d6ffbe820c8ab208f2b8"
+  },
+  "started_unix_ns": 1793962533564087000,
+  "synthetic_certificates_sha256": {
+    "fixture-good": "42f36d91550b51847a8b362f8d7715b53f48db207a8b3f96de52570e78846a15",
+    "fixture-wrong": "20fe112ad3f8765bb99eefaab367cf91449f315ce228ee9b9b8037c8ac8964e0",
+    "provider": "011229f8f6ee83bfc2c913955eea2fddf62e9343fef2371d2b8a98351158e619"
+  },
+  "tool_files": {
+    "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java": "be6cc6b785dcd1893ce4726bf3cd92590d2d31a987c99e00a83e98c114c3d38f",
+    "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac": "520a565c285dd7d8e7da4979fc6d2e99abee7a7d534693eeb56155e85f4d1005",
+    "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2": "22d092d529b050c71016f3f4402f53fadcd358a65fe16df408c400f0fe9ffe62",
+    "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/lib/apksigner.jar": "eefdd6aed9db9fb849e4c98a50d8741e19d1b674ba6547220bcb9c3ed152123a",
+    "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/lib/d8.jar": "d43c8a94c9b1f1da1a7cc49c32b81e8cee1708b37ee8b530a81a0688222b42c0",
+    "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/zipalign": "4e0bf80ede4ddb7f48d83a7f0d09b343acebf44b8ff3224a6130f9f470957706",
+    "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad"
+  }
+}

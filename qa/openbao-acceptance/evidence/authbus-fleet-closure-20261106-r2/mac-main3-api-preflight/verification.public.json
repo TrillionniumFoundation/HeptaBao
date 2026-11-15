@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.main3-preflight-evidence-verification.r1",
+  "credentialValuesOrDigestsIncluded": false,
+  "privateCapsuleIncluded": false,
+  "canonical": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "binarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c"
+  },
+  "plugin": {
+    "job": "1a1b1bb80dc-fc05-7a81",
+    "terminal": "succeeded",
+    "exitCode": 0,
+    "fullSourceCount": 8,
+    "wholeSourceBytes": 82927,
+    "currentPrivateConfigRead": false
+  },
+  "apiR1": {
+    "stagingJob": "1a1b1cc2471-fc05-7adb",
+    "stagingTerminal": "succeeded",
+    "qualificationAttempted": false,
+    "serviceActions": 0,
+    "httpRequests": 0,
+    "reasonNotExecuted": "Fixture-only activation route caught during review; preserved unchanged."
+  },
+  "apiR2": {
+    "stagingJob": "1a1b1d7bcd1-fc05-7b1c",
+    "stagingTerminal": "succeeded",
+    "preflightJob": "1a1b1dc7351-fc05-7b2e",
+    "preflightTerminal": "failed",
+    "exitCode": 1,
+    "guardTestsPassed": 108,
+    "guardTestsSkipped": 0,
+    "guardDenominatorIsProduct107": false,
+    "errorCode": "current_source_full_generation_exact",
+    "serviceActions": 0,
+    "httpRequests": 0,
+    "sourceFenceFdOpened": 4,
+    "sourceFenceFdClosed": 4,
+    "ownedHelperUnknownCount": 0,
+    "closuresKnown": true,
+    "readbackSourceCount": 15,
+    "normalStorageConfigVerified": true
+  },
+  "diagnostic": {
+    "job": "1a1b1de3b3b-fc05-7b39",
+    "terminal": "succeeded",
+    "exitCode": 0,
+    "fullStdoutBytes": 5237,
+    "allFiveAuthGenerationsExact": true,
+    "allAuthAbsencesExact": true,
+    "registryFilesChanged": 3,
+    "registryChangedFieldNames": [
+      "ctime_ns"
+    ],
+    "otherEightIdentityFieldsEqual": true,
+    "registryJournalAbsent": true,
+    "credentialByteChangeInferred": false,
+    "sourceSqlOpened": false,
+    "serviceActions": 0
+  },
+  "business": {
+    "main3ApiQualified": false,
+    "actualPluginSdkQualified": false,
+    "providerValid": false,
+    "productionCutover": false,
+    "oldOpenBaoRemovalQualified": false
+  },
+  "artifactCount": 88
+}

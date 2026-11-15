@@ -1,0 +1,36 @@
+{
+  "schema": "authbus-refresh-sdk-exact-source-preflight",
+  "actualSdkExecution": false,
+  "hashes": [
+    {
+      "relative": "dist/oauth-B4aOCsid.js",
+      "originalSha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+      "candidateSha256": "439d949e175af236401ad49ccfedc0086e17688ba20bbe9d91a865dabf3851d8",
+      "syntaxPassed": true
+    },
+    {
+      "relative": "dist/oauth-BcZS_BvC.js",
+      "originalSha256": "2a3aef714168afd10ca2afc537744f5e44639eaad4113e443bcc371f457409b4",
+      "candidateSha256": "26832290cfeb9e3497a9f28313b17059b52acd7976f388132a2cc2512a9f1e3a",
+      "syntaxPassed": true
+    },
+    {
+      "relative": "dist/chutes-oauth-YFvuN1-a.js",
+      "originalSha256": "f9e7bee3fbc4c311a960007f38e4057c70955c55e93caa7f0988a39aed940a55",
+      "candidateSha256": "1435b7efefd76d084d9e7b264005ffd16dfe54f3305c94584ab0cc22329ee8c9",
+      "syntaxPassed": true
+    },
+    {
+      "relative": "dist/provider-runtime.runtime--yRUs3av.js",
+      "originalSha256": "93be7eb924cb45f84505f03696e5c6545a1e0e885b584b12c7357d98d729c9ab",
+      "candidateSha256": "e980ab1b204ea3236842d14105c590979a7258d1d7b1a2961f4cd4340719f24a",
+      "syntaxPassed": true
+    },
+    {
+      "relative": "dist/provider-runtime-CLQOjLJ6.js",
+      "originalSha256": "6daf266a90294162eb45ce8c9402ce15743df0ee1cc951e4e95602a3c6122338",
+      "candidateSha256": "12f524d3d480a77118438fc29777aba6f3f4dad50de0ced5f471cbd5f429f1d6",
+      "syntaxPassed": true
+    }
+  ]
+}

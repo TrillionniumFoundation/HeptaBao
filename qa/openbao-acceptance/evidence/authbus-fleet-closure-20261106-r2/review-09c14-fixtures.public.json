@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.continuation.source-review.v1",
+  "reviewed_at_utc": "2026-11-06T12:58:58.010037+00:00",
+  "candidate_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "comparison_base": "868439e",
+  "changed_paths": [
+    "crates/heptabao-server/src/service_native_jwt_tests.rs"
+  ],
+  "reviewer": "root-assistant-internal-source-review",
+  "independent_external_security_review": false,
+  "execution_qualified": false,
+  "production_qualified": false,
+  "scope": "Review of the three failed native-JWT fixture preconditions; no product changes and no new test results claimed.",
+  "observations": [
+    {
+      "case": "token_type_error_precedence",
+      "finding": "Existing MountTokenType::parse accepts kebab-case default-batch and rejects default_batch. The fixed test retains unsupported-native-mode 501 checks, adds the invalid-spelling 400 check, and asserts no candidate delta or pending delivery."
+    },
+    {
+      "case": "jwt_role_assignment_authority",
+      "finding": "Existing jwt_role_route requires update plus sudo and validate_assignment for the retained token policies. The fixed positive actor explicitly carries the assigned native-jwt policy; separate missing-assignment and missing-sudo negatives remain."
+    },
+    {
+      "case": "token_api_origin",
+      "finding": "Existing validate_public_origin requires TokenApi provenance; exact path equality is mandatory for a named token role. The fixed unroled test distinguishes a valid public display path with a real issuer from a missing issuer, while retaining malformed-path and parent-graph negatives."
+    }
+  ],
+  "source_files": [
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "sha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_public_origin.rs",
+      "sha256": "dbca38cced351accc81f54a4f45d2ce3c57f01e0d0123aeaa4d79102e6a4dbcc"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_batch_issuance.rs",
+      "sha256": "41b66990f8df0e66a576dfa9193713290ec4f46ece74a926c32f648999de0c6f"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "sha256": "d36bd868975958093c50218ad1e06b20a58b5156a37cd58718dfdc1654c1f156"
+    }
+  ]
+}

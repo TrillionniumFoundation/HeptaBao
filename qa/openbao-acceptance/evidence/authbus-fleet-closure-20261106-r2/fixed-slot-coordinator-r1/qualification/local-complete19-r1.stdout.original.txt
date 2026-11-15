@@ -1,0 +1,27 @@
+✔ unchanged producer validates enrollment, two exact authorized rotations and slot reuse (91.765278ms)
+✔ no grant and revoked grant stay pending; full single slot preserves backpressure (48.189936ms)
+✔ health ack and fixed report make zero scheduler/provider actions (37.576258ms)
+✔ profile unknown before remote commit retains original intent across cold process state (43.31764ms)
+✔ profile unknown after remote commit retains original intent across cold process state (51.503052ms)
+✔ manifest unknown before remote commit retains original intent across cold process state (42.515636ms)
+✔ manifest unknown after remote commit retains original intent across cold process state (39.327468ms)
+✔ ack unknown before remote commit retains original intent across cold process state (42.75905ms)
+✔ ack unknown after remote commit retains original intent across cold process state (45.600322ms)
+✔ exact retained manifest history resolves an original committed postimage without rewrite (47.982125ms)
+✔ immutable profile collision refuses before canonical mutation (43.571426ms)
+✔ missing private enrollment history cannot adopt a used remote control (34.454881ms)
+✔ close stops admission and awaits the original operation before releasing SQLite/journal (31.056848ms)
+✔ real owned SIGKILL durable-dispatched preserves ack custody and releases SQLite process lock (202.568762ms)
+✔ real owned SIGKILL remote-confirmed-before-receipt preserves ack custody and releases SQLite process lock (132.984783ms)
+✔ exact original Python grant/profile/manifest/receipt contract matches new transaction planning (149.630199ms)
+✔ concrete strict TLS/AppRole adapter and unchanged production client perform complete fixed-slot transaction (531.06072ms)
+✔ strict TLS wrong leaf pin prevents HTTP authentication or KV dispatch (56.27947ms)
+✔ real TLS dropped ack response remains unknown and cold coordinator only reads to reconcile (464.598336ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1152.552547

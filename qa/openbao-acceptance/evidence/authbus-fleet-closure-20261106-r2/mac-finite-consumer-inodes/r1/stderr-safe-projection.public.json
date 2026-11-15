@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.fixed-lsof-stderr-safe-projection.r1",
+  "source": "original_known_exit1_500_byte_private_stderr",
+  "originalJobId": "1a1b376e3e0-fc05-8304",
+  "bytes": 500,
+  "complete": true,
+  "sourceContentsOrDigestPublished": false,
+  "lines": 10,
+  "optionDUnsupported": true,
+  "optionDUnknown": false,
+  "usagePresent": true,
+  "visibilityWarning": false,
+  "deviceCacheMention": false,
+  "fixedTokens": {
+    "unsupported": true,
+    "notSupported": false,
+    "unknownOption": false,
+    "illegalOption": false,
+    "optionD": true,
+    "optionI": true
+  },
+  "lineLengths": [
+    28,
+    9,
+    65,
+    63,
+    73,
+    64,
+    61,
+    77,
+    51,
+    0
+  ],
+  "exactUnsupportedOptionDLine": true
+}

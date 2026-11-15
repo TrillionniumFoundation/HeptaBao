@@ -246,7 +246,7 @@ def collect(args: argparse.Namespace) -> dict[str, Any]:
             "bound": True,
         },
         "source": {
-            "repository": "ProfHepta/HeptaBao",
+            "repository": "TrillionniumFoundation/HeptaBao",
             "commit_sha": args.source_commit,
             "tree_sha": args.source_tree,
             "branch": args.branch,

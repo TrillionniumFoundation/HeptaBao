@@ -1,0 +1,20 @@
+--- qualified-bootstrap-api
++++ complete-recovery-api
+@@ -9,11 +9,15 @@
+     if not value:raise Refused(code)
+ class Api:
+     def __init__(self,plan,phase,phase_until,journal,guard):
+-        need(phase in ('initial','cold-new-process'),'fixed_api_phase')
++        need(phase in ('locked-positive','recovered','recovered-cold'),'fixed_api_phase')
+         need(type(plan['port']) is int and 1024<=plan['port']<=65535
+              and re.fullmatch(r'[0-9a-f]{64}',plan['certificateLeafSha256']),'fixed_owned_tls_endpoint')
+         self.plan=plan;self.phase=phase;self.until=phase_until;self.journal=journal;self.guard=guard
+-        self.context=ssl.create_default_context(cafile=str(ROOT/'tls/ca.crt'))
++        need(plan.get('caFile') in (
++            str(ROOT/'tls/ca.crt'),
++            '/Users/qianqi/heptabao-authbus-production-recovery-20261107-r1/runtime/tls/ca.crt'),
++             'fixed_original_or_restored_ca_path')
++        self.context=ssl.create_default_context(cafile=plan['caFile'])
+         self.rows=[];self.checks=[];self.unknown=False;self.root_token=None;self.sensitive=[]
+     def remaining(self,cap):
+         left=self.until-time.monotonic();need(left>0,'original_api_phase_120_seconds');return min(left,cap)

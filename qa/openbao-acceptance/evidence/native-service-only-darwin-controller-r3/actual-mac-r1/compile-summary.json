@@ -1,0 +1,341 @@
+{
+  "schema": "heptabao.native-service-only-compile.v1",
+  "status": "passed_native_service_only_compile",
+  "started_utc": "2026-10-19T07:30:11.407123+00:00",
+  "runner_pid": 44824,
+  "controller_sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-9770",
+  "source_commit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+  "source_tree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+  "manifest_sha256": "9e167d20256e2d59c9ce57c73b90a0976403cf7a20db3e1d6b5de011c9d3cb0c",
+  "target_dir": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target",
+  "target_lock_acquired": true,
+  "hostname": "MacBook-Pro.local",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "uname": [
+    "Darwin",
+    "MacBook-Pro.local",
+    "25.6.0",
+    "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142",
+    "arm64"
+  ],
+  "python": "3.14.3",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T07:30:11.527961+00:00",
+      "status": "passed",
+      "budget_seconds": 15,
+      "log": "cargo-version.log",
+      "pid": 44827,
+      "pgid": 44827,
+      "sid": 44827,
+      "darwin_leader_identity": {
+        "pid": 44827,
+        "ppid": 44824,
+        "pgid": 44827,
+        "uid": 501,
+        "lstart": "Mon Oct 19 15:30:11 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 44827,
+            "ppid": 44824,
+            "pgid": 44827,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:11 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 44827,
+            "ppid": 44824,
+            "pgid": 44827,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:11 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T07:30:11.609364+00:00",
+      "elapsed_seconds": 0.078,
+      "log_sha256": "fc5da452af509c1010d5949e8773b2d2e1a28f2ed00e5e4cdbf72c204fc62c32",
+      "log_bytes": 335,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T07:30:11.609939+00:00",
+      "status": "passed",
+      "budget_seconds": 15,
+      "log": "rustc-version.log",
+      "pid": 44835,
+      "pgid": 44835,
+      "sid": 44835,
+      "darwin_leader_identity": {
+        "pid": 44835,
+        "ppid": 44824,
+        "pgid": 44835,
+        "uid": 501,
+        "lstart": "Mon Oct 19 15:30:11 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 44835,
+            "ppid": 44824,
+            "pgid": 44835,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:11 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 44835,
+            "ppid": 44824,
+            "pgid": 44835,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:11 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T07:30:11.931392+00:00",
+      "elapsed_seconds": 0.321,
+      "log_sha256": "bd38eb565e393486255b35ff1f74e9dc7ca87425f1febb798b9dd042159a833a",
+      "log_bytes": 192,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    },
+    {
+      "label": "check-native-service-only",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--no-default-features",
+        "--features",
+        "fixture-native-v6-service",
+        "--lib",
+        "--bin",
+        "heptabao-server",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T07:30:11.932010+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "check-native-service-only.log",
+      "pid": 44844,
+      "pgid": 44844,
+      "sid": 44844,
+      "darwin_leader_identity": {
+        "pid": 44844,
+        "ppid": 44824,
+        "pgid": 44844,
+        "uid": 501,
+        "lstart": "Mon Oct 19 15:30:11 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 44844,
+            "ppid": 44824,
+            "pgid": 44844,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:11 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 44844,
+            "ppid": 44824,
+            "pgid": 44844,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:11 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T07:30:42.193884+00:00",
+      "elapsed_seconds": 30.261,
+      "log_sha256": "6e23a3bf3a3b6cbadfd0d590ca857b4586bbce374eab83a98521f6625f3508ef",
+      "log_bytes": 446471,
+      "root_rustc_cfg_observations": [
+        {
+          "test_target": false,
+          "source": [
+            "crates/heptabao-server/src/lib.rs"
+          ],
+          "active_features": [
+            "fixture-native-v6-service"
+          ]
+        },
+        {
+          "test_target": false,
+          "source": [
+            "crates/heptabao-server/src/main.rs"
+          ],
+          "active_features": [
+            "fixture-native-v6-service"
+          ]
+        }
+      ],
+      "root_rustc_cfg_observed": true
+    },
+    {
+      "label": "compile-native-service-only-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--no-default-features",
+        "--features",
+        "fixture-native-v6-service",
+        "--lib",
+        "--no-run",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T07:30:42.261475+00:00",
+      "status": "passed",
+      "budget_seconds": 1800,
+      "log": "compile-native-service-only-tests.log",
+      "pid": 45178,
+      "pgid": 45178,
+      "sid": 45178,
+      "darwin_leader_identity": {
+        "pid": 45178,
+        "ppid": 44824,
+        "pgid": 45178,
+        "uid": 501,
+        "lstart": "Mon Oct 19 15:30:42 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 45178,
+            "ppid": 44824,
+            "pgid": 45178,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:42 2026"
+          }
+        ],
+        "signals": [],
+        "unexpected_live_descendants_after_exit": false,
+        "group_before_final_wait": [
+          {
+            "pid": 45178,
+            "ppid": 44824,
+            "pgid": 45178,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:42 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T07:35:49.526433+00:00",
+      "elapsed_seconds": 307.262,
+      "log_sha256": "5954337b6975c183894f85d7fb43b8ca2479fb0f2239b026b1e020ea11e206aa",
+      "log_bytes": 26292,
+      "root_rustc_cfg_observations": [
+        {
+          "test_target": true,
+          "source": [
+            "crates/heptabao-server/src/lib.rs"
+          ],
+          "active_features": [
+            "fixture-native-v6-service"
+          ]
+        }
+      ],
+      "root_rustc_cfg_observed": true
+    }
+  ],
+  "feature": "fixture-native-v6-service",
+  "compiler_command_budget_seconds": 1800,
+  "rust_tests_executed": 0,
+  "original_host_cohort_test_count": 55,
+  "server_started": false,
+  "physical_lan_validation_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "source_verifier": {
+    "path": "qa/openbao-acceptance/native_candidate_host_run.py",
+    "git_blob": "0e34e16e2fa7fbc5a0ae19230a1e289d9a939ddf",
+    "sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd"
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-19T07:30:11.527835+00:00",
+    "commit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+    "tree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+    "verified_files": 2979
+  },
+  "compiler_resource_profile": {
+    "cargo_build_jobs": 2,
+    "cmake_build_parallel_level": 2,
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "cleared_environment_keys": [
+      "CARGO_BUILD_TARGET",
+      "RUSTC_WRAPPER",
+      "RUSTC_WORKSPACE_WRAPPER",
+      "RUSTFLAGS",
+      "CARGO_ENCODED_RUSTFLAGS"
+    ]
+  },
+  "controller_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-19T07:35:50.308416+00:00",
+    "commit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+    "tree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+    "verified_files": 2979
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-19T07:35:50.308515+00:00"
+}

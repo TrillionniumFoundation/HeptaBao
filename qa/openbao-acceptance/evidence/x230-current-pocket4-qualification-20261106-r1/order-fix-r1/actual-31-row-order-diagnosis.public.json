@@ -1,0 +1,734 @@
+{
+  "actual_product_execution_in_refused_attempt": false,
+  "actual_receiver_job_id": "1a1b277e5bb-fc05-7e22",
+  "actual_refusal_job_id": "1a1b287b00e-fc05-7e71",
+  "all_other_compatibility_fields_equal": true,
+  "complete_full_row_multisets_equal": true,
+  "first_different_index": 11,
+  "full31_api69_qualified": false,
+  "inputs_after": {
+    "fixed_qualifier": {
+      "bytes": 34679,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_current_candidate_qualification.py",
+      "sha256": "abb8adee9483696df7e38369dbb0436cd578721d4b6bde18a06dd0218ee1e0d0"
+    },
+    "normal107": {
+      "bytes": 285431,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/pocket4-preparation/normal107.result.original.public.json",
+      "sha256": "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5"
+    },
+    "parser": {
+      "bytes": 14323,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-abi-guard/x230_native_abi_admission.py",
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    "r1_refusal": {
+      "bytes": 688,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/qualification-r1.result.original.public.json",
+      "sha256": "fa9106ab50ef8f895c132e75c62a59db151df0d54be24b565fdf3e8aaf9b9da7"
+    },
+    "receiver": {
+      "bytes": 313210,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-abi-guard/receiver-current-pocket4.result.original.public.json",
+      "sha256": "ca07a01f3c67d6934e18e1be4c9869cf90677ed735cfc3f8266f9f0e857669c6"
+    }
+  },
+  "inputs_before": {
+    "fixed_qualifier": {
+      "bytes": 34679,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/x230_current_candidate_qualification.py",
+      "sha256": "abb8adee9483696df7e38369dbb0436cd578721d4b6bde18a06dd0218ee1e0d0"
+    },
+    "normal107": {
+      "bytes": 285431,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/pocket4-preparation/normal107.result.original.public.json",
+      "sha256": "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5"
+    },
+    "parser": {
+      "bytes": 14323,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-abi-guard/x230_native_abi_admission.py",
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4"
+    },
+    "r1_refusal": {
+      "bytes": 688,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-current-pocket4/qualification-r1.result.original.public.json",
+      "sha256": "fa9106ab50ef8f895c132e75c62a59db151df0d54be24b565fdf3e8aaf9b9da7"
+    },
+    "receiver": {
+      "bytes": 313210,
+      "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/x230-abi-guard/receiver-current-pocket4.result.original.public.json",
+      "sha256": "ca07a01f3c67d6934e18e1be4c9869cf90677ed735cfc3f8266f9f0e857669c6"
+    }
+  },
+  "inputs_unchanged": true,
+  "local_candidate_or_oracle_executions": 0,
+  "local_filesystem_receiver_recheck_performed": false,
+  "original_count": 31,
+  "original_requirement_rows": [
+    {
+      "origin": "heptabao-seed",
+      "provider": "libgssapi_krb5.so.2",
+      "required_versions": [
+        "gssapi_krb5_2_MIT"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "libgcc_s.so.1",
+      "required_versions": [
+        "GCC_3.0",
+        "GCC_3.3",
+        "GCC_4.2.0"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "libm.so.6",
+      "required_versions": [
+        "GLIBC_2.29"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.10",
+        "GLIBC_2.14",
+        "GLIBC_2.15",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_2.7",
+        "GLIBC_2.9"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libgssapi_krb5.so.2",
+      "required_versions": [
+        "gssapi_krb5_2_MIT"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libgcc_s.so.1",
+      "required_versions": [
+        "GCC_3.0",
+        "GCC_3.3",
+        "GCC_4.2.0"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libm.so.6",
+      "required_versions": [
+        "GLIBC_2.29"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.10",
+        "GLIBC_2.14",
+        "GLIBC_2.15",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_2.7",
+        "GLIBC_2.9"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "libc.so.6",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.3",
+        "GLIBC_PRIVATE"
+      ]
+    },
+    {
+      "origin": "libgcc_s.so.1",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "libgcc_s.so.1",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.34",
+        "GLIBC_2.35"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libk5crypto.so.3",
+      "required_versions": [
+        "k5crypto_3_MIT"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libkrb5support.so.0",
+      "required_versions": [
+        "krb5support_0_MIT"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.17",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.27",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.33",
+        "GLIBC_2.38",
+        "GLIBC_2.4",
+        "GLIBC_2.8"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libkrb5.so.3",
+      "required_versions": [
+        "krb5_3_MIT"
+      ]
+    },
+    {
+      "origin": "libcom_err.so.2",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "libcom_err.so.2",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.17",
+        "GLIBC_2.2.5",
+        "GLIBC_2.3.4",
+        "GLIBC_2.38",
+        "GLIBC_2.4"
+      ]
+    },
+    {
+      "origin": "libk5crypto.so.3",
+      "provider": "libkrb5support.so.0",
+      "required_versions": [
+        "krb5support_0_MIT"
+      ]
+    },
+    {
+      "origin": "libk5crypto.so.3",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.33",
+        "GLIBC_2.38",
+        "GLIBC_2.4"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libresolv.so.2",
+      "required_versions": [
+        "GLIBC_2.9"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libk5crypto.so.3",
+      "required_versions": [
+        "k5crypto_3_MIT"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libkrb5support.so.0",
+      "required_versions": [
+        "krb5support_0_MIT"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libkeyutils.so.1",
+      "required_versions": [
+        "KEYUTILS_0.3",
+        "KEYUTILS_1.0",
+        "KEYUTILS_1.5"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.4",
+        "GLIBC_2.7",
+        "GLIBC_2.8"
+      ]
+    },
+    {
+      "origin": "libkeyutils.so.1",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.3.4",
+        "GLIBC_2.4",
+        "GLIBC_2.7"
+      ]
+    },
+    {
+      "origin": "libkrb5support.so.0",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.4",
+        "GLIBC_2.8"
+      ]
+    },
+    {
+      "origin": "libm.so.6",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_PRIVATE"
+      ]
+    },
+    {
+      "origin": "libm.so.6",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.36",
+        "GLIBC_2.4",
+        "GLIBC_ABI_DT_RELR",
+        "GLIBC_PRIVATE"
+      ]
+    },
+    {
+      "origin": "libresolv.so.2",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.34",
+        "GLIBC_2.36",
+        "GLIBC_2.4",
+        "GLIBC_ABI_DT_RELR",
+        "GLIBC_PRIVATE"
+      ]
+    }
+  ],
+  "original_unique_origin_provider_count": 31,
+  "raw_order_equal": false,
+  "recomputed_count": 31,
+  "recomputed_from_original_raw_readelf_rows": [
+    {
+      "origin": "heptabao-seed",
+      "provider": "libgssapi_krb5.so.2",
+      "required_versions": [
+        "gssapi_krb5_2_MIT"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "libgcc_s.so.1",
+      "required_versions": [
+        "GCC_3.0",
+        "GCC_3.3",
+        "GCC_4.2.0"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "libm.so.6",
+      "required_versions": [
+        "GLIBC_2.29"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.10",
+        "GLIBC_2.14",
+        "GLIBC_2.15",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_2.7",
+        "GLIBC_2.9"
+      ]
+    },
+    {
+      "origin": "heptabao-seed",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libgssapi_krb5.so.2",
+      "required_versions": [
+        "gssapi_krb5_2_MIT"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libgcc_s.so.1",
+      "required_versions": [
+        "GCC_3.0",
+        "GCC_3.3",
+        "GCC_4.2.0"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libm.so.6",
+      "required_versions": [
+        "GLIBC_2.29"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.10",
+        "GLIBC_2.14",
+        "GLIBC_2.15",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.39",
+        "GLIBC_2.4",
+        "GLIBC_2.7",
+        "GLIBC_2.9"
+      ]
+    },
+    {
+      "origin": "heptabao-server",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "libc.so.6",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.3",
+        "GLIBC_PRIVATE"
+      ]
+    },
+    {
+      "origin": "libcom_err.so.2",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "libcom_err.so.2",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.17",
+        "GLIBC_2.2.5",
+        "GLIBC_2.3.4",
+        "GLIBC_2.38",
+        "GLIBC_2.4"
+      ]
+    },
+    {
+      "origin": "libgcc_s.so.1",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_2.3"
+      ]
+    },
+    {
+      "origin": "libgcc_s.so.1",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.34",
+        "GLIBC_2.35"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libk5crypto.so.3",
+      "required_versions": [
+        "k5crypto_3_MIT"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libkrb5support.so.0",
+      "required_versions": [
+        "krb5support_0_MIT"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.17",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.27",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.33",
+        "GLIBC_2.38",
+        "GLIBC_2.4",
+        "GLIBC_2.8"
+      ]
+    },
+    {
+      "origin": "libgssapi_krb5.so.2",
+      "provider": "libkrb5.so.3",
+      "required_versions": [
+        "krb5_3_MIT"
+      ]
+    },
+    {
+      "origin": "libk5crypto.so.3",
+      "provider": "libkrb5support.so.0",
+      "required_versions": [
+        "krb5support_0_MIT"
+      ]
+    },
+    {
+      "origin": "libk5crypto.so.3",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.33",
+        "GLIBC_2.38",
+        "GLIBC_2.4"
+      ]
+    },
+    {
+      "origin": "libkeyutils.so.1",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.3.4",
+        "GLIBC_2.4",
+        "GLIBC_2.7"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libresolv.so.2",
+      "required_versions": [
+        "GLIBC_2.9"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libk5crypto.so.3",
+      "required_versions": [
+        "k5crypto_3_MIT"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libkrb5support.so.0",
+      "required_versions": [
+        "krb5support_0_MIT"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libkeyutils.so.1",
+      "required_versions": [
+        "KEYUTILS_0.3",
+        "KEYUTILS_1.0",
+        "KEYUTILS_1.5"
+      ]
+    },
+    {
+      "origin": "libkrb5.so.3",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.4",
+        "GLIBC_2.7",
+        "GLIBC_2.8"
+      ]
+    },
+    {
+      "origin": "libkrb5support.so.0",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.34",
+        "GLIBC_2.38",
+        "GLIBC_2.4",
+        "GLIBC_2.8"
+      ]
+    },
+    {
+      "origin": "libm.so.6",
+      "provider": "ld-linux-x86-64.so.2",
+      "required_versions": [
+        "GLIBC_PRIVATE"
+      ]
+    },
+    {
+      "origin": "libm.so.6",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.2.5",
+        "GLIBC_2.36",
+        "GLIBC_2.4",
+        "GLIBC_ABI_DT_RELR",
+        "GLIBC_PRIVATE"
+      ]
+    },
+    {
+      "origin": "libresolv.so.2",
+      "provider": "libc.so.6",
+      "required_versions": [
+        "GLIBC_2.14",
+        "GLIBC_2.2.5",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.34",
+        "GLIBC_2.36",
+        "GLIBC_2.4",
+        "GLIBC_ABI_DT_RELR",
+        "GLIBC_PRIVATE"
+      ]
+    }
+  ],
+  "recomputed_unique_origin_provider_count": 31,
+  "schema": "heptabao.actual-x230-static-requirement-order-diagnosis.v1",
+  "status": "order_only_difference_reproduced",
+  "strict_validated_order_normalization_equal": true
+}

@@ -1,0 +1,1 @@
+{"schema": "heptabao.mac-custody-selftest-input-pins.r3", "pins_verified": true, "prior_failed_jobs": ["1a1b066d692-fc05-7043", "1a1b06a4504-fc05-7060"], "expected_tests": 15, "original_child_caps_preserved": true}

@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.fixed-slot-recovery-only-preparation.r2",
+  "executed": false,
+  "executionKey": "heptabao-mac-fixed-slot-coordinator-recovery-20261107-r2",
+  "originalExecutionKeyNotReplayed": "heptabao-mac-fixed-slot-coordinator-normal-20261107-r1",
+  "originalNativeJob": "1a1b3e976fc-fc05-8575",
+  "originalStatus": "failed",
+  "originalLauncher": {
+    "bytes": 242236,
+    "sha256": "0399270ee35c5c47d3431e263d9a338028393c1b4ebf09babbb23d9fa7923752"
+  },
+  "originalReadonlyPreflight": {
+    "job": "1a1b40a9813-fc05-85f4",
+    "stdoutSha256": "3ecaf1e19fa5489d5c35b455ce7da1b4981fc4c10c69161786d59b8dac114177"
+  },
+  "launcher": {
+    "bytes": 250110,
+    "sha256": "26607ac1cff11a8478ebfc09c0cb7a699c1897c188070c0278ef2dd02a8100f0"
+  },
+  "body": {
+    "bytes": 50638,
+    "sha256": "6c21a9cfe130ab54b0896d4719631bdcb4902f2d4ad012452aa39adee23e66c4"
+  },
+  "template": {
+    "bytes": 55503,
+    "sha256": "7e5616bb0f572033730f95466c4aba53a51a4a07a2cce3f159bb12337893a116"
+  },
+  "pythonSourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_fixedslot_t5_guard_r1.py": {
+      "bytes": 13393,
+      "sha256": "a10dbbad79a0be44028594e3c25c7139097890e97a4f51ab2d4cf06b6a0bee9c"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "main3_http_complete.py": {
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    },
+    "fixedslot_recovery_api_r2.py": {
+      "bytes": 7375,
+      "sha256": "1092ae7833ab8eea9d0d1e02dd06d393f956c1a35ce4178cf23e20dd63600b2c"
+    }
+  },
+  "nodeAssetPins": {
+    "cli.mjs": {
+      "bytes": 2959,
+      "sha256": "9c36c47e2a8c0f3ea567321f53b2bde4506a018a6d1905ebd14752ac50553458"
+    },
+    "coordinator.mjs": {
+      "bytes": 27398,
+      "sha256": "2788c8ba026db045a2961c633aad83762ddceb125b174bcd56c0f782da598a77"
+    },
+    "private-journal.mjs": {
+      "bytes": 6004,
+      "sha256": "068b240c36aa30eef04020036685c81d90598f82e598522990bda9c0c0f11315"
+    },
+    "protocol.mjs": {
+      "bytes": 12155,
+      "sha256": "1afa3a7dfaef49003a63edfa2fa48bfb5381a6b0c5cd4d5890c677e824dcdb7c"
+    },
+    "source-verification.mjs": {
+      "bytes": 2008,
+      "sha256": "0a4469d52afa7ada171cb85a41a7102244bf36e3220e80e8e92e1ecb6138f0c1"
+    },
+    "transport/bounded-outbox.js": {
+      "bytes": 18043,
+      "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+    },
+    "transport/private-outbox-store.js": {
+      "bytes": 8660,
+      "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+    },
+    "transport/production-client.js": {
+      "bytes": 3434,
+      "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+    },
+    "transport/strict-bao-client.js": {
+      "bytes": 26161,
+      "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+    },
+    "package.json": {
+      "bytes": 224,
+      "sha256": "16e20a08d18e63788873553c23d9fe14306d016a80981ec938e9dd135f1df737"
+    },
+    "mac_coordinator_actual_worker_r1.mjs": {
+      "bytes": 28397,
+      "sha256": "8692f3b9d5986aad2405f3781c9f8c99989f54aca02f65129f16e6759025056b"
+    }
+  },
+  "allElevenOriginalNodeAssetBytesUnchanged": true,
+  "originalApi": {
+    "bytes": 7208,
+    "sha256": "51a3a0b9432e664530a320a31ba7ccf79f746f2855050fb2de7bfbcc5615cf8b"
+  },
+  "apiChange": "init removed from categories and forbidden before journal/dispatch",
+  "sameExistingInitializedStore": true,
+  "sameOriginalKeyAndCertificates": true,
+  "newJournalOnly": "/Users/qianqi/heptabao-fixed-slot-coordinator-normal-20261107-r1/custody-recovery-r2",
+  "originalJournalUnchanged": true,
+  "originalFailedResultUnchanged": true,
+  "originalObservedDirectoryInodes": [
+    72788478,
+    72788485,
+    72788480
+  ],
+  "originalPreInitDirectoryInodeNotClaimed": true,
+  "parentSeconds": 600,
+  "nodePhaseSeconds": 120,
+  "apiPhaseSeconds": 120,
+  "originalEvidenceAdmissionSeconds": 20,
+  "coordinatorOperationMs": 30000,
+  "strictClientRequestMs": 15000,
+  "pythonHttpSeconds": 10,
+  "readinessSeconds": 15,
+  "supervisorSeconds": 630,
+  "independentNewBudgetNotExtensionOfFailedR1": true,
+  "initializationRequests": 0,
+  "cryptoCommands": 0,
+  "originalNodeWorkers": 2,
+  "rustGenerations": 2,
+  "providerCalls": 0,
+  "currentCredentialReads": 0,
+  "productionClientChanges": 0,
+  "serviceRegistrationChanges": 0,
+  "automaticRetry": false,
+  "actualCoordinatorBusinessQualified": false
+}

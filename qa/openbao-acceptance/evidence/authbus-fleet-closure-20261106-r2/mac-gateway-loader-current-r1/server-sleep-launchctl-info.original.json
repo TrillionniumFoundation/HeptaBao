@@ -1,0 +1,42 @@
+{
+  "server": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":80,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":420,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":420,\"path\":\"/opt/homebrew/lib/node_modules/openclaw/dist/server-BnSQQ3Aa.js\",\"sha256\":\"f1e68d8731b1477e114b0ff2ac6a9aa9941ffed59ae0298c37363bb472726bf1\",\"size\":1138,\"version\":\"16777233:405239293:1138:1784843463530718361:1784843463530718361\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "sleep": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":0,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":493,\"uid\":0,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":493,\"path\":\"/bin/sleep\",\"sha256\":\"c30e72b2e2d6a4eb32b6f38f07815346bc734d031d3c712d9123f28d8b237051\",\"size\":100976,\"version\":\"16777233:1152921500312571411:100976:1786589515000000000:1786589515000000000\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "launchctl": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":0,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":493,\"uid\":0,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":493,\"path\":\"/bin/launchctl\",\"sha256\":\"b4dbf509754d8e1117f7851baa93ede75bc75218c48d6ddf19fbb1505d261be7\",\"size\":363488,\"version\":\"16777233:1152921500312571385:363488:1786589515000000000:1786589515000000000\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "serverImpl": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":80,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":420,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":420,\"path\":\"/opt/homebrew/lib/node_modules/openclaw/dist/server.impl-qYPVZMND.js\",\"sha256\":\"d1d033e41ee27222a5b743a7a5a2e54f8f963d335a2599be3cb5243f9fe8c877\",\"size\":118221,\"version\":\"16777233:405239346:118221:1784843463743522926:1784843463743522926\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

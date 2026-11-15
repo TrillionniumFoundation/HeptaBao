@@ -1,26 +1,188 @@
+use base64::{Engine as _, engine::general_purpose::STANDARD};
+use heptabao_ha_service::{
+    MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES, MAX_NATIVE_INDEX_RESPONSE_FRAME_BYTES,
+    MAX_NATIVE_INDEX_RESPONSE_METADATA_BYTES, MAX_NATIVE_KV2_WRITE_BODY_BYTES,
+    MAX_NATIVE_KV2_WRITE_FRAME_BYTES, MAX_NATIVE_KV2_WRITE_METADATA_BYTES,
+    NATIVE_INDEX_REQUEST_MAGIC, NATIVE_INDEX_RESPONSE_MAGIC, NATIVE_KV2_WRITE_REQUEST_MAGIC,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
 use zeroize::{Zeroize, Zeroizing};
 
+#[cfg(test)]
+#[path = "ha_forward_native_index_tests.rs"]
+mod native_index_tests;
+
+#[cfg(test)]
+#[path = "ha_forward_native_ssh_tests.rs"]
+mod native_ssh_tests;
+
+#[path = "ha_forward_native_kv2_write.rs"]
+mod native_kv2_write;
+
 const REQUEST_MAGIC: &[u8; 5] = b"HBFQ1";
+const WRAPPED_REQUEST_MAGIC: &[u8; 5] = b"HBFQ2";
+const PEER_REQUEST_MAGIC: &[u8; 5] = b"HBFQ3";
 const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
+// Versioned negotiation: only HBFQ4 clients receive the HBFS2 index sidecar.
+// Older frames and their strict decoding remain unchanged; no mutation replay.
+const INDEX_REQUEST_MAGIC: &[u8; 5] = b"HBFQ4";
+const INDEX_RESPONSE_MAGIC: &[u8; 5] = b"HBFS2";
+// Q8/S6 negotiates complete original bytes, lexical ingress and two sticky reader facts. Q5/S3 only
+// represented the older newline unit and cannot authorize full reply transfer.
+const LEGACY_UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ5";
+const UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFQ8";
+const UNWRAP_RESPONSE_MAGIC: &[u8; 5] = b"HBFS6";
+// AppRole form metadata requires a mount-aware receiver. Dedicated request
+// framing makes older peers refuse before auth/plugin dispatch, including
+// during the explicitly enabled legacy rolling transition.
+const FORM_INDEX_REQUEST_MAGIC: &[u8; 5] = b"HBFA1";
+const FORM_UNWRAP_REQUEST_MAGIC: &[u8; 5] = b"HBFA2";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
 const MAX_PATH_BYTES: usize = 8192;
 const MAX_NAMESPACE_BYTES: usize = 512;
 const MAX_TOKEN_BYTES: usize = 16 * 1024;
+const MAX_CLIENT_CERT_CHAIN: usize = 8;
+const MAX_CLIENT_CERT_BYTES: usize = 64 * 1024;
+const MAX_CLUSTER_ID_BYTES: usize = 128;
+#[cfg(test)]
+const TEST_CLUSTER_ID: &str = "test-cluster";
+
+pub(crate) struct ForwardContext<'a> {
+    pub method: &'a str,
+    pub path: &'a str,
+    pub namespace: &'a str,
+    pub token: &'a str,
+    pub body: &'a Value,
+    pub wrap_ttl_seconds: Option<u64>,
+    pub origin_peer: Option<std::net::IpAddr>,
+    pub client_certificates: Option<&'a [Vec<u8>]>,
+    pub caller_deadline: Option<std::time::Instant>,
+}
+
+/// A closed request-side transport selection, never a raw-response authority.
+/// The Service selects this only from its caught-up native root SSH mount.
+/// The receiving Service must still capture its actual typed SSH response and
+/// complete the original publication, terminal receipt and audit checks.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) enum NativeOriginalReplyProfile {
+    RootSshPublicKey,
+}
+
+impl NativeOriginalReplyProfile {
+    fn validate_request(
+        self,
+        context: &ForwardContext<'_>,
+        has_ingress: bool,
+        has_lexical: bool,
+        has_completion_nonce: bool,
+    ) -> Result<(), String> {
+        match self {
+            Self::RootSshPublicKey => {
+                // This validates an already selected profile. A path suffix
+                // alone must never select Q8: ordinary native KV replies keep
+                // their existing Q9/S7 capacity, including keys with this name.
+                let canonical_public_path =
+                    context
+                        .path
+                        .strip_suffix("/public_key")
+                        .is_some_and(|prefix| {
+                            !prefix.is_empty()
+                                && prefix.split('/').all(|segment| {
+                                    !segment.is_empty() && !matches!(segment, "." | "..")
+                                })
+                        });
+                if context.method != "GET"
+                    || !context.namespace.is_empty()
+                    || !canonical_public_path
+                    || context.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+                    || !has_ingress
+                    || has_lexical
+                    || !has_completion_nonce
+                {
+                    return Err(
+                        "HA native SSH reply profile lacks its original root GET ingress".into(),
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+thread_local! {
+    static NATIVE_ORIGINAL_REPLY_PROFILE: std::cell::Cell<Option<NativeOriginalReplyProfile>> = const {
+        std::cell::Cell::new(None)
+    };
+}
+
+/// Request-local restriction installed only after peer, frame and direction
+/// validation. The active Service checks its actual synchronized mount before
+/// any ordinary immutable read can consume this specialized request profile.
+pub(crate) struct NativeOriginalReplyScope {
+    previous: Option<NativeOriginalReplyProfile>,
+}
+
+impl NativeOriginalReplyScope {
+    pub(crate) fn authenticated_forward(profile: Option<NativeOriginalReplyProfile>) -> Self {
+        Self {
+            previous: NATIVE_ORIGINAL_REPLY_PROFILE.with(|slot| slot.replace(profile)),
+        }
+    }
+}
+
+impl Drop for NativeOriginalReplyScope {
+    fn drop(&mut self) {
+        NATIVE_ORIGINAL_REPLY_PROFILE.with(|slot| slot.set(self.previous));
+    }
+}
+
+pub(crate) fn current_native_original_reply_profile() -> Option<NativeOriginalReplyProfile> {
+    NATIVE_ORIGINAL_REPLY_PROFILE.with(std::cell::Cell::get)
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ForwardRequest {
+    pub cluster_id: String,
     pub source: u64,
     pub target: u64,
     pub method: String,
     pub path: String,
     pub namespace: String,
     pub token: String,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub body: Value,
+    #[serde(default)]
+    pub wrap_ttl_seconds: Option<u64>,
+    #[serde(default)]
+    pub client_certificates: Option<Vec<Vec<u8>>>,
+    #[serde(default)]
+    pub origin_peer: Option<std::net::IpAddr>,
+    #[serde(default)]
+    pub completion_nonce: Option<[u8; 32]>,
+    #[serde(default)]
+    pub wrapped_reply_ingress: Option<[u8; 16]>,
+    #[serde(default)]
+    pub wrapped_reply_lexical: Option<crate::auth::LexicalJson>,
+    #[serde(default)]
+    pub native_original_reply_profile: Option<NativeOriginalReplyProfile>,
+    #[serde(default)]
+    pub logical_data: Option<crate::request_metadata::DataFrame>,
+    /// True only when an explicitly enabled one-step rolling transition
+    /// admitted the pre-cluster-bound HBFQ1 wire after mTLS peer identity.
+    #[serde(skip)]
+    pub legacy_v1: bool,
+    #[serde(skip)]
+    pub index_response: bool,
+    #[serde(skip)]
+    pub unwrap_response: bool,
+    /// Derived solely from Q9 or N1 after strict frame/nonce validation. Never JSON input.
+    #[serde(skip)]
+    pub native_index_response: bool,
 }
 
 impl fmt::Debug for ForwardRequest {
@@ -41,12 +203,35 @@ impl fmt::Debug for ForwardRequest {
 impl Drop for ForwardRequest {
     fn drop(&mut self) {
         self.token.zeroize();
+        if let Some(certificates) = &mut self.client_certificates {
+            certificates.iter_mut().for_each(Vec::zeroize);
+        }
+        erase_json(&mut self.body);
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct LegacyForwardRequest {
+    source: u64,
+    target: u64,
+    method: String,
+    path: String,
+    namespace: String,
+    token: String,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
+    body: Value,
+}
+
+impl Drop for LegacyForwardRequest {
+    fn drop(&mut self) {
+        self.token.zeroize();
         erase_json(&mut self.body);
     }
 }
 
 #[derive(Serialize)]
-struct ForwardRequestRef<'a> {
+struct LegacyForwardRequestRef<'a> {
     source: u64,
     target: u64,
     method: &'a str,
@@ -58,12 +243,113 @@ struct ForwardRequestRef<'a> {
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
+struct LegacyForwardResponse {
+    source: u64,
+    target: u64,
+    status: u16,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
+    body: Value,
+}
+
+impl Drop for LegacyForwardResponse {
+    fn drop(&mut self) {
+        erase_json(&mut self.body);
+    }
+}
+
+#[derive(Serialize)]
+struct ForwardRequestRef<'a> {
+    cluster_id: &'a str,
+    source: u64,
+    target: u64,
+    method: &'a str,
+    path: &'a str,
+    namespace: &'a str,
+    token: &'a str,
+    body: &'a Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    wrap_ttl_seconds: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    client_certificates: Option<&'a [Vec<u8>]>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    origin_peer: Option<std::net::IpAddr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    completion_nonce: Option<[u8; 32]>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    wrapped_reply_ingress: Option<[u8; 16]>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    wrapped_reply_lexical: Option<&'a crate::auth::LexicalJson>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    native_original_reply_profile: Option<NativeOriginalReplyProfile>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    logical_data: Option<&'a crate::request_metadata::DataFrame>,
+}
+
+#[derive(Clone, Copy, Deserialize, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) enum UnwrapFramingWire {
+    StoredJson,
+    // Only an admitted KV1 registry producer or its completed peer reply owns this.
+    StaticKv1Lease {
+        projection: crate::auth::StaticKv1LeaseProjection,
+    },
+    // Produced locally only by evaluated workflow output, or recovered from
+    // an original completed-forward MAC. No public request carrier creates it.
+    WorkflowJsonFailure {
+        output_digest: [u8; 32],
+        logical_digest: [u8; 32],
+    },
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct ForwardResponse {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unwrapped_json: Option<UnwrapFramingWire>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub raw_wrapped_reply: Option<crate::auth::StoredWrappedReply>,
+    pub cluster_id: String,
     pub source: u64,
     pub target: u64,
     pub status: u16,
+    #[serde(deserialize_with = "heptabao_domain::json::deserialize")]
     pub body: Value,
+    #[serde(
+        default,
+        skip_serializing_if = "crate::service::ResponseHeaders::is_empty"
+    )]
+    pub response_headers: crate::service::ResponseHeaders,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consistency_index: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub completion: Option<crate::ha_forward_completion::CompletionWire>,
 }
+
+// Q9/S7's response body has its own admitted 32 MiB decode entry. Borrowing the
+// original RawValue avoids an unbounded secret copy and measures actual body
+// tokens (including internal whitespace/escapes), not a normalized projection.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct NativeIndexResponseWire<'a> {
+    #[serde(default)]
+    unwrapped_json: Option<UnwrapFramingWire>,
+    cluster_id: String,
+    source: u64,
+    target: u64,
+    status: u16,
+    #[serde(borrow)]
+    body: &'a serde_json::value::RawValue,
+    #[serde(default)]
+    response_headers: crate::service::ResponseHeaders,
+    #[serde(default)]
+    consistency_index: Option<u64>,
+    #[serde(default)]
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
+}
+
+const _: () = assert!(
+    heptabao_domain::json::MAX_BOUNDED_HA_RESPONSE_BYTES == MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES
+);
 
 impl fmt::Debug for ForwardResponse {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -85,9 +371,561 @@ impl Drop for ForwardResponse {
 
 pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
     encoded.starts_with(REQUEST_MAGIC)
+        || encoded.starts_with(WRAPPED_REQUEST_MAGIC)
+        || encoded.starts_with(PEER_REQUEST_MAGIC)
+        || encoded.starts_with(INDEX_REQUEST_MAGIC)
+        || encoded.starts_with(NATIVE_INDEX_REQUEST_MAGIC)
+        || encoded.starts_with(NATIVE_KV2_WRITE_REQUEST_MAGIC)
+        || encoded.starts_with(UNWRAP_REQUEST_MAGIC)
+        || encoded.starts_with(FORM_INDEX_REQUEST_MAGIC)
+        || encoded.starts_with(FORM_UNWRAP_REQUEST_MAGIC)
+        || encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC)
 }
 
+#[cfg(test)]
 pub(crate) fn encode_request(
+    source: u64,
+    target: u64,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+) -> Result<Vec<u8>, String> {
+    encode_request_with_client_certificates(
+        source, target, method, path, namespace, token, body, None,
+    )
+}
+
+#[cfg(test)]
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_request_with_client_certificates(
+    source: u64,
+    target: u64,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
+    encode_request_for_cluster(
+        TEST_CLUSTER_ID,
+        source,
+        target,
+        method,
+        path,
+        namespace,
+        token,
+        body,
+        client_certificates,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+#[cfg(test)]
+pub(crate) fn encode_request_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
+    validate_direction(source, target)?;
+    validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
+    encode(
+        REQUEST_MAGIC,
+        &ForwardRequestRef {
+            cluster_id,
+            source,
+            target,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: None,
+            client_certificates,
+            origin_peer: None,
+            completion_nonce: None,
+            wrapped_reply_ingress: None,
+            wrapped_reply_lexical: None,
+            native_original_reply_profile: None,
+            logical_data: None,
+        },
+    )
+}
+
+#[cfg(test)]
+pub(crate) fn encode_wrapped_request(
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    ttl: u64,
+) -> Result<Vec<u8>, String> {
+    encode_wrapped_request_with_client_certificates(
+        direction, method, path, namespace, token, body, ttl, None,
+    )
+}
+
+#[cfg(test)]
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_wrapped_request_with_client_certificates(
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    ttl: u64,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
+    encode_wrapped_request_for_cluster(
+        TEST_CLUSTER_ID,
+        direction,
+        method,
+        path,
+        namespace,
+        token,
+        body,
+        ttl,
+        client_certificates,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+#[cfg(test)]
+pub(crate) fn encode_wrapped_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    ttl: u64,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
+    let (source, target) = direction;
+    validate_cluster_id(cluster_id)?;
+    validate_direction(source, target)?;
+    validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
+    if ttl > 32 * 24 * 3600 {
+        return Err("invalid HA wrapping TTL".into());
+    }
+    encode(
+        WRAPPED_REQUEST_MAGIC,
+        &ForwardRequestRef {
+            cluster_id,
+            source,
+            target,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: Some(ttl),
+            client_certificates,
+            origin_peer: None,
+            completion_nonce: None,
+            wrapped_reply_ingress: None,
+            wrapped_reply_lexical: None,
+            native_original_reply_profile: None,
+            logical_data: None,
+        },
+    )
+}
+
+/// HBFQ3 is accepted only through the peer-authenticated listener. The source
+/// node attests this socket IP together with the complete request inside mTLS.
+#[allow(clippy::too_many_arguments)]
+#[cfg(test)]
+pub(crate) fn encode_peer_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<&[Vec<u8>]>,
+    origin_peer: std::net::IpAddr,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
+    validate_direction(direction.0, direction.1)?;
+    validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
+    if wrap_ttl_seconds.is_some_and(|ttl| ttl > 32 * 24 * 3600) {
+        return Err("HA wrapping TTL is invalid".into());
+    }
+    encode(
+        PEER_REQUEST_MAGIC,
+        &ForwardRequestRef {
+            cluster_id,
+            source: direction.0,
+            target: direction.1,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            client_certificates,
+            origin_peer: Some(origin_peer),
+            completion_nonce: None,
+            wrapped_reply_ingress: None,
+            wrapped_reply_lexical: None,
+            native_original_reply_profile: None,
+            logical_data: None,
+        },
+    )
+}
+
+/// Index-capable forwarding keeps the complete authority tuple and explicitly
+/// negotiates response metadata. Unknown versions fail before handler admission.
+#[allow(clippy::too_many_arguments)]
+#[cfg(test)]
+pub(crate) fn encode_index_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<&[Vec<u8>]>,
+    origin_peer: Option<std::net::IpAddr>,
+) -> Result<Vec<u8>, String> {
+    encode_completed_index_request_for_cluster(
+        cluster_id,
+        direction,
+        &ForwardContext {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+            caller_deadline: None,
+        },
+        None,
+    )
+}
+
+pub(crate) fn encode_completed_index_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+) -> Result<Vec<u8>, String> {
+    encode_completed_request_for_profile(
+        cluster_id,
+        direction,
+        context,
+        completion_nonce,
+        false,
+        None,
+    )
+}
+
+fn encode_completed_request_for_profile(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+    native_capacity: bool,
+    native_original_reply_profile: Option<NativeOriginalReplyProfile>,
+) -> Result<Vec<u8>, String> {
+    let method = context.method;
+    let path = context.path;
+    let namespace = context.namespace;
+    let token = context.token;
+    let body = context.body;
+    let wrap_ttl_seconds = context.wrap_ttl_seconds;
+    let origin_peer = context.origin_peer;
+    let client_certificates = context.client_certificates;
+    validate_cluster_id(cluster_id)?;
+    validate_direction(direction.0, direction.1)?;
+    validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
+    let logical_data = crate::request_metadata::current(method, path, namespace, body)
+        .map_err(|_| "HA logical data belongs to another request")?;
+    let wrapped_reply_context = crate::auth::current_ingress();
+    let wrapped_reply_ingress = wrapped_reply_context
+        .as_ref()
+        .map(|context| context.attempt_id());
+    let wrapped_reply_lexical = wrapped_reply_context
+        .as_ref()
+        .and_then(|context| context.wrapping_body());
+    if let Some(context) = &wrapped_reply_context {
+        context
+            .lexical_request_binding(method, path, body)
+            .map_err(|_| "HA private lexical request binding differs")?;
+    }
+    if let Some(profile) = native_original_reply_profile {
+        if !native_capacity {
+            return Err("HA native original reply requires native completed forwarding".into());
+        }
+        profile.validate_request(
+            context,
+            wrapped_reply_ingress.is_some(),
+            wrapped_reply_lexical.is_some(),
+            completion_nonce.is_some(),
+        )?;
+    }
+    let full_reply = path == "sys/wrapping/unwrap"
+        || path.starts_with("sys/workflows/execute/")
+        || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) && wrapped_reply_ingress.is_some()
+        || wrapped_reply_lexical.is_some()
+        || native_original_reply_profile.is_some();
+    if full_reply && completion_nonce.is_none() {
+        return Err("HA unwrap requires original completed-request nonce".into());
+    }
+    if wrap_ttl_seconds.is_some_and(|ttl| ttl > 32 * 24 * 3600) {
+        return Err("HA wrapping TTL is invalid".into());
+    }
+    let approle_form = logical_data
+        .as_ref()
+        .is_some_and(crate::request_metadata::DataFrame::is_approle_form);
+    let request = ForwardRequestRef {
+        cluster_id,
+        source: direction.0,
+        target: direction.1,
+        method,
+        path,
+        namespace,
+        token,
+        body,
+        wrap_ttl_seconds,
+        client_certificates,
+        origin_peer,
+        completion_nonce,
+        native_original_reply_profile,
+        logical_data: logical_data.as_ref(),
+        wrapped_reply_ingress: if full_reply {
+            wrapped_reply_ingress
+        } else {
+            None
+        },
+        wrapped_reply_lexical: if full_reply {
+            wrapped_reply_lexical
+        } else {
+            None
+        },
+    };
+    if native_capacity && !approle_form && !full_reply {
+        return native_kv2_write::encode(&request);
+    }
+    encode(
+        match (approle_form, full_reply) {
+            (true, true) => FORM_UNWRAP_REQUEST_MAGIC,
+            (true, false) => FORM_INDEX_REQUEST_MAGIC,
+            (false, true) => UNWRAP_REQUEST_MAGIC,
+            (false, false) => INDEX_REQUEST_MAGIC,
+        },
+        &request,
+    )
+}
+
+/// Ordinary Q4 completed requests negotiate Q9 responses. Only a bounded
+/// canonical KV2 POST/PUT which exceeds the old frame uses the separate N1
+/// request profile. Dedicated original-byte, workflow and AppRole form
+/// protocols retain their existing versions and request bounds.
+pub(crate) fn encode_completed_request_with_native_index_capacity(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+) -> Result<Vec<u8>, String> {
+    if completion_nonce.is_none() {
+        return Err("HA native index capacity requires original completion nonce".into());
+    }
+    encode_completed_request_for_profile(
+        cluster_id,
+        direction,
+        context,
+        completion_nonce,
+        true,
+        None,
+    )
+}
+
+/// The only explicit addition to ordinary native completed forwarding. Old
+/// strict peers reject the new field before dispatch. No failed exchange is
+/// retried using another profile, and the original Q8/S6 bound is unchanged.
+pub(crate) fn encode_completed_request_with_native_original_reply(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+    profile: NativeOriginalReplyProfile,
+) -> Result<Vec<u8>, String> {
+    encode_completed_request_for_profile(
+        cluster_id,
+        direction,
+        context,
+        completion_nonce,
+        true,
+        Some(profile),
+    )
+}
+
+pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
+    if encoded.starts_with(b"HBFQ7") {
+        return Err("HA general stored reply requires Q8 before consumption".into());
+    }
+    if encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC) {
+        return Err("HA original stored reply requires Q7 before consumption".into());
+    }
+    let native_kv2_write = encoded.starts_with(NATIVE_KV2_WRITE_REQUEST_MAGIC);
+    let native_index_response = native_kv2_write || encoded.starts_with(NATIVE_INDEX_REQUEST_MAGIC);
+    let form_index = encoded.starts_with(FORM_INDEX_REQUEST_MAGIC);
+    let form_unwrap = encoded.starts_with(FORM_UNWRAP_REQUEST_MAGIC);
+    let approle_form_framing = form_index || form_unwrap;
+    let unwrap_response = encoded.starts_with(UNWRAP_REQUEST_MAGIC) || form_unwrap;
+    let index_response = native_index_response
+        || encoded.starts_with(INDEX_REQUEST_MAGIC)
+        || form_index
+        || unwrap_response;
+    let with_peer = encoded.starts_with(PEER_REQUEST_MAGIC);
+    let wrapped = encoded.starts_with(WRAPPED_REQUEST_MAGIC);
+    let magic = if native_index_response {
+        NATIVE_INDEX_REQUEST_MAGIC
+    } else if form_unwrap {
+        FORM_UNWRAP_REQUEST_MAGIC
+    } else if form_index {
+        FORM_INDEX_REQUEST_MAGIC
+    } else if unwrap_response {
+        UNWRAP_REQUEST_MAGIC
+    } else if index_response {
+        INDEX_REQUEST_MAGIC
+    } else if with_peer {
+        PEER_REQUEST_MAGIC
+    } else if wrapped {
+        WRAPPED_REQUEST_MAGIC
+    } else {
+        REQUEST_MAGIC
+    };
+    let mut request: ForwardRequest = if native_kv2_write {
+        native_kv2_write::decode(encoded)?
+    } else {
+        decode(magic, encoded)?
+    };
+    if request.completion_nonce.is_some() && !index_response {
+        return Err("HA completion nonce requires negotiated version".into());
+    }
+    request.index_response = index_response;
+    request.unwrap_response = unwrap_response;
+    request.native_index_response = native_index_response;
+    if native_index_response && request.completion_nonce.is_none() {
+        return Err("HA native index framing requires original completion nonce".into());
+    }
+    if unwrap_response && request.completion_nonce.is_none() {
+        return Err("HA unwrap framing requires original completion nonce".into());
+    }
+    if let Some(profile) = request.native_original_reply_profile {
+        if !encoded.starts_with(UNWRAP_REQUEST_MAGIC) || approle_form_framing {
+            return Err("HA native original reply requires its explicit Q8 profile".into());
+        }
+        profile.validate_request(
+            &ForwardContext {
+                method: &request.method,
+                path: &request.path,
+                namespace: &request.namespace,
+                token: &request.token,
+                body: &request.body,
+                wrap_ttl_seconds: request.wrap_ttl_seconds,
+                origin_peer: request.origin_peer,
+                client_certificates: request.client_certificates.as_deref(),
+                caller_deadline: None,
+            },
+            request.wrapped_reply_ingress.is_some(),
+            request.wrapped_reply_lexical.is_some(),
+            request.completion_nonce.is_some(),
+        )?;
+    }
+    let full_reply = request.path == "sys/wrapping/unwrap"
+        || request.path.starts_with("sys/workflows/execute/")
+        || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+            && request.wrapped_reply_ingress.is_some()
+        || request.wrapped_reply_lexical.is_some()
+        || request.native_original_reply_profile.is_some();
+    if let Some(lexical) = &request.wrapped_reply_lexical {
+        if !unwrap_response
+            || request.wrapped_reply_ingress.is_none()
+            || request.path != "sys/wrapping/wrap"
+            || !matches!(request.method.as_str(), "POST" | "PUT")
+        {
+            return Err("HA lexical payload is outside negotiated wrapping ingress".into());
+        }
+        lexical
+            .validate_wrapping_view(&request.body)
+            .map_err(|_| "HA lexical payload and complete request body differ")?;
+    }
+    if unwrap_response != full_reply || !unwrap_response && request.wrapped_reply_ingress.is_some()
+    {
+        return Err("HA original reply requires explicit negotiated version".into());
+    }
+    if !index_response
+        && (with_peer != request.origin_peer.is_some()
+            || !with_peer && wrapped != request.wrap_ttl_seconds.is_some())
+        || request
+            .wrap_ttl_seconds
+            .is_some_and(|ttl| ttl > 32 * 24 * 3600)
+    {
+        return Err("HA wrapping version or TTL mismatch".into());
+    }
+    validate_direction(request.source, request.target)?;
+    validate_cluster_id(&request.cluster_id)?;
+    validate_request_fields(
+        &request.method,
+        &request.path,
+        &request.namespace,
+        &request.token,
+    )?;
+    validate_client_certificates(request.client_certificates.as_deref())?;
+    if let Some(data) = &request.logical_data {
+        data.validate().map_err(str::to_owned)?;
+    }
+    if request
+        .logical_data
+        .as_ref()
+        .is_some_and(crate::request_metadata::DataFrame::is_approle_form)
+        != approle_form_framing
+    {
+        return Err("HA AppRole form requires mount-aware request framing".into());
+    }
+    Ok(request)
+}
+
+pub(crate) fn decode_request_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardRequest, String> {
+    validate_cluster_id(expected_cluster_id)?;
+    let request = decode_request(encoded)?;
+    if request.cluster_id != expected_cluster_id {
+        return Err("HA forward cluster identity is invalid".into());
+    }
+    Ok(request)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_legacy_request_for_transition(
     source: u64,
     target: u64,
     method: &str,
@@ -100,7 +938,7 @@ pub(crate) fn encode_request(
     validate_request_fields(method, path, namespace, token)?;
     encode(
         REQUEST_MAGIC,
-        &ForwardRequestRef {
+        &LegacyForwardRequestRef {
             source,
             target,
             method,
@@ -112,19 +950,333 @@ pub(crate) fn encode_request(
     )
 }
 
-pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
-    let request: ForwardRequest = decode(REQUEST_MAGIC, encoded)?;
-    validate_direction(request.source, request.target)?;
-    validate_request_fields(
-        &request.method,
-        &request.path,
-        &request.namespace,
-        &request.token,
-    )?;
-    Ok(request)
+/// Accept the pre-cluster-bound HBFQ1 shape only when the deployment has
+/// explicitly enabled the one-step rolling transition. The caller must have
+/// already authenticated the transport peer with the pinned mTLS identity.
+pub(crate) fn decode_request_for_cluster_compatible(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+    allow_legacy_v1: bool,
+) -> Result<ForwardRequest, String> {
+    match decode_request_for_cluster(encoded, expected_cluster_id) {
+        Ok(request) => Ok(request),
+        Err(strict_error) if allow_legacy_v1 && encoded.starts_with(REQUEST_MAGIC) => {
+            validate_cluster_id(expected_cluster_id)?;
+            let mut legacy: LegacyForwardRequest =
+                decode(REQUEST_MAGIC, encoded).map_err(|_| strict_error)?;
+            if legacy.path == "sys/wrapping/unwrap" {
+                return Err("legacy HA peer cannot negotiate unwrap framing".into());
+            }
+            validate_direction(legacy.source, legacy.target)?;
+            validate_request_fields(
+                &legacy.method,
+                &legacy.path,
+                &legacy.namespace,
+                &legacy.token,
+            )?;
+            Ok(ForwardRequest {
+                cluster_id: expected_cluster_id.to_owned(),
+                source: legacy.source,
+                target: legacy.target,
+                method: std::mem::take(&mut legacy.method),
+                path: std::mem::take(&mut legacy.path),
+                namespace: std::mem::take(&mut legacy.namespace),
+                token: std::mem::take(&mut legacy.token),
+                body: std::mem::take(&mut legacy.body),
+                wrap_ttl_seconds: None,
+                client_certificates: None,
+                origin_peer: None,
+                legacy_v1: true,
+                index_response: false,
+                unwrap_response: false,
+                native_index_response: false,
+                completion_nonce: None,
+                wrapped_reply_ingress: None,
+                wrapped_reply_lexical: None,
+                native_original_reply_profile: None,
+                logical_data: None,
+            })
+        }
+        Err(error) => Err(error),
+    }
 }
 
+#[cfg(test)]
 pub(crate) fn encode_response(
+    source: u64,
+    target: u64,
+    status: u16,
+    body: &Value,
+) -> Result<Vec<u8>, String> {
+    encode_response_for_cluster(TEST_CLUSTER_ID, source, target, status, body)
+}
+
+pub(crate) fn encode_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    status: u16,
+    body: &Value,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
+    validate_direction(source, target)?;
+    if !(100..=599).contains(&status) {
+        return Err("HA forward response status is invalid".into());
+    }
+    encode(
+        RESPONSE_MAGIC,
+        &ForwardResponse {
+            cluster_id: cluster_id.to_owned(),
+            source,
+            target,
+            status,
+            body: body.clone(),
+            unwrapped_json: None,
+            raw_wrapped_reply: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+            completion: None,
+        },
+    )
+}
+
+#[cfg(test)]
+pub(crate) fn encode_index_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+) -> Result<Vec<u8>, String> {
+    encode_completed_index_response_for_cluster(cluster_id, source, target, response, None)
+}
+
+pub(crate) fn encode_completed_index_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
+) -> Result<Vec<u8>, String> {
+    encode_completed_framed_response_for_cluster(
+        cluster_id, source, target, response, completion, false, false,
+    )
+}
+
+pub(crate) fn encode_completed_unwrap_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
+) -> Result<Vec<u8>, String> {
+    encode_completed_framed_response_for_cluster(
+        cluster_id, source, target, response, completion, true, false,
+    )
+}
+
+pub(crate) fn encode_completed_native_index_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
+) -> Result<Vec<u8>, String> {
+    encode_completed_framed_response_for_cluster(
+        cluster_id, source, target, response, completion, false, true,
+    )
+}
+
+fn encode_completed_framed_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
+    unwrap_response: bool,
+    native_index_response: bool,
+) -> Result<Vec<u8>, String> {
+    let static_kv1 = response
+        .unwrapped_json
+        .as_ref()
+        .is_some_and(|origin| origin.static_kv1_lease().is_some());
+    if response.unwrapped_json.is_some()
+        && ((!unwrap_response && !static_kv1)
+            || response.status != 200
+            || !response.body.is_object())
+    {
+        return Err("HA trusted origin requires its successful negotiated framing".into());
+    }
+    if let Some(stored) = response
+        .unwrapped_json
+        .as_ref()
+        .and_then(|origin| origin.stored_reply())
+    {
+        stored
+            .validate(&response.body)
+            .map_err(|_| "HA stored reply representation rejected")?;
+    }
+    validate_cluster_id(cluster_id)?;
+    validate_direction(source, target)?;
+    if !(100..=599).contains(&response.status) {
+        return Err("HA forward response status is invalid".into());
+    }
+    let consistency_index = response
+        .consistency_index
+        .as_ref()
+        .map(|index| {
+            index
+                .raft_index_for_cluster(cluster_id)
+                .ok_or_else(|| "HA response index cluster or value is invalid".to_owned())
+        })
+        .transpose()?;
+    let wire = ForwardResponse {
+        cluster_id: cluster_id.to_owned(),
+        source,
+        target,
+        status: response.status,
+        body: response.body.clone(),
+        unwrapped_json: response
+            .unwrapped_json
+            .as_ref()
+            .map(|origin| origin.framing_wire(&response.body))
+            .transpose()
+            .map_err(|_| "HA private response origin rejected")?,
+        raw_wrapped_reply: response
+            .unwrapped_json
+            .as_ref()
+            .and_then(|origin| origin.stored_reply().cloned()),
+        response_headers: response.response_headers.copy_for_forward(),
+        consistency_index,
+        completion,
+    };
+    if native_index_response {
+        encode_native_index_response(&wire)
+    } else {
+        encode(
+            if unwrap_response {
+                UNWRAP_RESPONSE_MAGIC
+            } else {
+                INDEX_RESPONSE_MAGIC
+            },
+            &wire,
+        )
+    }
+}
+
+pub(crate) fn decode_index_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    decode_framed_response_for_cluster(encoded, expected_cluster_id, false, false)
+}
+
+pub(crate) fn decode_unwrap_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    decode_framed_response_for_cluster(encoded, expected_cluster_id, true, false)
+}
+
+pub(crate) fn decode_native_index_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    decode_framed_response_for_cluster(encoded, expected_cluster_id, false, true)
+}
+
+fn decode_framed_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+    unwrap_response: bool,
+    native_index_response: bool,
+) -> Result<ForwardResponse, String> {
+    let response: ForwardResponse = if native_index_response {
+        decode_native_index_response(encoded)?
+    } else {
+        decode(
+            if unwrap_response {
+                UNWRAP_RESPONSE_MAGIC
+            } else {
+                INDEX_RESPONSE_MAGIC
+            },
+            encoded,
+        )?
+    };
+    let static_kv1 = matches!(
+        response.unwrapped_json,
+        Some(UnwrapFramingWire::StaticKv1Lease { .. })
+    );
+    if response.unwrapped_json.is_some()
+        && ((!unwrap_response && !static_kv1)
+            || response.status != 200
+            || !response.body.is_object())
+    {
+        return Err("HA typed origin is outside its negotiated successful reply".into());
+    }
+    if let Some(stored) = &response.raw_wrapped_reply {
+        if !unwrap_response || response.unwrapped_json.is_none() || response.status != 200 {
+            return Err("HA original stored reply is outside negotiated consumption".into());
+        }
+        stored
+            .validate(&response.body)
+            .map_err(|_| "HA stored reply representation rejected")?;
+    }
+    if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json
+        && (response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err())
+    {
+        return Err("HA signed KV1 static reply projection differs".into());
+    }
+    if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) =
+        response.unwrapped_json
+        && (response.raw_wrapped_reply.is_some()
+            || response.body != crate::workflow_runtime::FailedOutput::logical()
+            || serde_json::to_vec(&response.body).is_err()
+            || serde_json::to_vec(&response.body)
+                .is_ok_and(|bytes| crate::crypto::digest(&bytes) != logical_digest))
+    {
+        return Err("HA workflow serialization failure projection differs".into());
+    }
+    validate_direction(response.source, response.target)?;
+    validate_cluster_id(&response.cluster_id)?;
+    if response.cluster_id != expected_cluster_id || !(100..=599).contains(&response.status) {
+        return Err("HA index response identity or status is invalid".into());
+    }
+    Ok(response)
+}
+
+#[cfg(test)]
+pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
+    let response: ForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
+    if response.unwrapped_json.is_some()
+        || response.raw_wrapped_reply.is_some()
+        || response.consistency_index.is_some()
+        || response.completion.is_some()
+        || !response.response_headers.is_empty()
+    {
+        return Err("HA response index requires negotiated version".into());
+    }
+    validate_direction(response.source, response.target)?;
+    validate_cluster_id(&response.cluster_id)?;
+    if !(100..=599).contains(&response.status) {
+        return Err("HA forward response status is invalid".into());
+    }
+    Ok(response)
+}
+
+#[cfg(test)]
+pub(crate) fn decode_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    validate_cluster_id(expected_cluster_id)?;
+    let response = decode_response(encoded)?;
+    if response.cluster_id != expected_cluster_id {
+        return Err("HA forward response cluster identity is invalid".into());
+    }
+    Ok(response)
+}
+
+pub(crate) fn encode_legacy_response_for_transition(
     source: u64,
     target: u64,
     status: u16,
@@ -136,7 +1288,7 @@ pub(crate) fn encode_response(
     }
     encode(
         RESPONSE_MAGIC,
-        &ForwardResponse {
+        &LegacyForwardResponse {
             source,
             target,
             status,
@@ -145,13 +1297,28 @@ pub(crate) fn encode_response(
     )
 }
 
-pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
-    let response: ForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
+pub(crate) fn decode_legacy_response_for_transition(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    validate_cluster_id(expected_cluster_id)?;
+    let mut response: LegacyForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
     validate_direction(response.source, response.target)?;
     if !(100..=599).contains(&response.status) {
         return Err("HA forward response status is invalid".into());
     }
-    Ok(response)
+    Ok(ForwardResponse {
+        cluster_id: expected_cluster_id.to_owned(),
+        source: response.source,
+        target: response.target,
+        status: response.status,
+        body: std::mem::take(&mut response.body),
+        unwrapped_json: None,
+        raw_wrapped_reply: None,
+        response_headers: Default::default(),
+        consistency_index: None,
+        completion: None,
+    })
 }
 
 fn validate_direction(source: u64, target: u64) -> Result<(), String> {
@@ -159,6 +1326,26 @@ fn validate_direction(source: u64, target: u64) -> Result<(), String> {
         return Err("HA forward direction is invalid".into());
     }
     Ok(())
+}
+
+fn validate_cluster_id(cluster_id: &str) -> Result<(), String> {
+    if cluster_id.is_empty() || cluster_id.len() > MAX_CLUSTER_ID_BYTES {
+        return Err("HA cluster identity is outside bounds".into());
+    }
+    if cluster_id
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+    {
+        return Ok(());
+    }
+    let decoded = STANDARD
+        .decode(cluster_id)
+        .map_err(|_| "HA cluster identity is invalid")?;
+    if decoded.len() == 16 && STANDARD.encode(decoded) == cluster_id {
+        Ok(())
+    } else {
+        Err("HA cluster identity is invalid".into())
+    }
 }
 
 fn validate_request_fields(
@@ -171,7 +1358,7 @@ fn validate_request_fields(
         || method.len() > MAX_METHOD_BYTES
         || !matches!(
             method,
-            "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
+            "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD" | "HELP"
         )
         || path.is_empty()
         || path.len() > MAX_PATH_BYTES
@@ -179,6 +1366,21 @@ fn validate_request_fields(
         || token.len() > MAX_TOKEN_BYTES
     {
         return Err("HA forward request is outside bounded API shape".into());
+    }
+    Ok(())
+}
+
+fn validate_client_certificates(certificates: Option<&[Vec<u8>]>) -> Result<(), String> {
+    let Some(certificates) = certificates else {
+        return Ok(());
+    };
+    if certificates.is_empty()
+        || certificates.len() > MAX_CLIENT_CERT_CHAIN
+        || certificates
+            .iter()
+            .any(|certificate| certificate.is_empty() || certificate.len() > MAX_CLIENT_CERT_BYTES)
+    {
+        return Err("HA client certificate chain is outside bounds".into());
     }
     Ok(())
 }
@@ -192,6 +1394,104 @@ fn encode<T: Serialize>(magic: &[u8; 5], value: &T) -> Result<Vec<u8>, String> {
     let length = u32::try_from(json.len()).map_err(|_| "HA forward frame is oversized")?;
     let mut encoded = Vec::with_capacity(9 + json.len());
     encoded.extend_from_slice(magic);
+    encoded.extend_from_slice(&length.to_be_bytes());
+    encoded.extend_from_slice(&json);
+    Ok(encoded)
+}
+
+fn native_index_body_size(value: &Value) -> Result<usize, String> {
+    struct Counter {
+        bytes: usize,
+    }
+    impl std::io::Write for Counter {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.bytes = self
+                .bytes
+                .checked_add(bytes.len())
+                .filter(|size| *size <= MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES)
+                .ok_or_else(|| std::io::Error::other("native index body exceeds response bound"))?;
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    // Count the actual JSON representation, including escapes and Base64 text;
+    // decoded string/record length is not a wire-capacity proof.
+    let mut counter = Counter { bytes: 0 };
+    serde_json::to_writer(&mut counter, value)
+        .map_err(|_| "HA native index body exceeds response bound")?;
+    Ok(counter.bytes)
+}
+
+fn decode_native_index_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
+    if encoded.len() < 9
+        || encoded.len() > MAX_NATIVE_INDEX_RESPONSE_FRAME_BYTES
+        || &encoded[..5] != NATIVE_INDEX_RESPONSE_MAGIC
+    {
+        return Err("HA native index frame is invalid".into());
+    }
+    let json_length = u32::from_be_bytes(
+        encoded[5..9]
+            .try_into()
+            .map_err(|_| "HA native index frame length is invalid")?,
+    ) as usize;
+    if encoded.len() != 9 + json_length {
+        return Err("HA native index frame length does not match payload".into());
+    }
+    let wire: NativeIndexResponseWire<'_> = serde_json::from_slice(&encoded[9..])
+        .map_err(|_| "HA native index frame JSON is invalid")?;
+    let raw_body_bytes = wire.body.get().len();
+    if raw_body_bytes > MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES
+        || encoded
+            .len()
+            .checked_sub(raw_body_bytes)
+            .is_none_or(|metadata| metadata > MAX_NATIVE_INDEX_RESPONSE_METADATA_BYTES)
+    {
+        return Err("HA native index raw body or metadata exceeds response bound".into());
+    }
+    // Keep a typed zeroizing owner before checking canonical output growth.
+    // The old ForwardResponse serde entry remains 16 MiB for every old protocol.
+    let response = ForwardResponse {
+        cluster_id: wire.cluster_id,
+        source: wire.source,
+        target: wire.target,
+        status: wire.status,
+        body: heptabao_domain::json::decode_bounded_ha_response_raw(wire.body)
+            .map_err(|_| "HA native index body JSON is invalid")?,
+        response_headers: wire.response_headers,
+        consistency_index: wire.consistency_index,
+        completion: wire.completion,
+        unwrapped_json: wire.unwrapped_json,
+        raw_wrapped_reply: None,
+    };
+    if response.unwrapped_json.is_some()
+        && !matches!(
+            response.unwrapped_json,
+            Some(UnwrapFramingWire::StaticKv1Lease { .. })
+        )
+    {
+        return Err("HA native index forbids non-static-KV1 private origins".into());
+    }
+    native_index_body_size(&response.body)?;
+    Ok(response)
+}
+
+fn encode_native_index_response(response: &ForwardResponse) -> Result<Vec<u8>, String> {
+    let body_bytes = native_index_body_size(&response.body)?;
+    // The bounded serializer wipes every grown allocation, including on failure.
+    let json = crate::secret_serde::to_vec(response, MAX_NATIVE_INDEX_RESPONSE_FRAME_BYTES - 9)
+        .map_err(|_| "HA native index frame exceeds response bound")?;
+    let wire_bytes = 9 + json.len();
+    if wire_bytes
+        .checked_sub(body_bytes)
+        .is_none_or(|metadata| metadata > MAX_NATIVE_INDEX_RESPONSE_METADATA_BYTES)
+    {
+        return Err("HA native index metadata exceeds response bound".into());
+    }
+    let length = u32::try_from(json.len()).map_err(|_| "HA native index frame is oversized")?;
+    let mut encoded = Vec::with_capacity(wire_bytes);
+    encoded.extend_from_slice(NATIVE_INDEX_RESPONSE_MAGIC);
     encoded.extend_from_slice(&length.to_be_bytes());
     encoded.extend_from_slice(&json);
     Ok(encoded)
@@ -224,6 +1524,304 @@ fn erase_json(value: &mut Value) {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn raw113_actual_q8_lexical_shadow_binding_oldpeer_nonce_and_s6_immutable_reply()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let lexical = crate::auth::LexicalJson::parse_listener(br#"{"number":1.0,"large":1e309}"#)?;
+        let body = lexical.wrapping_view()?;
+        let _ingress =
+            crate::auth::IngressReplyScope::listener_wrapping(&[0x93; 16], Some(lexical));
+        let context = ForwardContext {
+            method: "POST",
+            path: "sys/wrapping/wrap",
+            namespace: "",
+            token: "root-fixture",
+            body: &body,
+            wrap_ttl_seconds: Some(60),
+            origin_peer: None,
+            client_certificates: None,
+            caller_deadline: None,
+        };
+        assert!(
+            encode_completed_index_request_for_cluster("raw113-ha", (1, 2), &context, None)
+                .is_err()
+        );
+        let encoded = encode_completed_index_request_for_cluster(
+            "raw113-ha",
+            (1, 2),
+            &context,
+            Some([7; 32]),
+        )?;
+        assert!(encoded.starts_with(b"HBFQ8"));
+        let admitted = decode_request_for_cluster(&encoded, "raw113-ha")?;
+        assert!(admitted.wrapped_reply_lexical.is_some() && admitted.unwrap_response);
+        assert_eq!(admitted.wrapped_reply_ingress, Some([0x93; 16]));
+        assert!(decode_request_for_cluster(&encoded, "wrong-cluster").is_err());
+        for magic in [b"HBFQ4", b"HBFQ5", b"HBFQ6", b"HBFQ7"] {
+            let mut old = encoded.clone();
+            old[..5].copy_from_slice(magic);
+            assert!(decode_request_for_cluster(&old, "raw113-ha").is_err());
+        }
+        let mut wire: Value = serde_json::from_slice(&encoded[9..])?;
+        for mutation in 0..4 {
+            let mut changed = wire.clone();
+            match mutation {
+                0 => changed["wrapped_reply_ingress"] = serde_json::Value::Null,
+                1 => changed["completion_nonce"] = serde_json::Value::Null,
+                2 => changed["body"]["number"] = json!("1.0"),
+                _ => changed["path"] = json!("auth/token/create"),
+            }
+            assert!(
+                decode_request_for_cluster(&encode(UNWRAP_REQUEST_MAGIC, &changed)?, "raw113-ha")
+                    .is_err()
+            );
+            erase_json(&mut changed);
+        }
+        let (mut auth, root) = crate::auth::AuthState::bootstrap(100)?;
+        let admin = auth.authenticate(&root, 100)?;
+        let wrapped =
+            auth.wrap_logical_response("", "sys/wrapping/wrap", 60, &json!({"data":body}), 100)?;
+        let token = wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?;
+        let _later = crate::auth::IngressReplyScope::listener(&[0x94; 16]);
+        let unwrapped = auth.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":token}),
+            100,
+        )?;
+        let response = crate::Response {
+            status: unwrapped.status,
+            body: unwrapped.body,
+            unwrapped_json: unwrapped.unwrapped_json,
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        let encoded =
+            encode_completed_unwrap_response_for_cluster("raw113-ha", 2, 1, &response, None)?;
+        assert!(encoded.starts_with(b"HBFS6"));
+        let received = decode_unwrap_response_for_cluster(&encoded, "raw113-ha")?;
+        assert_eq!(
+            crate::ha_forward_completion::response_digest(&response)?,
+            crate::ha_forward_completion::wire_response_digest(&received)?
+        );
+        for magic in [b"HBFS3", b"HBFS4", b"HBFS5"] {
+            let mut old = encoded.clone();
+            old[..5].copy_from_slice(magic);
+            assert!(decode_unwrap_response_for_cluster(&old, "raw113-ha").is_err());
+        }
+        let mut changed = serde_json::to_value(&received)?;
+        changed["raw_wrapped_reply"]["kind"]["general-json-envelope-v1"]["lexical_data"] =
+            json!({"type":"number","value":"NaN"});
+        assert!(
+            decode_unwrap_response_for_cluster(
+                &encode(UNWRAP_RESPONSE_MAGIC, &changed)?,
+                "raw113-ha"
+            )
+            .is_err()
+        );
+        erase_json(&mut changed);
+        erase_json(&mut wire);
+        Ok(())
+    }
+    #[test]
+    fn raw113_q8_preconsume_and_s6_complete_payload_digest()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (mut auth, root) = crate::auth::AuthState::bootstrap(100)?;
+        let admin = auth.authenticate(&root, 100)?;
+        let _ingress = crate::auth::IngressReplyScope::listener(&[0x91; 16]);
+        let issued = auth.wrap_logical_response(
+            "",
+            "sys/wrapping/wrap",
+            60,
+            &json!({"data":{"stable":"<>&"}}),
+            100,
+        )?;
+        let token = issued.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?
+            .to_owned();
+        let context = ForwardContext {
+            method: "POST",
+            path: "sys/wrapping/unwrap",
+            namespace: "",
+            token: &root,
+            body: &Value::Null,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+            caller_deadline: None,
+        };
+        let request = encode_completed_index_request_for_cluster(
+            "raw110-ha",
+            (1, 2),
+            &context,
+            Some([5; 32]),
+        )?;
+        assert!(request.starts_with(b"HBFQ8"));
+        for old_magic in [b"HBFQ5", b"HBFQ6"] {
+            let mut downgraded = request.clone();
+            downgraded[..5].copy_from_slice(old_magic);
+            assert!(decode_request_for_cluster(&downgraded, "raw110-ha").is_err());
+            assert!(auth.is_wrapping_token(&token));
+        }
+        // Refusal occurred before any Auth dispatch or token consume.
+        assert!(auth.is_wrapping_token(&token));
+        let consumed = auth.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":token}),
+            100,
+        )?;
+        let response = crate::Response {
+            unwrapped_json: consumed.unwrapped_json,
+            status: consumed.status,
+            body: consumed.body,
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        let bytes =
+            encode_completed_unwrap_response_for_cluster("raw110-ha", 2, 1, &response, None)?;
+        assert!(bytes.starts_with(b"HBFS6"));
+        let received = decode_unwrap_response_for_cluster(&bytes, "raw110-ha")?;
+        assert!(received.raw_wrapped_reply.is_some());
+        assert!(
+            crate::ha_forward_completion::response_digest(&response)?
+                == crate::ha_forward_completion::wire_response_digest(&received)?
+        );
+        for old_magic in [b"HBFS3", b"HBFS4", b"HBFS5"] {
+            let mut lower = bytes.clone();
+            lower[..5].copy_from_slice(old_magic);
+            assert!(decode_unwrap_response_for_cluster(&lower, "raw110-ha").is_err());
+        }
+        let mut tampered = serde_json::to_value(&received)?;
+        tampered["raw_wrapped_reply"]["digest"] = json!(vec![9_u8; 32]);
+        assert!(
+            decode_unwrap_response_for_cluster(
+                &encode(UNWRAP_RESPONSE_MAGIC, &tampered)?,
+                "raw110-ha"
+            )
+            .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn trusted_unwrap_framing_negotiation_rejects_downgrade_and_unknown_origin()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (mut auth, root) = crate::auth::AuthState::bootstrap(100)?;
+        let admin = auth.authenticate(&root, 100)?;
+        let wrapped = auth.wrap_response(
+            "",
+            "sys/wrapping/wrap",
+            60,
+            &json!({"data":{"synthetic":"HA-origin"}}),
+            100,
+        )?;
+        let token = wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?
+            .to_owned();
+        let consumed = auth.wrapping_route(
+            Some(&admin),
+            "",
+            "POST",
+            "sys/wrapping/unwrap",
+            &json!({"token":token}),
+            100,
+        )?;
+        assert!(consumed.unwrapped_json.is_some());
+        let response = crate::Response {
+            unwrapped_json: consumed.unwrapped_json,
+            response_headers: Default::default(),
+            consistency_index: None,
+            status: consumed.status,
+            body: consumed.body,
+        };
+        let context = ForwardContext {
+            method: "POST",
+            path: "sys/wrapping/unwrap",
+            namespace: "",
+            token: &root,
+            body: &Value::Null,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+            caller_deadline: None,
+        };
+        let mut request = encode_completed_index_request_for_cluster(
+            "unwrap-ha",
+            (1, 2),
+            &context,
+            Some([4; 32]),
+        )?;
+        assert!(request.starts_with(UNWRAP_REQUEST_MAGIC));
+        let admitted = decode_request_for_cluster(&request, "unwrap-ha")?;
+        assert!(admitted.unwrap_response && admitted.index_response);
+        request[..5].copy_from_slice(INDEX_REQUEST_MAGIC);
+        assert!(decode_request_for_cluster(&request, "unwrap-ha").is_err());
+        let legacy = encode_legacy_request_for_transition(
+            1,
+            2,
+            "POST",
+            "sys/wrapping/unwrap",
+            "",
+            &root,
+            &Value::Null,
+        )?;
+        assert!(decode_request_for_cluster_compatible(&legacy, "unwrap-ha", true).is_err());
+        assert!(
+            encode_completed_index_response_for_cluster("unwrap-ha", 2, 1, &response, None)
+                .is_err()
+        );
+        let bytes =
+            encode_completed_unwrap_response_for_cluster("unwrap-ha", 2, 1, &response, None)?;
+        assert!(bytes.starts_with(UNWRAP_RESPONSE_MAGIC));
+        assert!(decode_index_response_for_cluster(&bytes, "unwrap-ha").is_err());
+        let received = decode_unwrap_response_for_cluster(&bytes, "unwrap-ha")?;
+        assert!(received.unwrapped_json.is_some());
+        assert_eq!(
+            crate::ha_forward_completion::response_digest(&response)?,
+            crate::ha_forward_completion::wire_response_digest(&received)?
+        );
+        let mut unknown = serde_json::to_value(&received)?;
+        unknown["unwrapped_json"] = json!("arbitrary-sdk-value");
+        assert!(
+            decode_unwrap_response_for_cluster(
+                &encode(UNWRAP_RESPONSE_MAGIC, &unknown)?,
+                "unwrap-ha"
+            )
+            .is_err()
+        );
+        let mut forged = serde_json::to_value(&received)?;
+        forged["status"] = json!(503);
+        assert!(
+            decode_unwrap_response_for_cluster(
+                &encode(UNWRAP_RESPONSE_MAGIC, &forged)?,
+                "unwrap-ha"
+            )
+            .is_err()
+        );
+        let mut old = serde_json::to_value(&received)?;
+        old.as_object_mut()
+            .ok_or("object")?
+            .remove("unwrapped_json");
+        let ordinary =
+            decode_index_response_for_cluster(&encode(INDEX_RESPONSE_MAGIC, &old)?, "unwrap-ha")?;
+        assert!(ordinary.unwrapped_json.is_none());
+        assert_ne!(
+            crate::ha_forward_completion::wire_response_digest(&ordinary)?,
+            crate::ha_forward_completion::wire_response_digest(&received)?
+        );
+        Ok(())
+    }
+
     use super::*;
     use serde_json::json;
 
@@ -242,11 +1840,74 @@ mod tests {
         assert_eq!(request.source, 1);
         assert_eq!(request.target, 2);
         assert_eq!(request.method, "POST");
+        assert_eq!(request.cluster_id, TEST_CLUSTER_ID);
 
         let response = encode_response(2, 1, 200, &json!({"data":{"version":1}}))?;
         let response = decode_response(&response)?;
         assert_eq!(response.source, 2);
         assert_eq!(response.target, 1);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.cluster_id, TEST_CLUSTER_ID);
+        Ok(())
+    }
+
+    #[test]
+    fn cross_cluster_forward_frames_are_rejected() -> Result<(), String> {
+        let request = encode_request_for_cluster(
+            "cluster-a",
+            1,
+            2,
+            "GET",
+            "secret/data/demo",
+            "",
+            "token",
+            &json!({}),
+            None,
+        )?;
+        assert!(decode_request_for_cluster(&request, "cluster-a").is_ok());
+        assert!(decode_request_for_cluster(&request, "cluster-b").is_err());
+
+        let response = encode_response_for_cluster("cluster-a", 2, 1, 200, &json!({}))?;
+        assert!(decode_response_for_cluster(&response, "cluster-a").is_ok());
+        assert!(decode_response_for_cluster(&response, "cluster-b").is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn legacy_v1_transition_is_explicit_and_cannot_bypass_cluster_binding() -> Result<(), String> {
+        let legacy = encode_legacy_request_for_transition(
+            1,
+            2,
+            "GET",
+            "secret/data/demo",
+            "",
+            "synthetic-token",
+            &json!({}),
+        )?;
+        assert!(decode_request_for_cluster(&legacy, "cluster-a").is_err());
+        assert!(decode_request_for_cluster_compatible(&legacy, "cluster-a", false).is_err());
+        let admitted = decode_request_for_cluster_compatible(&legacy, "cluster-a", true)?;
+        assert!(admitted.legacy_v1);
+        assert_eq!(admitted.cluster_id, "cluster-a");
+
+        let foreign = encode_request_for_cluster(
+            "cluster-b",
+            1,
+            2,
+            "GET",
+            "secret/data/demo",
+            "",
+            "synthetic-token",
+            &json!({}),
+            None,
+        )?;
+        assert!(decode_request_for_cluster_compatible(&foreign, "cluster-a", true).is_err());
+
+        let legacy_response =
+            encode_legacy_response_for_transition(2, 1, 200, &json!({"ok":true}))?;
+        assert!(decode_response_for_cluster(&legacy_response, "cluster-a").is_err());
+        let response = decode_legacy_response_for_transition(&legacy_response, "cluster-a")?;
+        assert_eq!(response.cluster_id, "cluster-a");
         assert_eq!(response.status, 200);
         Ok(())
     }
@@ -310,3 +1971,263 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod wrapping_frame_tests {
+    use super::*;
+    use serde_json::json;
+    #[test]
+    fn wrapped_forwarding_binds_options_and_rejects_version_downgrade() -> Result<(), String> {
+        let frame = encode_wrapped_request(
+            (1, 2),
+            "GET",
+            "secret/data/a",
+            "",
+            "synthetic",
+            &json!({}),
+            60,
+        )?;
+        let decoded = decode_request(&frame)?;
+        assert_eq!(decoded.wrap_ttl_seconds, Some(60));
+        assert!(is_forward_request(&frame));
+        let mut changed = frame.clone();
+        changed[..5].copy_from_slice(REQUEST_MAGIC);
+        assert!(decode_request(&changed).is_err());
+        let legacy = encode_request(1, 2, "GET", "secret/data/a", "", "synthetic", &json!({}))?;
+        assert!(decode_request(&legacy)?.wrap_ttl_seconds.is_none());
+        let zero = encode_wrapped_request(
+            (1, 2),
+            "GET",
+            "secret/data/a",
+            "",
+            "synthetic",
+            &json!({}),
+            0,
+        )?;
+        assert_eq!(decode_request(&zero)?.wrap_ttl_seconds, Some(0));
+        assert_ne!(zero, legacy);
+        let mut zero_downgrade = zero;
+        zero_downgrade[..5].copy_from_slice(REQUEST_MAGIC);
+        assert!(decode_request(&zero_downgrade).is_err());
+        let mut changed = legacy;
+        changed[..5].copy_from_slice(WRAPPED_REQUEST_MAGIC);
+        assert!(decode_request(&changed).is_err());
+        assert!(
+            encode_wrapped_request(
+                (1, 2),
+                "GET",
+                "secret/data/a",
+                "",
+                "synthetic",
+                &json!({}),
+                32 * 24 * 3600 + 1
+            )
+            .is_err()
+        );
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod peer_frame_tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn original_peer_is_typed_versioned_and_bound_with_wrapping_and_cluster() -> Result<(), String>
+    {
+        for peer in ["127.0.0.2", "2001:db8::2"] {
+            let peer: std::net::IpAddr = peer.parse().map_err(|_| "bad test peer")?;
+            for ttl in [None, Some(0), Some(60)] {
+                let frame = encode_peer_request_for_cluster(
+                    TEST_CLUSTER_ID,
+                    (1, 2),
+                    "POST",
+                    "auth/token/renew-self",
+                    "",
+                    "synthetic-token",
+                    &json!({}),
+                    ttl,
+                    None,
+                    peer,
+                )?;
+                assert!(frame.starts_with(PEER_REQUEST_MAGIC));
+                assert!(is_forward_request(&frame));
+                let request = decode_request_for_cluster(&frame, TEST_CLUSTER_ID)?;
+                assert_eq!(request.origin_peer, Some(peer));
+                assert_eq!(request.wrap_ttl_seconds, ttl);
+                assert_eq!((request.source, request.target), (1, 2));
+                assert!(decode_request_for_cluster(&frame, "other-cluster").is_err());
+                for magic in [REQUEST_MAGIC, WRAPPED_REQUEST_MAGIC] {
+                    let mut downgraded = frame.clone();
+                    downgraded[..5].copy_from_slice(magic);
+                    assert!(decode_request(&downgraded).is_err());
+                }
+                let mut value: Value =
+                    serde_json::from_slice(&frame[9..]).map_err(|_| "bad test frame")?;
+                value
+                    .as_object_mut()
+                    .ok_or("not an object")?
+                    .remove("origin_peer");
+                assert!(decode_request(&encode(PEER_REQUEST_MAGIC, &value)?).is_err());
+                value["origin_peer"] = json!("localhost");
+                assert!(decode_request(&encode(PEER_REQUEST_MAGIC, &value)?).is_err());
+            }
+        }
+        let old = encode_request(1, 2, "GET", "secret/data/a", "", "synthetic", &json!({}))?;
+        assert!(decode_request(&old)?.origin_peer.is_none());
+        let mut falsely_upgraded = old;
+        falsely_upgraded[..5].copy_from_slice(PEER_REQUEST_MAGIC);
+        assert!(decode_request(&falsely_upgraded).is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod consistency270_tests {
+    use super::*;
+    #[test]
+    fn consistency270_forward_roundtrip_negotiates_index_and_retains_authority_tuple()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let bytes = encode_index_request_for_cluster(
+            "synthetic",
+            (1, 2),
+            "POST",
+            "secret/data/key",
+            "team",
+            "synthetic-token",
+            &serde_json::json!({"data":{"fixture":true}}),
+            Some(30),
+            None,
+            Some("127.0.0.1".parse()?),
+        )?;
+        assert!(is_forward_request(&bytes));
+        let request = decode_request_for_cluster(&bytes, "synthetic")?;
+        assert!(request.index_response && !request.legacy_v1);
+        assert_eq!(request.origin_peer, Some("127.0.0.1".parse()?));
+        assert_eq!(request.wrap_ttl_seconds, Some(30));
+        assert_eq!(request.namespace, "team");
+        assert_eq!(request.token, "synthetic-token");
+        assert!(decode_request_for_cluster(&bytes, "another-cluster").is_err());
+        let response = crate::Response {
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            status: 204,
+            body: Value::Null,
+            consistency_index: crate::http::consistency::IndexValue::for_raft("synthetic", 42)
+                .wire(),
+        };
+        let bytes = encode_index_response_for_cluster("synthetic", 2, 1, &response)?;
+        assert!(decode_response_for_cluster(&bytes, "synthetic").is_err());
+        let received = decode_index_response_for_cluster(&bytes, "synthetic")?;
+        assert_eq!(received.consistency_index, Some(42));
+        assert_eq!(received.status, 204);
+        assert!(decode_index_response_for_cluster(&bytes, "another-cluster").is_err());
+        assert!(encode_index_response_for_cluster("another-cluster", 2, 1, &response).is_err());
+        let old = encode_response_for_cluster("synthetic", 2, 1, 204, &Value::Null)?;
+        assert!(
+            decode_response_for_cluster(&old, "synthetic")?
+                .consistency_index
+                .is_none()
+        );
+        assert!(decode_index_response_for_cluster(&old, "synthetic").is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod sdk_response_header_tests {
+    use super::*;
+    #[test]
+    fn sdk_headers95_negotiated_forward_multivalue_and_bounded_metadata()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut response = crate::Response {
+            status: 200,
+            body: serde_json::json!({"data":{"marker":"same-approved-response"}}),
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        response.response_headers = crate::service::ResponseHeaders::from_sdk(Some(&serde_json::json!({"X-SDK-One":["one"],"x-sdk-multi":["first","second"],"X-SDK-Blocked":["withheld"]})), &["X-SDK-One".into(),"X-SDK-Multi".into()]).map_err(|()| "response header fixture")?;
+        let frame = encode_index_response_for_cluster("sdk-forward95", 1, 2, &response)?;
+        let received = decode_index_response_for_cluster(&frame, "sdk-forward95")?;
+        assert_eq!(
+            (received.source, received.target, received.status),
+            (1, 2, 200)
+        );
+        assert_eq!(received.body, response.body);
+        let mut headers = Vec::new();
+        received.response_headers.write(&mut headers)?;
+        assert_eq!(
+            std::str::from_utf8(&headers)?,
+            "X-Sdk-Multi: first\r\nX-Sdk-Multi: second\r\nX-Sdk-One: one\r\n"
+        );
+        let mut merged = crate::Response {
+            status: 200,
+            body: serde_json::json!({"data":{"marker":"case-variant-merged"}}),
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        merged.response_headers = crate::service::ResponseHeaders::from_sdk(
+            Some(&serde_json::json!({
+                "X-SDK-Variant":vec!["first";32], "x-sdk-variant":vec!["second";32]
+            })),
+            &["X-SDK-Variant".into()],
+        )
+        .map_err(|()| "merged local headers")?;
+        let frame_merged = encode_index_response_for_cluster("sdk-forward95", 1, 2, &merged)?;
+        let received_merged = decode_index_response_for_cluster(&frame_merged, "sdk-forward95")?;
+        let mut merged_wire = Vec::new();
+        received_merged.response_headers.write(&mut merged_wire)?;
+        assert_eq!(
+            std::str::from_utf8(&merged_wire)?
+                .matches("X-Sdk-Variant:")
+                .count(),
+            64
+        );
+        assert!(decode_index_response_for_cluster(&frame, "other-cluster").is_err());
+        assert!(
+            serde_json::from_value::<crate::service::ResponseHeaders>(
+                serde_json::json!({"Content-Length":["123"]})
+            )
+            .is_err()
+        );
+        assert!(
+            serde_json::from_value::<crate::service::ResponseHeaders>(
+                serde_json::json!({"X-SDK-One":["x".repeat(4097)]})
+            )
+            .is_err()
+        );
+        let legacy = encode_response_for_cluster(
+            "sdk-forward95",
+            1,
+            2,
+            403,
+            &serde_json::json!({"errors":["denied"]}),
+        )?;
+        assert!(
+            decode_response_for_cluster(&legacy, "sdk-forward95")?
+                .response_headers
+                .is_empty()
+        );
+        let mut response = received;
+        response.target = 1;
+        assert!(
+            decode_index_response_for_cluster(
+                &encode(INDEX_RESPONSE_MAGIC, &response)?,
+                "sdk-forward95"
+            )
+            .is_err()
+        );
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "ha_lossless_json_tests.rs"]
+mod lossless_json_tests;
+
+#[cfg(test)]
+#[path = "ha_forward_approle_form_tests.rs"]
+mod approle_form_tests;

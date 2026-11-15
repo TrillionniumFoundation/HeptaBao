@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.mac-fresh-synthetic-r2-evidence-verification.r1",
+  "sourceFiles": 11,
+  "remoteOriginalWholeHashesCompared": 74,
+  "allComparedHashesEqual": true,
+  "artifactFilesBeforeDocs": 107,
+  "qualification": {
+    "originalSafetyMockCases": 30,
+    "newPsTlsMockCases": 33,
+    "failures": 0,
+    "skipped": 0,
+    "actualFixedPsDirectChildren": 2,
+    "actualFixedPsChildrenReaped": true,
+    "actualFixedPsChildrenSignalCount": 0,
+    "job": "1a1b19b46a3-fc05-79d9",
+    "stdoutBytes": 23278
+  },
+  "campaign": {
+    "job": "1a1b19fe485-fc05-79e6",
+    "stdoutBytes": 53812,
+    "ok": true,
+    "completedOperations": 4,
+    "elapsedSeconds": 9.635977207683027,
+    "registrations": 2,
+    "bootstrapCount": 2,
+    "killCount": 2,
+    "bootoutCount": 2,
+    "termCount": 0,
+    "helpers": 63,
+    "systemPsHelpers": 14,
+    "helperUnknownCount": 0,
+    "helperSignalCount": 0,
+    "allRegistrationsClosed": true,
+    "allKnownLineagesClosed": true,
+    "allOwnedCommandsStopped": true
+  },
+  "independentAbsence": {
+    "job": "1a1b1a315d9-fc05-7a01",
+    "stdoutBytes": 1803,
+    "ok": true,
+    "rounds": 2,
+    "pids": [
+      59204,
+      59497
+    ],
+    "allGuiQueries113": true,
+    "allNativeEsrch": true,
+    "allRelatedRowsEmpty": true
+  },
+  "priorFailuresRelabeled": false,
+  "realCredentialInputsRead": false,
+  "providerValidityQualified": false,
+  "productionManagerQualified": false,
+  "physicalHaQualified": false,
+  "productionTrafficCutover": false
+}

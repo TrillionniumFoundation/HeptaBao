@@ -1,0 +1,11 @@
+[req]
+prompt=no
+distinguished_name=dn
+req_extensions=server
+[dn]
+CN=MacBook-Pro.local
+[server]
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature,keyEncipherment
+extendedKeyUsage=serverAuth
+subjectAltName=DNS:MacBook-Pro.local,DNS:localhost,IP:192.168.0.8,IP:127.0.0.1,IP:10.77.0.3,IP:100.77.61.24

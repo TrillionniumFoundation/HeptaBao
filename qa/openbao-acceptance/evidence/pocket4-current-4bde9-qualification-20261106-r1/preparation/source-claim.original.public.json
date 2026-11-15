@@ -1,0 +1,17 @@
+{
+  "ai395_unknown_or_failed_execution_replayed": false,
+  "at_utc": "2026-11-06T17:22:32.472824+00:00",
+  "bundle_sha256": "9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0",
+  "bundle_sole_prerequisite": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "control": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1",
+  "formal107_started": false,
+  "preparation_script_sha256": "ec549c490deb29bfc3bdf819f21d9aba6ddbb3d7afa15fc1e0982dcd7723cb59",
+  "production_changed": false,
+  "root": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1",
+  "rust_compilation_executed": false,
+  "schema": "heptabao.pocket4-canonical-source-owned-claim.v1",
+  "source": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "target": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.ha128.r3.transport-exception-boundary.v1",
+  "originalJob": "1a1b357f5e0-fc05-8241",
+  "originalFailureType": "URLError",
+  "inferredRange": [
+    "HTTPConnection.request",
+    "TCP-connect",
+    "TLS-handshake",
+    "HTTP-request-send"
+  ],
+  "responseWaitTimeoutNotEquivalent": true,
+  "missingOriginalReasonNotRecovered": true,
+  "sameCandidateOriginalBudgetRetained": true,
+  "noProductFixJustifiedByBareException": true,
+  "basis": "The complete actual Mac urllib public source is version-bound and whole-SHA checked. Its do_open wraps only h.request OSError, while h.getresponse and body read lie outside that inner wrapper. Five source-AST injected cases confirm that boundary without network.",
+  "tests": {
+    "kind": "local-source-AST-synthetic",
+    "passed": 5,
+    "required": 5,
+    "haReproduction": false
+  },
+  "productExecutions": 0,
+  "networkRequests": 0,
+  "credentialReads": 0,
+  "acquisition": "Two exact public stdlib sources, five original metadata/chunk responses; no private source or state read."
+}

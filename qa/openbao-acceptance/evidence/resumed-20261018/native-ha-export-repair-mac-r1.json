@@ -1,0 +1,86 @@
+{
+  "base_commit": "e0f95a38850a4a3b0220112eff27e2e32efb7742",
+  "base_unchanged": true,
+  "elapsed_seconds": 354.037,
+  "groups": [
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "--no-run"
+      ],
+      "elapsed_seconds": 320.912,
+      "exit_code": 0,
+      "group": "compile",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8p-export-repair-mac-verify-01/compile.log",
+      "log_sha256": "937dd698d2fab079b14068c6cd8cd7d7f6410e5d21a1ddef34d5482d8b85cd43",
+      "summaries": []
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_snapshot_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 31.558,
+      "exit_code": 0,
+      "group": "archive-service",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8p-export-repair-mac-verify-01/archive-service.log",
+      "log_sha256": "7f4c603beba15d0b025ceb7a34105dd02c3ead620c793eab4c07af858ba06bb2",
+      "summaries": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 2714 filtered out; finished in 25.84s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 0.151,
+      "exit_code": 0,
+      "group": "repair-http-admission",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8p-export-repair-mac-verify-01/repair-http-admission.log",
+      "log_sha256": "870327e2f6f69c998d53ed28bbb11f136e7877d9d1d839aac1ee9138cf5dde4b",
+      "summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2720 filtered out; finished in 0.00s"
+      ]
+    }
+  ],
+  "host": "MacBook-Pro.local",
+  "ok": true,
+  "patch_sha256": "591a4c49e0c54350d5b21fcb1815b9c034f78e80f243b5dc917e2ba6ea5cbe97",
+  "production_cutover": false,
+  "schema": "heptabao.native-ha-service-export-repair-candidate.v1",
+  "source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8p-export-repair-01",
+  "source_unchanged": true
+}

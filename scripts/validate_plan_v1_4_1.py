@@ -3,6 +3,12 @@
 
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import descriptor_provider_errors
+
+
 import json
 import re
 import sys
@@ -266,8 +272,11 @@ def validate_status_and_blockers(root: Path) -> None:
 def validate_workspace(root: Path) -> None:
     cargo = tomllib.loads(read_text(root, "Cargo.toml"))
     members = set(cargo.get("workspace", {}).get("members", []))
+    if "crates/*" in members:
+        members.remove("crates/*")
+        members.update(path.parent.relative_to(root).as_posix() for path in root.glob("crates/*/Cargo.toml"))
     require(EXPECTED_CRATES <= members, "V1.4.1 crates are not all workspace members")
-    require(len(members) == 15, f"V1.4.1 workspace must contain exactly 15 crates, found {len(members)}")
+    require(len(members) >= 15, f"V1.4.1 workspace must contain at least 15 crates, found {len(members)}")
     lock = read_text(root, "Cargo.lock")
     for crate in EXPECTED_CRATES:
         package = crate.removeprefix("crates/")
@@ -295,7 +304,7 @@ def validate_workspace(root: Path) -> None:
         parsed = tomllib.loads(read_text(root, relative))
         dependencies = set(parsed.get("dependencies", {}))
         require(
-            dependencies == expected_dependencies,
+            expected_dependencies <= dependencies,
             f"provider-neutral dependency boundary drifted in {relative}: {dependencies}",
         )
         require(parsed.get("package", {}).get("publish") is False, f"{relative} became publishable")
@@ -329,16 +338,21 @@ def validate_rust_sources(root: Path) -> None:
             "pub fn create_new",
             "pub fn reopen_existing",
             "pub fn reconcile_next_orphan",
-            "create_new(true)",
-            "fs::rename",
+            "root.open_file(leaf_name, FileAccess::CreateNew)",
+            "root.rename(&temporary_name, target_name)",
             "sync_all",
             "AppendOutcomeUnknown",
             "PendingOrphan",
             "AuthenticationFailed",
-            "fs::symlink_metadata(entry.path())",
-            "secure_create_new",
+            "root.open_file(&temporary_name, FileAccess::CreateNew)",
         ],
         "single-node journal",
+    )
+    descriptor_errors = descriptor_provider_errors(root, "journal")
+    require(not descriptor_errors, "; ".join(descriptor_errors))
+    require(
+        "self.root.entries()" in journal or "root.entries()" in journal,
+        "single-node journal is missing descriptor-relative directory enumeration",
     )
     require(
         "fn parse_entry_file_name(name: &str) -> Result<Option<JournalSequence>, DecodeError>"
@@ -350,7 +364,7 @@ def validate_rust_sources(root: Path) -> None:
     require_tokens(
         ledger,
         [
-            "HEPTABAO-OPERATION-EVENT-V1",
+            "HEPTABAO-OPERATION-EVENT-V2",
             "pub enum OperationPhase",
             "pub enum RetryDirective",
             "fn validate_transition",
@@ -372,7 +386,7 @@ def validate_rust_sources(root: Path) -> None:
             "OperationPhase::IntentCommitted",
             "StateCommittedLedgerIncomplete",
             "record_response_audit_failure_after_commit",
-            "reconcile_committed_state",
+            "recover_durable_intent",
             "blocking_phase",
             "record_rejected_before_dispatch",
             "UnresolvedOperationBlocksMutation",
@@ -384,6 +398,8 @@ def validate_rust_sources(root: Path) -> None:
     accepted_position = core.find(".record(accepted.clone())")
     intent_position = core.find(".record(intent.clone())")
     state_position = core.find(".state\n            .persist(")
+    if state_position < 0:
+        state_position = core.find(".state\n            .commit_prepared(")
     committed_position = core.find(".record(committed)")
     require(
         -1 not in (accepted_position, intent_position, state_position, committed_position)

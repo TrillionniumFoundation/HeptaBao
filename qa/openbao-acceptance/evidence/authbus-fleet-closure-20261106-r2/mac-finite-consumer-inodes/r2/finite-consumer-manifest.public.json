@@ -1,0 +1,41 @@
+{
+  "actualExecuted": false,
+  "allProcessMemoryCredentialUseEstablished": false,
+  "consumerQuiescenceQualified": false,
+  "credentialReads": 0,
+  "deviceCacheIgnored": false,
+  "deviceCacheOptionUnsupported": true,
+  "fileNameFieldsRequested": false,
+  "fixedFileMetadataTargets": 45,
+  "keychainReads": 0,
+  "launcherBytes": 62793,
+  "launcherSha256": "97eadcc826a72fff5ec04d873e0a5164533880570a92345ef66c2e115558eb0a",
+  "lsofFields": "pufatDi",
+  "maximumFileRecords": 16384,
+  "maximumLsofOutputBytes": 1048576,
+  "metadataScope": {
+    "databasesAndSidecars": 24,
+    "knownAgentLegacyFiles": 15,
+    "knownAuthBusCaches": 6
+  },
+  "nameAndServiceResolutionDisabled": true,
+  "nulTerminatedFields": true,
+  "observedProcessesMayNotBeSignalled": true,
+  "originalLsofSeconds": 10,
+  "parentSeconds": 45,
+  "productionWrites": 0,
+  "schema": "heptabao.finite-consumer-inode-preparation.r2",
+  "selectedProcesses": 9,
+  "serviceActions": 0,
+  "sourcePins": {
+    "mac_finite_lsof_fields_r1.py": "9e19a42760a60d94aa01bb89a038634eff34c9d291f69285e253578128b81bf1",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_owned_commands_r1.py": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530",
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+  },
+  "sourceReferences": [
+    "https://github.com/lsof-org/lsof/blob/master/docs/manpage.md"
+  ],
+  "sqliteCalls": 0,
+  "supervisorSeconds": 70
+}

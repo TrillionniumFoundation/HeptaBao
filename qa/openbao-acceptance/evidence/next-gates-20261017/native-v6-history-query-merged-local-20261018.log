@@ -1,0 +1,6 @@
+test_retained_and_retired_versions_use_real_http_query_selection (test_native_v6_ha_multihost_live.NativeHistoryHttpTests.test_retained_and_retired_versions_use_real_http_query_selection) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.563s
+
+OK

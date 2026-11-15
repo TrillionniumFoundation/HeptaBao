@@ -1,0 +1,11 @@
+--- qualified-fixedslot-guard
++++ normal5f9d4-staging-guard
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/fixed-slot-coordinator-normal-20261107-r1'
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 

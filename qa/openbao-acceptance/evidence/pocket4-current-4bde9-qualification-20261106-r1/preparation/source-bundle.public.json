@@ -1,0 +1,14 @@
+{
+  "bytes": 377715,
+  "git_bundle_verified": true,
+  "head": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "head_ref": "HEAD",
+  "path": "/workspace/scratch/c9fe536787d9/x230-migration-checkpoint/pocket4-preparation/candidate-4bde9-from-df026.bundle",
+  "prerequisite_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "private_isolated_bare_HEAD_used": true,
+  "root_repo_index_or_refs_modified": false,
+  "schema": "heptabao.pocket4-canonical-source-bundle.v1",
+  "sha256": "9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0",
+  "sole_prerequisite": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "tree": "f08493a23f8ea0637073651231865ea9607b790e"
+}

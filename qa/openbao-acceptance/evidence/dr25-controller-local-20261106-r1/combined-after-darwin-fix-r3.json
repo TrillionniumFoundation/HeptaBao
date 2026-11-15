@@ -1,0 +1,31 @@
+{
+  "actual_dr25_executed": false,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/openbao-acceptance/tests",
+    "-p",
+    "test_kv2*dr*.py",
+    "-v"
+  ],
+  "darwin_execution_claim": false,
+  "elapsed_seconds": 7.867107820999081,
+  "exit_code": 0,
+  "expected_tests": 32,
+  "log": "qa/openbao-acceptance/evidence/dr25-controller-local-20261106-r1/combined-after-darwin-fix-r3.log",
+  "production_authority": false,
+  "production_servers_started": false,
+  "reason_for_reexecution": "Actual Darwin signed UID parser fix plus test destructor reconciliation; product/child budgets unchanged. Prior Linux failure retained.",
+  "schema": "heptabao.dr25-controller-regression-observation.v1",
+  "source_file_pins": {
+    "qa/openbao-acceptance/kv2_dr_process_custody.py": "5b6445687c1024e6bd1b2c47c8dd83175445ce70cfbdd3637834faf4a0316d54",
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": "c9cb84f9e01f1e1eb0ff80ae1cb8d22e6f9ba084ecb1497daf0514e591ad425b",
+    "qa/openbao-acceptance/tests/test_kv2_dr_process_custody.py": "74ca530db853dfb7786ccb9f53a920c1581685aff68c23a7f5d19d5af63fb193",
+    "qa/openbao-acceptance/tests/test_kv2_native_fresh_directory_dr_live.py": "ff4e42e1415d39a7c6f3ae8bde9af1c70faafb4a55891c501dcac3ea1c14e464"
+  },
+  "status": "passed"
+}

@@ -1,0 +1,140 @@
+TAP version 13
+# (node:1864920) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: existing DELETE state migrates without changing binding or revision; WAL keeps FULL and lock keeps DELETE
+ok 1 - existing DELETE state migrates without changing binding or revision; WAL keeps FULL and lock keeps DELETE
+  ---
+  duration_ms: 90.244215
+  type: 'test'
+  ...
+# Subtest: SIGKILL at prepared preserves durable intent and never repeats an uncertain write
+ok 2 - SIGKILL at prepared preserves durable intent and never repeats an uncertain write
+  ---
+  duration_ms: 607.168301
+  type: 'test'
+  ...
+# Subtest: SIGKILL at dispatched preserves durable intent and never repeats an uncertain write
+ok 3 - SIGKILL at dispatched preserves durable intent and never repeats an uncertain write
+  ---
+  duration_ms: 602.442931
+  type: 'test'
+  ...
+# Subtest: SIGKILL at server_confirmed preserves durable intent and never repeats an uncertain write
+ok 4 - SIGKILL at server_confirmed preserves durable intent and never repeats an uncertain write
+  ---
+  duration_ms: 868.708286
+  type: 'test'
+  ...
+# Subtest: SIGKILL at confirmed preserves durable intent and never repeats an uncertain write
+ok 5 - SIGKILL at confirmed preserves durable intent and never repeats an uncertain write
+  ---
+  duration_ms: 796.943283
+  type: 'test'
+  ...
+# Subtest: quiescent backup after SIGKILL includes uncheckpointed WAL and restores exact confirmation without replay
+ok 6 - quiescent backup after SIGKILL includes uncheckpointed WAL and restores exact confirmation without replay
+  ---
+  duration_ms: 310.824182
+  type: 'test'
+  ...
+# Subtest: two actual processes competing at the same local CAS revision produce one winner
+ok 7 - two actual processes competing at the same local CAS revision produce one winner
+  ---
+  duration_ms: 246.922601
+  type: 'test'
+  ...
+# Subtest: OS-held operation lock excludes another process and releases after SIGKILL
+ok 8 - OS-held operation lock excludes another process and releases after SIGKILL
+  ---
+  duration_ms: 398.208349
+  type: 'test'
+  ...
+# Subtest: known remote CAS rejection is durable and never retried after reopen
+ok 9 - known remote CAS rejection is durable and never retried after reopen
+  ---
+  duration_ms: 289.626201
+  type: 'test'
+  ...
+# (node:1864921) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: expired persisted active lease performs one fresh AppRole login and a real TLS KV read
+ok 10 - expired persisted active lease performs one fresh AppRole login and a real TLS KV read
+  ---
+  duration_ms: 309.576918
+  type: 'test'
+  ...
+# Subtest: valid active lease is reused by explicit login without dispatching another authentication
+ok 11 - valid active lease is reused by explicit login without dispatching another authentication
+  ---
+  duration_ms: 171.372418
+  type: 'test'
+  ...
+# Subtest: expired metadata never permits clearing an unresolved login-dispatched
+ok 12 - expired metadata never permits clearing an unresolved login-dispatched
+  ---
+  duration_ms: 50.84407
+  type: 'test'
+  ...
+# Subtest: expired metadata never permits clearing an unresolved renew-dispatched
+ok 13 - expired metadata never permits clearing an unresolved renew-dispatched
+  ---
+  duration_ms: 51.666222
+  type: 'test'
+  ...
+# Subtest: expired metadata never permits clearing an unresolved revoke-dispatched
+ok 14 - expired metadata never permits clearing an unresolved revoke-dispatched
+  ---
+  duration_ms: 63.752965
+  type: 'test'
+  ...
+# Subtest: known rejected authentication intent and invalid active lease remain unchanged
+ok 15 - known rejected authentication intent and invalid active lease remain unchanged
+  ---
+  duration_ms: 52.930133
+  type: 'test'
+  ...
+# Subtest: persisted clock high-water failure cannot be recast as expired-lease recovery
+ok 16 - persisted clock high-water failure cannot be recast as expired-lease recovery
+  ---
+  duration_ms: 40.898578
+  type: 'test'
+  ...
+# Subtest: production read restarts an expired bearer before actual control and KV reads
+ok 17 - production read restarts an expired bearer before actual control and KV reads
+  ---
+  duration_ms: 296.687275
+  type: 'test'
+  ...
+# Subtest: expired caller deadline dispatches no renewal, reauthentication, read, or publication
+ok 18 - expired caller deadline dispatches no renewal, reauthentication, read, or publication
+  ---
+  duration_ms: 112.335039
+  type: 'test'
+  ...
+# Subtest: renewal reply beyond the caller deadline leaves one unresolved attempt and performs no later reads
+ok 19 - renewal reply beyond the caller deadline leaves one unresolved attempt and performs no later reads
+  ---
+  duration_ms: 626.966564
+  type: 'test'
+  ...
+# Subtest: renewal and expiry recovery receive the exact original absolute deadline
+ok 20 - renewal and expiry recovery receive the exact original absolute deadline
+  ---
+  duration_ms: 1.394196
+  type: 'test'
+  ...
+# Subtest: fixed-slot outbox rejects the caller deadline before taking an operation lock
+ok 21 - fixed-slot outbox rejects the caller deadline before taking an operation lock
+  ---
+  duration_ms: 1.369507
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4411.42612

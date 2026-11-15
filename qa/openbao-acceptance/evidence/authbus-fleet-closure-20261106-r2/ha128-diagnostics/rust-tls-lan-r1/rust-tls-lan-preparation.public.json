@@ -1,0 +1,44 @@
+{
+  "assembledSourceMatchesExactBodyAndWorker": true,
+  "coordinatorTotalSeconds": 100,
+  "diagnosticOkIsNotConnectivityOrHaQualification": true,
+  "durableOuterSeconds": 120,
+  "keyValueOrDigestPublished": false,
+  "listenerReadinessSeconds": 45,
+  "macQaCommit": "af91ec0cecbb1c0bd717095d6d8696a3f73a1cee",
+  "normalServerSha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c",
+  "oldFixtureStateUsed": false,
+  "oldHaAttemptReplayed": false,
+  "oldHaBudgetsChanged": false,
+  "oldSyntheticKeyUsedReadOnly": true,
+  "onlyHttpOperation": "unauthenticated GET /v1/sys/health",
+  "originalClientDefinitionsIdenticalBetween4bAndAf91": [
+    "NoRedirect",
+    "Node",
+    "api",
+    "wait_listener"
+  ],
+  "parentFinishWindowSeconds": 15,
+  "pins": {
+    "rust_tls_lan_coordinator_r1.body.py": {
+      "bytes": 12424,
+      "sha256": "d04a174ac39372c034dbff4d7cb8f5ea2f49c7d36b64bf5abd030851437e00e0"
+    },
+    "rust_tls_lan_coordinator_r1.py": {
+      "bytes": 26712,
+      "sha256": "1d974c67a1018c11cde9aa038277ecaa276a905b3a5e6038253c4bb5b9ab31be"
+    },
+    "rust_tls_lan_worker_r1.py": {
+      "bytes": 13667,
+      "sha256": "9a5a53a007f555b999c779ef1363c7e5724e7bc50c446599127e37f50581c6cb"
+    }
+  },
+  "probeStageSeconds": 1.5,
+  "remoteExecuted": false,
+  "schema": "heptabao.ha-rust-tls-lan-diagnostic-preparation.r1",
+  "scope": "one new private X230 uninitialized normal listener and fixed Mac layered transport observation",
+  "serverRequestSeconds": 15,
+  "sourceCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "sourceTree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "workerTotalSeconds": 85
+}

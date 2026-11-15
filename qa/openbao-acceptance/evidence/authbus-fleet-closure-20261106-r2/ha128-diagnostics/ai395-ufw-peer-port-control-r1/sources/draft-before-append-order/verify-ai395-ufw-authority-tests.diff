@@ -1,0 +1,81 @@
+--- before-authority-tests
++++ review-final
+@@ -132,11 +132,15 @@
+ 
+ def exact_nft_owned(rule,peer):
+     need(set(rule)=={'family','table','chain','handle','expr'},'owned_nft_rule_schema')
++    need(isinstance(rule['expr'],list) and rule['expr'] and rule['expr'][-1]=={'accept':None},
++         'owned_accept_must_follow_all_selectors')
+     selectors={}; opaque=0; counters=0; accepts=0; protocol=None
+     for expr in rule['expr']:
+         need(isinstance(expr,dict) and len(expr)==1,'exact_nft_expression')
+         if 'counter' in expr:
+-            need(set(expr['counter'])=={'packets','bytes'},'exact_owned_counter'); counters+=1; continue
++            need(set(expr['counter'])=={'packets','bytes'} and
++                 all(type(x) is int and x>=0 for x in expr['counter'].values()),'exact_owned_counter')
++            counters+=1; continue
+         if 'accept' in expr:
+             need(expr['accept'] is None,'exact_accept'); accepts+=1; continue
+         if 'xt' in expr:
+@@ -210,6 +214,31 @@
+             'countersAndNftHandlesExcludedOnlyAsDeclared':True,'existingUfwUserChainsComplete':True}
+ 
+ 
++def validate_capture_authority(authority):
++    need(set(authority)=={'path','bytes','sha256','eofAuthorityOriginal'},'exact_capture_authority_fields')
++    match=re.fullmatch(r'/home/qq/\.local/state/hepta-runtime-mac-worker/terminals/(dpty-[a-z0-9-]+)/output\.log',authority['path'])
++    need(match is not None and type(authority['bytes']) is int and 0<authority['bytes']<=65536
++         and re.fullmatch(r'[0-9a-f]{64}',authority['sha256']) is not None,'original_capture_archive_bound')
++    original=json.loads(authority['eofAuthorityOriginal']); state=original['status']
++    need(original['host']=='ai395' and original['session_id']==match.group(1)
++         and original['archive_path']==authority['path']
++         and original['offset']==original['next_offset']==original['available_end']==authority['bytes']
++         and original['output_complete'] is True and original['truncated_before_offset'] is False
++         and original['text_is_lossy'] is False and original['text']=='' and original['bytes_hex']==''
++         and state['state']=='exited' and state['exit_code']==0 and state['output_complete'] is True
++         and state['capture_error'] is None and state['bytes_seen']==state['bytes_stored']==authority['bytes'],
++         'original_capture_natural_zero_complete_authority')
++
++
++def validate_closed_capture(actual,name,root_identity):
++    facts=actual['fdCloseFacts']; opened={'created':13,'input':19,'directory':3}
++    need(actual['schema']=='heptabao.ai395-ufw-private-phase-capture.r1' and actual['ok'] is True
++         and actual['privateBackupComplete'] is True and actual['phase']==name and actual['rootIdentity']==root_identity
++         and facts['allOpenedFdsKnownClosed'] is True and facts['errorCount']==0 and facts['firstError'] is None
++         and facts['opened']==facts['attemptedOnce']==facts['knownClosed']==opened,
++         'actual_capture_stdout_fd_closure_required')
++
++
+ def main():
+     held=[]; report={'schema':'heptabao.ai395-ufw-phase-semantic-verification.r1','ok':False,
+                     'childCount':0,'networkPacketsSent':0,'firewallWrites':0,'originalFilesChanged':False}
+@@ -237,27 +266,11 @@
+             return bytes(raw)
+         authoritative_captures={}
+         for name,authority in manifest['captureAuthorities'].items():
+-            need(set(authority)=={'path','bytes','sha256','eofAuthorityOriginal'},'exact_capture_authority_fields')
+-            match=re.fullmatch(r'/home/qq/\.local/state/hepta-runtime-mac-worker/terminals/(dpty-[a-z0-9-]+)/output\.log',authority['path'])
+-            need(match is not None and type(authority['bytes']) is int and 0<authority['bytes']<=65536
+-                 and re.fullmatch(r'[0-9a-f]{64}',authority['sha256']) is not None,'original_capture_archive_bound')
+-            original=json.loads(authority['eofAuthorityOriginal']); state=original['status']
+-            need(original['host']=='ai395' and original['session_id']==match.group(1)
+-                 and original['offset']==original['next_offset']==original['available_end']==authority['bytes']
+-                 and original['output_complete'] is True and original['truncated_before_offset'] is False
+-                 and original['text_is_lossy'] is False and original['text']=='' and original['bytes_hex']==''
+-                 and state['state']=='exited' and state['exit_code']==0 and state['output_complete'] is True
+-                 and state['capture_error'] is None and state['bytes_seen']==state['bytes_stored']==authority['bytes'],
+-                 'original_capture_natural_zero_complete_authority')
++            validate_capture_authority(authority)
+             raw=read(Path(authority['path']),65536,1000)
+             need(len(raw)==authority['bytes'] and hashlib.sha256(raw).hexdigest()==authority['sha256'],
+                  'original_capture_full_stdout_bytes')
+-            actual=json.loads(raw); facts=actual['fdCloseFacts']; opened={'created':13,'input':19,'directory':3}
+-            need(actual['schema']=='heptabao.ai395-ufw-private-phase-capture.r1' and actual['ok'] is True
+-                 and actual['privateBackupComplete'] is True and actual['phase']==name and actual['rootIdentity']==root_identity
+-                 and facts['allOpenedFdsKnownClosed'] is True and facts['errorCount']==0 and facts['firstError'] is None
+-                 and facts['opened']==facts['attemptedOnce']==facts['knownClosed']==opened,
+-                 'actual_capture_stdout_fd_closure_required')
++            actual=json.loads(raw); validate_closed_capture(actual,name,root_identity)
+             authoritative_captures[name]=actual
+         def load(name):
+             directory=ROOT/name; ds=directory.lstat()

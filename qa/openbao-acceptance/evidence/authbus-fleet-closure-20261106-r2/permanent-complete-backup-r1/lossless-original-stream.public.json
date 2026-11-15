@@ -1,0 +1,10 @@
+{
+  "job_id": "1a1b3d4e115-fc05-84f3",
+  "stdoutBytes": 34879,
+  "stderrBytes": 0,
+  "originalPages": 3,
+  "hexTextEqual": true,
+  "offsetsExact": true,
+  "eof": true,
+  "allOriginalNativeTextRetained": true
+}

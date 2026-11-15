@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.immutable-evidence-map.r1",
+  "entries": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/r4/launch.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f497e6513cadaf69802d98dacb201c717df0fe6e",
+      "bytes": 59991,
+      "sha256": "10758ef4aede8af62b34eb206e81cdac2a842b2f17f165e1de51e83157d426a8"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/r4/terminal.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6fe09f4ac2b3a3654f941ea7b23098c1961460d4",
+      "bytes": 731,
+      "sha256": "c587a4c461d6ff5a76c982d0d831dfafa4c1481e32d501cb94690713a586071a"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/r4/read-00000.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f64780a32b2a1457d39e55f7952bc028b4b7d230",
+      "bytes": 22475,
+      "sha256": "d95731dac9df1e9f8c343a33e6342ccc01608534a028176ba124b798da25c54a"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/r4/stdout.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "000c7b86e0c6a32bb7435e7236604d145068fd5b",
+      "bytes": 7223,
+      "sha256": "6d0380b34fa671b73f7555b03d64de5c41dcf6efbb246f7b73f9a790cc7f89eb"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/r4/verification.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4e68725e55a5a0c5f7f8f422c1b155c4e39cc5f6",
+      "bytes": 729,
+      "sha256": "a1b6d4870e1ad0c1d87f7bd34da41dafe2f9a4ca48a224eaef5f0891d65d9e52"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/r4/README.actual.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ba292b51130d116f6b8fed3dce2d880dd3704887",
+      "bytes": 1359,
+      "sha256": "4c9d4821a10b7ad8dc9765c392f72b11798497e7bfe9e51d506cab797ae1120b"
+    }
+  ]
+}

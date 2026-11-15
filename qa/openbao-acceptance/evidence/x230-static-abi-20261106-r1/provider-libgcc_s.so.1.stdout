@@ -1,0 +1,186 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x0
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          181040 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         12
+  Size of section headers:           64 (bytes)
+  Number of section headers:         31
+  Section header string table index: 30
+
+Program Headers:
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x0036e0 0x0036e0 R   0x1000
+  LOAD           0x004000 0x0000000000004000 0x0000000000004000 0x023755 0x023755 R E 0x1000
+  LOAD           0x028000 0x0000000000028000 0x0000000000028000 0x003b00 0x003b00 R   0x1000
+  LOAD           0x02bd90 0x000000000002cd90 0x000000000002cd90 0x000440 0x000618 RW  0x1000
+  DYNAMIC        0x02bdb0 0x000000000002cdb0 0x000000000002cdb0 0x000200 0x000200 RW  0x8
+  NOTE           0x0002e0 0x00000000000002e0 0x00000000000002e0 0x000020 0x000020 R   0x8
+  NOTE           0x000300 0x0000000000000300 0x0000000000000300 0x00009c 0x00009c R   0x4
+  TLS            0x02bd90 0x000000000002cd90 0x000000000002cd90 0x000000 0x000008 R   0x8
+  GNU_PROPERTY   0x0002e0 0x00000000000002e0 0x00000000000002e0 0x000020 0x000020 R   0x8
+  GNU_EH_FRAME   0x028b44 0x0000000000028b44 0x0000000000028b44 0x000824 0x000824 R   0x4
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x10
+  GNU_RELRO      0x02bd90 0x000000000002cd90 0x000000000002cd90 0x000270 0x000270 R   0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .note.gnu.property .note.gnu.build-id .note.package .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_d .gnu.version_r .rela.dyn .rela.plt 
+   01     .init .plt .plt.got .plt.sec .text .fini 
+   02     .rodata .eh_frame_hdr .eh_frame 
+   03     .init_array .fini_array .dynamic .got .got.plt .data .bss 
+   04     .dynamic 
+   05     .note.gnu.property 
+   06     .note.gnu.build-id .note.package 
+   07     .tbss 
+   08     .note.gnu.property 
+   09     .eh_frame_hdr 
+   10     
+   11     .init_array .fini_array .dynamic .got 
+
+Dynamic section at offset 0x2bdb0 contains 28 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+ 0x000000000000000e (SONAME)             Library soname: [libgcc_s.so.1]
+ 0x000000000000000c (INIT)               0x4000
+ 0x000000000000000d (FINI)               0x27748
+ 0x0000000000000019 (INIT_ARRAY)         0x2cd90
+ 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)
+ 0x000000000000001a (FINI_ARRAY)         0x2cda0
+ 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)
+ 0x000000006ffffef5 (GNU_HASH)           0x3a0
+ 0x0000000000000005 (STRTAB)             0x2010
+ 0x0000000000000006 (SYMTAB)             0xae0
+ 0x000000000000000a (STRSZ)              3048 (bytes)
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000003 (PLTGOT)             0x2cfe8
+ 0x0000000000000002 (PLTRELSZ)           1368 (bytes)
+ 0x0000000000000014 (PLTREL)             RELA
+ 0x0000000000000017 (JMPREL)             0x3188
+ 0x0000000000000007 (RELA)               0x3080
+ 0x0000000000000008 (RELASZ)             264 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x000000006ffffffc (VERDEF)             0x2dc0
+ 0x000000006ffffffd (VERDEFNUM)          16
+ 0x000000006ffffffe (VERNEED)            0x2ff0
+ 0x000000006fffffff (VERNEEDNUM)         2
+ 0x000000006ffffff0 (VERSYM)             0x2bf8
+ 0x000000006ffffff9 (RELACOUNT)          4
+ 0x0000000000000000 (NULL)               0x0
+
+Version symbols section '.gnu.version' contains 226 entries:
+ Addr: 0x0000000000002bf8  Offset: 0x00002bf8  Link: 5 (.dynsym)
+  000:   0 (*local*)      11 (GLIBC_2.2.5)  11 (GLIBC_2.2.5)   1 (*global*)   
+  004:  12 (GLIBC_2.3.2)  13 (GLIBC_2.34)   12 (GLIBC_2.3.2)  11 (GLIBC_2.2.5)
+  008:  11 (GLIBC_2.2.5)  13 (GLIBC_2.34)   11 (GLIBC_2.2.5)  14 (GLIBC_2.3)  
+  00c:  11 (GLIBC_2.2.5)   1 (*global*)     15 (GLIBC_2.14)   11 (GLIBC_2.2.5)
+  010:  11 (GLIBC_2.2.5)  16 (GLIBC_2.35)   11 (GLIBC_2.2.5)  11 (GLIBC_2.2.5)
+  014:  11 (GLIBC_2.2.5)  11 (GLIBC_2.2.5)  17 (GLIBC_2.3.4)   1 (*global*)   
+  018:  13 (GLIBC_2.34)   11 (GLIBC_2.2.5)  11 (GLIBC_2.2.5)  13 (GLIBC_2.34) 
+  01c:   a (GCC_4.3.0)     2 (GCC_3.0)      10 (GCC_14.0.0)    e (GCC_12.0.0) 
+  020:   a (GCC_4.3.0)     2 (GCC_3.0)       a (GCC_4.3.0)     8 (GCC_4.0.0)  
+  024:  10 (GCC_14.0.0)    2 (GCC_3.0)       8 (GCC_4.0.0)     2 (GCC_3.0)    
+  028:   6 (GCC_3.4.2)     2 (GCC_3.0)       5 (GCC_3.4)       e (GCC_12.0.0) 
+  02c:   9 (GCC_4.2.0)     2 (GCC_3.0)       a (GCC_4.3.0)     2 (GCC_3.0)    
+  030:   9 (GCC_4.2.0)     2 (GCC_3.0)      10 (GCC_14.0.0)    4 (GCC_3.3.1)  
+  034:  10 (GCC_14.0.0)    a (GCC_4.3.0)     2 (GCC_3.0)      10 (GCC_14.0.0) 
+  038:   5 (GCC_3.4)       a (GCC_4.3.0)     a (GCC_4.3.0)     e (GCC_12.0.0) 
+  03c:  10 (GCC_14.0.0)    2 (GCC_3.0)       2 (GCC_3.0)       a (GCC_4.3.0)  
+  040:   e (GCC_12.0.0)    f (GCC_13.0.0)    7 (GCC_3.4.4)     2 (GCC_3.0)    
+  044:  10 (GCC_14.0.0)    2 (GCC_3.0)       2 (GCC_3.0)       a (GCC_4.3.0)  
+  048:   2 (GCC_3.0)      10 (GCC_14.0.0)    a (GCC_4.3.0)     5 (GCC_3.4)    
+  04c:   f (GCC_13.0.0)    2 (GCC_3.0)       e (GCC_12.0.0)   10 (GCC_14.0.0) 
+  050:   a (GCC_4.3.0)     2 (GCC_3.0)       f (GCC_13.0.0)    2 (GCC_3.0)    
+  054:   e (GCC_12.0.0)    a (GCC_4.3.0)     b (GCC_4.7.0)     f (GCC_13.0.0) 
+  058:   2 (GCC_3.0)       2 (GCC_3.0)       5 (GCC_3.4)       2 (GCC_3.0)    
+  05c:  10 (GCC_14.0.0)    a (GCC_4.3.0)     8h(GCC_4.0.0)     ch(GCC_4.8.0)  
+  060:   2 (GCC_3.0)       f (GCC_13.0.0)    a (GCC_4.3.0)     a (GCC_4.3.0)  
+  064:   a (GCC_4.3.0)     2 (GCC_3.0)       e (GCC_12.0.0)    2 (GCC_3.0)    
+  068:   d (GCC_7.0.0)     2 (GCC_3.0)      10 (GCC_14.0.0)    4 (GCC_3.3.1)  
+  06c:   e (GCC_12.0.0)    2 (GCC_3.0)       2 (GCC_3.0)       b (GCC_4.7.0)  
+  070:   e (GCC_12.0.0)    a (GCC_4.3.0)     2 (GCC_3.0)       a (GCC_4.3.0)  
+  074:   2h(GCC_3.0)       d (GCC_7.0.0)     2h(GCC_3.0)       a (GCC_4.3.0)  
+  078:   2 (GCC_3.0)       8 (GCC_4.0.0)     e (GCC_12.0.0)    ch(GCC_4.8.0)  
+  07c:   f (GCC_13.0.0)    a (GCC_4.3.0)     a (GCC_4.3.0)    10 (GCC_14.0.0) 
+  080:   2 (GCC_3.0)       a (GCC_4.3.0)     8h(GCC_4.0.0)     a (GCC_4.3.0)  
+  084:   2 (GCC_3.0)       a (GCC_4.3.0)     8h(GCC_4.0.0)     2 (GCC_3.0)    
+  088:   e (GCC_12.0.0)   10 (GCC_14.0.0)    2 (GCC_3.0)       2 (GCC_3.0)    
+  08c:   a (GCC_4.3.0)     2 (GCC_3.0)       2 (GCC_3.0)       2 (GCC_3.0)    
+  090:   3 (GCC_3.3)      10 (GCC_14.0.0)    2 (GCC_3.0)       2 (GCC_3.0)    
+  094:   9 (GCC_4.2.0)     2 (GCC_3.0)       8 (GCC_4.0.0)     2 (GCC_3.0)    
+  098:   a (GCC_4.3.0)     8 (GCC_4.0.0)     2 (GCC_3.0)       5 (GCC_3.4)    
+  09c:   3 (GCC_3.3)       2 (GCC_3.0)       a (GCC_4.3.0)     a (GCC_4.3.0)  
+  0a0:   a (GCC_4.3.0)     2 (GCC_3.0)       2 (GCC_3.0)       5 (GCC_3.4)    
+  0a4:   7 (GCC_3.4.4)     8 (GCC_4.0.0)     2 (GCC_3.0)       2 (GCC_3.0)    
+  0a8:   f (GCC_13.0.0)    2 (GCC_3.0)       a (GCC_4.3.0)     2 (GCC_3.0)    
+  0ac:   2 (GCC_3.0)       2 (GCC_3.0)       7 (GCC_3.4.4)     9 (GCC_4.2.0)  
+  0b0:  10 (GCC_14.0.0)    3 (GCC_3.3)       5 (GCC_3.4)       2 (GCC_3.0)    
+  0b4:   e (GCC_12.0.0)    a (GCC_4.3.0)     f (GCC_13.0.0)    a (GCC_4.3.0)  
+  0b8:   8 (GCC_4.0.0)    10 (GCC_14.0.0)    5 (GCC_3.4)       7 (GCC_3.4.4)  
+  0bc:   2 (GCC_3.0)       3 (GCC_3.3)       a (GCC_4.3.0)     7 (GCC_3.4.4)  
+  0c0:   a (GCC_4.3.0)     3 (GCC_3.3)       b (GCC_4.7.0)     2 (GCC_3.0)    
+  0c4:   a (GCC_4.3.0)     f (GCC_13.0.0)    e (GCC_12.0.0)   10 (GCC_14.0.0) 
+  0c8:   2 (GCC_3.0)       5 (GCC_3.4)       e (GCC_12.0.0)   10 (GCC_14.0.0) 
+  0cc:   a (GCC_4.3.0)     8 (GCC_4.0.0)     2 (GCC_3.0)       e (GCC_12.0.0) 
+  0d0:   2 (GCC_3.0)       2 (GCC_3.0)       2 (GCC_3.0)       2 (GCC_3.0)    
+  0d4:   6 (GCC_3.4.2)     c (GCC_4.8.0)     a (GCC_4.3.0)     7 (GCC_3.4.4)  
+  0d8:   2h(GCC_3.0)       a (GCC_4.3.0)     9 (GCC_4.2.0)     2 (GCC_3.0)    
+  0dc:   e (GCC_12.0.0)    e (GCC_12.0.0)    8 (GCC_4.0.0)    10 (GCC_14.0.0) 
+  0e0:   8 (GCC_4.0.0)     2 (GCC_3.0)    
+
+Version definition section '.gnu.version_d' contains 16 entries:
+ Addr: 0x0000000000002dc0  Offset: 0x00002dc0  Link: 6 (.dynstr)
+  000000: Rev: 1  Flags: BASE  Index: 1  Cnt: 1  Name: libgcc_s.so.1
+  0x001c: Rev: 1  Flags: none  Index: 2  Cnt: 1  Name: GCC_3.0
+  0x0038: Rev: 1  Flags: none  Index: 3  Cnt: 2  Name: GCC_3.3
+  0x0054: Parent 1: GCC_3.0
+  0x005c: Rev: 1  Flags: none  Index: 4  Cnt: 2  Name: GCC_3.3.1
+  0x0078: Parent 1: GCC_3.3
+  0x0080: Rev: 1  Flags: none  Index: 5  Cnt: 2  Name: GCC_3.4
+  0x009c: Parent 1: GCC_3.3.1
+  0x00a4: Rev: 1  Flags: none  Index: 6  Cnt: 2  Name: GCC_3.4.2
+  0x00c0: Parent 1: GCC_3.4
+  0x00c8: Rev: 1  Flags: none  Index: 7  Cnt: 2  Name: GCC_3.4.4
+  0x00e4: Parent 1: GCC_3.4.2
+  0x00ec: Rev: 1  Flags: none  Index: 8  Cnt: 2  Name: GCC_4.0.0
+  0x0108: Parent 1: GCC_3.4.4
+  0x0110: Rev: 1  Flags: none  Index: 9  Cnt: 2  Name: GCC_4.2.0
+  0x012c: Parent 1: GCC_4.0.0
+  0x0134: Rev: 1  Flags: none  Index: 10  Cnt: 2  Name: GCC_4.3.0
+  0x0150: Parent 1: GCC_4.2.0
+  0x0158: Rev: 1  Flags: none  Index: 11  Cnt: 2  Name: GCC_4.7.0
+  0x0174: Parent 1: GCC_4.3.0
+  0x017c: Rev: 1  Flags: none  Index: 12  Cnt: 2  Name: GCC_4.8.0
+  0x0198: Parent 1: GCC_4.7.0
+  0x01a0: Rev: 1  Flags: none  Index: 13  Cnt: 2  Name: GCC_7.0.0
+  0x01bc: Parent 1: GCC_4.8.0
+  0x01c4: Rev: 1  Flags: none  Index: 14  Cnt: 2  Name: GCC_12.0.0
+  0x01e0: Parent 1: GCC_7.0.0
+  0x01e8: Rev: 1  Flags: none  Index: 15  Cnt: 2  Name: GCC_13.0.0
+  0x0204: Parent 1: GCC_12.0.0
+  0x020c: Rev: 1  Flags: none  Index: 16  Cnt: 2  Name: GCC_14.0.0
+  0x0228: Parent 1: GCC_13.0.0
+
+Version needs section '.gnu.version_r' contains 2 entries:
+ Addr: 0x0000000000002ff0  Offset: 0x00002ff0  Link: 6 (.dynstr)
+  000000: Version: 1  File: ld-linux-x86-64.so.2  Cnt: 1
+  0x0010:   Name: GLIBC_2.3  Flags: none  Version: 20
+  0x0020: Version: 1  File: libc.so.6  Cnt: 6
+  0x0030:   Name: GLIBC_2.3.4  Flags: none  Version: 23
+  0x0040:   Name: GLIBC_2.35  Flags: none  Version: 22
+  0x0050:   Name: GLIBC_2.14  Flags: none  Version: 21
+  0x0060:   Name: GLIBC_2.34  Flags: none  Version: 19
+  0x0070:   Name: GLIBC_2.3.2  Flags: none  Version: 18
+  0x0080:   Name: GLIBC_2.2.5  Flags: none  Version: 17

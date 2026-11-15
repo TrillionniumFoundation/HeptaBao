@@ -1,10 +1,10 @@
+use crate::state_machine::TypeConfig;
 use openraft::errors::RaftError;
 use openraft::raft::SnapshotResponse;
 use openraft::type_config::alias::{SnapshotMetaOf, VoteOf};
-use openraft_memstore::TypeConfig;
 use serde::{Deserialize, Serialize};
 
-pub(super) const MAX_REMOTE_RPC_BYTES: usize = 768 * 1024;
+pub(super) use crate::replication_bounds::MAX_REMOTE_RPC_BYTES;
 pub(super) const SNAPSHOT_CHUNK_BYTES: usize = 128 * 1024;
 pub(super) const MAX_REMOTE_SNAPSHOT_BYTES: usize = 128 * 1024 * 1024;
 pub(super) const MAX_INCOMING_SNAPSHOTS: usize = 4;

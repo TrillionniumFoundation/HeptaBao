@@ -1,0 +1,71 @@
+{
+  "c5_apk_sha256": "5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8",
+  "expected_phone_count": 12,
+  "files": {
+    "phone-report-r6.json": {
+      "bytes": 3589,
+      "path": "/workspace/scratch/848006513f75/android_qualification_candidate5/phone-report-r6.json",
+      "sha256": "a5e914d2fb0c0e5749128d8c731f2c51055fed10f33798ae89ea556489be570b"
+    },
+    "qa9-offline-guards.public.json": {
+      "bytes": 5578,
+      "path": "/workspace/scratch/848006513f75/android_qualification_candidate5/qa9-offline-guards.public.json",
+      "sha256": "623d218fa8f256f5f39deaf57bc2012e7a293faf96166c0b04d5130e246114bd"
+    },
+    "r6-owned-process-framework-diagnostic.json": {
+      "bytes": 564,
+      "path": "/workspace/scratch/848006513f75/android_qualification_candidate5/r6-owned-process-framework-diagnostic.json",
+      "sha256": "8b4b3ba66d37a069475b3ed5e55f64065a5ffafc17354489261a28a831e255f4"
+    },
+    "r6-readonly-log-metadata.json": {
+      "bytes": 4301,
+      "path": "/workspace/scratch/848006513f75/android_qualification_candidate5/r6-readonly-log-metadata.json",
+      "sha256": "1cc9652f1593b510416868912a4ee7e2180210ef07581e4c16aa5042eb4e2715"
+    },
+    "r6_framework_diagnostic.py": {
+      "bytes": 3937,
+      "path": "/workspace/scratch/848006513f75/android_qualification_candidate5/r6_framework_diagnostic.py",
+      "sha256": "1e6d91f6242118015cd305284ac2b9b7129c2e3ac4a9667f4b575a8256ed87ca"
+    },
+    "release-r6.json": {
+      "bytes": 790,
+      "path": "/workspace/scratch/848006513f75/android_qualification_candidate5/release-r6.json",
+      "sha256": "88286461b8775ac8dc53be12a7e9793a798cffce8e9eb9b122f4adb541d01aeb"
+    }
+  },
+  "local_qa_commit": "3b51801b60221818b521218c3a12b2d036fa8d25",
+  "local_qa_tree": "69869a557b7d19a0ce3f093789e50c53bda1f11c",
+  "note": "Readonly log absence is diagnostic only and does not establish why authentication did not start. Original r6 remains failed. QA9 has only offline guard qualification.",
+  "qa9_device_run_performed": false,
+  "qa9_driver_sha256": "4d20ac12535e592da591b5c63cf7971ef2443c6b219f36e250aac2074fd3ce1e",
+  "qa9_mac_private_source": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/android_live.revision9.py",
+  "r6_phone_checks_passed": 1,
+  "r6_phone_passed": false,
+  "r6_readonly_jobs": [
+    {
+      "canonical_host": "pocket4",
+      "exit_code": 0,
+      "job_id": "1a1b01f913b-fc05-6e43",
+      "output_durable": true,
+      "public_file": "r6-readonly-log-metadata.json",
+      "state": "succeeded"
+    },
+    {
+      "canonical_host": "pocket4",
+      "exit_code": 0,
+      "job_id": "1a1b0265935-fc05-6e91",
+      "output_durable": true,
+      "public_file": "r6-owned-process-framework-diagnostic.json",
+      "state": "succeeded"
+    }
+  ],
+  "r6_release_job": {
+    "canonical_host": "pocket4",
+    "exit_code": 0,
+    "job_id": "1a1b027d7d9-fc05-6ea1",
+    "output_durable": true,
+    "state": "succeeded"
+  },
+  "schema": 1,
+  "scope": "c5_qa9_pre_device_binding_and_r6_preservation"
+}

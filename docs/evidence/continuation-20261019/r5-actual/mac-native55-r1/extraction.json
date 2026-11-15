@@ -1,0 +1,26 @@
+{
+  "files": [
+    {
+      "bytes": 54220,
+      "local_name": "summary.json",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/summary.json",
+      "sha256": "2aabd021e20e5de6e640e4a88e1496dafb7e0a25d0a14de10a8efad9e322c79a",
+      "tool_eof": true,
+      "tool_version": "16777244:66384885:54220:1792398736435864635:1792398736436123349"
+    },
+    {
+      "bytes": 1336,
+      "local_name": "git-materialization.json",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de-object-git-materialization.json",
+      "sha256": "8de04dde85339784f959290f6da46474b7f882f009e5085baf578912f5349305",
+      "tool_eof": true,
+      "tool_version": "16777244:66379715:1336:1792398354038402714:1792398354038630467"
+    }
+  ],
+  "main_owner_files_extracted": false,
+  "normalization_performed": false,
+  "retrieval_bytes": 67305,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-actual-first-retrieval-r1.json",
+  "retrieval_sha256": "3dd40f26042a67a709a1734d21f6105dce1a38615ebda2df04bd5e50b08f03d0",
+  "schema": "heptabao.exact-returned-public-evidence-extraction.v1"
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "1331c0",
+  "wall_time_seconds": 0.000026009,
+  "exit_code": 0,
+  "original_token_count": 316,
+  "output": "{\"schema\":\"heptabao.refresh-original-worker-channel.local.r1\",\"ok\":true,\"checks\":15,\"passed\":15,\"cases\":[{\"name\":\"private_handoff_complete_original_capture\",\"passed\":true},{\"name\":\"old_or_other_ordinal_capture_refused\",\"passed\":true},{\"name\":\"unlisted_input_authority_refused\",\"passed\":true},{\"name\":\"noncanonical_private_bytes_refused\",\"passed\":true},{\"name\":\"stdin_or_shared_channel_descriptor_refused\",\"passed\":true},{\"name\":\"constructor_refusal_retires_both_original_pipes\",\"passed\":true},{\"name\":\"partial_original_io_complete_once\",\"passed\":true},{\"name\":\"explicit_parent_refusal_blocks_all_later_dispatch\",\"passed\":true},{\"name\":\"unrelated_parent_reply_is_unknown_and_not_replayed\",\"passed\":true},{\"name\":\"eof_after_request_is_unknown\",\"passed\":true},{\"name\":\"expired_before_request_does_not_dispatch\",\"passed\":true},{\"name\":\"response_after_deadline_never_authorizes_send\",\"passed\":true},{\"name\":\"oversized_response_refuses_without_second_request\",\"passed\":true},{\"name\":\"duplicate_response_field_refused\",\"passed\":true},{\"name\":\"failed_close_does_not_skip_or_retry_other_pipe\",\"passed\":true}],\"syntheticInjectedIo\":true,\"actualMacQualified\":false,\"providerDispatches\":0,\"productionSourceReads\":0,\"productionMutations\":0,\"realKernelPipeQualification\":false}\n"
+}

@@ -1,0 +1,31 @@
+{
+  "configuredAgentPathResolutionExecuted": false,
+  "credentialRowsRead": 0,
+  "fullConsumerCoverageProven": false,
+  "gatewayOriginalPrintCount": 2,
+  "gatewayPrintMaximumSeconds": 8,
+  "inventoryOriginalChildren": 1,
+  "launcherBytes": 253692,
+  "launcherSha256": "5c3d59c45baebc667daf7e32cd03957be180bedee9609906c08ccaa7c6c300c3",
+  "memoryCommandMaximumSeconds": 3,
+  "memoryOriginalCommandCount": 1,
+  "productionWrites": 0,
+  "providerCalls": 0,
+  "publicScope": "ordinal metadata, scalar memory, finite registered gateway family, source-code pins",
+  "registryPathsGrantAdditionalDatabaseOpenAuthority": false,
+  "runningPluginMemoryFlagsProven": false,
+  "schema": "heptabao.current-production-source-inventory-preparation.public.r2",
+  "serviceMutations": 0,
+  "sharedSeconds": 45,
+  "sourcePins": {
+    "capture_current_database_inventory_r2.py": "00bab7c4ec400d30d8829230887f35389ec39db26cd660a1551fa3b186bdc3e3",
+    "mac_current_database_inventory_r1.py": "7cce171427acb9528fb4425ea254280fffb600b8522cde10dc30a4f0eb7707ef",
+    "mac_current_gateway_observation_r2.py": "bc558d3c58d81db4c16cad25e728512564931c2b32b9fb7c10ebc915a7036ecb",
+    "mac_gateway_local_fallback_r1.py": "d113b6009dfb5d0c6b4701ae382f62b11817cf9038f032547375d95c0e10d905",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_owned_commands_r1.py": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530",
+    "mac_owned_launchd_r3.py": "19c131fa1952a48e99f521fee024bb9ef34ccc94901cc604b0c75c7424689031",
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+  },
+  "supervisorSeconds": 70
+}

@@ -1,0 +1,33 @@
+{
+  "assembled": {
+    "bytes": 106163,
+    "path": "/workspace/scratch/c9fe536787d9/ha-current-work/launch_ha128_current_r1.py",
+    "sha256": "4ff02b869535c4acec1eb9586c897d281384bd900af15b91a503f64153b104e7"
+  },
+  "assembled_bytes_reconstructed_exactly": true,
+  "full_replacement_qualified": false,
+  "product_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "product_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "production_cutover": false,
+  "qa_commit": "af91ec0cecbb1c0bd717095d6d8696a3f73a1cee",
+  "reconstructed_python_source_pins": 613,
+  "required_case_count": 128,
+  "review_scope": "local_source_and_git_blob_pin_reconstruction_only",
+  "reviewed_boundaries": [
+    "exact official history full34 input admission",
+    "before_and_after frozen source and whole dependency pins",
+    "unchanged exact 128 case cohort and original child/request budgets",
+    "all three newly owned roots and normal native build receipts",
+    "failure path finally cleanup independently attempts each owned node and mesh",
+    "foreground watchdog ownership and failed cleanup prevent qualification",
+    "final success requires complete unique case set and source/artifact stability"
+  ],
+  "reviewer": "x230_migration",
+  "runtime_executed": false,
+  "schema": "heptabao.independent-static-launcher-review.v1",
+  "status": "reviewed_no_blocking_issue",
+  "syntax_compile_passed": true,
+  "x230_inputs_match_actual_completed_relay_and_qualification": true,
+  "x230_native_build_receipt_sha256": "25263aa341d5525570da0c950ff519ed808110fc301c63fab7b1611015b7fa8e",
+  "x230_server_sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c"
+}

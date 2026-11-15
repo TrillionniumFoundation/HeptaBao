@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.permanent-complete-runtime-backup-source.r1",
+  "actualExecuted": false,
+  "launcher": {
+    "bytes": 118021,
+    "sha256": "3c11cfe77a1f34331ae00ddeb6731605314272618249acc574e426806d00da2b"
+  },
+  "sources": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_production_t5_guard_r1.py": {
+      "bytes": 13379,
+      "sha256": "9f0b032264c4dd5db45478f08c1cdbc92354ac3153b2ed4d18ef2aab30b139f1"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "main3_http_complete.py": {
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    },
+    "permanent_recovery_api_r1.py": {
+      "bytes": 7445,
+      "sha256": "d94e97036d3c6919d86e07d0f231af3269055812cb31cf133115301c6bcf8e6e"
+    },
+    "complete_cold_tree_backup_r2.py": {
+      "bytes": 18781,
+      "sha256": "bdd557f5cda36beace0dbbaac7f900b5f54e75ae5b7d33340b07e3ae8fd74283"
+    }
+  },
+  "parentSeconds": 300,
+  "supervisorSeconds": 330,
+  "actualOriginalNormalServerLockProofRequired": true,
+  "originalDataLockHeldThroughCopyRestoreAndColdLifecycle": true,
+  "fullRuntimeTreeNoExclusions": true,
+  "newBackupAndRecoveryDirectoriesOnly": true,
+  "restoredExecutableFromBackup": true,
+  "kernelDenyOriginalT5RuntimeRequired": true,
+  "originalSeparateHomeUnsealCustodyRequired": true,
+  "currentCredentialOrProviderActions": 0,
+  "productionBackupQualified": false
+}

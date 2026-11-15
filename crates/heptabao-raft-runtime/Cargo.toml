@@ -5,7 +5,20 @@ edition.workspace = true
 rust-version.workspace = true
 publish = false
 
+[features]
+default = []
+# Fixed-label private synthetic admission diagnostics; no authority changes.
+private-native-admission-diagnostic = []
+# Durable native objects and V6 root CAS. Service admission still requires its
+# original Actor/clock, real key custody and authenticated majority durability.
+native-v6-raft-objects = ["dep:heptabao-filesystem-guard"]
+# Compatibility entry for the existing isolated native qualification fixtures.
+experimental-v6-raft-objects = ["native-v6-raft-objects"]
 [dependencies]
+base64 = "=0.22.1"
+crc32fast = "=1.5.2"
+heptabao-filesystem-guard = { path = "../heptabao-filesystem-guard", optional = true }
+sha2 = "=0.10.9"
 futures = "=0.3.34"
 openraft = { version = "=0.10.0-alpha.34", default-features = false, features = ["serde", "tokio-rt", "type-alias"] }
 openraft-memstore = { version = "=0.10.0-alpha.34" }

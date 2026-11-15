@@ -1,0 +1,7 @@
+{
+  "chunk_id": "a1703e",
+  "wall_time_seconds": 0.000031006,
+  "exit_code": 0,
+  "original_token_count": 225,
+  "output": "{\"actualMacRun\": false, \"cases\": [{\"case\": \"N01_unchanged_link_count_allowed\", \"passed\": true}, {\"case\": \"N02_single_owned_child_link_allowed\", \"passed\": true}, {\"case\": \"N03_two_extra_links_refused\", \"passed\": true}, {\"case\": \"N04_replaced_directory_inode_refused\", \"passed\": true}, {\"case\": \"N05_parent_owner_change_refused\", \"passed\": true}, {\"case\": \"N06_parent_mode_change_refused\", \"passed\": true}, {\"case\": \"N07_actual_local_own_mkdir_reproduces_old_guard\", \"passed\": true}], \"localFilesystemObservation\": {\"heldParentFirstFiveUnchanged\": true, \"onlyOwnMkdirLinkCountIncreasedOnce\": true, \"originalDescriptorClosedOnce\": true, \"originalFirstSixComparisonRejected\": true}, \"ok\": true, \"passed\": 7, \"productionActions\": 0, \"schema\": \"heptabao.service-parent-generation-local.r2\", \"templateSha256\": \"1e1265073f901323776b7f1bf44e5f22dce433ce2c880a1f51e8426b96bd61ec\"}\nr1-to-r2 exact diff saved\n"
+}

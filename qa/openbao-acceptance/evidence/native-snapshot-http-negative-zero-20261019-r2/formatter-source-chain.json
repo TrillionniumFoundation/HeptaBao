@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.actual-rustfmt-source-chain.v1",
+  "author_overlay_sha256": "fe11e037beda834b72df2c617e7db2e13bd34f8c5e83303eb0176492fc8d740e",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "rustfmt_actual_receipt_sha256": "645f2bb12f0edc379fd7c15e215cfb693968b2b4df6c13a423f2f35085a58170",
+  "format_only": true,
+  "runtime": "Rust 1.98.0 toolchain / actual Mac",
+  "actual_rust_compilation_performed": false,
+  "actual_rust_tests_executed": 0,
+  "original_additional_http_actual_passed": 1,
+  "original_additional_http_required": 3,
+  "files": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs",
+      "source_path": "crates/heptabao-server/src/auth_wrapped_reply110.rs",
+      "before_sha256": "5412eb636f2b63d6fdeee50ce6e8cd0e223b400d9d550fe9b702943f35b59dca",
+      "after_bytes": 108487,
+      "after_sha256": "d9ed62153f3e08939981d58a0e9ae8cbaeecd3c7332dcbd4bfed025e525f10fd",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-0.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-1.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-2.json",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/auth_wrapped_reply110.rs.chunk-3.json"
+      ]
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/http_snapshot_accept_tests.rs",
+      "source_path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "before_sha256": "64ff7aa31b6575a232ee50ce4a6b32593b1358775954154499067819a6a9d627",
+      "after_bytes": 25103,
+      "after_sha256": "acc6d70d514daa2e7b41073ae08e918c1c57a433210cb3a1063132c6dc83d758",
+      "retrieval_chunks": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/http-negativezero-r2-fmt-20261019-r2/http_snapshot_accept_tests.rs.chunk-0.json"
+      ]
+    }
+  ],
+  "failed_prior_formatter_attempt": "r1 failed resolving absent #[path] child modules in the isolated two-file directory; original stderr/version retained, not a product compilation result",
+  "successful_formatter_scope": "r2 format and --check explicitly used --config skip_children=true on only the two listed Rust files",
+  "raw_retrievals": [
+    {
+      "path": "actual-mac-fmt-r1-failure-retrieval.json",
+      "size": 1350,
+      "sha256": "17d631eeef6154629b354113350353fb58093d090705b3a17738dcbdf6d5801d"
+    },
+    {
+      "path": "actual-mac-fmt-r2-retrieval.json",
+      "size": 186074,
+      "sha256": "21e10810ec1be65ca88a25bdb07f507b9f5dc0a9c268afba48dfa1ada7c45de1"
+    }
+  ]
+}

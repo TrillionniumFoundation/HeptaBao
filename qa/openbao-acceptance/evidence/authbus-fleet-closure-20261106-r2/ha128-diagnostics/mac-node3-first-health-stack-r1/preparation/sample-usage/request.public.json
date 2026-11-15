@@ -1,0 +1,13 @@
+{
+  "host": "main",
+  "executable": "/usr/bin/sample",
+  "args": [
+    "-h"
+  ],
+  "env": {
+    "LC_ALL": "C",
+    "LANG": "C"
+  },
+  "timeout_seconds": 15,
+  "idempotency_key": "mac-ha-node3-sample-usage-readonly-20261106-r1"
+}

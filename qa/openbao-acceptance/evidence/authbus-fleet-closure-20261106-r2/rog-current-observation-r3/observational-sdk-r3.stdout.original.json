@@ -1,0 +1,1 @@
+{"credentialSourceQualified": false, "errors": 0, "failures": 0, "passed": true, "remoteExecution": false, "schema": "heptabao.rog-observational-sdk-guards.r3", "sdkImported": false, "sourceBytes": 17242, "sourceSha256": "49f99c605d4b4b9d4e60adc1b418fead0460248bedb4a650f3a7af0fd276ee84", "syntheticLocalOnly": true, "tests": 12}

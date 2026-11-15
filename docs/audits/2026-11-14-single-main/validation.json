@@ -1,0 +1,305 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "audit_date": "2026-11-14",
+  "local_prepublication_commit": "a9de837764984c182ad78206b50cb4775ba8a991",
+  "local_prepublication_tree": "6feaf3b893276e9795c5a1b00dae2ba09747fe64",
+  "identity_note": "Local helper commit identifiers describe preparation. GitHub publication reconstructs and verifies the complete final tree, then retains all original remote histories as merge parents. Preparation runs are not exact-remote-commit attestations.",
+  "native_environment": {
+    "rust": "1.98.0",
+    "CARGO_BUILD_JOBS": "1 for check, lint and scoped executable tests",
+    "LIBCLANG_PATH": "/home/agent/.local/lib/python3.12/site-packages/clang/native",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+    "AF_UNIX": "denied by host"
+  },
+  "results": [
+    {
+      "check": "workspace module closure",
+      "result": "passed",
+      "modules": 53,
+      "log": "logs/modules-final.log"
+    },
+    {
+      "check": "full workspace compilation including all targets",
+      "result": "passed",
+      "command": "cargo check --locked --workspace --all-targets",
+      "log": "logs/check-integration.log",
+      "note": "Three unused test-helper warnings were subsequently removed; strict clippy below reran all targets."
+    },
+    {
+      "check": "strict workspace lint",
+      "result": "passed",
+      "command": "cargo clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+      "log": "logs/clippy-integration.log"
+    },
+    {
+      "check": "Rust formatting",
+      "result": "passed",
+      "command": "cargo fmt --all -- --check"
+    },
+    {
+      "check": "repository Python suite",
+      "result": "passed",
+      "passed": 300,
+      "scope": "tests/repository",
+      "log": "logs/tests-repository.log"
+    },
+    {
+      "check": "workflow security Python suite",
+      "result": "passed",
+      "passed": 80,
+      "scope": "tests/security",
+      "log": "logs/tests-security.log"
+    },
+    {
+      "check": "delivery gate ownership validator",
+      "result": "passed"
+    },
+    {
+      "check": "workflow trust validator",
+      "result": "passed",
+      "workflows": 42,
+      "note": "Static workflow/token/action trust controls, not arbitrary-code sandboxing."
+    },
+    {
+      "check": "OpenBao 2.7.1 release denominator validator",
+      "result": "passed",
+      "security_rows": 15,
+      "feature_rows": 11,
+      "gates": 11,
+      "note": "Structural gate coverage only; not a complete compatibility verdict."
+    },
+    {
+      "check": "initial acceptance Python suite",
+      "result": "failed",
+      "total": 1765,
+      "passed": 1759,
+      "errors": 3,
+      "skipped": 3,
+      "log": "logs/tests-acceptance.log",
+      "note": "One real rolling cleanup API mismatch was fixed. Two environment admission errors remain separately recorded."
+    },
+    {
+      "check": "final acceptance Python suite",
+      "result": "failed_environment_admission",
+      "total": 1766,
+      "passed": 1761,
+      "errors": 2,
+      "skipped": 3,
+      "log": "logs/tests-acceptance-final.log",
+      "remaining_errors": [
+        "AF_UNIX socket creation refused with EPERM",
+        "native system loader rejected by owned bounded regular-file admission"
+      ],
+      "note": "Original assertions and admission requirements remain intact."
+    },
+    {
+      "check": "Python client suite on system Python 3.13",
+      "result": "failed_environment_admission",
+      "total": 224,
+      "passed": 218,
+      "errors": 2,
+      "skipped": 4,
+      "log": "logs/tests-clients.log",
+      "remaining_errors": [
+        "Two AF_UNIX socket creation permission errors"
+      ],
+      "note": "Existing Linux/platform skips retained; required seal constants are available in this interpreter."
+    },
+    {
+      "check": "full workspace native test compilation",
+      "result": "failed_resource_limit",
+      "command": "cargo test --locked --workspace --all-targets --no-fail-fast --no-run",
+      "log": "logs/build-integration-r2.log",
+      "note": "After correcting available Clang builtin-header discovery, server rustc code generation was terminated by SIGKILL. This is not a workspace native test pass."
+    },
+    {
+      "check": "initial native compilation setup",
+      "result": "failed_environment_setup",
+      "log": "logs/build-integration.log",
+      "note": "Initial libclang invocation lacked stddef.h include discovery; subsequently configured using the installed GCC builtin include path."
+    },
+    {
+      "check": "credential, vault, edge and renderer executable targets",
+      "command": "cargo test --locked -p heptabao-credential-broker -p heptabao-personal-vault -p heptabao-personal-edge -p heptabao-agent-renderer --all-targets --no-fail-fast -- --test-threads=1",
+      "result": "failed_environment_admission",
+      "total": 39,
+      "passed": 30,
+      "failed": 9,
+      "log": "logs/tests-integrated-credentials.log",
+      "note": "Nine broker process_e2e cases report server io_failure before UnixListener startup. Independent socket creation reproduces AF_UNIX EPERM while AF_INET and socketpair are allowed (logs/af-unix-diagnostic.log). No failing case is counted as a pass. All vault, edge and renderer targets passed."
+    },
+    {
+      "check": "snapshot and HA merge guards",
+      "result": "passed",
+      "passed": 75,
+      "log": "logs/qa-merge-guards.log"
+    },
+    {
+      "check": "historical rejected-process retirement",
+      "result": "passed",
+      "passed": 31,
+      "log": "logs/qa-legacy-retirement.log"
+    },
+    {
+      "check": "rolling rejected-process retirement",
+      "result": "passed",
+      "passed": 38,
+      "log": "logs/qa-rolling-retirement.log"
+    },
+    {
+      "check": "final startup cleanup controls",
+      "result": "passed",
+      "passed": 27,
+      "log": "logs/ha-final-cleanup-tests-r2.log"
+    },
+    {
+      "check": "real filesystem browser installer guards",
+      "result": "passed",
+      "passed": 17,
+      "log": "logs/browser-installer-guards.log"
+    },
+    {
+      "check": "Firefox executable staging guards",
+      "result": "passed",
+      "passed": 7,
+      "log": "logs/firefox-staging-guards.log"
+    },
+    {
+      "check": "Chromium executable staging guards",
+      "result": "passed",
+      "passed": 4,
+      "log": "logs/browser-live-staging-guards.log"
+    },
+    {
+      "check": "credentials workflow path guard",
+      "result": "passed",
+      "passed": 1
+    },
+    {
+      "check": "current and historical Kubernetes fixture/custody guards",
+      "result": "passed",
+      "passed": 33,
+      "provenance": "independent governance review before cherry-pick"
+    },
+    {
+      "check": "Kubernetes CI ownership guards",
+      "result": "passed",
+      "passed": 8,
+      "provenance": "independent governance review before cherry-pick"
+    },
+    {
+      "check": "fresh real KIND cluster / OpenBao 2.7.1 renewal comparison",
+      "result": "not_run_locally",
+      "reason": "Docker unavailable; fresh GitHub Actions required"
+    },
+    {
+      "check": "final-tree full GitHub Actions qualification",
+      "result": "pending_publication",
+      "note": "Fresh run URLs and final conclusions are recorded on the consolidation PR; prior runs are not inherited."
+    }
+  ],
+  "retained_logs": [
+    {
+      "path": "logs/build-integration.log",
+      "bytes": 9871,
+      "sha256": "ce6982c97eee2459040e005e278ab371b81dce90900daa32424276a425e036c6"
+    },
+    {
+      "path": "logs/build-integration-r2.log",
+      "bytes": 26364,
+      "sha256": "2f1c5c1dc651094d6f55e712eb90e5d40a56f8eef26f06ebe13ff7ccea7f0ce1"
+    },
+    {
+      "path": "logs/check-integration.log",
+      "bytes": 15828,
+      "sha256": "24727fc91e57bf0a10cba9808263c51593d8bdefd5a678194c77942989f6ab52"
+    },
+    {
+      "path": "logs/clippy-integration.log",
+      "bytes": 6215,
+      "sha256": "b648b1cb525900b3d1f41be4a25b6fb7c0fa1cab6cb19493a232cb08f57cd490"
+    },
+    {
+      "path": "logs/modules-final.log",
+      "bytes": 4021,
+      "sha256": "b8f987f9fceae71b7685f8377ffc7f7c4a9d35f14bbcca20108d90b1ac98a7f8"
+    },
+    {
+      "path": "logs/tests-repository.log",
+      "bytes": 54037,
+      "sha256": "3f60f9bd6ba9504f406a1427ee898d351228c0148ceb839ecd753e8cec163c67"
+    },
+    {
+      "path": "logs/tests-security.log",
+      "bytes": 10989,
+      "sha256": "36bfd4cc0004dbd15bbea0f8e8b00e71af96037cabc0491336dd30275525db91"
+    },
+    {
+      "path": "logs/tests-acceptance.log",
+      "bytes": 327164,
+      "sha256": "d5a9694eeef5218761ec7276d1867fc06d63353933f1d027f132fdb532583c06"
+    },
+    {
+      "path": "logs/tests-acceptance-final.log",
+      "bytes": 326260,
+      "sha256": "5b53044ed2f2262f7b05ccf878923da7afa66f4bbcaced2891f237236f6f3539"
+    },
+    {
+      "path": "logs/tests-clients.log",
+      "bytes": 38302,
+      "sha256": "121a84312f33937366c5103248482af707656a79ce925aa0947d73c065415189"
+    },
+    {
+      "path": "logs/tests-integrated-credentials.log",
+      "bytes": 9240,
+      "sha256": "c7dbda07bd67227967703cb09e16f5d2157ead0f5177ccb04cae4e82646f1454"
+    },
+    {
+      "path": "logs/qa-merge-guards.log",
+      "bytes": 13142,
+      "sha256": "77d476475cf899c9fb6946c4886d063361891871d48072f248cf264d4c68510c"
+    },
+    {
+      "path": "logs/qa-legacy-retirement.log",
+      "bytes": 6027,
+      "sha256": "d9967ca8202e987c49300a40617f4000bfa493a98711d6ebfe2a261384f31d3a"
+    },
+    {
+      "path": "logs/qa-rolling-retirement.log",
+      "bytes": 7350,
+      "sha256": "d4f99b0cb0b8ec57e63c34fd232c020bb93441565ce629eaf8303525df106425"
+    },
+    {
+      "path": "logs/ha-final-cleanup-tests-r2.log",
+      "bytes": 4423,
+      "sha256": "b57034c48d6d9e3675f198c4cefcdd835f708cdfdc15ce3dd9ef5b192c318c15"
+    },
+    {
+      "path": "logs/browser-installer-guards.log",
+      "bytes": 2736,
+      "sha256": "99484a507081dec1ac087bf9719bd41160ec59e99547a6485e06ae0884c8e40f"
+    },
+    {
+      "path": "logs/browser-live-staging-guards.log",
+      "bytes": 712,
+      "sha256": "7ee2d1ebc6f084d4b516dedefac2c667907ba65b5e7c7bdefbc171b27418bdc3"
+    },
+    {
+      "path": "logs/firefox-staging-guards.log",
+      "bytes": 1054,
+      "sha256": "45e82f0b3f0a63154806a1b12b12d7442e12abafa79b74a0d5624601a5ca23a2"
+    },
+    {
+      "path": "logs/af-unix-diagnostic.log",
+      "bytes": 116,
+      "sha256": "ea676a4d22f5d6eea778d4de228f59694fc7b7f28f69d70dd2521fa4d879a667"
+    }
+  ],
+  "historical_failed_runs": [
+    "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42293086208",
+    "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42338444046",
+    "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42320223033"
+  ],
+  "qualification": "Development-source consolidation only; full workspace executable, physical HA, provider and production qualification are not claimed."
+}

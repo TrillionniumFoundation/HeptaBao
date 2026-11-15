@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json\",\"sha256\":\"b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5\",\"size\":285431,\"version\":\"66306:38446733:285431:1793994193300583016:1793994193302583092\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,235 @@
+{
+  "schema": "heptabao.authbus-wal-verification.v1",
+  "candidateFileSha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+  "syntheticOnly": true,
+  "productionCutover": false,
+  "fullAuthbusQualified": false,
+  "hosts": [
+    {
+      "host": "main",
+      "filesystem": "ext4",
+      "results": [
+        {
+          "originalPath": "/home/qian-qi/heptabao-authbus-wal-durability-20261103-r1/evidence/durability.public.json",
+          "originalSha256": "62b52595b75256bc12f6db818e320cc3edc9d2813796478d0bc9a39e908b1a8a",
+          "receipt": {
+            "schema": "heptabao.authbus-wal-actual-host-run.v1",
+            "host": "main",
+            "case": "durability",
+            "exitCode": 0,
+            "elapsedSeconds": 2.390091237029992,
+            "stdoutSha256": "4678e738ea4ff40908fb97aaa2ce98e6f25c52493a9885560ec4cb0ef21038ce",
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sourceHashes": {
+              "package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+              "provenance.json": "94dc27f9af243a6c305b6ae5bbca5c600463f75ab55a5eb29503223bc7a45c9e",
+              "README.md": "9dea86400f5b9ca164bc83f691b403463c20b16725b4329b53905f351d065ce3",
+              "tests/durability-child.mjs": "3ac44904b00dd4308c0998ac862b935a6e2a0f6694dda7a82b3d2322bc6459c6",
+              "tests/benchmark.mjs": "95e034cb894d117e93e8d2cb0e478fb32260db99762ab4ad5162094e93cd5375",
+              "tests/durability.test.mjs": "cc737cf86e87459040a5d71eb1fe30855e50f029bd4fb4887d09355a9699d5f4",
+              "plugin/strict-bao-client.js": "448bf680904b692aabfee38e2a6226008b5879a0bb68746200da21486afd35cd",
+              "plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+              "plugin/bounded-outbox.js": "d72c45a334ea06c7d1862c7622b905c56f481d90e0406c412d39c29c98378734",
+              "plugin/production-client.js": "a8ce51ccce23ef75d2b42b21509154d7297b45d51b2a9053d7a197f5b3b7da92"
+            },
+            "productionModified": false,
+            "syntheticCredentialsOnly": true
+          }
+        },
+        {
+          "originalPath": "/home/qian-qi/heptabao-authbus-wal-durability-20261103-r1/evidence/cost.public.json",
+          "originalSha256": "b36eaf110a09d90273121ec5ecbe2842d5bdcb7a4a7ae29fc9f4fa577efa66e4",
+          "receipt": {
+            "schema": "heptabao.authbus-wal-actual-host-run.v1",
+            "host": "main",
+            "case": "cost",
+            "exitCode": 0,
+            "elapsedSeconds": 3.8973038740223274,
+            "stdoutSha256": "edef3fa451f7f9ee93506cb83cb5426bd4352dca214e6ec598e1b5c9218de827",
+            "stderrSha256": "2b39823426c64f146d3c02daa18657f68b3a46ef0c22243c52dff4fcee9dc43d",
+            "sourceHashes": {
+              "package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+              "provenance.json": "94dc27f9af243a6c305b6ae5bbca5c600463f75ab55a5eb29503223bc7a45c9e",
+              "README.md": "9dea86400f5b9ca164bc83f691b403463c20b16725b4329b53905f351d065ce3",
+              "tests/durability-child.mjs": "3ac44904b00dd4308c0998ac862b935a6e2a0f6694dda7a82b3d2322bc6459c6",
+              "tests/benchmark.mjs": "95e034cb894d117e93e8d2cb0e478fb32260db99762ab4ad5162094e93cd5375",
+              "tests/durability.test.mjs": "cc737cf86e87459040a5d71eb1fe30855e50f029bd4fb4887d09355a9699d5f4",
+              "plugin/strict-bao-client.js": "448bf680904b692aabfee38e2a6226008b5879a0bb68746200da21486afd35cd",
+              "plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+              "plugin/bounded-outbox.js": "d72c45a334ea06c7d1862c7622b905c56f481d90e0406c412d39c29c98378734",
+              "plugin/production-client.js": "a8ce51ccce23ef75d2b42b21509154d7297b45d51b2a9053d7a197f5b3b7da92"
+            },
+            "productionModified": false,
+            "syntheticCredentialsOnly": true,
+            "cost": {
+              "schema": "heptabao.authbus-wal-full-cost.v1",
+              "ok": true,
+              "syntheticOnly": true,
+              "providerCalled": false,
+              "productionModified": false,
+              "durabilityRelaxed": false,
+              "durableCommitsPerReport": 6,
+              "nodeVersion": "v22.23.4",
+              "platform": "linux",
+              "baselineSha256": "24c88b017679b9e61eae7e47d2768e055799f651ab0c0aae76703305e40c7955",
+              "candidateSha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+              "samples": [
+                {
+                  "round": 0,
+                  "mode": "DELETE_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 867.8959690000007,
+                  "elapsedMs": 1199.535673
+                },
+                {
+                  "round": 0,
+                  "mode": "WAL_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 304.3046049999998,
+                  "elapsedMs": 641.946038
+                },
+                {
+                  "round": 1,
+                  "mode": "WAL_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 297.9503050000003,
+                  "elapsedMs": 637.994782
+                },
+                {
+                  "round": 1,
+                  "mode": "DELETE_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 850.7953639999996,
+                  "elapsedMs": 1216.2525649999998
+                }
+              ],
+              "aggregateSpeedup": 1.8874218247059267
+            }
+          }
+        },
+        {
+          "originalPath": "/home/qian-qi/heptabao-authbus-wal-durability-20261103-r1/evidence/durability.stdout",
+          "originalSha256": "4678e738ea4ff40908fb97aaa2ce98e6f25c52493a9885560ec4cb0ef21038ce",
+          "stdout": "TAP version 13\n# (node:1118439) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n# (Use `node --trace-warnings ...` to show where the warning was created)\n# Subtest: existing DELETE state migrates without changing binding or revision; WAL keeps FULL and lock keeps DELETE\nok 1 - existing DELETE state migrates without changing binding or revision; WAL keeps FULL and lock keeps DELETE\n  ---\n  duration_ms: 32.042958\n  type: 'test'\n  ...\n# Subtest: SIGKILL at prepared preserves durable intent and never repeats an uncertain write\nok 2 - SIGKILL at prepared preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 327.434246\n  type: 'test'\n  ...\n# Subtest: SIGKILL at dispatched preserves durable intent and never repeats an uncertain write\nok 3 - SIGKILL at dispatched preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 239.916781\n  type: 'test'\n  ...\n# Subtest: SIGKILL at server_confirmed preserves durable intent and never repeats an uncertain write\nok 4 - SIGKILL at server_confirmed preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 300.985897\n  type: 'test'\n  ...\n# Subtest: SIGKILL at confirmed preserves durable intent and never repeats an uncertain write\nok 5 - SIGKILL at confirmed preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 313.969459\n  type: 'test'\n  ...\n# Subtest: quiescent backup after SIGKILL includes uncheckpointed WAL and restores exact confirmation without replay\nok 6 - quiescent backup after SIGKILL includes uncheckpointed WAL and restores exact confirmation without replay\n  ---\n  duration_ms: 248.011229\n  type: 'test'\n  ...\n# Subtest: two actual processes competing at the same local CAS revision produce one winner\nok 7 - two actual processes competing at the same local CAS revision produce one winner\n  ---\n  duration_ms: 177.049027\n  type: 'test'\n  ...\n# Subtest: OS-held operation lock excludes another process and releases after SIGKILL\nok 8 - OS-held operation lock excludes another process and releases after SIGKILL\n  ---\n  duration_ms: 320.67794\n  type: 'test'\n  ...\n# Subtest: known remote CAS rejection is durable and never retried after reopen\nok 9 - known remote CAS rejection is durable and never retried after reopen\n  ---\n  duration_ms: 208.457463\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2305.059027\n"
+        }
+      ]
+    },
+    {
+      "host": "x230",
+      "filesystem": "ext4",
+      "results": [
+        {
+          "originalPath": "/home/qian/heptabao-authbus-wal-20261103-r1/evidence/durability.public.json",
+          "originalSha256": "4474290c392580c1ee65592a8c395a88fc41430a8dd822f63c84b5a48304bbf2",
+          "receipt": {
+            "schema": "heptabao.authbus-wal-actual-host-run.v1",
+            "host": "x230",
+            "case": "durability",
+            "exitCode": 0,
+            "elapsedSeconds": 2.4298677216283977,
+            "stdoutSha256": "4f7fbd456bc71df6092b269c16d70b34cd55235d4f7e19bbb39269673f3907b9",
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sourceHashes": {
+              "README.md": "9dea86400f5b9ca164bc83f691b403463c20b16725b4329b53905f351d065ce3",
+              "provenance.json": "94dc27f9af243a6c305b6ae5bbca5c600463f75ab55a5eb29503223bc7a45c9e",
+              "package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+              "plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+              "plugin/strict-bao-client.js": "448bf680904b692aabfee38e2a6226008b5879a0bb68746200da21486afd35cd",
+              "plugin/bounded-outbox.js": "d72c45a334ea06c7d1862c7622b905c56f481d90e0406c412d39c29c98378734",
+              "plugin/production-client.js": "a8ce51ccce23ef75d2b42b21509154d7297b45d51b2a9053d7a197f5b3b7da92",
+              "tests/durability.test.mjs": "cc737cf86e87459040a5d71eb1fe30855e50f029bd4fb4887d09355a9699d5f4",
+              "tests/durability-child.mjs": "3ac44904b00dd4308c0998ac862b935a6e2a0f6694dda7a82b3d2322bc6459c6",
+              "tests/benchmark.mjs": "95e034cb894d117e93e8d2cb0e478fb32260db99762ab4ad5162094e93cd5375"
+            },
+            "productionModified": false,
+            "syntheticCredentialsOnly": true
+          }
+        },
+        {
+          "originalPath": "/home/qian/heptabao-authbus-wal-20261103-r1/evidence/cost.public.json",
+          "originalSha256": "79ad921a1b76310cf48a89d568715d35a0e5d4022671d6ac09a1adc60c1bbdda",
+          "receipt": {
+            "schema": "heptabao.authbus-wal-actual-host-run.v1",
+            "host": "x230",
+            "case": "cost",
+            "exitCode": 0,
+            "elapsedSeconds": 2.3521993537433445,
+            "stdoutSha256": "576022f27fd1359c966a492e3b4308660aea554ba57ee007b556ab40a60ef341",
+            "stderrSha256": "08717af0d9fc04ba316ef08a3d99193ecb68758a8e5366416f6a417fda4db9c2",
+            "sourceHashes": {
+              "README.md": "9dea86400f5b9ca164bc83f691b403463c20b16725b4329b53905f351d065ce3",
+              "provenance.json": "94dc27f9af243a6c305b6ae5bbca5c600463f75ab55a5eb29503223bc7a45c9e",
+              "package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+              "plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+              "plugin/strict-bao-client.js": "448bf680904b692aabfee38e2a6226008b5879a0bb68746200da21486afd35cd",
+              "plugin/bounded-outbox.js": "d72c45a334ea06c7d1862c7622b905c56f481d90e0406c412d39c29c98378734",
+              "plugin/production-client.js": "a8ce51ccce23ef75d2b42b21509154d7297b45d51b2a9053d7a197f5b3b7da92",
+              "tests/durability.test.mjs": "cc737cf86e87459040a5d71eb1fe30855e50f029bd4fb4887d09355a9699d5f4",
+              "tests/durability-child.mjs": "3ac44904b00dd4308c0998ac862b935a6e2a0f6694dda7a82b3d2322bc6459c6",
+              "tests/benchmark.mjs": "95e034cb894d117e93e8d2cb0e478fb32260db99762ab4ad5162094e93cd5375"
+            },
+            "productionModified": false,
+            "syntheticCredentialsOnly": true,
+            "cost": {
+              "schema": "heptabao.authbus-wal-full-cost.v1",
+              "ok": true,
+              "syntheticOnly": true,
+              "providerCalled": false,
+              "productionModified": false,
+              "durabilityRelaxed": false,
+              "durableCommitsPerReport": 6,
+              "nodeVersion": "v22.23.3",
+              "platform": "linux",
+              "baselineSha256": "24c88b017679b9e61eae7e47d2768e055799f651ab0c0aae76703305e40c7955",
+              "candidateSha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+              "samples": [
+                {
+                  "round": 0,
+                  "mode": "DELETE_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 188.68689399999977,
+                  "elapsedMs": 539.710307
+                },
+                {
+                  "round": 0,
+                  "mode": "WAL_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 154.23951899999827,
+                  "elapsedMs": 470.247247
+                },
+                {
+                  "round": 1,
+                  "mode": "WAL_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 132.64386100000024,
+                  "elapsedMs": 454.1584230000001
+                },
+                {
+                  "round": 1,
+                  "mode": "DELETE_FULL",
+                  "operations": 32,
+                  "commits": 192,
+                  "commitMs": 401.22131399999944,
+                  "elapsedMs": 750.4807069999999
+                }
+              ],
+              "aggregateSpeedup": 1.395697858495394
+            }
+          }
+        },
+        {
+          "originalPath": "/home/qian/heptabao-authbus-wal-20261103-r1/evidence/durability.stdout",
+          "originalSha256": "4f7fbd456bc71df6092b269c16d70b34cd55235d4f7e19bbb39269673f3907b9",
+          "stdout": "TAP version 13\n# (node:1695570) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n# (Use `node --trace-warnings ...` to show where the warning was created)\n# Subtest: existing DELETE state migrates without changing binding or revision; WAL keeps FULL and lock keeps DELETE\nok 1 - existing DELETE state migrates without changing binding or revision; WAL keeps FULL and lock keeps DELETE\n  ---\n  duration_ms: 32.925699\n  type: 'test'\n  ...\n# Subtest: SIGKILL at prepared preserves durable intent and never repeats an uncertain write\nok 2 - SIGKILL at prepared preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 283.809167\n  type: 'test'\n  ...\n# Subtest: SIGKILL at dispatched preserves durable intent and never repeats an uncertain write\nok 3 - SIGKILL at dispatched preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 216.659174\n  type: 'test'\n  ...\n# Subtest: SIGKILL at server_confirmed preserves durable intent and never repeats an uncertain write\nok 4 - SIGKILL at server_confirmed preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 362.929315\n  type: 'test'\n  ...\n# Subtest: SIGKILL at confirmed preserves durable intent and never repeats an uncertain write\nok 5 - SIGKILL at confirmed preserves durable intent and never repeats an uncertain write\n  ---\n  duration_ms: 297.63746\n  type: 'test'\n  ...\n# Subtest: quiescent backup after SIGKILL includes uncheckpointed WAL and restores exact confirmation without replay\nok 6 - quiescent backup after SIGKILL includes uncheckpointed WAL and restores exact confirmation without replay\n  ---\n  duration_ms: 262.684587\n  type: 'test'\n  ...\n# Subtest: two actual processes competing at the same local CAS revision produce one winner\nok 7 - two actual processes competing at the same local CAS revision produce one winner\n  ---\n  duration_ms: 194.088813\n  type: 'test'\n  ...\n# Subtest: OS-held operation lock excludes another process and releases after SIGKILL\nok 8 - OS-held operation lock excludes another process and releases after SIGKILL\n  ---\n  duration_ms: 276.063535\n  type: 'test'\n  ...\n# Subtest: known remote CAS rejection is durable and never retried after reopen\nok 9 - known remote CAS rejection is durable and never retried after reopen\n  ---\n  duration_ms: 188.459516\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2279.70251\n"
+        }
+      ]
+    }
+  ]
+}

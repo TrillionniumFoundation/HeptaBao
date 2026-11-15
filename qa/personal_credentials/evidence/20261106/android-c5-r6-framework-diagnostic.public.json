@@ -1,0 +1,26 @@
+{
+  "causal_case_proof": false,
+  "events": [],
+  "no_device_mutation": true,
+  "owned_processes": [
+    {
+      "package": "org.heptabao.synthetic.fixture",
+      "pid": 19157
+    },
+    {
+      "package": "org.heptabao.personal.preview",
+      "pid": 19275
+    },
+    {
+      "package": "org.heptabao.synthetic.fixture",
+      "pid": 19384
+    }
+  ],
+  "schema": 1,
+  "scope": "r6_exact_window_owned_process_framework_diagnostic",
+  "started_unix_ns": 1793956666815688856,
+  "time_window_device_clock": [
+    "11-06 17:03:20.000",
+    "11-06 17:04:12.000"
+  ]
+}

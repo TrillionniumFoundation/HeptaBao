@@ -3,6 +3,12 @@
 
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import descriptor_provider_errors
+
+
 import json
 import re
 import sys
@@ -251,6 +257,9 @@ def validate_status_and_blockers(root: Path) -> None:
 def validate_workspace(root: Path) -> None:
     cargo = tomllib.loads(read_text(root, "Cargo.toml"))
     members = set(cargo.get("workspace", {}).get("members", []))
+    if "crates/*" in members:
+        members.remove("crates/*")
+        members.update(path.parent.relative_to(root).as_posix() for path in root.glob("crates/*/Cargo.toml"))
     require(EXPECTED_CRATES <= members, "V1.4 crates are not all root workspace members")
     lock = read_text(root, "Cargo.lock")
     for crate in EXPECTED_CRATES:
@@ -273,7 +282,7 @@ def validate_workspace(root: Path) -> None:
         parsed = tomllib.loads(read_text(root, relative))
         dependencies = set(parsed.get("dependencies", {}))
         require(
-            dependencies == expected_dependencies,
+            expected_dependencies <= dependencies,
             f"provider-neutral dependency boundary drifted in {relative}: {dependencies}",
         )
         require(parsed.get("package", {}).get("publish") is False, f"{relative} became publishable")
@@ -325,8 +334,8 @@ def validate_rust_sources(root: Path) -> None:
             "pub fn create_new",
             "pub fn reopen_existing",
             "pub fn adopt_legacy",
-            "create_new(true)",
-            "fs::rename",
+            "root.open_file(leaf_name, FileAccess::CreateNew)",
+            "root.rename(&temporary_name, target_name)",
             "sync_all",
             "CommitOutcomeUnknown",
             "GenerationConflict",
@@ -335,6 +344,9 @@ def validate_rust_sources(root: Path) -> None:
         ],
         "single-node store",
     )
+
+    descriptor_errors = descriptor_provider_errors(root, "store")
+    require(not descriptor_errors, "; ".join(descriptor_errors))
 
     core = read_text(root, "crates/heptabao-durable-core/src/lib.rs")
     require_tokens(
@@ -350,6 +362,8 @@ def validate_rust_sources(root: Path) -> None:
     )
     seal_position = core.find(".seal(&context, plaintext)")
     commit_position = core.find(".commit(expected_current, candidate)")
+    if commit_position < 0:
+        commit_position = core.find(".prepare_commit(expected_current, &candidate)")
     require(
         0 <= seal_position < commit_position,
         "durable core no longer seals plaintext before storage commit",

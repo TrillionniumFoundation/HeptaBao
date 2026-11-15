@@ -1,0 +1,14 @@
+--- observed-r2/mac_owned_launchd_r3.py
++++ parser-candidate/mac_owned_launchd_r3.py
+@@ -76,6 +76,11 @@
+     for name in ('pid','runs','last exit code'):
+         if name in fields:
+             typed_value=fields[name]
++            if name=='last exit code' and typed_value=='(never exited)':
++                # An unexited registration has no successful exit observation.
++                # Keep None so actual_launchd_phase_exit_zero still rejects it.
++                fields[name]=None
++                continue
+             if name=='last exit code' and typed_value=='78: EX_CONFIG':
+                 typed_value='78'
+             need(re.fullmatch(r'-?[0-9]{1,10}',typed_value) is not None,'typed_launchctl_integer')

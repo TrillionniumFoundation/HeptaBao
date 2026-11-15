@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.native-linux-artifact-once-handoff.v1",
+  "status": "executor_launch_intent",
+  "started_utc": "2026-10-19T05:55:22.489333+00:00",
+  "controller_pid": 1775848,
+  "source_capsule": "/home/qian-qi/heptabao-next-gates-20261017/native-artifact55-0f1c-main-capsule-20261019-r1",
+  "source_capsule_sha256": "7ba7d276da01fa535ddc1a702bdf643931e439451054c43fa36ec3888c48f766",
+  "target_capsule": "/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-main-capsule-20261019-r1",
+  "ssh_alias": "x230-ts",
+  "automatic_retry": false,
+  "operations": [
+    {
+      "label": "x230-fresh-owner-preflight",
+      "argv": [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "x230-ts",
+        "python3 -c 'import json,os,platform,pwd; from pathlib import Path; b=Path('\"'\"'/home/qian/heptabao-continuation-20261019'\"'\"'); s=Path('\"'\"'/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-executor-20261019-r1-controller'\"'\"'); c=Path('\"'\"'/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-main-capsule-20261019-r1'\"'\"'); assert platform.node()=='\"'\"'qian-ThinkPad-X230'\"'\"' and platform.system()=='\"'\"'Linux'\"'\"' and platform.machine()=='\"'\"'x86_64'\"'\"'; assert os.geteuid()==1000 and pwd.getpwuid(os.geteuid()).pw_dir=='\"'\"'/home/qian'\"'\"'; assert b.resolve()==b and not s.exists() and not c.exists(); v=os.statvfs(b); assert v.f_bavail*v.f_frsize>2400000000; s.mkdir(mode=0o700); print(json.dumps(dict(hostname=platform.node(),machine=platform.machine(),uid=os.geteuid(),available_bytes=v.f_bavail*v.f_frsize,controller=str(s),capsule_absent=True)))'"
+      ],
+      "status": "completed",
+      "submission_count": 1,
+      "timeout": 30,
+      "exit_code": 0,
+      "stdout": "{\"hostname\": \"qian-ThinkPad-X230\", \"machine\": \"x86_64\", \"uid\": 1000, \"available_bytes\": 36048199680, \"controller\": \"/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-executor-20261019-r1-controller\", \"capsule_absent\": true}\n",
+      "stderr": ""
+    },
+    {
+      "label": "copy-exact-capsule",
+      "argv": [
+        "scp",
+        "-r",
+        "-p",
+        "-q",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-artifact55-0f1c-main-capsule-20261019-r1",
+        "x230-ts:/home/qian/heptabao-continuation-20261019/"
+      ],
+      "status": "completed",
+      "submission_count": 1,
+      "timeout": 300,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "copy-exact-executor",
+      "argv": [
+        "scp",
+        "-p",
+        "-q",
+        "/home/qian-qi/heptabao-next-gates-20261017/native-linux-artifact-tool-20261019-r1/native_linux_artifact_run.py",
+        "x230-ts:/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-executor-20261019-r1-controller/native_linux_artifact_run.py"
+      ],
+      "status": "completed",
+      "submission_count": 1,
+      "timeout": 30,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "x230-executor-launch-once",
+      "argv": [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "x230-ts",
+        "python3 -c 'import datetime,hashlib,json,os,subprocess,sys\nfrom pathlib import Path\nstage=Path('\"'\"'/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-executor-20261019-r1-controller'\"'\"'); base=Path('\"'\"'/home/qian/heptabao-continuation-20261019'\"'\"'); capsule=Path('\"'\"'/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-main-capsule-20261019-r1'\"'\"')\nscript=stage/\"native_linux_artifact_run.py\"\nassert hashlib.sha256(script.read_bytes()).hexdigest()=='\"'\"'d4206c72bded887e807563b85de45568a60b319f035097291d622160d91c3620'\"'\"'\nassert hashlib.sha256((capsule/\"capsule.json\").read_bytes()).hexdigest()=='\"'\"'/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-main-capsule-20261019-r1'\"'\"'_SHA\nargs=[sys.executable,\"-B\",str(script),\"execute\",\"--source\",str(base/\"source-0f1c\"),\"--manifest\",str(base/\"source-0f1c-manifest.json\"),\"--source-commit\",\"0f1c996136aae94e99c2b709a5797ffea479f6cd\",\"--source-tree\",\"8befd5cedfb7ccafee5f707e5985d49eeb78fb60\",\"--producer-runner-sha256\",\"38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc\",\"--capsule\",str(capsule),\"--capsule-sha256\",'\"'\"'/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-main-capsule-20261019-r1'\"'\"'_SHA,\"--expected-executor-hostname\",\"qian-ThinkPad-X230\",\"--output\",str(base/\"native-artifact55-0f1c-x230-actual-20261019-r1\")]\njournal=dict(schema=\"heptabao.x230-artifact-executor-once.v1\",status=\"intent_saved\",started_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),argv=args,submission_count=0,automatic_retry=False,compiled_on_executor=False)\ndef save():\n with open(stage/\"launch.json\",\"w\") as f:json.dump(journal,f,indent=2);f.write(\"\\n\");f.flush();os.fsync(f.fileno())\n (stage/\"launch.json\").chmod(0o600)\nassert not (stage/\"launch.json\").exists();save()\nwith open(stage/\"stdout.log\",\"xb\") as so,open(stage/\"stderr.log\",\"xb\") as se:\n p=subprocess.Popen(args,cwd=base/\"source-0f1c\",stdin=subprocess.DEVNULL,stdout=so,stderr=se,start_new_session=True)\njournal.update(status=\"running\",submission_count=1,executor_pid=p.pid,executor_pgid=os.getpgid(p.pid));save()\nprint(json.dumps(dict(status=\"running\",executor_pid=p.pid,launch=str(stage/\"launch.json\"),compiled_on_executor=False)),flush=True)\n'"
+      ],
+      "status": "completed",
+      "submission_count": 1,
+      "timeout": 30,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "  File \"<string>\", line 6\n    assert hashlib.sha256((capsule/\"capsule.json\").read_bytes()).hexdigest()=='/home/qian/heptabao-continuation-20261019/native-artifact55-0f1c-main-capsule-20261019-r1'_SHA\n                                                                                                                                                                         ^^^^\nSyntaxError: invalid syntax\n"
+    }
+  ]
+}

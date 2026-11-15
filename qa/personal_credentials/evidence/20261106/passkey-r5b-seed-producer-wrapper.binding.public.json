@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "scope": "exact_original_runtime_launch_argv_retrieved_by_idempotent_receipt",
+  "job_id": "1a1b01cfb0b-fc05-6e25",
+  "executable": "/usr/bin/python3",
+  "request_digest": "aa9482b8317b2deb64130455279283a2462d93c96f4628b5cd965df070ada942",
+  "request_fingerprint": 12291593010616676000,
+  "wrapper_sha256": "9fc9472b4995cd469b6157819432bfb98cd4a709d3d36f0abbe90f16eafb587f",
+  "wrapper_path": "/home/qq/heptabao-passkey-r5-input-20261106-r1/producer-wrapper.actual.py",
+  "reused_existing_job": true,
+  "seed_not_regenerated": true
+}

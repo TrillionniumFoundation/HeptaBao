@@ -1,0 +1,54 @@
+{
+  "actualArchivedKernelParse": {
+    "persistentInputs": "synthetic_not_actual_privileged_backup",
+    "pins": {
+      "iptables-filter.original.private.log": {
+        "bytes": 8521,
+        "sha256": "5ce8a18b540a54b78fcf5510f1f686cd924f460df85ec67c16d0672ee912fa22"
+      },
+      "nft.original.private.log": {
+        "bytes": 100231,
+        "sha256": "e3709076a468edd11d1b8338d3e4e7be0d8833b02cacd3af8cf897afcca3393a"
+      }
+    },
+    "result": {
+      "allOtherPersistentAndKernelSemanticsUnchanged": true,
+      "countersAndNftHandlesExcludedOnlyAsDeclared": true,
+      "existingUfwUserChainsComplete": true,
+      "opaqueMultiportRulesBoundToFullIptablesSameOrdinal": 0,
+      "ownedPeerFlows": [],
+      "ownedRulesPerView": 0
+    }
+  },
+  "errors": 0,
+  "failures": 0,
+  "firewallWrites": 0,
+  "inputs": {
+    "test_verify_ai395_ufw_phase_r1.py": {
+      "bytes": 12864,
+      "sha256": "41863b71eb3785de8e81ae04e45974b3a43ef293aada53f33f8a53259bfa8d0b"
+    },
+    "verify-ai395-ufw-28-guards.exec.original.json": {
+      "bytes": 3024,
+      "sha256": "a0d79f975aa2072fdb28234eaff7ded1006c37a9a253e99c96773887fadad60a"
+    },
+    "verify-ai395-ufw-28-guards.stdout.original.txt": {
+      "bytes": 2863,
+      "sha256": "3732b155275929a671e98cb2077a0a0562baea926dae29d6f227b39096bb1efb"
+    },
+    "verify-ai395-ufw-append-order-fix.diff": {
+      "bytes": 3719,
+      "sha256": "6fdeaa6460a858a2e9fc8d76cc5d4d3a11cc8d3529e6367cd0e324f59bf3ffbc"
+    },
+    "verify_ai395_ufw_phase_r1.py": {
+      "bytes": 19402,
+      "sha256": "334a14eeb265d9fb52988e2d681811cd013e0e00600ece730c3668a52f6eb99d"
+    }
+  },
+  "ok": true,
+  "productTestsRun": 0,
+  "remoteOperations": 0,
+  "schema": "heptabao.ai395-ufw-verifier-local-guards.r2",
+  "skipped": 0,
+  "testsRun": 28
+}

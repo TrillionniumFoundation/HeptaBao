@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-",
+      "rog"
+    ],
+    "created_unix_ms": 1794005611024,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1b3113210-fc05-8090",
+    "idempotency_key": "heptabao-rog-selected-sdk-custody-plan-20261106-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b3113210-fc05-8090",
+    "request_digest": "6465b2a31bb5617a2fb6998ef3cc37d8a66075642d16e76c4905a2e603201aa2",
+    "request_fingerprint": 7234384790054855034,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b3113210-fc05-8090"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b3113210-fc05-8090"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

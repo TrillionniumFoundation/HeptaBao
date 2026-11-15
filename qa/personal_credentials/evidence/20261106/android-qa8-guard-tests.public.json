@@ -1,0 +1,10 @@
+{
+  "driver_sha256": "44d6658109744bb3450eece3d68b36603dffe284d92655c7c04c474e23724007",
+  "exit_code": 0,
+  "schema": 1,
+  "scope": "local_driver_fault_regressions_no_adb_no_phone_qualification",
+  "stderr_sha256": "1c1c199aad32a864d4e4cf0a78d6e10b4d1ddaf4d93d5b16690649cba74e3122",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "tests": 8,
+  "tests_source_sha256": "c3ed49de97b4a8c3e81d74e6abe14eacd7b8c7051b2de4481410684b70e0424f"
+}

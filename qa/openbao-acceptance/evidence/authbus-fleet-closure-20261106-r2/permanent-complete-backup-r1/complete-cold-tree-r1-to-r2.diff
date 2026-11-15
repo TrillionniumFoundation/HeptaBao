@@ -1,0 +1,77 @@
+--- copy-core-r1
++++ copy-core-r2
+@@ -33,7 +33,7 @@
+     """An original source generation, one new destination, no resume or retry."""
+ 
+     def __init__(self, source, destination, *, check, critical=nullcontext,
+-                 expected_manifest=None, max_files=4096, max_directories=256,
++                 expected_manifest=None, public_executables=None, max_files=4096, max_directories=256,
+                  max_file_bytes=128 * 1024 * 1024, max_total_bytes=1024 * 1024 * 1024):
+         self.source, self.destination = Path(source), Path(destination)
+         need(self.source.is_absolute() and self.destination.is_absolute()
+@@ -43,6 +43,14 @@
+         need(callable(check) and callable(critical), 'explicit_caller_custody_callbacks')
+         self.check, self.critical = check, critical
+         self.expected = expected_manifest
++        self.public_executables = dict(public_executables or {})
++        need(len(self.public_executables) <= 1 and all(
++            isinstance(name, str) and name and not name.startswith('/')
++            and all(part not in ('', '.', '..') for part in name.split('/'))
++            and type(pin) is tuple and len(pin) == 2 and type(pin[0]) is int
++            and 0 < pin[0] <= 128 * 1024 * 1024 and isinstance(pin[1], str)
++            and len(pin[1]) == 64 and all(c in '0123456789abcdef' for c in pin[1])
++            for name, pin in self.public_executables.items()), 'one_explicit_public_executable_pin')
+         self.max_files, self.max_dirs = max_files, max_directories
+         self.max_file, self.max_total = max_file_bytes, max_total_bytes
+         need(1 <= max_files <= 4096 and 1 <= max_directories <= 256
+@@ -54,7 +62,7 @@
+         self.lock_fd = None
+         self.destination_lock_fd = None
+         self.used = False
+-        self.result = {'schema': 'heptabao.complete-cold-copy-public.r1', 'ok': False,
++        self.result = {'schema': 'heptabao.complete-cold-copy-public.r2', 'ok': False,
+             'sourceWrites': 0, 'sourceFilesExcluded': 0, 'automaticRetry': False,
+             'destinationReused': False, 'readBlockBytes': 1048576,
+             'directoryWriterLockHeldDuringAllCopies': False,
+@@ -134,7 +142,13 @@
+                 need(identity(info) == identity(os.fstat(child['fd'])), 'source_subdirectory_open_identity')
+                 self.scan(selected, child, depth + 1)
+             else:
+-                need(self.private_file(info), 'private_regular_unlinked_data_file')
++                public_executable = selected in self.public_executables
++                executable_ok = public_executable and stat.S_ISREG(info.st_mode) \
++                    and info.st_uid == os.geteuid() and info.st_gid == os.getegid() \
++                    and info.st_nlink == 1 and stat.S_IMODE(info.st_mode) == 0o500 \
++                    and info.st_size == self.public_executables[selected][0]
++                need(executable_ok if public_executable else self.private_file(info),
++                     'private_data_or_explicit_pinned_public_executable')
+                 need(len(self.entries) < self.max_files and 0 <= info.st_size <= self.max_file,
+                      'bounded_data_file_count_and_size')
+                 self.total += info.st_size
+@@ -219,6 +233,9 @@
+             final = identity(os.fstat(target['fd']))
+             need(final == identity(os.stat(entry['name'], dir_fd=destination_parent, follow_symlinks=False)),
+                  'same_complete_destination_name')
++            if relative in self.public_executables:
++                need((copied, digest.hexdigest()) == self.public_executables[relative],
++                     'complete_public_executable_source_pin')
+             entry['sha256'] = digest.hexdigest()
+             entry['destinationIdentity'] = final
+         finally:
+@@ -250,7 +267,7 @@
+             'files': [{'path': relative, 'bytes': row['bytes'], 'mode': row['mode'], 'sha256': row['sha256']}
+                       for relative, row in sorted(self.entries.items())],
+             'completeFileCount': len(self.entries), 'completeBytes': self.total,
+-            'sourceFilesExcluded': 0, 'keyMaterialClaim': 'Encrypted server data only; caller separately binds original seal/unseal custody.',
++            'sourceFilesExcluded': 0, 'keyMaterialClaim': 'Caller-selected private runtime tree; seal/unseal custody is separate and required.',
+             'allCopiedFilesSyncedAndReadBack': True, 'cryptographicAdmissionClaim': False}
+ 
+     def run(self):
+@@ -267,6 +284,7 @@
+             self.result['directoryWriterLockHeldDuringAllCopies'] = True
+             self.scan('', source)
+             need(self.entries, 'complete_encrypted_store_not_empty')
++            need(set(self.public_executables).issubset(self.entries), 'every_pinned_executable_present')
+             self.source_unchanged()
+             parent = self.open_chain(self.destination.parent)
+             need(self.private_directory(os.fstat(parent['fd'])), 'private_destination_parent')

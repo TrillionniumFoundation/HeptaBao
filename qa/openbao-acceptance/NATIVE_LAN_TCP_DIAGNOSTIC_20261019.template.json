@@ -1,0 +1,16 @@
+{
+  "run_id": "native-tcp-0f1c-20261019-r1",
+  "source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "nodes": {
+    "macbook-pro": {
+      "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/heptabao-native-tcp-0f1c-20261019-r1"
+    },
+    "rog": {
+      "root": "/home/qian-qi/heptabao-native-tcp-0f1c-20261019-r1"
+    },
+    "pocket4": {
+      "root": "/home/alex/heptabao-native-tcp-0f1c-20261019-r1"
+    }
+  }
+}

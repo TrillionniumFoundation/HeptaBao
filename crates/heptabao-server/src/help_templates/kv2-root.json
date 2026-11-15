@@ -1,0 +1,595 @@
+{
+  "help": "## DESCRIPTION\n\nThis backend provides a versioned key-value store. The kv backend reads and\nwrites arbitrary secrets to the storage backend. The secrets are\nencrypted/decrypted by Vault: they are never stored unencrypted in the backend\nand the backend never has an opportunity to see the unencrypted value. Each key\ncan have a configured number of versions, and versions can be retrieved based on\ntheir version numbers.\n\n## PATHS\n\nThe following paths are supported by this backend. To view help for\nany of the paths below, use the help command with any route matching\nthe path pattern. Note that depending on the policy of your auth token,\nyou may or may not be able to access certain paths.\n\n    ^.*$\n\n\n    ^config$\n        Configures settings for the KV store\n\n    ^data/(?P<path>.*)$\n        Write, Patch, Read, and Delete data in the Key-Value Store.\n\n    ^delete/(?P<path>.*)$\n        Marks one or more versions as deleted in the KV store.\n\n    ^destroy/(?P<path>.*)$\n        Permanently removes one or more versions in the KV store\n\n    ^detailed-metadata/(?P<path>.*)$\n        Allows listing detailed information about key metadata in the KV store.\n\n    ^metadata/(?P<path>.*)$\n        Allows interaction with key metadata and settings in the KV store.\n\n    ^subkeys/(?P<path>.*)$\n        Read the structure of a secret entry from the Key-Value store with the values removed.\n\n    ^undelete/(?P<path>.*)$\n        Undeletes one or more versions from the KV store.",
+  "openapi": {
+    "components": {
+      "schemas": {
+        "PatchDataPathRequest": {
+          "properties": {
+            "data": {
+              "description": "The contents of the data map will be stored and returned on read.",
+              "format": "map",
+              "type": "object"
+            },
+            "options": {
+              "description": "Options for writing a KV entry. Set the \"cas\" value to use a Check-And-Set operation. If not set the write will be allowed. If set to 0 a write will only be allowed if the key doesn’t exist. If the index is non-zero the write will only be allowed if the key’s current version matches the version specified in the cas parameter.",
+              "format": "map",
+              "type": "object"
+            },
+            "version": {
+              "description": "If provided during a read, the value at the version number will be returned",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "PatchMetadataPathRequest": {
+          "properties": {
+            "after": {
+              "description": "Optional entry to list begin listing after, not required to exist. Only used for listing.",
+              "type": "string"
+            },
+            "cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all write requests. If false, the backend’s configuration will be used.",
+              "type": "boolean"
+            },
+            "custom_metadata": {
+              "description": "User-provided key-value pairs that are used to describe arbitrary and version-agnostic information about a secret.",
+              "format": "map",
+              "type": "object"
+            },
+            "delete_version_after": {
+              "description": "The length of time before a version is deleted. If not set, the backend's configured delete_version_after is used. Cannot be greater than the backend's delete_version_after. A zero duration clears the current setting. A negative duration will cause an error.",
+              "format": "seconds",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Optional number of entries to return; defaults to all entries. Only used for listing.",
+              "type": "integer"
+            },
+            "max_versions": {
+              "description": "The number of versions to keep. If not set, the backend’s configured max version is used.",
+              "type": "integer"
+            },
+            "metadata_cas": {
+              "description": "Check-and-set parameter for metadata updates. Must match the current metadata version for the update to succeed. Set to 0 for initial metadata creation.",
+              "type": "integer"
+            },
+            "metadata_cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all metadata update requests. If false, the backend's configuration will be used.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "WriteConfigRequest": {
+          "properties": {
+            "cas_required": {
+              "description": "If true, the backend will require the cas parameter to be set for each write",
+              "type": "boolean"
+            },
+            "delete_version_after": {
+              "description": "If set, the length of time before a version is deleted. A negative duration disables the use of delete_version_after on all keys. A zero duration clears the current setting. Accepts a Go duration format string.",
+              "format": "seconds",
+              "type": "integer"
+            },
+            "max_versions": {
+              "description": "The number of versions to keep for each key. Defaults to 10",
+              "type": "integer"
+            },
+            "metadata_cas_required": {
+              "description": "If true, the backend will require the metadata_cas parameter to be set for each metadata update",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "WriteDataPathRequest": {
+          "properties": {
+            "data": {
+              "description": "The contents of the data map will be stored and returned on read.",
+              "format": "map",
+              "type": "object"
+            },
+            "options": {
+              "description": "Options for writing a KV entry. Set the \"cas\" value to use a Check-And-Set operation. If not set the write will be allowed. If set to 0 a write will only be allowed if the key doesn’t exist. If the index is non-zero the write will only be allowed if the key’s current version matches the version specified in the cas parameter.",
+              "format": "map",
+              "type": "object"
+            },
+            "version": {
+              "description": "If provided during a read, the value at the version number will be returned",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "WriteDeletePathRequest": {
+          "properties": {
+            "versions": {
+              "description": "The versions to be archived. The versioned data will not be deleted, but it will no longer be returned in normal get requests.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "WriteDestroyPathRequest": {
+          "properties": {
+            "versions": {
+              "description": "The versions to destroy. Their data will be permanently deleted.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "WriteMetadataPathRequest": {
+          "properties": {
+            "after": {
+              "description": "Optional entry to list begin listing after, not required to exist. Only used for listing.",
+              "type": "string"
+            },
+            "cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all write requests. If false, the backend’s configuration will be used.",
+              "type": "boolean"
+            },
+            "custom_metadata": {
+              "description": "User-provided key-value pairs that are used to describe arbitrary and version-agnostic information about a secret.",
+              "format": "map",
+              "type": "object"
+            },
+            "delete_version_after": {
+              "description": "The length of time before a version is deleted. If not set, the backend's configured delete_version_after is used. Cannot be greater than the backend's delete_version_after. A zero duration clears the current setting. A negative duration will cause an error.",
+              "format": "seconds",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Optional number of entries to return; defaults to all entries. Only used for listing.",
+              "type": "integer"
+            },
+            "max_versions": {
+              "description": "The number of versions to keep. If not set, the backend’s configured max version is used.",
+              "type": "integer"
+            },
+            "metadata_cas": {
+              "description": "Check-and-set parameter for metadata updates. Must match the current metadata version for the update to succeed. Set to 0 for initial metadata creation.",
+              "type": "integer"
+            },
+            "metadata_cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all metadata update requests. If false, the backend's configuration will be used.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "WriteUndeletePathRequest": {
+          "properties": {
+            "versions": {
+              "description": "The versions to unarchive. The versions will be restored and their data will be returned on normal get requests.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/^.*$": {},
+      "/config": {
+        "description": "Configures settings for the KV store",
+        "get": {
+          "operationId": "read-config",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "summary": "Read the backend level settings.",
+          "tags": [
+            "secrets"
+          ]
+        },
+        "post": {
+          "operationId": "write-config",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteConfigRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "summary": "Configure backend level settings that are applied to every key in the key-value store.",
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      },
+      "/data/{path}": {
+        "delete": {
+          "operationId": "delete-data-path",
+          "responses": {
+            "204": {
+              "description": "empty body"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "description": "Write, Patch, Read, and Delete data in the Key-Value Store.",
+        "get": {
+          "operationId": "read-data-path",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "patch": {
+          "operationId": "patch-data-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchDataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "post": {
+          "operationId": "write-data-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteDataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      },
+      "/delete/{path}": {
+        "description": "Marks one or more versions as deleted in the KV store.",
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "post": {
+          "operationId": "write-delete-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteDeletePathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      },
+      "/destroy/{path}": {
+        "description": "Permanently removes one or more versions in the KV store",
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "post": {
+          "operationId": "write-destroy-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteDestroyPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      },
+      "/detailed-metadata/{path}": {
+        "description": "Allows listing detailed information about key metadata in the KV store.",
+        "get": {
+          "operationId": "scan-detailed-metadata-path",
+          "parameters": [
+            {
+              "description": "Must be set to `true` or else `scan` must be set to `true`",
+              "in": "query",
+              "name": "list",
+              "required": true,
+              "schema": {
+                "enum": [
+                  "true"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Must be set to `true` or else `list` must be set to `true`",
+              "in": "query",
+              "name": "scan",
+              "required": true,
+              "schema": {
+                "enum": [
+                  "true"
+                ],
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "/metadata/{path}": {
+        "delete": {
+          "operationId": "delete-metadata-path",
+          "responses": {
+            "204": {
+              "description": "empty body"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "description": "Allows interaction with key metadata and settings in the KV store.",
+        "get": {
+          "operationId": "read-metadata-path",
+          "parameters": [
+            {
+              "description": "Return a list if `true`",
+              "in": "query",
+              "name": "list",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Return a recursive list if `true`",
+              "in": "query",
+              "name": "scan",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "patch": {
+          "operationId": "patch-metadata-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchMetadataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "post": {
+          "operationId": "write-metadata-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteMetadataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      },
+      "/subkeys/{path}": {
+        "description": "Read the structure of a secret entry from the Key-Value store with the values removed.",
+        "get": {
+          "operationId": "read-subkeys-path",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "/undelete/{path}": {
+        "description": "Undeletes one or more versions from the KV store.",
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "post": {
+          "operationId": "write-undelete-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteUndeletePathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      }
+    }
+  },
+  "see_also": null
+}

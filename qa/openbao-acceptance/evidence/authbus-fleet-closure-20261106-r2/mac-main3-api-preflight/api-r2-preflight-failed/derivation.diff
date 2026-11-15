@@ -1,0 +1,326 @@
+--- retained-unexecuted-r1/mac_t5_volume_guard_r1.py
++++ normal-main3-api-r2/mac_t5_volume_guard_r1.py
+@@ -11,7 +11,7 @@
+ from pathlib import Path
+ 
+ MOUNT = Path('/Volumes/T5')
+-ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1'
++ROOT = MOUNT / 'hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2'
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ ANCHOR_PATHS = ('/', '/Volumes', '/Volumes/T5')
+ 
+--- retained-unexecuted-r1/mac_owned_launchd_r3.py
++++ normal-main3-api-r2/mac_owned_launchd_r3.py
+@@ -13,13 +13,13 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
+ DOMAIN='gui/501'
+-LABELS={'server':'org.heptabao.qa.mac-authbus-main3-api-20261106-r1.server',
+-        'consumer':'org.heptabao.qa.mac-authbus-main3-api-20261106-r1.consumer'}
+-SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1/bin/heptabao-server')
++LABELS={'server':'org.heptabao.qa.mac-authbus-main3-api-20261106-r2.server',
++        'consumer':'org.heptabao.qa.mac-authbus-main3-api-20261106-r2.consumer'}
++SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2/bin/heptabao-server')
+ SERVER_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ GRAPH=(('server-start','server-initial'),('server-kill','server-initial'),
+        ('server-start','server-cold-new-process'),('server-kill','server-cold-new-process'))
+@@ -95,7 +95,7 @@
+     return lines in ([exact],['Bad request.',exact])
+ 
+ 
+-HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r1')
++HOME_CONTROL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r2')
+ HOME_COPY_NAMES=('mac_current_server_owner_r1.py',)
+ HOME_GENERATIONS=('server-initial','server-cold-new-process')
+ HOME_FD_ATTEMPTS=64
+--- retained-unexecuted-r1/mac_current_server_owner_r1.py
++++ normal-main3-api-r2/mac_current_server_owner_r1.py
+@@ -14,10 +14,10 @@
+ 
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
+ QA=ROOT/'qa'
+ BINDING_READY=True  # Startup custody scope only; actual main3 capsule admission is independently fenced.
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1/bin/heptabao-server')
++BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2/bin/heptabao-server')
+ BINARY_SHA='5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
+ BINARY_BYTES=92359328
+ GENERATIONS=('server-initial','server-cold-new-process')
+--- retained-unexecuted-r1/main3_api_controller.py
++++ normal-main3-api-r2/main3_api_controller.py
+@@ -19,18 +19,18 @@
+ import sys
+ import time
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
+-HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r1')
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r1')
+-JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-journal-20261106-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
++HOME=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-20261106-r2')
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r2')
++JOURNAL=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-journal-20261106-r2')
+ QA=ROOT/'qa'
+-TARGET='gui/501/org.heptabao.qa.mac-authbus-main3-api-20261106-r1.server'
++TARGET='gui/501/org.heptabao.qa.mac-authbus-main3-api-20261106-r2.server'
+ SOURCE_NAMES=('mac_owned_launchd_r3.py','mac_current_server_owner_r1.py',
+     'mac_native_process_observer_r1.py','mac_owned_commands_r1.py',
+     'mac_owned_unreaped_r1.py','mac_public_code_pin_excerpt_r1.py',
+     'mac_t5_volume_guard_r1.py','tls_complete_http_probe.py','main3_api_controller.py',
+     'test_main3_api_controller.py','test_suid_ps_tls_r2.py',
+-    'main3_source_fence.py','main3_api_cycle.py','test_main3_api_guards.py')
++    'main3_source_fence.py','main3_source_authority.py','main3_api_cycle.py','test_main3_api_guards.py')
+ 
+ def need(value,code):
+     if not value:raise RuntimeError(code)
+@@ -55,7 +55,7 @@
+ def load_inputs():
+     raw=stable_read(PREP/'plan.public.json',131072)
+     plan=json.loads(raw)
+-    need(plan['schema']=='heptabao.mac-main3-api-preparation.r1'
++    need(plan['schema']=='heptabao.mac-main3-api-preparation.r2'
+          and plan['root']==str(ROOT) and plan['home']==str(HOME)
+          and plan['journal']==str(JOURNAL) and plan['wrapperSeconds']==30
+          and plan['execObservationSeconds']==10 and plan['managerSeconds']==600
+@@ -65,6 +65,13 @@
+     for name,pin in plan['sourcePins'].items():
+         source=stable_read(QA/name)
+         need(len(source)==pin['bytes'] and sha(source)==pin['sha256'],'complete_pinned_fresh_source')
++    config=json.loads(stable_read(ROOT/'server/server.json',131072))
++    need(set(config)=={'listen','data_dir','audit_file','tls_cert_file','tls_key_file','storage'}
++         and config['storage']=={'native_v6_file':{'path':str(ROOT/'server/data')}}
++         and config['data_dir']==str(ROOT/'server/data') and config['listen']=='127.0.0.1:'+str(plan['port'])
++         and config['tls_cert_file']==str(ROOT/'server/tls/server.crt')
++         and config['tls_key_file']==str(ROOT/'server/tls/server.key')
++         and config['audit_file']==str(ROOT/'server/audit.jsonl'), 'exact_normal_native_file_configuration_without_fixture_options')
+     need(Path(__file__).resolve()==QA/'main3_api_controller.py','only_pinned_remote_controller')
+     return plan,sha(raw)
+ 
+@@ -89,7 +96,7 @@
+     def append(self,event,value):
+         self.check()
+         need(re.fullmatch(r'[a-z0-9-]{1,48}',event) and len(self.rows)<512,'journal_finite_events')
+-        raw=encoded({'schema':'heptabao.mac-main3-api-journal.r1','index':len(self.rows),'event':event,'value':value})
++        raw=encoded({'schema':'heptabao.mac-main3-api-journal.r2','index':len(self.rows),'event':event,'value':value})
+         need(len(raw)<=262144,'journal_bounded_record')
+         name='%03d-%s.public.json'%(len(self.rows),event)
+         with self.signals.critical():
+@@ -365,11 +372,13 @@
+         need(signals.pending is None,'outer_not_cancelled')
+         left=until-time.monotonic();need(left>0,'original_outer_600_seconds');return left
+     journal=None;guard=None;home=None;manager=None;active_api=None;active_fence=None;private_state=None
+-    result={'schema':'heptabao.mac-main3-current-api-qualification.r1','mode':args.mode,
++    result={'schema':'heptabao.mac-main3-current-api-qualification.r2','mode':args.mode,
+         'ok':False,'planSha256':plan_sha,'startupCustodyOnly':False,'businessCredentialInputsRead':False,
+         'providerValid':False,'providerCalled':False,'providerRefreshAttempted':False,
+         'productionTrafficCutover':False,'credentialValuesOrDigestsPublished':False,
+         'actualPluginSdkPhaseExecuted':False,'productionClientRollbackQualified':False,
++        'normalNativeStorageConfigurationVerified':True,'fixtureOptionsEnabled':False,
++        'normalActivationPath':'sys/storage/native-v6/activate',
+         'j3160Contacted':False,'productionChanged':False,'oldR2Modified':False,
+         'sourcePins':plan['sourcePins'],'canonicalProduct':plan['canonicalProduct'],
+         'phases':[],'sourceFences':[],'stages':{},'mutationExecuted':False}
+@@ -389,7 +398,7 @@
+             qa_pins={name:pin['sha256'] for name,pin in plan['sourcePins'].items()},
+             python_runtime=plan['pythonRuntime'],home_control=home)
+         if args.mode=='preflight':
+-            active_fence=CapsuleFence(min(until,time.monotonic()+45.0))
++            active_fence=CapsuleFence(min(until,time.monotonic()+45.0),admit_mode="qualify")
+             result['businessCredentialInputsRead']=True
+             active_fence.observe('preflight')
+             result.update(ok=True,labelsInitiallyAbsent=True,mutationExecuted=False)
+--- retained-unexecuted-r1/main3_source_fence.py
++++ normal-main3-api-r2/main3_source_fence.py
+@@ -13,10 +13,13 @@
+ import re
+ import stat
+ import time
++from main3_source_authority import validate_authority,SOURCE_SELECTION_AUTHORITY,SDK_SOURCE_PINS
+ 
+ LIVE=Path('/Users/qianqi/.openclaw')
+ CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-current-sdk-capsule-20261106-r1')
+ CAPSULE=CAPSULE_ROOT/'output/selected-owner-credentials.private.json'
++PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-api-preparation-20261106-r2')
++BINDING=PREP/'capsule-admission-binding.private.json'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ CAPTURE_JOB='1a1b1a4c29c-fc05-7a0c'
+ CAPTURE_WORKER_SHA='dbbac9f6ee12704b1e6e73ca2587d6f4e6489b58ec36122c49d24a9605274628'
+@@ -34,7 +37,7 @@
+     return str(relative)!='.' and '..' not in relative.parts
+ 
+ class CapsuleFence:
+-    def __init__(self,phase_until,*,capsule_path=CAPSULE,clock=time.monotonic):
++    def __init__(self,phase_until,*,capsule_path=CAPSULE,clock=time.monotonic,admit_mode="run"):
+         self.clock=clock;self.phase_until=phase_until;self.until=min(phase_until,clock()+45.0)
+         self.opened=0;self.closed=0;self.bytes=0;self.file_reads=0;self.observations=[]
+         self.capsule_path=Path(capsule_path)
+@@ -45,6 +48,7 @@
+         raw,self.capsule_identity=self.read(self.capsule_path,1048576,private=True)
+         self.doc=json.loads(raw)
+         self.validate(self.doc)
++        self.bind_admission(admit_mode)
+         self.remaining()
+     def remaining(self):
+         left=min(self.phase_until,self.until)-self.clock()
+@@ -112,8 +116,45 @@
+         typed_identity(doc.get('configurationIdentity'))
+         need(isinstance(doc.get('configurationSha256'),str) and re.fullmatch(r'[0-9a-f]{64}',doc['configurationSha256']),
+              'private_configuration_pin_shape')
++        validate_authority(doc,need)
+         metadata=doc.get('registeredMetadataFileBindings')
+         need(isinstance(metadata,list) and len(metadata)==145,'exact_observed_registered_metadata_count')
++    @staticmethod
++    def expected_binding(identity):
++        return {'schema':'heptabao.main3-capsule-admission-binding.private.r1',
++            'capsulePath':str(CAPSULE),'capsuleIdentity':list(typed_identity(identity)),
++            'sourceCaptureJob':CAPTURE_JOB,'sourceCaptureWorkerSha256':CAPTURE_WORKER_SHA}
++    @classmethod
++    def validate_binding(cls,value,identity):
++        need(value==cls.expected_binding(identity),'same_authoritatively_qualified_capsule_generation')
++    def bind_admission(self,mode):
++        self.remaining();need(mode in ('qualify','run'),'fixed_private_capsule_admission_mode')
++        parent=os.open(PREP,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);self.opened+=1
++        try:
++            p=os.fstat(parent)
++            need(stat.S_ISDIR(p.st_mode) and p.st_uid==501 and stat.S_IMODE(p.st_mode)==0o700,
++                 'admission_fixed_private_parent')
++            if mode=='qualify':
++                raw=(json.dumps(self.expected_binding(self.capsule_identity),sort_keys=True,separators=(',',':'))+'\n').encode()
++                fd=os.open(BINDING.name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600,dir_fd=parent);self.opened+=1
++                try:
++                    before=os.fstat(fd)
++                    need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1
++                         and stat.S_IMODE(before.st_mode)==0o600,'new_private_capsule_binding')
++                    offset=0
++                    while offset<len(raw):
++                        self.remaining();count=os.write(fd,raw[offset:]);need(count>0,'private_admission_write_progress');offset+=count
++                    os.fsync(fd);os.fsync(parent);after=os.fstat(fd)
++                    need(ident(before)[:6]==ident(after)[:6] and after.st_size==len(raw)
++                         and ident(after)==ident(os.stat(BINDING.name,dir_fd=parent,follow_symlinks=False)),
++                         'private_admission_binding_durable_identity')
++                finally:os.close(fd);self.closed+=1
++            else:
++                raw,_=self.read(BINDING,8192,private=True)
++                self.validate_binding(json.loads(raw),self.capsule_identity)
++        finally:os.close(parent);self.closed+=1
++        need(self.opened==self.closed,'capsule_admission_all_descriptors_closed')
++        self.remaining()
+     def namespace(self,bundle,scope):
+         need(isinstance(bundle,dict) and isinstance(bundle.get('sourceIdentities'),dict)
+              and isinstance(bundle.get('sourceAbsences'),list),'private_namespace_bundle_shape')
+@@ -182,6 +223,8 @@
+         self.observations.append(row);return row
+     def public(self):
+         return {'captureJob':CAPTURE_JOB,'captureWorkerSourceSha256':CAPTURE_WORKER_SHA,
++                'sourceSelectionAuthority':SOURCE_SELECTION_AUTHORITY,
++                'publicSdkCodePinCount':len(SDK_SOURCE_PINS),'qualificationCapsuleIdentityBound':True,
+                 'selectedOwnerCount':3,'consumerReferenceCount':15,'sourceAgentCount':5,
+                 'providerValid':False,'providerRefreshAttempted':False,'productionCutover':False,
+                 'credentialValuesOrDigestsPublished':False,'capsuleDigestsPublished':False,
+--- retained-unexecuted-r1/main3_api_cycle.py
++++ normal-main3-api-r2/main3_api_cycle.py
+@@ -19,7 +19,7 @@
+ import time
+ from main3_source_fence import CapsuleFence,Refused,need,ident
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r2')
+ MOUNT='openclaw-auth'
+ MAX_HTTP=192
+ MAX_BODY=1048576
+@@ -64,6 +64,7 @@
+              'fixed_public_route_category')
+         need(method in ('GET','POST','PUT') and isinstance(route,str) and route.startswith('/v1/')
+              and re.fullmatch(r'/[A-Za-z0-9/._-]+',route) and 0<=slot<=3,'fixed_owned_api_route')
++        if category=='activate':need(method=='POST' and route=='/v1/sys/storage/native-v6/activate','normal_configured_storage_activation_only')
+         need(not readiness or (method=='GET' and route=='/v1/sys/health' and body is None and token==''),'health_only_tcp_refusal_wait')
+         bearer=self.root_token if token is None else token
+         need(bearer is None or isinstance(bearer,str) and len(bearer)<=16384 and '\r' not in bearer and '\n' not in bearer,'private_single_line_bearer')
+@@ -148,9 +149,10 @@
+     unsealed=api.call('initial.unseal','POST','/v1/sys/unseal',{'key':key},token='',category='unseal')
+     api.check('initial.actually_unsealed',unsealed.get('sealed') is False)
+     api.call('initial.kv2_mount','POST','/v1/sys/mounts/'+MOUNT,{'type':'kv','options':{'version':'2'}},expected=204,category='mount')
+-    api.call('initial.native_activate_once','POST','/v1/sys/internal/native-v6/activate',{},expected=204,category='activate')
++    api.call('initial.native_activate_once','POST','/v1/sys/storage/native-v6/activate',{},expected=204,category='activate')
+     capacity=api.call('initial.native_capacity','GET','/v1/sys/internal/capacity',category='capacity')
+-    api.check('initial.native_format_two',capacity.get('data',{}).get('native_kv2_reader_format')==2)
++    api.check('initial.native_format_two',capacity.get('data',{}).get('native_kv2_reader_format')==2
++              and capacity['data'].get('state_storage_format')=='heptabao-state-records-v6')
+     api.call('initial.approle_mount','POST','/v1/sys/auth/approle',{'type':'approle'},expected=204,category='mount')
+     for i,entry in enumerate(entries,1):
+         case='slot'+str(i);name='main3-current-slot-'+str(i);base='/v1/auth/approle/role/'+name
+@@ -194,7 +196,8 @@
+     unsealed=api.call('cold.unseal_existing_store','POST','/v1/sys/unseal',{'key':state['unsealKey']},token='',category='unseal')
+     api.check('cold.actually_unsealed',unsealed.get('sealed') is False)
+     capacity=api.call('cold.native_capacity','GET','/v1/sys/internal/capacity',category='capacity')
+-    api.check('cold.native_format_two_preserved',capacity.get('data',{}).get('native_kv2_reader_format')==2)
++    api.check('cold.native_format_two_preserved',capacity.get('data',{}).get('native_kv2_reader_format')==2
++              and capacity['data'].get('state_storage_format')=='heptabao-state-records-v6')
+     for i,(entry,role) in enumerate(zip(fence.doc['ownerEntries'],state['roles'],strict=True),1):
+         case='cold.slot'+str(i);old=role['token'];login={'role_id':role['roleId'],'secret_id':role['secretId']}
+         lookup=api.call(case+'.old_lease_lookup','GET','/v1/auth/token/lookup-self',token=old,category='lookup',slot=i)
+--- retained-unexecuted-r1/test_main3_api_guards.py
++++ normal-main3-api-r2/test_main3_api_guards.py
+@@ -28,6 +28,7 @@
+            'actualSdkOrderRank':i,'configuredProfileId':False} for agent in f.AGENTS for i,entry in enumerate(entries)],
+         'sourceGenerations':[{'agent':x} for x in f.AGENTS],
+         'configurationIdentity':IDENT,'configurationSha256':'a'*64,
++        'sourceSelectionAuthority':dict(f.SOURCE_SELECTION_AUTHORITY),'sdkSourcePins':dict(f.SDK_SOURCE_PINS),
+         'registeredMetadataFileBindings':[{} for _ in range(145)]}
+ def bundle():
+     base=str(f.LIVE/'agents/main/agent/openclaw-agent.sqlite')
+@@ -89,6 +90,23 @@
+         base,value=bundle()
+         for suffix in ('-wal','-shm'):value['sourceAbsences'].remove(base+suffix);value['sourceIdentities'][base+suffix]=IDENT
+         self.assertEqual(len(f.CapsuleFence.exact_database_bundle(value,base)),4)
++    def test_other_source_selection_job_rejected(self):
++        value=capsule();value['sourceSelectionAuthority']['jobId']='other'
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_other_public_order_receipt_rejected(self):
++        value=capsule();value['sourceSelectionAuthority']['originalResultSha256']='f'*64
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_missing_public_sdk_pin_rejected(self):
++        value=capsule();value['sdkSourcePins'].pop(next(iter(value['sdkSourcePins'])))
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate(value)
++    def test_exact_qualification_identity_allowed(self):
++        value=f.CapsuleFence.expected_binding(IDENT);f.CapsuleFence.validate_binding(value,IDENT)
++    def test_changed_qualification_identity_rejected(self):
++        value=f.CapsuleFence.expected_binding(IDENT);value['capsuleIdentity'][1]='999'
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate_binding(value,IDENT)
++    def test_wrong_qualification_path_rejected(self):
++        value=f.CapsuleFence.expected_binding(IDENT);value['capsulePath']='/another/private.json'
++        with self.assertRaises(f.Refused):f.CapsuleFence.validate_binding(value,IDENT)
+     def test_phase_deadline_cannot_be_replenished(self):
+         fence=object.__new__(f.CapsuleFence);fence.clock=lambda:100;fence.phase_until=99;fence.until=145
+         with self.assertRaises(f.Refused):fence.remaining()
+@@ -185,6 +203,13 @@
+     def test_public_route_never_contains_private_key(self):
+         self.call();row=self.api.public()['requests'][0]
+         self.assertNotIn('path',row);self.assertNotIn('route',row);self.assertEqual(row['routeCategory'],'health')
++    def test_normal_storage_activation_route_accepted(self):
++        self.response.body=b'';self.response.length='0';self.response.status=204
++        self.api.call('normal.activate','POST','/v1/sys/storage/native-v6/activate',{},expected=204,category='activate')
++        self.assertEqual(self.connect.call_count,1)
++    def test_fixture_only_activation_route_rejected_before_dispatch(self):
++        with self.assertRaises(f.Refused):self.api.call('fixture.refused','POST','/v1/sys/internal/native-v6/activate',{},category='activate')
++        self.connect.assert_not_called()
+     def test_fixed_request_bound_prevents_dispatch(self):
+         self.api.rows=[{} for _ in range(a.MAX_HTTP)]
+         with self.assertRaises(f.Refused):self.call()
+--- retained-unexecuted-r1/main3_source_authority.py
++++ normal-main3-api-r2/main3_source_authority.py
+@@ -0,0 +1,7 @@
++#!/usr/bin/env python3
++"""Exact public source authority for the already succeeded current capsule."""
++SDK_SOURCE_PINS={"dist/agent-scope-config-BxAUeF6t.js":"83ef65476ae41bfcf040b1503f468074f36d602e9fa46551822cb7768bef3a1f","dist/credential-state-BY-oz-QV.js":"596a57e2ef09a3bc13a584781ddf749b66598b52a6b3f0817584bc6f401b4db4","dist/current-plugin-metadata-snapshot-CmOpmveB.js":"0c2efc7943a5f6407d938ddea68275e58cbaf916f1378cab8791ec9f5338808b","dist/installed-plugin-index-store-CWgFGnm0.js":"0d7bfad658ef322012b9b68b9709620bca8c0b202046f6f3d623ed7d31fc7a18","dist/logger-DPps3u8A.js":"90366fb73663dd713d58f4389e41331566a1ed82b1649844cf05d0c769175d44","dist/manifest-registry-installed-DMplEARQ.js":"6732b5661610d5b57c10478b77714c2767310b4b5544f158987de1c3ef9af832","dist/order-CeBlX0NH.js":"4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732","dist/plugin-metadata-snapshot-rpSrEgGf.js":"2264d7441cd9690df32caf42d3c71c7c7e674b6c10f0f6a19a667605b479db4b","dist/plugin-registry-8E8D2Hou.js":"570f856a8f4e517d8bf0e0d768bcf691eaf9bf44b9f8e560c8f86ff8a7cef983","dist/plugin-sdk/agent-runtime.js":"7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95","dist/profile-list-XT2LKXsd.js":"b64042c7f5fc9e8902c68dd2f63ad66b200f6a92a176c7d7ccfed312dfec4f6c","dist/provider-auth-aliases-Cp2PXhsh.js":"7a22ef68a9275fc0700e657dc4b71257c956dd38feb370cdc1387e83f5963efa","dist/provider-id-Dq06Bcx6.js":"99187ac3607cf72bd2f2f8bd253b61b490d56f657cf07dfdb5c3fe7198336cc0","dist/source-check-ZSz5NzGW.js":"9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9","dist/sqlite-B1ze-fre.js":"ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50","dist/store-DH33UrUj.js":"25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf","dist/tmp-openclaw-dir-uPgNO8da.js":"c12ed50f959d17d9e4ca3e3cce60aa471ee160bdd705035a6d1ed63c47207b23","dist/usage-state-BFMjBJsu.js":"aa0a93c88c1b10046e614d476c27568f985a60580433c4763c5b3c3e78c1c097"}
++SOURCE_SELECTION_AUTHORITY={'jobId':'1a1b197fa0e-fc05-79c0','source':'actual_sdk_persisted_store_explicit_order','originalResultSha256':'fb65fe07d9afc97aa102d7f00561537b315cf0b349b339f6ca8f3285bd5a10c4'}
++def validate_authority(doc,need):
++ need(doc.get('sourceSelectionAuthority')==SOURCE_SELECTION_AUTHORITY,'exact_public_source_selection_authority')
++ need(doc.get('sdkSourcePins')==SDK_SOURCE_PINS,'exact_captured_public_sdk_source_pins')

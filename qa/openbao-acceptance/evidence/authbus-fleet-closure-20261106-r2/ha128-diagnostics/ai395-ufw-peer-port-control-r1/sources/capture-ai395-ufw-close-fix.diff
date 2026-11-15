@@ -1,0 +1,62 @@
+--- capture-before-close-fix
++++ capture-final
+@@ -60,6 +60,19 @@
+     signal.alarm(20)
+     held = []
+     dirs = []
++    created_opened = 0
++    close_attempts = {'created':0,'input':0,'directory':0}
++    close_successes = {'created':0,'input':0,'directory':0}
++    close_errors = []
++    def close_once(fd,role):
++        close_attempts[role]+=1
++        try:
++            os.close(fd); close_successes[role]+=1; return True
++        except BaseException as error:
++            row={'role':role,'errorType':type(error).__name__}
++            if isinstance(error,OSError): row['errno']=error.errno
++            close_errors.append(row)
++            return False
+     report = {'schema':'heptabao.ai395-ufw-private-phase-capture.r1','ok':False,
+               'firewallWrites':0,'childCount':0,'networkPacketsSent':0,
+               'originalFilesOrPermissionsChanged':False,'crossSourceSnapshotIsAtomic':False}
+@@ -142,13 +155,16 @@
+         phase_ident=identity(os.fstat(phase_fd))[:5]
+ 
+         def create(name,data):
++            nonlocal created_opened
+             fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=phase_fd)
++            created_opened+=1
+             try:
+                 view=memoryview(data)
+                 while view:
+                     count=os.write(fd,view); need(count>0,'complete_backup_write'); view=view[count:]
+                 os.fsync(fd)
+-            finally: os.close(fd)
++            finally:
++                need(close_once(fd,'created'),'backup_fd_close_failed')
+ 
+         pins={}
+         for name,(data,ident,path) in inputs.items():
+@@ -171,9 +187,18 @@
+         if isinstance(error,OSError): report['errno']=error.errno
+     finally:
+         signal.alarm(0)
+-        for _,fd,_ in held: os.close(fd)
+-        for fd in reversed(dirs): os.close(fd)
+-        report['heldInputFdsClosed']=len(held)
++        for _,fd,_ in held: close_once(fd,'input')
++        for fd in reversed(dirs): close_once(fd,'directory')
++        opened={'created':created_opened,'input':len(held),'directory':len(dirs)}
++        all_closed=not close_errors and close_attempts==close_successes==opened
++        report['fdCloseFacts']={'opened':opened,
++                                'attemptedOnce':close_attempts,'knownClosed':close_successes,
++                                'allOpenedFdsKnownClosed':all_closed,
++                                'firstError':close_errors[0] if close_errors else None,
++                                'errorCount':len(close_errors)}
++        if not all_closed:
++            report['ok']=False; report['privateBackupComplete']=False
++            report.setdefault('errorCode','one_or_more_fd_closes_failed')
+         print(json.dumps(report,sort_keys=True,separators=(',',':')))
+     return 0 if report['ok'] else 1
+ 

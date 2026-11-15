@@ -1,0 +1,68 @@
+{
+  "host": "mac",
+  "tool": "Hepta Runtime Full Operator read_multiple_files",
+  "files": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r1/materialization.json",
+      "size": 542,
+      "sha256": "9e1a5e7660c0883bffa2c808f7b11022b2b542c621895399978f3d6f6a368a7b",
+      "version": "16777244:66452590:542:1792417718078290750:1792417718079749000"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r1/tests/summary.json",
+      "size": 6373,
+      "sha256": "3935a730b810b9fc69f6ac96ebeb8f9d8404f6a3956f6c9c9efd1d2421e0ab19",
+      "version": "16777244:66455948:6373:1792418079233471240:1792418079233678824"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r1/tests/native-kv2-mount.log",
+      "size": 5240,
+      "sha256": "33fdfe91c5b6b18873b1f8496998497ac56128985da9a450eb558481b9f3cd99",
+      "version": "16777244:66455905:5240:1792418078237125057:1792418078237125057"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/materialization.json",
+      "size": 998,
+      "sha256": "c2b397354bb1e991185c3015bfc36788f8ff392cadf050789b6864a7fa76fa47",
+      "version": "16777244:66459845:998:1792418508497942215:1792418508499338881"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/tests/summary.json",
+      "size": 6453,
+      "sha256": "3cbdb5ac45fcd9232cfe38bf3ee24a3cc8b1a07528074bed9350ab8c7c0db1db",
+      "version": "16777244:66463155:6453:1792418866271770471:1792418866271983555"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/tests/native-kv2-mount.log",
+      "size": 4784,
+      "sha256": "16fbbf4abd4dc1ea2c35580b5c5c991985257598bd3ae54048ff2f4e45c274bc",
+      "version": "16777244:66463112:4784:1792418865233901929:1792418865233901929"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/tests/compile-server-tests.log",
+      "size": 2923,
+      "sha256": "eba96b6a8258a7b1d2f31dec1e206698301e44685f1b683988203b7388e2a43c",
+      "version": "16777244:66459858:2923:1792418854061014814:1792418854061014814"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/tests/native-kv2-mount-list.log",
+      "size": 3224,
+      "sha256": "1b4a3eb2c8cbdf64a579967a0c31e2690794821e0cda94d0cb00340bbc6a9c98",
+      "version": "16777244:66463067:3224:1792418858112223581:1792418858112223581"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/tests/cargo-version.log",
+      "size": 446,
+      "sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1",
+      "version": "16777244:66459850:446:1792418508648527957:1792418508648527957"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/tests/rustc-version.log",
+      "size": 303,
+      "sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e",
+      "version": "16777244:66459854:303:1792418508661240741:1792418508661240741"
+    }
+  ],
+  "scope": "Exact remote public summaries and synthetic-test logs; no production credential values",
+  "saved_at_utc": "2026-10-19T14:13:37.387161+00:00"
+}

@@ -1,0 +1,154 @@
+{
+  "schema": 2,
+  "synthetic_only": true,
+  "real_browser": true,
+  "fixture_tls_trust_test": false,
+  "production_qualified": false,
+  "checks": [
+    {
+      "name": "vault_init",
+      "passed": true
+    },
+    {
+      "name": "vault_put",
+      "passed": true
+    },
+    {
+      "name": "expected_extension_loaded",
+      "passed": true
+    },
+    {
+      "name": "production_permissions_unchanged",
+      "passed": true
+    },
+    {
+      "name": "actual_action_popup",
+      "passed": true
+    },
+    {
+      "name": "exact_origin_item_selected",
+      "passed": true
+    }
+  ],
+  "identity_before": {
+    "source_commit": "0c033c4f24f6d476c63fdd3ae86b4b1e48b1a6de",
+    "source_tree": "1f8bb37d9cc89ecb370bc94421044f84c0e8a1f0",
+    "source_dirty": false,
+    "extension_sha256": {
+      "fill.js": "f2c02b6c1a1524e997336fc9aa4df978e38f94c21f63ae77a3eb7a30600e45f5",
+      "manifest.json": "a70a50e4a1b614cbbb9e5feacd83bb0ee13c66e7b80da4690435d118765e5153",
+      "popup.css": "4ce21a6cee946f38cc5ba45e244161647c0bd56cf1de3da0a0c45b32ba7e7138",
+      "popup.html": "5c62f0a83891acd663fb2986a313cb057fc3950e3d6a387d9cbb13c2b0b8e529",
+      "popup.js": "a66699bbbf5f4c167cb04415301ef5a145d61542eac7a9e608ee054f09258654",
+      "worker.js": "582041dd68349a735a0a805ccbd1cbe057122ae7f4ab1f0519f3aba81f5ce429"
+    },
+    "profile_sha256": "ef1bf50521c275f982929df6af3dba072c2161bb72a5d985b7d063444d7f02ab",
+    "installer_sha256": "b62dc389dc79fe9897f3ebae8d70c392d768592b78718e25be94a39029eda594",
+    "binary_sha256": {
+      "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+      "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d"
+    },
+    "browser_sha256": "41ea350a7f209da77c14d1df3924d71ac66988623e71d44459b49a3dceb1c14e"
+  },
+  "playwright_version": "1.57.0",
+  "headless": true,
+  "driver_attach_to_other_targets": true,
+  "action_invocations": [
+    "CDP Extensions.triggerAction on exact tab target"
+  ],
+  "renderer_component_world": "CDP isolated world",
+  "renderer_component_tests_are_extension_e2e": false,
+  "started_unix_ns": 1793945834657701363,
+  "launch_args": [
+    "--no-sandbox",
+    "--no-proxy-server",
+    "--disable-extensions-except=/home/qq/heptabao-personal-browser-source-20261106-r2/clients/chromium",
+    "--load-extension=/home/qq/heptabao-personal-browser-source-20261106-r2/clients/chromium",
+    "--host-resolver-rules=MAP *.example.test 127.0.0.1",
+    "--disable-dev-shm-usage"
+  ],
+  "extension_id": "goclokplbbognlhkbmbaoceeenphhjhb",
+  "browser_version": "157.0.8103.38",
+  "native_installation_sha256": {
+    "profile/NativeMessagingHosts/org.heptabao.personal_vault.json": "cc44315175b4593ff9fd01bd7e860b123ea67a64a3e2131dcc4cb1ce31542919",
+    "host/native-host": "3a1013d78a73362878a2fb11387e235624b6c95a0035957e1e16c5b91724c172",
+    "host/config.json": "c02fb3f7edb2800f50c6fbe7ab8d41eda0656e92cce3fe5b01a619a69873d0ea"
+  },
+  "status": "failed",
+  "error_type": "TimeoutError",
+  "failed_case": "browser_operation_failed",
+  "passed": 6,
+  "observed": 6,
+  "expected_count": 26,
+  "required_cases": [
+    "vault_init",
+    "vault_put",
+    "expected_extension_loaded",
+    "production_permissions_unchanged",
+    "actual_action_popup",
+    "exact_origin_item_selected",
+    "real_form_filled",
+    "no_automatic_submit",
+    "fill_then_lock_acknowledged",
+    "actual_login_accepted",
+    "locked_stale_fill_denied",
+    "fake_domain_empty_matches",
+    "fake_domain_stale_fill_denied",
+    "cross_origin_form_denied",
+    "get_form_denied",
+    "submit_override_denied",
+    "external_submit_override_denied",
+    "hidden_password_denied",
+    "ambiguous_password_denied",
+    "renderer_expired_authorization_denied",
+    "fake_domain_renderer_denied",
+    "child_frame_denied",
+    "renderer_positive_controls_complete",
+    "only_explicit_login_submitted",
+    "vault_list",
+    "identity_unchanged"
+  ],
+  "missing_cases": [
+    "actual_login_accepted",
+    "ambiguous_password_denied",
+    "child_frame_denied",
+    "cross_origin_form_denied",
+    "external_submit_override_denied",
+    "fake_domain_empty_matches",
+    "fake_domain_renderer_denied",
+    "fake_domain_stale_fill_denied",
+    "fill_then_lock_acknowledged",
+    "get_form_denied",
+    "hidden_password_denied",
+    "identity_unchanged",
+    "locked_stale_fill_denied",
+    "no_automatic_submit",
+    "only_explicit_login_submitted",
+    "real_form_filled",
+    "renderer_expired_authorization_denied",
+    "renderer_positive_controls_complete",
+    "submit_override_denied",
+    "vault_list"
+  ],
+  "identity_after": {
+    "source_commit": "0c033c4f24f6d476c63fdd3ae86b4b1e48b1a6de",
+    "source_tree": "1f8bb37d9cc89ecb370bc94421044f84c0e8a1f0",
+    "source_dirty": false,
+    "extension_sha256": {
+      "fill.js": "f2c02b6c1a1524e997336fc9aa4df978e38f94c21f63ae77a3eb7a30600e45f5",
+      "manifest.json": "a70a50e4a1b614cbbb9e5feacd83bb0ee13c66e7b80da4690435d118765e5153",
+      "popup.css": "4ce21a6cee946f38cc5ba45e244161647c0bd56cf1de3da0a0c45b32ba7e7138",
+      "popup.html": "5c62f0a83891acd663fb2986a313cb057fc3950e3d6a387d9cbb13c2b0b8e529",
+      "popup.js": "a66699bbbf5f4c167cb04415301ef5a145d61542eac7a9e608ee054f09258654",
+      "worker.js": "582041dd68349a735a0a805ccbd1cbe057122ae7f4ab1f0519f3aba81f5ce429"
+    },
+    "profile_sha256": "ef1bf50521c275f982929df6af3dba072c2161bb72a5d985b7d063444d7f02ab",
+    "installer_sha256": "b62dc389dc79fe9897f3ebae8d70c392d768592b78718e25be94a39029eda594",
+    "binary_sha256": {
+      "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+      "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d"
+    },
+    "browser_sha256": "41ea350a7f209da77c14d1df3924d71ac66988623e71d44459b49a3dceb1c14e"
+  },
+  "finished_unix_ns": 1793945846409920731
+}

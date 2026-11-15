@@ -1,0 +1,58 @@
+--- frozen-r1/coordinator.mjs
++++ candidate-r2/coordinator.mjs
+@@ -79,10 +79,39 @@
+         if(step.guard!==null){need(exact(step.guard,['key','expected']),'coordinator_slot_guard_shape');safeKey(step.guard.key);snapshot(step.guard.expected);}}
+       else need(exact(step,['type','key']),'coordinator_retention_step_shape');}
+     return plan;}
+-  async #confirm(step,until){const expected=(step.expected?.version??0)+1;let actual=await this.adapter.read(step.key,until);
+-    if(actual?.version!==expected||!equal(actual.data,step.desired))actual=await this.adapter.history(step.key,expected,until);
+-    if(!(actual?.version===expected&&equal(actual.data,step.desired)))throw new CoordinatorError('coordinator_original_effect_unresolved',{unknown:true});
+-    return expected;}
++  async #confirm(step,until){const targetVersion=(step.expected?.version??0)+1;
++    const head=await this.adapter.read(step.key,until);let retainedHistoryUsed=false,slotHeadVersion=null;
++    const unresolved=()=>{throw new CoordinatorError('coordinator_original_effect_unresolved',{unknown:true});};
++    const exactHead=head?.version===targetVersion&&equal(head.data,step.desired);
++    if(['profile','receipt','enrollment'].includes(step.role)){
++      // Immutable profiles/receipts/control and pre-control enrollment writes
++      // cannot be confirmed by an older version beneath a modified head.
++      if(!(step.expected===null&&targetVersion===1&&exactHead))unresolved();
++    }else if(step.role==='manifest'){
++      // An operator may have published one further authorization update. The
++      // fixed two-version contract can prove only this exact retained target.
++      if(!head||![targetVersion,targetVersion+1].includes(head.version))unresolved();
++      try{validateManifest(head.data,this.owner,this.hosts);}catch{unresolved();}
++      if(head.version===targetVersion){if(!exactHead)unresolved();}
++      else{const original=await this.adapter.history(step.key,targetVersion,until);
++        if(!(original?.version===targetVersion&&equal(original.data,step.desired)))unresolved();
++        retainedHistoryUsed=true;}
++    }else if(step.role==='ack'){
++      // The producer never writes ack. It can only reuse the acknowledged slot
++      // once; a later ack or a two-generation slot leap is not our confirmation.
++      if(!exactHead||step.guard===null||!step.guard.expected)unresolved();
++      const originalSlot=step.guard.expected,data=originalSlot.data;
++      const topology=this.topology.find(row=>row.host_id===data?.sourceHost&&row.epoch===data?.epoch);
++      if(!topology||!integer(data.slot)||data.slot>=topology.slots)unresolved();
++      const source=sourceFor(topology,this.owner);
++      if(step.guard.key!==slotKey(source,data.slot)||step.key!==slotKey(source,data.slot,'ack'))unresolved();
++      const slot=await this.adapter.read(step.guard.key,until);
++      if(!slot||![originalSlot.version,originalSlot.version+1].includes(slot.version))unresolved();
++      try{validatePair(source,data.slot,originalSlot,head);validatePair(source,data.slot,slot,head);}catch{unresolved();}
++      slotHeadVersion=slot.version;
++    }else unresolved();
++    return {version:targetVersion,observedHeadVersion:head.version,retainedHistoryUsed,
++      originalTargetDigest:digest(step.desired),slotHeadVersion};}
+   async #guard(step,until){if(step.guard!==null){const value=await this.adapter.read(step.guard.key,until);need(equal(value,step.guard.expected),'coordinator_slot_changed_before_dispatch');}
+     const current=await this.adapter.read(step.key,until);need(equal(current,step.expected),'coordinator_preimage_changed_before_dispatch');}
+   async #complete(active,plan){const done={schema:SCHEMA+'.completed',operationDigest:active.id,kind:plan.kind,stepCount:plan.steps.length,allStepsConfirmed:true};
+@@ -123,8 +152,9 @@
+           if(response!==null)need(response.operationDigest===active.id&&response.index===index&&response.knownRejection===false
+             &&response.version===(step.expected?.version??0)+1,'coordinator_original_response_binding');
+         }
+-        const version=await this.#confirm(step,until);
+-        this.journal.writeOnce(base+'.confirmed.json',{schema:SCHEMA+'.effect-confirmed',operationDigest:active.id,index,version,desiredDigest:digest(step.desired)});
++        const confirmation=await this.#confirm(step,until);
++        this.journal.writeOnce(base+'.confirmed.json',{schema:SCHEMA+'.effect-confirmed',operationDigest:active.id,index,
++          ...confirmation,desiredDigest:digest(step.desired)});
+       }
+       active={id:active.id,step:index+1,phase:'ready'};this.store.put('active',active);
+       await this.phaseHook('step-confirmed',{kind:plan.kind,role:step.role??'retention',index});

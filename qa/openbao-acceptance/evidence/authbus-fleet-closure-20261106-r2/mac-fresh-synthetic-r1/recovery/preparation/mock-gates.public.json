@@ -1,0 +1,114 @@
+{
+  "notRun": [],
+  "ok": true,
+  "passedCount": 26,
+  "realServiceMutations": 0,
+  "results": [
+    {
+      "name": "new-full-twenty-second-observation-before-single-kill",
+      "passed": true
+    },
+    {
+      "name": "already-retired-known-numeric-exit-needs-only-bootout",
+      "passed": true
+    },
+    {
+      "name": "term-has-no-callable-dispatch-branch",
+      "passed": true
+    },
+    {
+      "name": "prior-failure-does-not-substitute-new-twenty-second-observation",
+      "passed": true
+    },
+    {
+      "name": "new-kill-requires-pinned-failed-campaign-reconciliation",
+      "passed": true
+    },
+    {
+      "name": "kill-cannot-repeat",
+      "passed": true
+    },
+    {
+      "name": "unknown-kill-stops-repeat-and-bootout-even-if-process-gone",
+      "passed": true
+    },
+    {
+      "name": "known-nonzero-kill-stops-bootout",
+      "passed": true
+    },
+    {
+      "name": "identity-change-after-fsynced-intent-stops-dispatch",
+      "passed": true
+    },
+    {
+      "name": "expired-total-budget-blocks-dispatch",
+      "passed": true
+    },
+    {
+      "name": "insufficient-new-budget-cannot-shorten-grace",
+      "passed": true
+    },
+    {
+      "name": "missing-post-kill-signal-never-implies-success",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-9",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-SIGKILL",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-Killed: 9",
+      "passed": true
+    },
+    {
+      "name": "known-post-kill-terminal-9 (Killed: 9)",
+      "passed": true
+    },
+    {
+      "name": "unrelated-uid-stat-are-not-identity-gates",
+      "passed": true
+    },
+    {
+      "name": "all-related-uids-remain-exact-501-with-offending-row",
+      "passed": true
+    },
+    {
+      "name": "all-selector-columns-remain-strict-with-offending-row",
+      "passed": true
+    },
+    {
+      "name": "unrelated-malformed-selector-still-fails-closed",
+      "passed": true
+    },
+    {
+      "name": "unknown-related-stat-refused-and-preserved",
+      "passed": true
+    },
+    {
+      "name": "related-record-still-requires-complete-five-columns",
+      "passed": true
+    },
+    {
+      "name": "never-exited-null-cannot-qualify-prior-retirement",
+      "passed": true
+    },
+    {
+      "name": "actual-private-journal-fsync-create-only-no-reuse",
+      "passed": true
+    },
+    {
+      "name": "new-unknown-helper-blocks-all-service-mutations",
+      "passed": true
+    },
+    {
+      "name": "unannounced-external-signal-does-not-prove-owned-retirement",
+      "passed": true
+    }
+  ],
+  "schema": "heptabao.mac-fresh-synthetic-cleanup-gates.r1",
+  "sourceSha256": "74c1c25ea9a747946b18b4a4e70e2a48037e3ca8892af63230e1e1980fcfad8a"
+}

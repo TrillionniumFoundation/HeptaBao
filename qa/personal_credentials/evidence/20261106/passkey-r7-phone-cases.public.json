@@ -1,0 +1,2605 @@
+{
+  "blocked": 9,
+  "candidate": "r7",
+  "cases": [
+    {
+      "evidence": [
+        {
+          "observation": "ordinary_SAF_full_retry_import_with_0ba_input_supplement",
+          "phase_results": [
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966040119299882-be12de0f-0.result.public.json",
+              "phase": "tap",
+              "sha256": "8b686467ab111afd55b3bbf9a39150c2ef7655ec3ba39be191b23eb4c98c91a5"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966040119299882-be12de0f-1.result.public.json",
+              "phase": "tap",
+              "sha256": "c1cdcfea9833ce1475bf9b124814bd454605b3324acdbdea32b54b5e0c2e8afb"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966040119299882-be12de0f-2.result.public.json",
+              "phase": "tap",
+              "sha256": "ec3142157c7d212c33aa900ea30542589a62be7b896e64fb2e5849b6ba131a4a"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966040119299882-be12de0f-3.result.public.json",
+              "phase": "tap",
+              "sha256": "8490f2adcefcf0f636a907737a7924a80173b7b14df9b70985475e8f358c6ef7"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966040119299882-be12de0f-4.result.public.json",
+              "phase": "tap",
+              "sha256": "40530e54437e14d4c2e4565d311fa338d2e844b4628db8282d516aa23be2bd48"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966040119299882-be12de0f-5.result.public.json",
+              "phase": "inspect",
+              "sha256": "c7de858bdcc7071ef5229ddba1a20469502fe6bdebc8d831a34b96e79f9ea707"
+            },
+            {
+              "case": "M01",
+              "error": "password_field_not_empty",
+              "exit_code": 1,
+              "file": "1793966110687895578-c8e128ea-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "8c7aac483b82737b1a64c96e3f52b5aa1912888672bef1fc23a3493d5edd2f51"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-0.result.public.json",
+              "phase": "tap",
+              "sha256": "1d02a9954caa958b49130c45042b93050c78c22ec58b5e40f208671ae31b4191"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-1.result.public.json",
+              "phase": "tap",
+              "sha256": "3006481654318961571b08aadcfb9c7937dbdaf7e58c18670d045619cfe2a860"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-2.result.public.json",
+              "phase": "tap",
+              "sha256": "dd048d378167cff7c8b22b1aa190e8f75a9c73686fc361fffc83dd898f53611e"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-3.result.public.json",
+              "phase": "tap",
+              "sha256": "dcd6a1ff3166fe2dbcaa520691233ea289ddfc741c876b5fc0ba30c15e13586e"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-4.result.public.json",
+              "phase": "tap",
+              "sha256": "7dde014047abf2279dbeced59093f8334bcd3c134d597624822739000ce6011f"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-5.result.public.json",
+              "phase": "inspect",
+              "sha256": "69a88372afec9f431ca2f95bfb090ee510212a546cf05d12cd5eea3e961b64ef"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-6.result.public.json",
+              "phase": "input-master",
+              "sha256": "de48afa30d4c42ff7a01e5b9b6f7735ee0f07ec4ca267db358ebd06a9be96b91"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-7.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "fa1ea9b2184d29bd56579b8168603d95d6b54e99390c6c273f42e2ba9ea61808"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-8.result.public.json",
+              "phase": "tap",
+              "sha256": "b009a38fed6c542d2648e0ffef0439e23e7c2fd7212c840fd270c8cfae9f06a4"
+            },
+            {
+              "case": "M01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966897490221373-bb28cbb9-9.result.public.json",
+              "phase": "inspect",
+              "sha256": "290345ce287964a721651195391c9246dd0892f80efeb9ae94378d8f4daaa091"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "M01",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        {
+          "observation": "real_Android_CredentialManager_create_provider_approval_and_independent_RP_registration",
+          "phase_results": [
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966992619150392-b8ae7ba2-0.result.public.json",
+              "phase": "rp-state",
+              "sha256": "9706898a86fde0677f19ec88ddb49626573650f617de269927c0ab1a543de5db"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966992619150392-b8ae7ba2-1.result.public.json",
+              "phase": "launch-fixture",
+              "sha256": "e32a23d70778fbb8e1fb2b31d15baaab491e0d2075eb1d3a2a004a3cc51772ab"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793966992619150392-b8ae7ba2-2.result.public.json",
+              "phase": "inspect",
+              "sha256": "6f26a3996c21f81ec414661e6836eb0c5e52934cbb3d8c1aa6f53f2573f6b6e0"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967015029312251-17449231-0.result.public.json",
+              "phase": "tap",
+              "sha256": "041ac14c2647bf6dbd53fbf1c5d21a015302c740a83e4644ede7060d43b2a5bd"
+            },
+            {
+              "case": "M02",
+              "error": "focused_window_unavailable",
+              "exit_code": 1,
+              "file": "1793967015029312251-17449231-1.result.public.json",
+              "phase": "inspect",
+              "sha256": "21cb5a4b1253a83df45aa660a777c528ac236b6c90401dee4d032074d8c2935f"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967049334501683-26b3f17f-0.result.public.json",
+              "phase": "rp-state",
+              "sha256": "f48a96b7bc738c5c15a1d233078490fdf237a4e890342a6f5e4e64edc782470b"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967049334501683-26b3f17f-1.result.public.json",
+              "phase": "inspect",
+              "sha256": "b0c5ed96ce62b159dd03eb77a869768bd5a73d7701695951a82a7fb8aa3854a6"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967094855695201-4a9778b1-0.result.public.json",
+              "phase": "tap",
+              "sha256": "a1995a40a5883f2594cccdc8c45849e8053a6abe4839a8e0b9c4143024d88b6c"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967094855695201-4a9778b1-1.result.public.json",
+              "phase": "inspect",
+              "sha256": "6d1160bbc747bc55052b9c2eb8efeee51d080ecf6d5040fc3dc00714668a9412"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967134450717489-2e870d5c-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "2ad378ea150aed972ab356ec1903b5a86f456e5b36b9245a3321515c58f25756"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967134450717489-2e870d5c-1.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "23cd4505047d4e215e009958e02d80bab9f0104c226bc2840c723fa31164b235"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967134450717489-2e870d5c-2.result.public.json",
+              "phase": "tap",
+              "sha256": "99dcc43094104ce9de04311d78bbc7524fec27efa2e47871ac7651ccaf534c35"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967134450717489-2e870d5c-3.result.public.json",
+              "phase": "inspect",
+              "sha256": "6c45d4829d342fb1625dbfec46151bf875db843ccd9fcad7cc616502d31b3cb0"
+            },
+            {
+              "case": "M02",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967134450717489-2e870d5c-4.result.public.json",
+              "phase": "rp-state",
+              "sha256": "ce11746761c5eb38440813cbd925df7d4bee4d7ccd71db28fa7a1bc3b2851435"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "M02",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        {
+          "accepted_authentications": 0,
+          "accepted_counter": 0,
+          "actual_exception_class_observed": false,
+          "inference": "fixed_fixture_omits_normal_allowed_provider_permission_required_by_platform_contract",
+          "permission_granted_during_run": false,
+          "phase_results": [
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967223786824268-94957a59-0.result.public.json",
+              "phase": "launch-provider",
+              "sha256": "7c230e8f9477f079e0b5ca1e60ef0e8aab99b012aaa2da91603606b4d52cd877"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967223786824268-94957a59-1.result.public.json",
+              "phase": "input-master",
+              "sha256": "6b89f18b4c6bf28e99d3cb18bf1f66da6e7cbe833d56007ee2e6323fafb4626e"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967223786824268-94957a59-2.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "65fd8b567c4fbda8c9e35fa6eb3475bc1ac9a6b2aa030c63a924c74e5f04d512"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967223786824268-94957a59-3.result.public.json",
+              "phase": "tap",
+              "sha256": "e1b232898d544456858b22036ed9d6ba400d48ba2f4619a3327babb5326ab182"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967223786824268-94957a59-4.result.public.json",
+              "phase": "inspect",
+              "sha256": "9a589409bc11a51963343c634fd9f5c681c456844ae5bbf7e503f0cf704c72f8"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967223786824268-94957a59-5.result.public.json",
+              "phase": "launch-fixture",
+              "sha256": "207b863e97e09ced8aee3a07203fbeb65d4cc4cae4297e83ad60a7eaf0738235"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967223786824268-94957a59-6.result.public.json",
+              "phase": "tap",
+              "sha256": "d1737997c88d4eb15ac09dfa620b60f6c6b65a5a10a61bea44d8439bd103ba44"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967360739223333-44128fbc-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "8dfb22808935b8555a613e82b535470adb0ced56dd438752d5e695be602b7302"
+            },
+            {
+              "case": "M03",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967360739223333-44128fbc-1.result.public.json",
+              "phase": "rp-state",
+              "sha256": "db9506258344624dbf8f05905ed83c795d7f9bd7eaf4fc5a1d3ca37f95151562"
+            }
+          ],
+          "rp_authentication_options_issued": true,
+          "ui_code": "platform_invocation_failed"
+        }
+      ],
+      "executed": true,
+      "id": "M03",
+      "status": "failed"
+    },
+    {
+      "evidence": [
+        {
+          "observation": "ordinary_SAF_encrypted_backup_written_and_readback_verified",
+          "phase_results": [
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967652125224200-6039baa5-0.result.public.json",
+              "phase": "launch-provider",
+              "sha256": "27d9783559b794b8de33d1ff0f7c379c9c6ef2c6a43970fcf3a089775a27af23"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967652125224200-6039baa5-1.result.public.json",
+              "phase": "input-master",
+              "sha256": "b564ca5587c3ef5bd44017ec1aa40884f766fdce36751027da116a540917cd3b"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967652125224200-6039baa5-2.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "ba270182b15ad078044d0f29455285e56568012047d6f807fdb6cc2366303817"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967652125224200-6039baa5-3.result.public.json",
+              "phase": "tap",
+              "sha256": "6db637d647678d40255f24ba03a6614daaa0f2e6dc5f53da16dc960bd670752a"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967652125224200-6039baa5-4.result.public.json",
+              "phase": "inspect",
+              "sha256": "81ef990b59e29266ee425d3742d609153f0d3e402354cb65bb5b6556bfeeb50c"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967652125224200-6039baa5-5.result.public.json",
+              "phase": "tap",
+              "sha256": "b99c6096838a89aeeaf4d1078f5e090369e893185fd6efef8f3bdeeef9f038a9"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967652125224200-6039baa5-6.result.public.json",
+              "phase": "inspect",
+              "sha256": "8cf95c8719f8368bffe97fa6d854dcc45e5a86ec4e0dac80b53a9295ae44c571"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967747766521901-3a087a49-0.result.public.json",
+              "phase": "tap",
+              "sha256": "c45bf8a64e1a2b5ff6bd5944a0c389be5494a74d468003cb90e5ded1cd0992d0"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967747766521901-3a087a49-1.result.public.json",
+              "phase": "input-master",
+              "sha256": "c6b23e825bf51f5df2c376d1d40bfa110a9e7df2f0dac28e16a437b855724a42"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967747766521901-3a087a49-2.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "45b82c2f220d7ac4530dbc24cab8c2e87e6d93bb6140b62908d185e5c6bbbc33"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967747766521901-3a087a49-3.result.public.json",
+              "phase": "tap",
+              "sha256": "856c46633186a3632165045489aff1bbd91229dad62916ec57535d8472cb7b85"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967747766521901-3a087a49-4.result.public.json",
+              "phase": "inspect",
+              "sha256": "b8379fbafd4845178d4fb351015f4c4477e95df3e6482d3c976fcf584e44e88e"
+            },
+            {
+              "case": "M04",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967747766521901-3a087a49-5.result.public.json",
+              "phase": "rp-state",
+              "sha256": "c0d38f3fe8d16e401edf0b34d612be3d77e594aea6c2b4abd48617291afebf0f"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "M04",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "M05",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "M06",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "observation": "wrong_master_import_refused_and_existing_one_credential_reopened",
+          "phase_results": [
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-0.result.public.json",
+              "phase": "tap",
+              "sha256": "8ef884d0c86681375861a0aa16ad73d882f972a3e58ee42d76fe0ea5f62478c5"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-1.result.public.json",
+              "phase": "tap",
+              "sha256": "7701a2d4468a976cbaf917b7dcf63a2691661ef626242bfcb1ade0b557d9de62"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-2.result.public.json",
+              "phase": "tap",
+              "sha256": "7caf2303b633711da95b2f8211c9338f4e46a87493dd3a8208489080c3c9c3ce"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-3.result.public.json",
+              "phase": "tap",
+              "sha256": "74f440e396dfda28ff25b73aad9dab68c37a307b871c6e362785d8bd3483e5aa"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-4.result.public.json",
+              "phase": "tap",
+              "sha256": "1cf3a6daaea3c1cac7f937fcdd0b305074ce0c2d4945c507ef572b021a41c7d8"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-5.result.public.json",
+              "phase": "inspect",
+              "sha256": "1b03d3496bc183f8518f4d79cc75117856729669ebfa38cb63d183af512c68ac"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-6.result.public.json",
+              "phase": "input-master",
+              "sha256": "344baa2bb656ac7d774c27dbe606ef723238b26dee1c33684e385e8a378ae179"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-7.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "493983f3e963dadc2fedef9c1a87825b68966a8d0bdf471d6129ce0f969191e4"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-8.result.public.json",
+              "phase": "tap",
+              "sha256": "c9eff456fc8f742927a15b6423f623b04e69b4a63520aec1c715dce899b836bb"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793967904586829876-9d34b6b5-9.result.public.json",
+              "phase": "inspect",
+              "sha256": "7315e04c9be0075a1f0e0645153cb89fa6e25daaf10e90918d8e6bb661a96363"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968041205170367-c531e58f-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "1a750aa1a950e126528599c0ce5ee23b70c593d9f909725a56cb09e7c1116679"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968041205170367-c531e58f-1.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "6daa8951795a53ccdf4ef23cd42b902a5f6745fc34749afed94c0e43470756ce"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968041205170367-c531e58f-2.result.public.json",
+              "phase": "tap",
+              "sha256": "6de9e7a0e006f016c0fcb8971530cbf09ad53762f0f8c5a8421f427c8732e11d"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968041205170367-c531e58f-3.result.public.json",
+              "phase": "inspect",
+              "sha256": "82c9fcdd8c770cdf34cb29db0ecfee60f143b4993cd0e656fc5aea4679ba0194"
+            },
+            {
+              "case": "G01",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968041205170367-c531e58f-4.result.public.json",
+              "phase": "rp-state",
+              "sha256": "6322bd94a248729522a46dd445adaa1dd59f96db8ccafcba678c2bf689a616fb"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "G01",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "G02",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "G03",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "G04",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "G05",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "G06",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "G07",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "observation": "new_export_selection_cancelled_old_target_not_reused",
+          "phase_results": [
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "d943ac16d209f164acca03f6c144eccaa0e0143988faa97b9e4afd6f2fa56904"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-1.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "085cc4cbcf348e97a23d5c2fc45a6b9ba1bf6e0d716d70ca9ac4988645980ff9"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-2.result.public.json",
+              "phase": "tap",
+              "sha256": "8617333274e6459f83b2bda13472690b4e4495fb49d729641f9d060f5bcba62c"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-3.result.public.json",
+              "phase": "inspect",
+              "sha256": "ceb054d13a1f9c62c70fda132b1da4240d70ed03cfd6ccdf9876545b3b3f4f9f"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-4.result.public.json",
+              "phase": "tap",
+              "sha256": "7814fc5e835edb9ea119df218b509d408b987722c98f4bce169e9ac60edbf125"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-5.result.public.json",
+              "phase": "tap",
+              "sha256": "eced87cc8ea531b813f02a2d3d9dcef56125765aa00833cf6251202e7975e964"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-6.result.public.json",
+              "phase": "tap",
+              "sha256": "7b5855acfe473ea2dc86621823859f37ac8b59fb6b54078cdba192bb48196d5d"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968803238760822-04d348a6-7.result.public.json",
+              "phase": "tap",
+              "sha256": "8f2aaf48ebca70e65246944b780c43bf3bc536f2128728214f6b711ea5ca6678"
+            },
+            {
+              "case": "G08",
+              "error": "ui_target_not_unique",
+              "exit_code": 1,
+              "file": "1793968803238760822-04d348a6-8.result.public.json",
+              "phase": "tap",
+              "sha256": "f4d4bcd453bcbecc04bac99243f9badf2c5320e95d2d47cf08715f4e927170e2"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968924876349982-e89caedf-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "2b3f65d8961b72aace046f5ae01ed468067075f704092c171f44b0c59c720a14"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968980383540690-b9365019-0.result.public.json",
+              "phase": "tap",
+              "sha256": "0aa54194f623b1c18a7e67489f82ddfe1ca54c0705c412c953f94291db53bd5d"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968980383540690-b9365019-1.result.public.json",
+              "phase": "tap",
+              "sha256": "ebadc0794b25a057f9728b46f64d75386a5e9b455242c02bf13422821c376cc9"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968980383540690-b9365019-2.result.public.json",
+              "phase": "tap",
+              "sha256": "9ca231e3d4d48fcc4fa19961ae43662b41818b70c95993c97bbdc903384cc179"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968980383540690-b9365019-3.result.public.json",
+              "phase": "tap",
+              "sha256": "4f15ab951d5dca49fc3d43090b2aa0a1e00b5f28bf09f00c92e3f645350f3ff8"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968980383540690-b9365019-4.result.public.json",
+              "phase": "inspect",
+              "sha256": "ff27d3c520cda66c4d9e62e8b9bfb2059ec3e77ef828c5087ae6582c208c1e7d"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968995906253996-1acac2b6-0.result.public.json",
+              "phase": "tap",
+              "sha256": "bd71a1403eeb79cb94dc5c622a423da3f42d39bf17f19d3e184008927e4d6e55"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968995906253996-1acac2b6-1.result.public.json",
+              "phase": "inspect",
+              "sha256": "9c4acb98a5dda5562d500a8e9cd849946f719a0832d3ab21c7b3507a521b5ce7"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969072729958577-b60d04b8-0.result.public.json",
+              "phase": "tap",
+              "sha256": "d9d4ff54b410695c4fd529b74368e4f158d7fe79321973cd16fb9d1c35db69bb"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969075355064338-94f79520-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "d0f01ec8506c78ac5ea5181bac03bd35bd12bb174ed9f59bcd2ed56ca5894172"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969077779964904-084e691f-0.result.public.json",
+              "phase": "back",
+              "sha256": "3a3c1a41c7e80700a4ece83b5c1f490fb80122affd19e88d31c36ca6f9268dca"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969078043046863-8df8307c-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "aa17041c8d1d5653fc3fd5c972596d68ec0fd6dee35fe7f5f6dd18242ed8d50f"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969080453864250-fb55358d-0.result.public.json",
+              "phase": "back",
+              "sha256": "13cebf3e6ca6d25928c812d733c5c397caba119650be2b4973700805a8948b1e"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969080707413905-e16b8bce-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "56866b792e3b825edbbcfcf8729124d8e7b54f0feadb2fa5840adbdf5b3e0c88"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969083099158337-27430591-0.result.public.json",
+              "phase": "back",
+              "sha256": "477fd5463a22d934ccc1fb1ef0dc5e1edf020caa5cc0744aea4c44d057d0c327"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969083340410154-b10abec0-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "1dc6f1884f88ee94b2949aa5d168db34af17d0065379983d467b707ab82c01f3"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969085724375552-2310e63e-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "8beda17660a49b5a6f67d6e84fe16ecdda396c991ea846749130dc76604626a3"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969085724375552-2310e63e-1.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "ef5a5a24b6f92ac1ae021b4e0b726c7390b3f4d2460d7f9675ea1134134302cc"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969085724375552-2310e63e-2.result.public.json",
+              "phase": "tap",
+              "sha256": "d683498ea7075b888d7a205449427afce21dabef75f3d73d0458720bd63c55c6"
+            },
+            {
+              "case": "G08",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969085724375552-2310e63e-3.result.public.json",
+              "phase": "inspect",
+              "sha256": "3430053a48825dcd945bfc031309ee9230850670c20133951e1d3073c993e6c3"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "G08",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        {
+          "observation": "new_import_selection_cancelled_old_stage_not_reused",
+          "phase_results": [
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-0.result.public.json",
+              "phase": "tap",
+              "sha256": "d93d102679d635755e8661b7e0809bc58d5a94e9cede367a389f2032f43284ba"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-1.result.public.json",
+              "phase": "tap",
+              "sha256": "3e39c7bbe36f20e9547ea2f8e62d9d419030dad95606f72a522f3075395b6886"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-2.result.public.json",
+              "phase": "tap",
+              "sha256": "965aeabdab3e0eda82d48cf7a501cc658912c93e8daa354a5fce20b3716baff5"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-3.result.public.json",
+              "phase": "tap",
+              "sha256": "a3f8a7ea988ba466f278e800cd3cd75468a3114d3edaa91fad8cef615a6a4f6e"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-4.result.public.json",
+              "phase": "tap",
+              "sha256": "a4a4e389942957fc978c0b24e54ef05e530af1bff94e63bfa39bbb51a6706a8c"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-5.result.public.json",
+              "phase": "inspect",
+              "sha256": "21da5fa70a94fdcad3ff2fa892936416ed1846165e4c9fa417f9806076802435"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-6.result.public.json",
+              "phase": "tap",
+              "sha256": "861a72980c2c7d809cf05d9735758bb0c8c9244fdcfb53228c8970d661f1151f"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968058664090633-e03f04cf-7.result.public.json",
+              "phase": "back",
+              "sha256": "cf3abdd100925ded0b8cb8b9bf85ebbf5aa526a65b7da7b559bf3df2dd71d0ef"
+            },
+            {
+              "case": "G09",
+              "error": "password_activity_changed",
+              "exit_code": 1,
+              "file": "1793968058664090633-e03f04cf-8.result.public.json",
+              "phase": "input-master",
+              "sha256": "a60e8dee2ec5088bf16bf05e0da0380bddb7c027fe92a0a962ae195cd3509427"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968351522680812-276c1ff0-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "043b80c04c4a02872858593d714ab52e1af1cca2ff9250f4344bb97fe7e7fba6"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968353971440047-466c5a2d-0.result.public.json",
+              "phase": "back",
+              "sha256": "f8c181e6f54b68ce131e6e380d1a200b863b8714f2bad72be9c2217f950eb32d"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968354234138416-4a62a49e-0.result.public.json",
+              "phase": "inspect",
+              "sha256": "b408171c7bb2a254622e7144f4e9797b5567c72bf89ca7090b034f6e818d5a8a"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "d354e56f4c14a241d8baf365f83b275e1f84084fe5e1e9795cedf084a15cb608"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-1.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "b16aae80ca4c376ef01aea90151407f8d04a8fd95dbb961ed648cb9634d6de2b"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-2.result.public.json",
+              "phase": "tap",
+              "sha256": "3cf0cba462626e1f3d8e1a9b912d8b5fe4dcf27bca981bc9bce4c07059dffed6"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-3.result.public.json",
+              "phase": "inspect",
+              "sha256": "c1783bf113803fe4f6b926d1486a26ce47ca189b579146bf0b718241e92b830d"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-4.result.public.json",
+              "phase": "input-master",
+              "sha256": "6d6d86f41661755b5959407c941c934a65ab38f2ca4061e79539d90cdfe6ac88"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-5.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "85c6c257b31cc17b06fb2191122dc3412667065f17f86c543d43ee7efdd971ed"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-6.result.public.json",
+              "phase": "tap",
+              "sha256": "c6a5739fd7c6a5a1135f0cfaefb323cb46d1635b62316653a28b36f7b393a6c9"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-7.result.public.json",
+              "phase": "inspect",
+              "sha256": "30a1f1a41ca4c1c2b815839e4e41f43afae0d4b9cabfee9b0725dc6d8d1f0723"
+            },
+            {
+              "case": "G09",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793968356645653261-de8c6eb7-8.result.public.json",
+              "phase": "rp-state",
+              "sha256": "fe6ccab96949924c28591070e492f865d75dac25fae87bb67f9031c34d8aa5d3"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "G09",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        {
+          "observation": "wrong_master_export_refused_destination_unchanged_after_picker_baseline",
+          "phase_results": [
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "39f8cff1425375d5e43f2680c783f38fb8f7a626ad4097c5bb072d9d9ed181d7"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-1.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "4961114a3046e952f18497835314a9970cd40541f1cb89e65d14f5daabaa716b"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-2.result.public.json",
+              "phase": "tap",
+              "sha256": "d51286087dec6061730b5582c295347c0a6922d732faafb1dc1b8a08b432d732"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-3.result.public.json",
+              "phase": "inspect",
+              "sha256": "2715184220295e2fb3524b3192bab413f7227bae39e7c3c92b04a9d22ebe95fd"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-4.result.public.json",
+              "phase": "tap",
+              "sha256": "80b5aeabae4db8f39bd1db68807f43bad92f9f5eb080ec092dc815c52e01d250"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-5.result.public.json",
+              "phase": "tap",
+              "sha256": "c3d18828bbeffb61ba68dcb1fa8f14436643ff31ec7702ed895d0f197716e2f8"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-6.result.public.json",
+              "phase": "tap",
+              "sha256": "4e9fea3bba4c6afd3beae255df43f1c26b2ec052a61c18e589faa7566f1b74b3"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-7.result.public.json",
+              "phase": "tap",
+              "sha256": "df91838f639ade4b72cc69cc5a7a76c3c06a3d3568c87f7dfba0549688450861"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-8.result.public.json",
+              "phase": "tap",
+              "sha256": "3fb61ed7807f575712add4ae77371e708d99db8ad875949e623223d54c4809c1"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969103229554961-414659b7-9.result.public.json",
+              "phase": "inspect",
+              "sha256": "c6dde0983f9ca70c6465f037ace54ffbd31098ebcb263560379b672d54c80064"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969138640191111-df05d674-0.result.public.json",
+              "phase": "tap",
+              "sha256": "f7612b5f3660d9653c6dbbf4dff66fea6a90ab057aa400e51f6a71f21a62cbb2"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969138640191111-df05d674-1.result.public.json",
+              "phase": "inspect",
+              "sha256": "4b2a6c391a95687fe1c756e0b3ac1d4283b9efe0977136caad169c0f35a64034"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969241918198989-5450c530-0.result.public.json",
+              "phase": "input-master",
+              "sha256": "1dd4d58f8585cca5341c28584bc86bfcc38bedcc49890614afe4df966cc276ad"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969241918198989-5450c530-1.result.public.json",
+              "phase": "hide-keyboard",
+              "sha256": "67d2f7021685101dee35ec6f83548025d9317b836933bac8658159a761241f0b"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969241918198989-5450c530-2.result.public.json",
+              "phase": "tap",
+              "sha256": "fcc7db0fb12bd47f51709d17c3eb00d1fea027667053d5b803c50ffa6e1ad93f"
+            },
+            {
+              "case": "G10",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969241918198989-5450c530-3.result.public.json",
+              "phase": "inspect",
+              "sha256": "51fae2c6e95a460bdf1d777a1aa9e1cc318408e1925fa79cc10615d8d8951654"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "G10",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        {
+          "prerequisite": "M03",
+          "reason": "no_successful_get_positive_control_for_fixed_fixture;new_permission_only_fixture_requires_new_complete_profile_run"
+        }
+      ],
+      "executed": false,
+      "id": "G11",
+      "status": "blocked"
+    },
+    {
+      "evidence": [
+        {
+          "observation": "settings_packages_reverse_documents_media_and_RP_listener_cleanup",
+          "phase_results": [
+            {
+              "case": "M07",
+              "error": null,
+              "exit_code": 0,
+              "file": "1793969324667542067-a2bc0a31-0.result.public.json",
+              "phase": "restore",
+              "sha256": "9b8d2ade3f2f1402975e3c1bde3de6f894e0335e02e478ab879c98e4ee635c67"
+            }
+          ]
+        }
+      ],
+      "executed": true,
+      "id": "M07",
+      "status": "passed"
+    }
+  ],
+  "cleanup_sha256": "77fc4383b2627f3b0eb47d1483a5d3ea54e3f69e3654787a832b7bd47c073532",
+  "created_unix_ns": 1793965362976557450,
+  "credential_entry": "synthetic_only_adb_input_text_argv",
+  "credential_manager_create_verified": true,
+  "credential_manager_exercised": true,
+  "credential_manager_get_verified": false,
+  "executed": 9,
+  "expected": 18,
+  "failed": 1,
+  "failed_phase_attempts": [
+    {
+      "case": "M01",
+      "error": "password_field_not_empty",
+      "exit_code": 1,
+      "file": "1793966110687895578-c8e128ea-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "8c7aac483b82737b1a64c96e3f52b5aa1912888672bef1fc23a3493d5edd2f51"
+    },
+    {
+      "case": "M02",
+      "error": "focused_window_unavailable",
+      "exit_code": 1,
+      "file": "1793967015029312251-17449231-1.result.public.json",
+      "phase": "inspect",
+      "sha256": "21cb5a4b1253a83df45aa660a777c528ac236b6c90401dee4d032074d8c2935f"
+    },
+    {
+      "case": "G09",
+      "error": "password_activity_changed",
+      "exit_code": 1,
+      "file": "1793968058664090633-e03f04cf-8.result.public.json",
+      "phase": "input-master",
+      "sha256": "a60e8dee2ec5088bf16bf05e0da0380bddb7c027fe92a0a962ae195cd3509427"
+    },
+    {
+      "case": "G08",
+      "error": "ui_target_not_unique",
+      "exit_code": 1,
+      "file": "1793968803238760822-04d348a6-8.result.public.json",
+      "phase": "tap",
+      "sha256": "f4d4bcd453bcbecc04bac99243f9badf2c5320e95d2d47cf08715f4e927170e2"
+    }
+  ],
+  "initial_ledger_sha256": "2f5533b2157092c4525a6e5e401e4031206af6919525de2d7b94881cf4e226e3",
+  "input_helper_sha256": "0ba29978acd83d7cccad6ff4d25d4ee32304c2c2584a02b74fee28be8db87f56",
+  "input_supplement_admission_sha256": "1436ad8b01b53568336766a37556f4bcedff73868e7e382f67ec379f7cbd5462",
+  "master_entered": true,
+  "missing": 0,
+  "observations": [
+    {
+      "error": "password_field_not_empty",
+      "job": "1a1b0b6744d-fc05-724e",
+      "kind": "input_guard_before_supplement",
+      "master_read_or_entered": false,
+      "preserved": true
+    },
+    {
+      "create_tap_had_occurred": true,
+      "error": "focused_window_unavailable",
+      "job": "1a1b0c44067-fc05-72b6",
+      "kind": "CM_transition_inspect",
+      "preserved": true,
+      "subsequent_settled_system_selector_observed": true
+    },
+    {
+      "error": "password_activity_changed",
+      "job": "1a1b0d3e90c-fc05-733b",
+      "kind": "picker_navigation_guard",
+      "master_read_or_entered_for_failed_phase": false,
+      "preserved": true
+    },
+    {
+      "error": "ui_target_not_unique",
+      "job": "1a1b0df864e-fc05-7381",
+      "kind": "unindexed_owned_folder_preparation",
+      "later_exact_owned_ciphertext_indexing": true,
+      "no_unknown_target_clicked": true,
+      "preserved": true
+    },
+    {
+      "after_CM_create_and_failed_get": true,
+      "exit_code": 124,
+      "job": "1a1b0aea36c-fc05-7224",
+      "kind": "RP_runtime_limit",
+      "not_a_credential_rejection_case": true,
+      "state": "timed_out",
+      "timeout_seconds": 3600
+    }
+  ],
+  "p4_qualified": false,
+  "passed": 8,
+  "phase_evidence": [
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-0.result.public.json",
+      "phase": "preflight",
+      "sha256": "cdd3829d052febd4d41582930e0b165d19114023e0d95903265e6fa84487eebb"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-1.result.public.json",
+      "phase": "install",
+      "sha256": "e68411a307cf5450b69f4962a7463bcd3ae156095ca5f8a4251c2a80da79054f"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-10.result.public.json",
+      "phase": "launch-provider",
+      "sha256": "4f1a45098d178572b1d90ad0eadc47e3c37c1c8e5ee386f57d1c35e1900afbfb"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-11.result.public.json",
+      "phase": "inspect",
+      "sha256": "46347917cb88f8e7d97b05c7656d90b4c4e32ed3525f2700e9df496f466e595d"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-2.result.public.json",
+      "phase": "reverse",
+      "sha256": "737a44d758a5afc18c700d030087631ab1ec269a86a6c888cf2b1cdf45b6e467"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-3.result.public.json",
+      "phase": "settings-arm-primary-system-bridge",
+      "sha256": "0a2c720daaabd5ee7b5466b29a9cbbb659f398843b282860fc6402ba55bb49bb"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-4.result.public.json",
+      "phase": "launch-provider",
+      "sha256": "4dcf7e5240022de7e2eb3d0d5a146d59b854ad1fbf1a3f49cef5cd71df032a0c"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-5.result.public.json",
+      "phase": "tap",
+      "sha256": "d7ccab057a4b54ce643e022f87b0f6eb4a7f806098afcb1074ec99bacf3936ea"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-6.result.public.json",
+      "phase": "tap",
+      "sha256": "6448e67c516dcc96cdc3d5a002fae1d13a9a3e48954c763eaa293a45928981ff"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-7.result.public.json",
+      "phase": "tap",
+      "sha256": "67b8f3e629992d493e4d0bb686e4719b4ffea85bd1ee91ea0689f0991aa660b8"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-8.result.public.json",
+      "phase": "tap",
+      "sha256": "cc6c52ad093fc701604ddb0ad0b66a6d1449f56ead9591ec34bd4f7821868607"
+    },
+    {
+      "case": "SETUP",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793965681408117692-0d2a9834-9.result.public.json",
+      "phase": "settings-selected",
+      "sha256": "b5559cb70403a2bc169dc17a681a8d6bb85a4072f87f31a59cbbf3762801f363"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966040119299882-be12de0f-0.result.public.json",
+      "phase": "tap",
+      "sha256": "8b686467ab111afd55b3bbf9a39150c2ef7655ec3ba39be191b23eb4c98c91a5"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966040119299882-be12de0f-1.result.public.json",
+      "phase": "tap",
+      "sha256": "c1cdcfea9833ce1475bf9b124814bd454605b3324acdbdea32b54b5e0c2e8afb"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966040119299882-be12de0f-2.result.public.json",
+      "phase": "tap",
+      "sha256": "ec3142157c7d212c33aa900ea30542589a62be7b896e64fb2e5849b6ba131a4a"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966040119299882-be12de0f-3.result.public.json",
+      "phase": "tap",
+      "sha256": "8490f2adcefcf0f636a907737a7924a80173b7b14df9b70985475e8f358c6ef7"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966040119299882-be12de0f-4.result.public.json",
+      "phase": "tap",
+      "sha256": "40530e54437e14d4c2e4565d311fa338d2e844b4628db8282d516aa23be2bd48"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966040119299882-be12de0f-5.result.public.json",
+      "phase": "inspect",
+      "sha256": "c7de858bdcc7071ef5229ddba1a20469502fe6bdebc8d831a34b96e79f9ea707"
+    },
+    {
+      "case": "M01",
+      "error": "password_field_not_empty",
+      "exit_code": 1,
+      "file": "1793966110687895578-c8e128ea-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "8c7aac483b82737b1a64c96e3f52b5aa1912888672bef1fc23a3493d5edd2f51"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-0.result.public.json",
+      "phase": "tap",
+      "sha256": "1d02a9954caa958b49130c45042b93050c78c22ec58b5e40f208671ae31b4191"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-1.result.public.json",
+      "phase": "tap",
+      "sha256": "3006481654318961571b08aadcfb9c7937dbdaf7e58c18670d045619cfe2a860"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-2.result.public.json",
+      "phase": "tap",
+      "sha256": "dd048d378167cff7c8b22b1aa190e8f75a9c73686fc361fffc83dd898f53611e"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-3.result.public.json",
+      "phase": "tap",
+      "sha256": "dcd6a1ff3166fe2dbcaa520691233ea289ddfc741c876b5fc0ba30c15e13586e"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-4.result.public.json",
+      "phase": "tap",
+      "sha256": "7dde014047abf2279dbeced59093f8334bcd3c134d597624822739000ce6011f"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-5.result.public.json",
+      "phase": "inspect",
+      "sha256": "69a88372afec9f431ca2f95bfb090ee510212a546cf05d12cd5eea3e961b64ef"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-6.result.public.json",
+      "phase": "input-master",
+      "sha256": "de48afa30d4c42ff7a01e5b9b6f7735ee0f07ec4ca267db358ebd06a9be96b91"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-7.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "fa1ea9b2184d29bd56579b8168603d95d6b54e99390c6c273f42e2ba9ea61808"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-8.result.public.json",
+      "phase": "tap",
+      "sha256": "b009a38fed6c542d2648e0ffef0439e23e7c2fd7212c840fd270c8cfae9f06a4"
+    },
+    {
+      "case": "M01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966897490221373-bb28cbb9-9.result.public.json",
+      "phase": "inspect",
+      "sha256": "290345ce287964a721651195391c9246dd0892f80efeb9ae94378d8f4daaa091"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966992619150392-b8ae7ba2-0.result.public.json",
+      "phase": "rp-state",
+      "sha256": "9706898a86fde0677f19ec88ddb49626573650f617de269927c0ab1a543de5db"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966992619150392-b8ae7ba2-1.result.public.json",
+      "phase": "launch-fixture",
+      "sha256": "e32a23d70778fbb8e1fb2b31d15baaab491e0d2075eb1d3a2a004a3cc51772ab"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793966992619150392-b8ae7ba2-2.result.public.json",
+      "phase": "inspect",
+      "sha256": "6f26a3996c21f81ec414661e6836eb0c5e52934cbb3d8c1aa6f53f2573f6b6e0"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967015029312251-17449231-0.result.public.json",
+      "phase": "tap",
+      "sha256": "041ac14c2647bf6dbd53fbf1c5d21a015302c740a83e4644ede7060d43b2a5bd"
+    },
+    {
+      "case": "M02",
+      "error": "focused_window_unavailable",
+      "exit_code": 1,
+      "file": "1793967015029312251-17449231-1.result.public.json",
+      "phase": "inspect",
+      "sha256": "21cb5a4b1253a83df45aa660a777c528ac236b6c90401dee4d032074d8c2935f"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967049334501683-26b3f17f-0.result.public.json",
+      "phase": "rp-state",
+      "sha256": "f48a96b7bc738c5c15a1d233078490fdf237a4e890342a6f5e4e64edc782470b"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967049334501683-26b3f17f-1.result.public.json",
+      "phase": "inspect",
+      "sha256": "b0c5ed96ce62b159dd03eb77a869768bd5a73d7701695951a82a7fb8aa3854a6"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967094855695201-4a9778b1-0.result.public.json",
+      "phase": "tap",
+      "sha256": "a1995a40a5883f2594cccdc8c45849e8053a6abe4839a8e0b9c4143024d88b6c"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967094855695201-4a9778b1-1.result.public.json",
+      "phase": "inspect",
+      "sha256": "6d1160bbc747bc55052b9c2eb8efeee51d080ecf6d5040fc3dc00714668a9412"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967134450717489-2e870d5c-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "2ad378ea150aed972ab356ec1903b5a86f456e5b36b9245a3321515c58f25756"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967134450717489-2e870d5c-1.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "23cd4505047d4e215e009958e02d80bab9f0104c226bc2840c723fa31164b235"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967134450717489-2e870d5c-2.result.public.json",
+      "phase": "tap",
+      "sha256": "99dcc43094104ce9de04311d78bbc7524fec27efa2e47871ac7651ccaf534c35"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967134450717489-2e870d5c-3.result.public.json",
+      "phase": "inspect",
+      "sha256": "6c45d4829d342fb1625dbfec46151bf875db843ccd9fcad7cc616502d31b3cb0"
+    },
+    {
+      "case": "M02",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967134450717489-2e870d5c-4.result.public.json",
+      "phase": "rp-state",
+      "sha256": "ce11746761c5eb38440813cbd925df7d4bee4d7ccd71db28fa7a1bc3b2851435"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967223786824268-94957a59-0.result.public.json",
+      "phase": "launch-provider",
+      "sha256": "7c230e8f9477f079e0b5ca1e60ef0e8aab99b012aaa2da91603606b4d52cd877"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967223786824268-94957a59-1.result.public.json",
+      "phase": "input-master",
+      "sha256": "6b89f18b4c6bf28e99d3cb18bf1f66da6e7cbe833d56007ee2e6323fafb4626e"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967223786824268-94957a59-2.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "65fd8b567c4fbda8c9e35fa6eb3475bc1ac9a6b2aa030c63a924c74e5f04d512"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967223786824268-94957a59-3.result.public.json",
+      "phase": "tap",
+      "sha256": "e1b232898d544456858b22036ed9d6ba400d48ba2f4619a3327babb5326ab182"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967223786824268-94957a59-4.result.public.json",
+      "phase": "inspect",
+      "sha256": "9a589409bc11a51963343c634fd9f5c681c456844ae5bbf7e503f0cf704c72f8"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967223786824268-94957a59-5.result.public.json",
+      "phase": "launch-fixture",
+      "sha256": "207b863e97e09ced8aee3a07203fbeb65d4cc4cae4297e83ad60a7eaf0738235"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967223786824268-94957a59-6.result.public.json",
+      "phase": "tap",
+      "sha256": "d1737997c88d4eb15ac09dfa620b60f6c6b65a5a10a61bea44d8439bd103ba44"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967360739223333-44128fbc-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "8dfb22808935b8555a613e82b535470adb0ced56dd438752d5e695be602b7302"
+    },
+    {
+      "case": "M03",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967360739223333-44128fbc-1.result.public.json",
+      "phase": "rp-state",
+      "sha256": "db9506258344624dbf8f05905ed83c795d7f9bd7eaf4fc5a1d3ca37f95151562"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967652125224200-6039baa5-0.result.public.json",
+      "phase": "launch-provider",
+      "sha256": "27d9783559b794b8de33d1ff0f7c379c9c6ef2c6a43970fcf3a089775a27af23"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967652125224200-6039baa5-1.result.public.json",
+      "phase": "input-master",
+      "sha256": "b564ca5587c3ef5bd44017ec1aa40884f766fdce36751027da116a540917cd3b"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967652125224200-6039baa5-2.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "ba270182b15ad078044d0f29455285e56568012047d6f807fdb6cc2366303817"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967652125224200-6039baa5-3.result.public.json",
+      "phase": "tap",
+      "sha256": "6db637d647678d40255f24ba03a6614daaa0f2e6dc5f53da16dc960bd670752a"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967652125224200-6039baa5-4.result.public.json",
+      "phase": "inspect",
+      "sha256": "81ef990b59e29266ee425d3742d609153f0d3e402354cb65bb5b6556bfeeb50c"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967652125224200-6039baa5-5.result.public.json",
+      "phase": "tap",
+      "sha256": "b99c6096838a89aeeaf4d1078f5e090369e893185fd6efef8f3bdeeef9f038a9"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967652125224200-6039baa5-6.result.public.json",
+      "phase": "inspect",
+      "sha256": "8cf95c8719f8368bffe97fa6d854dcc45e5a86ec4e0dac80b53a9295ae44c571"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967747766521901-3a087a49-0.result.public.json",
+      "phase": "tap",
+      "sha256": "c45bf8a64e1a2b5ff6bd5944a0c389be5494a74d468003cb90e5ded1cd0992d0"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967747766521901-3a087a49-1.result.public.json",
+      "phase": "input-master",
+      "sha256": "c6b23e825bf51f5df2c376d1d40bfa110a9e7df2f0dac28e16a437b855724a42"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967747766521901-3a087a49-2.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "45b82c2f220d7ac4530dbc24cab8c2e87e6d93bb6140b62908d185e5c6bbbc33"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967747766521901-3a087a49-3.result.public.json",
+      "phase": "tap",
+      "sha256": "856c46633186a3632165045489aff1bbd91229dad62916ec57535d8472cb7b85"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967747766521901-3a087a49-4.result.public.json",
+      "phase": "inspect",
+      "sha256": "b8379fbafd4845178d4fb351015f4c4477e95df3e6482d3c976fcf584e44e88e"
+    },
+    {
+      "case": "M04",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967747766521901-3a087a49-5.result.public.json",
+      "phase": "rp-state",
+      "sha256": "c0d38f3fe8d16e401edf0b34d612be3d77e594aea6c2b4abd48617291afebf0f"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-0.result.public.json",
+      "phase": "tap",
+      "sha256": "8ef884d0c86681375861a0aa16ad73d882f972a3e58ee42d76fe0ea5f62478c5"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-1.result.public.json",
+      "phase": "tap",
+      "sha256": "7701a2d4468a976cbaf917b7dcf63a2691661ef626242bfcb1ade0b557d9de62"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-2.result.public.json",
+      "phase": "tap",
+      "sha256": "7caf2303b633711da95b2f8211c9338f4e46a87493dd3a8208489080c3c9c3ce"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-3.result.public.json",
+      "phase": "tap",
+      "sha256": "74f440e396dfda28ff25b73aad9dab68c37a307b871c6e362785d8bd3483e5aa"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-4.result.public.json",
+      "phase": "tap",
+      "sha256": "1cf3a6daaea3c1cac7f937fcdd0b305074ce0c2d4945c507ef572b021a41c7d8"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-5.result.public.json",
+      "phase": "inspect",
+      "sha256": "1b03d3496bc183f8518f4d79cc75117856729669ebfa38cb63d183af512c68ac"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-6.result.public.json",
+      "phase": "input-master",
+      "sha256": "344baa2bb656ac7d774c27dbe606ef723238b26dee1c33684e385e8a378ae179"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-7.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "493983f3e963dadc2fedef9c1a87825b68966a8d0bdf471d6129ce0f969191e4"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-8.result.public.json",
+      "phase": "tap",
+      "sha256": "c9eff456fc8f742927a15b6423f623b04e69b4a63520aec1c715dce899b836bb"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793967904586829876-9d34b6b5-9.result.public.json",
+      "phase": "inspect",
+      "sha256": "7315e04c9be0075a1f0e0645153cb89fa6e25daaf10e90918d8e6bb661a96363"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968041205170367-c531e58f-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "1a750aa1a950e126528599c0ce5ee23b70c593d9f909725a56cb09e7c1116679"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968041205170367-c531e58f-1.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "6daa8951795a53ccdf4ef23cd42b902a5f6745fc34749afed94c0e43470756ce"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968041205170367-c531e58f-2.result.public.json",
+      "phase": "tap",
+      "sha256": "6de9e7a0e006f016c0fcb8971530cbf09ad53762f0f8c5a8421f427c8732e11d"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968041205170367-c531e58f-3.result.public.json",
+      "phase": "inspect",
+      "sha256": "82c9fcdd8c770cdf34cb29db0ecfee60f143b4993cd0e656fc5aea4679ba0194"
+    },
+    {
+      "case": "G01",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968041205170367-c531e58f-4.result.public.json",
+      "phase": "rp-state",
+      "sha256": "6322bd94a248729522a46dd445adaa1dd59f96db8ccafcba678c2bf689a616fb"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-0.result.public.json",
+      "phase": "tap",
+      "sha256": "d93d102679d635755e8661b7e0809bc58d5a94e9cede367a389f2032f43284ba"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-1.result.public.json",
+      "phase": "tap",
+      "sha256": "3e39c7bbe36f20e9547ea2f8e62d9d419030dad95606f72a522f3075395b6886"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-2.result.public.json",
+      "phase": "tap",
+      "sha256": "965aeabdab3e0eda82d48cf7a501cc658912c93e8daa354a5fce20b3716baff5"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-3.result.public.json",
+      "phase": "tap",
+      "sha256": "a3f8a7ea988ba466f278e800cd3cd75468a3114d3edaa91fad8cef615a6a4f6e"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-4.result.public.json",
+      "phase": "tap",
+      "sha256": "a4a4e389942957fc978c0b24e54ef05e530af1bff94e63bfa39bbb51a6706a8c"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-5.result.public.json",
+      "phase": "inspect",
+      "sha256": "21da5fa70a94fdcad3ff2fa892936416ed1846165e4c9fa417f9806076802435"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-6.result.public.json",
+      "phase": "tap",
+      "sha256": "861a72980c2c7d809cf05d9735758bb0c8c9244fdcfb53228c8970d661f1151f"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968058664090633-e03f04cf-7.result.public.json",
+      "phase": "back",
+      "sha256": "cf3abdd100925ded0b8cb8b9bf85ebbf5aa526a65b7da7b559bf3df2dd71d0ef"
+    },
+    {
+      "case": "G09",
+      "error": "password_activity_changed",
+      "exit_code": 1,
+      "file": "1793968058664090633-e03f04cf-8.result.public.json",
+      "phase": "input-master",
+      "sha256": "a60e8dee2ec5088bf16bf05e0da0380bddb7c027fe92a0a962ae195cd3509427"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968351522680812-276c1ff0-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "043b80c04c4a02872858593d714ab52e1af1cca2ff9250f4344bb97fe7e7fba6"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968353971440047-466c5a2d-0.result.public.json",
+      "phase": "back",
+      "sha256": "f8c181e6f54b68ce131e6e380d1a200b863b8714f2bad72be9c2217f950eb32d"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968354234138416-4a62a49e-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "b408171c7bb2a254622e7144f4e9797b5567c72bf89ca7090b034f6e818d5a8a"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "d354e56f4c14a241d8baf365f83b275e1f84084fe5e1e9795cedf084a15cb608"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-1.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "b16aae80ca4c376ef01aea90151407f8d04a8fd95dbb961ed648cb9634d6de2b"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-2.result.public.json",
+      "phase": "tap",
+      "sha256": "3cf0cba462626e1f3d8e1a9b912d8b5fe4dcf27bca981bc9bce4c07059dffed6"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-3.result.public.json",
+      "phase": "inspect",
+      "sha256": "c1783bf113803fe4f6b926d1486a26ce47ca189b579146bf0b718241e92b830d"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-4.result.public.json",
+      "phase": "input-master",
+      "sha256": "6d6d86f41661755b5959407c941c934a65ab38f2ca4061e79539d90cdfe6ac88"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-5.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "85c6c257b31cc17b06fb2191122dc3412667065f17f86c543d43ee7efdd971ed"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-6.result.public.json",
+      "phase": "tap",
+      "sha256": "c6a5739fd7c6a5a1135f0cfaefb323cb46d1635b62316653a28b36f7b393a6c9"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-7.result.public.json",
+      "phase": "inspect",
+      "sha256": "30a1f1a41ca4c1c2b815839e4e41f43afae0d4b9cabfee9b0725dc6d8d1f0723"
+    },
+    {
+      "case": "G09",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968356645653261-de8c6eb7-8.result.public.json",
+      "phase": "rp-state",
+      "sha256": "fe6ccab96949924c28591070e492f865d75dac25fae87bb67f9031c34d8aa5d3"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "d943ac16d209f164acca03f6c144eccaa0e0143988faa97b9e4afd6f2fa56904"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-1.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "085cc4cbcf348e97a23d5c2fc45a6b9ba1bf6e0d716d70ca9ac4988645980ff9"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-2.result.public.json",
+      "phase": "tap",
+      "sha256": "8617333274e6459f83b2bda13472690b4e4495fb49d729641f9d060f5bcba62c"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-3.result.public.json",
+      "phase": "inspect",
+      "sha256": "ceb054d13a1f9c62c70fda132b1da4240d70ed03cfd6ccdf9876545b3b3f4f9f"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-4.result.public.json",
+      "phase": "tap",
+      "sha256": "7814fc5e835edb9ea119df218b509d408b987722c98f4bce169e9ac60edbf125"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-5.result.public.json",
+      "phase": "tap",
+      "sha256": "eced87cc8ea531b813f02a2d3d9dcef56125765aa00833cf6251202e7975e964"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-6.result.public.json",
+      "phase": "tap",
+      "sha256": "7b5855acfe473ea2dc86621823859f37ac8b59fb6b54078cdba192bb48196d5d"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968803238760822-04d348a6-7.result.public.json",
+      "phase": "tap",
+      "sha256": "8f2aaf48ebca70e65246944b780c43bf3bc536f2128728214f6b711ea5ca6678"
+    },
+    {
+      "case": "G08",
+      "error": "ui_target_not_unique",
+      "exit_code": 1,
+      "file": "1793968803238760822-04d348a6-8.result.public.json",
+      "phase": "tap",
+      "sha256": "f4d4bcd453bcbecc04bac99243f9badf2c5320e95d2d47cf08715f4e927170e2"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968924876349982-e89caedf-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "2b3f65d8961b72aace046f5ae01ed468067075f704092c171f44b0c59c720a14"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968980383540690-b9365019-0.result.public.json",
+      "phase": "tap",
+      "sha256": "0aa54194f623b1c18a7e67489f82ddfe1ca54c0705c412c953f94291db53bd5d"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968980383540690-b9365019-1.result.public.json",
+      "phase": "tap",
+      "sha256": "ebadc0794b25a057f9728b46f64d75386a5e9b455242c02bf13422821c376cc9"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968980383540690-b9365019-2.result.public.json",
+      "phase": "tap",
+      "sha256": "9ca231e3d4d48fcc4fa19961ae43662b41818b70c95993c97bbdc903384cc179"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968980383540690-b9365019-3.result.public.json",
+      "phase": "tap",
+      "sha256": "4f15ab951d5dca49fc3d43090b2aa0a1e00b5f28bf09f00c92e3f645350f3ff8"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968980383540690-b9365019-4.result.public.json",
+      "phase": "inspect",
+      "sha256": "ff27d3c520cda66c4d9e62e8b9bfb2059ec3e77ef828c5087ae6582c208c1e7d"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968995906253996-1acac2b6-0.result.public.json",
+      "phase": "tap",
+      "sha256": "bd71a1403eeb79cb94dc5c622a423da3f42d39bf17f19d3e184008927e4d6e55"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793968995906253996-1acac2b6-1.result.public.json",
+      "phase": "inspect",
+      "sha256": "9c4acb98a5dda5562d500a8e9cd849946f719a0832d3ab21c7b3507a521b5ce7"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969072729958577-b60d04b8-0.result.public.json",
+      "phase": "tap",
+      "sha256": "d9d4ff54b410695c4fd529b74368e4f158d7fe79321973cd16fb9d1c35db69bb"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969075355064338-94f79520-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "d0f01ec8506c78ac5ea5181bac03bd35bd12bb174ed9f59bcd2ed56ca5894172"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969077779964904-084e691f-0.result.public.json",
+      "phase": "back",
+      "sha256": "3a3c1a41c7e80700a4ece83b5c1f490fb80122affd19e88d31c36ca6f9268dca"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969078043046863-8df8307c-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "aa17041c8d1d5653fc3fd5c972596d68ec0fd6dee35fe7f5f6dd18242ed8d50f"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969080453864250-fb55358d-0.result.public.json",
+      "phase": "back",
+      "sha256": "13cebf3e6ca6d25928c812d733c5c397caba119650be2b4973700805a8948b1e"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969080707413905-e16b8bce-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "56866b792e3b825edbbcfcf8729124d8e7b54f0feadb2fa5840adbdf5b3e0c88"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969083099158337-27430591-0.result.public.json",
+      "phase": "back",
+      "sha256": "477fd5463a22d934ccc1fb1ef0dc5e1edf020caa5cc0744aea4c44d057d0c327"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969083340410154-b10abec0-0.result.public.json",
+      "phase": "inspect",
+      "sha256": "1dc6f1884f88ee94b2949aa5d168db34af17d0065379983d467b707ab82c01f3"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969085724375552-2310e63e-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "8beda17660a49b5a6f67d6e84fe16ecdda396c991ea846749130dc76604626a3"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969085724375552-2310e63e-1.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "ef5a5a24b6f92ac1ae021b4e0b726c7390b3f4d2460d7f9675ea1134134302cc"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969085724375552-2310e63e-2.result.public.json",
+      "phase": "tap",
+      "sha256": "d683498ea7075b888d7a205449427afce21dabef75f3d73d0458720bd63c55c6"
+    },
+    {
+      "case": "G08",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969085724375552-2310e63e-3.result.public.json",
+      "phase": "inspect",
+      "sha256": "3430053a48825dcd945bfc031309ee9230850670c20133951e1d3073c993e6c3"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "39f8cff1425375d5e43f2680c783f38fb8f7a626ad4097c5bb072d9d9ed181d7"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-1.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "4961114a3046e952f18497835314a9970cd40541f1cb89e65d14f5daabaa716b"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-2.result.public.json",
+      "phase": "tap",
+      "sha256": "d51286087dec6061730b5582c295347c0a6922d732faafb1dc1b8a08b432d732"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-3.result.public.json",
+      "phase": "inspect",
+      "sha256": "2715184220295e2fb3524b3192bab413f7227bae39e7c3c92b04a9d22ebe95fd"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-4.result.public.json",
+      "phase": "tap",
+      "sha256": "80b5aeabae4db8f39bd1db68807f43bad92f9f5eb080ec092dc815c52e01d250"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-5.result.public.json",
+      "phase": "tap",
+      "sha256": "c3d18828bbeffb61ba68dcb1fa8f14436643ff31ec7702ed895d0f197716e2f8"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-6.result.public.json",
+      "phase": "tap",
+      "sha256": "4e9fea3bba4c6afd3beae255df43f1c26b2ec052a61c18e589faa7566f1b74b3"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-7.result.public.json",
+      "phase": "tap",
+      "sha256": "df91838f639ade4b72cc69cc5a7a76c3c06a3d3568c87f7dfba0549688450861"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-8.result.public.json",
+      "phase": "tap",
+      "sha256": "3fb61ed7807f575712add4ae77371e708d99db8ad875949e623223d54c4809c1"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969103229554961-414659b7-9.result.public.json",
+      "phase": "inspect",
+      "sha256": "c6dde0983f9ca70c6465f037ace54ffbd31098ebcb263560379b672d54c80064"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969138640191111-df05d674-0.result.public.json",
+      "phase": "tap",
+      "sha256": "f7612b5f3660d9653c6dbbf4dff66fea6a90ab057aa400e51f6a71f21a62cbb2"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969138640191111-df05d674-1.result.public.json",
+      "phase": "inspect",
+      "sha256": "4b2a6c391a95687fe1c756e0b3ac1d4283b9efe0977136caad169c0f35a64034"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969241918198989-5450c530-0.result.public.json",
+      "phase": "input-master",
+      "sha256": "1dd4d58f8585cca5341c28584bc86bfcc38bedcc49890614afe4df966cc276ad"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969241918198989-5450c530-1.result.public.json",
+      "phase": "hide-keyboard",
+      "sha256": "67d2f7021685101dee35ec6f83548025d9317b836933bac8658159a761241f0b"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969241918198989-5450c530-2.result.public.json",
+      "phase": "tap",
+      "sha256": "fcc7db0fb12bd47f51709d17c3eb00d1fea027667053d5b803c50ffa6e1ad93f"
+    },
+    {
+      "case": "G10",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969241918198989-5450c530-3.result.public.json",
+      "phase": "inspect",
+      "sha256": "51fae2c6e95a460bdf1d777a1aa9e1cc318408e1925fa79cc10615d8d8951654"
+    },
+    {
+      "case": "M07",
+      "error": null,
+      "exit_code": 0,
+      "file": "1793969324667542067-a2bc0a31-0.result.public.json",
+      "phase": "restore",
+      "sha256": "9b8d2ade3f2f1402975e3c1bde3de6f894e0335e02e478ab879c98e4ee635c67"
+    }
+  ],
+  "phase_runner_sha256": "3b50d89e0688e640453025c8994aa787f4f527a880062e3e1cf8538429dd8eff",
+  "production_qualified": false,
+  "profile_public_sha256": "8a2c3e83c878ea5a6c6d646f94559d0de5154fd9b8210604bcdc879349a7165d",
+  "profile_source_sha256": "a568f1e51f4d4e6c096b0b871bb7a9be5f7da88cf3aef39fca17e59bf8564706",
+  "provider_apk_sha256": "b16e82916330fac6909f82696089798c3ec76d7b4058fe9290e7e841b9e00459",
+  "reset_executed": false,
+  "rp_final_public_state": {
+    "ceremony_counts": {
+      "consumed": 1,
+      "pending": 1,
+      "restart_invalidated": 0
+    },
+    "counters": {
+      "authentications": 0,
+      "options": 2,
+      "registrations": 1,
+      "rejected": 0,
+      "restart_invalidated": 0,
+      "verification_attempts": 1
+    },
+    "credential_count": 1,
+    "credentials": [
+      {
+        "credential_id": "8gyD2VEc9HRwh-E-E8gSMSbZpckKiQCU58DUw1M7qXc",
+        "flags": 77,
+        "public_key_sha256": "588a26a1d8d77142d66b59be5d93c9c8191b5131b16bc266c09406a2fbd8cce5",
+        "sign_count": 0
+      }
+    ],
+    "event_count": 5,
+    "fixture_cert_sha256": "cb684e07720b0233e9aa87bc74e87cf40956476770dabc2a426bee30dcba6135",
+    "origin": "android:apk-key-hash:y2hOB3ILAjPpqoe8dOh89AlWR2dw2rwqQmvuMNy6YTU",
+    "revision": 5,
+    "rp_id": "passkeys.heptabao.test"
+  },
+  "runtime_source_bundle_sha256": "e2e79c7e35a507c11ba2a52a67c5a4882528d2447fa1c489977a64ad992f91b6",
+  "schema": 1
+}

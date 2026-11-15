@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "scope": "r5_first_failed_build_r5b_build_host_and_new_seed_public_evidence_transfer",
+  "method": "HeptaRuntime binary_read explicit public paths with full digest verification",
+  "files": [
+    {
+      "host": "mac",
+      "path": "/Users/qianqi/HeptaBaoPasskey-20261106-r1/build-r5b/receipt.json",
+      "name": "r5b-build-receipt.public.json",
+      "sha256": "b46691b4da0fc2f461801ff7b8e3abf64cb461a55a03d2624f24d4713f20fc40",
+      "bytes": 59317,
+      "remote_version": "16777233:593012265:59317:1793956716422628886:1793956716422628886",
+      "expected_sha256_source": "parent_or_artifact_owner_predeclared_whitelist",
+      "sha256_verified": true
+    },
+    {
+      "host": "mac",
+      "path": "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r5b/result.public.json",
+      "name": "r5b-host-result.public.json",
+      "sha256": "4db33700c86cd4f185fa56c1e1fe92af291c8a50f6da48fae53682438fc92bb2",
+      "bytes": 16248,
+      "remote_version": "16777233:593012442:16248:1793956722964635779:1793956722964635779",
+      "expected_sha256_source": "parent_or_artifact_owner_predeclared_whitelist",
+      "sha256_verified": true
+    },
+    {
+      "host": "ai395",
+      "path": "/home/qq/heptabao-passkey-r5-seed-20261106-r1/producer.public.json",
+      "name": "r5b-seed-producer.public.json",
+      "sha256": "533cb27055640f2da05b7e362a6c767203894f0bc05fc80b55acb01310308eb8",
+      "bytes": 1372,
+      "remote_version": "66306:46828487:1372:1793956052816391723:1793956052816391723",
+      "expected_sha256_source": "parent_or_artifact_owner_predeclared_whitelist",
+      "sha256_verified": true
+    },
+    {
+      "host": "ai395",
+      "path": "/home/qq/heptabao-passkey-r5-seed-20261106-r1/receipt.public.json",
+      "name": "r5b-seed-receipt.public.json",
+      "sha256": "ab16e81f85823b75bea71a4648b701be6072b41ee6096926c13ded5282a814d3",
+      "bytes": 473,
+      "remote_version": "66306:46828486:473:1793956052807657167:1793956052807657167",
+      "expected_sha256_source": "parent_or_artifact_owner_predeclared_whitelist",
+      "sha256_verified": true
+    },
+    {
+      "host": "ai395",
+      "path": "/home/qq/heptabao-passkey-r5-input-20261106-r1/producer-wrapper.actual.py",
+      "name": "r5b-seed-producer-wrapper.actual.py",
+      "sha256": "9fc9472b4995cd469b6157819432bfb98cd4a709d3d36f0abbe90f16eafb587f",
+      "bytes": 2621,
+      "remote_version": "66306:46822947:2621:1793957318677933889:1793957318688258106",
+      "expected_sha256_source": "parent_or_artifact_owner_predeclared_whitelist",
+      "sha256_verified": true
+    },
+    {
+      "host": "ai395",
+      "path": "/home/qq/heptabao-passkey-r5-input-20261106-r1/producer-wrapper.binding.public.json",
+      "name": "r5b-seed-producer-wrapper.binding.public.json",
+      "sha256": "5bebf6fb697a12578b81eba278fcf5ca48f35cba2f82ff65605d7116a2ae518b",
+      "bytes": 553,
+      "remote_version": "66306:46833061:553:1793957326720999655:1793957326731961457",
+      "expected_sha256_source": "parent_or_artifact_owner_predeclared_whitelist",
+      "sha256_verified": true
+    },
+    {
+      "host": "mac",
+      "path": "/Users/qianqi/HeptaBaoPasskey-20261106-r1/build-r5/receipt.failed.json",
+      "name": "r5-first-build-receipt.failed.json",
+      "sha256": "d7a36b6292202d6487b4ae9c9c3252973256c9cbad6dd52e969d2eda29c79fb2",
+      "bytes": 18317,
+      "remote_version": "16777233:593003511:18317:1793955921473249093:1793955921473249093",
+      "expected_sha256_source": "first_capture_file_info_then_version_pinned_binary_read",
+      "sha256_verified": true,
+      "predeclared_owner_sha256_available": false
+    }
+  ],
+  "private_journals_read": false,
+  "master_or_capsule_read": false,
+  "raw_private_logs_read": false,
+  "adb_or_ui_actions": 0,
+  "unknown_mac_probe_replayed": false,
+  "original_bytes_preserved": true,
+  "unretrieved_first_failure_stderr": {
+    "expected_sha256": "039fc9c4f9c21455f9044892dbb0602e7818437ecda301827e9c5dded0c60f17",
+    "reason": "Exact public path not yet whitelisted; no path guessed."
+  },
+  "source_archive_already_preserved": {
+    "repository_path": "qa/personal_credentials/evidence/20261106/source-android-passkey-r5b.tar.gz",
+    "sha256": "e84c3768271be8b908f7f9a505c3d96abdc98fd9e3bba4ed3d5d9557e13322be"
+  }
+}

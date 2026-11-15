@@ -1,0 +1,172 @@
+{
+  "schema": "heptabao.ha128-r4-mutation33-cold-clone-effect-plan.v1",
+  "status": "source-plan-only-not-executed",
+  "originalJob": "1a1b3c982b3-fc05-84bc",
+  "question": "Did the original single standby POST, which returned 503 after leader local-root CAS, durably create version 1 with the exact original intended data?",
+  "originalMutation": {
+    "sequence": 33,
+    "node": 2,
+    "method": "POST",
+    "expectedCas": 0,
+    "expectedVersion": 1,
+    "responses": 1,
+    "httpStatus": 503,
+    "retryOrReissueAllowed": false,
+    "effectCurrentlyKnown": false
+  },
+  "source": {
+    "host": "x230",
+    "fixtureRoot": "/home/qian/heptabao-native-ha-4bde9-authbus-20261107-r4",
+    "dataDirectory": "/home/qian/heptabao-native-ha-4bde9-authbus-20261107-r4/state",
+    "originalNodeStarted": false,
+    "originalFilesEditedOrDeleted": false,
+    "allOriginal4ProcessesAlreadyClosed": true,
+    "currentStructuralObservation": {
+      "job": "1a1b3de5aed-fc05-8539",
+      "committed": 54,
+      "applied": 54,
+      "lastPublicationGeneration": 21,
+      "exactTargetReadProved": false
+    }
+  },
+  "newOwnedRoot": "/home/qian/heptabao-ha-r4-effect-read-20261107-r1",
+  "stages": [
+    {
+      "name": "bounded-readonly-preflight",
+      "operations": [
+        "fresh exact original root/state/no-symlink owner and mode metadata",
+        "finite full state membership/size counts privately; no key/contents before copy",
+        "fresh normal server pin and original X230 ABI/source receipt admission",
+        "new root absent; selected loopback port unbound; enough space for two complete data copies plus bounded private diagnostics",
+        "original root and relevant data full9 recorded privately; no chmod/repermission"
+      ],
+      "output": "only counts/bytes/boolean custody and explicit unsupported mode refusal; no names or hashes of encrypted/credential data"
+    },
+    {
+      "name": "preserve-complete-state",
+      "newDirectories": [
+        "backup",
+        "clone",
+        "control",
+        "private"
+      ],
+      "core": "existing source-pinned CompleteColdCopy r2 with public_executables empty",
+      "operation": "copy the entire original state tree to backup with no exclusions, O_EXCL, nofollow, original held root, exclusive nonblocking directory flock, exact source full9/membership before/after, SHA readback and fsync for every file; retain full manifest privately",
+      "bounds": {
+        "files": 4096,
+        "directories": 256,
+        "depth": 8,
+        "eachFileBytes": 134217728,
+        "totalBytes": 1073741824
+      },
+      "requiredNoModification": [
+        "ACTIVE_CURSOR",
+        "ACTIVE_SOURCE_ROOT",
+        "HA_CURSOR",
+        "every referenced or unreferenced existing native ciphertext object",
+        "seal metadata",
+        "journal/snapshot/public index"
+      ],
+      "admission": "If any original directory/leaf does not match the existing copy core private predicate, stop and report metadata; never silently widen or change source permissions."
+    },
+    {
+      "name": "independent-writable-clone",
+      "operation": "create clone from the completed backup through the same unchanged copy core, supplying its exact private expected_manifest; preserve backup and original entirely; reacquire and hold the exact original directory flock for the diagnostic, rechecking complete original manifest after the brief handoff and again after the server closes",
+      "publicClaims": "complete file bytes and membership copied/read back; this is not cryptographic recovery and does not claim Rust/Python cross-lock interoperability unless separately evidenced"
+    },
+    {
+      "name": "private-original-custody-relay",
+      "originHost": "main",
+      "originWork": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/native-ha-official-history-4bde9-authbus-r4/private-recovery",
+      "closedInputs": [
+        "credentials.json",
+        "mutation-00033.intent.json",
+        "mutation-00033.outcome.json"
+      ],
+      "operation": "after candidate Mac product window closes, one bounded source-pinned parent reads only these three private files via held nofollow FDs, enforces same full9 and original fixture_run_id plus synthetic_only=true/production_authority=false, and sends a finite framed capsule over an owned SSH child using existing alias x230; keys/token/digest/route stay within host memory or new 0600 private files. No credential value/digest appears in argv, env, runtime stdin, public stdout/stderr, or hashes of public evidence. SSH stdin is a private process pipe; runtime stdin contains code only. Receiver publishes create-only, fsync/readback, acknowledges finite boolean facts. Unknown send/install remains same operation identity and no replay."
+    },
+    {
+      "name": "strict-normal-cold-read",
+      "binary": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/artifacts/heptabao-server",
+      "binaryBytes": 110799168,
+      "binarySha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c",
+      "argvShape": [
+        "normal-server",
+        "--config",
+        "new-control/server.json"
+      ],
+      "storage": "native_v6_file with path equal to complete writable clone; no HA config or experimental/fixture flags",
+      "network": "only owned loopback listener and caller; no peer/provider/J3160 connections; original synthetic CA and node1 leaf with strict DNS-name verification and direct loopback TCP transport, no TLS verification relaxation",
+      "privateKey": "copy original synthetic TLS key privately with full9/readback equality and close; never output value/digest",
+      "httpRequests": [
+        "bounded sealed health readiness",
+        "one POST sys/unseal using original private synthetic share; no initialization",
+        "one GET auth/token/lookup-self to confirm original root principal in memory; public boolean only",
+        "one GET exact original intent route, version=1 only; never POST or retransmit original mutation"
+      ],
+      "effectComparison": "exact JSON type/data/metadata/version constraints, canonical data SHA calculated only in private process memory and constant-time compared to the privately preserved original intent expected_data_sha256; emit only present/matched/version/effect classification. Preserve original GET outcome privately. A 404 may establish absence only after the original root principal and exact route/candidate admission pass; any unseal/auth/TLS/cursor mismatch is inconclusive.",
+      "responseBoundBytes": 1048576,
+      "httpBudgetSeconds": 15,
+      "readinessBudgetSeconds": 45,
+      "serverChildCount": 1,
+      "initializationCount": 0,
+      "originalMutationDispatchCount": 0
+    },
+    {
+      "name": "close-and-recheck",
+      "operation": "original child birth/PPID/PGID/SID/UID and waitable ownership bound by existing pinned Linux process-custody; original5s stop/group/reap/stream closure; all files/sockets closed once; verify original complete data and backup unchanged, public inputs unchanged; retain all original/new roots privately for review. Unknown closure cannot be claimed success or replayed."
+    }
+  ],
+  "proposedDiagnosticBounds": {
+    "sourceAndCopyPhaseSeconds": 240,
+    "privateRelaySeconds": 30,
+    "runtimePhaseSeconds": 120,
+    "cleanupSeconds": 5,
+    "totalWorkerSeconds": 420,
+    "supervisorSeconds": 450,
+    "note": "These are finite separate forensic-copy/cold-read limits, not changes to any original128/15HTTP/8native acceptance budget. Freeze only after source review."
+  },
+  "normalSourceEvidence": [
+    {
+      "path": "crates/heptabao-server/src/service_native_blob_source.rs",
+      "fact": "Slot contains only store_id,address,length; store identity is derived from cluster identity, not absolute data_dir.",
+      "sourceBytes": 20416,
+      "sourceSha256": "1fb88ca85b9767233515cea3a4ed2df5274e895a1e70a8a34075f74b15322614"
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/immutable_cipher_store.rs",
+      "fact": "BlobLocator::leaf is the fixed-width nv6 store/address leaf; FileBackend pins via self.directory.open_file(locator.leaf(), FileAccess::Read).",
+      "sourceBytes": 34330,
+      "sourceSha256": "36c6b5a6c4b635e42c69fb3c4942fa179408a0d08fd7ec4f33b0fd5c673bbe2b"
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/backend.rs",
+      "fact": "FileBackend::open anchors its ExclusiveDirectory at the supplied root. It can clean stale temporary files, so only the new clone may be opened by a server.",
+      "sourceBytes": 43317,
+      "sourceSha256": "5b76115a11625e18142ebbc2a04ca4c21d88f2c73735b354cb8c5e35eda29f87"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage.rs",
+      "fact": "ordinary configured File profile captures a standalone NativeCandidateProfile; original sealed Shamir metadata and no HA are still required.",
+      "sourceBytes": 8921,
+      "sourceSha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_reader.rs",
+      "fact": "normal cold load reads and validates exact ACTIVE_CURSOR and ACTIVE_SOURCE_ROOT against current generation/root and freshly authenticates native graph; no data/cursor editing is permitted to make it pass.",
+      "sourceBytes": 52675,
+      "sourceSha256": "ddda11678db6ead0f271bea21bc0c821fe791487aa8a7a72853ced1ee633edfd"
+    }
+  ],
+  "resultBoundary": {
+    "oldHaRunRemainsFailed": true,
+    "full128PassedClaim": false,
+    "productPerformanceFixValidatedClaim": false,
+    "crossHostRecoveryClaim": false,
+    "scope": "one original mutation effect on a complete independent copy of original leader state"
+  },
+  "copyCorePin": {
+    "bytes": 18781,
+    "sha256": "bdd557f5cda36beace0dbbaac7f900b5f54e75ae5b7d33340b07e3ae8fd74283"
+  }
+}

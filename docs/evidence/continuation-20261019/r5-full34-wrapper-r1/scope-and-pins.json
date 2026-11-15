@@ -1,0 +1,15 @@
+{
+  "actual_controller_sha256": "fca367526e041bdafdb65b5c849c5b20875e6b1ab2864cf8efdd599b93132a12",
+  "actual_original_checks": 31,
+  "actual_summary_sha256": "c50a35ee55f6ae42ed2eca2167c287466c6d94175f7449a7b481cbc7abafc770",
+  "new_carrier_created_for_r6_review": true,
+  "new_source_execution_claim": false,
+  "production_authority": false,
+  "schema": "heptabao.explicit-prior-actual-full34-wrapper-scope.v1",
+  "scope": "Exact prior Mac b24 full34 wrapper, preserving its b24 pins; a future candidate needs a separately bound invocation.",
+  "script_bytes": 5607,
+  "script_sha256": "ed0e197b533775d55cf99194132b9317ad138b7a5ca237ba5acbb10e6980f8f5",
+  "script_source_local_path": "continuation-20261019/r5-full34-mac-r1/run_official_full34_mac_r1.py",
+  "source_commit_tested": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree_tested": "3356f0a94616e9e1804f497239f33546e16db577"
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.immutable-evidence-map.r1",
+  "entries": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-contract-r1/RECOVERY-AND-COMPATIBILITY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b26c96bee99c6ea57c82e2233b3f2b07d6854d4b",
+      "bytes": 10844,
+      "sha256": "6c35c245b8bde8cf83a79aabe49e3de4b09537b5fd63f6fcaf87b32d3c70bf2f"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-contract-r1/manifest.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f323bcb2d5370290bb8bef1dfc20437c08f351f0",
+      "bytes": 1788,
+      "sha256": "f6daa7ea3fe34b3d819e59f3c3f6cb30651aca31f257c7a8a6a6282c2971df25"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-contract-r1/publication-20261103.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2b349e20267d170396729f48c2fc5b0655c6d243",
+      "bytes": 5002,
+      "sha256": "372132ff2ee297c005def6940cb7b5d02c1e3565727da05f7194ae963a992527"
+    }
+  ]
+}

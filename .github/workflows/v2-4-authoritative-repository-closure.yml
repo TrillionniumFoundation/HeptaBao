@@ -1,11 +1,8 @@
 name: HeptaBao V2.4 authoritative repository closure
 
 on:
-  push:
-    branches:
-      - codex/openbao-replacement-v2.4-authoritative-closure-20260909
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

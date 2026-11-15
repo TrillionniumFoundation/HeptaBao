@@ -1,0 +1,124 @@
+//! UI and CLI preflight use the current namespace registry and admitted actor.
+use super::*;
+
+impl Service {
+    pub(super) fn ui_namespaces_route(
+        state: &State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        body: &Value,
+        time: AuthorityTime,
+    ) -> Response {
+        if method != "GET" {
+            return Response::error(405, "namespace discovery requires GET");
+        }
+        if !body.as_object().is_some_and(|object| object.is_empty()) {
+            return Response::error(400, "namespace discovery does not accept parameters");
+        }
+        let Some(principal) = principal else {
+            return Response::error(403, "permission denied");
+        };
+        if let Err(error) = state.auth.ui_discovery_actor(principal, namespace, time) {
+            return Response::error(error.status, &error.message);
+        }
+        // Listing registry metadata does not authorize entering a child.
+        // Nonroot actors are confined to their issuing namespace, so their
+        // picker has no other accessible namespace, even with registry LIST.
+        if principal.is_root() {
+            Response::ok(json!({"data":{"keys":state.ui_namespace_keys(namespace)}}))
+        } else {
+            Response::ok(json!({"data":{}}))
+        }
+    }
+
+    pub(super) fn listed_mount_catalog(
+        state: &State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        now: u64,
+    ) -> Result<BTreeMap<String, Value>, Response> {
+        let mut mounts = state.engines.ui_secret_mounts(namespace);
+        mounts.extend(state.auth.ui_auth_mounts(namespace));
+        let mut visible = BTreeMap::new();
+        for (mount, descriptor) in mounts {
+            let unauth = crate::mount_listing_visibility::ListingVisibility::is_unauth(&descriptor);
+            // Even a public listing must validate a supplied actor. Its ACL
+            // projection reveals metadata and never grants data access.
+            let acl = match principal {
+                Some(actor) => state
+                    .auth
+                    .ui_mount_visible(actor, namespace, &mount, now)
+                    .map_err(|error| Response::error(error.status, &error.message))?,
+                None => false,
+            };
+            if unauth || acl {
+                visible.insert(mount, descriptor);
+            }
+        }
+        Ok(visible)
+    }
+
+    pub(super) fn ui_mounts_route(
+        state: &State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        now: u64,
+    ) -> Response {
+        if method != "GET" {
+            return Response::error(405, "mount discovery requires GET");
+        }
+        let suffix = path.strip_prefix("sys/internal/ui/mounts").unwrap_or("");
+        let mut mounts = state.engines.ui_secret_mounts(namespace);
+        mounts.extend(state.auth.ui_auth_mounts(namespace));
+        let visible = |mount: &str| -> Result<bool, Response> {
+            match principal {
+                Some(actor) => state
+                    .auth
+                    .ui_mount_visible(actor, namespace, mount, now)
+                    .map_err(|error| Response::error(error.status, &error.message)),
+                None => Ok(false),
+            }
+        };
+        if suffix.is_empty() || suffix == "/" {
+            let mounts = match Self::listed_mount_catalog(state, principal, namespace, now) {
+                Ok(mounts) => mounts,
+                Err(response) => return response,
+            };
+            let mut auth = serde_json::Map::new();
+            let mut secret = serde_json::Map::new();
+            for (mount, descriptor) in mounts {
+                let descriptor = if principal.is_none() {
+                    json!({"type":descriptor["type"],"description":descriptor["description"],"options":descriptor["options"]})
+                } else {
+                    descriptor
+                };
+                if let Some(name) = mount.strip_prefix("auth/") {
+                    auth.insert(name.to_owned(), descriptor);
+                } else {
+                    secret.insert(mount, descriptor);
+                }
+            }
+            return Response::ok(json!({"data":{"auth":auth,"secret":secret}}));
+        }
+        let target = suffix.trim_start_matches('/');
+        let Some((mount, mut descriptor)) = mounts
+            .into_iter()
+            .filter(|(mount, _)| target == mount.trim_end_matches('/') || target.starts_with(mount))
+            .max_by_key(|(mount, _)| mount.len())
+        else {
+            return Response::error(403, "mount preflight access denied");
+        };
+        match visible(&mount) {
+            Ok(true) => {
+                descriptor["path"] =
+                    Value::String(mount.strip_prefix("auth/").unwrap_or(&mount).to_owned());
+                Response::ok(json!({"data":descriptor}))
+            }
+            Ok(false) => Response::error(403, "mount preflight access denied"),
+            Err(response) => response,
+        }
+    }
+}

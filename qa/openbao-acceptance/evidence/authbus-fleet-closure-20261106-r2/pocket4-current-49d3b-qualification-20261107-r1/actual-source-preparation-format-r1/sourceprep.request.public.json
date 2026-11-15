@@ -1,0 +1,16 @@
+{
+  "host": "pocket4",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/prepare_source.py"
+  ],
+  "cwd": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1",
+  "idempotency_key": "pocket4-stream-hmac49d3b-source-preparation-20261107-r1",
+  "timeout_seconds": 510,
+  "source_sha256": "9385c9f4d7815436cea734850d1f91fe183dc7d69858856b486568303822ddad",
+  "source_bytes": 16779,
+  "inner_budget_seconds": 480
+}

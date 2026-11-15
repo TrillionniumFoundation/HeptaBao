@@ -1,14 +1,11 @@
 name: Codex OpenBao replacement closure source export
 
 on:
-  push:
-    branches:
-      - codex/openbao-replacement-full-closure-20260908
-      - codex/openbao-2-6-production-replacement-closure-20260911-r1
-      - codex/openbao-2.6-production-gap-closure-20260911
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
+
+# Source/vendor export is a packaging aid, not product qualification. Keep it
+# manual so ordinary candidate synchronization cannot consume CI capacity or
+# become an accidental required check.
 
 permissions:
   contents: read

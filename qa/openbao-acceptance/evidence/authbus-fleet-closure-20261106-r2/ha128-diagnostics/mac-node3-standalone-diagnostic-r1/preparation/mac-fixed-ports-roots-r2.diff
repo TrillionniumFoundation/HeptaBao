@@ -1,0 +1,32 @@
+--- reviewed-r1
++++ r2-three-new-roots
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Only the requested X230 policy reads or Mac alias and two port-22 connects.
++"""Observe the two Mac QA ports and three new HA root paths.
+ 
+ Full command output stays in a new private directory. Public output contains
+ only the declared LAN projection. This never modifies a rule or a service.
+@@ -77,7 +77,7 @@
+  sources={};owner=None;created=False
+  try:
+   need(sys.platform=='darwin' and os.getuid()==501 and platform.machine()=='arm64','fixed_mac_host')
+-  root=BASE/'ha128-fixed-port-observation-20261106-r1'
++  root=BASE/'ha128-fixed-port-observation-20261106-r2'
+   parent=root.parent.lstat()
+   need(root.parent.resolve(strict=True)==root.parent and stat.S_ISDIR(parent.st_mode) and parent.st_uid==501 and not parent.st_mode&0o022 and not root.exists() and not root.is_symlink(),'new_private_observation_root')
+   for name,(size,digest) in PINS.items():
+@@ -120,6 +120,13 @@
+   for path,(raw,ident) in sources.items():
+    now,now_ident=read_public(path,max(32768,len(raw)))
+    need(now==raw and now_ident==ident,'source_or_tool_changed')
++  report['newOwnedHaRoots']=[]
++  for name in ('ha128-current-launch-20261106-r2','native-ha-official-history-4bde9-authbus-r2','native-ha-4bde9-authbus-node-r2'):
++   path=BASE/name
++   try:path.lstat();absent=False
++   except FileNotFoundError:absent=True
++   report['newOwnedHaRoots'].append({'path':str(path),'absent':absent})
++   need(absent,'new_ha_root_must_be_absent')
+   report.update(ok=True,allSourceAndToolInputsUnchanged=True,readOnlySnapshotDoesNotReservePorts=True)
+  except BaseException as error:
+   report['errorType']=type(error).__name__

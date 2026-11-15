@@ -1,0 +1,129 @@
+{
+  "binary_sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c",
+  "build_exit_code": 0,
+  "elapsed_seconds": 0.24988143192604184,
+  "full_replacement_qualified": false,
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "physical_ha_qualified": false,
+  "production_authority": false,
+  "provenance": {
+    "actual_artifacts": {
+      "heptabao-seed": {
+        "bytes": 102211888,
+        "identity": [
+          66306,
+          38803092,
+          1000,
+          1000,
+          33216,
+          1,
+          102211888,
+          1793992417787365655,
+          1793992417808367769
+        ],
+        "mode": 448,
+        "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-seed",
+        "sha256": "434c32ed59201c13d8af498f5a6b19f10935e744b085a4f8029c241523f4d968"
+      },
+      "heptabao-server": {
+        "bytes": 110799168,
+        "identity": [
+          66306,
+          38803091,
+          1000,
+          1000,
+          33216,
+          1,
+          110799168,
+          1793992417433330022,
+          1793992417452331935
+        ],
+        "mode": 448,
+        "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-server",
+        "sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c"
+      }
+    },
+    "candidate_until_projection_runtime_terminal": true,
+    "observations_are_cross_file_atomic": false,
+    "original_inputs": {
+      "receipt": {
+        "bytes": 285431,
+        "identity": [
+          66306,
+          38446733,
+          1000,
+          1000,
+          33152,
+          1,
+          285431,
+          1793994193300583016,
+          1793994193302583092
+        ],
+        "mode": 384,
+        "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/result.public.json",
+        "sha256": "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5"
+      },
+      "selection": {
+        "bytes": 142663,
+        "identity": [
+          66306,
+          38446579,
+          1000,
+          1000,
+          33152,
+          1,
+          142663,
+          1793990365143048494,
+          1793990365143048494
+        ],
+        "mode": 384,
+        "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/test-selection.public.json",
+        "sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9"
+      },
+      "terminal": {
+        "bytes": 733,
+        "identity": [
+          66306,
+          38959719,
+          1000,
+          1000,
+          33152,
+          1,
+          733,
+          1793995430401860314,
+          1793995430401860314
+        ],
+        "mode": 384,
+        "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/normal107.terminal.exact-tool-text.json",
+        "sha256": "8ec1de7b5b992112d479afa5f64233fd9196e83ab323581041b3f6f99670ef63"
+      }
+    },
+    "original_job_id": "1a1b2367cb2-fc05-7cfc",
+    "original_receipt_status": "passed",
+    "passed_cases": 107,
+    "projection_binary_executions": 0,
+    "projection_compiler_invocations": 0,
+    "source_directory": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+    "validator": {
+      "bytes": 72065,
+      "identity": [
+        66306,
+        38959718,
+        1000,
+        1000,
+        33152,
+        1,
+        72065,
+        1793995430401251873,
+        1793995430401251873
+      ],
+      "mode": 384,
+      "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/native-build-projection-r1/kv2_native_fresh_directory_dr_live.py",
+      "sha256": "01993e6c367bf8b896b4832c7723b1f36900fefbc20fcc05394ce401ec6b4f67"
+    }
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_freeze_verified": true,
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e"
+}

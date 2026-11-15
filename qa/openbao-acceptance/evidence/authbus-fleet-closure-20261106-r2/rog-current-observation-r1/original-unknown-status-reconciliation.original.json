@@ -1,0 +1,9 @@
+remote helper on rog-ts failed with 1
+stdout:
+
+stderr:
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    _bound_job = private_job_directory(_original_query["job_dir"])
+  File "<string>", line 25, in private_job_directory
+FileNotFoundError: [Errno 2] No such file or directory: '1a1b14de59a-fc05-779f'

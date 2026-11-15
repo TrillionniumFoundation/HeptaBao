@@ -1,0 +1,19 @@
+{
+  "actual_named_tests": 18,
+  "errors": 0,
+  "failed": 0,
+  "host": "mac",
+  "job_id": "1a1b0f0b31e-fc05-7438",
+  "no_additional_cleanup_signals_sent": true,
+  "old_partial_or_failed_receipts_modified": false,
+  "original_test_timeouts_preserved": true,
+  "passed": 18,
+  "product_or_physical_ha_qualified": false,
+  "raw_streams_and_independent_remote_files_match": true,
+  "same_helper_hash_complete_module_qualified": true,
+  "schema": "heptabao.mac-final-custody18-evidence-reconciliation.v1",
+  "skipped": 0,
+  "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "source_files_also_matched_exact_git_blobs": true,
+  "verified": true
+}

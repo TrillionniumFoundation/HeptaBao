@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.root-pocket4-custody-source-review.r1",
+  "status": "source-review-passed",
+  "sourcePin": {
+    "bytes": 47009,
+    "sha256": "29ff9e609e251ed64c6566f99e1f17dccf78c89c8e1c6100e84a07f18dbbd24c"
+  },
+  "payloadPins": [
+    {
+      "name": "normal107_custody_bridge.py",
+      "bytes": 7363,
+      "sha256": "6e0803628e858259f22836790e970248da205fdd848d52e6fbcb521fce6062ef",
+      "byteEqualSeparateImmutableBlob": true
+    },
+    {
+      "name": "qualify_normal107_custody_bridge.py",
+      "bytes": 7019,
+      "sha256": "8be99da82f0c2cea28b0b6913e267560909a6008752033e220e3e8a6bf645316",
+      "byteEqualSeparateImmutableBlob": true
+    },
+    {
+      "name": "controller.py",
+      "bytes": 21718,
+      "sha256": "aaee55e7b80ee4f55ee4518abd2ed4f881551eaa533afd9be316106ac39339a1",
+      "byteEqualSeparateImmutableBlob": true
+    }
+  ],
+  "independentWholeUtf8Pins": true,
+  "originalSourcePreparedReceiptPin": {
+    "bytes": 39110,
+    "sha256": "2b7dec111acdb1af091484328bbcae936839ed30ef33133a1056e6030bc619e2"
+  },
+  "hostUidAndOwnedDirectoryAdmission": true,
+  "noProductOrRustExecution": true,
+  "privateNewWorkDirectory": true,
+  "originalFiveCaseQualificationDeadlineSeconds": 30,
+  "parentSeconds": 45,
+  "helperPinsRecheckedBeforeAndAfter": true,
+  "allFileDescriptorsCloseOnceRequired": true,
+  "illegalSignalProbesFailBeforeKernelIfReached": true,
+  "remoteQualificationExecuted": false,
+  "normal107Qualified": false,
+  "sourceReviewOnly": true,
+  "localExecutorAvailable": false
+}

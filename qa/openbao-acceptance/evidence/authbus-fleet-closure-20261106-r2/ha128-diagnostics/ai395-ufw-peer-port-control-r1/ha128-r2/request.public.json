@@ -1,0 +1,18 @@
+{
+  "host": "main",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "idempotency_key": "mac-ha128-current-4bde9-authbus-20261106-r2",
+  "timeout_seconds": 1800,
+  "stdinSource": {
+    "bytes": 106163,
+    "sha256": "b0b9c320a462828045a1046d99a9e2b65b50610780513a37b0d62e8d8a49d96a",
+    "repositoryPath": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/fixed-port-preparation-r1/launch_ha128_current_r2.py",
+    "gitBlob": "b5d83965a9c010da4a9ec0c419b500ea13a1a2e2"
+  }
+}
