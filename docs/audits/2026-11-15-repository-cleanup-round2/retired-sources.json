@@ -1,0 +1,1090 @@
+{
+  "schema": "heptabao.retired-qa-sources.v1",
+  "source_repository": "TrillionniumFoundation/HeptaBao",
+  "source_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73",
+  "source_tree": "bd420a049cccfa423ba7dc8c58bfc8af7d70e662",
+  "file_count": 135,
+  "total_bytes": 1538989,
+  "entries": [
+    {
+      "path": ".github/workflows/export-exact-audit-source-macos.yml",
+      "mode": "100644",
+      "git_blob": "c5b9c4acace9a6d32d46093a02c6fbbef1b460db",
+      "bytes": 1725,
+      "sha256": "3ba1faa3680ffa4d1416784e3275b40066ee3aab97c03baa99ef8d0a3c1bbccb",
+      "reason": "Platform-independent Git archive export duplicates Linux exact-source export; the retired job has no macOS build, execution or platform test."
+    },
+    {
+      "path": ".github/workflows/v2-4-authoritative-repository-closure.yml",
+      "mode": "100644",
+      "git_blob": "d14ed6857fe7b7017fec346c08b8eb8f2f816e98",
+      "bytes": 5020,
+      "sha256": "1e15c82f5c8dbc388fc535b1ae53b79be103da149f693968c9efd10fafcc4ebc",
+      "reason": "Superseded full qualification entry point; maintained PR workflow already owns both exact-head and prospective-merge source identities and complete workspace tests. The retired manual prospective-main job attempts to merge the sole main branch into itself and expects MERGE_HEAD."
+    },
+    {
+      "path": ".github/workflows/v2-5-external-evidence-admission.yml",
+      "mode": "100644",
+      "git_blob": "a9271813ac5490e9be61ff108b46e7bca995341c",
+      "bytes": 2670,
+      "sha256": "ce5db099c7115804083cdd5f2063fb5e58f381ca3ef5ca3bd032ffff8e4f5f4d",
+      "reason": "Duplicate repository external-evidence suite; migrate its only otherwise-uncovered trust-store schema assertions into the maintained tests/repository suite before deleting."
+    },
+    {
+      "path": "bootstrap/plan-v1-1-generator/gzip-part-00",
+      "mode": "100644",
+      "git_blob": "d82d38ceae16ee55c90bdb9c202d271da7d9dec6",
+      "bytes": 16000,
+      "sha256": "d01c015ea1df85c2d5293ea6fc6a533b2fca0cdac9a2bf8b2fb3abbccd39d7c1",
+      "reason": "Undocumented encoded V1.1 bootstrap generator fragment. Four gzip/base64 chunks decode129712-byte original one-shot generator; part-00 redundantly encodes its first12000 bytes and is truncated. No current invocation or decoder; only validator exclusion and historical full-tree receipts mention these paths. Superseded V1.1 output would overwrite README, old plan files, workflows and license notes."
+    },
+    {
+      "path": "bootstrap/plan-v1-1-generator/gzip-part-01",
+      "mode": "100644",
+      "git_blob": "198bfc46f02e5e49d538dce074cca23c4e96cbb2",
+      "bytes": 16000,
+      "sha256": "4d4d9501bddd3cc19d711117863e7e7135052a4a99b227f399f3dca619f61499",
+      "reason": "Undocumented encoded V1.1 bootstrap generator fragment. Four gzip/base64 chunks decode129712-byte original one-shot generator; part-00 redundantly encodes its first12000 bytes and is truncated. No current invocation or decoder; only validator exclusion and historical full-tree receipts mention these paths. Superseded V1.1 output would overwrite README, old plan files, workflows and license notes."
+    },
+    {
+      "path": "bootstrap/plan-v1-1-generator/gzip-part-02",
+      "mode": "100644",
+      "git_blob": "7bc630cd5044700db222ddf6a73a194fdf747342",
+      "bytes": 16000,
+      "sha256": "728eaaa1c824eda523e4693870102c505e5d17ce2f1ff07523686a5cf2fd7bdd",
+      "reason": "Undocumented encoded V1.1 bootstrap generator fragment. Four gzip/base64 chunks decode129712-byte original one-shot generator; part-00 redundantly encodes its first12000 bytes and is truncated. No current invocation or decoder; only validator exclusion and historical full-tree receipts mention these paths. Superseded V1.1 output would overwrite README, old plan files, workflows and license notes."
+    },
+    {
+      "path": "bootstrap/plan-v1-1-generator/gzip-part-03",
+      "mode": "100644",
+      "git_blob": "4ed2adc716cade0cebf5939603cb3dbbdbb50cfc",
+      "bytes": 4260,
+      "sha256": "57d329157119f5e0987426f9b6f8f0cce0323e1fc787b3a91fe79c297c1884bb",
+      "reason": "Undocumented encoded V1.1 bootstrap generator fragment. Four gzip/base64 chunks decode129712-byte original one-shot generator; part-00 redundantly encodes its first12000 bytes and is truncated. No current invocation or decoder; only validator exclusion and historical full-tree receipts mention these paths. Superseded V1.1 output would overwrite README, old plan files, workflows and license notes."
+    },
+    {
+      "path": "bootstrap/plan-v1-1-generator/part-00",
+      "mode": "100644",
+      "git_blob": "aa86e44b17121e655c689447e31b7d8b4ed8acd1",
+      "bytes": 16000,
+      "sha256": "152d1374193c69396aa26b0ec8e9eee16910c92a4fe00d3db723743b443cf5cb",
+      "reason": "Undocumented encoded V1.1 bootstrap generator fragment. Four gzip/base64 chunks decode129712-byte original one-shot generator; part-00 redundantly encodes its first12000 bytes and is truncated. No current invocation or decoder; only validator exclusion and historical full-tree receipts mention these paths. Superseded V1.1 output would overwrite README, old plan files, workflows and license notes."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/ai395-canonical107-20261106-r1/controller.diff",
+      "mode": "100644",
+      "git_blob": "efb04890e7f818fd50439931c8713b9d83aa4790",
+      "bytes": 1655,
+      "sha256": "a29f2418ef77c669241f67af1b443ec6e815bd8acb8cebb0f3d37b04333195b3",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/ai395-canonical107-20261106-r1/headerlocator-r3.controller.diff",
+      "mode": "100644",
+      "git_blob": "e11f6073598ad51c28dd6a6d928165335a3276a4",
+      "bytes": 451,
+      "sha256": "e49c6622258e9d006d4d94692b40bbd422796f0fe2b488bff5cf843f5b017dcc",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/ai395-canonical107-20261106-r1/headerlocator-r3.selection.diff",
+      "mode": "100644",
+      "git_blob": "4ccb4749f1c06e62a3f89e46bddf40dc73a9938f",
+      "bytes": 45145,
+      "sha256": "5fa4434fbf2f3264325329a45f4f8ec1e00184f861941ef6cb274ef2da696da2",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/codex-candidate-prepared-r1/derivation/codex-backend-procargs-r4-to-r1.diff",
+      "mode": "100644",
+      "git_blob": "735bfc404038003ab29ef9f25e9b4b50f2b988b6",
+      "bytes": 3131,
+      "sha256": "2ad636bcdb748d39ad463ddcef1b9f1b0642fc5e07f7681db7ca6feac9b5b11f",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/codex-candidate-prepared-r1/derivation/codex-selector-r4-to-candidate-r1.diff",
+      "mode": "100644",
+      "git_blob": "6a2c8c2bc5671e05775999410955b573fd4aff60",
+      "bytes": 6838,
+      "sha256": "818bfdbb271a3715d63cdb5828f1f0da61e57de10e565d11a4ff73db2f994e54",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/current-main3-relation-prepared-r1/derivation/candidate-to-current-main3-relation-r1.diff",
+      "mode": "100644",
+      "git_blob": "7361540b33415267982479dc6fc61017d708a17b",
+      "bytes": 19320,
+      "sha256": "404a6236ccbb4d84e1970c8c82bf7d32778faec7ca8c9cbced52fc5f86f51791",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/current-main3-relation-prepared-r2/derivation/r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "90b833a00097436eb389923543ea103cb475a448",
+      "bytes": 8447,
+      "sha256": "ddcfe8468fc23e4bad8db8b165f6cd5d62b5c6205198a0c17094d288a351b94e",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/preparation/fixedslot_actual_api_r1.py.diff",
+      "mode": "100644",
+      "git_blob": "ad32bba86effe95e9d51f614c7d210adfdb4664d",
+      "bytes": 1190,
+      "sha256": "f58abc9ab6355ab9d8714246c22f48004cb73e11ee15d4718174ba4e20de7aa8",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/preparation/mac_fixedslot_t5_guard_r1.py.diff",
+      "mode": "100644",
+      "git_blob": "94322bd301e020f074016627c5fa51a4ec1f0ba1",
+      "bytes": 406,
+      "sha256": "489ac6fc59c7892c39d2a202f4aa0d9a6176efc37f86c69ea17a806b6c236fb3",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/preparation/original-operations-categories-only.diff",
+      "mode": "100644",
+      "git_blob": "23fb58272084db45332d348e2410c2d191c301d3",
+      "bytes": 668,
+      "sha256": "2165c6f63f9c974b60bf41ce8f6a3a10b9f62c98f5364c8685a6c53dcdce78ae",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/actual-r1-to-recovery-r2.diff",
+      "mode": "100644",
+      "git_blob": "94cafc4e031092aeace54ce18421c47e0e20eb8e",
+      "bytes": 26976,
+      "sha256": "c15b19b9b516d22a53d36bcc2dda7f68e9d77a2d5c4fc21d2282717b9cd55bcf",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/api-init-forbidden-r2.diff",
+      "mode": "100644",
+      "git_blob": "9bb3bf4742f92cbfbb4e77d710a7e272a3eecfcb",
+      "bytes": 1259,
+      "sha256": "49b2885584bd1f2888c74bf07e52fbb3672c18c657a6304dc091ef54a9145dd8",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-r2/r1-to-r2-confirmation.diff",
+      "mode": "100644",
+      "git_blob": "c7d0ed119c7342320c97662f2cedd405cf40f1eb",
+      "bytes": 4757,
+      "sha256": "d522d6452332cb3e217b2d162eb976d476d144125a784f27db0b5f8adcf20da4",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-r3/r2-to-r3-journal.diff",
+      "mode": "100644",
+      "git_blob": "1d93ae78811e5efc152bddaa18eb822196d651c1",
+      "bytes": 4770,
+      "sha256": "2c69de17542c3728099d9d593d8bf96a69f468765141e407d266d7b235aa5832",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ai395-ufw-peer-port-control-r1/sources/capture-ai395-ufw-close-fix.diff",
+      "mode": "100644",
+      "git_blob": "77d96e65c7c3dd819aea508eb7c06c0466b9eeea",
+      "bytes": 2810,
+      "sha256": "82da13f243f2f657aec176378481f4bb5757f94c36aeb0e2831882a33b44a9c2",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ai395-ufw-peer-port-control-r1/sources/draft-before-append-order/verify-ai395-ufw-authority-tests.diff",
+      "mode": "100644",
+      "git_blob": "f9be66536663b5b5e3d799d73201af6abee01cb7",
+      "bytes": 5823,
+      "sha256": "1357e6f53b4e4d214f30339edd5e7c441a78d2f1776f479da9fd1e5e550d083d",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ai395-ufw-peer-port-control-r1/sources/observed-ip-protocol/verify-ai395-ufw-observed-ip-protocol.diff",
+      "mode": "100644",
+      "git_blob": "8f0b5775b74d3968c42dbacb5fb5f2ec5ad6e81f",
+      "bytes": 786,
+      "sha256": "56edba95b80a20b5d241e92b6a90d6350d4fcd6a3496e1a454d55ec54f2c47a7",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ai395-ufw-peer-port-control-r1/sources/verify-ai395-ufw-append-order-fix.diff",
+      "mode": "100644",
+      "git_blob": "c4046854a6e6b5b500e48ed5ec40f322d117854b",
+      "bytes": 3719,
+      "sha256": "6fdeaa6460a858a2e9fc8d76cc5d4d3a11cc8d3529e6367cd0e324f59bf3ffbc",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/closed-r3-state-r1/closed-state-private-enclosure-r2.diff",
+      "mode": "100644",
+      "git_blob": "1e0ee650263c918f0347ae0e94c996bcad30b41c",
+      "bytes": 1699,
+      "sha256": "ababe7c8983059e6924a052dc0f002eefdfe344545750041344efd292a8a72d2",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/fixed-port-preparation-r1/launch_ha128_current_r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "d9c1436dd5462bcc992dbcb56563a2295ef2d64e",
+      "bytes": 1927,
+      "sha256": "6059acda857703d9f6d7c054a08f5c651bd510ce3ea5100d5132353623282fff",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/fixed-port-preparation-r1/rust-tls-lan-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "91c203d12c6ca2910368e13a6b58d014f8f7a0b4",
+      "bytes": 3656,
+      "sha256": "aa3c85aced800a59a9c00b8c76c517af7dbb5860b49ac6691075a75d030064b9",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/closed-state/preparation/closed-r4-state-provenance-only.diff",
+      "mode": "100644",
+      "git_blob": "000a9bb7d19869cb8f05110152f6da0d3fccc8d9",
+      "bytes": 628,
+      "sha256": "8053af47a2f5b45c427cfc3824fa3cd4312b11a35d03b407d836cf817f0f9c25",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/closed-state/preparation/closed-r4-state-root-only.diff",
+      "mode": "100644",
+      "git_blob": "b6d828ea791c64e3e3f2fc54561f614d37c5d6c6",
+      "bytes": 1268,
+      "sha256": "83064ca6378c2b87a10a22d91425f5aff99bdc7edaaaa4f98aa7095a74ac86b8",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-observed-r4-vs-original-r3.diff",
+      "mode": "100644",
+      "git_blob": "d6ee2931e8da32f4785322edd53bab9fe63840ca",
+      "bytes": 9762,
+      "sha256": "a794d137fc48c9f94d07c4aa0bb16844c6d7b5d999dc2dad03d19318bb03bfb9",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-observer-and-snapshot-review-delta.diff",
+      "mode": "100644",
+      "git_blob": "4ffc341bf4f0786fa3545d8aca0f7a8a5b06e913",
+      "bytes": 1491,
+      "sha256": "8f47bad31685f9d662b9e9f22ef147643be0f1d11da259eafdb539210e065847",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-observed-r4/preparation/ha128-r4-preflight-phase-root-only.diff",
+      "mode": "100644",
+      "git_blob": "e092f061aa50b3d0b8e2487af530b8b65e17ebca",
+      "bytes": 3408,
+      "sha256": "c7c7d6109b119d78bece37ec3c47d916adfac1c69c149d75a6a0478d1e01041e",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/ha128-r3-preparation/ha128-r3-five-root-preparation.diff",
+      "mode": "100644",
+      "git_blob": "e13eb878de6b982907d1b74ef78006067c420e0a",
+      "bytes": 4208,
+      "sha256": "21d74f2fd60615488cb59bedb6377a194a1587d34e5b70c316fadafed5d24398",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-launcher-vs-formal-r3.diff",
+      "mode": "100644",
+      "git_blob": "cf76237dbb071080733facb4b779cee9c050cb7c",
+      "bytes": 10649,
+      "sha256": "65aa1fc43fcd598c5eb9f7c189ca803c70042769b642c059004a74f3874251ea",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/history10-preflight-phase-root-only.diff",
+      "mode": "100644",
+      "git_blob": "65694884907ccb4c146d38c234f54f137a61edd2",
+      "bytes": 3346,
+      "sha256": "bb81296afc21098f9a6dfe618a0f66dcafe38f9bf6e2b93fb772ac03206264a4",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/preparation/observer-body-returned-review-fix.diff",
+      "mode": "100644",
+      "git_blob": "20904887b3205cb4527f5ca73c861309b3ef3671",
+      "bytes": 1426,
+      "sha256": "a30672aff77c4a678ac74d69905f7cedd02cc234cf37e68aa864a85e7ea2c2f6",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-first-health-stack-r1/preparation/mac-rust-tls-stack-minimal.diff",
+      "mode": "100644",
+      "git_blob": "d557fa387b78040dfaae014044dbe7f18ced434c",
+      "bytes": 17520,
+      "sha256": "0ea5712363fdfbc61278d59d8c9a3348068dee23d8212d0c8ff86a98911cf1c0",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-standalone-diagnostic-r1/preparation/mac-fixed-ports-roots-r2.diff",
+      "mode": "100644",
+      "git_blob": "b8c60c3aa68d571a2f25bdaaab09625b91439429",
+      "bytes": 1691,
+      "sha256": "e573d291d5fa07058269eb4e14b407637c0836dee917c3db448bfe7f41808d98",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-standalone-diagnostic-r1/preparation/mac-rust-tls-from-reviewed-r2.diff",
+      "mode": "100644",
+      "git_blob": "e432e3f7ee2abb265cde51848f178580a28c05fb",
+      "bytes": 11056,
+      "sha256": "0e22292f9afdb175292873b156fa0680123e3ea149adc289deb6d393eb766d4b",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/mac-node3-standalone-diagnostic-r1/preparation/ufw-fresh-predelete-phase-only.diff",
+      "mode": "100644",
+      "git_blob": "33aff352f4ac234a5fb60e374368f933a87999a9",
+      "bytes": 1214,
+      "sha256": "861fdbebec1c28c26b9012836c2a00a502a5bf97ee4c278eef679865fa68d286",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/payload-stream-hmac-proposal-r1/payload-stream-hmac-r1.diff",
+      "mode": "100644",
+      "git_blob": "8bb014f6eadab4527e63194bf5f0628fc43cda79",
+      "bytes": 15422,
+      "sha256": "e6ac88eeeceec7093fdf42a20f3b4c8461ce87855f7d67f3c2d69e93a38501ab",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-5f9d4-normal-preparation-r1/controller-4bde9-to-5f9d4.diff",
+      "mode": "100644",
+      "git_blob": "00ab498b027b678d829e29eff0c89b556444a85f",
+      "bytes": 8216,
+      "sha256": "f738f6e88647cd85e08f993edf9808e65cbda9bc7dbf6252f5f42d88d85d7366",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-5f9d4-normal-preparation-r1/staging-t5-scope-only.diff",
+      "mode": "100644",
+      "git_blob": "55ef2470acf9888285c226fe2a4b189998065db2",
+      "bytes": 415,
+      "sha256": "3e2272441dab5b76c657dfeb1641d769a277951c31f60a3e6620fe564c3ee6db",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-current-source-inventory-r3/preparation/inventory-r2-to-r3-minimal.diff",
+      "mode": "100644",
+      "git_blob": "151137f3b0f4f2b38cac9b272560603238e55c5c",
+      "bytes": 11867,
+      "sha256": "80eec54db1297d91b2df8efb2bc4c00451ee90a6e9deaa9b6a182f9e9f86cefe",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/attempt-r2/source/r1-to-r2-minimal.diff",
+      "mode": "100644",
+      "git_blob": "70b6e4d9743607ff39b02b8004500d62f01b267c",
+      "bytes": 2605,
+      "sha256": "417b23432444e9e7c71e77acd5ed6ef1bb9679930a1efdc8cfa683fa44889205",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/attempt-r3/source/r2-to-r3-parser.diff",
+      "mode": "100644",
+      "git_blob": "a18959d38e153ea346496fe062d12c94c3c429e4",
+      "bytes": 3575,
+      "sha256": "63ffea72710808cad2df057bd85a98e0cd92ff1ebc331e0fde527a1ffb184afb",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-codex-selectors/prepared-r4/source/r3-to-r4-parser.diff",
+      "mode": "100644",
+      "git_blob": "83907b10f4d5d37eb1a093eb2ecff4483575624c",
+      "bytes": 1971,
+      "sha256": "ce0d183a5578a88b2615c46865ce37318b24262e42491505d0bd6937054b71fb",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-consumer-inodes/r2/r1-to-r2-minimal.diff",
+      "mode": "100644",
+      "git_blob": "af78cfce17f9ca309d264a1abaede557c235b54d",
+      "bytes": 1925,
+      "sha256": "ec6851f5ee1ee85093437720a5ebbc75120fe63a888b0de7e362f4372776dbf8",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-finite-consumer-inodes/r3/r2-to-r3-minimal.diff",
+      "mode": "100644",
+      "git_blob": "9582ae69f22e333e31c6354020a1fdf2ddfd1ecb",
+      "bytes": 3239,
+      "sha256": "6bf92299644383ff0df1f6f971112df61c833db13c6d8721433e0ea72b11426c",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-fresh-synthetic-r1/recovery/qa/cleanup-derivation.diff",
+      "mode": "100644",
+      "git_blob": "98ece0f3fcee6d77f23a0e1c672aa1646bbabe60",
+      "bytes": 40717,
+      "sha256": "ef31985307064a5b19ec9c81928f7243f57e49b720070e5aa3d97850289ca1ff",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-fresh-synthetic-r2/derivation/complete-derivation-r2.diff",
+      "mode": "100644",
+      "git_blob": "d3eb572a065fe0250dec3f3042bb8179b590c7fb",
+      "bytes": 35851,
+      "sha256": "eee2858c14483006a2875a5383e58b575fa539ac94805da51efb801a95d9d930",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-fresh-synthetic-r2/derivation/ps-tls-minimal.diff",
+      "mode": "100644",
+      "git_blob": "13bf46a20f407effa0c5daa1a92064ee860145bd",
+      "bytes": 12686,
+      "sha256": "875f5abac392eda05045c33afc34067d45869f1cf2a7704a76bdeba81a7f74f0",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-argv-r3-unknown/gateway-argv-r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "e14071fbe47da8c125d3c3e68b1a0617d1643de4",
+      "bytes": 7461,
+      "sha256": "7e7ca3a7c750f56ccd6458738f73cb2e76255f34dab16baf0ff7c7d5d3794537",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-local-fallback-sdk20/gateway-fallback-sdk-source-name-fix-r1.diff",
+      "mode": "100644",
+      "git_blob": "45e13a157bdbd669d7a1788b2036b769a4549494",
+      "bytes": 847,
+      "sha256": "716e8803a227cc6f410c8ff83514609c46c7462f2908c330fa02e5d112e8ee52",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-selector-registration-r3/r2/gateway-registration-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "5f31c83cd86aed0740ffe43e2a8c159374f0ba7d",
+      "bytes": 22171,
+      "sha256": "72863770b8e1beab4b7dcb38988c20bf170d1750fb205b9463b75bf150764920",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-selector-registration-r3/r3/gateway-registration-r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "b026a933eb506470cceda7ce97687d8212168e01",
+      "bytes": 12471,
+      "sha256": "2bf1456723d881eb1346dcda16c5f544b8fb85370b5f24115d4785db67ce6fe4",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-selector-registration-r3/r3/gateway-registration-r2-to-r3.semantic.diff",
+      "mode": "100644",
+      "git_blob": "407ac2587c04a63d8ede01bf41e16e8d177fed8b",
+      "bytes": 3218,
+      "sha256": "efb859c418d1769547ff64dab71bd34a4c81eca8030db859ab9f01889fd94921",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-service-primitives-r4/sources/gateway-service-primitives-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "a434acac6cdcfcb862bd2c3257b668dd8b480220",
+      "bytes": 4894,
+      "sha256": "5efc17a0c663d396911a016ea137a27236bd4c8a43254a8f8a2d67e190ca4d63",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-service-primitives-r4/sources/gateway-service-primitives-r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "0996165a75fea98ce167e2ca04f4626472ca9fc8",
+      "bytes": 5175,
+      "sha256": "359751a8e7f8be993f30d43919f6b15e8deb3767aa33530cebe88bc1b94e9238",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-gateway-service-primitives-r4/sources/gateway-service-primitives-r3-to-r4.diff",
+      "mode": "100644",
+      "git_blob": "fc90bc7cb128903661e9a69fbb56bf708da2e229",
+      "bytes": 5309,
+      "sha256": "f807b3c05b131456e4f116e569ece9c647f2493604c04c9d8a8e518699a2076d",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-api-preflight/api-r1-unexecuted/derivation.diff",
+      "mode": "100644",
+      "git_blob": "7ad016d6a5784058211c62b61106ec8ed685fdb8",
+      "bytes": 60321,
+      "sha256": "8a557156846baff57d7c71c81bc78fbd8f11830895a32a1e34b2c70c0f29367c",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-api-preflight/api-r2-preflight-failed/derivation.diff",
+      "mode": "100644",
+      "git_blob": "42c536eda00ff00d51d82885d5c5af71333df2cd",
+      "bytes": 23459,
+      "sha256": "91134c25874fb76e1b24883125a4d644a8ec7bd00050ab096b28d97f33aea99d",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-api-r3/r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "04b047bce32a6346173f94a8bd2bb78f413eeaa2",
+      "bytes": 7817,
+      "sha256": "d07c6ed6f5a5c0aa9c997cdcf579fa64e07675a34de30a19dd486a6f2234665e",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-api-r5/main3-api-r5-framing.diff",
+      "mode": "100644",
+      "git_blob": "3c47328eee58f6ea2c9668c70240a606f46ae6b4",
+      "bytes": 33754,
+      "sha256": "362ce8a713bb892ab800b948f860e69f8498de9ff1ae2cc59e6978ee3a9ee913",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-sdk-r2/network-diagnostic/r2/network-scope-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "e5ada7d1379a7f47d4a8cc2a57cd5710a37f45c0",
+      "bytes": 15949,
+      "sha256": "5e6f01692018f12a99da54d77a2dfcb5e95cbeb855f8e07ffd6d57af22d7e822",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-sdk-r3/sdk-r3-only-semantic-delta.diff",
+      "mode": "100644",
+      "git_blob": "e75d76785f2af15a04e2d885e0a4ae3285fb2b64",
+      "bytes": 994,
+      "sha256": "7f1d6a3ee7a5b156d8081ef38b5696300037102b7c426d05238d94b17a2932ad",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-sdk-r4/preparation/sdk-r3-to-r4-minimal.diff",
+      "mode": "100644",
+      "git_blob": "735e9b34257eb6ca16060aee2e5618241a80ca2b",
+      "bytes": 39606,
+      "sha256": "130f4236014ebd94ba0a36a3a348658781966924fc2d75198ad68439fde43fed",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-sdk-wire-r3/wire-r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "088e5d856f29bf8635b07499d00ceb38b093a7c7",
+      "bytes": 3052,
+      "sha256": "3ab411221acfa54957a468ccb5ac0b0816b2f7b533458fa7030537efe9fd3ed7",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-provider-actual-isolated-r2/provider-qualification-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "fb5769bfce66799cb1e4e0d593e8fd55f111213b",
+      "bytes": 4133,
+      "sha256": "ed3f8749004a3ca327fa1eb4d69ac9c1aee569a8473f0d64c40d3ea3eff15f98",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-provider-callback-closure-r2/provider-hooks-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "7356d90ea3411a6fc405fe9c2e9424b770e0dc75",
+      "bytes": 13754,
+      "sha256": "0c51e7eb4db5456ec838eecef4c7fc5df45d43f972f9f2d13ee9b2040386abc9",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-whole-database-qualification-r2/whole-r1-to-r2-minimal.diff",
+      "mode": "100644",
+      "git_blob": "252417cb329b699ce3b05c7409a98c92cf07e138",
+      "bytes": 11537,
+      "sha256": "a1e7224d2f38a4985a96c119c2c29ef003dfd3b63c59ba0b8526c14227878263",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-whole-database-streaming-capacity-r1/small-to-capacity-qualification.diff",
+      "mode": "100644",
+      "git_blob": "00c4ed4a8061d84472193faec88c436a2b0cad40",
+      "bytes": 13477,
+      "sha256": "6855f57bdb83f364e59a6e78a4b215635d4b265eff942f2325a59703d10a3809",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-whole-database-streaming-capacity-r1/small-to-capacity-worker-parent.diff",
+      "mode": "100644",
+      "git_blob": "6a2b4fc382d0e62a363ee691cbadd9008c471745",
+      "bytes": 19947,
+      "sha256": "2e51ce74b8431a6d6959bd2ec09a6fc29c2f2b43e5eca06e461d13b1e5cc6f7a",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-whole-database-streaming-small-r1/whole-r2-to-streaming-r1.diff",
+      "mode": "100644",
+      "git_blob": "db27396418e5e519f91c4c0e0b3cb28f12395654",
+      "bytes": 51838,
+      "sha256": "be1ea43a8541dd11728d9a2021e74bbc37491225d002b137f76532572715f172",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-prepared-r1/capture/fence-r4-to-clone-r1.diff",
+      "mode": "100644",
+      "git_blob": "cae58f0e89c1ad50a70cb6d4cf02033f9e78774a",
+      "bytes": 4197,
+      "sha256": "ae28a3c2bf6dc92c8230af90d49c30b154137185a834f3c4c660c0d4b5c42627",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-prepared-r1/capture/inline-r4-to-clone-r1.diff",
+      "mode": "100644",
+      "git_blob": "c1db15368bea06e3cf761a4bf07c21f4e416ae12",
+      "bytes": 11019,
+      "sha256": "d0f64d1eb9af29c72329ddb694c1c77c7db639d9e4ccb91df39c1006be7d9e9b",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-prepared-r1/capture/launcher-r4-to-clone-r1.diff",
+      "mode": "100644",
+      "git_blob": "2c407e5bc8c0135cc868b9afaa28dbb0c0043491",
+      "bytes": 17761,
+      "sha256": "a65bee24565f03f5c789668a6c630370236ebc7722c4300736c56d7be5d8aa70",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-prepared-r1/capture/registry-r4-to-clone-r1.diff",
+      "mode": "100644",
+      "git_blob": "a745a431fd3cbc70f8baac68e4b429a67257dd4b",
+      "bytes": 3849,
+      "sha256": "f91ac439de86eef4588d87b17d48113c8ed7a890f1b24851eb33d3a9cf56061b",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-prepared-r1/capture/worker-r4-to-clone-r1.diff",
+      "mode": "100644",
+      "git_blob": "de9de81acd57360e69cd40d1c3a6acbdfb55420d",
+      "bytes": 5873,
+      "sha256": "04e01ec38661b80b137f5bdf0c4a884a418c3bd0206a341a1455f5f363c417a1",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-preserve-absent-prepared-r2/derivation/mac_gateway_writer_maintenance_r2.py.diff",
+      "mode": "100644",
+      "git_blob": "db2978723ab469ca97d795511931f5a629c7ff2e",
+      "bytes": 26537,
+      "sha256": "bcd82e9d1836e4c7cca5a118bb6dcb9da605d4f49c16332b4ade65baf29f2811",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-preserve-absent-prepared-r2/derivation/mac_owned_refresh_parent_r2.py.diff",
+      "mode": "100644",
+      "git_blob": "4be9eb847119ff5e22b263f0dc83772ec6a33bea",
+      "bytes": 1885,
+      "sha256": "ff431896cbb6d2e1bbdc846474f3e7704a25bf75a98035ab2ce5f116419f766d",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-preserve-absent-prepared-r2/derivation/mac_post_commit_epoch_r2.py.diff",
+      "mode": "100644",
+      "git_blob": "d24bbd1b97082958542db3f9bba474c0a48aa6bb",
+      "bytes": 422,
+      "sha256": "54cc207865a629986d7c63b86240dd7bf6b65c562243c278eb787122a14b5628",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-preserve-absent-prepared-r2/derivation/mac_refresh_capture_sequence_r2.py.diff",
+      "mode": "100644",
+      "git_blob": "92499f675764a7717669b6bbf3fc3c612fb30ff0",
+      "bytes": 2029,
+      "sha256": "f3dbf0cec29db51f0f1913ca8d83abcc1318889e48f5b1828fa4bbf0e96f9830",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/maintenance-preserve-absent-prepared-r2/derivation/mac_registered_relay_retirement_r2.py.diff",
+      "mode": "100644",
+      "git_blob": "707b45d1307653aa372ef2a5df321c4dd1c6ee92",
+      "bytes": 16436,
+      "sha256": "4047f932d0135fdf1614a32588ec7ff73a9c618f4dc1c50b5087055783c8be86",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-authbus-production-startup-tcc-message-r2-prepared/original-to-message-query.diff",
+      "mode": "100644",
+      "git_blob": "5f6923987b377120829eeda4c33a88c887e1a0d6",
+      "bytes": 5973,
+      "sha256": "a3f449ec60e06d44a9d08922c69b538efe971f6ae8cd4e5f3b904228d9cb1e38",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-authbus-target-preparation-r1/staging/production-t5-scope-only.diff",
+      "mode": "100644",
+      "git_blob": "53ace2077e151f120f1e939d517594f92629c502",
+      "bytes": 405,
+      "sha256": "8b22e66777829fa8431ede843cfd501a4240cd02f842dd8631876ff22dfd09f7",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-authbus-target-preparation-r1/staging/target-metadata-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "9930be6f46cbee84fe783c9515a42fa1e65c8824",
+      "bytes": 967,
+      "sha256": "7e821106d4ee8088edd53d44658dc2c043d1c2e42d656d34ee0c34c8c3056492",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-authbus-target-preparation-r1/staging/target-metadata-r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "ba8560760718de20e18d90b7bf23ca02a576fc4d",
+      "bytes": 1564,
+      "sha256": "d0bc956ec1c83763960fca0102a1b1b1257881668baadc46caabb504b4e30636",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-bootstrap-r1/preparation/api-r5-to-permanent-bootstrap-r1.diff",
+      "mode": "100644",
+      "git_blob": "81bf56ecb20924513e7f255848f2c04691b6a2c8",
+      "bytes": 3087,
+      "sha256": "802ef1263c2a26a02fc0f3a443fcbcae2408260318a4fbd1c9ece9d4068173c5",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-bootstrap-r2/preparation/bootstrap-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "f096ab42415cbc0cbb39d6faa199a543b92c6b12",
+      "bytes": 4458,
+      "sha256": "ff871e3415a5e4253e82ba29e822a18b664965d5b6d0e248025c47b812f54ad7",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-complete-backup-r1/bootstrap-to-recovery-api-r1.diff",
+      "mode": "100644",
+      "git_blob": "c3cad36d7a82172d40c904d690cfc64b5566a4fe",
+      "bytes": 1238,
+      "sha256": "54b34b7424c455a86bfacda5f0774d7e6df90546bad1344aa66541035508d652",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-complete-backup-r1/complete-cold-tree-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "d97df729eb9dbc8b8e7e05aa4c19c83b71393b74",
+      "bytes": 4981,
+      "sha256": "eb1c0a93d2bfc1c699a03309bf1421176aebda9963ef3d453ae2047823dd4f91",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-service-lifecycle-r1/preparation/bootstrap-to-service-api-r1.diff",
+      "mode": "100644",
+      "git_blob": "1c0cd317401c0e9bf957e90836a153bf61c29e38",
+      "bytes": 4383,
+      "sha256": "0821684fbdb5c0f8168b3536c3cbd5e9eb672430105f76fbfdb054dab9a6717f",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/permanent-service-primitives-r1/preserve-absent-to-permanent-service-r1.diff",
+      "mode": "100644",
+      "git_blob": "97f253bb641fa3755d0f61a097aa67cea4ba544a",
+      "bytes": 9979,
+      "sha256": "0cd4fed80757badfaac1f09591f536264fb0d5937c8dacf59ae356e42e26f1e6",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/actual-source-preparation-format-r1/format-only-remediation.diff",
+      "mode": "100644",
+      "git_blob": "9b3d3bc26cec1f418269972f5a5f4a0ffc48ef3d",
+      "bytes": 2053,
+      "sha256": "ab7d30c951224319802f4ad741b3fddf2f24a8642dbf379d2dfec5a72ea36e44",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/controller.diff",
+      "mode": "100644",
+      "git_blob": "53bb0cd647cad39256bac33bec7f18311b7737d7",
+      "bytes": 1234,
+      "sha256": "a3647767a732b0754daefe45096bd5e8336c6674eb2282b72b3772efd836f818",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/pocket4-current-49d3b-qualification-20261107-r1/preparation/receipt-durable-publication.diff",
+      "mode": "100644",
+      "git_blob": "dab545934451b3a926774f2acd36a747bf4c7bd3",
+      "bytes": 3529,
+      "sha256": "791ba4eee50ac6c843fe6db56c3ae1c4e793d951c33d9339723628144d3bdca4",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/preserve-absent-mac-r1/code/preserve-absent-primitives-r1.diff",
+      "mode": "100644",
+      "git_blob": "72b2ed4b9afab20772f169dc7f4403b9134cc065",
+      "bytes": 15026,
+      "sha256": "656ef6f6c7b23802ad773f52a3ecce41e27202c3524108989a7a7a8371fe2409",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-plugin-r2/prepared/mac-rog.diff",
+      "mode": "100644",
+      "git_blob": "6f66591bdfae460a7e7a30950e96aa13700d627f",
+      "bytes": 1196,
+      "sha256": "53e177d424677e09388679cf9d7271e8b5a6306dd443b03919b7ff1d65290df9",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-plugin-r2/prepared/pocket4.diff",
+      "mode": "100644",
+      "git_blob": "0e4d4d869d865a6de7611b738ed5a98700577d2d",
+      "bytes": 1196,
+      "sha256": "fadeea29869679762f29730331050119f7eee02bfe2f3b16d2cab14ba8560864",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-plugin-r2/qualification/production-plugin-wiring-r3-to-r4.diff",
+      "mode": "100644",
+      "git_blob": "1743edae7ca7aab7e2dd58098f9b6ffa39145e29",
+      "bytes": 3064,
+      "sha256": "4f4fd3f58aa9a277becbea1a9f5ae313e89a3c914ccf3197eb12849aaf2350f5",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-transport-integration-r1/production-plugin-r1/mac-rog.diff",
+      "mode": "100644",
+      "git_blob": "bc686fd61f4f29743c89ed2e00e19c133075839f",
+      "bytes": 14450,
+      "sha256": "f6e64abf0f5518a650e0082040611fb256e37c56ecb27c6705e1e8634ca944d9",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-transport-integration-r1/production-plugin-r1/pocket4.diff",
+      "mode": "100644",
+      "git_blob": "67877623ed908c25201a88fa142a9b37acf39e03",
+      "bytes": 14450,
+      "sha256": "221d8f20e8d5f6e5a2d4ebb3ce2f17315a26f3c00f41780f59e958e8330eea77",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-transport-integration-r1/production-plugin-wiring-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "7d1aee387039ea938de6ea2c2e575dc1f5d71d3c",
+      "bytes": 1165,
+      "sha256": "6aedb89eecba1c58e356168fe289cd7fa980bdc271fc9f890bf0d5c2f87a17b7",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-transport-integration-r1/production-plugin-wiring-r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "bd88a3b89416e9ade3a62a324e17cf1c4e8c1ec5",
+      "bytes": 1095,
+      "sha256": "effa9aaa438dc72fe96dd2dba335c08dc8d5cdc172a97e6a8ea812604a4ba783",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/rog-current-observation-r2/observer-r1-to-r2.diff",
+      "mode": "100644",
+      "git_blob": "c3975c6170a192cc72885a51724c92ff8e730778",
+      "bytes": 3517,
+      "sha256": "3d0fcbe7abff19dfff1ad68c076c54939eb4c3c88aecec96b08ba3bd020c111b",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/rog-current-observation-r3/observer-r2-to-r3.diff",
+      "mode": "100644",
+      "git_blob": "e2c49ef0816ca1983b57d87d8cdf59fe4dde8d59",
+      "bytes": 4052,
+      "sha256": "2e973e2a873211359b4a772016baaf12f0351b8e0ebfe59990c67d9901093d44",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-native-four-repeat-r2/launch-r2-from-r1.diff",
+      "mode": "100644",
+      "git_blob": "9d299576361630190de83ad8ee7e5c8fb7ca3248",
+      "bytes": 33255,
+      "sha256": "8c5390d9240945de759f5d3abc1a518433f473a46900b983c3ca65b6b01ffb00",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-connect-r4/fixture-r4-from-r3.diff",
+      "mode": "100644",
+      "git_blob": "d4f0cf8aa8dc67e66886ecc80bf8d51225ac25c1",
+      "bytes": 2226,
+      "sha256": "5417b3aeb6d8a75fb5af476b3a13e359170f998b307087a2cd9b79be937438d7",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-connect-r4/outer-r4-from-r3-r2.diff",
+      "mode": "100644",
+      "git_blob": "ad7503b3f27b82de844396a14068525032b25a86",
+      "bytes": 1049,
+      "sha256": "bc3096a8adfcb3b4f613d38dabaf361661992ec15822709dfe70325869e55b1f",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/outer-r2.diff",
+      "mode": "100644",
+      "git_blob": "cd93166b0cb1788ce20a0824d93e914346813cf0",
+      "bytes": 7420,
+      "sha256": "90a0cad7baf7efa3728a182a394ade2f950e30255afcaf3bf51c5762977085e6",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/kv2-ha-convergence-20261106-r1/rog/compile-fix-format-r1/formatted.patch",
+      "mode": "100644",
+      "git_blob": "efe60aa0f6c4a6056b2c7453f206b953fb0e91c7",
+      "bytes": 6486,
+      "sha256": "00f87df5766b04865fb47ec38534399c4ad3b8be914454638a3e8c88835b04cc",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/kv2-ha-convergence-20261106-r1/rog/compile-fix-format-r1/input.patch",
+      "mode": "100644",
+      "git_blob": "b8b8adee59fd4f53559ddb2b12411b3f38361271",
+      "bytes": 6487,
+      "sha256": "7bec12947c138f0fe5d7f0b54d18f56eedced5f8ae918a36f4cb11089540386b",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-launchctl-parser-20261106-r1/manager-r2-parser.diff",
+      "mode": "100644",
+      "git_blob": "82df88480928ab576ce611ce08b1f9070f09c39c",
+      "bytes": 723,
+      "sha256": "185c131d1b7f53d41b053628742c466b77361e31b8b39d6c35a7a5a818375780",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r1/sdk-r1.derivation.diff",
+      "mode": "100644",
+      "git_blob": "9daf2ad45cd7cd9df9c6fda854f9439fd3f3d634",
+      "bytes": 83897,
+      "sha256": "2257afd34cc8009659819638c7a6c98b2b92015c463183880a00add985109c57",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r2/sdk-r1-to-r2-minimal.diff",
+      "mode": "100644",
+      "git_blob": "5217f7730cf2de616f194ae24470d4e32e9f63e6",
+      "bytes": 10811,
+      "sha256": "7ea3a0bb5f6549e22d31d24d0167eab1e40dc3f688b0d84706c8b68009d2ba58",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r2/sdk-r2.derivation.diff",
+      "mode": "100644",
+      "git_blob": "74735c100d441607dd7f40db40ad34b86406ddd6",
+      "bytes": 84478,
+      "sha256": "72aba6a21a68ea89e8ecaae65afd2b996932ae71eab8b5fa0cc3e8f23adf97ce",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r3/sdk-r2-to-r3-minimal.diff",
+      "mode": "100644",
+      "git_blob": "b960d3f88215a355d8343992b9271ea4633d7d84",
+      "bytes": 9468,
+      "sha256": "435da3777c14eed038c0fc0c095c1a994983e5c7e9561598f9c6129131b713f9",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r3/sdk-r3.derivation.diff",
+      "mode": "100644",
+      "git_blob": "cbe95219aa451ef5e1b0e83a5e4f71b33f3b0bad",
+      "bytes": 84718,
+      "sha256": "58940e215f207d773b2633ef7e2e6ffd3bdc4a912d7c2c39b271f3fc49b2aaf6",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-jwt-default-policy-20261106-r1/fixture.patch",
+      "mode": "100644",
+      "git_blob": "98adbd2dac81b29ca9838d5153c8c49a28cc4aa6",
+      "bytes": 3264,
+      "sha256": "7e887710e76c16720b687926dd17ed95f1351ca5a9ad77490e63ef33afad12d9",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r2/native-only-darwin-r2.diff",
+      "mode": "100644",
+      "git_blob": "5a9447cf002d5fd0862950c47f468e5fb1a983f1",
+      "bytes": 6681,
+      "sha256": "410597d3f936a7125ecaad42b22ffcd0bfbc7727ed4bf1125fc7cc968ba1aa36",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/narrow-controller.diff",
+      "mode": "100644",
+      "git_blob": "c975388318987a875dd145ac0817357d7b1bea53",
+      "bytes": 3556,
+      "sha256": "2ec1a48da555b1146a40f735adc9de5284f46b2f0177c03bac8858dab54ee5b8",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/pocket4-current-4bde9-qualification-20261106-r1/artifact-relay/relay-current-artifacts.review.diff",
+      "mode": "100644",
+      "git_blob": "c3e152cb58038793025b4897e4db1762a550ad99",
+      "bytes": 25607,
+      "sha256": "5883417183bfa462136b65796ecfdf1120836330e588572b2c88249ad4cd91b1",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/pocket4-current-4bde9-qualification-20261106-r1/normal107/controller.diff",
+      "mode": "100644",
+      "git_blob": "16a4f354195f1872c5efeec6afd82fb7b54b688e",
+      "bytes": 1354,
+      "sha256": "1775791609ceac74e45c27a2b00cee672c97066503b2fae0b501348f3ceb3b67",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/pocket4-current-4bde9-qualification-20261106-r1/normal107/launch-admission-scope-r2.diff",
+      "mode": "100644",
+      "git_blob": "b701aa2a43ce4621115a3a6a2f6e834e94440a60",
+      "bytes": 5363,
+      "sha256": "e2f3605ad2d80030ae2432174a059492f81f5a7329c46c3f7aef4ae6c58243e3",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/pocket4-current-4bde9-qualification-20261106-r1/normal107/selection.diff",
+      "mode": "100644",
+      "git_blob": "1977a7539639bd862cb1bee1366c42df4d783539",
+      "bytes": 112803,
+      "sha256": "3aeaa06c66ba84a6053dcaca6f9cb1a4d1bf1f3e04d035b8f35adeffd8f9b364",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/x230-current-pocket4-qualification-20261106-r1/admission-guards-r1/controller.diff",
+      "mode": "100644",
+      "git_blob": "4fc9c113bcb972423ab345c20f09a281f3df187b",
+      "bytes": 14788,
+      "sha256": "58acd0fc57b816843ed11f2d8cf754b22fde14932dc787d421f55a3664abe66b",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/x230-current-pocket4-qualification-20261106-r1/controller.diff",
+      "mode": "100644",
+      "git_blob": "4e4c8454ddd84aa1ca89c6f1dfffdf8bbe374462",
+      "bytes": 14998,
+      "sha256": "3fc4760850cb097d02e3296f13a17630b7449b331e688278fd3eee64be59cd0b",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/x230-current-pocket4-qualification-20261106-r1/order-fix-r1/requirement-order-fix.diff",
+      "mode": "100644",
+      "git_blob": "28e5e83df4453b7d4d776a45b7bbd5640bcbf0cb",
+      "bytes": 9250,
+      "sha256": "25a288c688db8401b252473eb8be3751cbf4ab7dd24e7e55fd2ea1f14ad595a4",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/x230-current-pocket4-qualification-20261106-r1/public-source-permission-fix.diff",
+      "mode": "100644",
+      "git_blob": "ca84cbf1729ae3face30e443f683f0f0c01c073d",
+      "bytes": 1008,
+      "sha256": "43e8b3b08ffcb95ffb93f6aa9eb2c2d9391535f39d782987199c5fedb113f537",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/x230-static-abi-20261106-r1/capture-guards-r2/review-fixes.diff",
+      "mode": "100644",
+      "git_blob": "ceba41f04fc1c17bba4d4db09a3af19d4dc8967a",
+      "bytes": 11352,
+      "sha256": "7b238f8fd607647fbb3b1d4c1fd30a785e551b85cb3df93fd6d181c99fab9d88",
+      "reason": "Historical source diff/patch snapshot with no current code, test, workflow or operational-document path consumer; immutable original remains in Git."
+    },
+    {
+      "path": "scripts/emit_exact_head_receipt.py",
+      "mode": "100644",
+      "git_blob": "5e4da7e748aa6f9f6c358be6507740a207e56a99",
+      "bytes": 3668,
+      "sha256": "f45011029e26058c26fc47922b8391bb495de999c74581687ba5dc5377547cbc",
+      "reason": "Unwired receipt emitter: no current workflow, code import, test, or documented invocation; its custom heptabao.exact-head-receipt.v1 schema has no consumer. CI instead emits its own exact source/build metadata and existing collectors remain."
+    },
+    {
+      "path": "scripts/generate_module_closure_docs.py",
+      "mode": "100644",
+      "git_blob": "3761ec7795af48bc496680ed8267a3a3dfdc4c9f",
+      "bytes": 10761,
+      "sha256": "79d74ef78d7be1e2db5fac7db207a4e4bc7efa50efe678f5f29d7708c88ce74b",
+      "reason": "Unwired one-shot bulk dossier initializer: import-time writes every module dossier and navigation registry, recreates snapshot source/manifest hashes and lexically selected anchors while current validators resolve real Git source and curated named anchors. No current code/test/workflow/documented invocation. Current inventory/reporting/validation remain."
+    }
+  ]
+}

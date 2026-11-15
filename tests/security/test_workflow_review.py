@@ -1,9 +1,11 @@
 """Regression cases from PR68 review; parsing only, no candidate execution."""
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from test_workflow_trust import SAFE, ROOT, policy
 
@@ -222,7 +224,17 @@ class WorkflowReviewTests(unittest.TestCase):
                 policy.check_upload_path(value, {}, "fixture.path", lambda *_: False, {})
 
     def test_upload_registry_is_closed_and_contains_no_unsafe_paths(self):
-        self.assertEqual(32, len(policy.APPROVED_UPLOAD_PATHS))
+        installed = {}
+        for path in sorted((ROOT / ".github/workflows").iterdir()):
+            if path.suffix not in {".yml", ".yaml"}:
+                continue
+            document = policy.parse_workflow(path.read_text(encoding="utf-8"))
+            for job_name, job in document["jobs"].items():
+                for index, step in enumerate(job.get("steps", [])):
+                    if step.get("uses") == policy.UPLOAD_ARTIFACT_ACTION:
+                        location = f"workflow.jobs.{job_name}.steps[{index}]"
+                        installed[(path.name, location)] = step["with"]["path"]
+        self.assertEqual(installed, policy.APPROVED_UPLOAD_PATHS)
         self.assertEqual(
             "${{ runner.temp }}/heptabao-native-recovery-reports/",
             policy.APPROVED_UPLOAD_PATHS[(
@@ -244,6 +256,18 @@ class WorkflowReviewTests(unittest.TestCase):
                 self.assertNotIn("..", value.split("/"))
                 self.assertNotIn("/home/runner", value)
                 self.assertNotEqual("/tmp", value.rstrip("/"))
+
+    def test_obsolete_extra_upload_grant_is_rejected(self):
+        path = ROOT / "scripts/workflow_trust_action_registry_v2.json"
+        registry = json.loads(path.read_text(encoding="utf-8"))
+        registry["uploads"].append({
+            "file": "v2-1-main-exact-and-merge.yml",
+            "location": "workflow.jobs.exact-head.steps[6]",
+            "path": "${{ runner.temp }}/heptabao-v2.1-exact-head-receipt.json",
+        })
+        with patch.object(Path, "read_text", return_value=json.dumps(registry)):
+            with self.assertRaises(policy.PolicyError):
+                policy._v2._load_registry()
 
     def test_action_inputs_are_checked_beyond_action_sha(self):
         setup = SAFE.replace(

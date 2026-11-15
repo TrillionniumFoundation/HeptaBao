@@ -18,10 +18,8 @@ from typing import Any
 
 import yaml
 from jsonschema import Draft202012Validator
-from yaml.constructor import ConstructorError
-from yaml.resolver import BaseResolver
 
-from yaml12_loader import Yaml12SafeLoader
+from yaml12_loader import UniqueKeyYaml12Loader
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -100,40 +98,6 @@ FORBIDDEN_TEMP_WORKFLOWS = {
 class ValidationFailure(RuntimeError):
     """Raised when one closed-world V1.4.1 invariant is not satisfied."""
 
-
-class UniqueKeyYaml12Loader(Yaml12SafeLoader):
-    """YAML 1.2 loader that rejects duplicate mapping keys."""
-
-
-def _construct_unique_mapping(
-    loader: UniqueKeyYaml12Loader, node: yaml.MappingNode, deep: bool = False
-) -> dict[Any, Any]:
-    mapping: dict[Any, Any] = {}
-    for key_node, value_node in node.value:
-        key = loader.construct_object(key_node, deep=deep)
-        try:
-            duplicate = key in mapping
-        except TypeError as error:
-            raise ConstructorError(
-                "while constructing a mapping",
-                node.start_mark,
-                "found an unhashable mapping key",
-                key_node.start_mark,
-            ) from error
-        if duplicate:
-            raise ConstructorError(
-                "while constructing a mapping",
-                node.start_mark,
-                f"found duplicate key {key!r}",
-                key_node.start_mark,
-            )
-        mapping[key] = loader.construct_object(value_node, deep=deep)
-    return mapping
-
-
-UniqueKeyYaml12Loader.add_constructor(
-    BaseResolver.DEFAULT_MAPPING_TAG, _construct_unique_mapping
-)
 
 
 def require(condition: bool, message: str) -> None:

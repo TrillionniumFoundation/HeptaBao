@@ -13,8 +13,11 @@ repository validators. An empty homepage grants no exception to those checks.
 
 [Repository layout and language ownership](REPOSITORY_LAYOUT.md) explains the
 Rust runtime, required clients and QA languages, and the retrieval of retired
-historical source snapshots. The [2026-11-15 cleanup audit](audits/2026-11-15-repository-cleanup/README.md)
-records the exact deletion set, immutable recovery commit, and verification.
+historical source snapshots. The [initial 2026-11-15 cleanup audit](audits/2026-11-15-repository-cleanup/README.md)
+records the first deletion set and immutable recovery commit. The
+[follow-up cleanup audit](audits/2026-11-15-repository-cleanup-round2/README.md)
+records shared HA fixtures, shared strict YAML loading, retired generators and
+patches, and consolidated workflow coverage.
 
 ## Managed-secret Agent renderer
 

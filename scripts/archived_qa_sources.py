@@ -29,8 +29,8 @@ def git(*args: str) -> bytes:
     return subprocess.check_output(["git", "-C", str(ROOT), *args])
 
 
-def inventory() -> tuple[dict, list[dict]]:
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+def inventory(manifest_path: Path = MANIFEST) -> tuple[dict, list[dict]]:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     require(isinstance(manifest, dict), "invalid retirement manifest")
     require(manifest.get("schema") == SCHEMA, "unsupported retirement manifest")
     commit = manifest.get("source_commit", "")
@@ -122,9 +122,11 @@ def main() -> int:
     action.add_argument("--verify", action="store_true", help="verify source bindings and all bytes (default)")
     action.add_argument("--restore-to", type=Path, help="recover into a NEW directory outside the checkout")
     parser.add_argument("--prefix", default="", help="select archived paths with this repository-relative prefix")
+    parser.add_argument("--manifest", type=Path, default=MANIFEST,
+                        help="retirement manifest to use (default: initial source cleanup)")
     args = parser.parse_args()
     try:
-        manifest, entries = inventory()
+        manifest, entries = inventory(args.manifest)
         selected = [entry for entry in entries if entry["path"].startswith(args.prefix)]
         require(bool(selected), "prefix selects no archived source files")
         # Verify the entire selection before creating any output directory.

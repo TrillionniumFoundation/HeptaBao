@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "schemas" / "heptabao-external-evidence-v2.5.schema.json"
+TRUST_SCHEMA = ROOT / "schemas" / "heptabao-external-trust-store-v2.5.schema.json"
 VALIDATOR = ROOT / "scripts" / "validate_external_evidence_v2_5.py"
 DOC = ROOT / "docs" / "plan" / "HEPTABAO_EXTERNAL_EVIDENCE_ADMISSION_V2_5.md"
 
@@ -13,7 +14,7 @@ DOC = ROOT / "docs" / "plan" / "HEPTABAO_EXTERNAL_EVIDENCE_ADMISSION_V2_5.md"
 class ExternalEvidenceSchemaBindingTests(unittest.TestCase):
     def test_schema_is_closed_and_non_authoritative(self) -> None:
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
-        self.assertFalse(schema["additionalProperties"])
+        self.assertIs(schema["additionalProperties"], False)
         self.assertEqual(schema["properties"]["authority_effect"]["const"], "NONE")
         claims = schema["properties"]["claims"]["properties"]
         self.assertEqual(
@@ -27,6 +28,13 @@ class ExternalEvidenceSchemaBindingTests(unittest.TestCase):
             },
         )
         self.assertTrue(all(item["const"] is False for item in claims.values()))
+
+    def test_trust_store_schema_is_closed_and_non_authoritative(self) -> None:
+        # Preserve the unique schema assertions from the retired V2.5 workflow
+        # in the repository suite run by current PR and nightly qualification.
+        schema = json.loads(TRUST_SCHEMA.read_text(encoding="utf-8"))
+        self.assertIs(schema["additionalProperties"], False)
+        self.assertEqual(schema["properties"]["authority_effect"]["const"], "NONE")
 
     def test_schema_and_validator_have_identical_gate_denominator(self) -> None:
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))

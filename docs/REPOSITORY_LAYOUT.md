@@ -22,7 +22,7 @@ workspace members with their own tests and module guides.
 | [`clients/android-passkey/`](../clients/android-passkey/README.md) | Native Android Credential Manager provider, passkey codec and synthetic relying-party fixture | Java and Android XML, with separate host and device qualification. |
 | [`tools/authbus/`](../tools/authbus/README.md) | AuthBus coordination and transport | Python coordination plus the maintained JavaScript/Node transport in [`production-transport/`](../tools/authbus/production-transport/README.md). Its SQLite transaction, restart and deadline tests remain beside the implementation. |
 | [`tools/openbao-sdk-bridge/`](../tools/openbao-sdk-bridge/README.md) | Companion process for the official OpenBao Go SDK and plugin protocol | Go with pinned modules; the Rust plugin host owns the private IPC boundary. |
-| [`bootstrap/`](../bootstrap/) | Explicit provider provisioning and database schema upgrades | SQL and Python. The PostgreSQL upgrade files are migrations, not interchangeable copies of the initial schema. See the [provider guide](engines/HEPTABAO_POSTGRESQL_PROVIDER.md). |
+| [`bootstrap/`](../bootstrap/) | Explicit provider provisioning and database schema upgrades | SQL. The PostgreSQL upgrade files are migrations, not interchangeable copies of the initial schema. The unused encoded V1.1 repository generator has been retired. See the [provider guide](engines/HEPTABAO_POSTGRESQL_PROVIDER.md). |
 | [`qa/`](../qa/) and [`tests/`](../tests/) | Acceptance runners, regression tests, synthetic services, device drivers and fixed comparison inputs | Primarily Python, with JavaScript and other protocol-specific fixtures. These execute the Rust programs and their consumers or validate repository contracts. |
 | [`scripts/`](../scripts/) | Repository, documentation, workflow and evidence validation | Python tooling invoked by CI and local validation; [`requirements-plan.txt`](../requirements-plan.txt) records its Python dependencies. |
 | [`probes/`](../probes/) | Isolated dependency and platform experiments | Rust probes with separate manifests and lockfiles, consumed by their named qualification workflows. |
@@ -82,6 +82,18 @@ git worktree add --detach /tmp/heptabao-historical 6faf7957bb0b9390141a9f3680567
 Historical paths inside retained receipts still name the historical checkout.
 Use that checkout or the manifest to inspect the exact bytes; do not substitute
 the latest maintained source for an older recorded hash.
+
+The [second cleanup audit](audits/2026-11-15-repository-cleanup-round2/README.md)
+records additional retired generators, historical patches and superseded
+workflows, plus shared implementations for the strict YAML loader and native HA
+test fixture. Its separate manifest uses commit
+`dd38ea55476813fb4b5d6d9a9e73211249536a73`:
+
+```sh
+python3 scripts/archived_qa_sources.py --manifest docs/audits/2026-11-15-repository-cleanup-round2/retired-sources.json --verify
+```
+
+The same `--manifest` option works with `--restore-to` and `--prefix`.
 
 ## Adding future work
 

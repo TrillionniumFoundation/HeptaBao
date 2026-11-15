@@ -331,7 +331,7 @@ def scan_secret_hygiene() -> None:
         "xox" + "b-",
         "AK" + "IA" + "IOSFODNN7EXAMPLE",
     ]
-    skip_prefixes = (".git/", "bootstrap/plan-v1-1-generator/")
+    skip_prefixes = (".git/",)
     for path in ROOT.rglob("*"):
         if not path.is_file():
             continue

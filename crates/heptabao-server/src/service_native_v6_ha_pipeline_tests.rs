@@ -24,6 +24,9 @@ mod phase_readindex_tests;
 #[path = "service_native_v6_ha_same_root_progress_tests.rs"]
 mod same_root_progress_tests;
 
+#[path = "service_native_formal_ha_fixture.rs"]
+mod formal_fixture;
+
 #[path = "service_native_raft_observation_ha_tests.rs"]
 mod native_raft_observation_tests;
 

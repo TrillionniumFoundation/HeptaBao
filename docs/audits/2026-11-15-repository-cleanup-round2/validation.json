@@ -1,0 +1,1688 @@
+{
+  "schema": "heptabao.repository-cleanup-validation.v1",
+  "round": 2,
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "baseline_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73",
+  "summary": {
+    "status": "COMPLETED_WITH_BASELINE_FAILURES",
+    "current_repository_and_security_checks": "PASS",
+    "historical_plan_checks": "BASELINE_FAILURES_REPRODUCED",
+    "native_execution": "PASS",
+    "all_checks_passed": false,
+    "interpretation": "Current Python repository and security checks pass. The complete heptabao-server library test target compiled on macOS arm64; all 34 affected native HA tests actually executed and passed with no failure or ignore. Historical plan failures and existing skips remain recorded as such. Local Linux compilation attempts did not complete. This is not a claim that all workspace tests or all platforms passed."
+  },
+  "python": {
+    "repository": {
+      "status": "PASS",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/repository",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "tests": {
+        "total": 305,
+        "passed": 305,
+        "skipped": 0,
+        "failed": 0,
+        "errors": 0
+      },
+      "reported_summary": [
+        "Ran 305 tests in 49.247s",
+        "OK"
+      ],
+      "failure_ids": []
+    },
+    "security": {
+      "status": "PASS",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/security",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "tests": {
+        "total": 81,
+        "passed": 81,
+        "skipped": 0,
+        "failed": 0,
+        "errors": 0
+      },
+      "reported_summary": [
+        "Ran 81 tests in 2.096s",
+        "OK"
+      ],
+      "failure_ids": []
+    },
+    "plan": {
+      "status": "BASELINE_FAILURES_REPRODUCED",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/plan",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 1,
+      "tests": {
+        "total": 342,
+        "passed": 313,
+        "skipped": 27,
+        "failed": 2,
+        "errors": 0
+      },
+      "reported_summary": [
+        "Ran 342 tests in 65.376s",
+        "FAILED (failures=2, skipped=27)"
+      ],
+      "failure_ids": [
+        "FAIL: test_current_tree_passes (test_plan_v1_4_5.PlanV145HostileTests.test_current_tree_passes)",
+        "FAIL: test_current_tree_passes (test_plan_v1_4_6.PlanV146HostileTests.test_current_tree_passes)"
+      ]
+    },
+    "validators": [
+      {
+        "id": "validate_repository_v2",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_repository_v2.py"
+        ],
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "validate_current_documentation_semantics",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_current_documentation_semantics.py"
+        ],
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "validate_repository_identity_v1",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_repository_identity_v1.py"
+        ],
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "validate_module_closure",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_module_closure.py"
+        ],
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "validate_workflow_trust",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_workflow_trust.py"
+        ],
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "validate_delivery_gate_ownership",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_delivery_gate_ownership.py"
+        ],
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "validate_openbao_271_release_denominator",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_openbao_271_release_denominator.py"
+        ],
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "validate_plan_v2",
+        "command": [
+          "python3",
+          "-B",
+          "scripts/validate_plan_v2.py"
+        ],
+        "exit_code": 1,
+        "status": "BASELINE_FAILURE_REPRODUCED",
+        "classification": "Baseline failure reproduced; historical marker scan currently detects an existing private-key delimiter in a Rust test fixture. Guard not relaxed and fixture not changed.",
+        "cleanup_delta": "Only stale bootstrap/plan-v1-1-generator exclusion removed from scan_secret_hygiene skip_prefixes. Private-key marker list and scan behavior otherwise unchanged."
+      }
+    ],
+    "historical_failure_reproduction": {
+      "baseline_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73",
+      "commands": [
+        {
+          "id": "v145-v146-current-tree-tests",
+          "working_tree_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73",
+          "command": [
+            "python3",
+            "-B",
+            "-m",
+            "unittest",
+            "-v",
+            "test_plan_v1_4_5.PlanV145HostileTests.test_current_tree_passes",
+            "test_plan_v1_4_6.PlanV146HostileTests.test_current_tree_passes"
+          ],
+          "exit_code": 1,
+          "output_sha256": "f6ea1d84d9887b53b4607a90b548475c6c41e89353305dd16ce996a5994f969f",
+          "summary": [
+            "FAIL: test_current_tree_passes (test_plan_v1_4_5.PlanV145HostileTests.test_current_tree_passes)",
+            "FAIL: test_current_tree_passes (test_plan_v1_4_6.PlanV146HostileTests.test_current_tree_passes)",
+            "Ran 2 tests in 0.081s",
+            "FAILED (failures=2)"
+          ],
+          "environment": {
+            "PYTHONPATH": "tests/plan"
+          }
+        },
+        {
+          "id": "v11-plan-validator",
+          "working_tree_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73",
+          "command": [
+            "python3",
+            "-B",
+            "scripts/validate_plan_v2.py"
+          ],
+          "exit_code": 1,
+          "output_sha256": "ec3ab62e5847d954d6569094d469da821601bda2da1b83f6dbe35d03d16eff62",
+          "summary": []
+        }
+      ],
+      "classification": {
+        "v145_v146": "Both exact baseline tests fail on absent old-version README tokens; README and both validators/tests are byte-identical in cleanup tree. Existing historical-check incompatibility, not introduced by YAML loader dedup or orphan retirement.",
+        "v11_validator": "Baseline failure reproduced; historical marker scan currently detects an existing private-key delimiter in a Rust test fixture. Guard not relaxed and fixture not changed."
+      },
+      "compared_files": [
+        {
+          "path": "README.md",
+          "baseline_bytes": 0,
+          "current_bytes": 0,
+          "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "identical": true
+        },
+        {
+          "path": "tests/plan/test_plan_v1_4_5.py",
+          "baseline_bytes": 4893,
+          "current_bytes": 4893,
+          "baseline_sha256": "e1308cb919c3e2c0ba49966acb92590327da8e8fcbd2aa1f540041c81e6eeff1",
+          "current_sha256": "e1308cb919c3e2c0ba49966acb92590327da8e8fcbd2aa1f540041c81e6eeff1",
+          "identical": true
+        },
+        {
+          "path": "tests/plan/test_plan_v1_4_6.py",
+          "baseline_bytes": 7193,
+          "current_bytes": 7193,
+          "baseline_sha256": "1c13770607f81de9c83c74c184ad1bb8d91d9bcac0b4333dc895ea065e6f3807",
+          "current_sha256": "1c13770607f81de9c83c74c184ad1bb8d91d9bcac0b4333dc895ea065e6f3807",
+          "identical": true
+        },
+        {
+          "path": "scripts/validate_plan_v1_4_5.py",
+          "baseline_bytes": 11631,
+          "current_bytes": 11631,
+          "baseline_sha256": "5d36fde2bf538ce12a4bddda46fd54790d3ee61414798a8bb19499d12b4a08c2",
+          "current_sha256": "5d36fde2bf538ce12a4bddda46fd54790d3ee61414798a8bb19499d12b4a08c2",
+          "identical": true
+        },
+        {
+          "path": "scripts/validate_plan_v1_4_6.py",
+          "baseline_bytes": 13729,
+          "current_bytes": 13729,
+          "baseline_sha256": "570353113b740c2f74efeca4056b54be31454bc8a434af6a137f1ae005444df9",
+          "current_sha256": "570353113b740c2f74efeca4056b54be31454bc8a434af6a137f1ae005444df9",
+          "identical": true
+        },
+        {
+          "path": "scripts/validate_plan_v2.py",
+          "baseline_bytes": 15434,
+          "current_bytes": 15401,
+          "baseline_sha256": "b9fe994e7814142380372c9558ef47a7b20983e1e77562c9da58fc10977c2207",
+          "current_sha256": "6894f643b7b8bb14bb203d26ad84b4316694c0cdb073d336a92766137b2181e0",
+          "identical": false
+        },
+        {
+          "path": "crates/heptabao-server/src/service_external_key_native_tests.rs",
+          "baseline_bytes": 17530,
+          "current_bytes": 17530,
+          "baseline_sha256": "0840e47ac028ccaa18479f056b9fd01dfabeeb4827ae6c923ea6db8a962fbf47",
+          "current_sha256": "0840e47ac028ccaa18479f056b9fd01dfabeeb4827ae6c923ea6db8a962fbf47",
+          "identical": true
+        }
+      ],
+      "readme_token_comparison": {
+        "baseline_readme_bytes": 0,
+        "current_readme_bytes": 0,
+        "same_missing_tokens": true,
+        "v145_tokens": [
+          "V1.4.5 security invariant closure",
+          "V1.4.4",
+          "Current Cargo workspace documentation:",
+          "not production-deployable",
+          "docs/CURRENT_DOCUMENTATION.md"
+        ],
+        "v146_tokens": [
+          "V1.4.6 authoritative recovery closure",
+          "not production-deployable",
+          "docs/CURRENT_DOCUMENTATION.md"
+        ]
+      },
+      "v11_validator_delta": "Only stale bootstrap/plan-v1-1-generator exclusion removed from scan_secret_hygiene skip_prefixes. Private-key marker list and scan behavior otherwise unchanged.",
+      "conclusion": "The two V1.4.5/V1.4.6 plan-test failures and the separate V1.1 plan-validator failure were reproduced at the exact baseline. They remain failures; the cleanup neither converts them to passes nor adds skips."
+    }
+  },
+  "yaml_loader_consolidation": {
+    "status": "PASS",
+    "changed_files": [
+      "scripts/yaml12_loader.py",
+      "scripts/validate_plan_v1_4.py",
+      "scripts/validate_plan_v1_4_1.py",
+      "scripts/validate_plan_v1_4_2.py",
+      "scripts/validate_plan_v1_4_3.py"
+    ],
+    "semantic_comparison": {
+      "validators": [
+        "validate_plan_v1_4",
+        "validate_plan_v1_4_1",
+        "validate_plan_v1_4_2",
+        "validate_plan_v1_4_3"
+      ],
+      "case_names": [
+        "yaml12_boolean_and_enum_keys",
+        "nested_mappings",
+        "duplicate_root",
+        "duplicate_nested",
+        "equivalent_quoted_keys",
+        "bool_integer_key_collision",
+        "unhashable_sequence_key",
+        "unsupported_merge_key",
+        "unsafe_python_tag",
+        "invalid_syntax"
+      ],
+      "comparisons": 40,
+      "all_match_baseline": true
+    },
+    "standalone_entrypoints": [
+      {
+        "validator": "validate_plan_v1_4",
+        "mode": "script",
+        "exit_code": 0,
+        "stdout": "V1.4 durable single-node foundation validation: PASS"
+      },
+      {
+        "validator": "validate_plan_v1_4",
+        "mode": "module",
+        "exit_code": 0,
+        "stdout": "V1.4 durable single-node foundation validation: PASS"
+      },
+      {
+        "validator": "validate_plan_v1_4_1",
+        "mode": "script",
+        "exit_code": 0,
+        "stdout": "V1.4.1 durable journal and operation ledger validation: PASS"
+      },
+      {
+        "validator": "validate_plan_v1_4_1",
+        "mode": "module",
+        "exit_code": 0,
+        "stdout": "V1.4.1 durable journal and operation ledger validation: PASS"
+      },
+      {
+        "validator": "validate_plan_v1_4_2",
+        "mode": "script",
+        "exit_code": 0,
+        "stdout": "V1.4.2 key lifecycle, rollback anchor, and recovery validation: PASS"
+      },
+      {
+        "validator": "validate_plan_v1_4_2",
+        "mode": "module",
+        "exit_code": 0,
+        "stdout": "V1.4.2 key lifecycle, rollback anchor, and recovery validation: PASS"
+      },
+      {
+        "validator": "validate_plan_v1_4_3",
+        "mode": "script",
+        "exit_code": 0,
+        "stdout": "V1.4.3 descriptor anchoring and writer fencing validation: PASS"
+      },
+      {
+        "validator": "validate_plan_v1_4_3",
+        "mode": "module",
+        "exit_code": 0,
+        "stdout": "V1.4.3 descriptor anchoring and writer fencing validation: PASS"
+      }
+    ],
+    "selected_regressions_before": {
+      "total": 41,
+      "passed": 33,
+      "skipped": 8,
+      "failed": 0,
+      "errors": 0,
+      "status": "PASS_WITH_EXISTING_SKIPS"
+    },
+    "selected_regressions_after": {
+      "total": 41,
+      "passed": 33,
+      "skipped": 8,
+      "failed": 0,
+      "errors": 0,
+      "status": "PASS_WITH_EXISTING_SKIPS"
+    },
+    "independent_review": {
+      "result": "PASS",
+      "current_plan_validator_bodies_ast_unchanged": [
+        "validate_plan_v1_4",
+        "validate_plan_v1_4_1",
+        "validate_plan_v1_4_2",
+        "validate_plan_v1_4_3"
+      ],
+      "four_original_duplicate_key_constructor_asts_identical_to_shared": true,
+      "global_pyyaml_resolvers_unchanged": true,
+      "global_pyyaml_constructors_unchanged": true,
+      "ordinary_yaml12_duplicate_mapping_semantics_unchanged": true,
+      "strict_loader_rejects_duplicate_unhashable_unsafe_tag": true,
+      "no_fallback_to_permissive_loader_in_four_validators": true
+    }
+  },
+  "workflow_consolidation": {
+    "status": "PASS",
+    "installed_workflows_before": 41,
+    "installed_workflows_after": 38,
+    "all_installed_workflows_pass_trust_validation": true,
+    "retired_workflows": [
+      {
+        "retired": ".github/workflows/v2-4-authoritative-repository-closure.yml",
+        "reason": "Superseded full qualification entry point; maintained PR workflow already owns both exact-head and prospective-merge source identities and complete workspace tests. The retired manual prospective-main job attempts to merge the sole main branch into itself and expects MERGE_HEAD.",
+        "current_triggers": {
+          "primary": [
+            "pull_request: opened/synchronize/reopened/ready_for_review",
+            "workflow_dispatch (head)"
+          ],
+          "supplemental": [
+            "nightly 02:17 UTC",
+            "workflow_dispatch"
+          ]
+        },
+        "coverage": [
+          {
+            "old": "exact-head: checkout exact source; bind commit/tree; clean checkout",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Checkout immutable candidate without persisted credentials; Verify source identity and prospective-merge parents; Bind safe diagnostic reports"
+          },
+          {
+            "old": "exact-head + prospective-main: install Rust 1.98.0, fmt/clippy components and record versions",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Install exact Rust toolchain; Build and exercise the real TLS service (native build receipt records rustc -vV)"
+          },
+          {
+            "old": "exact-head + prospective-main: validate_repository_v2.py, validate_compatibility_corpus.py, tests/repository",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Validate current repository truth and acceptance fixtures; validate_repository_v2.py invokes validate_compatibility_corpus() and tests/repository remain explicitly discovered; .github/workflows/v2-5-multiplatform-repository-qualification.yml also invokes both validators explicitly"
+          },
+          {
+            "old": "exact-head + prospective-main: cargo fmt --all -- --check",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Check formatting without changing source"
+          },
+          {
+            "old": "exact-head + prospective-main: cargo test --workspace --all-targets --locked -- --test-threads=1",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Test the complete locked Rust workspace; same workspace/targets/lock/thread limit, additionally --no-fail-fast"
+          },
+          {
+            "old": "exact-head + prospective-main: cargo clippy --workspace --all-targets --locked -- -D warnings",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Check strict first-party workspace Clippy (current policy excludes vendored qrcode); .github/workflows/v2-5-multiplatform-repository-qualification.yml :: Run strict Clippy retains the old all-workspace invocation including qrcode. First-party lint coverage is unchanged."
+          },
+          {
+            "old": "exact-head + prospective-main: cargo doc --workspace --no-deps --locked and cargo build --locked -p heptabao-server",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Build workspace documentation; Build and exercise the real TLS service"
+          },
+          {
+            "old": "prospective-main: construct candidate/main merge, verify MERGE_HEAD and no untracked files",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: PR matrix [head,merge] uses GitHub prospective merge and verifies exact PR_BASE/PR_HEAD as the two parents; tests run against that tree; manual current-main invocations intentionally select head only"
+          },
+          {
+            "old": "exact-head + prospective-main: source remains unchanged at end",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Confirm source remained immutable; native build and multiple live gates also recheck exact commit and clean state"
+          },
+          {
+            "old": "per-job 150-minute and cargo-test 5400s supervision",
+            "retained": "No workload is moved to a different budget by deleting this duplicate manual entry point. The existing 360-minute current qualification envelope and its unchanged fixture-local deadlines remain; the existing nightly job retains a 150-minute envelope."
+          }
+        ],
+        "archive": {
+          "path": ".github/workflows/v2-4-authoritative-repository-closure.yml",
+          "mode": "100644",
+          "git_blob": "d14ed6857fe7b7017fec346c08b8eb8f2f816e98",
+          "bytes": 5020,
+          "sha256": "1e15c82f5c8dbc388fc535b1ae53b79be103da149f693968c9efd10fafcc4ebc",
+          "source_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73"
+        }
+      },
+      {
+        "retired": ".github/workflows/v2-5-external-evidence-admission.yml",
+        "reason": "Duplicate repository external-evidence suite; migrate its only otherwise-uncovered trust-store schema assertions into the maintained tests/repository suite before deleting.",
+        "current_triggers": {
+          "primary": [
+            "pull_request: opened/synchronize/reopened/ready_for_review",
+            "workflow_dispatch"
+          ],
+          "supplemental": [
+            "nightly 02:17 UTC",
+            "workflow_dispatch"
+          ]
+        },
+        "coverage": [
+          {
+            "old": "checkout exact source; bind GITHUB_SHA; clean checkout",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Checkout immutable candidate; Verify source identity and prospective-merge parents"
+          },
+          {
+            "old": "evidence schema additionalProperties is False and authority_effect.const == NONE",
+            "retained": "tests/repository/test_external_evidence_v2_5_schema.py :: test_schema_is_closed_and_non_authoritative; assertion tightened from assertFalse to assertIs(False), matching old inline gate exactly"
+          },
+          {
+            "old": "trust-store schema additionalProperties is False and authority_effect.const == NONE",
+            "retained": "tests/repository/test_external_evidence_v2_5_schema.py :: test_trust_store_schema_is_closed_and_non_authoritative (migrated verbatim semantic checks)"
+          },
+          {
+            "old": "four hostile admission modules: test_external_evidence_v2_5, test_external_evidence_io_v2_5, test_external_evidence_v2_5_schema, test_external_evidence_register_v2_5",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: python -m unittest discover -s tests/repository -p test_*.py; .github/workflows/v2-5-multiplatform-repository-qualification.yml same discovery"
+          },
+          {
+            "old": "validate_repository_v2.py and validate_compatibility_corpus.py; full tests/repository",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Validate current repository truth and acceptance fixtures; .github/workflows/v2-5-multiplatform-repository-qualification.yml :: Validate repository and V2.5 admission boundaries"
+          },
+          {
+            "old": "final clean tree and print non-authoritative qualification/compatibility/migration/release/production flags",
+            "retained": ".github/workflows/codex-openbao-replacement-ci.yml :: Confirm source remained immutable; validate_repository_v2.py + test_external_evidence_register_v2_5 enforce non-authoritative flags. No authority is created by output logging."
+          }
+        ],
+        "archive": {
+          "path": ".github/workflows/v2-5-external-evidence-admission.yml",
+          "mode": "100644",
+          "git_blob": "a9271813ac5490e9be61ff108b46e7bca995341c",
+          "bytes": 2670,
+          "sha256": "ce5db099c7115804083cdd5f2063fb5e58f381ca3ef5ca3bd032ffff8e4f5f4d",
+          "source_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73"
+        }
+      },
+      {
+        "retired": ".github/workflows/export-exact-audit-source-macos.yml",
+        "reason": "Platform-independent Git archive export duplicates Linux exact-source export; the retired job has no macOS build, execution or platform test.",
+        "current_triggers": [
+          "workflow_dispatch"
+        ],
+        "coverage": [
+          {
+            "old": "read-only exact Git checkout and clean-tree assertion",
+            "retained": ".github/workflows/export-exact-audit-source.yml :: Checkout exact source; Bind exact source and create deterministic archive"
+          },
+          {
+            "old": "source-binding repository/commit/tree text",
+            "retained": ".github/workflows/export-exact-audit-source.yml :: same fields plus ref, run_id and run_attempt"
+          },
+          {
+            "old": "git archive --format=tar --prefix=HeptaBao/ exact source SHA",
+            "retained": ".github/workflows/export-exact-audit-source.yml :: identical Git archive format/prefix/source semantics; no host filesystem or platform-specific payload is read"
+          },
+          {
+            "old": "shasum -a 256 heptabao-exact-source.tar",
+            "retained": ".github/workflows/export-exact-audit-source.yml :: sha256sum same tar payload"
+          },
+          {
+            "old": "upload exactly source-binding.txt, heptabao-exact-source.tar, .sha256, error if missing, retention7",
+            "retained": ".github/workflows/export-exact-audit-source.yml :: same three-file upload, pinned action, missing-file error and retention7; artifact label no longer has macos suffix"
+          },
+          {
+            "old": "macos-15 runner identity",
+            "retained": "No qualification obligation: source export is packaging only, not platform execution evidence. Actual macOS build/behavior jobs remain in nightly qualification and native historical recovery workflows."
+          }
+        ],
+        "archive": {
+          "path": ".github/workflows/export-exact-audit-source-macos.yml",
+          "mode": "100644",
+          "git_blob": "c5b9c4acace9a6d32d46093a02c6fbbef1b460db",
+          "bytes": 1725,
+          "sha256": "3ba1faa3680ffa4d1416784e3275b40066ee3aab97c03baa99ef8d0a3c1bbccb",
+          "source_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73"
+        }
+      }
+    ],
+    "upload_registry": {
+      "old_upload_grants": 32,
+      "current_upload_grants": 28,
+      "removed_grants": [
+        "export-exact-audit-source-macos.yml: workflow.jobs.export.steps[2]",
+        "v2-1-main-exact-and-merge.yml: workflow.jobs.exact-head.steps[6]",
+        "v2-1-main-exact-and-merge.yml: workflow.jobs.prospective-main-merge.steps[6]",
+        "workflow-trust-boundary.yml: workflow.jobs.verify.steps[3]"
+      ],
+      "guard": "Loader remains exact cardinality28/1; security test now compares complete installed upload invocation mapping to registry, not only a count; extra obsolete grant is rejected."
+    },
+    "download_grants_unchanged": 1,
+    "current_pr_nightly_and_native_recovery_workflows_modified": false,
+    "distinct_manual_workflow_retained": ".github/workflows/v2-continuous-assurance.yml",
+    "distinct_manual_coverage": "Platform, Oracle and selected plan checks remain in the retained continuous-assurance workflow.",
+    "focused_regressions": {
+      "external_evidence": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/repository",
+          "-p",
+          "test_external_evidence*"
+        ],
+        "passed": 35,
+        "failed": 0,
+        "status": "PASS",
+        "included_in_repository_suite": true
+      },
+      "delivery_gate_ownership": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests/repository",
+          "-p",
+          "test_delivery_gate_ownership.py"
+        ],
+        "passed": 8,
+        "failed": 0,
+        "status": "PASS",
+        "included_in_repository_suite": true
+      }
+    }
+  },
+  "retirement_and_evidence_preservation": {
+    "status": "PASS",
+    "manifest": "docs/audits/2026-11-15-repository-cleanup-round2/retired-sources.json",
+    "source_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73",
+    "retired_files": 135,
+    "retired_bytes": 1538989,
+    "retired_file_categories": {
+      "historical_patch_snapshots": 125,
+      "unwired_generator_or_emitter_artifacts": 7,
+      "superseded_manual_workflows": 3
+    },
+    "restored_files": 135,
+    "all_restored_sha256_sizes_and_modes_match": true,
+    "manifest_matches_all_deleted_paths": true,
+    "initial_retirement_manifest_byte_identical": true,
+    "default_restoration_manifest_unchanged": true,
+    "manifest_selection_preserves_commit_tree_path_blob_sha_and_destination_checks": true,
+    "retained_nonmarkdown_evidence_files": 4440,
+    "retained_nonmarkdown_evidence_bytes_unchanged": true,
+    "retained_evidence_by_directory": {
+      "docs": 300,
+      "docs/migration": 22,
+      "planning": 20,
+      "qa/openbao-acceptance": 3841,
+      "qa/personal_credentials": 257
+    },
+    "receipt_json_log_or_archive_container_deletions": [],
+    "active_orphan_or_patch_consumers_found": [],
+    "historical_patch_markdown_link_pinned": true,
+    "current_module_closure_requires_no_generator_execution": true,
+    "archived_code_executed": false,
+    "verification_command": [
+      "python3",
+      "scripts/archived_qa_sources.py",
+      "--manifest",
+      "docs/audits/2026-11-15-repository-cleanup-round2/retired-sources.json",
+      "--verify"
+    ],
+    "restoration_command_template": "python3 scripts/archived_qa_sources.py --manifest docs/audits/2026-11-15-repository-cleanup-round2/retired-sources.json --restore-to <new-directory-outside-checkout>"
+  },
+  "rust_fixture_consolidation": {
+    "static_review_status": "PASS",
+    "net_source_bytes_removed": 37551,
+    "net_source_lines_removed": 986,
+    "native_storage_profile_parent_import_retained": true,
+    "recursive_test_inventory": true,
+    "top_level_test_suites": 5,
+    "recursive_child_module_source_files_unchanged": 6,
+    "unchanged_test_function_count": 34,
+    "unchanged_test_source_files": 11,
+    "recursive_suite_test_counts": {
+      "service_native_userpass_ha_tests": 8,
+      "service_native_missing_route_ha_tests": 7,
+      "service_native_raft_observation_ha_tests": 7,
+      "service_native_totp_ha_tests": 3,
+      "service_native_pki_ha_tests": 9
+    },
+    "unchanged_test_function_bodies": [
+      {
+        "path": "crates/heptabao-server/src/service_native_userpass_ha_tests.rs",
+        "name": "formal_native_userpass_ha_forwarded_issuance_election_cold_provenance_and_revoke",
+        "sha256": "36b7e0b6107265ec7cf1df3a625274ab70c96a28489909e6d76af9093625e615"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_userpass_ha_tests.rs",
+        "name": "formal_native_userpass_ha_lost_actual_quorum_cannot_issue_a_credential",
+        "sha256": "eb58df85e3a6fc9f52257aa76b40dd89da61bcc4687610843f8cf468b6acaac4"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_ha_tests.rs",
+        "name": "formal_native_userpass_batch_ha_first_issuance_election_cold_and_current_policy",
+        "sha256": "1888c9a8ab23def8244761112f4f676bb4afff815cfeedbb790b11a358694732"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_userpass_batch_ha_tests.rs",
+        "name": "formal_native_userpass_batch_ha_lost_quorum_cannot_install_first_lifecycle_or_reply",
+        "sha256": "4bbb5c962a4462c7ca1c3720630f48b111a7ca8ae69a25ecb8e3fc206d845078"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_ha_tests.rs",
+        "name": "formal_native_batch_approle_ha_forwarded_sid_once_election_cold",
+        "sha256": "e0060a1c62534870b685c226b25e04cc3b6f2d9325ceee947f0593083aa2b580"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_ha_tests.rs",
+        "name": "formal_native_batch_token_api_ha_forwarded_election_parent_revoke_cold",
+        "sha256": "e79c9cd09d09eeadc0307a1dc4fd3f5ead86587cb589446847d771c336c5983a"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_ha_tests.rs",
+        "name": "formal_native_batch_ha_actual_audit_parent_revoke_vetoes_original_response",
+        "sha256": "de2579e57cd0d82d0c967b1f80718b10a17405747cff040290cbc55b02af9e60"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_batch_issuer_ha_tests.rs",
+        "name": "formal_native_batch_ha_missing_quorum_cannot_consume_sid_or_publish_either_issuer",
+        "sha256": "98878c6235d8825ed115510d84ed8ede98ea189840d6e17998b9431dc6064fd6"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_missing_route_ha_tests.rs",
+        "name": "native_missing_route_formal_ha_readindex_forwarding_election_and_cold_rejoin",
+        "sha256": "c5111bcef68af21d537d4c15d7f347921b6e26a03aaa958455b474a4f5d9ee57"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_missing_route_ha_tests.rs",
+        "name": "native_missing_route_formal_ha_actual_post_audit_publication_vetoes_stale_absence",
+        "sha256": "cdb34f1bd1f658d34c73b67e30286885e0f58c4aacab033a9186cb76c66f9e29"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_missing_route_ha_tests.rs",
+        "name": "native_missing_route_formal_ha_actual_actor_expiry_after_audit_withholds_404",
+        "sha256": "6cdd4fc4e256e7ffebbb6213a9727d3040e5beb00807358ea15b96b472ab5867"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_capabilities_ha_tests.rs",
+        "name": "native_capabilities_formal_ha_forwarding_finite_uses_election_and_cold_rejoin",
+        "sha256": "6e3981b8b765bd4bc097657da6d32f4a80369eb3516a5d6cbac94a8a57c43596"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_capabilities_ha_tests.rs",
+        "name": "native_capabilities_formal_ha_actual_post_audit_policy_actor_and_target_changes",
+        "sha256": "eaab25c9c2f4d7abdad0588c8fc80cc9af14ebd62801c5abf67a0bb7769698d0"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_capabilities_ha_tests.rs",
+        "name": "native_capabilities_formal_ha_real_quorum_loss_cannot_release_inspection",
+        "sha256": "b0159efa832c4b651402eb3c2230ba4d8ab2cf226ea8f3337af3eede25760f78"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_missing_route_namespace_ha_tests.rs",
+        "name": "native_missing_route_formal_ha_child_retirement_readindex_forwarding_and_cold",
+        "sha256": "1587c3e1bca8095a9c392a71dbe60c704d84b869c7c7f9b85572c1ef018a80ab"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "name": "formal_native_raft_five_reads_survive_forwarding_election_and_cold_rejoin",
+        "sha256": "ac81eb28d9edd602a77c737f6f04c8b9d0ae31b7cd95ac4102a3c99371731e0a"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "name": "formal_native_raft_read_acl_shape_and_clock_delivery_keep_all_writers_closed",
+        "sha256": "63019ca404e96dc7514e6e0888db8ee2237b7fb26ca4730686534a6308bd904c"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "name": "formal_native_raft_read_cannot_return_after_original_deadline_expires_at_audit",
+        "sha256": "41479eec53ed1739cab0e8a0884242f16ea6998d45a7633aff93c4aef7604ba8"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "name": "formal_native_raft_read_rechecks_original_actor_after_actual_audit",
+        "sha256": "e561b0352de1b4eb7924f5a83cfe1902e74e7b53cfaa26826779fc9cce4f31a1"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "name": "formal_native_raft_read_vetoes_warm_policy_tampering_after_actual_audit",
+        "sha256": "fa1a9a50a566b7fac8632e155dc81cd3d4ea8c4c01c750a49fd9aefcf01dc9df"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "name": "formal_native_raft_five_reads_reject_actual_lost_quorum",
+        "sha256": "34ca29cc26df7d4cde128ded44a1675b18b35220a6986b7fcd421824ed2bedb2"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "name": "formal_native_raft_audited_reply_status_tampering_cannot_bypass_delivery_custody",
+        "sha256": "cf66b19baf480b98dd7db8181de939880db91d1c39d021ed14b0676eb5df43dc"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_totp_ha_tests.rs",
+        "name": "native_totp_formal_ha_tls_counter_readindex_failover_and_two_cold_rejoins",
+        "sha256": "bbe0492ff0c283e6e267db45cbe65ac23fddd16bf8bf9a00264e513e4a76447a"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_totp_ha_tests.rs",
+        "name": "native_totp_formal_ha_actual_post_audit_root_change_vetoes_private_code",
+        "sha256": "910c28716bdbbc6f926d593d5b114ff2f56a99ea282d167077e185b0a501a4c4"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_totp_ha_tests.rs",
+        "name": "native_totp_formal_ha_actual_actor_clock_expiry_after_audit_vetoes_code",
+        "sha256": "2558942cfd12dcc8cb34527deb8ef43babc2df6d664e15ded8e109d5045158d3"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_ha_tests.rs",
+        "name": "formal_native_pki_ha_forwarded_signing_election_cold_and_actual_crl",
+        "sha256": "bd0d1e679996cfd335eafe9b721768a6b65174330c34b09b8c586217e208ea83"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_ha_tests.rs",
+        "name": "formal_native_pki_ha_batch_lease_keeps_typed_owner_across_actual_cold_election",
+        "sha256": "68316a543fc1e2cdf47e14221ad248c13fe598e26c1dee74d144ab990667a799"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_ha_tests.rs",
+        "name": "formal_native_pki_ha_lost_actual_quorum_cannot_sign_or_disclose_public_material",
+        "sha256": "8c45b9018b5185a80ee9f4d64384366abd9e07153b8c612d0efdf2db1afc2492"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_ha_tests.rs",
+        "name": "formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "sha256": "3f1493306b58280562c9b731fe8847275d11a4397c91d529defb7659d39a38f0"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_ha_tests.rs",
+        "name": "formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "sha256": "2fd468cdfb8ba366c253b0486cfd0f0e848daa76fa86e49b5e06caa06128c2c3"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_ha_tests.rs",
+        "name": "formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "sha256": "1b3ca6fda47ad9948bd93cedcac7c0e967de7cdd77ffad8646232090a9cd96aa"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_ha_tests.rs",
+        "name": "formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key",
+        "sha256": "74b8b8f2146969951357d8a50f71ac6ec76f746533e454d90c77bb03c237e0fc"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+        "name": "no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "sha256": "c7c4293aadb3cbfa672773596b13cd3d2a391c098863203e46d7e57e5baa8a73"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+        "name": "no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "sha256": "ad065b01697fbe6f6c49470f5f23c0965aa56c0fcb8c1fbd868aee906a7ef695"
+      }
+    ],
+    "interpretation": "The recursive inventory includes all 34 original test-function bodies across five parent suites and six child modules. Their recorded SHA256 values are unchanged after shared-fixture extraction. This is source-preservation evidence, not a Rust build or test-execution result."
+  },
+  "language_ownership": {
+    "scope": "Raw extension counts for tracked files that still exist plus nonignored added files; not GitHub Linguist percentages or production-only code.",
+    "python_file_count": 940,
+    "python_by_root": {
+      "clients": 35,
+      "qa": 698,
+      "scripts": 92,
+      "tests": 100,
+      "tools": 14,
+      "verification": 1
+    },
+    "rust_file_count": 1249,
+    "rust_by_root": {
+      "crates": 1194,
+      "probes": 19,
+      "third_party": 19,
+      "vendor": 17
+    },
+    "python_purpose_groups": [
+      {
+        "group": "python_clients",
+        "prefix": "clients/python/",
+        "count": 35,
+        "purpose": "Current installable SDK, CLI, Agent, Proxy, SSH helper and OIDC client, together with regression tests."
+      },
+      {
+        "group": "repository_scripts",
+        "prefix": "scripts/",
+        "count": 92,
+        "purpose": "Current repository, workflow, documentation and evidence validators/collectors; historical contract validators still exercised by retained tests; archive inspection/restoration utility."
+      },
+      {
+        "group": "acceptance_tests",
+        "prefix": "qa/openbao-acceptance/tests/",
+        "count": 237,
+        "purpose": "Current acceptance-tool regression tests and hostile-input/process-custody checks."
+      },
+      {
+        "group": "historical_operators",
+        "prefix": "qa/openbao-acceptance/operators/",
+        "count": 22,
+        "purpose": "Explicitly documented frozen operator/replay packages with fixed source and host-layout contracts; retained for their documented provenance/replay purpose."
+      },
+      {
+        "group": "acceptance_drivers",
+        "prefix": "qa/openbao-acceptance/",
+        "count": 351,
+        "purpose": "Reusable live/differential/migration/HA acceptance drivers and shared HTTP/process/receipt helpers."
+      },
+      {
+        "group": "personal_evidence",
+        "prefix": "qa/personal_credentials/evidence/",
+        "count": 17,
+        "purpose": "17 Python artifacts retained by the exact personal-credentials evidence integrity manifest; not active server implementations."
+      },
+      {
+        "group": "personal_pinned_r9",
+        "prefix": "qa/personal_credentials/passkey_r9/",
+        "count": 26,
+        "purpose": "Frozen passkey R9 driver/workflow package; filename and SHA-bound guard/replay consumers remain."
+      },
+      {
+        "group": "personal_qa",
+        "prefix": "qa/personal_credentials/",
+        "count": 44,
+        "purpose": "Browser/Android/passkey build drivers, synthetic services, device controllers and host guard tests."
+      },
+      {
+        "group": "single_node_qa",
+        "prefix": "qa/single-node/",
+        "count": 1,
+        "purpose": "Current single-node service smoke runner."
+      },
+      {
+        "group": "regression_tests",
+        "prefix": "tests/",
+        "count": 100,
+        "purpose": "Repository, plan, platform, oracle and security regression tests."
+      },
+      {
+        "group": "operator_tools",
+        "prefix": "tools/",
+        "count": 14,
+        "purpose": "Maintained AuthBus, migration, browser installation, Git signing and physical-HA tools plus their tests."
+      },
+      {
+        "group": "verification",
+        "prefix": "verification/",
+        "count": 1,
+        "purpose": "Standalone concurrency/linearizability verification tool."
+      }
+    ],
+    "unclassified_python_file_count": 0,
+    "interpretation": "Remaining Python includes current clients, acceptance and regression tooling, repository gates, operator tools, and explicitly pinned provenance/replay artifacts. Language alone is not a deletion criterion."
+  },
+  "native_execution": {
+    "status": "PASS",
+    "completion_observed": true,
+    "platform": "aarch64-apple-darwin",
+    "cargo_version": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
+    "rustc_version": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+    "build": {
+      "command": [
+        "<user-home>/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json",
+        "--config",
+        "profile.test.package.heptabao-server.opt-level=0",
+        "--config",
+        "profile.test.debug-assertions=true",
+        "--config",
+        "profile.test.overflow-checks=true"
+      ],
+      "environment": {
+        "RUSTC": "<user-home>/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "CARGO_HOME": "<user-home>/.cargo",
+        "CARGO_TARGET_DIR": "<native-workdir>/target",
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "PATH": "/opt/homebrew/opt/openssl@3/bin:<user-home>/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "OPENSSL_DIR": "/opt/homebrew/opt/openssl@3",
+        "LIBCLANG_PATH": "/Library/Developer/CommandLineTools/usr/lib",
+        "RUSTFLAGS": "",
+        "CARGO_ENCODED_RUSTFLAGS": "",
+        "RUSTC_WRAPPER": "",
+        "RUSTC_WORKSPACE_WRAPPER": ""
+      },
+      "status": "PASS",
+      "exit_code": 0,
+      "stderr_sha256": "12ae150f273bc04e4b1973a29c8937663f3ea79798e83466add821092a88f0ea",
+      "jsonl_sha256": "3f8dcbe4fd0f6c181d8b20c0c98b1a250ad5d9e46ce68c9b3099f6bb6bc1456e",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": true
+      }
+    },
+    "binary_platform": {
+      "schema": "heptabao.native-binary-platform.v1",
+      "binary": "<native-workdir>/target/debug/deps/heptabao_server-d8ac5afbedb25816",
+      "binary_size": 511591232,
+      "binary_sha256": "f5318b837cb34607674d6b4afdbaa536131efaed43b60b042d42ef85f395c737",
+      "mach_o": {
+        "header_hex": "cffaedfe0c000001000000000200000014000000880900008500a00000000000",
+        "magic": "0xfeedfacf",
+        "cpu_type": "0x100000c",
+        "cpu_subtype": "0x0",
+        "file_type": 2,
+        "arm64_verified": true
+      },
+      "file_output": "Mach-O 64-bit executable arm64",
+      "otool_header": "<native-workdir>/target/debug/deps/heptabao_server-d8ac5afbedb25816:\nMach header\n      magic  cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags\nMH_MAGIC_64    ARM64        ALL  0x00     EXECUTE    20       2440   NOUNDEFS DYLDLINK TWOLEVEL PIE MH_HAS_TLV_DESCRIPTORS",
+      "rustc_verbose": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8",
+      "sw_vers": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
+      "machine": "arm64",
+      "os_release": "25.6.0"
+    },
+    "openssl": {
+      "path": "/opt/homebrew/opt/openssl@3/bin/openssl",
+      "version": "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)",
+      "req_addext_supported": true,
+      "OPENSSL_DIR": "/opt/homebrew/opt/openssl@3"
+    },
+    "tests": {
+      "status": "PASS",
+      "commands": [
+        [
+          "<native-workdir>/target/debug/deps/heptabao_server-d8ac5afbedb25816",
+          "service::native_v6_ha_pipeline_tests::native_userpass_tests",
+          "--test-threads=1"
+        ],
+        [
+          "<native-workdir>/target/debug/deps/heptabao_server-d8ac5afbedb25816",
+          "service::native_v6_ha_pipeline_tests::native_missing_route_tests",
+          "--test-threads=1"
+        ],
+        [
+          "<native-workdir>/target/debug/deps/heptabao_server-d8ac5afbedb25816",
+          "service::native_v6_ha_pipeline_tests::native_raft_observation_tests",
+          "--test-threads=1"
+        ],
+        [
+          "<native-workdir>/target/debug/deps/heptabao_server-d8ac5afbedb25816",
+          "service::native_v6_ha_pipeline_tests::native_totp_tests",
+          "--test-threads=1"
+        ],
+        [
+          "<native-workdir>/target/debug/deps/heptabao_server-d8ac5afbedb25816",
+          "service::native_v6_ha_pipeline_tests::native_pki_tests",
+          "--test-threads=1"
+        ]
+      ],
+      "expected_test_count": 34,
+      "counts": {
+        "passed": 34,
+        "failed": 0,
+        "ignored": 0,
+        "executed": 34,
+        "listed_only": 0
+      },
+      "test_process_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "complete_target_tests_reported_by_libtest": 3615,
+      "suites": [
+        {
+          "filter": "service::native_v6_ha_pipeline_tests::native_userpass_tests",
+          "expected_tests": 8,
+          "child_exit_code": 0,
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "seconds": 115.929,
+          "tests": [
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::batch_issuer_tests::formal_native_batch_approle_ha_forwarded_sid_once_election_cold",
+              "start_line": 3,
+              "status": "ok",
+              "terminal_line": 4,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::batch_issuer_tests::formal_native_batch_ha_actual_audit_parent_revoke_vetoes_original_response",
+              "start_line": 5,
+              "status": "ok",
+              "terminal_line": 6,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::batch_issuer_tests::formal_native_batch_ha_missing_quorum_cannot_consume_sid_or_publish_either_issuer",
+              "start_line": 7,
+              "status": "ok",
+              "terminal_line": 11,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::batch_issuer_tests::formal_native_batch_token_api_ha_forwarded_election_parent_revoke_cold",
+              "start_line": 12,
+              "status": "ok",
+              "terminal_line": 13,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::batch_tests::formal_native_userpass_batch_ha_first_issuance_election_cold_and_current_policy",
+              "start_line": 14,
+              "status": "ok",
+              "terminal_line": 15,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::batch_tests::formal_native_userpass_batch_ha_lost_quorum_cannot_install_first_lifecycle_or_reply",
+              "start_line": 16,
+              "status": "ok",
+              "terminal_line": 18,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::formal_native_userpass_ha_forwarded_issuance_election_cold_provenance_and_revoke",
+              "start_line": 19,
+              "status": "ok",
+              "terminal_line": 20,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_userpass_tests::formal_native_userpass_ha_lost_actual_quorum_cannot_issue_a_credential",
+              "start_line": 21,
+              "status": "ok",
+              "terminal_line": 23,
+              "executed": true
+            }
+          ],
+          "log_path": "<native-workdir>/sparse-retry1-logs/native_userpass_tests.log",
+          "log_sha256": "08aa8fde9c25c78ecbe42d7a7e352c8565a86457f282ebcf5ac2ad0ee6862e17",
+          "footer": "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 3607 filtered out; finished in 114.98s",
+          "execution_verified": true
+        },
+        {
+          "filter": "service::native_v6_ha_pipeline_tests::native_missing_route_tests",
+          "expected_tests": 7,
+          "child_exit_code": 0,
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "seconds": 148.126,
+          "tests": [
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_missing_route_tests::capabilities::native_capabilities_formal_ha_actual_post_audit_policy_actor_and_target_changes",
+              "start_line": 3,
+              "status": "ok",
+              "terminal_line": 7,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_missing_route_tests::capabilities::native_capabilities_formal_ha_forwarding_finite_uses_election_and_cold_rejoin",
+              "start_line": 8,
+              "status": "ok",
+              "terminal_line": 9,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_missing_route_tests::capabilities::native_capabilities_formal_ha_real_quorum_loss_cannot_release_inspection",
+              "start_line": 10,
+              "status": "ok",
+              "terminal_line": 12,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_missing_route_tests::namespace_tests::native_missing_route_formal_ha_child_retirement_readindex_forwarding_and_cold",
+              "start_line": 13,
+              "status": "ok",
+              "terminal_line": 174,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_missing_route_tests::native_missing_route_formal_ha_actual_actor_expiry_after_audit_withholds_404",
+              "start_line": 175,
+              "status": "ok",
+              "terminal_line": 198,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_missing_route_tests::native_missing_route_formal_ha_actual_post_audit_publication_vetoes_stale_absence",
+              "start_line": 199,
+              "status": "ok",
+              "terminal_line": 219,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_missing_route_tests::native_missing_route_formal_ha_readindex_forwarding_election_and_cold_rejoin",
+              "start_line": 220,
+              "status": "ok",
+              "terminal_line": 401,
+              "executed": true
+            }
+          ],
+          "log_path": "<native-workdir>/sparse-retry1-logs/native_missing_route_tests.log",
+          "log_sha256": "5e7b35eb3ee9cf00d01b56182d35e4b8902abbabd0f4ee0f3ec4e48705cc9609",
+          "footer": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 3608 filtered out; finished in 147.39s",
+          "execution_verified": true
+        },
+        {
+          "filter": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests",
+          "expected_tests": 7,
+          "child_exit_code": 0,
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "seconds": 127.986,
+          "tests": [
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests::formal_native_raft_audited_reply_status_tampering_cannot_bypass_delivery_custody",
+              "start_line": 3,
+              "status": "ok",
+              "terminal_line": 4,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests::formal_native_raft_five_reads_reject_actual_lost_quorum",
+              "start_line": 5,
+              "status": "ok",
+              "terminal_line": 15,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests::formal_native_raft_five_reads_survive_forwarding_election_and_cold_rejoin",
+              "start_line": 16,
+              "status": "ok",
+              "terminal_line": 17,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests::formal_native_raft_read_acl_shape_and_clock_delivery_keep_all_writers_closed",
+              "start_line": 18,
+              "status": "ok",
+              "terminal_line": 28,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests::formal_native_raft_read_cannot_return_after_original_deadline_expires_at_audit",
+              "start_line": 29,
+              "status": "ok",
+              "terminal_line": 29,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests::formal_native_raft_read_rechecks_original_actor_after_actual_audit",
+              "start_line": 30,
+              "status": "ok",
+              "terminal_line": 30,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_raft_observation_tests::formal_native_raft_read_vetoes_warm_policy_tampering_after_actual_audit",
+              "start_line": 31,
+              "status": "ok",
+              "terminal_line": 32,
+              "executed": true
+            }
+          ],
+          "log_path": "<native-workdir>/sparse-retry1-logs/native_raft_observation_tests.log",
+          "log_sha256": "510c2b21a2a1a4bb9416293ec32b5f91628f592368670f1577551c545e8cff01",
+          "footer": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 3608 filtered out; finished in 127.09s",
+          "execution_verified": true
+        },
+        {
+          "filter": "service::native_v6_ha_pipeline_tests::native_totp_tests",
+          "expected_tests": 3,
+          "child_exit_code": 0,
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "seconds": 26.241,
+          "tests": [
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_totp_tests::native_totp_formal_ha_actual_actor_clock_expiry_after_audit_vetoes_code",
+              "start_line": 3,
+              "status": "ok",
+              "terminal_line": 6,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_totp_tests::native_totp_formal_ha_actual_post_audit_root_change_vetoes_private_code",
+              "start_line": 7,
+              "status": "ok",
+              "terminal_line": 9,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_totp_tests::native_totp_formal_ha_tls_counter_readindex_failover_and_two_cold_rejoins",
+              "start_line": 10,
+              "status": "ok",
+              "terminal_line": 11,
+              "executed": true
+            }
+          ],
+          "log_path": "<native-workdir>/sparse-retry1-logs/native_totp_tests.log",
+          "log_sha256": "0d714283c7a14b58303e471f0512f1e128d023359304ac1ab8bbad50e4df356b",
+          "footer": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 3612 filtered out; finished in 25.87s",
+          "execution_verified": true
+        },
+        {
+          "filter": "service::native_v6_ha_pipeline_tests::native_pki_tests",
+          "expected_tests": 9,
+          "child_exit_code": 0,
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "seconds": 117.858,
+          "tests": [
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_batch_lease_keeps_typed_owner_across_actual_cold_election",
+              "start_line": 3,
+              "status": "ok",
+              "terminal_line": 4,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_forwarded_signing_election_cold_and_actual_crl",
+              "start_line": 5,
+              "status": "ok",
+              "terminal_line": 6,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_lost_actual_quorum_cannot_sign_or_disclose_public_material",
+              "start_line": 7,
+              "status": "ok",
+              "terminal_line": 11,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+              "start_line": 12,
+              "status": "ok",
+              "terminal_line": 13,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+              "start_line": 14,
+              "status": "ok",
+              "terminal_line": 15,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+              "start_line": 16,
+              "status": "ok",
+              "terminal_line": 17,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+              "start_line": 18,
+              "status": "ok",
+              "terminal_line": 19,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+              "start_line": 20,
+              "status": "ok",
+              "terminal_line": 21,
+              "executed": true
+            },
+            {
+              "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key",
+              "start_line": 22,
+              "status": "ok",
+              "terminal_line": 28,
+              "executed": true
+            }
+          ],
+          "log_path": "<native-workdir>/sparse-retry1-logs/native_pki_tests.log",
+          "log_sha256": "1ae146df5b726c6f72f3bf70e3c69fec3e6b0616a2a5ee03e264a6cf232f4962",
+          "footer": "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 3606 filtered out; finished in 117.31s",
+          "execution_verified": true
+        }
+      ],
+      "summary": "All five real native test processes exited 0. Their complete logs verify 8 userpass, 7 missing-route, 7 Raft-observation, 3 TOTP and 9 PKI tests as executed and passed; none failed or was ignored. The other registered tests were filtered out, not executed."
+    },
+    "source_materialization": {
+      "kind": "sparse-source-snapshot",
+      "git_checkout": false,
+      "source_commit": "dd38ea55476813fb4b5d6d9a9e73211249536a73",
+      "source_tree": "bd420a049cccfa423ba7dc8c58bfc8af7d70e662",
+      "baseline_files": 1376,
+      "source_archive": "<native-workdir>/rust-sparse-dd38.tar.xz",
+      "source_archive_sha256": "511a289c01f75fd76345f98a4aecaf685aed8b79f27afa6919fcf84ecf56d054",
+      "metadata_archive": "<native-workdir>/sparse-metadata.tar.xz",
+      "metadata_archive_sha256": "9d6d63e218b115fe181a5d5f82b2b970ba23651c7b03d824b3cd980826d61926",
+      "baseline_manifest_sha256": "9107dd2e7e2523d74934a822491d78bce669466c4176c29e3cb1ee9509faa4d3",
+      "scope": "All tracked root files, crates, vendor, third_party, third-party license notices, and referenced Git signer helper; complete server library test sources. Seven candidate overlay files are applied separately.",
+      "all_file_blobs_and_sha256_verified": true
+    },
+    "source_input_closure": {
+      "cargo_manifests": 57,
+      "cargo_path_dependency_edges": 84,
+      "literal_include_macro_references": 57,
+      "unparsed_include_macros": 0,
+      "missing_build_inputs": 0,
+      "probes_required_by_workspace_or_path_dependencies": false,
+      "included_trees": [
+        "crates/ (entire)",
+        "vendor/ (entire)",
+        "third_party/ (entire)",
+        "docs/licenses/ (entire)"
+      ],
+      "additional_runtime_helper": "tools/heptabao_git_signer.py",
+      "selected_test_external_requirements": [
+        "Rust 1.98.0 toolchain and locked registry dependencies",
+        "platform C compiler/toolchain for locked native dependencies",
+        "openssl CLI with req/x509/-addext support",
+        "loopback socket support and writable private temp directory"
+      ],
+      "selected_tests_use_fresh_private_temporary_state_and_generated_tls_assets": true,
+      "no_documentation_or_historical_evidence_runtime_input_found": true
+    },
+    "candidate_overlay_files": [
+      {
+        "path": "crates/heptabao-server/src/service_native_formal_ha_fixture.rs",
+        "bytes": 9886,
+        "sha256": "14e7fad1bef2f423dca2400162e7c19f41bac34d6ba53f5bc5cfe6caf408ce7b"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_missing_route_ha_tests.rs",
+        "bytes": 10193,
+        "sha256": "69e4c713295527ea55f9f43f48296ae8712a927b7c76f569722ba4ec91d4eb08"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_ha_tests.rs",
+        "bytes": 12121,
+        "sha256": "08a160f8968b582d82f3ff361bbedb84521e61a6501949d0d1fdbabe8658e7e3"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_raft_observation_ha_tests.rs",
+        "bytes": 13922,
+        "sha256": "fd4f319ed42abfbc423631090827a6f16b03355ee8418e6f1b782c42a49306ab"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_totp_ha_tests.rs",
+        "bytes": 11393,
+        "sha256": "62802d3ff5ec0ffaec670c9dcb47a86215db09d77f454a7299ea4f2c8d96d9a4"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_userpass_ha_tests.rs",
+        "bytes": 7298,
+        "sha256": "f188bf297a30ad25c23c149d383ab1358f57483bda2b201fbac100abd059d91b"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+        "bytes": 70849,
+        "sha256": "7a6fc16ce3ba09ceebe4d722e457d8ff8116a3f517a96a90c6a8cdb0102bc0ba"
+      }
+    ],
+    "source_integrity_after_tests": {
+      "expected_files": 1377,
+      "actual_files": 1377,
+      "added_paths": [],
+      "removed_paths": [],
+      "git_executable_mode_changes": [],
+      "content_changes": [],
+      "special_entries": [],
+      "pass": true,
+      "check_scope": "One final read of complete materialized file paths, Git executable modes, sizes and SHA256 after all five test processes ended."
+    },
+    "dependency_integrity": {
+      "status": "VERIFIED",
+      "cargo_lock_path": "Cargo.lock",
+      "cargo_lock_sha256": "25ca249c868aece0f70eadbb99f6e689509c9164e860aeb9cce4de8dec88e48e",
+      "missing_packages_in_server_mac_resolution_closure": 86,
+      "verified_original_registry_archives": 86,
+      "all_86_original_archive_sha256_match_locked_checksums": true,
+      "dependency_versions_or_lockfile_changed": false,
+      "different_existing_cache_content_overwritten": false,
+      "complete_install_receipt": {
+        "file": "round2-mac-cache-install-complete.json",
+        "bytes": 30178,
+        "sha256": "bd5599861275929cd650829ccaa1bbcc73fa20c28b7ba1890931f8631821dc70"
+      },
+      "interpretation": "The 86 previously missing original archives for the selected Mac dependency closure were checksum-verified and cached. This count is not a claim about all workspace packages or every platform."
+    },
+    "linux_attempts": {
+      "platform": "x86_64-unknown-linux-gnu",
+      "toolchain": "1.98.0",
+      "exit_codes_confirmed_by": "Root orchestration tool terminal observations; the low-optimization retry also records rustc signal 9 directly in stderr.",
+      "attempts": [
+        {
+          "attempt": "full_library_test_build",
+          "status": "INCOMPLETE",
+          "command": [
+            "cargo",
+            "test",
+            "--offline",
+            "--locked",
+            "-p",
+            "heptabao-server",
+            "--lib",
+            "--no-run",
+            "--message-format=json"
+          ],
+          "environment": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+          },
+          "exit_code": 137,
+          "rustc_signal": null,
+          "observation": "The orchestration tool observed exit 137. Compiler logs end during heptabao-server compilation without a terminal exit line. The signal recipient and kernel cause were not independently established.",
+          "build_finished_success_records": [],
+          "server_library_test_executable_produced": false,
+          "selected_tests_executed": 0,
+          "artifacts": [
+            {
+              "file": "round2-rust-build-final.log",
+              "bytes": 11542,
+              "sha256": "8fe22d4dda085faf1cdaacc94dcc143dbeec5b0483addba2617350ecfc1031f0"
+            },
+            {
+              "file": "round2-rust-build-final.jsonl",
+              "bytes": 340737,
+              "sha256": "b9443dcc671e9ea27cc319bf1462ba0c39f5885a4f15dcfcb4cdfffb06139edf"
+            }
+          ]
+        },
+        {
+          "attempt": "server_opt_level_zero_retry",
+          "status": "INCOMPLETE",
+          "command": [
+            "cargo",
+            "test",
+            "--offline",
+            "--locked",
+            "-p",
+            "heptabao-server",
+            "--lib",
+            "--no-run",
+            "--message-format=json",
+            "--config",
+            "profile.test.package.heptabao-server.opt-level=0"
+          ],
+          "environment": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+          },
+          "exit_code": 101,
+          "rustc_signal": 9,
+          "observation": "Cargo returned 101. Saved stderr directly reports that the server lib-test rustc process terminated with signal 9 (SIGKILL).",
+          "build_finished_success_records": [
+            false
+          ],
+          "server_library_test_executable_produced": false,
+          "selected_tests_executed": 0,
+          "artifacts": [
+            {
+              "file": "round2-rust-build-lowmem.log",
+              "bytes": 7461,
+              "sha256": "2dce3479a9464a2155bc9d0e34c2bd6b596e1bf7bea4a219d3720843d12791c5"
+            },
+            {
+              "file": "round2-rust-build-lowmem.jsonl",
+              "bytes": 340385,
+              "sha256": "294a0dc2ac71852fcf2acfa37c2e33bbe9bb4441ae055614ae2add4fc24b750c"
+            }
+          ]
+        },
+        {
+          "attempt": "library_and_tests_check",
+          "status": "INCOMPLETE",
+          "command": [
+            "cargo",
+            "check",
+            "--offline",
+            "--locked",
+            "-p",
+            "heptabao-server",
+            "--lib",
+            "--tests",
+            "--message-format=json"
+          ],
+          "environment": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+          },
+          "exit_code": 137,
+          "rustc_signal": null,
+          "observation": "The orchestration tool observed exit 137. Compiler logs contain no terminal exit line and no server library test executable was produced.",
+          "build_finished_success_records": [],
+          "server_library_test_executable_produced": false,
+          "selected_tests_executed": 0,
+          "artifacts": [
+            {
+              "file": "round2-rust-check.log",
+              "bytes": 9465,
+              "sha256": "cf938ec2412fb50418d48b0001bb0c4df9501454182eae0c090cf6fc988fedf2"
+            },
+            {
+              "file": "round2-rust-check.jsonl",
+              "bytes": 316849,
+              "sha256": "390323b1c9ab4b1fd8b6f45e912b1489d6fa50a4a8e9fca4730f6ddf388a78cc"
+            }
+          ]
+        }
+      ],
+      "kernel_oom_cause_established": false,
+      "interpretation": "All three attempts were incomplete. SIGKILL is directly recorded for the low-optimization rustc process; exit 137 was observed for the other two. No kernel OOM diagnosis is claimed."
+    },
+    "collector_correction": {
+      "original_job": {
+        "host": "mac",
+        "job_id": "1a1df8507be-392-2792",
+        "state": "failed",
+        "exit_code": 1,
+        "output_complete": true
+      },
+      "original_result_path": "<native-workdir>/sparse-retry1-results.json",
+      "original_result_sha256": "a70650e8765c1f61bf0491bda3a5ede0ea61c3cd925c9e5ef75e2fffc728adc3",
+      "original_status": "FAIL",
+      "observer_parse_failure_only": true,
+      "reason": "Original single-line per-test regex missed libtest status words moved onto later lines by interleaved HA diagnostics; all five native child processes exited zero and their complete footers reported the exact expected passes with no failure or ignore.",
+      "method": "Read-only ordered test-start and terminal-status matching, checked against each original listing, child exit status and suite footer.",
+      "sample": {
+        "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_forwarded_signing_election_cold_and_actual_crl",
+        "text": "test service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_forwarded_signing_election_cold_and_actual_crl ... HBHA-NATIVE-SYNC-FAIL step=committed_read_index code=read_index_refused reason_sha=a530fba9c493c61f7efec9a3ba2be5f93abada16e753cabd5dff98da22732519 elapsed_us=1575 step_elapsed_us=1573 original_deadline_expired=false original_remaining_ns=7998424083 panicking=false\nok\n",
+        "sha256": "9a7341ef1ab9c0f4b7fda6a6604f7fa1322f1212fb4fdc36a958838d1ea11861",
+        "expected_status": "ok",
+        "observed": {
+          "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_forwarded_signing_election_cold_and_actual_crl",
+          "start_line": 1,
+          "status": "ok",
+          "terminal_line": 2
+        }
+      },
+      "test_processes_rerun": false,
+      "original_results_modified": false,
+      "correcting_observer": {
+        "job_id": "1a1df968773-392-27d7",
+        "state": "succeeded",
+        "exit_code": 0,
+        "output_complete": true,
+        "source_job_receipts_sha256": "b3a30d0d18325cb62ca49151aee55c67675c803ae8109ca4bb352160e4952817"
+      }
+    },
+    "validation_no_test_code_or_assertions_changed": true,
+    "scope_limits": [
+      "The native source was a verified sparse materialization of 1,376 baseline files plus the seven-file candidate overlay (1,377 resulting files), not a full Git checkout. Complete server library test sources and their native build inputs were retained.",
+      "The full server library test target was compiled with unchanged default features; 34 affected tests were executed out of 3,615 registered tests. This does not qualify the complete workspace, release optimization profile, or every platform.",
+      "Only the server package test optimization level was overridden to zero; debug information was disabled and debug assertions and overflow checks stayed enabled.",
+      "The incomplete local Linux attempts are retained above; SIGKILL/exit 137 is observed, but a kernel OOM cause is not established.",
+      "Private machine paths are replaced with descriptive placeholders in this public record. All artifact hashes bind the original unmodified artifacts."
+    ],
+    "source_evidence": [
+      {
+        "file": "round2-mac-native-validation.json",
+        "bytes": 21801,
+        "sha256": "ae801680d7bf9be8dd022249d9a9b431c118c7705c7fa35163029c99e9a538e2"
+      },
+      {
+        "file": "round2-mac-native-validation-artifacts.tar.xz",
+        "bytes": 68768,
+        "sha256": "247979ddf43d4798cdc566f5e8cb7b1a02d88f2f363fe3c4c341b5a8050a3d14"
+      }
+    ]
+  }
+}

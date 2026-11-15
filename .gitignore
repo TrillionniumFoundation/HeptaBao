@@ -28,10 +28,12 @@ Thumbs.db
 *.log
 *.tmp
 
-# Historical executable captures belong to their original Git commit or an
+# Historical source captures belong to their original Git commit or an
 # evidence artifact, not the current source tree. See docs/REPOSITORY_LAYOUT.md.
 # Current QA programs live beside evidence/ and remain tracked normally.
 /qa/openbao-acceptance/evidence/**/*.py
 /qa/openbao-acceptance/evidence/**/*.js
 /qa/openbao-acceptance/evidence/**/*.mjs
 /qa/openbao-acceptance/evidence/**/*.rs
+/qa/openbao-acceptance/evidence/**/*.diff
+/qa/openbao-acceptance/evidence/**/*.patch
