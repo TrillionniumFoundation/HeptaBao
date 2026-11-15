@@ -95,6 +95,13 @@ python3 scripts/archived_qa_sources.py --manifest docs/audits/2026-11-15-reposit
 
 The same `--manifest` option works with `--restore-to` and `--prefix`.
 
+The [third cleanup audit](audits/2026-11-15-repository-cleanup-round3/README.md)
+records shared P0 response formatting, strict JSON and historical YAML 1.1
+parsing, and the AuthBus SDK compatibility import. It also retires two unused
+Android r4 top-level copies while preserving their identical evidence originals.
+Its [recovery manifest](audits/2026-11-15-repository-cleanup-round3/retired-sources.json)
+is bound to `2b6cf2c68dd953fd935a3fd94780aba6ae62c6d1` and uses the same command.
+
 ## Adding future work
 
 Keep reusable source in its maintained directory, with tests next to the relevant

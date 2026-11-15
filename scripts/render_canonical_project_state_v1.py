@@ -14,6 +14,15 @@ from typing import Any
 
 import yaml
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from yaml11_loader import (  # noqa: E402
+    UniqueKeyYaml11Loader as UniqueKeyLoader,
+    _construct_unique_mapping,
+)
+
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 REF_SAFE = re.compile(r"^[A-Za-z0-9._/@+:-]+$")
 DEFAULT_STATE_INPUT = "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V1.yaml"
@@ -21,32 +30,6 @@ DEFAULT_MANIFEST = "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1.yaml"
 HISTORICAL_REPOSITORY = "ProfHepta/HeptaBao"
 CURRENT_REPOSITORY = "TrillionniumFoundation/HeptaBao"
 ACTIVE_STATE_INPUT = "planning/HEPTABAO_V1_3_1_FINAL_CLOSURE_INPUT.yaml"
-
-
-class UniqueKeyLoader(yaml.SafeLoader):
-    """Safe YAML loader that rejects ambiguous duplicate mapping keys."""
-
-
-def _construct_unique_mapping(
-    loader: UniqueKeyLoader, node: yaml.nodes.MappingNode, deep: bool = False
-) -> dict[Any, Any]:
-    mapping: dict[Any, Any] = {}
-    for key_node, value_node in node.value:
-        key = loader.construct_object(key_node, deep=deep)
-        if key in mapping:
-            raise yaml.constructor.ConstructorError(
-                "while constructing a mapping",
-                node.start_mark,
-                f"duplicate key: {key!r}",
-                key_node.start_mark,
-            )
-        mapping[key] = loader.construct_object(value_node, deep=deep)
-    return mapping
-
-
-UniqueKeyLoader.add_constructor(
-    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_unique_mapping
-)
 
 
 class Failure(RuntimeError):

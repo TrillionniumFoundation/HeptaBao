@@ -18,6 +18,9 @@ records the first deletion set and immutable recovery commit. The
 [follow-up cleanup audit](audits/2026-11-15-repository-cleanup-round2/README.md)
 records shared HA fixtures, shared strict YAML loading, retired generators and
 patches, and consolidated workflow coverage.
+The [third cleanup audit](audits/2026-11-15-repository-cleanup-round3/README.md)
+records shared response and parser helpers, the removal of unused r4 duplicates,
+and repaired inherited checks for the current documentation entry points.
 
 ## Managed-secret Agent renderer
 

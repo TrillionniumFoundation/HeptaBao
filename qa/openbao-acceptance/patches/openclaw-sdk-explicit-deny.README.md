@@ -34,8 +34,10 @@ whose references are all pruned keeps the previous clear/fallback behavior.
 - `openclaw-sdk-explicit-deny.patch`: three SDK module changes.
 - `openclaw-authbus-atomic-deny.patch`: the small plugin delta applied **after**
   `openclaw-authbus-lease-deadline.patch`.
-- `../authbus_sdk_explicit_deny_candidate.mjs`: exact source SHA checks and
-  deterministic transformations for those same changes.
+- `../authbus/authbus_sdk_explicit_deny_candidate.mjs`: the shared implementation
+  of exact source SHA checks and deterministic transformations for those changes.
+- `../authbus_sdk_explicit_deny_candidate.mjs`: the compatibility import entry
+  used by the top-level runner inside a checkout.
 - `../authbus_explicit_deny_sdk_live.mjs`: isolated actual-SDK execution.
 
 The SDK source SHAs are:
@@ -61,8 +63,20 @@ The generated atomic-deny plugin candidate is
 
 ## Run in a new isolated directory
 
-Upload both `.mjs` files next to each other and the existing deadline candidate
-to a private tools directory. No SDK copy or production patch is required.
+For a standalone two-file deployment, copy these source files into the same
+private tools directory, keeping their basenames:
+
+```text
+qa/openbao-acceptance/authbus_explicit_deny_sdk_live.mjs
+qa/openbao-acceptance/authbus/authbus_sdk_explicit_deny_candidate.mjs
+```
+
+Use the shared implementation from `authbus/` for this copy. The top-level
+compatibility entry imports that subdirectory and is intended for an intact
+checkout. The flattened deployment still contains just the runner and the
+candidate module; the runner's relative import resolves to that copied module.
+Supply the existing deadline candidate separately. No SDK copy or production
+patch is required.
 
 ```text
 /usr/bin/node /path/to/tools/authbus_explicit_deny_sdk_live.mjs \

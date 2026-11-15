@@ -30,17 +30,54 @@ class PlanV146HostileTests(unittest.TestCase):
         )
         return temporary, root
 
-    def assert_rejected(self, path: str, mutate) -> None:
+    def assert_rejected(self, path: str, mutate, expected_error: str | None = None) -> None:
         temporary, root = self.candidate()
         try:
+            self.assertEqual(VALIDATOR.validate(root), [])
             target = root / path
             mutate(target)
-            self.assertTrue(VALIDATOR.validate(root))
+            errors = VALIDATOR.validate(root)
+            self.assertTrue(errors)
+            if expected_error is not None:
+                self.assertTrue(any(expected_error in error for error in errors), errors)
         finally:
             temporary.cleanup()
 
     def test_current_tree_passes(self) -> None:
         self.assertEqual(VALIDATOR.validate(ROOT), [])
+
+    def test_nonempty_public_homepage_is_rejected(self) -> None:
+        self.assert_rejected(
+            "README.md",
+            lambda path: path.write_text("\n", encoding="utf-8"),
+            "README.md must remain the intentionally empty public homepage",
+        )
+
+    def test_missing_public_homepage_is_rejected(self) -> None:
+        self.assert_rejected(
+            "README.md",
+            lambda path: path.unlink(),
+            "missing current public homepage: README.md",
+        )
+
+    def test_missing_current_portal_is_rejected(self) -> None:
+        self.assert_rejected(
+            "docs/CURRENT_DOCUMENTATION.md",
+            lambda path: path.unlink(),
+            "missing required V1.4.6 path: docs/CURRENT_DOCUMENTATION.md",
+        )
+
+    def test_missing_inherited_portal_marker_is_rejected(self) -> None:
+        self.assert_rejected(
+            "docs/CURRENT_DOCUMENTATION.md",
+            lambda path: path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "V1.4.6 authoritative recovery closure", "removed historical marker"
+                ),
+                encoding="utf-8",
+            ),
+            "docs/CURRENT_DOCUMENTATION.md missing required semantic token 'V1.4.6 authoritative recovery closure'",
+        )
 
     def test_rustfmt_whitespace_is_semantically_transparent(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -160,6 +197,7 @@ class PlanV146HostileTests(unittest.TestCase):
     def test_development_materializer_residue_is_rejected(self) -> None:
         temporary, root = self.candidate()
         try:
+            self.assertEqual(VALIDATOR.validate(root), [])
             path = root / "scripts/apply_v1_4_6_unreviewed.py"
             path.write_text("raise SystemExit('development only')\n", encoding="utf-8")
             self.assertTrue(VALIDATOR.validate(root))

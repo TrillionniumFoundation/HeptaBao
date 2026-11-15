@@ -20,6 +20,7 @@ import yaml
 from jsonschema import Draft202012Validator
 
 from yaml12_loader import UniqueKeyYaml12Loader
+from strict_json import loads_strict_json, unique_json_pairs
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -119,23 +120,12 @@ def load_yaml(root: Path, relative: str) -> Any:
 
 
 def _unique_json_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValidationFailure(f"duplicate JSON member: {key}")
-        result[key] = value
-    return result
+    return unique_json_pairs(pairs, ValidationFailure)
 
 
 def load_json(root: Path, relative: str) -> Any:
     try:
-        return json.loads(
-            read_text(root, relative),
-            object_pairs_hook=_unique_json_pairs,
-            parse_constant=lambda value: (_ for _ in ()).throw(
-                ValidationFailure(f"non-standard JSON constant: {value}")
-            ),
-        )
+        return loads_strict_json(read_text(root, relative), ValidationFailure, _unique_json_pairs)
     except (json.JSONDecodeError, ValueError) as error:
         raise ValidationFailure(f"invalid JSON {relative}: {error}") from error
 

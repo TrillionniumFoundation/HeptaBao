@@ -1,0 +1,550 @@
+{
+  "schema": "heptabao.repository-cleanup-validation.v1",
+  "round": 3,
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "baseline_commit": "2b6cf2c68dd953fd935a3fd94780aba6ae62c6d1",
+  "summary": {
+    "status": "COMPLETED_WITH_RETAINED_LEGACY_SCANNER_FINDING",
+    "current_repository_security_plan_tests": "PASS",
+    "native_p0_and_protocol_tests": {
+      "passed": 37,
+      "failed": 0,
+      "ignored": 0
+    },
+    "historical_plan_tests": {
+      "passed": 323,
+      "failed": 0,
+      "existing_skips": 27,
+      "new_skips": 0
+    },
+    "all_executed_commands_passed": false,
+    "retained_failure": "Legacy V1.1 marker scanner still rejects the same synthetic Rust test fixture; its output is byte-identical to the baseline."
+  },
+  "source_cleanup": {
+    "retired_files": 2,
+    "retired_bytes": 13592,
+    "retirement_manifest": "retired-sources.json",
+    "restored_original_bytes_and_modes_verified": true,
+    "net_source_lines_removed_including_new_guard_tests": 307,
+    "net_source_bytes_removed_including_new_guard_tests": 22079,
+    "rust_private_formatting": {
+      "net_lines_removed": 55,
+      "net_bytes_removed": 3336,
+      "full_baseline_sources_reconstructable": true,
+      "public_api_changed": false,
+      "existing_test_modules_unchanged": true
+    },
+    "python_parsers": {
+      "net_lines_removed": 6,
+      "net_bytes_removed": 357,
+      "strict_json_implementations": "4 to 1",
+      "yaml_1_1_implementations": "2 to 1"
+    },
+    "javascript_compatibility_entry": {
+      "net_lines_removed": 142,
+      "net_bytes_removed": 8147,
+      "canonical_and_runner_bytes_unchanged": true,
+      "standalone_deployment_files": 2
+    }
+  },
+  "environment": {
+    "platform": "x86_64-unknown-linux-gnu",
+    "rustc": "1.98.0",
+    "python": "3.12.14",
+    "PyYAML": "6.0.2",
+    "jsonschema": "4.23.0",
+    "cryptography": "50.0.0",
+    "node": "v24.22.1"
+  },
+  "native": [
+    {
+      "id": "test",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "heptabao-p0-server",
+        "-p",
+        "heptabao-protocol"
+      ],
+      "exit_code": 0,
+      "log_sha256": "75de8183e7babb172b3449d45d7c2df2ad158ef0140cae550e54dd9878f28d57",
+      "test_summaries": [
+        "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "id": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "heptabao-p0-server",
+        "-p",
+        "heptabao-protocol",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e8639163a7f7d1031548539c4662281f1c2a20aaaeddc0320dc109d35d615ef8"
+    },
+    {
+      "id": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "repository_regression": [
+    {
+      "id": "plan",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/plan",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "836bccf398f339fda021c47dd6bd25a963356ac864d32f312645938f4e09c579",
+      "tests_run": 350,
+      "result": "OK (skipped=27)"
+    },
+    {
+      "id": "repository",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/repository",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "bb6fe869c52cd51d426de9b4a68efac487736b2291ff9403b17a7c73f63596e6",
+      "tests_run": 305,
+      "result": "OK"
+    },
+    {
+      "id": "security",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/security",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "217ae29fc8b61dafe31a8ede8981f2c4f6f28408ce948962883855f8166e53bb",
+      "tests_run": 81,
+      "result": "OK"
+    },
+    {
+      "id": "validate_current_documentation_semantics",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_current_documentation_semantics.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "235e33f4d159bbc9bbdb023438f52b11376537f17804076db7155bbb844d4e03"
+    },
+    {
+      "id": "validate_delivery_gate_ownership",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_delivery_gate_ownership.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "125c16ae60f12e892597dc986849b47560b623a9145db7fdb4acaa346e9f0cc3"
+    },
+    {
+      "id": "validate_module_closure",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_module_closure.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "90032bc95e41a45603efac06c2f82e6d10d8bd5469bc3a2d0aac4a1c8daced60"
+    },
+    {
+      "id": "validate_openbao_271_release_denominator",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_openbao_271_release_denominator.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b164d3dcb2b0c25bdd944dd698d8206f4176b65410e1f0c48f03545d01bacc1b"
+    },
+    {
+      "id": "validate_plan_v2",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_plan_v2.py"
+      ],
+      "exit_code": 1,
+      "log_sha256": "ec3ab62e5847d954d6569094d469da821601bda2da1b83f6dbe35d03d16eff62"
+    },
+    {
+      "id": "validate_repository_identity_v1",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_repository_identity_v1.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "5bf9f09f80be682afc0dca39af420330669954ef239f06588a21590e0167081e"
+    },
+    {
+      "id": "validate_repository_v2",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_repository_v2.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "eb13c684216ecaf8161275dc6657b63a4be12f9bd94f4bc008d221ed7d879e2f"
+    },
+    {
+      "id": "validate_workflow_trust",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/validate_workflow_trust.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "0944a1557f3c43ccd5512290bae1db08c17f1ea6617110598a574764b0a77bd2"
+    }
+  ],
+  "python_differential": {
+    "status": "PASS",
+    "counts": {
+      "json": 160,
+      "json_pairs": 24,
+      "read_boundaries": 20,
+      "yaml11": 48,
+      "entrypoints": 18
+    },
+    "all_252_outcomes_and_exception_chains_identical": true,
+    "global_pyyaml_tables_unchanged": true,
+    "yaml12_loader_unchanged": true,
+    "existing_targeted_suites": [
+      {
+        "scope": "baseline",
+        "command": "python -m unittest tests.plan.test_plan_v1_4 tests.plan.test_plan_v1_4_1 tests.plan.test_plan_v1_4_2 tests.plan.test_plan_v1_4_3 tests.plan.test_plan_v1_2 tests.plan.test_v1_3_1_final_closure",
+        "total": 84,
+        "passed": 75,
+        "skipped": 9,
+        "failed": 0,
+        "exit_code": 0,
+        "log": "round3-python-baseline-targeted.log",
+        "sha256": "cae34c87735727a16f2e13f93133bb5b2aa35b0e8c527d7d20f7331f0a8ad51f"
+      },
+      {
+        "scope": "candidate",
+        "command": "python -m unittest tests.plan.test_plan_v1_4 tests.plan.test_plan_v1_4_1 tests.plan.test_plan_v1_4_2 tests.plan.test_plan_v1_4_3 tests.plan.test_plan_v1_2 tests.plan.test_v1_3_1_final_closure",
+        "total": 84,
+        "passed": 75,
+        "skipped": 9,
+        "failed": 0,
+        "exit_code": 0,
+        "log": "round3-python-candidate-targeted.log",
+        "sha256": "865367fb4296045470ad03793dc64b73de969e7fee2be6d2cc3f698652088b0c"
+      }
+    ],
+    "independent_review": "PASS"
+  },
+  "javascript_differential": {
+    "status": "PASS",
+    "exported_names": [
+      "DEADLINE_PLUGIN_SHA",
+      "ORIGINAL_PLUGIN_SHA",
+      "SDK_PATCHES",
+      "installSdkCandidate",
+      "patchDeadlinePlugin",
+      "patchSdkSource",
+      "sha256",
+      "verifyInstalledSdkUnchanged"
+    ],
+    "identical_function_bodies": [
+      "installSdkCandidate",
+      "patchDeadlinePlugin",
+      "patchSdkSource",
+      "sha256",
+      "verifyInstalledSdkUnchanged"
+    ],
+    "differential_cases": 20,
+    "runner_subprocesses": 12,
+    "all_compatibility_exports_are_canonical_objects": true,
+    "checked_layouts": [
+      "original-flat",
+      "checkout-compatibility",
+      "canonical-flat"
+    ],
+    "limits": [
+      "No installed OpenClaw SDK or production plugin was read or modified.",
+      "This checks module resolution, exact exported implementation, source-pin/custody rejection behavior and CLI entry behavior; it is not a rerun of the external SDK integration campaign."
+    ]
+  },
+  "documentation_guard_repair": {
+    "authority_basis": [
+      {
+        "commit": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+        "meaning": "Main intentionally cleared the root public README."
+      },
+      {
+        "commit": "fdc802e2e933a65f298ff449ce00f1c0a454b682",
+        "meaning": "Technical requirements moved to the current documentation portal while the README remained empty; current repository validators and hostile regressions were updated."
+      },
+      {
+        "path": "docs/CURRENT_DOCUMENTATION.md",
+        "sections": [
+          "opening homepage policy",
+          "Canonical current truth",
+          "Main-line reconciliation"
+        ],
+        "meaning": "V2.1 is current; V1.4.5 and V1.4.6 remain inherited historical evidence within their original scope."
+      },
+      {
+        "path": "scripts/validate_repository_v2.py",
+        "symbol": "validate_current_documentation",
+        "meaning": "Requires the root README to remain empty and technical documentation and validation commands to remain in the portal."
+      }
+    ],
+    "baseline": {
+      "exact_commit_verified": true,
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "tests.plan.test_plan_v1_4_5.PlanV145HostileTests.test_current_tree_passes",
+        "tests.plan.test_plan_v1_4_6.PlanV146HostileTests.test_current_tree_passes",
+        "-v"
+      ],
+      "exit_code": 1,
+      "tests_run": 2,
+      "failures": 2,
+      "validator_errors": {
+        "validate_plan_v1_4_5": [
+          "README missing current-truth token 'V1.4.5 security invariant closure'",
+          "README missing current-truth token 'V1.4.4'",
+          "README missing current-truth token 'Current Cargo workspace documentation:'",
+          "README missing current-truth token 'not production-deployable'",
+          "README missing current-truth token 'docs/CURRENT_DOCUMENTATION.md'"
+        ],
+        "validate_plan_v1_4_6": [
+          "README missing current-truth token 'V1.4.6 authoritative recovery closure'",
+          "README missing current-truth token 'not production-deployable'",
+          "README missing current-truth token 'docs/CURRENT_DOCUMENTATION.md'"
+        ]
+      }
+    },
+    "current": {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/plan",
+        "-p",
+        "test_plan_v1_4_[56].py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests_run": 30,
+      "passed": 29,
+      "failures": 0,
+      "errors": 0,
+      "existing_skips": 1,
+      "new_skips": 0,
+      "new_tests": 8,
+      "root_readme_bytes": 0
+    },
+    "preservation": "Both validators retain every check before their obsolete README tail. All original 22 test methods and decorators remain; both current-tree assertions are unchanged. Mutation helpers now require a passing unmodified candidate before checking the mutation.",
+    "new_negative_cases_per_validator": [
+      "nonempty homepage",
+      "missing homepage",
+      "missing technical portal",
+      "missing inherited portal marker"
+    ],
+    "old_audits_rewritten": false
+  },
+  "personal_credentials_host_checks": [
+    {
+      "name": "evidence-integrity",
+      "command": [
+        "python",
+        "-B",
+        "qa/personal_credentials/verify_evidence.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "a63ea51a5779fce932c9ca209bf45588d96dad8c1a1ba0b9b550277e4ba38248",
+      "summary": {
+        "archive_integrity": "passed",
+        "indexed_files": 256,
+        "verified_bytes": 28189714
+      }
+    },
+    {
+      "name": "evidence-self-test",
+      "command": [
+        "python",
+        "-B",
+        "qa/personal_credentials/verify_evidence.py",
+        "--self-test"
+      ],
+      "exit_code": 0,
+      "log_sha256": "2aaad3e9813a8b732337787a9605793e0146cf3c93cfd66cb7d22f24e4443bbb",
+      "summary": {
+        "checks_passed": 24,
+        "passed": true
+      }
+    },
+    {
+      "name": "workflow-paths",
+      "command": [
+        "python",
+        "-B",
+        "qa/personal_credentials/test_synthetic_workflow_paths.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "edb172086b62ea0f8b4b941325ae071715280109e4e748ce987f02dac9ebdea5",
+      "summary": {
+        "tests": 1,
+        "unittest_ok": true
+      }
+    },
+    {
+      "name": "passkey-live-host-guards",
+      "command": [
+        "python",
+        "-B",
+        "qa/personal_credentials/passkey_live_guard_test.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "3956acbd0b60a9a4075753e82b02ee0e9a26dc86430f18fbae126ce3783de536",
+      "summary": {
+        "adb_calls": 0,
+        "passed": 25
+      }
+    },
+    {
+      "name": "passkey-r9-workflow-host-guards",
+      "command": [
+        "python",
+        "-B",
+        "qa/personal_credentials/passkey_r9/passkey_r9_workflow_guard_test.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b2712136fca9def2075db4159385217af55977c4ab2010bb3d104c8ee66d31ed",
+      "summary": {
+        "adb_calls": 0,
+        "network_calls": 0,
+        "passed": 13,
+        "phone_cases_executed": 0
+      }
+    },
+    {
+      "name": "passkey-r9-record-host-guards",
+      "command": [
+        "python",
+        "-B",
+        "qa/personal_credentials/passkey_r9/passkey_r9_record_guard_test.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "d908f3baba32f71bfc2ed8cf61a715e9ec6fddb47d076c5323f22b17187686cb",
+      "summary": {
+        "adb_used": false,
+        "external_events_attempted": 0,
+        "network_used": false,
+        "passed": 14
+      }
+    }
+  ],
+  "evidence_preservation": {
+    "schema": "heptabao.round3-evidence-preservation.v1",
+    "baseline_commit": "2b6cf2c68dd953fd935a3fd94780aba6ae62c6d1",
+    "all_evidence_files": 4531,
+    "non_markdown_files": 4440,
+    "bytes": 91754542,
+    "content_and_git_modes_unchanged": true,
+    "inventory_sha256": "256fdb652ab3d05c6692f33728ac608ff8faffcb2f9d132e8e764524fc23cab7"
+  },
+  "legacy_scanner_comparison": {
+    "baseline_commit": "2b6cf2c68dd953fd935a3fd94780aba6ae62c6d1",
+    "command": [
+      "python3",
+      "-B",
+      "scripts/validate_plan_v2.py"
+    ],
+    "baseline_exit_code": 1,
+    "baseline_log_sha256": "ec3ab62e5847d954d6569094d469da821601bda2da1b83f6dbe35d03d16eff62",
+    "current_log_sha256": "ec3ab62e5847d954d6569094d469da821601bda2da1b83f6dbe35d03d16eff62",
+    "output_identical": true,
+    "classification": "Unchanged legacy V1.1 scanner finding in an existing synthetic Rust private-key delimiter fixture."
+  },
+  "remaining_scope_review": {
+    "python_files_parsed": 940,
+    "original_first_party_rust_files_scanned": 1194,
+    "normalized_rust_function_groups_reviewed": 64,
+    "schemas_with_references": 52,
+    "docs_relative_file_links_checked": 670,
+    "broken_docs_relative_file_links": 0,
+    "retained_patch_files": 10,
+    "retained_original_stdout_stderr_files": 48,
+    "dependency_versions_changed": false,
+    "workflow_set_or_permissions_changed": false,
+    "frozen_passkey_replay_inputs_preserved": true
+  },
+  "candidate_source_sha256": {
+    "crates/heptabao-p0-server/src/lib.rs": "e8b512aa9696e55439b1e061d43fe9d0bf3f21cdec18c4052c3943ce09f8b344",
+    "crates/heptabao-p0-server/src/main.rs": "c7204bdbe9840a8a797d106616f4896260cfb5be2cf370e1b7d203adad67304d",
+    "crates/heptabao-p0-server/src/response_format.rs": "ea224cfff25810ce44af0f831380eec8eb020614ba180306fca444be79ef5fb0",
+    "qa/openbao-acceptance/authbus_sdk_explicit_deny_candidate.mjs": "2a2cfcaa83a61dd1a31229056482c642c9b4a77a06e72edfb8cd66b945c17ee6",
+    "scripts/governance_source_contracts.py": "6df86cce271d423f1a52f244801ae5e98c9421beb1e55614618b36f8a3b65ad9",
+    "scripts/render_canonical_project_state_v1.py": "b0555ce6aa734bed2ea437eb7599c9b783501d6ecb6246bcab1de61f3652ecaf",
+    "scripts/strict_json.py": "0fd39ba073b31ba9c98ce5cd7300dc5e829a8e72720b36d3f564a978d6d412ca",
+    "scripts/validate_plan_v1_4.py": "550a8bcf6a187e4758cfd7736606c29f0566fdba1edbe77ea69ff0e4be36ab75",
+    "scripts/validate_plan_v1_4_1.py": "3d19340d0ec3c98cc87ab8fd38116a69af487fdb3a91cedbe84bccb6adb0f291",
+    "scripts/validate_plan_v1_4_2.py": "69ac8fa6e61cc286761feb1c0406d89145b28139ac7e17b673e0089f677cd216",
+    "scripts/validate_plan_v1_4_3.py": "6a8c49ab62f133cf43e1c297c4e13a9991861441436a9bf8c70f8142419450d5",
+    "scripts/validate_plan_v1_4_5.py": "ee28fc1b95849c011aa1c005dbbe3d3cedddeb948aa8801edb1e500fef20cdb9",
+    "scripts/validate_plan_v1_4_6.py": "cd99199b012caa1a64d45de7507551ce2d8da060db0fef02aa613dacfea40019",
+    "scripts/validate_v1_3_1_final_closure_v1.py": "5731f348e86c55b177f4ab41424bdc82ce34674326f33d6db5d6baa7771cca94",
+    "scripts/yaml11_loader.py": "cf532ee45d2eeae46cb72beef4012461dcb6ec81d4e0bbcacf8d227895ba7dbf",
+    "tests/plan/test_plan_v1_4_5.py": "726cec41df770e21b33a55504de76f29e21011e5e880cd13771d9e8bf544ee23",
+    "tests/plan/test_plan_v1_4_6.py": "357eda5552a68bd1e25f0f615732f7cf8e99a66e9591b9a4e0815993f84e00cf"
+  },
+  "coverage_limits": [
+    "Rust execution covers the affected P0 library/binary and protocol package, not the full Rust workspace or every platform.",
+    "JavaScript checks validate exported implementation, module/deployment layout and rejection behavior; no external OpenClaw SDK integration campaign was rerun.",
+    "Personal credential checks are host and archive checks only. No phone, ADB or external network actions were performed, and prior device qualification outcomes were not changed."
+  ]
+}

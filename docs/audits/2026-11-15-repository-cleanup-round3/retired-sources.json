@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.retired-qa-sources.v1",
+  "source_repository": "TrillionniumFoundation/HeptaBao",
+  "source_commit": "2b6cf2c68dd953fd935a3fd94780aba6ae62c6d1",
+  "source_tree": "f21f09218e586b926f8bf7ed967e7fbca0345926",
+  "file_count": 2,
+  "total_bytes": 13592,
+  "entries": [
+    {
+      "path": "qa/personal_credentials/passkey_phone_profile.py",
+      "mode": "100644",
+      "git_blob": "1a1a9cbc2a058f11e6b37014cc40be407f9238ad",
+      "bytes": 6303,
+      "sha256": "6a26dbf2c4394becba2eb0c21192853afb5f176ede68f2e4dbf9d00ed9b1a7b0",
+      "reason": "Unreferenced top-level r4 shadow copy. Original failed-run artifact is retained under the evidence manifest and its original transfer/runtime name; current workflow uses later versioned profiles and the active passkey_live.py driver.",
+      "retained_identical_evidence": "qa/personal_credentials/evidence/20261106/passkey-r4-phone-passkey_phone_profile.r4.py"
+    },
+    {
+      "path": "qa/personal_credentials/passkey_restore_autofill_bridge.py",
+      "mode": "100644",
+      "git_blob": "ae69efb93eb1e89d2e2ddc092b8526d235dfc255",
+      "bytes": 7289,
+      "sha256": "9fcac67c2bd53060232986d4573965584d5f48ccc3fbdbf009e6b59113921e0d",
+      "reason": "Unreferenced top-level r4 shadow copy. Original failed-run artifact is retained under the evidence manifest and its original transfer/runtime name; current workflow uses later versioned profiles and the active passkey_live.py driver.",
+      "retained_identical_evidence": "qa/personal_credentials/evidence/20261106/passkey-r4-phone-passkey_restore_autofill_bridge.final-r4.py"
+    }
+  ]
+}

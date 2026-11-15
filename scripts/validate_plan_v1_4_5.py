@@ -4,7 +4,7 @@ from __future__ import annotations
 import sys as _contract_sys
 from pathlib import Path as _ContractPath
 _contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
-from governance_source_contracts import descriptor_guard_errors
+from governance_source_contracts import current_documentation_entry_errors, descriptor_guard_errors
 
 
 import argparse
@@ -303,16 +303,7 @@ def validate(root: Path) -> list[str]:
         if marker not in text(root, path):
             errors.append(f"{path} missing security semantic addendum {marker!r}")
 
-    readme = text(root, "README.md")
-    for token in (
-        "V1.4.5 security invariant closure",
-        "V1.4.4",
-        "Current Cargo workspace documentation:",
-        "not production-deployable",
-        "docs/CURRENT_DOCUMENTATION.md",
-    ):
-        if token not in readme:
-            errors.append(f"README missing current-truth token {token!r}")
+    errors.extend(current_documentation_entry_errors(root))
     return errors
 
 
