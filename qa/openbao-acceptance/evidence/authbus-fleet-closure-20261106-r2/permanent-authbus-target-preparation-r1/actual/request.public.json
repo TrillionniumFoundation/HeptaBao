@@ -1,0 +1,15 @@
+{
+  "host": "main",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "idempotency_key": "heptabao-permanent-authbus-create-only-20261106-r1",
+  "timeout_seconds": 210,
+  "sourceBytes": 67604,
+  "sourceSha256": "442d86d12118813f7fb7aae06566e6649f98fd2b9eae6df059c747b3fce145c3",
+  "scope": "create-only independent CA, binary and planned configs; no service/API/provider/client changes"
+}

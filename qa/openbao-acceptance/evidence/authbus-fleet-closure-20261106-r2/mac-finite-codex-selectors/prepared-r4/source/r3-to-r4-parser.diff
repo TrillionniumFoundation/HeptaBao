@@ -1,0 +1,39 @@
+--- failed-r3/parser
++++ prepared-r4/parser
+@@ -93,11 +93,7 @@
+     selectors, presence = {}, {}
+     environ_count = 0
+     while at < len(raw) and raw[at] != 0:
+-        segment_start = at
+         value = take()
+-        if value.partition(b'=')[0] in APPLE_KEYS:
+-            at = segment_start
+-            break
+         environ_count += 1
+         need(environ_count <= MAX_ENVIRON, 'selector_environment_count_bound')
+         key, separator, contents = value.partition(b'=')
+@@ -112,7 +108,9 @@
+             presence[decoded_key] = True
+         # All other key names and all credential-bearing values are discarded.
+     # Restricted processes may end immediately after argv. Otherwise the
+-    # saved strings can include the public apple[] vector after the environment.
++    # saved strings can include the public apple[] vector. Only the first empty
++    # segment marks the tail: a public Apple key may also be an ordinary env key.
++    # The leading key/value count is therefore only an environment upper bound.
+     # Validate every nonempty auxiliary segment; never skip an unknown tail.
+     auxiliary_count = auxiliary_tail(raw[at:])
+ 
+@@ -180,9 +178,11 @@
+     # Candidate strings are not filesystem opens or proof of active credential
+     # storage. Native version/config/backend validation remains a later gate.
+     public = {
+-        'argc': argc, 'environmentEntriesReturned': environ_count,
++        'argc': argc, 'preTailKeyValueEntriesReturned': environ_count,
++        'environmentEntryCountUpperBound': environ_count,
++        'environmentEntryCountExact': False,
+         'appleAuxiliarySegmentsValidated': auxiliary_count,
+-        'environmentCountExcludesRecognizedAppleVector': True,
++        'firstEmptySegmentDefinesAuxiliaryTail': True,
+         'auxiliaryValuesRetained': False,
+         'environmentSectionState': 'entries_returned' if available else 'unavailable_or_empty',
+         'missingEnvironmentTreatedAsDefault': False,

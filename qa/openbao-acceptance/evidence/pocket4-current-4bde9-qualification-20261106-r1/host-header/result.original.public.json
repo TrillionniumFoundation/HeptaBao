@@ -1,0 +1,184 @@
+{
+  "actual_builder_clang_args": [
+    "-x",
+    "c",
+    "--target=x86_64-unknown-linux-gnu",
+    "-I",
+    "[locked-aws-lc-source]/include",
+    "-I",
+    "[locked-aws-lc-source]/generated-include",
+    "-I",
+    "[locked-aws-lc-source]/aws-lc/include",
+    "-DAWS_LC_RUST_INCLUDE_SSL"
+  ],
+  "actual_wrapper_relative_path": "include/rust_wrapper.h",
+  "all_observed_inputs_unchanged": true,
+  "at_utc": "2026-11-06T18:31:06.930130+00:00",
+  "cases": [
+    {
+      "added_header_locator": [],
+      "diagnostics": [],
+      "fatal_or_error_count": 0,
+      "label": "existing-native-clang-resource-baseline",
+      "parser_return": 0
+    }
+  ],
+  "clang_resource_header_tree": {
+    "files": 297,
+    "headers": {
+      "stdarg.h": "ce6e43d79dc89b50208ecf259b1ffd519f5a78cd3a2c7fcaac6386f376b89fef",
+      "stddef.h": "b3e62a046ddf28d09eedebe6eb9461cb7060e47cad2c69964b222c4eea10347e",
+      "stdint.h": "f43783466c93f77a6464274ebf18f9e4cc46f0d90770ddee2993c6cf39f7514f"
+    },
+    "manifest_sha256": "16af774ea47aa793cc64723856e6c8b992e11dced494f99ba45c28773b137a25",
+    "path": "/usr/lib/llvm-21/lib/clang/21/include"
+  },
+  "existing_toolchain_only": true,
+  "extra_header_locator_required": false,
+  "host_tool_pins_after": {
+    "cc": {
+      "bytes": 1305304,
+      "identity": [
+        66306,
+        108008578,
+        33261,
+        0,
+        0,
+        1,
+        1774174097000000000,
+        1791083705251606151
+      ],
+      "path": "/usr/bin/cc",
+      "resolved": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88"
+    },
+    "clang": {
+      "bytes": 137584,
+      "identity": [
+        66306,
+        3146068,
+        33261,
+        0,
+        0,
+        1,
+        1773841930000000000,
+        1791083777381299324
+      ],
+      "path": "/usr/lib/llvm-21/bin/clang",
+      "resolved": "/usr/lib/llvm-21/bin/clang",
+      "sha256": "412bbe8c60571a1eb06f48fde89635033621caeb01a9b4ee76d46711bae8e932"
+    },
+    "libclang": {
+      "bytes": 32691984,
+      "identity": [
+        66306,
+        108004434,
+        33188,
+        0,
+        0,
+        1,
+        1773841930000000000,
+        1791083777026290196
+      ],
+      "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b"
+    }
+  },
+  "host_tool_pins_before": {
+    "cc": {
+      "bytes": 1305304,
+      "identity": [
+        66306,
+        108008578,
+        33261,
+        0,
+        0,
+        1,
+        1774174097000000000,
+        1791083705251606151
+      ],
+      "path": "/usr/bin/cc",
+      "resolved": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88"
+    },
+    "clang": {
+      "bytes": 137584,
+      "identity": [
+        66306,
+        3146068,
+        33261,
+        0,
+        0,
+        1,
+        1773841930000000000,
+        1791083777381299324
+      ],
+      "path": "/usr/lib/llvm-21/bin/clang",
+      "resolved": "/usr/lib/llvm-21/bin/clang",
+      "sha256": "412bbe8c60571a1eb06f48fde89635033621caeb01a9b4ee76d46711bae8e932"
+    },
+    "libclang": {
+      "bytes": 32691984,
+      "identity": [
+        66306,
+        108004434,
+        33188,
+        0,
+        0,
+        1,
+        1773841930000000000,
+        1791083777026290196
+      ],
+      "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b"
+    }
+  },
+  "input_pins": {
+    "bytes": 70798,
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/clang-header-probe-r1/input-pins.public.json",
+    "protected_system_files": 300,
+    "sha256": "8ecb3a780b05085f21d7dcfcb00693e536c922b308f90beebb2317655f141b38"
+  },
+  "known_stddef_blocker_absent_with_native_resources": true,
+  "libclang_version": "Ubuntu clang version 21.1.8 (6ubuntu1)",
+  "locked_aws_lc_source": {
+    "archive_sha256": "1a2f9779ce85b93ab6170dd940ad0169b5766ff848247aff13bb788b832fe3f4",
+    "base_header_sha256": "24fa70204530a41dc75b1fc05b166243c130114608e50a2a035473408ba81ba5",
+    "builder_main_sha256": "bde463f3e478df531f32da2c790ae281edf12310825f91ad9520e0e1d9a0f8f5",
+    "builder_sys_bindgen_sha256": "e3e1395f2f73a7ac697fb74f23ef5a773ef9365a434a7022afd7424f4ba2b145",
+    "source_manifest_sha256": "62b96809a709876ba885b52c773608e6275d149f878e440afcb417b82245ce9c",
+    "verified_source_files": 100,
+    "wrapper_sha256": "b0a3f8f3f36f979bf77c83e7f4643e2d76cda65eadbded5d7c1720d93925193d"
+  },
+  "normal107_qualified": false,
+  "not_a_complete_bindgen_or_normal107_result": true,
+  "original_package_features": [
+    "all-bindings",
+    "bindgen",
+    "default",
+    "ssl"
+  ],
+  "prior_actual_failure_provenance": {
+    "actual_complete_wrapper_probe_result_sha256": "b08698ddfa50187e2c98a1fa3bac8832a7be944f70d035f08e1e5c1cd8f40057",
+    "cargo_json_sha256": "56a4bd10cbbafe96daba7372f701acbe991a96da16e4f9029121f85d66d57171",
+    "host": "ai395",
+    "same_failed_package_feature_set": [
+      "all-bindings",
+      "bindgen",
+      "default",
+      "ssl"
+    ]
+  },
+  "product_binary_executed": false,
+  "production_changed": false,
+  "proposed_environment": {},
+  "registry_private_path_omitted": true,
+  "rust_build_executed": false,
+  "schema": "heptabao.pocket4-actual-bindgen-wrapper-native-resource-probe.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "passed",
+  "tools_installed": false
+}

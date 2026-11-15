@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.native-artifact58-local-contract.v1",
+  "started_utc": "2026-10-19T14:21:54.934752+00:00",
+  "finished_utc": "2026-10-19T14:21:55.122063+00:00",
+  "baseline_commit": "391433b2e6bd55d565974cf9687e1b724dcf848b",
+  "status": "passed_contract_tests_with_separate_host_identity_limitation",
+  "contract_tests": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/openbao-acceptance/tests",
+      "-p",
+      "test_native_linux_artifact_run.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "passed": 9,
+    "log": "test-native-linux-artifact-run.log",
+    "log_sha256": "f2099930190b823c87c33b3f365e199b45211be31fc65b583cd15d0d49e3fdf3"
+  },
+  "supported_profiles": [
+    {
+      "groups": 17,
+      "tests": 55,
+      "historical": true
+    },
+    {
+      "groups": 18,
+      "tests": 58,
+      "mount_selector": "service::native_auth::mount_tests::native_kv2_mount_",
+      "mount_cases": 3
+    }
+  ],
+  "initial_combined_run": {
+    "tests": 13,
+    "passed_contract_tests": 9,
+    "cleanup_errors": 4,
+    "error": "new_owned_unreaped_session_required",
+    "raw_tool_output_chunk_id": "222ba6",
+    "owned_process_function_ast_unchanged": {
+      "proc_identity": true,
+      "session_identity": true,
+      "retain_owned_session": true,
+      "observed_owned_exit": true,
+      "wait_owned_exit": true,
+      "live_owned_group": true,
+      "stop_owned": true,
+      "execute_command": true
+    }
+  },
+  "current_sandbox_process_observation": {
+    "os_pid": 5,
+    "os_ppid": 2,
+    "os_pgid": 1,
+    "proc_self_pid": 550198,
+    "proc_self_ppid": 550195,
+    "proc_self_pgid": 550194,
+    "os_euid": 0,
+    "proc_self_uid": 0
+  },
+  "files": [
+    {
+      "path": "qa/openbao-acceptance/native_linux_artifact_run.py",
+      "sha256": "3ca6b6dfee259436c725f8bff9e6b72d7af363aa5a6e08d50d50ebf74e9f9fe7"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_candidate_host_run.py",
+      "sha256": "1a610b080e3f29e6daa19fe788eaf90f2c8d9d3c5e4daa2aea2fc6249e846e06"
+    },
+    {
+      "path": "qa/openbao-acceptance/tests/test_native_linux_artifact_run.py",
+      "sha256": "0058b651fe9e89d91a831e72b2128a2adb3722680a874287b979368aba5525cd"
+    },
+    {
+      "path": "qa/openbao-acceptance/NATIVE_LINUX_ARTIFACT58_20261019.template.json",
+      "sha256": "37a1544f63e3035154bbaebc699470375acdf4e4ebd97583f9e1e0cbf9599691"
+    }
+  ],
+  "actual_x230_execution_performed": false,
+  "actual_artifact_pack_performed": false,
+  "heptabao_or_openbao_service_started": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false
+}

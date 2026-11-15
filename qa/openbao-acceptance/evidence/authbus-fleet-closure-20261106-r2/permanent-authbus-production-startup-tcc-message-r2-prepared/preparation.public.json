@@ -1,0 +1,27 @@
+{
+  "bytes": 34832,
+  "exactOriginalMessageId": "9253.2991",
+  "logQuerySeconds": 20,
+  "parentSeconds": 45,
+  "permissionSettingsChanged": false,
+  "providerCalls": 0,
+  "sameClosedOriginalWindowSeconds": 35,
+  "serviceActions": 0,
+  "sha256": "83ff24bbeac5a94a8ebd0ac0925532814e51b960ef2fc264699bdb515b272b41",
+  "sources": {
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    }
+  },
+  "supervisorSeconds": 70,
+  "executed": false
+}

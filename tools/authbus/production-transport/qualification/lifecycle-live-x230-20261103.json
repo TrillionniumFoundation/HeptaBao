@@ -1,0 +1,475 @@
+{
+  "actual_cold_service_restarts": 2,
+  "actual_https_approle_kv2_policy_renewal_self_revocation": true,
+  "actual_new_client_process_each_phase": true,
+  "actual_renewal_response_dropped": true,
+  "binary_sha256": "187bcc477f3620c32d9ba549dc71e6c560417868a97faa8800d9fb14ffab1055",
+  "checks": [
+    {
+      "case": "initialize",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "approle_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "formal_activation",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "formal_native_v6",
+      "passed": true
+    },
+    {
+      "case": "seed.transport-v1",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "seed.manifest",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "seed.profiles",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "policy",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "secret_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "initial.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "initial.ok",
+      "passed": true
+    },
+    {
+      "case": "lease_expiry.original_wait",
+      "passed": true
+    },
+    {
+      "case": "actual_lease_wait_is_bounded",
+      "passed": true,
+      "wait_seconds": 10.153
+    },
+    {
+      "case": "expired_cold_restart.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "expired_cold_restart.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "expired_cold_restart.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "expired_cold_restart.formal_profile_persisted",
+      "passed": true
+    },
+    {
+      "case": "resume.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "resume.ok",
+      "passed": true
+    },
+    {
+      "case": "revocation.original_wait",
+      "passed": true
+    },
+    {
+      "case": "revoked_cold_restart.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "revoked_cold_restart.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "revoked_cold_restart.capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "revoked_cold_restart.formal_profile_persisted",
+      "passed": true
+    },
+    {
+      "case": "after-revoke.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "after-revoke.ok",
+      "passed": true
+    },
+    {
+      "case": "unknown-renewal.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "unknown-renewal.ok",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged",
+      "passed": true
+    },
+    {
+      "case": "binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "diagnostics_no_fixture_credential_values",
+      "passed": true
+    }
+  ],
+  "elapsed_seconds": 21.862,
+  "final_server_exit_code": -9,
+  "fixture_server_flags": false,
+  "full_replacement_qualified": false,
+  "j3160_contacted": false,
+  "node_version": "v22.23.3",
+  "ok": true,
+  "phases": [
+    {
+      "checks": [
+        {
+          "case": "actual_short_ttl_issued",
+          "passed": true
+        },
+        {
+          "case": "actual_approle_login_once",
+          "passed": true
+        },
+        {
+          "case": "actual_kv_write",
+          "passed": true
+        },
+        {
+          "case": "actual_kv_read_exact",
+          "passed": true
+        },
+        {
+          "case": "actual_renew_same_bearer",
+          "passed": true
+        },
+        {
+          "case": "lease_still_active_before_client_exit",
+          "passed": true
+        },
+        {
+          "case": "diagnostics_do_not_publish_bearers_or_payload",
+          "passed": true
+        }
+      ],
+      "expiresAtUnixMs": 1793702111477,
+      "externalProviderCalled": false,
+      "ok": true,
+      "phase": "initial",
+      "productionModified": false,
+      "realHeptaBaoServer": true,
+      "schema": "heptabao.authbus-lifecycle-live-child.v1",
+      "wireRequests": [
+        {
+          "method": "POST",
+          "path": "/v1/auth/approle/login"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/openclaw-auth/data/lifecycle/value"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/lifecycle/value"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/auth/token/renew-self"
+        }
+      ]
+    },
+    {
+      "checks": [
+        {
+          "case": "persisted_actual_lease_expired",
+          "passed": true
+        },
+        {
+          "case": "actual_expired_bearer_denied_after_server_restart",
+          "passed": true
+        },
+        {
+          "case": "expired_caller_deadline_has_no_new_wire_request",
+          "passed": true
+        },
+        {
+          "case": "expired_caller_deadline_preserves_state",
+          "passed": true
+        },
+        {
+          "case": "cold_restart_kv_exact",
+          "passed": true
+        },
+        {
+          "case": "expired_startup_uses_one_fresh_approle_login",
+          "passed": true
+        },
+        {
+          "case": "expired_startup_never_renews_old_bearer",
+          "passed": true
+        },
+        {
+          "case": "fresh_actual_bearer_and_lifetime",
+          "passed": true
+        },
+        {
+          "case": "actual_control_and_manifest_admitted",
+          "passed": true
+        },
+        {
+          "case": "actual_acl_denies_unenrolled_path",
+          "passed": true
+        },
+        {
+          "case": "actual_revoke_self_and_lookup_denial",
+          "passed": true
+        },
+        {
+          "case": "actual_revoked_kv_read_denied",
+          "passed": true
+        },
+        {
+          "case": "revoked_phase_persisted",
+          "passed": true
+        },
+        {
+          "case": "diagnostics_do_not_publish_bearers_or_payload",
+          "passed": true
+        }
+      ],
+      "externalProviderCalled": false,
+      "ok": true,
+      "phase": "resume",
+      "productionModified": false,
+      "realHeptaBaoServer": true,
+      "schema": "heptabao.authbus-lifecycle-live-child.v1",
+      "wireRequests": [
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/lifecycle/value"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/auth/approle/login"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/transport-v1/control"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/manifest"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/lifecycle/value"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/forbidden"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/auth/token/revoke-self"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/auth/token/lookup-self"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/lifecycle/value"
+        }
+      ]
+    },
+    {
+      "checks": [
+        {
+          "case": "revoked_phase_survives_client_restart",
+          "passed": true
+        },
+        {
+          "case": "revoked_bearer_denied_after_cold_server_restart",
+          "passed": true
+        },
+        {
+          "case": "diagnostics_do_not_publish_bearers_or_payload",
+          "passed": true
+        }
+      ],
+      "externalProviderCalled": false,
+      "ok": true,
+      "phase": "after-revoke",
+      "productionModified": false,
+      "realHeptaBaoServer": true,
+      "schema": "heptabao.authbus-lifecycle-live-child.v1",
+      "wireRequests": [
+        {
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/lifecycle/value"
+        }
+      ]
+    },
+    {
+      "checks": [
+        {
+          "case": "dropped_reply_was_actual_heptabao_success",
+          "passed": true
+        },
+        {
+          "case": "actual_renewal_sent_exactly_once",
+          "passed": true
+        },
+        {
+          "case": "real_response_loss_retains_dispatched_intent",
+          "passed": true
+        },
+        {
+          "case": "reopened_client_never_replays_or_reauthenticates_unknown",
+          "passed": true
+        },
+        {
+          "case": "unknown_record_unchanged_after_reopen",
+          "passed": true
+        },
+        {
+          "case": "production_wrapper_never_replays_unknown",
+          "passed": true
+        },
+        {
+          "case": "unknown_record_unchanged_after_production_wrapper",
+          "passed": true
+        },
+        {
+          "case": "diagnostics_do_not_publish_bearers_or_payload",
+          "passed": true
+        }
+      ],
+      "externalProviderCalled": false,
+      "ok": true,
+      "phase": "unknown-renewal",
+      "productionModified": false,
+      "realHeptaBaoServer": true,
+      "schema": "heptabao.authbus-lifecycle-live-child.v1",
+      "wireRequests": [
+        {
+          "method": "POST",
+          "path": "/v1/auth/approle/login"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/auth/token/renew-self"
+        }
+      ]
+    }
+  ],
+  "production_changed": false,
+  "production_cutover": false,
+  "provider_called": false,
+  "real_heptabao_server": true,
+  "real_lease_expiry_waited": true,
+  "real_provider_credentials": false,
+  "renewal_due_clock_forced": false,
+  "schema": "heptabao.authbus-lifecycle-live.v1",
+  "server_restarts": [
+    {
+      "case": "lease_expiry",
+      "exit_code": -9,
+      "original_pid": 1890825
+    },
+    {
+      "case": "revocation",
+      "exit_code": -9,
+      "original_pid": 1891368
+    }
+  ],
+  "source_files": {
+    "qa/openbao-acceptance/authbus_lifecycle_live.py": "f93d04b01bf44acfbc160b15e11f77658383fe4d9998c189007398caf570ae2f",
+    "tools/authbus/production-transport/plugin/bounded-outbox.js": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1",
+    "tools/authbus/production-transport/plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+    "tools/authbus/production-transport/plugin/production-client.js": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2",
+    "tools/authbus/production-transport/plugin/strict-bao-client.js": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294",
+    "tools/authbus/production-transport/tests/lifecycle-live-child.mjs": "a6d3fe8a27759399f1597eca32694595417441ffc328d288f2f1d50214dc3444"
+  },
+  "storage_profile": "native_v6_file"
+}

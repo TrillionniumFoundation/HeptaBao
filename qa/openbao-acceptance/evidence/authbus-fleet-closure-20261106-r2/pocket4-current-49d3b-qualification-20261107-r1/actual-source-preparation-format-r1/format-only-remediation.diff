@@ -1,0 +1,47 @@
+--- a/crates/heptabao-server/src/engines/kv2_native_paged.rs
++++ b/crates/heptabao-server/src/engines/kv2_native_paged.rs
+@@ -244,8 +244,8 @@
+     ) -> CodecResult<Option<Zeroizing<Vec<u8>>>> {
+         check()?;
+         self.validate(key, path, version)?;
+-        let mut value = retain_bytes
+-            .then(|| Zeroizing::new(Vec::with_capacity(self.logical_bytes as usize)));
++        let mut value =
++            retain_bytes.then(|| Zeroizing::new(Vec::with_capacity(self.logical_bytes as usize)));
+         let digest = key.digest_value_stream(PAYLOAD_DOMAIN, self.logical_bytes, |update| {
+             for reference in &self.blocks {
+                 check()?;
+@@ -327,8 +327,7 @@
+             .needs_lossless
+             .get(&memo_key)
+             .copied();
+-        let value =
+-            self.authenticate_payload(key, path, version, reader, check, hint.is_none())?;
++        let value = self.authenticate_payload(key, path, version, reader, check, hint.is_none())?;
+         check()?;
+         let known = memo
+             .try_borrow()
+--- a/crates/heptabao-server/src/engines/kv2_native_payload_validation_tests.rs
++++ b/crates/heptabao-server/src/engines/kv2_native_payload_validation_tests.rs
+@@ -293,7 +293,9 @@
+     Ok(())
+ }
+ 
+-fn first_payload_descriptor(view: &NativeReadView) -> CodecResult<(&AddressKey, &PayloadDescriptor)> {
++fn first_payload_descriptor(
++    view: &NativeReadView,
++) -> CodecResult<(&AddressKey, &PayloadDescriptor)> {
+     let graph = view.graph.as_ref().ok_or(RecordError::Missing)?;
+     let descriptor = graph
+         .paged
+@@ -336,8 +338,8 @@
+ }
+ 
+ #[test]
+-fn payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo()
+--> CodecResult<()> {
++fn payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo() -> CodecResult<()>
++{
+     let (view, source) = fixture(66, json!({"body": "z".repeat(600_000)}))?;
+     let memo = RefCell::new(PagedPayloadValidationMemo::default());
+     view.verify_paged_payloads_with_memo(&source, &|| Ok(()), Some(&memo))?;

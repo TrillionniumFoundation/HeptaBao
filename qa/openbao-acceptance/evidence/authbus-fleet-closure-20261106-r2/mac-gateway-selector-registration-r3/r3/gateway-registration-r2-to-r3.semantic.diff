@@ -1,0 +1,49 @@
+--- mac_gateway_registration_cases_r2.mjs
++++ mac_gateway_registration_cases_r3-normalized.mjs
+@@ -55,6 +55,10 @@
+    warnings:selectionSnapshot.warnings,legacyIssues:selectionSnapshot.legacyIssues});
+   need(selected===true&&selectorsExact(),'gateway_original_environment_selection_complete');
+   snapshotExact(selectionSnapshot);
++  need(isDeepStrictEqual(selectionSnapshot.warnings,[{path:'plugins.entries.'+AUTHBUS,
++   message:'plugin disabled (disabled in config) but config is present'}]),
++   'gateway_exact_original_disabled_config_warning');
++  report.originalDisabledConfigWarningExact=true;
+   need(report.originalDotenvReads.state>0&&report.originalDotenvReads.gateway>0
+    &&process.env.HEPTABAO_STATE_ENV_MARKER==='state-original-read'
+    &&process.env.HEPTABAO_GATEWAY_ENV_MARKER==='gateway-original-read'
+--- launch_gateway_registration_qualification_r2.template.py
++++ launch_gateway_registration_qualification_r3-normalized.template.py
+@@ -62,6 +62,15 @@
+ def close_streams(child):
+  for stream in (child.stdin,child.stdout,child.stderr):
+   if stream is not None and not stream.closed:stream.close()
++def admitted_child_stderr(label,returncode,err,unit):
++ # The original validator and logConfigWarningsOnce emit this exact public
++ # warning for a disabled plugin retaining its required config. No other
++ # stderr, reason, prefix, repetition, or failed child is accepted.
++ expected=b'Config warnings:\n- plugins.entries.openclaw-authbus: plugin disabled (disabled in config) but config is present\n'
++ return (type(returncode) is int and returncode==0 and isinstance(err,bytes)
++  and (err==b'' or (label=='unit' and err==expected and isinstance(unit,dict)
++   and unit.get('ok') is True and unit.get('originalDisabledConfigWarningExact') is True
++   and unit.get('passed')==15 and unit.get('executed')==15)))
+ def record(label,child,out,err):
+  close_streams(child)
+  need(len(out)<=65536 and len(err)<=65536,'bounded_fallback_sdk_worker_output')
+@@ -69,7 +78,8 @@
+  private(ROOT/'output'/(label+'.stderr.private'),err)
+  report['children'].append({'label':label,'exitCode':child.returncode,'stdoutBytes':len(out),
+    'stderrBytes':len(err),'stdoutSha256':sha(out),'streamsClosed':True})
+- need(child.returncode==0 and not err,'actual_fallback_sdk_child_complete_zero')
++ need(admitted_child_stderr(label,child.returncode,err,report.get('unitResult')),'actual_fallback_sdk_child_complete_zero')
++ if label=='unit':report['originalDisabledWarningBytesAdmitted']=len(err)
+ try:
+  os.umask(0o077)
+  need(sys.platform=='darwin' and os.getuid()==501 and os.path.realpath(sys.executable)==PYTHON,'exact_mac_fallback_sdk_runtime')
+@@ -144,6 +154,7 @@
+     and value.get('kernelReadWriteAndBothNetworkRefusalsObserved') is True
+     and value.get('allRecordedFileDescriptorsClosedOnce') is True
+     and value.get('allInstalledGuardsRestored') is True and value.get('originalModuleHookDeregistered') is True
++    and value.get('originalDisabledConfigWarningExact') is True
+     and value.get('actualStateAndGatewayDotenvReadsObserved') is True
+     and value.get('previousEmptyDisabledConfigRejectedByOriginalValidator') is True
+     and value.get('actualPreBootstrapFinalFallbackSelected') is True

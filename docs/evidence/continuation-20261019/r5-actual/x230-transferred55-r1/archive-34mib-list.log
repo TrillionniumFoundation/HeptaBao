@@ -1,0 +1,4 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs", "--list", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs: test
+
+1 test, 0 benchmarks

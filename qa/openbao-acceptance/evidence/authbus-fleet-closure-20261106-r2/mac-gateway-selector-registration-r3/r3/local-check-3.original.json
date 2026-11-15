@@ -1,0 +1,10 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "chunk_id": "eac7eb",
+    "wall_time_seconds": 0.000037506,
+    "exit_code": 0,
+    "original_token_count": 38,
+    "output": "{\"bytes\": 111207, \"sha256\": \"31f2695f55c57bc5d9c5260dd240a8740e50e0665c1203efd90dc04580cb18e4\", \"allEmbeddedSourcesExact\": true, \"diffBytes\": 12471}\n"
+  }
+}

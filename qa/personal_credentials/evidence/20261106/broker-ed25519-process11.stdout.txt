@@ -1,0 +1,16 @@
+
+running 11 tests
+test actual_cli_and_ed25519_git_sshsig_verify ... ok
+test actual_cli_denials_have_nonzero_exit_and_no_target_contact ... ok
+test actual_git_commit_signing_and_verify_commit_bind_repository_and_payload ... ok
+test cli_non_success_http_is_recorded_without_retry_and_queryable ... ok
+test killed_after_target_contact_remains_unknown_without_second_dispatch ... ok
+test owner_rejects_unscoped_targets_and_request_variants ... ok
+test private_permissions_symlinks_and_competing_writer_are_rejected ... ok
+test real_process_api_echo_is_not_released_and_result_survives_restart ... ok
+test redirect_is_not_followed_and_conflicting_id_is_rejected ... ok
+test revocation_survives_process_restart ... ok
+test wrong_target_body_task_signature_and_expired_grants_do_not_contact_target ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.49s
+

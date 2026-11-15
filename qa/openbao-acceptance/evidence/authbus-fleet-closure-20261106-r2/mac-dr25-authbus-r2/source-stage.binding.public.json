@@ -1,0 +1,23 @@
+{
+  "actual_restore_qualified": false,
+  "bundle_bytes": 401428,
+  "bundle_sha256": "eef7fc4f17d9818ad53fda4cf57b1de2ca7a31661833fae61695d89ff5dfbab3",
+  "http_seconds": 15,
+  "migration_seconds": 360,
+  "new_output_namespaces": true,
+  "old_failed_attempt_unchanged": true,
+  "prepare_seconds": 60,
+  "product_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "qa_commit": "5ded017e1c858b8602a73678acc29df75386a84d",
+  "qa_tree": "9d1d040a063504ede67559fadb556897591642f2",
+  "runtime_outer_seconds": 1800,
+  "same_process_entry": true,
+  "schema": "heptabao.mac-dr25-fresh-qa-stage-binding.v1",
+  "stage_bytes": 36548,
+  "stage_outer_seconds": 60,
+  "stage_sha256": "3a6f937e4183ff41c5adbbc372f1b80cfc9f665764d1d06d4906581b91670768",
+  "stage_work_seconds": 52,
+  "work_seconds_from_entry": 1740,
+  "wrapper_bytes": 22654,
+  "wrapper_sha256": "d435a05dec3dc28b976164540c1173b67a5a3f8360a6e5fd31a3926fe0c03a25"
+}

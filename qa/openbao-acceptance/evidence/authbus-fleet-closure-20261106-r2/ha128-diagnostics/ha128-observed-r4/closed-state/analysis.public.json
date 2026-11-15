@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.closed-ha-r4-structural-analysis.public.r1",
+  "originalProductJob": "1a1b3c982b3-fc05-84bc",
+  "nodes": [
+    {
+      "host": "x230",
+      "jobId": "1a1b3de5aed-fc05-8539",
+      "stdoutBytes": 14533,
+      "complete": true,
+      "durable": true,
+      "fdCloseFacts": {
+        "closeAttempts": 17,
+        "closeErrors": 0,
+        "closed": 17,
+        "opened": 17
+      },
+      "elapsedSeconds": 0.016139556653797626,
+      "committedIndex": 54,
+      "appliedIndex": 54,
+      "lastPublication": {
+        "command": "PublishNativeV6",
+        "index": 54,
+        "kind": "Normal",
+        "publicationIntentCounters": {
+          "ciphertext_bytes": 35738211,
+          "epoch": 0,
+          "expected_previous_commit_index": 52,
+          "object_count": 336,
+          "prior_generation": 20,
+          "proposed_generation": 21
+        }
+      },
+      "kvReadable": false,
+      "ciphertextClosureValidated": false,
+      "auditMacAuthenticated": false
+    },
+    {
+      "host": "ai395",
+      "jobId": "1a1b3e02799-fc05-8546",
+      "stdoutBytes": 9676,
+      "complete": true,
+      "durable": true,
+      "fdCloseFacts": {
+        "closeAttempts": 17,
+        "closeErrors": 0,
+        "closed": 17,
+        "opened": 17
+      },
+      "elapsedSeconds": 0.004703989950940013,
+      "committedIndex": 54,
+      "appliedIndex": 54,
+      "lastPublication": {
+        "command": "PublishNativeV6",
+        "index": 54,
+        "kind": "Normal",
+        "publicationIntentCounters": {
+          "ciphertext_bytes": 35738211,
+          "epoch": 0,
+          "expected_previous_commit_index": 52,
+          "object_count": 336,
+          "prior_generation": 20,
+          "proposed_generation": 21
+        }
+      },
+      "kvReadable": false,
+      "ciphertextClosureValidated": false,
+      "auditMacAuthenticated": false
+    },
+    {
+      "host": "mac",
+      "jobId": "1a1b3e0f9aa-fc05-854c",
+      "stdoutBytes": 9496,
+      "complete": true,
+      "durable": true,
+      "fdCloseFacts": {
+        "closeAttempts": 19,
+        "closeErrors": 0,
+        "closed": 19,
+        "opened": 19
+      },
+      "elapsedSeconds": 0.01927275024354458,
+      "committedIndex": 54,
+      "appliedIndex": 54,
+      "lastPublication": {
+        "command": "PublishNativeV6",
+        "index": 54,
+        "kind": "Normal",
+        "publicationIntentCounters": {
+          "ciphertext_bytes": 35738211,
+          "epoch": 0,
+          "expected_previous_commit_index": 52,
+          "object_count": 336,
+          "prior_generation": 20,
+          "proposed_generation": 21
+        }
+      },
+      "kvReadable": false,
+      "ciphertextClosureValidated": false,
+      "auditMacAuthenticated": false
+    }
+  ],
+  "allThreeSameLatestPublication": true,
+  "targetKvEffectReadProven": false,
+  "newProductExecutions": 0,
+  "effectBoundary": "Publication 54/proposed generation21 follows history17 generation18, soft-delete generation19 and destroy generation20 on all three nodes; consistent with a committed standby write, but no authoritative target-key read or reexecuted application acceptance has yet been performed."
+}

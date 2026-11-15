@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.kv2-native-migration-controller-regressions.v1",
+  "status": "passed",
+  "checks": 7,
+  "duration_seconds": 0.639142,
+  "recorded_at_utc": "2026-10-19T02:11:39.121991+00:00",
+  "reconstructed_after_ephemeral_source_loss": true,
+  "former_overlay_not_byte_recovered": true,
+  "base_commit": "5ea86e1e0499a4b21e3216a350c12e81f848f86e",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/openbao-acceptance/tests",
+    "-p",
+    "test_kv2_271_lossless_native_live.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "server_binaries_executed": false,
+  "openbao_271_executed": false,
+  "native_v6_import_executed": false,
+  "physical_hosts_qualified": false,
+  "production_authority": false,
+  "scope": "controller only; actual synthetic loopback TLS and owned child timeout; no OpenBao or HeptaBao server",
+  "source_file_sha256": {
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": "335120b48a26707f378e1d6d51480e9d08f7c490b5d5595d97746a50f1939c8d",
+    "qa/openbao-acceptance/tests/test_kv2_271_lossless_native_live.py": "c97777d47503b2cc8248f1d617fb52e8376f318e109cfe9aaffcdb8ddb33ceb7"
+  },
+  "cases": [
+    "test_cleanup_failure_still_stops_other_owner_and_publishes_failed_summary",
+    "test_diagnostic_profiles_do_not_shrink_full34",
+    "test_json_exact_decimal_wide_integer_and_unicode",
+    "test_non_tls_leaf_rejected_without_secret_diagnostic",
+    "test_real_pinned_tls_leaf_roundtrips_two_mib_exactly_once",
+    "test_secret_in_failed_diagnostic_is_redacted_and_never_qualified",
+    "test_unknown_mutation_has_one_owned_http_leaf_and_is_not_retried"
+  ],
+  "test_log_sha256": "5ca5988850926c5a74c98e56a9813440a087f3fa7b8e287e19968bbc567ded4c"
+}

@@ -1,0 +1,13 @@
+{
+  "host": "main",
+  "executable": "/usr/libexec/ApplicationFirewall/socketfilterfw",
+  "args": [
+    "--getallowsigned"
+  ],
+  "env": {
+    "LC_ALL": "C",
+    "LANG": "C"
+  },
+  "idempotency_key": "mac-ha-node3-alf-allowsigned-readonly-20261106-r1",
+  "timeout_seconds": 15
+}

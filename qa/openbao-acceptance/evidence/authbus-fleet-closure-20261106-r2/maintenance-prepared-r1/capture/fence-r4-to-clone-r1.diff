@@ -1,0 +1,62 @@
+--- qualified-sdk-r4/main3_source_fence.py
++++ prepared-clone-r1/main3_source_fence.py
+@@ -14,13 +14,13 @@
+ import stat
+ import time
+ from main3_source_authority import validate_authority,SOURCE_SELECTION_AUTHORITY,SDK_SOURCE_PINS
+-from main3_inline_capture import AUTHORITY,OPERATION_KEY,CAPTURE_WORKER_SHA,validate_authority as validate_inline_authority
++from mac_maintenance_capture_owner_01_inline import AUTHORITY,OPERATION_KEY,CAPTURE_WORKER_SHA,validate_authority as validate_inline_authority
+ 
+ LIVE=Path('/Users/qianqi/.openclaw')
+-CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-main3-sdk-inline-capsule-20261106-r4')
++CAPSULE_ROOT=Path('/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/captures/owner-01')
+ CAPSULE=CAPSULE_ROOT/'output/selected-owner-credentials.private.json'
+-PREP=Path('/Users/qianqi/heptabao-mac-authbus-main3-sdk-preparation-20261106-r4')
+-BINDING=PREP/'capsule-admission-binding.private.json'
++PREP=Path('/Users/qianqi/heptabao-authbus-writer-maintenance-20261106-r1/output')
++BINDING=PREP/'owner-01.capsule-admission-binding.private.json'
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ 
+ 
+@@ -120,6 +120,28 @@
+         need(isinstance(doc.get('configurationSha256'),str) and re.fullmatch(r'[0-9a-f]{64}',doc['configurationSha256']),
+              'private_configuration_pin_shape')
+         validate_authority(doc,need)
++        clone=doc.get('sdkPhysicalReadProvenance',{})
++        need(clone.get('schema')=='heptabao.actual-sdk-fresh-clone-provenance.private.r1'
++             and clone.get('logicalAgentPathsUnchanged') is True
++             and clone.get('directProductionDatabaseRead') is False
++             and clone.get('physicalSource')=='fresh_double_sqlite_backup',
++             'source_fence_actual_sdk_physical_clone_provenance')
++        mapping=clone.get('binding',{})
++        need(mapping.get('schema')=='heptabao.fresh-whole-clone-read.private.r1'
++             and mapping.get('backupSourceSha256')=='6a6a6630204687c56e12bc0e616e062b4e574c0665bb177d938409e739b30f4a'
++             and mapping.get('sourcePhase')=='after_writer_quiescence'
++             and isinstance(mapping.get('entries'),list) and len(mapping['entries'])==5,
++             'source_fence_same_original_double_backup_mapping')
++        for ordinal,entry in enumerate(mapping['entries']):
++            need(type(entry.get('ordinal')) is int and entry['ordinal']==ordinal
++                 and entry.get('logicalPath')==str(LIVE/'agents'/AGENTS[ordinal]/'agent/openclaw-agent.sqlite')
++                 and entry.get('physicalPath')==str(CAPSULE_ROOT/'output/source-clones'/('candidate-%d.sqlite'%ordinal))
++                 and entry.get('twoCompleteBackupOutputsEqual') is True
++                 and entry.get('freshIndependentTransaction') is True
++                 and entry.get('keeperUsedAsLatestSource') is False
++                 and entry.get('sourceContentCopyAuthority')=='sqlite_online_backup_api',
++                 'source_fence_exact_five_logical_physical_slots')
++            typed_identity(entry.get('physicalFull9'))
+         metadata=doc.get('registeredMetadataFileBindings')
+         need(isinstance(metadata,list) and len(metadata)==145,'exact_observed_registered_metadata_count')
+     @staticmethod
+@@ -200,6 +222,12 @@
+         raw,identity=self.read(CAPSULE,1048576,private=True,expected=self.capsule_identity)
+         need(json.loads(raw)==self.doc and identity==self.capsule_identity,'same_private_capsule_full_values')
+         d=self.doc;identities=0;absences=0
++        for entry in d['sdkPhysicalReadProvenance']['binding']['entries']:
++            current=Path(entry['physicalPath']).lstat()
++            need(stat.S_ISREG(current.st_mode) and current.st_uid==501 and current.st_gid==20
++                 and stat.S_IMODE(current.st_mode)==0o600 and current.st_nlink==1
++                 and ident(current)==typed_identity(entry['physicalFull9']),
++                 'source_fence_original_readonly_clone_full9_still_exact')
+         for source in d['sourceGenerations']:
+             prefix=LIVE/'agents'/source['agent']/'agent'
+             allowed=self.exact_database_bundle(source,prefix/'openclaw-agent.sqlite')

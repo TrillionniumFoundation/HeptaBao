@@ -1,0 +1,157 @@
+--- before/x230_current_candidate_qualification.py
++++ after/x230_current_candidate_qualification.py
+@@ -271,6 +271,29 @@
+     return modules["x230_native_abi_capture"], modules["x230_native_abi_admission"], pins
+ 
+ 
++def canonical_static_compatibility(value):
++    """Preserve every requirement row while ignoring discovery-only row order."""
++    need(type(value) is dict and type(value.get("requirements")) is list,
++         "static_compatibility_requirements_shape")
++    rows, identities = value["requirements"], set()
++    for row in rows:
++        need(type(row) is dict and set(row) == {"origin", "provider", "required_versions"}
++             and all(type(row[key]) is str and row[key] for key in ("origin", "provider"))
++             and type(row["required_versions"]) is list and row["required_versions"]
++             and all(type(version) is str and version for version in row["required_versions"]),
++             "static_compatibility_requirement_row_shape")
++        versions = row["required_versions"]
++        need(versions == sorted(versions) and len(versions) == len(set(versions)),
++             "static_compatibility_requirement_versions_exact")
++        identity = (row["origin"], row["provider"])
++        need(identity not in identities, "static_compatibility_requirement_rows_unique")
++        identities.add(identity)
++    # JSON sorts provider object keys, whereas the original collector discovers
++    # recursive providers incrementally. Requirement row order carries no ABI
++    # meaning; all rows, versions and other compatibility fields remain exact.
++    return dict(value, requirements=sorted(rows, key=lambda row: (row["origin"], row["provider"])))
++
++
+ def validate_static_admission(value, terminal, job, receipt, capture, parser):
+     capture["require_terminal"](terminal, job)
+     need(value.get("schema") == "heptabao.current-native-static-abi-capture.v1"
+@@ -294,7 +317,9 @@
+     comparison = parser["verify_compatibility"](value["artifacts"], value["providers"],
+         expected_artifact_pins=expected, interpreter_path="/lib64/ld-linux-x86-64.so.2",
+         interpreter_resolved_path=value["interpreter_pin"]["path"])
+-    need(comparison == value.get("compatibility"), "original_static_compatibility_recomputed")
++    need(canonical_static_compatibility(comparison)
++         == canonical_static_compatibility(value.get("compatibility")),
++         "original_static_compatibility_recomputed")
+     aliases = value.get("provider_alias_bindings", {})
+     candidates = {path for paths in value.get("provider_lookup_candidates", {}).values() for path in paths}
+     need(set(value.get("provider_lookup_candidates", {})) == set(value["providers"])
+--- before/tests/test_x230_current_candidate_qualification.py
++++ after/tests/test_x230_current_candidate_qualification.py
+@@ -573,6 +573,111 @@
+         with self.assertRaisesRegex(self.capture["Refused"], "actual_loader_lookup_alias_changed"):
+             self.validate()
+ 
++    def test_requirement_row_order_is_immaterial_without_mutating_original(self):
++        self.value["compatibility"]["requirements"].reverse()
++        before = copy.deepcopy(self.value)
++        result = self.validate()
++        self.assertEqual(self.value, before)
++        self.fresh.recheck.assert_called_once_with(self.value)
++        self.assertFalse(result["actual_x230_runtime_qualified_by_admission"])
++
++    def test_missing_extra_duplicate_or_changed_requirement_rows_are_refused(self):
++        mutations = (
++            lambda rows: rows.pop(),
++            lambda rows: rows.append(copy.deepcopy(rows[0])),
++            lambda rows: rows.append(dict(copy.deepcopy(rows[0]), origin="unexpected-origin")),
++            lambda rows: rows[0].update(provider="unexpected-provider"),
++            lambda rows: rows[0].update(required_versions=["CHANGED_VERSION"]),
++        )
++        for index, mutation in enumerate(mutations):
++            with self.subTest(index=index):
++                before = copy.deepcopy(self.value)
++                mutation(self.value["compatibility"]["requirements"])
++                with self.assertRaises(q.AdmissionFailure): self.validate()
++                self.value = before
++        self.fresh.recheck.assert_not_called()
++
++    def test_requirement_row_shape_and_version_types_are_exact(self):
++        mutations = (
++            lambda c: c.update(requirements={}),
++            lambda c: c["requirements"].__setitem__(0, []),
++            lambda c: c["requirements"][0].update(extra=True),
++            lambda c: c["requirements"][0].pop("provider"),
++            lambda c: c["requirements"][0].update(origin=1),
++            lambda c: c["requirements"][0].update(provider=""),
++            lambda c: c["requirements"][0].update(required_versions="GLIBC_2.39"),
++            lambda c: c["requirements"][0].update(required_versions=[1]),
++            lambda c: c["requirements"][0].update(required_versions=[]),
++            lambda c: c["requirements"][0].update(required_versions=["VERSION", "VERSION"]),
++            lambda c: c["requirements"][0].update(required_versions=["VERSION_Z", "VERSION_A"]),
++        )
++        for index, mutation in enumerate(mutations):
++            with self.subTest(index=index):
++                before = copy.deepcopy(self.value)
++                mutation(self.value["compatibility"])
++                with self.assertRaises(q.AdmissionFailure): self.validate()
++                self.value = before
++        self.fresh.recheck.assert_not_called()
++
++    def test_requirement_order_fix_preserves_all_other_compatibility_fields(self):
++        mutations = (
++            lambda c: c.update(interpreter_path="/different/loader"),
++            lambda c: c.update(actual_x230_runtime_qualified=True),
++            lambda c: c.update(static_elf_and_version_requirements_match=False),
++            lambda c: c["artifacts"]["heptabao-server"].update(sha256="0" * 64),
++            lambda c: c["providers"]["libc.so.6"].update(bytes=1),
++        )
++        for index, mutation in enumerate(mutations):
++            with self.subTest(index=index):
++                before = copy.deepcopy(self.value)
++                # Keep the original capture rows independent of the stored
++                # compatibility summary, as in a serialized public receipt.
++                self.value = json.loads(json.dumps(self.value))
++                mutation(self.value["compatibility"])
++                with self.assertRaises(q.AdmissionFailure): self.validate()
++                self.value = before
++        self.fresh.recheck.assert_not_called()
++
++
++class ActualReceiverRequirementOrderRegression(unittest.TestCase):
++    """Exact immutable real receipts; local filesystem recheck remains a mock."""
++    def test_actual_serialized_eleven_provider_closure_keeps_all_thirty_one_rows(self):
++        fixtures = (
++            ("HEPTABAO_X230_ACTUAL_STATIC_RECEIPT",
++             "evidence/x230-static-abi-20261106-r1/current-pocket4/receiver-current-pocket4.result.original.public.json",
++             "ca07a01f3c67d6934e18e1be4c9869cf90677ed735cfc3f8266f9f0e857669c6"),
++            ("HEPTABAO_X230_ACTUAL_STATIC_TERMINAL",
++             "evidence/x230-static-abi-20261106-r1/current-pocket4/receiver-current-pocket4.terminal.exact-tool-text.json",
++             "083e3abfb39cbe4edb4270ebb5802906a59cb322192500723820bd6a51771f1c"),
++            ("HEPTABAO_X230_ACTUAL_NORMAL107_RECEIPT",
++             "evidence/pocket4-current-4bde9-qualification-20261106-r1/normal107-completed/normal107.result.original.public.json",
++             "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5"),
++        )
++        values = []
++        for variable, relative, expected in fixtures:
++            raw = Path(os.environ.get(variable, str(HERE / relative))).read_bytes()
++            self.assertEqual(digest(raw), expected)
++            values.append(json.loads(raw))
++        value, terminal, build = values
++        capture, parser, _ = q.load_abi_guards(dr)
++        expected = {name: build["artifacts"][name] for name in ("heptabao-server", "heptabao-seed")}
++        recomputed = parser["verify_compatibility"](value["artifacts"], value["providers"],
++            expected_artifact_pins=expected, interpreter_path="/lib64/ld-linux-x86-64.so.2",
++            interpreter_resolved_path=value["interpreter_pin"]["path"])
++        self.assertEqual(len(value["providers"]), 11)
++        self.assertEqual(len(value["compatibility"]["requirements"]), 31)
++        self.assertEqual(len(recomputed["requirements"]), 31)
++        self.assertNotEqual(recomputed, value["compatibility"])
++        self.assertEqual(q.canonical_static_compatibility(recomputed),
++                         q.canonical_static_compatibility(value["compatibility"]))
++        fresh = Mock()
++        capture = dict(capture, Capture=Mock(return_value=fresh))
++        before = copy.deepcopy(value)
++        result = q.validate_static_admission(value, terminal, "1a1b277e5bb-fc05-7e22", build, capture, parser)
++        self.assertEqual(value, before)
++        fresh.recheck.assert_called_once_with(value)
++        self.assertFalse(result["actual_x230_runtime_qualified_by_admission"])
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

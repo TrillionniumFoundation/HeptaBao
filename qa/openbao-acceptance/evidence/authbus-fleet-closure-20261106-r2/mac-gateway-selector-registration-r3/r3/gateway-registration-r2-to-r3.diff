@@ -1,0 +1,173 @@
+--- mac_gateway_registration_cases_r2.mjs
++++ mac_gateway_registration_cases_r3.mjs
+@@ -2,7 +2,7 @@
+ import fs from 'node:fs';
+ import {isDeepStrictEqual} from 'node:util';
+ 
+-export const ROOT='/Users/qianqi/heptabao-authbus-gateway-registration-qualification-20261106-r2';
++export const ROOT='/Users/qianqi/heptabao-authbus-gateway-registration-qualification-20261106-r3';
+ export const SDK='/opt/homebrew/lib/node_modules/openclaw';
+ export const STATE=ROOT+'/output/home/.openclaw';
+ export const HOME=ROOT+'/output/home';
+@@ -55,6 +55,10 @@
+    warnings:selectionSnapshot.warnings,legacyIssues:selectionSnapshot.legacyIssues});
+   need(selected===true&&selectorsExact(),'gateway_original_environment_selection_complete');
+   snapshotExact(selectionSnapshot);
++  need(isDeepStrictEqual(selectionSnapshot.warnings,[{path:'plugins.entries.'+AUTHBUS,
++   message:'plugin disabled (disabled in config) but config is present'}]),
++   'gateway_exact_original_disabled_config_warning');
++  report.originalDisabledConfigWarningExact=true;
+   need(report.originalDotenvReads.state>0&&report.originalDotenvReads.gateway>0
+    &&process.env.HEPTABAO_STATE_ENV_MARKER==='state-original-read'
+    &&process.env.HEPTABAO_GATEWAY_ENV_MARKER==='gateway-original-read'
+--- mac_gateway_registration_qualification_r2.mjs
++++ mac_gateway_registration_qualification_r3.mjs
+@@ -13,11 +13,11 @@
+ import * as moduleApi from 'node:module';
+ import {pathToFileURL,fileURLToPath} from 'node:url';
+ import {isDeepStrictEqual} from 'node:util';
+-import {ROOT,SDK,STATE,HOME,CONFIG,AUTHBUS_ROOT,CONTROL_ROOT,runGatewayCases} from './mac_gateway_registration_cases_r2.mjs';
++import {ROOT,SDK,STATE,HOME,CONFIG,AUTHBUS_ROOT,CONTROL_ROOT,runGatewayCases} from './mac_gateway_registration_cases_r3.mjs';
+ 
+ const started=process.hrtime.bigint(),budget=Number(process.argv[2]);
+ let until=started+BigInt(Number.isFinite(budget)?Math.trunc(budget*1000000):0);
+-const report={schema:'heptabao.actual-mac-gateway-selectors-registration.r2',ok:false,
++const report={schema:'heptabao.actual-mac-gateway-selectors-registration.r3',ok:false,
+  actualInstalledSdk:true,syntheticConfigurationAndStateOnly:true,productionCredentialReads:0,
+  productionWrites:0,providerCalls:0,serviceMutations:0,fullGatewayServerStarted:false,
+  actualProductionGatewayMemoryQualified:false,productionFallbackConfigurationQualified:false,
+@@ -192,7 +192,7 @@
+  need(process.env.HOME===HOME&&process.env.OPENCLAW_STATE_DIR===STATE&&process.env.OPENCLAW_CONFIG_PATH===CONFIG,
+   'gateway_explicit_child_environment_before_import');
+  plan=JSON.parse(readPinned(ROOT+'/code/plan.public.json',undefined,131072));
+- need(plan.schema==='heptabao.gateway-selectors-registration.synthetic-plan.r2'&&plan.expectedCases===15,
++ need(plan.schema==='heptabao.gateway-selectors-registration.synthetic-plan.r3'&&plan.expectedCases===15,
+   'gateway_exact_qualification_plan');
+  for(const required of ['dist/pre-bootstrap-8G8HyMEQ.js','dist/config/config.js','dist/io-By0s-a_s.js',
+   'dist/paths-C6ahtu79.js','dist/paths-BMBAvkNf.js','dist/loader-D8d2EvVh.js','dist/server-plugin-bootstrap-CtU_XTUf.js',
+--- launch_gateway_registration_qualification_r2.template.py
++++ launch_gateway_registration_qualification_r3.template.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,os,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+45.0
+-ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-registration-qualification-20261106-r2')
++ROOT=Path('/Users/qianqi/heptabao-authbus-gateway-registration-qualification-20261106-r3')
+ QUAL=Path('/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2')
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+@@ -16,7 +16,7 @@
+  PYTHON:'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13',
+  NODE:'a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e',
+  '/usr/bin/sandbox-exec':'abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a'}
+-report={'schema':'heptabao.actual-sdk-gateway-selectors-registration-owned.r2','ok':False,
++report={'schema':'heptabao.actual-sdk-gateway-selectors-registration-owned.r3','ok':False,
+  'sharedSeconds':45,'supervisorSeconds':70,'automaticRetry':False,'providerCalls':0,
+  'productionCredentialReads':0,'productionWrites':0,'productionMutexAcquired':False,
+  'nativeServiceStarted':False,'syntheticStateOnly':True,'actualOriginalSelectorAndRegistrationFunctions':True,'productionGatewayMemoryQualified':False,
+@@ -62,6 +62,15 @@
+ def close_streams(child):
+  for stream in (child.stdin,child.stdout,child.stderr):
+   if stream is not None and not stream.closed:stream.close()
++def admitted_child_stderr(label,returncode,err,unit):
++ # The original validator and logConfigWarningsOnce emit this exact public
++ # warning for a disabled plugin retaining its required config. No other
++ # stderr, reason, prefix, repetition, or failed child is accepted.
++ expected=b'Config warnings:\n- plugins.entries.openclaw-authbus: plugin disabled (disabled in config) but config is present\n'
++ return (type(returncode) is int and returncode==0 and isinstance(err,bytes)
++  and (err==b'' or (label=='unit' and err==expected and isinstance(unit,dict)
++   and unit.get('ok') is True and unit.get('originalDisabledConfigWarningExact') is True
++   and unit.get('passed')==15 and unit.get('executed')==15)))
+ def record(label,child,out,err):
+  close_streams(child)
+  need(len(out)<=65536 and len(err)<=65536,'bounded_fallback_sdk_worker_output')
+@@ -69,7 +78,8 @@
+  private(ROOT/'output'/(label+'.stderr.private'),err)
+  report['children'].append({'label':label,'exitCode':child.returncode,'stdoutBytes':len(out),
+    'stderrBytes':len(err),'stdoutSha256':sha(out),'streamsClosed':True})
+- need(child.returncode==0 and not err,'actual_fallback_sdk_child_complete_zero')
++ need(admitted_child_stderr(label,child.returncode,err,report.get('unitResult')),'actual_fallback_sdk_child_complete_zero')
++ if label=='unit':report['originalDisabledWarningBytesAdmitted']=len(err)
+ try:
+  os.umask(0o077)
+  need(sys.platform=='darwin' and os.getuid()==501 and os.path.realpath(sys.executable)==PYTHON,'exact_mac_fallback_sdk_runtime')
+@@ -91,7 +101,7 @@
+   (ROOT/name).mkdir(mode=0o700,exist_ok=False)
+  private(ROOT/'protected-read',b'synthetic kernel read refusal probe\n')
+  private(ROOT/'protected-write',b'synthetic kernel write refusal probe\n')
+- need(set(PAYLOAD['sources'])=={'mac_gateway_registration_cases_r2.mjs','mac_gateway_registration_qualification_r2.mjs'},'exact_two_registration_sources')
++ need(set(PAYLOAD['sources'])=={'mac_gateway_registration_cases_r3.mjs','mac_gateway_registration_qualification_r3.mjs'},'exact_two_registration_sources')
+  fixture_pins={}
+  for name,raw in PAYLOAD['sources'].items():
+   need(sha(raw.encode())==PAYLOAD['sourcePins'][name],'prepared_gateway_registration_source_pin')
+@@ -107,7 +117,7 @@
+   need(name in ('output/maintenance/fallback.json','output/home/.openclaw/openclaw.json','output/decoy-state/openclaw.json',
+     'output/home/.openclaw/.env','output/home/.config/openclaw/gateway.env'),'fixed_synthetic_selector_inputs')
+   private(ROOT/name,raw);fixture_pins[name]=sha(raw.encode())
+- plan={'schema':'heptabao.gateway-selectors-registration.synthetic-plan.r2','sharedSeconds':45,'supervisorSeconds':70,
++ plan={'schema':'heptabao.gateway-selectors-registration.synthetic-plan.r3','sharedSeconds':45,'supervisorSeconds':70,
+   'originalOuterChildren':3,'expectedCases':15,'sourcePins':PAYLOAD['sourcePins'],'sdkPins':PAYLOAD['sdkPins'],
+   'fixturePins':fixture_pins,'productionReadAuthorized':False,'productionMutationAuthorized':False,
+   'providerCallAuthorized':False,'productionMutexAcquisitionAuthorized':False,
+@@ -134,7 +144,7 @@
+      stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=str(ROOT),env=environment)
+    children.append(child);out,err=child.communicate(timeout=remaining(5));record('syntax-'+str(number),child,out,err)
+   child=subprocess.Popen(['/usr/bin/sandbox-exec','-f',str(ROOT/'fixture.sb'),NODE,'--no-warnings',
+-    str(ROOT/'code/mac_gateway_registration_qualification_r2.mjs'),str(int(remaining(30)*1000))],
++    str(ROOT/'code/mac_gateway_registration_qualification_r3.mjs'),str(int(remaining(30)*1000))],
+     stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=str(ROOT),env=environment)
+   children.append(child);out,err=child.communicate(timeout=remaining(30))
+   value=json.loads(out);report['unitResult']=value;record('unit',child,out,err)
+@@ -144,6 +154,7 @@
+     and value.get('kernelReadWriteAndBothNetworkRefusalsObserved') is True
+     and value.get('allRecordedFileDescriptorsClosedOnce') is True
+     and value.get('allInstalledGuardsRestored') is True and value.get('originalModuleHookDeregistered') is True
++    and value.get('originalDisabledConfigWarningExact') is True
+     and value.get('actualStateAndGatewayDotenvReadsObserved') is True
+     and value.get('previousEmptyDisabledConfigRejectedByOriginalValidator') is True
+     and value.get('actualPreBootstrapFinalFallbackSelected') is True
+--- assemble_gateway_registration_qualification_r2.py
++++ assemble_gateway_registration_qualification_r3.py
+@@ -3,7 +3,7 @@
+ import ast,hashlib,json
+ from pathlib import Path
+ HERE=Path(__file__).resolve().parent
+-ROOT='/Users/qianqi/heptabao-authbus-gateway-registration-qualification-20261106-r2'
++ROOT='/Users/qianqi/heptabao-authbus-gateway-registration-qualification-20261106-r3'
+ STATE=ROOT+'/output/home/.openclaw';CONFIG=ROOT+'/output/maintenance/fallback.json'
+ AUTH=ROOT+'/code/disabled-authbus';CONTROL=ROOT+'/code/control'
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+@@ -12,7 +12,7 @@
+  return ast.literal_eval(next(n.value for n in tree.body if isinstance(n,ast.Assign)
+   and any(isinstance(x,ast.Name) and x.id=='PAYLOAD' for x in n.targets)))
+ previous=payload_from(HERE/'launch_gateway_fallback_sdk_qualification_r1.py')
+-names=['mac_gateway_registration_cases_r2.mjs','mac_gateway_registration_qualification_r2.mjs']
++names=['mac_gateway_registration_cases_r3.mjs','mac_gateway_registration_qualification_r3.mjs']
+ sources={name:(HERE/name).read_text() for name in names}
+ sdk_pins={}
+ loader_names=['paths-C6ahtu79.js','pre-bootstrap-8G8HyMEQ.js','config-env-vars-DlUfO5Q_.js',
+@@ -68,19 +68,19 @@
+ payload={'sources':sources,'sourcePins':{name:sha(text.encode()) for name,text in sources.items()},'sdkPins':sdk_pins,
+  'publicPluginPins':{name:sha(text.encode()) for name,text in auth_files.items()},'authbusPublicFiles':auth_files,
+  'controlFiles':control_files,'syntheticInputs':synthetic,'custodyQualificationAuthority':previous['custodyQualificationAuthority']}
+-template=(HERE/'launch_gateway_registration_qualification_r2.template.py').read_text()
++template=(HERE/'launch_gateway_registration_qualification_r3.template.py').read_text()
+ assert template.count('# PAYLOAD_PLACEHOLDER')==1
+ source=template.replace('# PAYLOAD_PLACEHOLDER','PAYLOAD='+repr(payload))
+-compile(source,'launch_gateway_registration_qualification_r2.py','exec')
++compile(source,'launch_gateway_registration_qualification_r3.py','exec')
+ tree=ast.parse(source);again=ast.literal_eval(next(n.value for n in tree.body if isinstance(n,ast.Assign)
+  and any(isinstance(t,ast.Name) and t.id=='PAYLOAD' for t in n.targets)))
+ assert again==payload
+ for name in names:assert again['sources'][name].encode()==(HERE/name).read_bytes()
+-(HERE/'launch_gateway_registration_qualification_r2.py').write_text(source)
+-proof={'schema':'heptabao.gateway-registration-assembled-source.r2','actualRun':False,'embeddedSourceBytesExact':True,
++(HERE/'launch_gateway_registration_qualification_r3.py').write_text(source)
++proof={'schema':'heptabao.gateway-registration-assembled-source.r3','actualRun':False,'embeddedSourceBytesExact':True,
+  'originalOuterChildren':3,'expectedCases':15,'originalSharedSeconds':45,'supervisorSeconds':70,
+  'sourcePins':payload['sourcePins'],'sdkPins':sdk_pins,'publicPluginPins':payload['publicPluginPins'],
+  'template':{'bytes':len(template.encode()),'sha256':sha(template.encode())},
+  'assembled':{'bytes':len(source.encode()),'sha256':sha(source.encode())}}
+-(HERE/'gateway-registration-r2.assembly.public.json').write_text(encoded(proof))
++(HERE/'gateway-registration-r3.assembly.public.json').write_text(encoded(proof))
+ print(json.dumps(proof,sort_keys=True))

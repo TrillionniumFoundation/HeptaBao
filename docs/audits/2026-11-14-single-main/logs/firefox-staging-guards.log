@@ -1,0 +1,12 @@
+test_cargo_style_hardlink_is_copied_without_relaxing_installer (__main__.BinaryStaging.test_cargo_style_hardlink_is_copied_without_relaxing_installer) ... ok
+test_existing_destination_and_symlink_are_not_overwritten (__main__.BinaryStaging.test_existing_destination_and_symlink_are_not_overwritten) ... ok
+test_nonprivate_parent_is_refused (__main__.BinaryStaging.test_nonprivate_parent_is_refused) ... ok
+test_same_size_build_input_change_during_copy_is_refused (__main__.BinaryStaging.test_same_size_build_input_change_during_copy_is_refused) ... ok
+test_single_link_build_still_produces_distinct_inode (__main__.BinaryStaging.test_single_link_build_still_produces_distinct_inode) ... ok
+test_symlink_and_writable_build_inputs_are_refused (__main__.BinaryStaging.test_symlink_and_writable_build_inputs_are_refused) ... ok
+test_wrong_digest_refused_without_overwrite_retry (__main__.BinaryStaging.test_wrong_digest_refused_without_overwrite_retry) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.029s
+
+OK

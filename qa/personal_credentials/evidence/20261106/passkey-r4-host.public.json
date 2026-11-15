@@ -1,0 +1,353 @@
+{
+  "android_device_exercised": false,
+  "bc_sha256": "fc50334d4d87b4272e72fa95ca748ead05bdef02ef760a5b13f64ffee317cd81",
+  "build_receipt_sha256": "c7f84bd9ff3dcde9adf1bf7b24c641f393bb1274cb27e3b860f41845b98d107c",
+  "checks": [
+    {
+      "detail": true,
+      "name": "host_harness_compiles",
+      "passed": true
+    },
+    {
+      "detail": {
+        "checks": [
+          "wrong_password",
+          "wrong_recovery_key",
+          "authenticated_revision",
+          "authenticated_vault_id",
+          "fixed_kdf_parameters",
+          "body_authentication",
+          "duplicate_json_fields",
+          "unpaired_java_surrogate",
+          "padded_base64",
+          "noncanonical_base64",
+          "valid_request",
+          "wrong_rp",
+          "uv_required",
+          "unsupported_extension",
+          "password_unlock",
+          "closed_vault",
+          "recovery_unlock"
+        ],
+        "count": 17,
+        "ok": true,
+        "scope": "host_core_only"
+      },
+      "name": "seed_crypto_negative_cases",
+      "passed": true
+    },
+    {
+      "detail": {
+        "credential_id": "yCjd6OuslsQ0yDfOIgjdW3QNYb1aNjaG2ZRNZhSE888",
+        "flags": 77,
+        "ok": true,
+        "public_key_sha256": "516b48705b18618d2f6fbc4d4c93a6d5b6ba385377b2bfd53b4242e01fe100a6",
+        "sign_count": 0
+      },
+      "name": "java_attestation_verified_by_independent_rp",
+      "passed": true
+    },
+    {
+      "detail": {
+        "checks": [
+          "wrong_password",
+          "wrong_recovery_key",
+          "authenticated_revision",
+          "authenticated_vault_id",
+          "fixed_kdf_parameters",
+          "body_authentication",
+          "duplicate_json_fields",
+          "unpaired_java_surrogate",
+          "padded_base64",
+          "noncanonical_base64",
+          "valid_request",
+          "wrong_rp",
+          "uv_required",
+          "unsupported_extension",
+          "password_unlock",
+          "closed_vault",
+          "recovery_unlock",
+          "wrong_fixture_certificate"
+        ],
+        "count": 18,
+        "ok": true,
+        "scope": "host_core_only"
+      },
+      "name": "record_crypto_negative_cases",
+      "passed": true
+    },
+    {
+      "detail": {
+        "credential_id": "yCjd6OuslsQ0yDfOIgjdW3QNYb1aNjaG2ZRNZhSE888",
+        "flags": 13,
+        "ok": true,
+        "public_key_sha256": "516b48705b18618d2f6fbc4d4c93a6d5b6ba385377b2bfd53b4242e01fe100a6",
+        "sign_count": 1
+      },
+      "name": "first-authentication",
+      "passed": true
+    },
+    {
+      "detail": {
+        "credential_id": "yCjd6OuslsQ0yDfOIgjdW3QNYb1aNjaG2ZRNZhSE888",
+        "flags": 13,
+        "ok": true,
+        "public_key_sha256": "516b48705b18618d2f6fbc4d4c93a6d5b6ba385377b2bfd53b4242e01fe100a6",
+        "sign_count": 2
+      },
+      "name": "original-device-advances",
+      "passed": true
+    },
+    {
+      "detail": {
+        "counter": 2,
+        "rejected": "counter_rollback_or_replay",
+        "restored": true
+      },
+      "name": "stale-backup-rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "credential_id": "yCjd6OuslsQ0yDfOIgjdW3QNYb1aNjaG2ZRNZhSE888",
+        "flags": 29,
+        "ok": true,
+        "public_key_sha256": "516b48705b18618d2f6fbc4d4c93a6d5b6ba385377b2bfd53b4242e01fe100a6",
+        "sign_count": 3
+      },
+      "name": "latest-backup-recovery-new-process",
+      "passed": true
+    },
+    {
+      "detail": {
+        "ciphertext_sha256": "8a4b589f72e33cdd7e5b5791c910e8fd2a4c50662f5a602e38623ffca31900de",
+        "fresh_directory": "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/fresh-private-store"
+      },
+      "name": "restored_store_is_new_path_and_jvm",
+      "passed": true
+    },
+    {
+      "detail": {
+        "credential_id": "yCjd6OuslsQ0yDfOIgjdW3QNYb1aNjaG2ZRNZhSE888",
+        "flags": 29,
+        "ok": true,
+        "public_key_sha256": "516b48705b18618d2f6fbc4d4c93a6d5b6ba385377b2bfd53b4242e01fe100a6",
+        "sign_count": 4
+      },
+      "name": "rp-and-authenticator-process-restart",
+      "passed": true
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+        "--release",
+        "17",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "-d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r4/source/common/java/org/heptabao/passkey/core/Codec.java",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r4/source/common/java/org/heptabao/passkey/core/Failure.java",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r4/source/common/java/org/heptabao/passkey/core/Hbv.java",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r4/source/common/java/org/heptabao/passkey/core/Json.java",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r4/source/common/java/org/heptabao/passkey/core/Passkey.java",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r4/source/common/java/org/heptabao/passkey/core/Protocol.java",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r4/source/tests/org/heptabao/passkey/core/HostInterop.java"
+      ],
+      "exit_code": 0,
+      "label": "compile-core-harness",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "negative",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/seed.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/seed-negatives.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/seed-negatives"
+      ],
+      "exit_code": 0,
+      "label": "seed-negatives",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5c8a12ba8fce01d35753252579ca8de736b31bbea1d8c0242736362d4f5d31dd"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "create",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/seed.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/created.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/created"
+      ],
+      "exit_code": 0,
+      "label": "created",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "05318850703f7feb1ae13d03c6ae9cb4e64d0b68768c781920f184a730639ee2"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "negative",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/created.vault.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/record-negatives.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/record-negatives"
+      ],
+      "exit_code": 0,
+      "label": "record-negatives",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fef3c73a506fbe022eebc90944d14869a7005acace3844744877ef4e4086a562"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "get",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/created.vault.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/first-authentication.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/first-authentication"
+      ],
+      "exit_code": 0,
+      "label": "first-authentication",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5307dff60c9121673879c26431277c39cfc6591849083859c4375881b96585b4"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "get",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/first-authentication.vault.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/original-device-advances.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/original-device-advances"
+      ],
+      "exit_code": 0,
+      "label": "original-device-advances",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5228953b47582395dccdf676d324f33e860076e05f7c8f1e9a40154eea36462b"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "recover-get",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/stale-backup.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/stale-backup-rejected.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/stale-backup-rejected"
+      ],
+      "exit_code": 0,
+      "label": "stale-backup-rejected",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "314ba1464423d0b2da86fffd9502040220fb7a0a5528c5a2b21a8a97989f6bb6"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "recover-get",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/fresh-private-store/latest-confirmed-backup.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/latest-backup-recovery-new-process.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/latest-backup-recovery-new-process"
+      ],
+      "exit_code": 0,
+      "label": "latest-backup-recovery-new-process",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "eb8077f81ed771cf8ea585b29dece6eb87a2e576c447c5e006a32dde9d9ae6b3"
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+        "-Xmx256m",
+        "-cp",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/classes:/Users/qianqi/HeptaBaoAndroid-20261106-r1/deps/bcprov-jdk15to18-1.86.jar",
+        "org.heptabao.passkey.core.HostInterop",
+        "get",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/latest-backup-recovery-new-process.vault.hbv",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/master.private",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/fixture/recovery.private.json",
+        "ab74dc07d6ac2e4b5d176637da98a0c4820ef987b862697b2487aa60714c882d",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/rp-and-authenticator-process-restart.options.json",
+        "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/rp-and-authenticator-process-restart"
+      ],
+      "exit_code": 0,
+      "label": "rp-and-authenticator-process-restart",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ffd8290e1b6461e957c347a50dd8fc4e259850507005e99de5330bc3df6d11ae"
+    }
+  ],
+  "credential_id": "yCjd6OuslsQ0yDfOIgjdW3QNYb1aNjaG2ZRNZhSE888",
+  "credential_manager_exercised": false,
+  "final_ciphertext_path": "/Users/qianqi/HeptaBaoPasskey-20261106-r1/host-r4/rp-and-authenticator-process-restart.vault.hbv",
+  "final_ciphertext_sha256": "e6405bd9032a86caf72a994b05303ec6688d8da8dba0c9c4542ae7fdbb107f19",
+  "finished_unix_ns": 1793951062956103000,
+  "passed_checks": 10,
+  "public_key_digest_encoding": "spki_der",
+  "registered_public_key_sha256": "516b48705b18618d2f6fbc4d4c93a6d5b6ba385377b2bfd53b4242e01fe100a6",
+  "result": "PASS",
+  "rp_crypto_backend": {
+    "name": "cryptography",
+    "version": "46.0.5"
+  },
+  "rp_script_sha256": "386de84bb5335f21998a000b4a1267eaa17fadbde1e1753d5df1c30325709a63",
+  "schema": 1,
+  "scope": "host_crypto_and_format_only",
+  "source_files": {
+    "common/java/org/heptabao/passkey/core/Codec.java": "a1a80c446a438e532f08a190a0208a965290b6f037a11350e75b41f0c006ca3d",
+    "common/java/org/heptabao/passkey/core/Failure.java": "aa14de964dc69e63089ba314cd7611bf7ab5c80405f40d8e7cea0efa15a5b39d",
+    "common/java/org/heptabao/passkey/core/Hbv.java": "4411788882603bdf22b10251321d06b8e8f27e1996d4ff13ee44cbe21a647753",
+    "common/java/org/heptabao/passkey/core/Json.java": "2c06fa99b7c66f103d2bfca2aad73375fe2da3783c01a72cf7110a1670be4c84",
+    "common/java/org/heptabao/passkey/core/Passkey.java": "e2b3cc6c4778e7fd6e4affbd762f9656d2b1f33cbc37f16484b6ea3f036c3be9",
+    "common/java/org/heptabao/passkey/core/Protocol.java": "5d66798fd44839a52db5e39a5591eedf9b9f4c5cafd01e66bd6897b5f5a3fa7e",
+    "tests/org/heptabao/passkey/core/HostInterop.java": "445f4abc4a95c8afae80db071bba2c07cac70899d95e35237b6735a7c0c6493f"
+  },
+  "started_unix_ns": 1793951056282120000
+}

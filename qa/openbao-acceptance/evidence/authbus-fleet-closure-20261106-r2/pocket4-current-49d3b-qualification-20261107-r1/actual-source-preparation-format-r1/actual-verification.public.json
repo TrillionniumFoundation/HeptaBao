@@ -1,0 +1,49 @@
+{
+  "bundle_create_only_commit_known_succeeded": true,
+  "bundle_whole_hash_independent_readback_verified": true,
+  "create_stage_known_succeeded": true,
+  "evidence_gap": {
+    "chunk_index": 1,
+    "initial_non_json_error_body_retained": false,
+    "initial_remote_effect": "unknown",
+    "later_committed_whole_sha_independently_verified": true,
+    "offset": 524288,
+    "original_error_text_reconstructed": false,
+    "same_upload_id_offset_and_bytes_reconciled": true
+  },
+  "format_remediation_submitted_to_root_only": true,
+  "normal107_qualified": false,
+  "normal107_started": false,
+  "old_49d_source_preserved": true,
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "read_only_format": {
+    "actual_format_seconds": 6.238250331953168,
+    "authoritative_failed": true,
+    "descriptors_closed_once": 72,
+    "files": 2,
+    "format_diff_bytes": 2313,
+    "format_hunks": 4,
+    "job_id": "1a1b416db1b-fc05-8637",
+    "original_cap_seconds": 60,
+    "original_children_closed_once": 7,
+    "source_clean_and_pins_unchanged": true,
+    "stdout_bytes": 12122,
+    "whole_hex_equal": true
+  },
+  "rust_compilation_executed": false,
+  "rust_tests_executed": false,
+  "schema": "heptabao.pocket4-49d3b-delivery-sourceprep-format.actual-verification.v1",
+  "source_commit": "49d3bb88f548d7647c44cefe21e5e7ab75a77fe9",
+  "source_tree": "ad35130626cbfa172dddfaffa1d09d081c7ff4dc",
+  "sourceprep": {
+    "authoritative_succeeded": true,
+    "descriptors_closed_once": 753,
+    "job_id": "1a1b41027d1-fc05-860f",
+    "original_children_closed_once": 21,
+    "original_inputs": 322,
+    "original_inputs_unchanged": true,
+    "stdout_bytes": 27501,
+    "whole_hex_equal": true
+  }
+}

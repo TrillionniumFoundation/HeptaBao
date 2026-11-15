@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.mac-main3-sdk-r2-complete-archive-verification.r1",
+  "originalJobId": "1a1b263a649-fc05-7dda",
+  "originalCampaignRemainsFailed": true,
+  "originalWorkerPid": 54346,
+  "originalWorkerExitCode": 65,
+  "actualSdkWorkerBodyReached": false,
+  "journalFilesRecorded": 58,
+  "journalFilesIndependentlyReadAndArchived": 58,
+  "launchdEventsRecorded": 3,
+  "launchdEventsIndependentlyReadAndArchived": 3,
+  "inlineCapturePublicFilesRecorded": 2,
+  "inlineCapturePublicFilesIndependentlyReadAndArchived": 2,
+  "allOriginalDigestsAndByteCountsMatched": true,
+  "fullOriginalStdoutBytes": 60943,
+  "fullOriginalStderrBytes": 0,
+  "independentAbsenceSucceeded": true,
+  "networkScopeProbeIsBusinessQualification": false,
+  "credentialValuesOrDigestsPublished": false,
+  "providerValid": false,
+  "productionChanged": false
+}

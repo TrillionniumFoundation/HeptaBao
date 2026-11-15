@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.original-private-time-projection.verification.r1",
+  "jobId": "1a1b429bfba-fc05-868a",
+  "sourcePin": {
+    "bytes": 10376,
+    "sha256": "f100aee9981ca14ac5cd6993d202a8f1a6d1a1a18ed3562d3f7f52cf3edfe521"
+  },
+  "authoritativeSucceeded": true,
+  "exitCode": 0,
+  "stdoutBytes": 2185,
+  "stderrBytes": 0,
+  "completeDurableTerminal": true,
+  "fullTextEqualsHex": true,
+  "originalArtifactsRead": 3,
+  "originalDescriptors": 8,
+  "allDescriptorsClosedOnce": true,
+  "closedOriginalNamesExact": true,
+  "liveSourceReads": 0,
+  "childProcesses": 0,
+  "sqlQueries": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "productionWrites": 0,
+  "cachedCredentialRelation": "unknown",
+  "effectiveBackendQualified": false,
+  "productionRefreshAdmission": false
+}

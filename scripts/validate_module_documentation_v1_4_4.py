@@ -2,6 +2,12 @@
 """Validate the frozen V1.4.4 documentation baseline inside an evolving workspace."""
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import archived_document_reference
+
+
 import argparse
 import glob
 import json
@@ -139,8 +145,14 @@ def validate(root: Path) -> list[str]:
         paths = [item.get('path') for item in manifest.get('documents') or []]
         if len(paths) != len(set(paths)):
             errors.append('manifest contains duplicate paths')
-        for rel in paths:
-            if not (root / str(rel)).is_file():
+        for item in manifest.get('documents') or []:
+            rel = item.get('path')
+            if 'archived_reference' in item:
+                try:
+                    archived_document_reference(root, rel, item['archived_reference'])
+                except (OSError, ValueError, KeyError) as exc:
+                    errors.append(f'archived manifest reference invalid: {rel}: {exc}')
+            elif not (root / str(rel)).is_file():
                 errors.append(f'manifest path missing: {rel}')
         if not docs_seen.issubset(set(paths)):
             errors.append('manifest does not include every historical module guide')

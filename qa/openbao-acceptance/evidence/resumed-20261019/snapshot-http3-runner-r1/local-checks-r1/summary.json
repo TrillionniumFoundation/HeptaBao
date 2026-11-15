@@ -1,0 +1,12 @@
+{
+  "scope": "local Python adapter checks only; no Rust tests or remote operations",
+  "argv": [
+    "python3",
+    "/workspace/scratch/915e5e680008/compatibility-review-20261019/snapshot-http3-runner-r1/work/qa/openbao-acceptance/native_snapshot_http_exact_run_checks.py"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 0.465,
+  "log_bytes": 2848,
+  "log_sha256": "1c15333c85323a4bd56b142552712ca985b8f9d978e54f35d79a39b34874436a",
+  "finished_utc": "2026-10-19T07:53:11.673839+00:00"
+}

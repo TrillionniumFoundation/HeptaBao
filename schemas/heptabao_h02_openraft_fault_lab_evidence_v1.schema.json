@@ -126,7 +126,7 @@
         "branch": {"minLength": 1, "type": "string"},
         "clean_tree": {"type": "boolean"},
         "commit": {"pattern": "^[0-9a-f]{40}$", "type": "string"},
-        "repository": {"const": "ProfHepta/HeptaBao"},
+        "repository": {"const": "TrillionniumFoundation/HeptaBao"},
         "tree": {"pattern": "^[0-9a-f]{40}$", "type": "string"}
       },
       "required": ["repository", "branch", "commit", "tree", "clean_tree"],

@@ -1,0 +1,19 @@
+{
+  "adb_calls": 0,
+  "android_device_qualified": false,
+  "builds": 0,
+  "child_acquire_succeeded_after_unrelated_same_file_close": true,
+  "child_exit_zero": true,
+  "duplicate_remained_open_throughout": true,
+  "external_review": false,
+  "file_removed": true,
+  "first_lock_descriptor_remained_open_throughout": true,
+  "independent_child_initial_acquire_refused": true,
+  "inference": "With Android libcore native F_SETLK locking, corrected raw-FD cleanup requires process-local admission before opening the lockfile; this host observation is not an OEM runtime test or diagnosis of r6.",
+  "network_calls": 0,
+  "parent_acquired_fcntl_exclusive_lock": true,
+  "parent_second_open_dup_then_close_original_fd": true,
+  "schema": 1,
+  "scope": "linux_host_posix_fcntl_lock_semantics_only",
+  "synthetic_file_only": true
+}

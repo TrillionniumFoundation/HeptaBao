@@ -1,0 +1,87 @@
+{
+  "all_product_artifact_and_rp_pins_unchanged": true,
+  "expected_cases": 18,
+  "files": [
+    {
+      "bytes": 15637,
+      "path": "passkey_input_r9.py",
+      "sha256": "8d06f61336813480f10346e852491bacbd098659bfd0124e725b40d3150b144b"
+    },
+    {
+      "bytes": 40150,
+      "path": "passkey_live.r9.py",
+      "sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd"
+    },
+    {
+      "bytes": 24901,
+      "path": "passkey_phone_profile.r9.py",
+      "sha256": "00e999af6c17c83fd81736fe8a8b5cda3553daaa6acf97fd652b7e6429751dd7"
+    },
+    {
+      "bytes": 68408,
+      "path": "passkey_reset_provider_r9.py",
+      "sha256": "c3d7da8f20fd03b7463eb59ad846718bcae5cad1668972eb626a7fd368aa4d30"
+    },
+    {
+      "bytes": 20033,
+      "path": "profile.public.json",
+      "sha256": "b6b7754bad0e34cf55b0c2635683b03093555fa5d3f096533ee36b3e02eec55b"
+    },
+    {
+      "bytes": 4867,
+      "path": "run_phases.input-r9.public.py",
+      "sha256": "38793057a126e755fd965a218aa5c4f7d078dd78a3af4386a7cb6accfe679e60"
+    }
+  ],
+  "input_algorithm_changed": false,
+  "new_phone_execution": false,
+  "only_case_definitions_changed": [
+    "G07",
+    "G08",
+    "G10"
+  ],
+  "origins": [
+    {
+      "new_path": "passkey_phone_profile.r9.py",
+      "new_sha256": "00e999af6c17c83fd81736fe8a8b5cda3553daaa6acf97fd652b7e6429751dd7",
+      "old_path": "passkey_phone_profile.r8.py",
+      "old_sha256": "4b6a478f84d16c563ce25fa75bd663a0c084c5c25314529b3f1f6ef3d8d64385"
+    },
+    {
+      "new_path": "profile.public.json",
+      "new_sha256": "b6b7754bad0e34cf55b0c2635683b03093555fa5d3f096533ee36b3e02eec55b",
+      "old_path": "profile.public.json",
+      "old_sha256": "b17933b703d60fcf4666bdf8a9334098dfa99a8d288fd197d8b4a5e338388de1"
+    },
+    {
+      "new_path": "passkey_live.r9.py",
+      "new_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd",
+      "old_path": "passkey_live.r8.py",
+      "old_sha256": "e0fefb8be676cd9e1e2da4d2b88d7abfa728bc4fdfdf725f6957869da976c9cd"
+    },
+    {
+      "new_path": "passkey_input_r9.py",
+      "new_sha256": "8d06f61336813480f10346e852491bacbd098659bfd0124e725b40d3150b144b",
+      "old_path": "passkey_input_r8.py",
+      "old_sha256": "6107824e7021d6d3c5c8741ad93922dc750595ce4bc4942f5a30b1d20230e146"
+    },
+    {
+      "new_path": "passkey_reset_provider_r9.py",
+      "new_sha256": "c3d7da8f20fd03b7463eb59ad846718bcae5cad1668972eb626a7fd368aa4d30",
+      "old_path": "passkey_reset_provider_r8.py",
+      "old_sha256": "413a17831a115b3c9688933dfba17835ccee9323be659b58c7810fcb5d986115"
+    },
+    {
+      "new_path": "run_phases.input-r9.public.py",
+      "new_sha256": "38793057a126e755fd965a218aa5c4f7d078dd78a3af4386a7cb6accfe679e60",
+      "old_path": "run_phases.input-r8.public.py",
+      "old_sha256": "45547627264563b447072222f7bf0371d6c00a7e99bd6480dbf926c85f236af3"
+    }
+  ],
+  "product_rebuilt": false,
+  "production_qualified": false,
+  "reset_algorithm_changed": false,
+  "schema": 1,
+  "scope": "frozen_r9_QA_components_before_any_phone_execution",
+  "source_diff_sha256": "e4eb5aabed0a3f005199039b8a07153c2f9dc8c108580ffd2a06094c925b7e3f"
+}

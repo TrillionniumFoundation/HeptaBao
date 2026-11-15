@@ -1,0 +1,41 @@
+--- qualified-r5-Api
++++ permanent-r1-Api
+@@ -4,7 +4,7 @@
+         need(type(plan['port']) is int and 1024<=plan['port']<=65535
+              and re.fullmatch(r'[0-9a-f]{64}',plan['certificateLeafSha256']),'fixed_owned_tls_endpoint')
+         self.plan=plan;self.phase=phase;self.until=phase_until;self.journal=journal;self.guard=guard
+-        self.context=ssl.create_default_context(cafile=str(ROOT/'server/tls/server.crt'))
++        self.context=ssl.create_default_context(cafile=str(ROOT/'tls/ca.crt'))
+         self.rows=[];self.checks=[];self.unknown=False;self.root_token=None;self.sensitive=[]
+     def remaining(self,cap):
+         left=self.until-time.monotonic();need(left>0,'original_api_phase_120_seconds');return min(left,cap)
+@@ -27,7 +27,7 @@
+         need(len(payload)<=MAX_BODY,'bounded_private_request_body')
+         row={'phase':self.phase,'ordinal':len(self.rows)+1,'case':case,'routeCategory':category,'slotOrdinal':slot,
+              'method':method,'dispatched':False,'responseComplete':False,'outcomeUnknown':False,
+-             'httpRequestCount':0,'connectionAttempts':0,'connectionRefusals':0,'tlsVerified':False,'socketsClosed':False}
++             'responsePrivatelyDurable':False,'httpRequestCount':0,'connectionAttempts':0,'connectionRefusals':0,'tlsVerified':False,'socketsClosed':False}
+         self.rows.append(row)
+         self.journal.append('api-request-intent',dict(row))
+         deadline=time.monotonic()+self.remaining(15 if readiness else 10)
+@@ -56,9 +56,11 @@
+             row['status']=response.status
+             data=read_complete_body(response,left,row)
+             left();row.update(responseComplete=True,responseBytes=len(data))
+-            value=json.loads(data) if data else {}
++            self.journal.response_bytes(self.phase,row['ordinal'],data)
++            row['responsePrivatelyDurable']=True
++            left();value=json.loads(data) if data else {}
+         except BaseException as error:
+-            row['outcomeUnknown']=bool(row['dispatched'] and not row['responseComplete'])
++            row['outcomeUnknown']=bool(row['dispatched'] and not (row['responseComplete'] and row['responsePrivatelyDurable']))
+             self.unknown=True;row['errorType']=type(error).__name__
+             row['failureCode']=safe_failure_code(error)
+             if isinstance(error,Refused) and error.args==('one_http_original_absolute_deadline',):row['failureCode']='http_original_deadline'
+@@ -81,5 +83,6 @@
+                 'unknownHttpOutcomeCount':sum(r['outcomeUnknown'] for r in self.rows),
+                 'allDispatchedResponsesComplete':all(not r['dispatched'] or r['responseComplete'] for r in self.rows),
+                 'allReturnedSocketsClosed':all(r['socketsClosed'] for r in self.rows),
++                'allCompleteResponsesPrivatelyDurable':all(not r['responseComplete'] or r['responsePrivatelyDurable'] for r in self.rows),
+                 'credentialValuesOrDigestsPublished':False,'providerValid':False,'providerCalled':False,
+                 'providerRefreshAttempted':False,'productionCutover':False}

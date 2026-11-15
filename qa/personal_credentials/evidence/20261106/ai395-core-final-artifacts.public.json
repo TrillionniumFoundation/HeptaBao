@@ -1,0 +1,191 @@
+{
+  "binaries": {
+    "heptabao-browser": {
+      "attribution_basis": "same directly sampled bytes and mtime as initial combined build; no change observed",
+      "bytes": 1243128,
+      "changed_after_initial_build": false,
+      "initial_combined_build_sha256": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d",
+      "last_producer_command_attribution": "01-build-binaries",
+      "original_mtime_ns": 1793944882676176095,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final/heptabao-browser",
+      "sha256": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d"
+    },
+    "heptabao-credential-broker": {
+      "attribution_basis": "same directly sampled bytes and mtime as initial combined build; no change observed",
+      "bytes": 2218312,
+      "changed_after_initial_build": false,
+      "initial_combined_build_sha256": "389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175",
+      "last_producer_command_attribution": "01-build-binaries",
+      "original_mtime_ns": 1793944882696175405,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final/heptabao-credential-broker",
+      "sha256": "389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175"
+    },
+    "heptabao-sync": {
+      "attribution_basis": "same directly sampled bytes and mtime as initial combined build; no change observed",
+      "bytes": 1053760,
+      "changed_after_initial_build": false,
+      "initial_combined_build_sha256": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+      "last_producer_command_attribution": "01-build-binaries",
+      "original_mtime_ns": 1793944881680210474,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final/heptabao-sync",
+      "sha256": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663"
+    },
+    "heptabao-vault": {
+      "attribution_basis": "inferred from sequential exclusive cargo, original mtime within test stage and compiler log",
+      "bytes": 1235416,
+      "changed_after_initial_build": true,
+      "initial_combined_build_sha256": "aecd8a1799f4d17b6eaaa02a55656c8d4461424eee08c48b4b3d4c1a85c2191a",
+      "last_producer_command_attribution": "03-vault-tests",
+      "original_mtime_ns": 1793944889534939400,
+      "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final/heptabao-vault",
+      "sha256": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+    }
+  },
+  "build_source": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+    "status_porcelain": "",
+    "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+  },
+  "captured_unix_ns": 1793945316516545808,
+  "command_chain": [
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/rustup",
+        "toolchain",
+        "install",
+        "1.98.0",
+        "--profile",
+        "minimal",
+        "--component",
+        "rustfmt",
+        "--component",
+        "clippy",
+        "--no-self-update"
+      ],
+      "elapsed_seconds": 4.551,
+      "exit_code": 0,
+      "name": "00-toolchain",
+      "started_unix": 1793944854
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "build",
+        "--locked",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--bins"
+      ],
+      "elapsed_seconds": 23.443,
+      "exit_code": 0,
+      "name": "01-build-binaries",
+      "started_unix": 1793944859
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "test",
+        "--locked",
+        "-p",
+        "heptabao-credential-broker"
+      ],
+      "elapsed_seconds": 1.974,
+      "exit_code": 0,
+      "name": "02-broker-tests",
+      "started_unix": 1793944883
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "test",
+        "--locked",
+        "-p",
+        "heptabao-personal-vault"
+      ],
+      "elapsed_seconds": 5.633,
+      "exit_code": 0,
+      "name": "03-vault-tests",
+      "started_unix": 1793944884
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "fmt",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--",
+        "--check"
+      ],
+      "elapsed_seconds": 0.114,
+      "exit_code": 0,
+      "name": "04-format",
+      "started_unix": 1793944890
+    },
+    {
+      "argv": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.98.0",
+        "clippy",
+        "--locked",
+        "-p",
+        "heptabao-credential-broker",
+        "-p",
+        "heptabao-personal-vault",
+        "-p",
+        "heptabao-personal-edge",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsed_seconds": 5.687,
+      "exit_code": 0,
+      "name": "05-clippy",
+      "started_unix": 1793944890
+    }
+  ],
+  "compiler_logs": {
+    "02-broker-tests.stderr.log": {
+      "sha256": "c675205618cec5bc2d497effc24bdb74b30353ea7c821f7023c217dae0016843",
+      "text": "   Compiling heptabao-credential-broker v0.1.0 (/home/qq/heptabao-personal-credentials-20261106-r1/crates/heptabao-credential-broker)\n    Finished `test` profile [optimized] target(s) in 0.75s\n     Running unittests src/lib.rs (target/debug/deps/heptabao_credential_broker-54607fe360fb6950)\n     Running unittests src/main.rs (target/debug/deps/heptabao_credential_broker-5c13f515e1d728aa)\n     Running tests/process_e2e.rs (target/debug/deps/process_e2e-73189ef81d6bd53c)\n   Doc-tests heptabao_credential_broker\n"
+    },
+    "03-vault-tests.stderr.log": {
+      "sha256": "e84f875abf0ee19f99e160b0474380785f9787b14f9f2539e7e6a5b8e4d97e51",
+      "text": "   Compiling generic-array v0.14.7\n   Compiling proc-macro2 v1.0.107\n   Compiling quote v1.0.47\n   Compiling subtle v2.6.1\n   Compiling crypto-common v0.1.7\n   Compiling block-buffer v0.10.4\n   Compiling digest v0.10.7\n   Compiling syn v3.0.6\n   Compiling base64ct v1.6.0\n   Compiling rand_core v0.6.4\n   Compiling getrandom v0.2.17\n   Compiling password-hash v0.5.0\n   Compiling blake2 v0.10.6\n   Compiling serde_derive v1.0.229\n   Compiling argon2 v0.5.3\n   Compiling ring v0.17.14\n   Compiling serde v1.0.229\n   Compiling heptabao-personal-vault v0.1.0 (/home/qq/heptabao-personal-credentials-20261106-r1/crates/heptabao-personal-vault)\n    Finished `test` profile [optimized] target(s) in 4.54s\n     Running unittests src/lib.rs (target/debug/deps/heptabao_personal_vault-8d0f16583c1986d2)\n     Running unittests src/main.rs (target/debug/deps/heptabao_vault-0af84f486e611458)\n     Running tests/vault.rs (target/debug/deps/vault-70268de919e415ad)\n   Doc-tests heptabao_personal_vault\n"
+    },
+    "05-clippy.stderr.log": {
+      "sha256": "8ef807e3fac82b25c4fc38ebe49f1d3d8de55a4b6f73ad440db3b38a5beb310b",
+      "text": "    Checking zeroize v1.8.1\n    Checking typenum v1.20.1\n    Checking cfg-if v1.0.4\n    Checking subtle v2.6.1\n    Checking const-oid v0.9.6\n    Checking libc v0.2.189\n    Checking generic-array v0.14.7\n    Checking crypto-common v0.1.7\n    Checking getrandom v0.2.17\n    Checking block-buffer v0.10.4\n    Checking digest v0.10.7\n    Checking rand_core v0.6.4\n    Checking cpufeatures v0.2.17\n    Checking base64ct v1.6.0\n    Checking serde_core v1.0.229\n    Checking linux-raw-sys v0.12.1\n    Checking bitflags v2.13.2\n    Checking rustix v1.1.4\n    Checking zmij v1.0.23\n    Checking der v0.7.10\n    Checking itoa v1.0.18\n    Checking untrusted v0.9.0\n    Checking memchr v2.8.3\n    Checking ring v0.17.14\n    Checking serde_json v1.0.151\n    Checking heptabao-filesystem-guard v0.1.0 (/home/qq/heptabao-personal-credentials-20261106-r1/crates/heptabao-filesystem-guard)\n    Checking serde v1.0.229\n    Checking base64 v0.22.1\n    Checking spki v0.7.3\n    Checking sha2 v0.10.9\n    Checking signature v2.2.0\n    Checking ff v0.13.1\n    Checking base16ct v0.2.0\n    Checking group v0.13.0\n    Checking sec1 v0.7.3\n    Checking password-hash v0.5.0\n    Checking blake2 v0.10.6\n    Checking crypto-bigint v0.5.5\n    Checking argon2 v0.5.3\n    Checking libm v0.2.16\n    Checking elliptic-curve v0.13.8\n    Checking zerocopy v0.8.62\n    Checking hmac v0.12.1\n    Checking rfc6979 v0.4.0\n    Checking num-traits v0.2.19\n    Checking num-integer v0.1.47\n    Checking ecdsa v0.16.9\n    Checking primeorder v0.13.6\n    Checking heptabao-personal-vault v0.1.0 (/home/qq/heptabao-personal-credentials-20261106-r1/crates/heptabao-personal-vault)\n    Checking spin v0.9.9\n    Checking lazy_static v1.5.0\n    Checking num-iter v0.1.46\n    Checking pkcs8 v0.10.2\n    Checking pem-rfc7468 v0.7.0\n    Checking inout v0.1.4\n    Checking smallvec v1.16.0\n    Checking cipher v0.4.4\n    Checking ssh-encoding v0.2.0\n    Checking pkcs1 v0.7.5\n    Checking curve25519-dalek v4.1.3\n    Checking ed25519 v2.2.3\n    Checking ed25519-dalek v2.1.1\n    Checking ssh-cipher v0.2.0\n    Checking ppv-lite86 v0.2.21\n    Checking p521 v0.13.3\n    Checking rand_chacha v0.3.1\n    Checking rand v0.8.8\n    Checking p384 v0.13.1\n    Checking num-bigint-dig v0.8.6\n    Checking p256 v0.13.2\n    Checking heptabao-personal-edge v0.1.0 (/home/qq/heptabao-personal-credentials-20261106-r1/crates/heptabao-personal-edge)\n    Checking rsa v0.9.10\n    Checking ssh-key v0.6.7\n    Checking heptabao-credential-broker v0.1.0 (/home/qq/heptabao-personal-credentials-20261106-r1/crates/heptabao-credential-broker)\n    Finished `dev` profile [optimized] target(s) in 5.64s\n"
+    }
+  },
+  "original_receipt_sha256": "1726602e78f1fd04cd953996d3b3a70158743b815d38d40c4d870539af5658aa",
+  "per_test_stage_artifact_hashes_were_sampled": false,
+  "qualification_interpretation": "Initial four hashes were sampled after the combined build. Cargo test may rebuild CLI binaries under different feature graphs. Final hashes below are new direct observations. Producer attribution for changed files is an explicit inference from exclusive ordered commands, compiler logs and file timestamps, not a retrospective sampled hash.",
+  "schema": "heptabao-final-artifact-custody-v1",
+  "source_at_capture_after": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+    "status_porcelain": "",
+    "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+  },
+  "source_at_capture_before": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+    "status_porcelain": "",
+    "tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+  },
+  "source_unchanged_during_capture": true
+}

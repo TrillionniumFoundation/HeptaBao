@@ -1,0 +1,40 @@
+{
+  "body": {
+    "bytes": 15753,
+    "sha256": "bc67af5aaf7248c7cdbf25d04c00d2bc5f5d4735c5281f9832165f7eb9b2fdd1"
+  },
+  "httpSeconds": 15,
+  "launcher": {
+    "bytes": 146937,
+    "sha256": "3543f30c9f3401af35d5d9ac39bebb8305124c9209054c0f01d7ea4ce99814f5"
+  },
+  "metadataObservationRowCap": 2048,
+  "nativeSeconds": 8,
+  "noPrefixStop": true,
+  "normalCandidateUnchanged": true,
+  "originalAllWorkloadMethodsDelegatedUnchanged": true,
+  "originalFormal128GateByteExact": true,
+  "originalFormalLauncherSha256": "9d703c0b213e5fe9f4e5cd67f6127ca16dd303f870df85526b86e63893b27fd1",
+  "originalOuterSeconds": 1800,
+  "payloads": {
+    "ha128_transport_observed_r4.py": {
+      "bytes": 7120,
+      "sha256": "da6e0bce5066f44e6ad608070c74fbd34ec1d1ffe38d30fcd990ff6541f893b5"
+    },
+    "ha_http_transport_observer_formal_r1.py": {
+      "bytes": 9521,
+      "sha256": "d716afa39e1c7a320709921c759ff1cad6f59a9a28bb4a3c035207a9ddd28be6"
+    },
+    "observe_ha128_r4_owned_x230_pid.py": {
+      "bytes": 11076,
+      "sha256": "63cf5c63c4df5dfb31754a041c27186d3f708698c12e4271cc2d24774dd50c2c"
+    }
+  },
+  "previousPrefixRowCap": 512,
+  "rowCapChangesProductBudget": false,
+  "rowCapReason": "Bound metadata for the complete 128 profile and its original read-only polls; original request and operation budgets stay fixed.",
+  "runtimeCalls": 0,
+  "sameOriginal613Pins": true,
+  "schema": "heptabao.ha128-observed-source-integrity.v1",
+  "state": "prepared-not-dispatched"
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.actual-wal-lifecycle-lossless-capture.r1",
+  "jobId": "1a1b2b25216-fc05-7f58",
+  "stdoutBytes": 26613,
+  "stdoutSha256": "ac9d311c758f40e4191d9a97c7b8a6c00c56e0429c3d8a5c973859506e9f852c",
+  "pageCount": 2,
+  "independentCursorsContiguous": true,
+  "allPageHexMatchesUtf8": true,
+  "fullEof": true,
+  "stderrBytes": 0,
+  "originalFivePhaseFilesMatchChildHashesAndEmbeddedResults": true,
+  "allEightFullFileSourcePinsVerified": true
+}

@@ -1,0 +1,28 @@
+{
+  "build_receipt_sha256": "c7f84bd9ff3dcde9adf1bf7b24c641f393bb1274cb27e3b860f41845b98d107c",
+  "created_unix_ns": 1793955278397963107,
+  "device_sha256": "41ad305f8562a6c47710afe71fabf30cb8692a71d3de1a47ca9949b669bcc6c1",
+  "driver_sha256": "be0fb6dbc35958308d00f6f084076826532f3d1be5c5fc21007ca62b888e419a",
+  "ok": true,
+  "original_settings_match": true,
+  "owned_directory_removed": true,
+  "owned_document_removed": true,
+  "owned_document_sha256": "85345f56cc374c330a96c7b09a2498c206deae2b9aea65ae1ef908fa5d551140",
+  "owned_media_row_absent": true,
+  "owned_media_row_deleted_explicitly": false,
+  "package_absence_query": "successful_pm_list_packages_-u_exact_target",
+  "packages_absent": {
+    "org.heptabao.passkey.decoy": true,
+    "org.heptabao.passkey.fixture": true,
+    "org.heptabao.passkey.preview": true
+  },
+  "reverse_port_38491_absent": true,
+  "schema": 1,
+  "scope": "r4_owned_phone_cleanup",
+  "settings_sha256": {
+    "autofill_service": "9fb252f02fa059931879ba0cd6179b9890d0e25538994d63d70290a333124a6e",
+    "credential_service": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "credential_service_primary": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "unknown_changes_overwritten": false
+}

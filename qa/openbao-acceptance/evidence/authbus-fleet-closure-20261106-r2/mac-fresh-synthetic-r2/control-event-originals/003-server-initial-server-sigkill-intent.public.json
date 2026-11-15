@@ -1,0 +1,1 @@
+{"detail":{"argv":["/bin/launchctl","kill","SIGKILL","gui/501/org.heptabao.qa.mac-fresh-synthetic-20261106-r2.server"]},"generation":"server-initial","index":3,"kind":"server-sigkill-intent","schema":"heptabao.mac-owned-launchd-event.r3"}

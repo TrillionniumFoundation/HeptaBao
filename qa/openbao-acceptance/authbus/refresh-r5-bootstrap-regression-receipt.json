@@ -1,0 +1,83 @@
+{
+  "schema": "authbus-trusted-control-local-tls-contract-r4",
+  "ok": true,
+  "checks": [
+    {
+      "case": "no_json_proof_or_verifier_can_mint_admission",
+      "passed": true
+    },
+    {
+      "case": "unresolved_cold_bootstrap_can_publish_durable_negative_without_a_clock_proof",
+      "passed": true
+    },
+    {
+      "case": "pinned_tls_approle_cas_mints_opaque_single_use_proof",
+      "passed": true
+    },
+    {
+      "case": "active_refresh_owner_blocks_other_bootstrap",
+      "passed": true
+    },
+    {
+      "case": "fresh_authenticated_same_epoch_cannot_boot_a_cold_authority",
+      "passed": true
+    },
+    {
+      "case": "replayed_or_serialized_proof_cannot_warm_reconcile",
+      "passed": true
+    },
+    {
+      "case": "grant_mutation_and_scope_escape_fail_proof_binding",
+      "passed": true
+    },
+    {
+      "case": "new_process_boot_id_cannot_read_old_control_grant",
+      "passed": true
+    },
+    {
+      "case": "cold_strictly_higher_actual_tls_issuance_survives_raw_wall_rollback",
+      "passed": true
+    },
+    {
+      "case": "failed_store_leaves_pending_and_cold_needs_another_new_epoch",
+      "passed": true
+    },
+    {
+      "case": "tls_reader_write_denied_and_approle_tokens_renewed",
+      "passed": true
+    }
+  ],
+  "actualNativeHeptaBao": false,
+  "actualSdk": false,
+  "actualColdProcess": false,
+  "tlsControlEmulator": true,
+  "productionMutation": false,
+  "readerCleanup": {
+    "revoked": true,
+    "coldDenied": true
+  },
+  "issuerCleanup": {
+    "revoked": true,
+    "coldDenied": true
+  },
+  "tlsRequests": 32,
+  "testScope": "R4 bootstrap regression with final R5 control protocol",
+  "sourceManifest": [
+    {
+      "name": "authbus_trusted_control_candidate.mjs",
+      "sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637"
+    },
+    {
+      "name": "authbus_trusted_control_contract_test.mjs",
+      "sha256": "6a04f2f39831ae1ac776e084cd144b85235302779ba919d8d76eef1101edf150"
+    },
+    {
+      "name": "authbus_trusted_admission_candidate.mjs",
+      "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad"
+    },
+    {
+      "name": "authbus_admission_authority_candidate.mjs",
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b"
+    }
+  ]
+}

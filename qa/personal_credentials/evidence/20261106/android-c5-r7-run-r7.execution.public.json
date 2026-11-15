@@ -1,0 +1,29 @@
+{
+  "exit_code": 1,
+  "finished_unix_ns": 1793960822642159347,
+  "input_sha256_after": {
+    "/home/alex/HeptaBaoPasskey-20261106-r5/release-r5b.public.json": "89d8cdd189a7da58fcf251d8688202b8a9fb9fd82faa99421f478904b6044a71",
+    "/home/alex/heptabao-android-autofill-20261106-r1/android_live.revision9.py": "4d20ac12535e592da591b5c63cf7971ef2443c6b219f36e250aac2074fd3ce1e",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/fixture-good.apk": "ddead923325a10232749b76bee39e469eda8e7dce51b58b2d3cd47bce2f1076c",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/fixture-wrong-certificate.apk": "05c382bd166ba8ac69077f0bd0d57ee383967f71f2c2ac5c48e4390e7959cd45",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/fixture-wrong-package.apk": "a9f5c47b15cfaac2c2ad579de218641ce9ada1da050bd7be83f860fb52f35b36",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/provider.apk": "5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/build-receipt.json": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047"
+  },
+  "input_sha256_before": {
+    "/home/alex/HeptaBaoPasskey-20261106-r5/release-r5b.public.json": "89d8cdd189a7da58fcf251d8688202b8a9fb9fd82faa99421f478904b6044a71",
+    "/home/alex/heptabao-android-autofill-20261106-r1/android_live.revision9.py": "4d20ac12535e592da591b5c63cf7971ef2443c6b219f36e250aac2074fd3ce1e",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/fixture-good.apk": "ddead923325a10232749b76bee39e469eda8e7dce51b58b2d3cd47bce2f1076c",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/fixture-wrong-certificate.apk": "05c382bd166ba8ac69077f0bd0d57ee383967f71f2c2ac5c48e4390e7959cd45",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/fixture-wrong-package.apk": "a9f5c47b15cfaac2c2ad579de218641ce9ada1da050bd7be83f860fb52f35b36",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/apks/provider.apk": "5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8",
+    "/home/alex/heptabao-android-autofill-20261106-r1/candidate5/build-receipt.json": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047"
+  },
+  "inputs_unchanged": true,
+  "launch_binding_sha256": "f92efc883e3a4b90a5c79c8d399cb6e69d8fac3ec3e1b8535d141cb795d0224a",
+  "phone_report_sha256": "be859adb806b91a57f8cf206e5880e5b995e596641b3caca8a321bd29b2af251",
+  "run": "r7",
+  "schema": 1,
+  "started_unix_ns": 1793960799825865687,
+  "wrapper_sha256": "2112bf11a314961047928ac1e8578c265c28b01a1253d29d0e9a4d02c729ec56"
+}

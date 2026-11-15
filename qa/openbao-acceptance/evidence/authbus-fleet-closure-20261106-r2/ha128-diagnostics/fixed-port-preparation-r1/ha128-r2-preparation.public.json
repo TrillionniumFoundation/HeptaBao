@@ -1,0 +1,25 @@
+{
+  "baseProductUnchanged": true,
+  "caseCountStill128": true,
+  "dispatched": false,
+  "files": {
+    "launch_ha128_current_r2.body.py": {
+      "bytes": 12347,
+      "parentSha256": "6a480f3bc99515e50046c565787b729d0180f1f96996df1e3799015530541826",
+      "sha256": "b7ceb51490a316aeb3a78449a53474678b214af2e023f2991ec3dabf935c56bb"
+    },
+    "launch_ha128_current_r2.py": {
+      "bytes": 106163,
+      "parentSha256": "4ff02b869535c4acec1eb9586c897d281384bd900af15b91a503f64153b104e7",
+      "sha256": "b0b9c320a462828045a1046d99a9e2b65b50610780513a37b0d62e8d8a49d96a"
+    }
+  },
+  "originalBudgetsUnchanged": true,
+  "replacementCount": 7,
+  "requiredBeforeLaunch": [
+    "ai395 existing manager exact peer/port permission with reviewed rollback",
+    "new X230 port strict TCP/TLS/original urllib proof",
+    "new roots absent; original source and artifact admission remains unchanged"
+  ],
+  "schema": "heptabao.ha128-port-only-successor-preparation.r1"
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.authbus-openai-r3-once-controller.v1",
+  "status": "failed_or_blocked",
+  "controllerPid": 1943898,
+  "startedUtc": "2026-10-19T07:12:17.184356+00:00",
+  "startedNs": 501451678826049,
+  "originalDeadlineNs": 501631678826049,
+  "originalBudgetSeconds": 180,
+  "submissionCount": 0,
+  "automaticRetry": false,
+  "frozenOverlaySha256": "bc348a4e5c509b3c9512f4be4467e70ef9e508f87aed7ef99aac67f19a075aa0",
+  "sourcePacketSha256": "29ff0adcfffe64632d683482c34a10696329796b7a56f3d656502b546c881fb7",
+  "sourceManifestSha256": "e47f38e9b04d68d9570b1432c71f3fb42764d79309c80f4de5eb4bfc84cc0d5b",
+  "sdkInputManifestSha256": "b4aad3e15807db250900505d3cf5ab0e1d319d762c08cdb5a839edf214fb3a65",
+  "actualNativeHeptaBao": false,
+  "realExternalProvider": false,
+  "realCredentials": false,
+  "productionMutation": false,
+  "controllerScriptSha256": "6f5bc0e4ae9e6e59e34b263b32bc55b052fba94c85697631e7e8c587046ec9ad",
+  "interruptionSignals": [],
+  "journalSequence": 2,
+  "controllerIdentity": {
+    "pid": 1943898,
+    "ppid": 1123966,
+    "pgid": 1943898,
+    "sid": 1943898,
+    "start_ticks": 50145152,
+    "uid": 1000,
+    "state": "R"
+  },
+  "bootId": "60f81bb0-a4d6-453a-a6e5-3d04e7978cb7",
+  "packetInput": {
+    "bytes": 66245,
+    "sha256": "29ff0adcfffe64632d683482c34a10696329796b7a56f3d656502b546c881fb7",
+    "identity": [
+      2050,
+      50116622,
+      66245,
+      1792393937083878869,
+      1792393937083878869,
+      33152,
+      1000,
+      1
+    ]
+  },
+  "failure": "owned_directory_custody_required",
+  "timedOut": false,
+  "finishedNs": 501451708880273,
+  "finishedUtc": "2026-10-19T07:12:17.208433+00:00",
+  "elapsedSeconds": 0.030054224,
+  "withinOriginal180Seconds": true
+}

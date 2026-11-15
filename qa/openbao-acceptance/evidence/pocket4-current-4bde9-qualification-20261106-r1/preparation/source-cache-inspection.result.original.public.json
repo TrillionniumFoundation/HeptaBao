@@ -1,0 +1,96 @@
+{
+  "at_utc": "2026-11-06T17:14:57.515261+00:00",
+  "existing_libclang": [
+    {
+      "bytes": 64644584,
+      "path": "/usr/lib/llvm-18/lib/libclang-cpp.so.18.1",
+      "sha256": "5ad2aa56cdb24612047f3b87f77bf9e25ffac2c3dfdcc40af3a174a974753cf8"
+    },
+    {
+      "bytes": 34305408,
+      "path": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+      "sha256": "f2ced409c57ee6de54bbc0e0429a65595817a60eafb901b353c8a214148e2c64"
+    },
+    {
+      "bytes": 32691984,
+      "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b"
+    },
+    {
+      "bytes": 60307904,
+      "path": "/usr/lib/x86_64-linux-gnu/libclang-cpp.so.21.1",
+      "sha256": "ff79833fd7e7707f3c715e9518f9edcec7371800ec22062c81d155fec3ad0daa"
+    }
+  ],
+  "existing_objects": {
+    "09c14eae7a3b52dee8ce3af3175dad5900ac59ec": false,
+    "4bde9aee03fcd27c59e13607e529b1cee594b249": false,
+    "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec": false
+  },
+  "original_path_tools": {
+    "cc": {
+      "bytes": 1305304,
+      "path": "/usr/bin/cc",
+      "resolved": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88"
+    },
+    "clang": {
+      "bytes": 137584,
+      "path": "/usr/bin/clang",
+      "resolved": "/usr/lib/llvm-21/bin/clang",
+      "resource_path": "/usr/lib/llvm-21/lib/clang/21",
+      "resource_stddef_exists": true,
+      "resource_stddef_sha256": "b3e62a046ddf28d09eedebe6eb9461cb7060e47cad2c69964b222c4eea10347e",
+      "sha256": "412bbe8c60571a1eb06f48fde89635033621caeb01a9b4ee76d46711bae8e932"
+    },
+    "clang-18": {
+      "bytes": 140672,
+      "path": "/usr/bin/clang-18",
+      "resolved": "/usr/lib/llvm-18/bin/clang",
+      "resource_path": "/usr/lib/llvm-18/lib/clang/18",
+      "resource_stddef_exists": true,
+      "resource_stddef_sha256": "23b9e2c5d397e05164b24bb46466bf14d951b8caec2d8e1a67a95b14f9a38625",
+      "sha256": "690ac43e62210d7816e8d2c6a828549b5e690368c8c8b24dc1aa30fb5530b4c4"
+    },
+    "clang-21": {
+      "bytes": 137584,
+      "path": "/usr/bin/clang-21",
+      "resolved": "/usr/lib/llvm-21/bin/clang",
+      "resource_path": "/usr/lib/llvm-21/lib/clang/21",
+      "resource_stddef_exists": true,
+      "resource_stddef_sha256": "b3e62a046ddf28d09eedebe6eb9461cb7060e47cad2c69964b222c4eea10347e",
+      "sha256": "412bbe8c60571a1eb06f48fde89635033621caeb01a9b4ee76d46711bae8e932"
+    },
+    "cmake": {
+      "bytes": 14253272,
+      "path": "/usr/bin/cmake",
+      "resolved": "/usr/bin/cmake",
+      "sha256": "6e1dccda39845415d68eabb934c598998949c99ec4668625d571aee1827b05c7"
+    },
+    "ninja": {
+      "bytes": 350624,
+      "path": "/usr/bin/ninja",
+      "resolved": "/usr/bin/ninja",
+      "sha256": "91e9548850cda2799facfdaa7abe33f9e978832f85e98212255708a7bbe437f2"
+    }
+  },
+  "production_changed": false,
+  "rust_compilation_executed": false,
+  "schema": "heptabao.pocket4-existing-source-cache-inspection.v1",
+  "source": "/home/alex/heptabao-replacement-unified-20261105-r5/source",
+  "source_clean": true,
+  "source_file_pins": {
+    "Cargo.lock": {
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "Cargo.toml": {
+      "bytes": 615,
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "source_head": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+  "source_tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a",
+  "status": "observed",
+  "tools_installed": false
+}

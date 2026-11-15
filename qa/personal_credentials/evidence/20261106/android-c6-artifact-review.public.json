@@ -1,0 +1,271 @@
+{
+  "apk_hashes_after": {
+    "fixture-good": "fe132993d1ffae96987af214456bd1804a5ed12b844e5ea9bbd0531109d8f035",
+    "fixture-wrong-certificate": "fea79164c6693ff393bbf8ec01a64302c919bb34c7f90ced13dd7963139aac3b",
+    "fixture-wrong-package": "9c2e196fe270f87d373e32df0a63ff7773fdad25aca0db9c2f81acfac0609422",
+    "provider": "10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a"
+  },
+  "artifacts": {
+    "fixture-good": {
+      "bytes": 20814,
+      "generated_config_sha256": "25108b77f1da553291c31889153f84afe84456e5461678dd6368b86a02c192c7",
+      "package": "org.heptabao.synthetic.fixture",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-good.apk",
+      "sha256": "fe132993d1ffae96987af214456bd1804a5ed12b844e5ea9bbd0531109d8f035",
+      "signer_sha256": "42f36d91550b51847a8b362f8d7715b53f48db207a8b3f96de52570e78846a15"
+    },
+    "fixture-wrong-certificate": {
+      "bytes": 20814,
+      "generated_config_sha256": "25108b77f1da553291c31889153f84afe84456e5461678dd6368b86a02c192c7",
+      "package": "org.heptabao.synthetic.fixture",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-certificate.apk",
+      "sha256": "fea79164c6693ff393bbf8ec01a64302c919bb34c7f90ced13dd7963139aac3b",
+      "signer_sha256": "20fe112ad3f8765bb99eefaab367cf91449f315ce228ee9b9b8037c8ac8964e0"
+    },
+    "fixture-wrong-package": {
+      "bytes": 20814,
+      "generated_config_sha256": "25108b77f1da553291c31889153f84afe84456e5461678dd6368b86a02c192c7",
+      "package": "org.heptabao.synthetic.decoy",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-package.apk",
+      "sha256": "9c2e196fe270f87d373e32df0a63ff7773fdad25aca0db9c2f81acfac0609422",
+      "signer_sha256": "42f36d91550b51847a8b362f8d7715b53f48db207a8b3f96de52570e78846a15"
+    },
+    "provider": {
+      "bytes": 5673467,
+      "generated_config_sha256": "7851383a3d49af1140e461c3f07e2446b258ca0ae9426ec9d3bfeab83a3b6c10",
+      "package": "org.heptabao.personal.preview",
+      "path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk",
+      "sha256": "10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a",
+      "signer_sha256": "011229f8f6ee83bfc2c913955eea2fddf62e9343fef2371d2b8a98351158e619"
+    }
+  },
+  "binary_transport": {
+    "base_sha256": "5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8",
+    "isolated_replay_verified": true,
+    "no_source_or_old_apk_changed": true,
+    "patch_bytes": 1575066,
+    "patch_path": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6-review/provider-c5-to-c6.patch",
+    "patch_sha256": "5575a28ae33e1dc430824c260094c74d974368ac3bc00b8c3353f846c47d94b5",
+    "target_sha256": "10028da82fede388096362d0bf2c6d106bd1e8823a12c17c022f8115adcf262a"
+  },
+  "build_receipt_sha256": "327060e7d1a5bb5edd3634307a448d9e87c3cb578a3a2b5e09cc1b256760a33e",
+  "checks": {
+    "all_four_signatures_match": true,
+    "backup_manifest_disabled": true,
+    "candidate6_closed_diagnostics_in_dex": true,
+    "cloud_and_device_transfer_nine_domains_excluded": true,
+    "dependency_digest_matches": true,
+    "four_apk_hashes_match_build": true,
+    "min_target_sdk34": true,
+    "no_permissions_including_network": true,
+    "nondebug_and_cleartext_disabled": true,
+    "nonexported_auth_and_bound_service": true,
+    "source_inventory_matches_build": true,
+    "tool_files_unchanged": true
+  },
+  "checks_passed": 12,
+  "commands": [
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-good.apk"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "finished_unix_ns": 1793963161463364000,
+      "label": "fixture-good-verify",
+      "started_unix_ns": 1793963161113029000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "68456690b8f75c9428db17ddbcb753c8079cc4d1fbc1ee41d7ac50d916ec7914"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-certificate.apk"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "finished_unix_ns": 1793963161679662000,
+      "label": "fixture-wrong-certificate-verify",
+      "started_unix_ns": 1793963161463521000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a12f8d9dd59538fb4c854f43a6c2c2afce657d99941aab8c625d66949a1dac3c"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/fixture-wrong-package.apk"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "finished_unix_ns": 1793963161896986000,
+      "label": "fixture-wrong-package-verify",
+      "started_unix_ns": 1793963161679706000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "68456690b8f75c9428db17ddbcb753c8079cc4d1fbc1ee41d7ac50d916ec7914"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/apksigner",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "finished_unix_ns": 1793963162152822000,
+      "label": "provider-verify",
+      "started_unix_ns": 1793963161897032000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5f1303e97186de319c70ce85204dc81fc762c05d827a2371a6cb4b7f8bb41b02"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "xmltree",
+        "--file",
+        "AndroidManifest.xml",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "finished_unix_ns": 1793963162161244000,
+      "label": "provider-manifest-tree",
+      "started_unix_ns": 1793963162152879000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7a2f23c3590f99e15ab590c55fe55ecd22536af2e43137c97f7bc207497643cd"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "xmltree",
+        "--file",
+        "res/xml/data_extraction_rules.xml",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "finished_unix_ns": 1793963162168358000,
+      "label": "provider-data-extraction-tree",
+      "started_unix_ns": 1793963162161594000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "03fd67f0e66d2b365809181cfac21f4cf8da2f9a54e8613a7351b8083dc7f03e"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+        "dump",
+        "resources",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6/apks/provider.apk"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "finished_unix_ns": 1793963162175189000,
+      "label": "provider-resources",
+      "started_unix_ns": 1793963162168506000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "eb4217b0ab184021d77dd88340e2be58150381bb1824d09e901e8c872f224361"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--no-pager",
+        "diff",
+        "--no-index",
+        "--binary",
+        "--",
+        "old/provider.apk",
+        "new/provider.apk"
+      ],
+      "cwd": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6-review/transport",
+      "exit_code": 1,
+      "finished_unix_ns": 1793963162382858000,
+      "label": "provider-binary-diff",
+      "started_unix_ns": 1793963162194236000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5575a28ae33e1dc430824c260094c74d974368ac3bc00b8c3353f846c47d94b5"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--binary",
+        "-p2",
+        "--check",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6-review/provider-c5-to-c6.patch"
+      ],
+      "cwd": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6-review/transport/replay",
+      "exit_code": 0,
+      "finished_unix_ns": 1793963162413999000,
+      "label": "provider-patch-check",
+      "started_unix_ns": 1793963162383535000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--binary",
+        "-p2",
+        "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6-review/provider-c5-to-c6.patch"
+      ],
+      "cwd": "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate6-review/transport/replay",
+      "exit_code": 0,
+      "finished_unix_ns": 1793963162444907000,
+      "label": "provider-patch-replay",
+      "started_unix_ns": 1793963162414015000,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "crypto_interop": {
+    "checks": 12,
+    "kdf": "argon2id-v19-m65536-t3-p4",
+    "ok": true,
+    "rust_to_java_digest_match": true
+  },
+  "device_operations": 0,
+  "finished_unix_ns": 1793963162453690000,
+  "production_qualified": false,
+  "provider_dex_sha256": "c8ad7bce8ad2a984d71e6cc61fcf7cf190999bbfc47b9b3d4dd666e554134237",
+  "purpose": "candidate6_actual_apk_static_review_and_transport",
+  "result": "static_artifact_review_passed_device_not_run",
+  "schema": 1,
+  "source_hashes_after": {
+    "clients/android/README.md": "c55d868c3c9f7ef5c7b9ee6a16803725b98d85b7ac5c699539a30cc97842f7c2",
+    "clients/android/fixture/AndroidManifest.xml": "27d5239184b585369629adef717ea1026b34de299ca068964ca4f78a913480ee",
+    "clients/android/fixture/java/org/heptabao/fixture/CiphertextProvider.java": "e6a9eba48713ea7ce83b021d0a16808da048803915ce8ea31eefd764238170ef",
+    "clients/android/fixture/java/org/heptabao/fixture/FixtureActivity.java": "921d208337bce033f523f9516fe282f034399d5e7c5b71cdbeaef836232023cb",
+    "clients/android/fixture/res/layout/fixture.xml": "c8d9fa2e8b60dcfc01cbe87097fcc6340cb025368a36a42d1c3db48e84c31b67",
+    "clients/android/provider/AndroidManifest.xml": "4867892e336da619ef787e7270ece2694b979cad2eddf00a5c82bb3c3cfacbeb",
+    "clients/android/provider/java/org/heptabao/preview/AuthActivity.java": "8410b9b9c183c63d9b776086d0ce1b931eddc5aebff8908bff727a23a94ffc85",
+    "clients/android/provider/java/org/heptabao/preview/MainActivity.java": "e18b75a03ca7bfd658716201e0d9cd9beaf88442ae9e920ed5a6f911885661c6",
+    "clients/android/provider/java/org/heptabao/preview/StrictJson.java": "c591b6163076a5696c58a73c77cebff6ddc7c8c8213b25e231b730fa04ac15df",
+    "clients/android/provider/java/org/heptabao/preview/TargetPolicy.java": "12e7b97a57c87f636de1886194ddc57870dbcc0b168b47238ca52668d86387db",
+    "clients/android/provider/java/org/heptabao/preview/VaultApplication.java": "b6714fc013e82af862f85a0224ea23acdeea92ddd1747a472636d0951f677da1",
+    "clients/android/provider/java/org/heptabao/preview/VaultAutofillService.java": "10eb92b71d769e03d503926d322d963ff50cd984d00af00d901a5349cad7678a",
+    "clients/android/provider/java/org/heptabao/preview/VaultCrypto.java": "9a3874a0e969458207515b4db9ee9c9a159565a14a07cea2876da2616b90d1cd",
+    "clients/android/provider/java/org/heptabao/preview/VaultFiles.java": "910792cf3346fabce49ca352b5e577753e1ce1f7bf5357c9729d4ac88e682a0e",
+    "clients/android/provider/res/layout/presentation.xml": "1650b8cf9157cf8b59ff283d483d14761cf6f5f2b27764a7df4a506665b98f1d",
+    "clients/android/provider/res/xml/autofill_service.xml": "43c179273b424145483f05b7434b424c821643c4bb3465b04ade980b205456c0",
+    "clients/android/provider/res/xml/data_extraction_rules.xml": "73c5c3fb986b6277fc2140a66470d0ba8800f28c889720142ba55c6a0f613a14",
+    "clients/android/tests/org/heptabao/preview/CryptoInterop.java": "8d775de9a5f008853c07176884a0d1682f6bf3384494d6ffbe820c8ab208f2b8",
+    "qa/personal_credentials/android_build.py": "138cd26f224f65b31871c2ab3da1c95b83717d883dfa56c6cf9417d3c95f4273",
+    "qa/personal_credentials/android_prepare.py": "d2053615ad116fc3111093f567451e81f73fd0969b5776d6194d0b657a7134ec"
+  },
+  "started_unix_ns": 1793963161078177000,
+  "wrapper_sha256": "da1189ebf4abad43c026d6d4c3648e9354a4232b73eb7fc7ed9bf74c2357e5d2"
+}

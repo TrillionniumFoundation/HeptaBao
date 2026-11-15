@@ -1,0 +1,11 @@
+HeptaBao HA TLS listener ready at 192.168.0.8:31040
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":359,"entry_remaining_ns":999985583,"exit_remaining_ns":999626541,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":7237,"entry_remaining_ns":999997667,"exit_remaining_ns":992760459,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":78,"entry_remaining_ns":999998000,"exit_remaining_ns":999919458,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":89,"entry_remaining_ns":999998000,"exit_remaining_ns":999908791,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"health","forwarded":false,"status":503,"elapsed_us":76,"entry_remaining_ns":999997917,"exit_remaining_ns":999921125,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHTTP-RESPONSE-WRITE-FAILURE io_kind=invalid_input accepted_plaintext_bytes=277 flush_attempted=true original_deadline_expired=false
+heptabao-raft-rpc: kind=pre_vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=750 stage=transport
+heptabao-raft-rpc: kind=pre_vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=751 stage=transport
+heptabao-raft-rpc: kind=pre_vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=751 stage=transport

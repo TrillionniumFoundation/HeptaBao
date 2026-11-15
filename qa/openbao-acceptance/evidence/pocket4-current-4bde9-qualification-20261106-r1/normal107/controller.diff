@@ -1,0 +1,29 @@
+--- ai395-approved-controller.py
++++ pocket4-controller.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""One owned ai395 source/build/test attempt. No production service operations."""
++"""One owned Pocket4 source/build/test attempt. No production service operations."""
+ import fcntl
+ import hashlib
+ import json
+@@ -13,7 +13,7 @@
+ import time
+ 
+ os.umask(0o077)
+-ROOT = Path('/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1')
++ROOT = Path('/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1')
+ SOURCE = ROOT / 'source-4bde9'
+ OUT = ROOT / 'build-test-r1'
+ COMMIT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+@@ -21,8 +21,8 @@
+ PARENT = '09c14eae7a3b52dee8ce3af3175dad5900ac59ec'
+ OLD_HEAD = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+ FORMAT_PATCH = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+-BUNDLE_SHA = 'a2e6cfdca310a4a05e6f4093a04969543b606bd9d7af0fcbe2f7a4189e7d0349'
+-TOOLCHAIN = Path('/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin')
++BUNDLE_SHA = '9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0'
++TOOLCHAIN = Path('/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin')
+ PINS = {
+     'cargo': 'ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24',
+     'rustc': '3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2',

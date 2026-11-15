@@ -1,0 +1,57 @@
+{
+  "adb_calls": 0,
+  "android_device_qualified": false,
+  "builds": 0,
+  "driver_sha256": "8a6fcd3959ef3d428ffc3888b0118c6cb381ee8afb7b7eba50a06a344a9ad3a9",
+  "external_review": false,
+  "host_controls_executed_by_this_review": {
+    "known_synthetic_upstream_shape_accepted": true,
+    "qa10_two_space_client_shape_rejected": true
+  },
+  "limits": [
+    "Internal review only; no external independent security review.",
+    "Synthetic host parser controls do not establish actual OEM field support or Android Autofill delivery.",
+    "Old QA10 44 host passes and actual parser counterexample remain original evidence; QA11 does not retroactively qualify QA10.",
+    "This review permits the already authorized exact-candidate device experiment; it does not declare its outcome."
+  ],
+  "official_windowstate": {
+    "behavior": "mBaseLayer and mSubLayer print without newline before mToken; exact standalone and layer-prefixed token shapes are supported.",
+    "blob": "2f25587ee91feb509a05d1a491db44d9986753c0",
+    "url": "https://android.googlesource.com/platform/frameworks/base/+/android16-qpr2-release/services/core/java/com/android/server/wm/WindowState.java"
+  },
+  "parser_control_network_calls": 0,
+  "production_qualified": false,
+  "review_findings": {
+    "fresh_final_focus_required": true,
+    "generic_fields_unique_before_expected_value_matching": true,
+    "no_new_static_blocker": true,
+    "query_is_single_current_server_record_not_package_filtered": true,
+    "raw_wms_ams_never_persisted_or_reported": true,
+    "same_parent_window_required_in_server_record": true,
+    "top_resumed_exact_command_has_no_client_dump_flags": true,
+    "window_token_two_evidenced_shapes_only_and_generic_unique": true,
+    "wms_popup_and_parent_binding_precedes_top_record_query": true
+  },
+  "reviewed_diff_sha256": "0d4781b879369ed518a7299400d7283a5bf1a7596b42d188e4b4568a2b3e71a9",
+  "root_independent_host_suite": {
+    "original_receipt_read_by_reviewer": true,
+    "receipt_sha256": "e547c7427f6f51c5e788c30886e6c629ca16d119635313a752330614ac67eedf",
+    "suite_repeated_by_this_review": false,
+    "tests_passed": 57
+  },
+  "schema": 1,
+  "scope": "internal_static_review_and_two_host_parser_controls",
+  "test_source_sha256": "53471f14b5eb3939e44a04711ed0edb43e55abc0e76b9f9602923375fdd9ec9f",
+  "unchanged_ast_nodes": [
+    "Device.ui",
+    "Device.wait",
+    "Device.tap",
+    "Device.authentication",
+    "Device.auth_task",
+    "Device.node_geometry",
+    "Device.command",
+    "main",
+    "restore",
+    "validate_journal"
+  ]
+}

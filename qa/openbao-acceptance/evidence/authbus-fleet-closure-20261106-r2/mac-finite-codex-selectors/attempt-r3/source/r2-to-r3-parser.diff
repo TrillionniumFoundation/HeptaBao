@@ -1,0 +1,74 @@
+--- old-parser-r1
++++ new-parser-r3
+@@ -40,6 +40,33 @@
+         raise SelectorRefused('selector_value_utf8') from None
+     need(not any(ord(c) < 32 or ord(c) == 127 for c in result), 'selector_value_no_control')
+     return result
++
++
++# XNU kern_exec.c builds an additional apple[] string vector in p_argslen.
++# Exact public source: blob 47420f9f8f620233f112e87a51ed8f576caa3546.
++# Values can be scrubbed to NUL by the running process. No auxiliary value is
++# retained, and unknown segments or later environment selectors still refuse.
++APPLE_KEYS = frozenset((b'pfz', b'MallocNanoZone', b'stack_guard', b'malloc_entropy',
++    b'ptr_munge', b'main_stack', b'executable_file', b'dyld_file', b'executable_cdhash',
++    b'executable_boothash', b'dyld_flags', b'subsystem_root_path', b'ptrauth_disabled',
++    b'arm64e_abi', b'th_port', b'vm_force_4k_pages', b'MallocExperiment',
++    b'security_config', b'HardenedRuntime'))
++
++
++def auxiliary_tail(raw):
++    if not any(raw):
++        return 0
++    need(len(raw) <= 8192 and raw.endswith(b'\0'), 'selector_bounded_complete_apple_vector')
++    segments = [part for part in raw.split(b'\0') if part]
++    need(1 <= len(segments) <= len(APPLE_KEYS), 'selector_apple_vector_segment_count')
++    seen = set()
++    for part in segments:
++        key, separator, value = part.partition(b'=')
++        need(separator == b'=' and key in APPLE_KEYS and key not in seen,
++             'selector_unknown_or_duplicate_apple_vector_segment')
++        text(value)
++        seen.add(key)
++    return len(segments)
+ 
+ 
+ def parse_procargs(raw):
+@@ -66,7 +93,11 @@
+     selectors, presence = {}, {}
+     environ_count = 0
+     while at < len(raw) and raw[at] != 0:
++        segment_start = at
+         value = take()
++        if value.partition(b'=')[0] in APPLE_KEYS:
++            at = segment_start
++            break
+         environ_count += 1
+         need(environ_count <= MAX_ENVIRON, 'selector_environment_count_bound')
+         key, separator, contents = value.partition(b'=')
+@@ -80,11 +111,10 @@
+             need(decoded_key not in presence, 'selector_duplicate_presence_environment_key')
+             presence[decoded_key] = True
+         # All other key names and all credential-bearing values are discarded.
+-    # XNU's restricted-process path can end immediately after argv. With a
+-    # returned environment section, every entry must terminate within the
+-    # returned buffer. Its last NUL may end the buffer; any remaining padding
+-    # must be zero. No heuristic reads beyond an ambiguous envelope.
+-    need(not any(raw[at:]), 'selector_procargs_zero_tail')
++    # Restricted processes may end immediately after argv. Otherwise the
++    # saved strings can include the public apple[] vector after the environment.
++    # Validate every nonempty auxiliary segment; never skip an unknown tail.
++    auxiliary_count = auxiliary_tail(raw[at:])
+ 
+     overrides = []
+     unknown_override_count = 0
+@@ -151,6 +181,9 @@
+     # storage. Native version/config/backend validation remains a later gate.
+     public = {
+         'argc': argc, 'environmentEntriesReturned': environ_count,
++        'appleAuxiliarySegmentsValidated': auxiliary_count,
++        'environmentCountExcludesRecognizedAppleVector': True,
++        'auxiliaryValuesRetained': False,
+         'environmentSectionState': 'entries_returned' if available else 'unavailable_or_empty',
+         'missingEnvironmentTreatedAsDefault': False,
+         'selectorPresence': {key.decode(): (key.decode() in selectors if available else None) for key in PATH_KEYS},

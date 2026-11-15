@@ -1,0 +1,27 @@
+{
+  "installedSchemaSourcePins": {
+    "dist/openclaw-agent-db-DKpxi-Ll.js": "5c99ab6de1ccc1419ed1bdbc783b79203afc34e564f794df4d91bf10e0b53360",
+    "dist/openclaw-state-db-DzSsA9Ji.js": "ba920b2e6f63293a27c34615fc31dcb16a20a68a1e1e34fbccdcac56a9608149"
+  },
+  "launcherBytes": 101655,
+  "launcherSha256": "8674a4cc5435400c40326905ff6b6150c25ae02246aa39cd84200e7480d99b29",
+  "maximumDatabaseBytes": 67108864,
+  "productionDatabaseSizesQualified": false,
+  "productionReadAuthorized": false,
+  "productionWriteAuthorized": false,
+  "root": "/Users/qianqi/heptabao-authbus-whole-database-qualification-20261106-r2",
+  "schema": "heptabao.whole-sqlite-mac-preparation.r2",
+  "schemaPins": {
+    "agent": "d37c6e104013adba853de170ca13588cef7d002215ce9417075139b7f95ee681",
+    "state": "aaca087250e53305be6994a516dbd260423b041330845ec457824fad82824ae5"
+  },
+  "sharedSeconds": 45,
+  "sourcePins": {
+    "mac_whole_sqlite_worker_r2.py": "668778cdf4d1f052f28b1bbe9aeaf2f4f917a074358d73bde633e3c9f2161e83",
+    "qualify_whole_sqlite_bundle_r2.py": "810bacc8ddeea75a1735709b2f176a88361410b32d32ee07def434e3decf1127",
+    "whole_sqlite_bundle_r2.py": "e2a93403d1c8af3256eadffa95061076c0977f52bdb37c99d68446abe6a8babd"
+  },
+  "sourceVfs": "unix-posix",
+  "supervisorSeconds": 70,
+  "workerSeconds": 30
+}

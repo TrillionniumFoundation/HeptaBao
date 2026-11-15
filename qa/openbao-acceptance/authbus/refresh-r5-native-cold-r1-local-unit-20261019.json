@@ -1,0 +1,197 @@
+{
+  "schema": "authbus-r5-native-cold-local-unit-v1",
+  "ok": true,
+  "checkedAtUtc": "2026-10-19T05:45:22.877826+00:00",
+  "actualSdk": false,
+  "actualNativeHeptaBao": false,
+  "actualColdSdkProcess": false,
+  "syntheticFixtureContractsOnly": true,
+  "pythonVersion": "3.12.14",
+  "nodeVersion": "v24.19.0",
+  "runs": [
+    {
+      "name": "python-contracts",
+      "exitCode": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "d674c58e0d5f459b3371cb8d76e77a44633b5a5789777eb3e43e9cf5570c99ac",
+      "stdoutBytes": 0,
+      "stderrBytes": 3604
+    },
+    {
+      "name": "node-fixture",
+      "exitCode": 0,
+      "stdoutSha256": "fa0b30cea91063bfc85c3ac4972b3bb6a2868d36477d51db1ea86635f04fc51f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 1187,
+      "stderrBytes": 0
+    }
+  ],
+  "checksPassed": 35,
+  "checks": [
+    {
+      "case": "test_cold_provider_request_is_refused_before_native_read",
+      "passed": true
+    },
+    {
+      "case": "test_content_length_exact_limit",
+      "passed": true
+    },
+    {
+      "case": "test_date_must_be_timezone_qualified",
+      "passed": true
+    },
+    {
+      "case": "test_duplicate_and_nonfinite_json_rejected",
+      "passed": true
+    },
+    {
+      "case": "test_duplicate_or_transfer_framing_rejected",
+      "passed": true
+    },
+    {
+      "case": "test_duplicate_provider_request_is_refused_before_native_read",
+      "passed": true
+    },
+    {
+      "case": "test_exact_configured_routes",
+      "passed": true
+    },
+    {
+      "case": "test_expired_original_budget_never_sends_backend_or_provider",
+      "passed": true
+    },
+    {
+      "case": "test_expired_original_deadline_rejected",
+      "passed": true
+    },
+    {
+      "case": "test_noncanonical_or_excessive_body_rejected",
+      "passed": true
+    },
+    {
+      "case": "test_nonfault_response_preserves_native_bytes_and_date",
+      "passed": true
+    },
+    {
+      "case": "test_original_deadline_only_shortens",
+      "passed": true
+    },
+    {
+      "case": "test_private_read_rejects_symlink_and_size",
+      "passed": true
+    },
+    {
+      "case": "test_provider_ack_loss_is_after_one_native_observation",
+      "passed": true
+    },
+    {
+      "case": "test_provider_rejects_published_or_unbound_native_state",
+      "passed": true
+    },
+    {
+      "case": "test_provider_sends_only_after_bound_unknown",
+      "passed": true
+    },
+    {
+      "case": "test_route_aliases_and_unconfigured_authorities_rejected",
+      "passed": true
+    },
+    {
+      "case": "test_unconfigured_request_never_reaches_backend",
+      "passed": true
+    },
+    {
+      "case": "test_unknown_ack_drop_requires_commit_then_exact_readback",
+      "passed": true
+    },
+    {
+      "case": "test_unknown_changed_readback_never_counts_as_committed_fault",
+      "passed": true
+    },
+    {
+      "case": "test_unknown_rejected_native_cas_is_never_counted_as_lost_ack",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_discovery_body_matches_frozen_actual_r5",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_package_bin_metadata_is_not_execution",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_entrypoint_change_is_detectable",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_escape_bin_rejected",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_symlink_bin_rejected",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_private_file_roundtrip_and_excess_rejected",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_original_budget_is_finite",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_controller_private_root_unreadable_even_outside_home",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_outside_write_refused",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_external_dns_refused_before_lookup",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_process_spawn_refused_before_exec",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_owned_private_store_still_accessible",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_expired_parent_budget_refused_before_install",
+      "passed": true
+    },
+    {
+      "case": "native_fixture_restores_guard_after_worker",
+      "passed": true
+    }
+  ],
+  "jsSyntaxPassed": 3,
+  "pythonAstPassed": 2,
+  "frozenBaseFilesUnchanged": 18,
+  "candidateInputs": [
+    {
+      "path": "qa/openbao-acceptance/test_native_v6_authbus_refresh.py",
+      "sha256": "0538692919adcc36b9569282aae253f225f7ed437e964fd97e8a23ce1615a0a7"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_authbus_refresh_live.py",
+      "sha256": "a1e284fda5a7aaf3615b50f46ade6bee58d67a302b0842b952eb5d69e2617f2f"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_worker.mjs",
+      "sha256": "aa454c1ddaf3e546f68f0ffcd17fa61708e946fbcdfe2578cf50289c7e267224"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_fixture_test.mjs",
+      "sha256": "32864913f0c63845710a94f60c65178dfacaadcadd7b12988d495a59fb273744"
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_fixture.mjs",
+      "sha256": "873b0ffc516901648da07da14089bc32ff16464b314f43458f7ac9eef06175c2"
+    }
+  ]
+}

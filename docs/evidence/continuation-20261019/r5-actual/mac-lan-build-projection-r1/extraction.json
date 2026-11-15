@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "bytes": 1725,
+      "local_name": "native-build-receipt.json",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-preflight-b24c6de-20261019-r1/native-build-receipt.json",
+      "sha256": "a7136fc65a829aee509afb9b199e20736b253237f3120ae5603aa7d8d34a3bb1",
+      "tool_eof": true,
+      "tool_version": "16777244:66385927:1725:1792399508027887321:1792399508027887321"
+    },
+    {
+      "bytes": 1192,
+      "local_name": "projection-controller.json",
+      "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-preflight-b24c6de-20261019-r1/projection-controller.json",
+      "sha256": "ee52d43efede975bb5ebcfc99e883781932e80cd66344ac7050200e93fc830c0",
+      "tool_eof": true,
+      "tool_version": "16777244:66385928:1192:1792399508031137488:1792399508031137488"
+    }
+  ],
+  "normalization_performed": false,
+  "retrieval_bytes": 3895,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-physical-followthrough-r1/mac-projection-actual-retrieval.json",
+  "retrieval_sha256": "6823055b14ae1ee55d53a99eff98dde0c984189483bfb2a90488cc75e39a99fa",
+  "schema": "heptabao.exact-returned-public-evidence-extraction.v1"
+}

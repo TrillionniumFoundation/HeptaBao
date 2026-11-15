@@ -1,0 +1,30 @@
+✔ unchanged producer validates enrollment, two exact authorized rotations and slot reuse (73.938959ms)
+✔ no grant and revoked grant stay pending; full single slot preserves backpressure (36.267667ms)
+✔ health ack and fixed report make zero scheduler/provider actions (31.325473ms)
+✔ profile unknown before remote commit retains original intent across cold process state (33.162252ms)
+✔ profile unknown after remote commit retains original intent across cold process state (38.525467ms)
+✔ manifest unknown before remote commit retains original intent across cold process state (34.306831ms)
+✔ manifest unknown after remote commit retains original intent across cold process state (42.841864ms)
+✔ ack unknown before remote commit retains original intent across cold process state (62.583561ms)
+✔ ack unknown after remote commit retains original intent across cold process state (41.060333ms)
+✔ exact retained manifest history resolves an original committed postimage without rewrite (38.778136ms)
+✔ immutable profile collision refuses before canonical mutation (26.131133ms)
+✔ missing private enrollment history cannot adopt a used remote control (20.266626ms)
+✔ close stops admission and awaits the original operation before releasing SQLite/journal (24.882468ms)
+✔ real owned SIGKILL durable-dispatched preserves ack custody and releases SQLite process lock (168.308837ms)
+✔ real owned SIGKILL remote-confirmed-before-receipt preserves ack custody and releases SQLite process lock (162.623449ms)
+✔ modified immutable profile, receipt and control heads cannot hide behind correct version-one history (147.650658ms)
+✔ too-far manifest, ack or producer-slot heads refuse even when original target history remains available (148.79342ms)
+✔ failed parent, intent-file or intent-directory fsync is re-proved before exactly one original dispatch (95.895463ms)
+✔ exact original Python grant/profile/manifest/receipt contract matches new transaction planning (72.469558ms)
+✔ concrete strict TLS/AppRole adapter and unchanged production client perform complete fixed-slot transaction (627.656485ms)
+✔ strict TLS wrong leaf pin prevents HTTP authentication or KV dispatch (55.387565ms)
+✔ real TLS dropped ack response remains unknown and cold coordinator only reads to reconcile (367.90372ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1171.893533

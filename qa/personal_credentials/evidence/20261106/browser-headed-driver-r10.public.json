@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.personal-credentials.headed-driver.v1",
+  "synthetic_only": true,
+  "display_server": "Xvfb",
+  "window_manager": "openbox",
+  "real_headed_chromium": true,
+  "physical_monitor_claimed": false,
+  "owned_processes": [
+    {
+      "name": "openbox",
+      "pid": 2604364,
+      "returncode": 0,
+      "reaped": true
+    },
+    {
+      "name": "Xvfb",
+      "pid": 2604328,
+      "returncode": 0,
+      "reaped": true
+    }
+  ],
+  "bin_sha256": {
+    "Xvfb": "4adf27968d6f78f329f88beb71cbd3d181fa2018850a95ae3716afae2ae236c9",
+    "openbox": "3e20f93a61d47fbb5c2e4ec863226fc77517a5ec809e58f61c58bb20a904af8c"
+  },
+  "browser_exit_code": 0,
+  "browser_report_sha256": "9517ac358ca1b9ff8ef9cf2f0b497f4a9f2da9a923b808736a004311a174b4a7",
+  "browser_summary": {
+    "status": "passed",
+    "passed": 26,
+    "observed": 26,
+    "expected_count": 26,
+    "failed_case": null,
+    "error_type": null,
+    "failure_browser_state": null,
+    "failure_popup_status": null,
+    "failure_document_state": null,
+    "failure_popup_connections": null,
+    "failure_runtime_contexts": null
+  },
+  "status": "passed"
+}

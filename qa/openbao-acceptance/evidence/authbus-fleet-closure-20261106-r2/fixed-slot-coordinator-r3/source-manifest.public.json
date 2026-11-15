@@ -1,0 +1,63 @@
+{
+  "fixedClientProtocol": "heptabao-authbus-fixed-slots-v1",
+  "implementationSha256": "248057b53a13708cc0650b73c83bc86729a7572e0d1bf24768ea94b8d3fd8265",
+  "minimumNodeVersion": "22.13",
+  "originalGrantOracle": {
+    "path": "reference/authbus_coordinator.py",
+    "sha256": "cc46822439dfd33c86d1068c886941a92c5581871474cef846d2aee14ce80fe0"
+  },
+  "originalTransportByteUnchanged": true,
+  "perOperationMs": 30000,
+  "productionActions": 0,
+  "providerCalls": 0,
+  "runtimeFiles": [
+    {
+      "bytes": 2959,
+      "path": "cli.mjs",
+      "sha256": "9c36c47e2a8c0f3ea567321f53b2bde4506a018a6d1905ebd14752ac50553458"
+    },
+    {
+      "bytes": 27398,
+      "path": "coordinator.mjs",
+      "sha256": "2788c8ba026db045a2961c633aad83762ddceb125b174bcd56c0f782da598a77"
+    },
+    {
+      "bytes": 6004,
+      "path": "private-journal.mjs",
+      "sha256": "068b240c36aa30eef04020036685c81d90598f82e598522990bda9c0c0f11315"
+    },
+    {
+      "bytes": 12155,
+      "path": "protocol.mjs",
+      "sha256": "1afa3a7dfaef49003a63edfa2fa48bfb5381a6b0c5cd4d5890c677e824dcdb7c"
+    },
+    {
+      "bytes": 2008,
+      "path": "source-verification.mjs",
+      "sha256": "0a4469d52afa7ada171cb85a41a7102244bf36e3220e80e8e92e1ecb6138f0c1"
+    },
+    {
+      "bytes": 18043,
+      "path": "transport/bounded-outbox.js",
+      "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+    },
+    {
+      "bytes": 8660,
+      "path": "transport/private-outbox-store.js",
+      "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+    },
+    {
+      "bytes": 3434,
+      "path": "transport/production-client.js",
+      "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+    },
+    {
+      "bytes": 26161,
+      "path": "transport/strict-bao-client.js",
+      "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+    }
+  ],
+  "schema": "heptabao.fixed-slot-coordinator-source.r1",
+  "sourceOnlyUntilActualQualification": true,
+  "strictPerRequestMs": 15000
+}

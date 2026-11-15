@@ -1,0 +1,9 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/actual/terminal.original.json": "560588d9a5a4e163a3eed59b43fe9b27a14b8064",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/actual/stdout.original.ndjson": "e528410c7753263756bdca2063c6f74437204c9a",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/actual/classification.original.json": "a1ff8107353936be04e68565425faa2870852361",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/actual/launcher-result.original.json": "ceb2827a0a7814f2d3405eeeb590d03583a1dc13",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/actual/diagnostic-summary.original.json": "aa7ac423f479310157ea39ccfff3f142d70d2331",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/actual/observation-analysis.public.json": "743237538c96224394b3b5fe73aab66703f355a1",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/history10-transport-r1/actual/read-originals.json": "0e663695ca2448e30a817884cf543fd35f193291"
+}

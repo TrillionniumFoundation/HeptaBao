@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.mac5f9d4-staging-dispatch-intent.r1",
+  "beforeDispatchUTC": "2026-11-07 03:58:30 UTC",
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "idempotency_key": "heptabao-mac-normal-5f9d4-source-staging-20261107-r1",
+  "timeout_seconds": 70,
+  "stdinBytes": 142675,
+  "stdinSha256": "4cd4ea46947c31170764f840f34e29ddeb80cf45383c73102ddb3a117f5d427f",
+  "controllerSeconds": 45,
+  "compilerCommands": 0,
+  "productProcesses": 0,
+  "automaticRetry": false
+}

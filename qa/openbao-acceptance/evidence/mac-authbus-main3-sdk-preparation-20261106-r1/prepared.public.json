@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.main3-sdk-worker-preparation.public.r1",
+  "candidateCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "status": "prepared-not-executed-on-mac",
+  "workRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-sdk-20261106-r1",
+  "sources": {
+    "main3_auth_rows_cas_r1.mjs": {
+      "bytes": 3040,
+      "sha256": "b3dc14d160ae8c76a2b50ec21e245e68954e1a956b401a1daa306582bffaa584",
+      "gitBlob": "16021af1af72d3f98d037daa58df5e11cd19d7a0"
+    },
+    "main3_authbus_cache_cas_r1.mjs": {
+      "bytes": 6983,
+      "sha256": "d0d2b19199d299dd8f163f0f18caade0153da9ccabaf9de20f42c89c8a255243",
+      "gitBlob": "b5d69d97738ab2b9f95ef67308693d28089d1c8c"
+    },
+    "main3_sdk_cycle_r1.mjs": {
+      "bytes": 31439,
+      "sha256": "6eda3dd25011aceed591a8a1d4aeac1bba672f63fac7ed0c0690b894a6d7b049",
+      "gitBlob": "d39447cc3882d83e55603105c429719ee615fbac"
+    },
+    "main3_sdk_wire_r1.mjs": {
+      "bytes": 11757,
+      "sha256": "864ed6999b6bfe89824fd48aeff7fee92e09ad9b5c4686a49cefdcc719b01a2d",
+      "gitBlob": "3109beaa3c96f5aba682d0e7a8edea808e61ded4"
+    },
+    "test_main3_sdk_wire_r1.mjs": {
+      "bytes": 11895,
+      "sha256": "3849a107dfbafcce5999a88ada2f0e90bcd5e9ba319d6f272e0b087ba8cd085f",
+      "gitBlob": "e7eee17ee95d63a13d1cb3a292d0615509995414"
+    }
+  },
+  "localWireQualification": {
+    "platform": "linux",
+    "node": "v24.22.1",
+    "cases": 16,
+    "passed": 16,
+    "failed": 0,
+    "realTlsPeers": true,
+    "actualSdkExecuted": false,
+    "macSandboxExecuted": false
+  },
+  "sourceReview": {
+    "sourceBoundOriginalSdkCacheCloseImplemented": true,
+    "globalExitEventFabricationUsed": false,
+    "sdkModificationRequired": false,
+    "pinnedOriginalPluginAndSdkSourcesRequired": true
+  },
+  "macExecuted": false,
+  "providerCalled": false,
+  "productionChanged": false,
+  "productionCutover": false,
+  "plannedCredentialScope": {
+    "selectedOwnerCount": 3,
+    "effectiveReferences": 15,
+    "fixtureAgents": 5,
+    "baseline": "five-local-effective-auth-stores-two-auth-tables-and-six-cache-files",
+    "wholeDatabaseRollback": false,
+    "productionClientRollback": false
+  }
+}

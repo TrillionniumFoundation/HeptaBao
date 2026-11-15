@@ -1,0 +1,50 @@
+--- frozen-wire-r2/main3_sdk_wire_r2.mjs
++++ candidate-wire-r3/main3_sdk_wire_r3.mjs
+@@ -1,6 +1,7 @@
+ /** One current AuthBus cycle, with bounded verified HTTPS and public ordinals.
+- * The outer Mac sandbox admits only the one owned loopback listener. This
+- * adapter never publishes request paths, response bodies, identifiers or hashes.
++ * The outer Mac sandbox admits one port across local machine addresses. This
++ * adapter separately pins exact IPv4, CA, host, and leaf on each response and
++ * never publishes request paths, response bodies, identifiers or hashes.
+  */
+ import https from 'node:https';
+ import http from 'node:http';
+@@ -81,7 +82,7 @@
+       socketObserved:false,socketClosed:false,tlsVerified:false,outcomeUnknown:false,
+       originalHttpMaximumMs:15000,allocatedHttpMs:budget};
+     rows.push(row);
+-    let req,timer=null,ended=false,received=false,pinVerified=false,failureDelivered=false;
++    let req,timer=null,ended=false,received=false,failureDelivered=false;
+     const deadline=process.hrtime.bigint()+BigInt(budget)*1000000n;
+     const fail=code=>{
+       if(failureDelivered)return;
+@@ -106,13 +107,25 @@
+           if(normal)return normal;
+           if(host!==target.hostname||!certificate?.raw||hash(certificate.raw)!==certificateSha256)
+             return safeError('sdk_wire_tls_leaf_pin');
+-          pinVerified=true;return undefined;
++          return undefined;
+         }},response=>{
+         received=true;row.status=response.statusCode;
+         const socket=response.socket;
+         try{
+-          need(pinVerified&&socket.authorized===true&&
+-               hash(socket.getPeerCertificate().raw)===certificateSha256,'sdk_wire_verified_exact_peer');
++          // A TLS callback is a connection verification hook, not a request-local
++          // completion marker. The Mac synthetic reproduction observed a valid
++          // new connection without invoking this request's callback closure.
++          row.tlsSocketAuthorized=socket.authorized===true;
++          row.tlsEndpointMatched=socket.remoteAddress===target.hostname&&socket.remotePort===Number(target.port);
++          row.tlsPeerCertificateAvailable=false;row.tlsHostMatched=false;row.tlsLeafMatched=false;
++          const peer=socket.getPeerCertificate();
++          row.tlsPeerCertificateAvailable=Boolean(peer&&Buffer.isBuffer(peer.raw)&&peer.raw.length>0);
++          if(row.tlsPeerCertificateAvailable){
++            row.tlsHostMatched=tls.checkServerIdentity(target.hostname,peer)===undefined;
++            row.tlsLeafMatched=hash(peer.raw)===certificateSha256;
++          }
++          need(row.tlsSocketAuthorized&&row.tlsEndpointMatched&&row.tlsPeerCertificateAvailable&&
++               row.tlsHostMatched&&row.tlsLeafMatched,'sdk_wire_verified_exact_peer');
+           row.tlsVerified=true;row.tlsVersion=socket.getProtocol();
+           const expected=responseLength(response.headers,response.statusCode);
+           row.responseFraming=response.statusCode===204?'no-body':expected===null?'chunked':'content-length';

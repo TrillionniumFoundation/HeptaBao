@@ -1,0 +1,32 @@
+{
+  "help": "Request:        mounts\nMatching Route: ^mounts$\n\nList the currently mounted backends.\n\n\n## DESCRIPTION\n\nThis path responds to the following HTTP methods.\n\n    GET /\n        Lists all the mounted secret backends.\n\n    GET /<mount point>\n        Get information about the mount at the specified path.\n\n    POST /<mount point>\n        Mount a new secret backend to the mount point in the URL.\n\n    POST /<mount point>/tune\n        Tune configuration parameters for the given mount point.\n\n    DELETE /<mount point>\n        Unmount the specified mount point.",
+  "openapi": {
+    "components": {
+      "schemas": {}
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/mounts": {
+        "description": "List the currently mounted backends.",
+        "get": {
+          "operationId": "mounts-list-secrets-engines",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      }
+    }
+  },
+  "see_also": null
+}

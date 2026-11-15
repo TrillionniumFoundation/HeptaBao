@@ -1,0 +1,32 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-"
+    ],
+    "created_unix_ms": 1793995642650,
+    "cwd": "/home/qian-qi",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1b279171a-fc05-7e2b",
+    "idempotency_key": "rog-current-registered-client-readonly-observation-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b279171a-fc05-7e2b",
+    "request_digest": "8d160ed7e8f36639b285a5cbc70625ad4d4d120d2044cd8424bf996d3ade5130",
+    "request_fingerprint": 10166329529324496441,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b279171a-fc05-7e2b"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b279171a-fc05-7e2b"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

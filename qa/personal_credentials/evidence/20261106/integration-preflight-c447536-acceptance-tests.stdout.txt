@@ -1,0 +1,3 @@
+{"status": "failed", "cases": 0, "failure": "RuntimeError"}
+{"status": "failed", "cases": 0, "failure": "RuntimeError"}
+HEPTABAO-QA-RUNTIME-SCOPE {"case": "test_actual_local_system_elf_loader_observation_is_not_product_execution", "host_system": "Linux", "scope": "actual_linux_x86_64_loader"}

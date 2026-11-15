@@ -1,0 +1,48 @@
+{
+  "nft": {
+    "request": {
+      "host": "ai395",
+      "executable": "/usr/sbin/nft",
+      "args": [
+        "-j",
+        "list",
+        "ruleset"
+      ],
+      "non_interactive": true,
+      "fresh_auth": false,
+      "rows": 40,
+      "cols": 160,
+      "env": {
+        "LC_ALL": "C",
+        "LANG": "C"
+      }
+    },
+    "start": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-18e596bd6a855130-fc05-c\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794005767654,\"output_complete\":false,\"owner_pid\":1786872,\"pid\":1786873,\"state\":\"running\"}}",
+    "file-info": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e596bd6a855130-fc05-c/output.log\",\"sha256\":\"e01d0a664bbfb6ad83e8689299a11009fc629d66a9127958b7909fb5d59f9a40\",\"size\":100836,\"version\":\"66306:52993159:100836:1794005767667528151:1794005767667528151\"}",
+    "eof": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e596bd6a855130-fc05-c/output.log\",\"available_end\":100836,\"bytes_hex\":\"\",\"chunk_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"host\":\"ai395\",\"next_offset\":100836,\"offset\":100836,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-18e596bd6a855130-fc05-c\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":100836,\"bytes_stored\":100836,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794005767654,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":1786872,\"pid\":1786873,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}",
+    "close": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"outcome\":\"unknown\",\"persistent_across_runtime_restart\":true,\"reconcile_warning\":\"Terminal owner is not accepting close. Inspect this session's exit status; this acknowledgement does not confirm termination.\",\"result\":\"already_exited\",\"session_id\":\"dpty-18e596bd6a855130-fc05-c\",\"termination_confirmed\":false}"
+  },
+  "iptables-filter": {
+    "request": {
+      "host": "ai395",
+      "executable": "/usr/sbin/iptables-save",
+      "args": [
+        "-c",
+        "-t",
+        "filter"
+      ],
+      "non_interactive": true,
+      "fresh_auth": false,
+      "rows": 40,
+      "cols": 160,
+      "env": {
+        "LC_ALL": "C",
+        "LANG": "C"
+      }
+    },
+    "start": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-18e596c47311de70-fc05-d\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":8641,\"bytes_stored\":8641,\"capture_error\":null,\"created_unix_ms\":1794005797836,\"output_complete\":false,\"owner_pid\":1787286,\"pid\":1787287,\"state\":\"running\"}}",
+    "file-info": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e596c47311de70-fc05-d/output.log\",\"sha256\":\"f9b0c4ecbb4523314435fc8c3410a221d972415e610ba046ae7d8651cb30c1e8\",\"size\":8641,\"version\":\"66306:52993166:8641:1794005797842375347:1794005797842375347\"}",
+    "eof": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e596c47311de70-fc05-d/output.log\",\"available_end\":8641,\"bytes_hex\":\"\",\"chunk_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"host\":\"ai395\",\"next_offset\":8641,\"offset\":8641,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-18e596c47311de70-fc05-d\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":8641,\"bytes_stored\":8641,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794005797836,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":1787286,\"pid\":1787287,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}",
+    "close": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"outcome\":\"unknown\",\"persistent_across_runtime_restart\":true,\"reconcile_warning\":\"Terminal owner is not accepting close. Inspect this session's exit status; this acknowledgement does not confirm termination.\",\"result\":\"already_exited\",\"session_id\":\"dpty-18e596c47311de70-fc05-d\",\"termination_confirmed\":false}"
+  }
+}

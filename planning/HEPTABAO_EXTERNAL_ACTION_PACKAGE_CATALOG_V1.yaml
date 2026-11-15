@@ -964,4 +964,103 @@ packages:
     revocation_policy: Credential overlap, custody overlap, divergence defect or evidence tampering revokes the
       result
   authority_effect: NONE
+- id: HB-EAP-EXT-008
+  blocker_id: HB-BLK-EXT-008
+  class: EXTERNAL_PLUGIN_PROVIDER
+  title: Qualify plugin sandboxes and external providers across supported platforms
+  owner_role: plugin-platform
+  operator_requirement: Independent plugin sandbox operator and provider reviewer with separate custody
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Exact plugin protocol, wrapper and provider manifests are frozen
+  - Linux, macOS and Windows qualification environments are independently controlled
+  - Real database and cloud provider test accounts are provisioned without production secrets
+  scope:
+  - Sandbox process isolation, environment clearing and process-tree termination
+  - Authenticated multiplexed plugin transport and bounded framing
+  - Real database/cloud provider connectors and dynamic lease revoke
+  - Plugin reload, rolling upgrade, rollback and destructive timeout/crash tests
+  explicit_non_scope:
+  - Checksum pinning or contract tests alone do not qualify a provider
+  - Test doubles do not qualify external database or cloud effects
+  - Qualification does not grant production, migration or release authority
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: plugin-qualifier
+    action: Attest platform, sandbox, wrapper, process-tree and credential isolation for each supported OS
+    required_outputs:
+    - platform sandbox attestations
+    - process termination evidence
+  - id: STEP-02
+    actor_role: plugin-qualifier
+    action: Execute authenticated multiplexed transport, timeout, output-flood and crash campaigns
+    required_outputs:
+    - transport and hostile execution bundle
+  - id: STEP-03
+    actor_role: provider-reviewer
+    action: Run real database/cloud connector issue, renew, revoke and failure-reconciliation scenarios
+    required_outputs:
+    - provider effect and lease evidence
+  - id: STEP-04
+    actor_role: plugin-qualifier
+    action: Execute rolling upgrade, rollback and destructive provider qualification on every platform
+    required_outputs:
+    - upgrade/rollback and destructive matrix
+  - id: STEP-05
+    actor_role: provider-reviewer
+    action: Independently review completeness, custody, divergences and unresolved findings
+    required_outputs:
+    - signed plugin-provider review
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: plugin-sandbox-platform-matrix
+    required_fields:
+    - platform
+    - sandbox
+    - process_tree
+    - credential_root
+    - cases
+    custody: Independent platform lab custody
+    signer_role: plugin-qualifier
+    freshness: Re-run after wrapper, OS, runtime or sandbox changes
+  - id: EV-02
+    artifact_type: provider-effect-qualification
+    required_fields:
+    - provider
+    - operations
+    - lease_revoke
+    - failure_reconciliation
+    - artifacts
+    custody: Provider test custody with redacted credentials
+    signer_role: provider-reviewer
+    freshness: Bound to provider version and connector manifest
+  acceptance_criteria:
+  - All three platform sandbox providers pass isolation and process-tree termination cases
+  - Authenticated multiplexed transport and hostile timeout/output cases pass
+  - Real provider issue/renew/revoke and external failure reconciliation pass
+  - Rolling upgrade, rollback and destructive provider matrices pass with no open Critical/High findings
+  - Distinct plugin qualifier and provider reviewer signatures are admitted
+  forbidden_substitutions:
+  - In-process mocks or contract-only tests
+  - Same-operator reruns presented as independent qualification
+  - Digest presence without sandbox or provider behavior evidence
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BLOCKED_UPSTREAM
+  - BASE_DRIFT
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: plugin-platform
+    completion_owner: plugin-qualifier
+    escalation_owner: security
+    required_context:
+    - exact source/tree
+    - plugin descriptors
+    - platform matrix
+    - provider manifest
+    expected_completion_object: heptabao.plugin-provider-qualification-completion.v1
+    expiry_policy: Revalidate after plugin, provider, OS or sandbox changes
+    revocation_policy: Isolation escape, provider divergence or credential compromise revokes qualification
+  authority_effect: NONE
 authority_effect: NONE

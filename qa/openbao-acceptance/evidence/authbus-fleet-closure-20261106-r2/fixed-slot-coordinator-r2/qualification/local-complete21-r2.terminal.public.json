@@ -1,0 +1,68 @@
+{
+  "actualHeptaBao": false,
+  "actualOwnedCrashChildren": 2,
+  "actualTlsAndSqlite": true,
+  "elapsedSeconds": 1.2961409089984954,
+  "exitCode": 0,
+  "implementationSha256": "efc5139e0fe226136a73b5577e92f42ceff20dd639b2d6da5e1c79755e6985d3",
+  "inheritedCases": 19,
+  "macExecuted": false,
+  "newNegativeVariants": 6,
+  "newTopLevelNegativeCases": 2,
+  "originalPythonOracleChild": 1,
+  "productionActions": 0,
+  "providerCalls": 0,
+  "runtimeSourcePins": [
+    {
+      "bytes": 2959,
+      "path": "cli.mjs",
+      "sha256": "9c36c47e2a8c0f3ea567321f53b2bde4506a018a6d1905ebd14752ac50553458"
+    },
+    {
+      "bytes": 27398,
+      "path": "coordinator.mjs",
+      "sha256": "2788c8ba026db045a2961c633aad83762ddceb125b174bcd56c0f782da598a77"
+    },
+    {
+      "bytes": 4447,
+      "path": "private-journal.mjs",
+      "sha256": "a3ac93791cfbf31a28c7628836def94a4a72f194a24e2c1bbc3f75f1502ee88c"
+    },
+    {
+      "bytes": 12155,
+      "path": "protocol.mjs",
+      "sha256": "1afa3a7dfaef49003a63edfa2fa48bfb5381a6b0c5cd4d5890c677e824dcdb7c"
+    },
+    {
+      "bytes": 2008,
+      "path": "source-verification.mjs",
+      "sha256": "0a4469d52afa7ada171cb85a41a7102244bf36e3220e80e8e92e1ecb6138f0c1"
+    },
+    {
+      "bytes": 18043,
+      "path": "transport/bounded-outbox.js",
+      "sha256": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1"
+    },
+    {
+      "bytes": 8660,
+      "path": "transport/private-outbox-store.js",
+      "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+    },
+    {
+      "bytes": 3434,
+      "path": "transport/production-client.js",
+      "sha256": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2"
+    },
+    {
+      "bytes": 26161,
+      "path": "transport/strict-bao-client.js",
+      "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+    }
+  ],
+  "runtimeSourcesUnchanged": true,
+  "schema": "heptabao.coordinator-complete-local-result.r2",
+  "stderrBytes": 0,
+  "stdoutBytes": 2323,
+  "stdoutSha256": "b260e65882ac01fcf79776bcf966f89502e8541050beacbb8abb6e8bb2b9c0e3",
+  "syntheticRemoteAndHttpsPeer": true
+}

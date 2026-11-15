@@ -1,0 +1,245 @@
+--- a/mac_owned_unreaped_r1.py
++++ b/mac_owned_unreaped_r1.py
+@@ -6,12 +6,70 @@
+ before signaling. Cleanup keeps the previous wrapper's TERM1 / wait5 /
+ group3 limits and PS4 maximum. No stage grants business more than phase120.
+ """
+-import os, signal, subprocess, time
++import hashlib, os, signal, stat, subprocess, time
+ 
+ MIB=1024*1024
+ class Refusal(RuntimeError): pass
+ def need(value,code):
+     if not value:raise Refusal(code)
++
++# Only this observed system helper may cross effective UID at exec. No target
++# service, arbitrary argv, descendant, or unrelated command gets this exception.
++FIXED_PS_ARGV=('/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat=')
++FIXED_PS_SHA256='3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c'
++FIXED_PS_BYTES=170432
++FIXED_PS_IDENTITY=(16777233,1152921500312571399,0,0,35309,1,170432,
++    1786589515000000000,1786589515000000000)
++
++def fixed_ps_identity(value):
++    return tuple(getattr(value,name) for name in ('st_dev','st_ino','st_uid','st_gid',
++        'st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
++
++def fixed_ps_pin(*,until):
++    need(os.getuid()==501 and os.geteuid()==501,'fixed_ps_requires_exact_caller')
++    need(time.monotonic()<until,'original_command_deadline_exhausted')
++    path=FIXED_PS_ARGV[0]
++    before=os.lstat(path)
++    need(fixed_ps_identity(before)==FIXED_PS_IDENTITY and stat.S_ISREG(before.st_mode)
++         and stat.S_IMODE(before.st_mode)==0o4755,'fixed_ps_system_file_identity')
++    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)
++    try:
++        need(fixed_ps_identity(os.fstat(fd))==FIXED_PS_IDENTITY,'fixed_ps_open_file_identity')
++        raw=bytearray()
++        while len(raw)<=FIXED_PS_BYTES:
++            need(time.monotonic()<until,'original_command_deadline_exhausted')
++            part=os.read(fd,min(65536,FIXED_PS_BYTES+1-len(raw)))
++            if not part:break
++            raw.extend(part)
++        need(len(raw)==FIXED_PS_BYTES and hashlib.sha256(raw).hexdigest()==FIXED_PS_SHA256,
++             'fixed_ps_whole_file_hash')
++        need(fixed_ps_identity(os.fstat(fd))==fixed_ps_identity(os.lstat(path))==FIXED_PS_IDENTITY,
++             'fixed_ps_named_file_unchanged')
++        need(time.monotonic()<until,'original_command_deadline_exhausted')
++        return {'identity':list(FIXED_PS_IDENTITY),'sha256':FIXED_PS_SHA256}
++    finally:
++        os.close(fd)
++
++def prepare_fixed_ps_contract(argv,*,until):
++    if not argv or argv[0]!=FIXED_PS_ARGV[0]:return None
++    need(tuple(argv)==FIXED_PS_ARGV,'fixed_ps_exact_argv_before_launch')
++    return {'schema':'heptabao.fixed-system-ps-child.r1','argv':list(FIXED_PS_ARGV),
++        'launcherPid':os.getpid(),'callerUid':501,'pin':fixed_ps_pin(until=until)}
++
++def verify_fixed_ps_contract(child,contract,*,until):
++    need(isinstance(contract,dict) and set(contract)=={'schema','argv','launcherPid','callerUid','pin'}
++         and contract['schema']=='heptabao.fixed-system-ps-child.r1'
++         and contract['argv']==list(FIXED_PS_ARGV)
++         and tuple(child.args)==FIXED_PS_ARGV
++         and contract['launcherPid']==os.getpid() and contract['callerUid']==501
++         and child.returncode is None and type(child.pid) is int and child.pid>1,
++         'fixed_ps_direct_child_contract')
++    need(contract['pin']==fixed_ps_pin(until=until),'fixed_ps_prelaunch_binding_changed')
++    return True
++
++def fixed_ps_group_uid(row,child,owner):
++    if owner.get('fixedPsContract') is None:return row['uid']==os.geteuid()
++    return row['pid']==child.pid and stable(row)==owner['ps'] and row['uid']==0
+ 
+ def require_waitid():
+     need(all(hasattr(os, name) for name in ("waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT",
+@@ -70,13 +128,15 @@
+         need(len(rows) == 1 and rows[0]["pid"] == pid, "process_projection_ambiguous")
+     return rows
+ 
+-def capture_child(child, *, until):
++def capture_child(child, *, until, fixed_ps_contract=None):
+     require_waitid()
+     rows = ps_rows(child.pid, until=until)
+     need(len(rows) == 1, "owned_child_identity_missing")
+     row = rows[0]
++    special=fixed_ps_contract is not None
++    if special:verify_fixed_ps_contract(child,fixed_ps_contract,until=until)
+     need(row["ppid"] == os.getpid() and row["pgid"] == child.pid
+-         and row["uid"] == os.geteuid(), "owned_child_scope_mismatch")
++         and row["uid"] == (0 if special else os.geteuid()), "owned_child_scope_mismatch")
+     # Darwin keeps an unreaped zombie in ps but getpgid/getsid return ESRCH.
+     # Use the real live APIs only for a still-live child; otherwise independently
+     # repeat WNOWAIT and retain ps plus Popen direct-parent custody.
+@@ -99,9 +159,12 @@
+              "owned_exit_not_retained")
+         row = fresh[0]
+     return {"ps": stable(row), "sid_observed_while_live": live_sid,
+-            "captured_exit": event}
++            "captured_exit": event,"fixedPsContract":fixed_ps_contract}
+ 
+ def verify_unreaped(child, owner, *, until=None):
++    if owner.get('fixedPsContract') is not None:
++        need(until is not None,'fixed_ps_requires_existing_deadline')
++        verify_fixed_ps_contract(child,owner['fixedPsContract'],until=until)
+     event = exit_observation(child)
+     rows = ps_rows(child.pid, until=until)
+     need(len(rows) == 1 and stable(rows[0]) == owner["ps"]
+@@ -121,8 +184,12 @@
+     need(time.monotonic() < until, "original_stop_deadline_expired")
+     verify_unreaped(child, owner, until=until)
+     rows = ps_rows(until=until)
++    if owner.get("fixedPsContract") is not None:
++        related=[row for row in rows if row["pgid"]==child.pid or row["ppid"]==child.pid]
++        need(all(row["pid"]==child.pid and stable(row)==owner["ps"] for row in related),
++             "fixed_ps_no_other_group_or_direct_child")
+     selected = [row for row in rows if row["pgid"] == child.pid and not row["state"].startswith("Z")]
+-    need(all(row["uid"] == os.geteuid() for row in selected), "owned_group_uid_changed_no_signal")
++    need(all(fixed_ps_group_uid(row,child,owner) for row in selected), "owned_group_uid_changed_no_signal")
+     need(time.monotonic() < until, "original_stop_deadline_expired")
+     return [stable(row) for row in selected]
+ 
+@@ -130,7 +197,7 @@
+     if event is None:return None
+     return event['status'] if event['code']==os.CLD_EXITED else -event['status']
+ 
+-def stop_once_unreaped(child, owner):
++def stop_once_unreaped(child, owner, *, fixed_ps_contract=None):
+     """Called once by the wrapper's protected ledger; never calls Popen.poll."""
+     require_waitid()
+     started=time.monotonic()
+@@ -142,7 +209,7 @@
+         need(child.returncode is None,'already_reaped_no_group_signal')
+         term_until=time.monotonic()+1.0
+         if owner is None:
+-            owner=capture_child(child,until=term_until)
++            owner=capture_child(child,until=term_until,fixed_ps_contract=fixed_ps_contract)
+             receipt['custody']=owner
+         members=live_group(child,owner,until=term_until)
+         receipt['initialLiveGroup']=members
+--- a/mac_owned_commands_r1.py
++++ b/mac_owned_commands_r1.py
+@@ -8,7 +8,7 @@
+ from __future__ import annotations
+ from contextlib import contextmanager
+ import hashlib, os, select, signal, subprocess, time
+-from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped
++from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped, prepare_fixed_ps_contract
+ 
+ class CommandRefused(RuntimeError):pass
+ def need(value,code):
+@@ -40,6 +40,8 @@
+             if not allow_cancelled_cleanup:need(self.signals.pending is None,'command_cancelled')
+             n=until-time.monotonic();need(n>0,'original_command_deadline_exhausted');return n
+         require_waitid();remaining()
++        fixed_ps_contract=prepare_fixed_ps_contract(argv,until=until)
++        remaining()
+         started=time.monotonic();row=None;out=bytearray();err=bytearray()
+         try:
+             with self.signals.critical():
+@@ -51,7 +53,7 @@
+                      'stopAttempted':False,'streamsCloseAttempted':False,'streamsClosed':False,
+                      'completeBeforeDeadline':False,'errorType':None,'errorCode':None}
+                 self.rows.append(row)
+-            row['custody']=capture_child(p,until=until)
++            row['custody']=capture_child(p,until=until,fixed_ps_contract=fixed_ps_contract)
+             streams={p.stdout.fileno():out,p.stderr.fileno():err}
+             for fd in streams:os.set_blocking(fd,False)
+             event=None
+@@ -77,7 +79,7 @@
+             if row is not None:
+                 with self.signals.critical():
+                     row['stopAttempted']=True
+-                    try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'])
++                    try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'],fixed_ps_contract=fixed_ps_contract)
+                     except BaseException as error:
+                         row['cleanup']={'ok':False,'outcomeUnknown':True,
+                             'errorType':type(error).__name__,'directChildReaped':row['process'].returncode is not None,
+--- a/tls_complete_http_probe.py
++++ b/tls_complete_http_probe.py
+@@ -2,6 +2,7 @@
+ """Read one complete, pinned TLS health response without early client close."""
+ 
+ import argparse
++import errno
+ import hashlib
+ import http.client
+ import json
+@@ -18,32 +19,52 @@
+               "server_name": server_name, "request_count": 0,
+               "tls_verified": False, "http_response_complete": False,
+               "passed": False, "initialization_performed": False,
+-              "credential_supplied": False, "timeout_seconds": 15}
++              "credential_supplied": False, "timeout_seconds": 15,
++              "connection_attempts": 0, "connection_refusals": 0}
+     context = ssl.create_default_context(cafile=str(ca_file))
+     raw = None
+     tls = None
+     response = None
++    def remaining():
++        left = deadline - time.monotonic()
++        if left <= 0:
++            raise TimeoutError("whole probe deadline expired")
++        return left
+     try:
+-        raw = socket.create_connection((host, port), timeout=min(5, deadline - time.monotonic()))
+-        raw.settimeout(max(0.001, deadline - time.monotonic()))
++        # Listener readiness shares the original deadline. Only refused TCP
++        # connections retry; TLS verification and HTTP each run at most once.
++        for _attempt in range(256):
++            left = remaining()
++            record["connection_attempts"] += 1
++            try:
++                raw = socket.create_connection((host, port), timeout=min(5, left))
++                break
++            except ConnectionRefusedError as error:
++                if error.errno != errno.ECONNREFUSED:
++                    raise
++                record["connection_refusals"] += 1
++                time.sleep(min(0.1, remaining()))
++        if raw is None:
++            raise TimeoutError("finite connection attempt limit exhausted")
++        raw.settimeout(remaining())
+         tls = context.wrap_socket(raw, server_hostname=server_name)
+         record.update(tls=tls.version(), leaf_sha256=hashlib.sha256(tls.getpeercert(binary_form=True)).hexdigest())
+         if record["leaf_sha256"] != expected_leaf:
+             raise ValueError("verified certificate differs from required leaf pin")
+         record["tls_verified"] = True
+-        tls.settimeout(max(0.001, deadline - time.monotonic()))
++        tls.settimeout(remaining())
+         request = ("GET /v1/sys/health HTTP/1.1\r\nHost: " + server_name
+                    + ":" + str(port) + "\r\nConnection: close\r\n\r\n").encode("ascii")
+         record["request_count"] = 1
+         tls.sendall(request)
+-        tls.settimeout(max(0.001, deadline - time.monotonic()))
++        tls.settimeout(remaining())
+         response = http.client.HTTPResponse(tls)
+         response.begin()
+         record.update(http_version=response.version, status=response.status, reason=response.reason)
+         length = response.getheader("Content-Length")
+         if not length or not length.isdecimal() or int(length) > 65536 or response.getheader("Transfer-Encoding"):
+             raise ValueError("response lacks the required bounded Content-Length framing")
+-        tls.settimeout(max(0.001, deadline - time.monotonic()))
++        tls.settimeout(remaining())
+         body = response.read(int(length) + 1)
+         record.update(content_length=int(length), body_bytes=len(body), body_sha256=hashlib.sha256(body).hexdigest())
+         if len(body) != int(length):

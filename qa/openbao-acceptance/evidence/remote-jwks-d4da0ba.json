@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.remote-jwks-live.v1",
+  "checks": [
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "mount",
+      "passed": true
+    },
+    {
+      "case": "discovery_configuration",
+      "passed": true
+    },
+    {
+      "case": "metadata_then_keys_fetched",
+      "passed": true
+    },
+    {
+      "case": "role",
+      "passed": true
+    },
+    {
+      "case": "real_rsa_signature_login",
+      "passed": true
+    },
+    {
+      "case": "same_assertion_issues_distinct_service_token",
+      "passed": true
+    },
+    {
+      "case": "wrong_audience_rejected",
+      "passed": true
+    },
+    {
+      "case": "wrong_issuer_rejected",
+      "passed": true
+    },
+    {
+      "case": "removed_key_immediately_rejected",
+      "passed": true
+    },
+    {
+      "case": "p256_rotation_login",
+      "passed": true
+    },
+    {
+      "case": "rotation_preserves_subject_identity",
+      "passed": true
+    },
+    {
+      "case": "redirect_no_stale_fallback",
+      "passed": true
+    },
+    {
+      "case": "duplicate_no_stale_fallback",
+      "passed": true
+    },
+    {
+      "case": "oversized_no_stale_fallback",
+      "passed": true
+    },
+    {
+      "case": "unavailable_no_stale_fallback",
+      "passed": true
+    },
+    {
+      "case": "discovery_issuer_mismatch",
+      "passed": true
+    },
+    {
+      "case": "cross_origin_metadata_rejected",
+      "passed": true
+    },
+    {
+      "case": "entity_disable",
+      "passed": true
+    },
+    {
+      "case": "disabled_subject_login_rejected",
+      "passed": true
+    },
+    {
+      "case": "existing_subject_token_rejected",
+      "passed": true
+    },
+    {
+      "case": "reenable_subject",
+      "passed": true
+    },
+    {
+      "case": "key_source_exclusive",
+      "passed": true
+    },
+    {
+      "case": "eddsa_rotation_login",
+      "passed": true
+    },
+    {
+      "case": "restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "restart_does_not_resurrect_old_key",
+      "passed": true
+    },
+    {
+      "case": "restart_current_key_login",
+      "passed": true
+    },
+    {
+      "case": "second_restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "same_assertion_reusable_after_restart",
+      "passed": true
+    },
+    {
+      "case": "not_browser_oidc",
+      "passed": true
+    },
+    {
+      "case": "direct_jwks_configuration",
+      "passed": true
+    },
+    {
+      "case": "direct_jwks_login",
+      "passed": true
+    },
+    {
+      "case": "unenrolled_configuration_not_activated",
+      "passed": true
+    },
+    {
+      "case": "rejected_configuration_preserves_predecessor",
+      "passed": true
+    },
+    {
+      "case": "invalid_host_enrollment_rejected",
+      "passed": true
+    }
+  ],
+  "independent_attestation": false,
+  "full_oidc_compatibility": false,
+  "candidate_binary_sha256": "ca26f8f6233d6939a47337379c7d153105ad93cca4c9422b557330dfe459700e",
+  "status": "passed",
+  "check_count": 36,
+  "binary_unchanged": true
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.postgresql-service-live.v1",
+  "status": "passed_scoped_service",
+  "source_sha": "f31b98eadf145332ab4e472c5a5973d3e0804017",
+  "source_dirty": false,
+  "candidate_binary_sha256": "bb36e16c3d8340ffb70e13ba78f36766b80ee7b99b8deb293aba3f6d366daaa7",
+  "runner_sha256": "b7dd3d2821bee22165cb1dccf28b6cdfca5716e6027bd09f9f9ee6fc7dce791f",
+  "observed_at_unix": 1789919919,
+  "checks": [
+    {
+      "case": "fresh_postgresql_17_unprivileged_owner",
+      "passed": true
+    },
+    {
+      "case": "postgres_init_requires_recovery_nonce",
+      "passed": true
+    },
+    {
+      "case": "database_unavailable_init_retains_recoverable_pending_state",
+      "passed": true
+    },
+    {
+      "case": "pending_init_rejects_different_nonce",
+      "passed": true
+    },
+    {
+      "case": "pending_init_recovers_after_process_restart",
+      "passed": true
+    },
+    {
+      "case": "recovered_init_returns_keys",
+      "passed": true
+    },
+    {
+      "case": "same_nonce_returns_identical_initialization_response",
+      "passed": true
+    },
+    {
+      "case": "local_storage_contains_only_metadata",
+      "passed": true
+    },
+    {
+      "case": "postgres_service_unseal",
+      "passed": true
+    },
+    {
+      "case": "initialization_ack",
+      "passed": true
+    },
+    {
+      "case": "kv_write_through_postgres_service",
+      "passed": true
+    },
+    {
+      "case": "postgres_stores_sealed_artifacts",
+      "passed": true
+    },
+    {
+      "case": "second_service_cannot_acquire_live_writer_fence",
+      "passed": true
+    },
+    {
+      "case": "restart_still_reports_initialized_without_pg_config",
+      "passed": true
+    },
+    {
+      "case": "restart_without_pg_config_fails_closed",
+      "passed": true
+    },
+    {
+      "case": "no_filesystem_fallback_artifacts",
+      "passed": true
+    },
+    {
+      "case": "restart_with_matching_pg_config_unseals",
+      "passed": true
+    },
+    {
+      "case": "kv_survives_server_sigkill_restart",
+      "passed": true
+    },
+    {
+      "case": "lost_init_deferred_commit_gate_installed",
+      "passed": true
+    },
+    {
+      "case": "lost_init_reached_real_commit",
+      "passed": true
+    },
+    {
+      "case": "lost_init_acknowledgement_actually_discarded",
+      "passed": true
+    },
+    {
+      "case": "lost_init_returns_unknown_without_keys",
+      "passed": true
+    },
+    {
+      "case": "lost_init_artifacts_are_committed",
+      "passed": true
+    },
+    {
+      "case": "lost_init_same_nonce_recovers_after_sigkill",
+      "passed": true
+    },
+    {
+      "case": "lost_init_retry_preserves_exact_committed_bundle",
+      "passed": true
+    },
+    {
+      "case": "lost_init_exactly_one_manifest",
+      "passed": true
+    }
+  ],
+  "server_storage_integrated": true,
+  "full_openbao_compatibility": false,
+  "production_qualified": false,
+  "independent_reproduction": false
+}

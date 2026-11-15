@@ -1,0 +1,29 @@
+/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/index.js:113
+      Error.captureStackTrace(err)
+            ^
+
+TypeError: fetch failed
+    at Object.fetch (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/index.js:113:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///workspace/scratch/915e5e680008/authbus-r5-openai-r4-20261019/analysis/old-fixture-reproduction/authbus_refresh_sdk_openai_undici_fixture_test.mjs:50:24 {
+  [cause]: DOMException [Error]: Request was cancelled.
+      at new DOMException (node:internal/per_context/domexception:76:18)
+      at makeAppropriateNetworkError (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/lib/web/fetch/response.js:450:38)
+      at httpNetworkFetch (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/lib/web/fetch/index.js:1883:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async httpNetworkOrCacheFetch (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/lib/web/fetch/index.js:1568:29)
+      at async httpFetch (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/lib/web/fetch/index.js:1139:33)
+      at async /opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/lib/web/fetch/index.js:591:16
+      at async mainFetch (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/lib/web/fetch/index.js:575:16) {
+    cause: RequestAbortedError [AbortError]: Proxy response (403) !== 200 when HTTP Tunneling
+        at Client.connect (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/dist/node_modules/undici/lib/dispatcher/proxy-agent.js:169:22)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+      code: 'UND_ERR_ABORTED',
+      Symbol(undici.error.UND_ERR): true,
+      Symbol(undici.error.UND_ERR_ABORT): true,
+      Symbol(undici.error.UND_ERR_ABORTED): true
+    }
+  }
+}
+
+Node.js v24.19.0

@@ -1,0 +1,9 @@
+{"event": "stage-step-started", "label": "00-old-head"}
+{"event": "stage-step-started", "label": "00-old-tree"}
+{"event": "stage-step-started", "label": "00-old-clean"}
+{"event": "stage-step-started", "label": "10-independent-clone"}
+{"event": "stage-step-started", "label": "11-fetch-published-exact"}
+{"event": "stage-step-started", "label": "98-old-final-head"}
+{"event": "stage-step-started", "label": "98-old-final-tree"}
+{"event": "stage-step-started", "label": "98-old-final-clean"}
+{"status": "failed", "receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/source-stage-1d63-r1/result.public.json", "sha256": "1b41c9e94ae0354ad3d5a7f6442c546b5fdfa4eeb07f19372f33a86bdcede7ba", "compiler_started": false}

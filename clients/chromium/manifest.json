@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "HeptaBao Personal Vault Preview",
+  "version": "0.1.0",
+  "description": "Explicit, exact-origin HTTPS login filling from a local encrypted Rust vault.",
+  "permissions": ["activeTab", "scripting", "nativeMessaging"],
+  "background": {"service_worker": "worker.js", "type": "module"},
+  "action": {"default_popup": "popup.html", "default_title": "HeptaBao"},
+  "commands": {"_execute_action": {"suggested_key": {"default": "Ctrl+Shift+Y", "mac": "Command+Shift+Y"}}},
+  "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'"}
+}

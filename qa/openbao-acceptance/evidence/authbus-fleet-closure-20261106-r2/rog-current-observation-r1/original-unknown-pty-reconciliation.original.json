@@ -1,0 +1,5 @@
+remote helper on rog-ts failed with 1
+stdout:
+
+stderr:
+ValueError: unknown terminal identity

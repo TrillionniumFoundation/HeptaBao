@@ -1,0 +1,272 @@
+   Compiling heptabao-filesystem-guard v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-filesystem-guard)
+   Compiling heptabao-domain v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-domain)
+   Compiling heptabao-raft-runtime v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-raft-runtime)
+   Compiling heptabao-plugin-contracts v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-plugin-contracts)
+   Compiling heptabao-durable-service v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-durable-service)
+   Compiling heptabao-linux-parent-death v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-linux-parent-death)
+   Compiling bcrypt v0.19.3 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/vendor/bcrypt-0.19.3)
+   Compiling heptabao-workflow-template v0.6.1 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/third_party/workflow-gotmpl)
+   Compiling heptabao-plugin-host v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-plugin-host)
+   Compiling heptabao-openbao-grpc v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-openbao-grpc)
+   Compiling heptabao-ha-service v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-ha-service)
+   Compiling heptabao-kms-contracts v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-kms-contracts)
+   Compiling qrcode v0.14.1 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/vendor/qrcode-0.14.1)
+   Compiling heptabao-server v0.1.0 (/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source/crates/heptabao-server)
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_client.rs:269:18
+    |
+268 |               let mut writer = service
+    |  ______________________________-
+269 | |                 .lock_for_request()
+    | |_________________-^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+269 -                 .lock_for_request()
+269 +                 .into_request()
+    |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_client.rs:302:38
+    |
+302 |             let mut writer = service.lock_for_request().map_err(|_| unavailable())?;
+    |                                      ^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+302 -             let mut writer = service.lock_for_request().map_err(|_| unavailable())?;
+302 +             let mut writer = service.into_request().map_err(|_| unavailable())?;
+    |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_client.rs:362:23
+    |
+362 |         match service.lock_for_request() {
+    |                       ^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+362 -         match service.lock_for_request() {
+362 +         match service.into_request() {
+    |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+  --> crates/heptabao-server/src/service_snapshot_forward_source.rs:62:18
+   |
+61 |               let mut writer = service
+   |  ______________________________-
+62 | |                 .lock_for_request()
+   | |_________________-^^^^^^^^^^^^^^^^
+   |
+   = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+  --> crates/heptabao-server/src/request_deadline.rs:92:1
+   |
+92 | pub(crate) trait HaLock {
+   | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+   |
+62 -                 .lock_for_request()
+62 +                 .into_request()
+   |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_source.rs:106:18
+    |
+105 |               let mut writer = service
+    |  ______________________________-
+106 | |                 .lock_for_request()
+    | |_________________-^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+106 -                 .lock_for_request()
+106 +                 .into_request()
+    |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_source.rs:114:22
+    |
+113 |                   let response = service
+    |  ________________________________-
+114 | |                     .lock_for_request()
+    | |_____________________-^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+114 -                     .lock_for_request()
+114 +                     .into_request()
+    |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_source.rs:147:18
+    |
+146 |               let response = service
+    |  ____________________________-
+147 | |                 .lock_for_request()
+    | |_________________-^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+147 -                 .lock_for_request()
+147 +                 .into_request()
+    |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_source.rs:163:22
+    |
+162 |                   let response = service
+    |  ________________________________-
+163 | |                     .lock_for_request()
+    | |_____________________-^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+163 -                     .lock_for_request()
+163 +                     .into_request()
+    |
+
+error[E0599]: no method named `lock_for_request` found for reference `&std::sync::Arc<std::sync::Mutex<service::Service>>` in the current scope
+   --> crates/heptabao-server/src/service_snapshot_forward_source.rs:178:14
+    |
+177 |           let completion = service
+    |  __________________________-
+178 | |             .lock_for_request()
+    | |_____________-^^^^^^^^^^^^^^^^
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `request_deadline::HaLock` defines an item `lock_for_request`, perhaps you need to implement it
+   --> crates/heptabao-server/src/request_deadline.rs:92:1
+    |
+ 92 | pub(crate) trait HaLock {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `into_request` with a similar name
+    |
+178 -             .lock_for_request()
+178 +             .into_request()
+    |
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+   --> crates/heptabao-server/src/service_snapshot_forward_source.rs:181:22
+    |
+181 |         let (status, completion) = match completion {
+    |                      ^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `[u8]`
+    = note: all local variables must have a statically known size
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+   --> crates/heptabao-server/src/service_snapshot_forward_source.rs:182:16
+    |
+182 |             Ok(value) => value,
+    |                ^^^^^ doesn't have a size known at compile-time
+    |
+    = help: within `(u16, [u8])`, the trait `Sized` is not implemented for `[u8]`
+    = note: required because it appears within the type `(u16, [u8])`
+    = note: all local variables must have a statically known size
+
+error[E0061]: this function takes 14 arguments but 13 arguments were supplied
+    --> crates/heptabao-server/src/service_native_pki.rs:270:17
+     |
+ 270 |                   Service::dispatch_native_authorized_subrequest(
+     |  _________________^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-
+ 271 | |                     candidate,
+ 272 | |                     actor,
+ 273 | |                     "",
+...    |
+ 283 | |                     &mut consumption,
+ 284 | |                 )
+     | |_________________- argument #14 of type `std::option::Option<&mut std::option::Option<NativeJwtLifetime>>` is missing
+     |
+note: associated function defined here
+    --> crates/heptabao-server/src/service.rs:6777:8
+     |
+6777 |     fn dispatch_native_authorized_subrequest(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+6791 |         native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+     |         ----------------------------------------------------------------------------------
+help: provide the argument
+     |
+ 270 |                 Service::dispatch_native_authorized_subrequest(
+ ...
+ 283 |                     &mut consumption,
+ 284 ~                     /* std::option::Option<&mut std::option::Option<NativeJwtLifetime>> */,
+ 285 ~                 )
+     |
+
+error[E0061]: this function takes 14 arguments but 13 arguments were supplied
+    --> crates/heptabao-server/src/service_native_ssh.rs:326:17
+     |
+ 326 |                   Service::dispatch_native_authorized_subrequest(
+     |  _________________^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-
+ 327 | |                     candidate,
+ 328 | |                     actor,
+ 329 | |                     "",
+...    |
+ 339 | |                     &mut consumption,
+ 340 | |                 )
+     | |_________________- argument #14 of type `std::option::Option<&mut std::option::Option<NativeJwtLifetime>>` is missing
+     |
+note: associated function defined here
+    --> crates/heptabao-server/src/service.rs:6777:8
+     |
+6777 |     fn dispatch_native_authorized_subrequest(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+6791 |         native_jwt_lifetime: Option<&mut Option<crate::federated_auth::NativeJwtLifetime>>,
+     |         ----------------------------------------------------------------------------------
+help: provide the argument
+     |
+ 326 |                 Service::dispatch_native_authorized_subrequest(
+ ...
+ 339 |                     &mut consumption,
+ 340 ~                     /* std::option::Option<&mut std::option::Option<NativeJwtLifetime>> */,
+ 341 ~                 )
+     |
+
+Some errors have detailed explanations: E0061, E0277, E0599.
+For more information about an error, try `rustc --explain E0061`.
+error: could not compile `heptabao-server` (lib) due to 13 previous errors

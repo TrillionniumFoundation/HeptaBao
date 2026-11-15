@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.existing-mac-ha-alias-qa-qualification.v1",
+  "change": "Recognize the already configured hepta-mac-local alias with the existing /Volumes/T5/ path boundary.",
+  "source_observation_job": "1a1b1819000-fc05-793e",
+  "source_observation_terminal": "succeeded/exit0, complete and durable",
+  "source_configs_observed": 5,
+  "source_configs_unchanged": true,
+  "source_ssh_executed": false,
+  "private_key_opened": false,
+  "observed_alias": "hepta-mac-local",
+  "observed_ssh_hostname": "127.0.0.1",
+  "observed_strict_host_key_checking": "yes",
+  "aliases_created": 0,
+  "ssh_config_changed": false,
+  "unit_test_command": "python3 -m unittest discover -s qa/openbao-acceptance/tests -p test_ha_multihost_live.py",
+  "actual_local_test_result": {
+    "exit_code": 0,
+    "ran": 20,
+    "passed": 20,
+    "elapsed_seconds": 1.261,
+    "skipped": 0
+  },
+  "added_case": "test_existing_runtime_mac_alias_keeps_external_volume_boundary",
+  "rejected_inputs": [
+    "Mac HOME path",
+    "Linux HOME path for this Mac alias",
+    "parent traversal",
+    "duplicate separator",
+    "unrelated alias on /Volumes/T5/"
+  ],
+  "runtime_host_identity_granted": false,
+  "process_ownership_granted": false,
+  "abi_identity_granted": false,
+  "physical_ha_qualified": false,
+  "production_authority": false,
+  "full_replacement_qualified": false,
+  "evidence_scope": "Actual read-only installed-alias observation and local harness tests, not a physical HA execution."
+}

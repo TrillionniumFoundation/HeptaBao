@@ -1,0 +1,36 @@
+test_accept_before_port_match_rejected (__main__.Guards.test_accept_before_port_match_rejected) ... ok
+test_accept_first_rejected (__main__.Guards.test_accept_first_rejected) ... ok
+test_before_identity (__main__.Guards.test_before_identity) ... ok
+test_both_exact_additions (__main__.Guards.test_both_exact_additions) ... ok
+test_duplicate_live_rule_rejected (__main__.Guards.test_duplicate_live_rule_rejected) ... ok
+test_duplicate_owned_tuple_rejected (__main__.Guards.test_duplicate_owned_tuple_rejected) ... ok
+test_duplicate_protocol_selectors_rejected (__main__.Guards.test_duplicate_protocol_selectors_rejected) ... ok
+test_empty_comment_same_core_rejected (__main__.Guards.test_empty_comment_same_core_rejected) ... ok
+test_exact_capture_authority_and_closed_stdout (__main__.Guards.test_exact_capture_authority_and_closed_stdout) ... ok
+test_existing_same_core_in_before_rejected (__main__.Guards.test_existing_same_core_in_before_rejected) ... ok
+test_failed_terminal_rejected (__main__.Guards.test_failed_terminal_rejected) ... ok
+test_final_restore_excludes_only_counters_and_handles (__main__.Guards.test_final_restore_excludes_only_counters_and_handles) ... ok
+test_missing_ipv6_user_chain_rejected (__main__.Guards.test_missing_ipv6_user_chain_rejected) ... ok
+test_missing_live_rule_rejected (__main__.Guards.test_missing_live_rule_rejected) ... ok
+test_nft_ordinal_swap_rejected (__main__.Guards.test_nft_ordinal_swap_rejected) ... ok
+test_observed_ip_protocol_tcp_form (__main__.Guards.test_observed_ip_protocol_tcp_form) ... ok
+test_one_exact_remaining_rule (__main__.Guards.test_one_exact_remaining_rule) ... ok
+test_original_chain_enumeration_reorder_rejected (__main__.Guards.test_original_chain_enumeration_reorder_rejected) ... ok
+test_original_rule_reorder_rejected (__main__.Guards.test_original_rule_reorder_rejected) ... ok
+test_other_iptables_change_rejected (__main__.Guards.test_other_iptables_change_rejected) ... ok
+test_other_nft_manager_change_rejected (__main__.Guards.test_other_nft_manager_change_rejected) ... ok
+test_other_persistent_change_rejected (__main__.Guards.test_other_persistent_change_rejected) ... ok
+test_owned_live_middle_insertion_rejected (__main__.Guards.test_owned_live_middle_insertion_rejected) ... ok
+test_owned_persistent_middle_insertion_rejected (__main__.Guards.test_owned_persistent_middle_insertion_rejected) ... ok
+test_stale_disk_ok_without_closure_rejected (__main__.Guards.test_stale_disk_ok_without_closure_rejected) ... ok
+test_stale_ok_with_failed_close_rejected (__main__.Guards.test_stale_ok_with_failed_close_rejected) ... ok
+test_unknown_terminal_rejected (__main__.Guards.test_unknown_terminal_rejected) ... ok
+test_unobserved_numeric_ip_protocol_form_rejected (__main__.Guards.test_unobserved_numeric_ip_protocol_form_rejected) ... ok
+test_wrong_capture_archive_rejected (__main__.Guards.test_wrong_capture_archive_rejected) ... ok
+test_wrong_peer_nft_rejected (__main__.Guards.test_wrong_peer_nft_rejected) ... ok
+test_wrong_port_opaque_pair_rejected (__main__.Guards.test_wrong_port_opaque_pair_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 0.022s
+
+OK

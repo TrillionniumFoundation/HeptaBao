@@ -1,0 +1,125 @@
+{
+  "binaries": {
+    "heptabao-server": {
+      "artifact_mode": "0700",
+      "artifact_path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/server-build-r1/bin/heptabao-server",
+      "binary_bytes": 133550368,
+      "binary_sha256": "c27a0c223d227d3b2b5292e1e3ab6cf0230562baee36b6465b22a7ddf17be172",
+      "cargo_output_path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/cargo-target/debug/heptabao-server",
+      "name": "heptabao-server"
+    }
+  },
+  "build_argv": [
+    "/home/qian-qi/.cargo/bin/cargo",
+    "build",
+    "--locked",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server"
+  ],
+  "build_exit_code": 0,
+  "cargo_config_sha256_after": {},
+  "cargo_config_sha256_before": {},
+  "commands": [
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "elapsed_seconds": 0.019,
+      "exit_code": 0,
+      "finished_unix_ns": 1793945064052852800,
+      "label": "rustc-version",
+      "log_path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/server-build-r1/rustc-version.private.log",
+      "log_sha256": "f1737553e0056c6c1b3fcbc9c65641e741fbf70f9fd296c4419d056ef9e36a1d",
+      "original_pid": 88870,
+      "started_unix_ns": 1793945064034226086,
+      "status": "passed",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--locked",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server"
+      ],
+      "elapsed_seconds": 439.466,
+      "exit_code": 0,
+      "finished_unix_ns": 1793945503520494168,
+      "label": "cargo-build",
+      "log_path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/server-build-r1/cargo-build.private.log",
+      "log_sha256": "16369c123d851cd30b46120ac35c7ab30d82a2421d1a046d405da7c1b090bf39",
+      "original_pid": 88881,
+      "started_unix_ns": 1793945064054430708,
+      "status": "passed",
+      "timed_out": false
+    }
+  ],
+  "controller_sha256": "24166f5956bc6ba6f7a6035abde449a129464d31587f4e071e397138dd7bd75d",
+  "disk_free_bytes_after": 23944396800,
+  "disk_free_bytes_before": 25645522944,
+  "environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/cargo-target",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_HOME": "/home/qian-qi/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.98.0"
+  },
+  "expected_source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+  "expected_source_tree": "5f685c1aaf647f016afed0555a6710cd4a76c317",
+  "failure": null,
+  "finished_unix_ns": 1793945504176584448,
+  "fixture_features_requested": false,
+  "gssapi_header_sha256": {
+    "/usr/include/gssapi/gssapi.h": "0eaba32c81c8399fe54da5c938a47852aedf60ebfe349026d1461636bbbda919",
+    "/usr/include/krb5.h": "1fe239732636b4f9cbfd596542b77c5dd60af2d73a1d4df1eb30ba6ebcd9ec78"
+  },
+  "host": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+  "inherited_overrides_removed": [],
+  "machine": "x86_64",
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "native_builtin_include_probe_argv": [
+    "/usr/bin/cc",
+    "-print-file-name=include"
+  ],
+  "native_builtin_stddef_sha256": "472a84e536689fc48e861b2415b229742e133d09bbf1c8fd8e0fe89ab5712f04",
+  "normal_default_features": true,
+  "phase": "server",
+  "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+  "production_qualified": false,
+  "python_version": "3.14.4",
+  "rustc_verbose": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.personal-credentials.build.v1",
+  "source_after": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+    "source_content_sha256": "a0c7c57850d25ae09aacc2d2ab9b951ddd765d438f570b565559c0b250325307",
+    "source_dirty": false,
+    "source_file_count": 3952,
+    "source_tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+  },
+  "source_before": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+    "source_content_sha256": "a0c7c57850d25ae09aacc2d2ab9b951ddd765d438f570b565559c0b250325307",
+    "source_dirty": false,
+    "source_file_count": 3952,
+    "source_tree": "5f685c1aaf647f016afed0555a6710cd4a76c317"
+  },
+  "source_freeze_verified": true,
+  "source_root": "/home/qian-qi/heptabao-personal-credentials-20261106-r1",
+  "started_unix_ns": 1793945063952715604,
+  "status": "passed"
+}

@@ -1,0 +1,6 @@
+/Users/qianqi/HeptaBaoPasskey-20261106-r1/snapshot-r5/source/provider/java/org/heptabao/passkey/preview/VaultFiles.java:48: 错误: 找不到符号
+        FileDescriptor fd = Os.open(files.getPath(), OsConstants.O_RDONLY | OsConstants.O_DIRECTORY
+                                                                                       ^
+  符号:   变量 O_DIRECTORY
+  位置: 类 OsConstants
+1 个错误

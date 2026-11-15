@@ -1,0 +1,364 @@
+{
+  "all_original_carriers_preserved": true,
+  "all_source_contents_preserved_except_explicit_selected_deltas": true,
+  "assembler_guards_modified": false,
+  "assembler_source_sha256": "65d75581cb9186b58568182ec9c42db874ef5831636b186244f881cd7fb6e3bd",
+  "base_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "base_manifest_sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+  "base_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "committed_predecessors": [
+    {
+      "all_output_members_already_committed_exact": true,
+      "committed_base": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+      "committed_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+      "members": [
+        {
+          "bytes": 25621,
+          "git_blob": "6f22bb58b3252b9b82f20c4b0c4e751ef17cf67f",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+          "sha256": "42d91742365526b548c49d0a900d88ccfaf7d93ab57fa61bff3d97a86df663d3"
+        },
+        {
+          "bytes": 19227,
+          "git_blob": "a72e64c812782713b671a35227de92ef86dad039",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs",
+          "sha256": "c7985bd4c07c2143009802f74392adc92ec9b5388b909b51d2f7709ac7ddd01d"
+        },
+        {
+          "bytes": 53313,
+          "git_blob": "a7ad97fc46648deb28d74c12a4b18d03b9537e3b",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_live.mjs",
+          "sha256": "ed93a34eb74d5c673469dee18f76fd3a4816018e0c94b2d8c54fad5e079fc749"
+        },
+        {
+          "bytes": 6400,
+          "git_blob": "e153cca52f6ea580f0b747cb0d9dc98dd2c68194",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture.mjs",
+          "sha256": "c249a014bd837d3af5e13844ddb12f201afa87f63fb0a6de7320c53503e97084"
+        },
+        {
+          "bytes": 11707,
+          "git_blob": "8a62e9018e120663518656d8a1074b4a7bb9dabe",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_ticket_boundary_test.mjs",
+          "sha256": "1f0a4bade6ed79713e31b92da7ba32065683bc2f57e36d35124393c8dcac8fa8"
+        },
+        {
+          "bytes": 5868,
+          "git_blob": "1315565ab629c5c5a4e7032569560ed04200f9f3",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture_test.mjs",
+          "sha256": "9365b942983b9057e642cf07c34708c655d4bb32de4cb0a1f2798e902b6f0a9b"
+        },
+        {
+          "bytes": 7238,
+          "git_blob": "80caad18f391c5bcb31478ffae2141aeff380050",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-sdk-inputs-20261019.json",
+          "sha256": "b4aad3e15807db250900505d3cf5ab0e1d319d762c08cdb5a839edf214fb3a65"
+        },
+        {
+          "bytes": 1525,
+          "git_blob": "54baba660b681da4632a870fea3d32c1fdeef018",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-ticket-unit-20261019.json",
+          "sha256": "41b311dbe3f093be274bd9196028fa501be91373773f1a42ae683f4d6364790c"
+        },
+        {
+          "bytes": 891,
+          "git_blob": "3478efd00380f3e5e3d7d4e1630d3d210af7b799",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-proxy-unit-20261019.json",
+          "sha256": "27a1b1dda06483a3ac2ce1cc15d5cac3a0ddf01b3509f6cfb2ae30d702f1a4c9"
+        },
+        {
+          "bytes": 10035,
+          "git_blob": "520a13938338dedb9e48086bc8f32d7884c1a038",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-source-preflight-20261019.json",
+          "sha256": "2183c73261e8f61d4ce217fc21d15f239a9a31ff1bd9877109a8cce5dc8fff0c"
+        },
+        {
+          "bytes": 550,
+          "git_blob": "278f961404b4fac7db5bbed89eef26a852e42d75",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-old-draft-getter-20261019.json",
+          "sha256": "6f4841c4df0a0aaad169b46c68522b3cd0d978e8871f72df50da8bca923a452c"
+        },
+        {
+          "bytes": 3018,
+          "git_blob": "9f2f4e7e39b65539783fa37cc9db117c230a5cf0",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-old-draft-getter.stderr.log",
+          "sha256": "f189dc9abf24346f9f1899cdc9584637b69b399831da643fe041fd2d2a52e6bf"
+        },
+        {
+          "bytes": 8546,
+          "git_blob": "128f27cc4f9fff8d518acaec78565a56c00ad878",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus/refresh-r5-openai-r3-local-validation-20261019.json",
+          "sha256": "fe1a2ee116a6b57fc3d2530138398da92079e0625d1692348bfc598b6d976276"
+        },
+        {
+          "bytes": 9639,
+          "git_blob": "3d16c7fa767c9c9b162ab440e9eb4842143ee75f",
+          "mode": "100644",
+          "path": "docs/authbus-r5-openai-sdk-candidate-r3-20261019.md",
+          "sha256": "5213ba833adcd821eb1611a9dc671ce29c4d1329da75a71f0e9053d8fb5ae53d"
+        }
+      ],
+      "overlay": "authbus-r5-openai-r3-20261019/openai-r3-overlay.json",
+      "overlay_sha256": "bc348a4e5c509b3c9512f4be4467e70ef9e508f87aed7ef99aac67f19a075aa0",
+      "replayed_as_mutation": false
+    },
+    {
+      "all_output_members_already_committed_exact": true,
+      "committed_base": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+      "committed_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+      "members": [
+        {
+          "bytes": 37776,
+          "git_blob": "ba8626f1b14a177db0f9127d82c367b6e97ac9f6",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus_openai_sdk_once.py",
+          "sha256": "ab57d4826c6d7b66b2c28f061df766d39bc21a7f2df1df9f90e3b0b8f81342d5"
+        },
+        {
+          "bytes": 7729,
+          "git_blob": "2567af36b490daa2380203c8577d7ab81497f68d",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py",
+          "sha256": "211898a55ecb350e36aca490c1a494d8488e9a33eca49bea94314a79bbdf774b"
+        },
+        {
+          "bytes": 7502,
+          "git_blob": "0c506c2d68be1212ea8446cbfe49257f22c1c1fe",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/tests/authbus_openai_sdk_private_anchor_test.py",
+          "sha256": "ea94c458cf4d674c1c5790363d14b7759149cf6aa51a48ca60374f906d393d4f"
+        },
+        {
+          "bytes": 4025,
+          "git_blob": "905300768c14f814b8c8b9bef32fa96f92593d87",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/REVIEW.md",
+          "sha256": "2e7515a2b4d35530a4fdbc7e55e128f58b5fe835ba86ea02957843fcc67118d4"
+        },
+        {
+          "bytes": 2829,
+          "git_blob": "adb871bb9427b5d4e9cda098953641ba5450581f",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/local-validation.json",
+          "sha256": "2f50b67c5364922058baeece8b933f572d8eb51cecab487444ccca755a298628"
+        },
+        {
+          "bytes": 7420,
+          "git_blob": "cd93166b0cb1788ce20a0824d93e914346813cf0",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/outer-r2.diff",
+          "sha256": "90a0cad7baf7efa3728a182a394ade2f950e30255afcaf3bf51c5762977085e6"
+        },
+        {
+          "bytes": 1154,
+          "git_blob": "cb0fe6e972b6d65a48b69ed48d439eb57bde2798",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/original-eight-tests.stderr.log",
+          "sha256": "a94eba259bf1838f9d50047aab98196c98b98f09e920a3fa5eeec60d637cbd26"
+        },
+        {
+          "bytes": 1867,
+          "git_blob": "5f6a9025158426b580dcb72b1a88054b72546f39",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/private-anchor-tests.stderr.log",
+          "sha256": "9533bec37718a6aafe67848f5d3dcbb2d08a15be69185a365d4ee517b43bac5c"
+        },
+        {
+          "bytes": 1713,
+          "git_blob": "f86de797b5dfaa5a865fd3053621f34aba55014a",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/actual-main-r1/controller.json",
+          "sha256": "f7a1d42f5387b7371e85719eb088cd50ab1dd1d5cdf31bd143d4760272ec5588"
+        },
+        {
+          "bytes": 25240,
+          "git_blob": "ea9a50692181c1fcb0733b0ae3f650467d6026de",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/actual-main-r1/sdk-input-custody-diagnostic.json",
+          "sha256": "ec4330492896fead3a74885a1fff4aeb634bb9d002d7049f5ef068f63e3dab90"
+        }
+      ],
+      "overlay": "authbus-r5-openai-r3-controller-r2-20261019/openai-r3-controller-r2-overlay.json",
+      "overlay_sha256": "b0c824a771e2ee849c392606debfa399441741999c625b970042f1af3cc91129",
+      "replayed_as_mutation": false
+    },
+    {
+      "all_output_members_already_committed_exact": true,
+      "committed_base": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+      "committed_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+      "members": [
+        {
+          "bytes": 32463,
+          "git_blob": "6d36d11733706d6ada5e1bc4ae4eeb9ee2e7d977",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/authbus_native_cold_r2_once.py",
+          "sha256": "a16477ce5c8ef06e6d46d4cdd4eb9ce3069179f95e3829fe393138e9f7fe8475"
+        },
+        {
+          "bytes": 7640,
+          "git_blob": "52bba21fd59a675d8d724c03ab27945219be5fb9",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-native-four-repeat-r2/source-manifest.json",
+          "sha256": "c13159524080c0c0a9588fffae8fdc01fdd1a2dc1068972fd2ce4232c2a6f58d"
+        },
+        {
+          "bytes": 21066,
+          "git_blob": "870e5698ba5d5e6a3c11a27555af4d144dbff513",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-native-four-repeat-r2/rerun-config.json",
+          "sha256": "526c4b8b0ba26262fcdfa86d8a9df05dd87693a46fa6b47bf64474d3915466b5"
+        },
+        {
+          "bytes": 4402,
+          "git_blob": "7378a5feb933b2647ac37254182da9717b7f40dc",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-native-four-repeat-r2/REVIEW.md",
+          "sha256": "b00ed797840a57bfd0eb640c95dde5923fac168603343f092cd880d0ccba3880"
+        },
+        {
+          "bytes": 996,
+          "git_blob": "b332572ea957cd4218410c1271f9e7734f0c4109",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-native-four-repeat-r2/local-packet-verification.json",
+          "sha256": "61c887c0a55b188508c59148477a65510b85feca2de9ba333d17415f2e7811c2"
+        },
+        {
+          "bytes": 33255,
+          "git_blob": "9d299576361630190de83ad8ee7e5c8fb7ca3248",
+          "mode": "100644",
+          "path": "qa/openbao-acceptance/evidence/authbus-native-four-repeat-r2/launch-r2-from-r1.diff",
+          "sha256": "8c5390d9240945de759f5d3abc1a518433f473a46900b983c3ca65b6b01ffb00"
+        }
+      ],
+      "overlay": "authbus-r5-native-cold-r2-20261019/native-cold-r2-overlay.json",
+      "overlay_sha256": "1ca405da70f3a3df4d62f4cf671d881966bb0a58f064387e966c249bb0238bc4",
+      "replayed_as_mutation": false
+    }
+  ],
+  "derived_carriers": [
+    {
+      "carrier_sha256": "daec36b38f5467f78227c0eb45846debe5a47bb825783e1cdebcb17eb55903b8",
+      "excluded_base64_chunk_count": 5,
+      "kind": "explicit-public-subset",
+      "original_sha256": "ee46ae6863ab5199b05501f2b0c94db0d1407fd707e62509b1446d5d804c9781",
+      "source_content_changed": false
+    },
+    {
+      "all16_absent_from_selected_base": true,
+      "carrier_sha256": "77ac4548a0481ffe056af027a63af45453a3e127bd30ac47b15a5e2a44d5707f",
+      "kind": "explicit-new-file-rebase",
+      "original_base": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+      "original_sha256": "849c2a8dd34c999066048b7b732c972b649f62e7e094ddbbdd110cf22831a1c5",
+      "selected_base": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+      "source_content_changed": false
+    }
+  ],
+  "frozen_input_catalog": [
+    {
+      "bytes": 180628,
+      "local_path": "authbus-r5-openai-r3-20261019/openai-r3-overlay.json",
+      "members": 14,
+      "sha256": "bc348a4e5c509b3c9512f4be4467e70ef9e508f87aed7ef99aac67f19a075aa0"
+    },
+    {
+      "bytes": 106536,
+      "local_path": "authbus-r5-openai-r3-controller-r2-20261019/openai-r3-controller-r2-overlay.json",
+      "members": 10,
+      "sha256": "b0c824a771e2ee849c392606debfa399441741999c625b970042f1af3cc91129"
+    },
+    {
+      "bytes": 107862,
+      "local_path": "authbus-r5-native-cold-r2-20261019/native-cold-r2-overlay.json",
+      "members": 6,
+      "sha256": "1ca405da70f3a3df4d62f4cf671d881966bb0a58f064387e966c249bb0238bc4"
+    },
+    {
+      "bytes": 82117,
+      "local_path": "continuation-20261019/lan98-private-seed-logs-r1/lan98-private-seed-logs-r1-overlay.json",
+      "members": 1,
+      "sha256": "a9d7bf38aa670da96c5ec06148226c07bba4f5908034cce0e2241ecaefa1b51d"
+    },
+    {
+      "bytes": 1597559,
+      "local_path": "continuation-20261019/r5-actual-evidence-r2/r5-actual-evidence-r2-overlay.json",
+      "members": 264,
+      "sha256": "553a44d910a1cce1b3785c725c8436413fc0e1911f967d64adf4b6d3b54299da"
+    },
+    {
+      "bytes": 372195,
+      "local_path": "compatibility-review-20261019/native-snapshot-http-negative-zero-r2/native-snapshot-http-negative-zero-r2-formatted-overlay.json",
+      "members": 11,
+      "sha256": "ee46ae6863ab5199b05501f2b0c94db0d1407fd707e62509b1446d5d804c9781"
+    },
+    {
+      "bytes": 287309,
+      "local_path": "authbus-r5-openai-r4-20261019/openai-r4-overlay.json",
+      "members": 18,
+      "sha256": "81f7341abed6032d6d754afcf8b4c5311ef3e400d28aa6b2b069f9bc7bf25c98"
+    },
+    {
+      "bytes": 58267,
+      "local_path": "authbus-r5-openai-r4-controller-r1-20261019/openai-r4-controller-r1-overlay.json",
+      "members": 4,
+      "sha256": "76764a4984b4fa9aa71c60e40902cc844adf02c40d59cca88a4633fb0e06e37b"
+    },
+    {
+      "bytes": 190692,
+      "local_path": "authbus-r5-native-openai-r1-20261019/native-openai-r1-overlay.json",
+      "members": 12,
+      "sha256": "236bc6d9d93263077b0d550f2fb3be8c3864c9db2c51f6366e1609482cd237b5"
+    },
+    {
+      "bytes": 69606,
+      "local_path": "authbus-r5-native-openai-controller-r1-20261019/native-openai-controller-r1-overlay.json",
+      "members": 7,
+      "sha256": "7adb8f78b0fe18013ccb0f03e52f80ac457b447bcb609f6e9c097d7de7fcbcab"
+    },
+    {
+      "bytes": 401372,
+      "local_path": "authbus-r5-stage-evidence-20261019/stage-evidence-overlay.json",
+      "members": 13,
+      "sha256": "c9c9799f14a7ceb2ec8d999d238c8083f37312edc356d87d49364067ebca82cc"
+    },
+    {
+      "bytes": 60002,
+      "local_path": "compatibility-review-20261019/snapshot-http3-runner-r1/native-snapshot-http3-runner-r1-overlay.json",
+      "members": 16,
+      "sha256": "849c2a8dd34c999066048b7b732c972b649f62e7e094ddbbdd110cf22831a1c5"
+    },
+    {
+      "bytes": 13062,
+      "local_path": "compatibility-review-20261019/snapshot-http3-config-r1/native-snapshot-http3-config-r1-overlay.json",
+      "members": 4,
+      "sha256": "2062faae3ab2d0bc8cf6d8d94a6e23b6d6177444359c2b0db9ad1801244a6cde"
+    },
+    {
+      "bytes": 46151,
+      "local_path": "continuation-20261019/r5-source-orchestration-r1/r5-source-orchestration-r1-overlay.json",
+      "members": 8,
+      "sha256": "be7c0bd0d83bd5d1369d24a51debfdeffc8fa335a7c68836f496917327f02496"
+    },
+    {
+      "bytes": 19600,
+      "local_path": "continuation-20261019/r5-lan98-orchestration-r1/r5-lan98-orchestration-r1-overlay.json",
+      "members": 3,
+      "sha256": "ed0537c611fafacd49cc2835b0b060342a3c9c794646a113da49f2d279b46ce8"
+    }
+  ],
+  "no_git_writes": true,
+  "no_network": true,
+  "schema": "heptabao.r6-explicit-selection-provenance.v1"
+}

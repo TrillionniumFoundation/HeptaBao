@@ -1,0 +1,55 @@
+{
+  "actual_sdk_qualified": false,
+  "binary_sha256": "187bcc477f3620c32d9ba549dc71e6c560417868a97faa8800d9fb14ffab1055",
+  "central_source_sha256": "cc46822439dfd33c86d1068c886941a92c5581871474cef846d2aee14ce80fe0",
+  "checks": [
+    {
+      "case": "initialize",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "approle_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "formal_native_v6",
+      "passed": false
+    }
+  ],
+  "cycles": [],
+  "driver_sha256": "a535d889838ed7aff8f79e47b8df598dd7190784d81f17aba95d677ceeeb0f4b",
+  "error": "formal_native_v6",
+  "final_server_exit_code": -9,
+  "full_replacement_qualified": false,
+  "inbox_deletions": 0,
+  "j3160_contacted": false,
+  "ok": false,
+  "production_changed": false,
+  "production_cutover": false,
+  "provider_called": false,
+  "real_provider_credentials": false,
+  "schema": "heptabao.authbus-inbox-paginated-live.v1",
+  "server_restarts": []
+}

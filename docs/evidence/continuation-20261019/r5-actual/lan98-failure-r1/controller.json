@@ -1,0 +1,164 @@
+{
+  "schema": "heptabao.actual-lan98-once-controller.v1",
+  "started_utc": "2026-10-19T08:47:41.405574+00:00",
+  "controller_pid": 2086088,
+  "status": "completed",
+  "submission_count": 1,
+  "automatic_retry": false,
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/source-b24c6de/qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+    "--binary-source",
+    "local:/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server",
+    "--expected-binary-sha256",
+    "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+    "--node-binary",
+    "macbook-pro,macbook-pro:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-b24c6de-mac-r1/heptabao-server,648698fdab9eedf33f0056a8d844ecfc34e9b401e0435ccd4dbca66f4b4b2ea4,b24c6de7831a7389e39ac069277a9e85e858ef98,3356f0a94616e9e1804f497239f33546e16db577",
+    "--node-binary",
+    "rog,local:/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server,71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53,b24c6de7831a7389e39ac069277a9e85e858ef98,3356f0a94616e9e1804f497239f33546e16db577",
+    "--node-binary",
+    "pocket4,local:/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server,71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53,b24c6de7831a7389e39ac069277a9e85e858ef98,3356f0a94616e9e1804f497239f33546e16db577",
+    "--native-build-receipt",
+    "macbook-pro,macbook-pro:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-preflight-b24c6de-20261019-r1/native-build-receipt.json,a7136fc65a829aee509afb9b199e20736b253237f3120ae5603aa7d8d34a3bb1",
+    "--native-build-receipt",
+    "rog,local:/home/qian-qi/heptabao-next-gates-20261017/native-lan98-preflight-b24c6de-20261019-r1/native-build-receipt.json,aa254b8b5af43887757c41cbe25662aa4f00fd96f50fbfb028ce3a5b5251e119",
+    "--native-build-receipt",
+    "pocket4,local:/home/qian-qi/heptabao-next-gates-20261017/native-lan98-preflight-b24c6de-20261019-r1/native-build-receipt.json,aa254b8b5af43887757c41cbe25662aa4f00fd96f50fbfb028ce3a5b5251e119",
+    "--source-commit",
+    "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "--source-tree",
+    "3356f0a94616e9e1804f497239f33546e16db577",
+    "--node",
+    "macbook-pro,192.168.0.7,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-b24c6de-20261019-r1",
+    "--node",
+    "rog,192.168.0.10,/home/qian-qi/heptabao-native-lan98-b24c6de-20261019-r1",
+    "--node",
+    "pocket4,192.168.0.9,/home/alex/heptabao-native-lan98-b24c6de-20261019-r1",
+    "--api-port",
+    "46230",
+    "--raft-port",
+    "46231",
+    "--work-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/work",
+    "--allow-private-lan",
+    "--darwin-watchdog-python",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "--darwin-watchdog-python-sha256",
+    "cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43"
+  ],
+  "product_source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "product_source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "driver_source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "driver_source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "driver_manifest_sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+  "driver_git_clean_claimed": false,
+  "driver_source_files": [
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+      "bytes": 13391,
+      "sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+      "git_blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "bytes": 74145,
+      "sha256": "a6e0bb58b0b053653965b10b502f1193ddbe02f8cab01e40c5693621bd7c0e11",
+      "git_blob": "b05277fe2fe00ca8ad6ee6acf963eed8b235fbf9",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_ha_foreground_watchdog.py",
+      "bytes": 36559,
+      "sha256": "325293a3b99005080cc4268dbcb7a6a5c1967f49aad4d230ef8ea1e15f4bfc1c",
+      "git_blob": "868d2139388cd3812cf686a851d5fb9939e12d32",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/ha_multihost_live.py",
+      "bytes": 77577,
+      "sha256": "e0c26f9858713303f3f57fab08057f535c893090b21c8eb6648711a164803e6b",
+      "git_blob": "fee033bc32126f5e29e0cb601f7a3211eee0be82",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/ha_three_host_loopback_live.py",
+      "bytes": 5876,
+      "sha256": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf",
+      "git_blob": "56259e65dc062744e296e0def7e5b75d612e1c4f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+      "bytes": 9920,
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+      "git_blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "bytes": 1560,
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+      "git_blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/physical_ha_loopback_mesh.py",
+      "bytes": 10134,
+      "sha256": "dfff07d56e0e6cd646b3ae003e9123d6506e651dd55bed19b972fafed9a26493",
+      "git_blob": "f2b8c018bcf10759ccca667cb74bbe65dfd64ef1",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/physical_ha_peer_preflight.py",
+      "bytes": 8115,
+      "sha256": "701f432144677e30400937e9407832fa63c3ef05e425bb50216c1cd48a206227",
+      "git_blob": "ef499e7c216feb5621a9f085ab63193e8d8b0c44",
+      "mode": "100644"
+    }
+  ],
+  "driver_full_source_before": {
+    "verified_at_utc": "2026-10-19T08:47:41.398641+00:00",
+    "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "verified_files": 3142
+  },
+  "native_build_projector_sha256": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+  "actual_main_summary_sha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+  "actual_mac_summary_sha256": "2aabd021e20e5de6e640e4a88e1496dafb7e0a25d0a14de10a8efad9e322c79a",
+  "actual_main_build_receipt_sha256": "aa254b8b5af43887757c41cbe25662aa4f00fd96f50fbfb028ce3a5b5251e119",
+  "actual_mac_build_receipt_sha256": "a7136fc65a829aee509afb9b199e20736b253237f3120ae5603aa7d8d34a3bb1",
+  "actual_main_binary_sha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+  "actual_mac_binary_sha256": "648698fdab9eedf33f0056a8d844ecfc34e9b401e0435ccd4dbca66f4b4b2ea4",
+  "original_main_host_status": "passed_scoped_host_recovery",
+  "original_mac_host_status": "passed_scoped_host_recovery",
+  "required_direct_checks": 98,
+  "original_seconds": {
+    "http": 15,
+    "read_index": 8,
+    "listener": 45,
+    "election": 60,
+    "quorum_loss": 35
+  },
+  "production_cutover": false,
+  "driver_pid": 2086118,
+  "driver_pgid": 2086118,
+  "driver_exit_code": 1,
+  "finished_utc": "2026-10-19T08:49:06.507400+00:00",
+  "driver_full_source_after": {
+    "verified_at_utc": "2026-10-19T08:49:06.507105+00:00",
+    "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "verified_files": 3142
+  },
+  "driver_source_unchanged": true,
+  "stdout.log": {
+    "bytes": 69,
+    "sha256": "928251df8d653605a3bb9cc1bbce214713ebae9bb74b9704817b0c563af1910c"
+  },
+  "stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

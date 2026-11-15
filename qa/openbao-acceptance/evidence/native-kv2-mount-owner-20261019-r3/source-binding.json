@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.native-kv2-mount-r6-actual-format-binding.v1",
+  "base_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "base_tree": "8c2b23cd1c66ac16b466f16ea97c201e852125aa",
+  "base_manifest_sha256": "84c27124f6dc213d2199c7cab5797d5cb22dabf4ad8b2947650ae8fa7928f8a8",
+  "base_file_count": 3507,
+  "original_layers": [
+    {
+      "path": "compatibility-review-20261019/native-kv2-mount-owner-r1/native-kv2-mount-owner-r1-overlay.json",
+      "sha256": "cde8d6f77ce1614c390a95a82dfc3a4f4a8a9dc0fee41168a9c38acbeaedd797"
+    },
+    {
+      "path": "compatibility-review-20261019/native-kv2-mount-owner-r2/native-kv2-mount-owner-r2-overlay.json",
+      "sha256": "f553dd064902bf13dbf63be24e6c8946c334d0d052a8b10873f0120df4f36cf4"
+    }
+  ],
+  "combined_author_packet_sha256": "bacbb193351a971adfdf2823e57de6db00598bed6159b53f1b080ddea1edb489",
+  "actual_mac_formatter_receipt_sha256": "d15ac95aa2e2d9d732cd20a1162e0f2fc510c07fd5ff2d96c84d23ec6c51e607",
+  "formatter_scope_note": "The exact original receipt also records 3 independently owned HA timing files; only the 5 mount Rust paths listed here enter this overlay.",
+  "original_public_layer_explanations_preserved_byte_exact": [
+    "qa/openbao-acceptance/evidence/native-kv2-mount-owner-20261019-r1/REVIEW.md",
+    "qa/openbao-acceptance/evidence/native-kv2-mount-owner-20261019-r1/source-and-test-review.json",
+    "qa/openbao-acceptance/evidence/native-kv2-mount-owner-20261019-r2/REVIEW.md",
+    "qa/openbao-acceptance/evidence/native-kv2-mount-owner-20261019-r2/source-and-test-review.json"
+  ],
+  "source_files": [
+    {
+      "path": "crates/heptabao-server/src/engine_native_kv2_mount.rs",
+      "expected_base_git_blob": null,
+      "base_sha256": null,
+      "author_bytes": 16619,
+      "author_sha256": "771e6b82a6ea7a3145c8212d4105f8896c3ae2e85209c0ad7811921d59a420ab",
+      "formatted_bytes": 17605,
+      "formatted_sha256": "8d390bf662452c2926b8bd6e514ed0a3caa41f7f5e3dd9434561a2bfa7dad4d3",
+      "formatted_git_blob": "686ade33dbb15376cdc0e77197d60306d96e9fd0",
+      "actual_formatter_receipt_match": true
+    },
+    {
+      "path": "crates/heptabao-server/src/engines.rs",
+      "expected_base_git_blob": "96f36f9f6be1f13321f6115250cc6cb8278fac6f",
+      "base_sha256": "fa15e089702e7ca3fa592d24d3b7623849158117446ca0572b438bcdc2077fa2",
+      "author_bytes": 149902,
+      "author_sha256": "01def59e8013859161f3494298dd035ecd40af244dd702374da476f58104349e",
+      "formatted_bytes": 149902,
+      "formatted_sha256": "01def59e8013859161f3494298dd035ecd40af244dd702374da476f58104349e",
+      "formatted_git_blob": "5018337414f66199cdd06885d9dc890b71b77cc8",
+      "actual_formatter_receipt_match": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "expected_base_git_blob": "c8836ee2cada4e9f4446002b0cd75335adc1586f",
+      "base_sha256": "a4d52f60d40b2af314f3f3aaafd13695f85778086e56cdd4feced641ad64184a",
+      "author_bytes": 447426,
+      "author_sha256": "d660cb0f12ebd722aa465e5443d73694c6e496114ccfd4bfa6ed78688e7a87e8",
+      "formatted_bytes": 447652,
+      "formatted_sha256": "ab707bd26ef6621226a72cea21779c82e1b727bbbf12e8492ad18a49dd629d06",
+      "formatted_git_blob": "950a977ad579716e160b4ba42c0e3ae6d908d916",
+      "actual_formatter_receipt_match": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "expected_base_git_blob": "7379a5c1e2d4bfb5b874197fcf5e96a8add69928",
+      "base_sha256": "b9594b204fed1a3d939a82a55d67a6cb5212b9a0644a4a099d7a0fa370320dc1",
+      "author_bytes": 33060,
+      "author_sha256": "375e12c3d94f45784f1a4f6bb0e46ace863300d901bd81a926e164f72851b288",
+      "formatted_bytes": 33838,
+      "formatted_sha256": "fc84083a7187763c30ba2e9083a598f4660790057c388ea4f9a02f0726ff8a35",
+      "formatted_git_blob": "497ef2633370b5cbc9dc98daa2376976e875bd70",
+      "actual_formatter_receipt_match": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "expected_base_git_blob": null,
+      "base_sha256": null,
+      "author_bytes": 20354,
+      "author_sha256": "536068940482c7a62020d71a8b3c8c047163ae957f0c387db2e2ae6e0f7b725b",
+      "formatted_bytes": 24642,
+      "formatted_sha256": "300fc228103443a30f8f29b243b6e14ac9757b36b3a698b6e03a1c26c7021392",
+      "formatted_git_blob": "1a1d4a3dee20b794d5488c20e773fe95426f9f2d",
+      "actual_formatter_receipt_match": true
+    }
+  ],
+  "validation_selection_sha256": "74cc089add425d7db59cc4ce2507c1954671848916c548b761cd1ed8c50d6d39",
+  "actual_mac_rustfmt_release": "1.98.0",
+  "actual_mac_format_exit_code": 0,
+  "actual_mac_check_exit_code": 0,
+  "rust_compile_executed_for_mount_patch": false,
+  "mount_test_execution_count": 0,
+  "original_55_and_31_results_are_not_mount_patch_evidence": true
+}

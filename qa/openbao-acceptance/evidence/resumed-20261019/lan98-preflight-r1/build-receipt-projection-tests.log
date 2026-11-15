@@ -1,0 +1,10 @@
+test_actual_artifact_or_compiler_log_change_refuses (test_native_build_receipt_from_host_run.ProjectionRegression.test_actual_artifact_or_compiler_log_change_refuses) ... ok
+test_duplicate_command_wrong_native_abi_and_manifest_refuse (test_native_build_receipt_from_host_run.ProjectionRegression.test_duplicate_command_wrong_native_abi_and_manifest_refuse) ... ok
+test_exact_retained_records_project_build_but_preserve_failed_scope (test_native_build_receipt_from_host_run.ProjectionRegression.test_exact_retained_records_project_build_but_preserve_failed_scope) ... ok
+test_source_and_build_claims_cannot_be_upgraded (test_native_build_receipt_from_host_run.ProjectionRegression.test_source_and_build_claims_cannot_be_upgraded) ... ok
+test_symlink_binary_and_existing_receipt_are_never_replaced (test_native_build_receipt_from_host_run.ProjectionRegression.test_symlink_binary_and_existing_receipt_are_never_replaced) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.023s
+
+OK

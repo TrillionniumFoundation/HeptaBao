@@ -1,0 +1,549 @@
+--- reviewed-completed-old-r3.py
++++ fresh-synthetic-cleanup-only-r1.py
+@@ -16,27 +16,15 @@
+ import sys
+ import time
+ 
+-ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2')
+-HOME = Path('/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2')
+-LABEL = 'org.heptabao.qa.mac-authbus-4e808-home-r2.server'
++ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1')
++HOME = Path('/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r1')
++LABEL = 'org.heptabao.qa.mac-fresh-synthetic-20261106-r1.server'
+ TARGET = 'gui/501/' + LABEL
+-PID = 32527
++PID = 19545
+ KERNEL_PYTHON = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python'
+ LAUNCHER = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+-MANAGER_SHA = '8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4'
+-CANDIDATE_SHA = '59aa264489cc8ebea2943a0a7bab68c419da52d645532391ec369b973d555941'
++MANAGER_SHA = '045a93a547ba5237b2d787b6e1724ca9ae0c8529b43736d7f98f28cf46078cdf'
+ OBSERVER_SHA = 'cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b'
+-OLD = """            typed_value=fields[name]
+-            if name=='last exit code' and typed_value=='78: EX_CONFIG':
+-"""
+-NEW = """            typed_value=fields[name]
+-            if name=='last exit code' and typed_value=='(never exited)':
+-                # An unexited registration has no successful exit observation.
+-                # Keep None so actual_launchd_phase_exit_zero still rejects it.
+-                fields[name]=None
+-                continue
+-            if name=='last exit code' and typed_value=='78: EX_CONFIG':
+-"""
+ 
+ class Refused(RuntimeError):
+     pass
+@@ -92,25 +80,32 @@
+ 
+ import errno
+ 
+-RECOVERY_ROOT = Path('/Users/qianqi/heptabao-mac-authbus-r2-recovery-20261106-r3')
+-WRAPPER_SHA = '34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1'
++RECOVERY_ROOT = Path('/Users/qianqi/heptabao-mac-fresh-synthetic-recovery-20261106-r1')
++WRAPPER_SHA = 'bb489d899e7284d2d4eb31008d40f8a6bcc7025b8b1ac7628551a02d83a4668e'
+ EXPECTED_IDENTITY = {
+-    'pid': 32527, 'ppid': 1, 'pgid': 32527, 'uid': 501,
+-    'birthSec': 1793969379, 'birthUsec': 298893, 'executable': KERNEL_PYTHON,
++    'pid': 19545, 'ppid': 1, 'pgid': 19545, 'uid': 501,
++    'birthSec': 1793977415, 'birthUsec': 45274, 'executable': str(ROOT / 'bin/heptabao-server'),
+ }
+ CLEANUP_SECONDS = 60
+-TERM_GRACE_SECONDS = 20
++OBSERVATION_GRACE_SECONDS = 20
+ KILL_GRACE_SECONDS = 10
+ QUERY_SECONDS = 10
+ PS_SECONDS = 4
+ POLL_SECONDS = 0.25
+-READONLY_JOB = '1a1b124606d-fc05-7635'
+-PRIOR_JOURNAL = Path('/Users/qianqi/heptabao-mac-authbus-r2-recovery-20261106-r2')
+-PREPARATION = Path('/Users/qianqi/heptabao-mac-authbus-r2-recovery-preparation-20261106-r3')
+-PRIOR_JOURNAL_PINS = {"001-intent.public.json":"106b40bf0d702cd27d49fc75de6935b08360ac198149d19da97f81276b69467a","010-term-intent.public.json":"2718f9b2b28513753e3e6c80a8d7abef23a3597a44a12cee052538e52392b0bb","011-term-command.public.json":"16233386892496308f62f7faf0cf38d094cee47f02fe7a97f52cca59ec38a725","012-term-observed.public.json":"80c3d602b1b4473feabc5b7cef392cd276f883bdb9442535eb631afdef51f8b5","999-unknown.public.json":"c2b5af38d9b2196f8eef3ca746768e772d7c2b4fe2e4af60dc073264a0f5759a"}
+-PRIOR_TERMINAL_SHA = 'cd93822161d6ea392d81e9c8ef5e36a5a800995259e6778dd052e9a2cb2b4a6a'
+-PRIOR_STDOUT_SHA = 'cb33597d70a971759b0d2fe916419100fde0f4f7e21b4dced537cbc2fa2f5d04'
+-
++READONLY_JOB = '1a1b16b55a9-fc05-788b'
++PRIOR_JOURNAL = Path('/Users/qianqi/heptabao-mac-fresh-synthetic-journal-20261106-r1')
++PREPARATION = Path('/Users/qianqi/heptabao-mac-fresh-synthetic-recovery-preparation-20261106-r1')
++PRIOR_JOURNAL_PINS = {'000-run-intent.public.json': '91b3f36a99641f6f109fe2db5ecc3ed7c9bdfff5bcf109397ecefb7378f0ac56', '001-mutation-intent.public.json': 'e6bb27f86f3828a3652b6ceedafe0a4953550fcc8ae557029bb4ed3aa2d5dd57', '002-mutation-result.public.json': 'f6834fdd5025ac64cc91d179a10bc1ab37e590b8a0bb8bc837daef4cc4715725', '003-bootstrap-cleanup-custody.public.json': '293c6f9411da1fc3c5cd2683bb273a95a66a3556d9010fde21007b8c36af8dc7', '004-mutation-observed.public.json': '45cf2638fb9d18fc1dcfe2b08fa9f272448a058efa502ac98c690ae7e9eb702c', '005-cleanup-refused.public.json': '9f0b73f3803749c8ea7a6ffe182b38f65063f646eb1ce6fa2b90e2fda3945545', '006-complete-command-batch.public.json': '0f38564fb5b6d2bb2cd43c6f91fb92316e80581e4192c8b79cc51a3857cd1673', '007-complete-command-batch.public.json': '608885d6695b1b128f8b98ba53c0ac5b471a3eed8e1e109c421d1776ff839fc3', '008-final-result.public.json': '5eb9d7c693b44964b75787103e17650e9d3816b15f152fc4e189d87b0301a1c8'}
++PRIOR_TERMINAL_SHA = '0cb483064febed69d449e22049018144418d378842d1aa073aa97adf76cdfb2d'
++PRIOR_STDOUT_SHA = 'fe56d76f0cc543abc476c3c7ea00f5dd717a608cbb1f02839456b79d51cb8bc4'
++
++
++BINARY_SHA = '5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c'
++SYSTEM_PS_SHA = '3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c'
++READONLY_TERMINAL_SHA = 'b8f3362e0677add0f7945a42251e8c028f02d7c2e055b5094f916911dcb83d5b'
++READONLY_STDOUT_SHA = 'a8c70efe87ccc9942a7256eeb5a056272504e964718ced7c3e46d5c9391997f8'
++WRAPPER_STDOUT_SHA = 'bf7dca3dd640e28fac7b1379dc8cb925fb5ef12c3d53af83435da17487b82d1e'
++CONTROL_PINS = {'/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/000-server-initial-bootstrap-intent.public.json': '883f36189ebfb5d2d66902a6ed3a2a1c559c8a9bdd3d0d9de43f69c3ba3a0f59', '/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/001-server-initial-actual-wrapper-admitted.public.json': '0177ee20d282e69d8c70449b17c5d3b41fc2651e685760ff7402083f9cd910d1', '/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/002-server-initial-actual-server-exec.public.json': '29f22a50a7af8951f2a4b3d27668bb03d484ff1df298eab8986667f7f1d4a89a', '/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/server-initial.ready.public.json': 'e18736f90d1d0f0e1a3f2a8b6053aec7b257e3b5d2e203c8d1717b9c720727b1', '/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/server-initial.admitted.private.json': '9c31cd3d155b010801e1983c7bbe01935f7a3f6ffbbbbdcc018fa0d3e24c8a2c', '/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/server-initial.exec-ready.public.json': '03f6f88abf89b4abbd11c8d53c86784df50c5d043c7c2efc332c1bb7900b9a01', '/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/server-initial.private.json': 'a6bb86cf3ee2a85310841568ae88f0c87c396e8000994342a8bb78f4a83d6ee5', '/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r1/launchd/server-initial.cleanup-intent.public.json': '2a1a1fcedd5f9640e1d904dd37c97b9f0b1e36bf4d60912eb5d04dc3a775e559', '/Users/qianqi/heptabao-mac-fresh-synthetic-launchd-20261106-r1/server-initial.plist': 'e474f8965063e67336795a78e9371c43d84bf244fe055c6676e8dc67d98c69d4'}
+ 
+ class Journal:
+     """One create-only recovery directory, held by fd; no resume or overwrite."""
+@@ -189,16 +184,16 @@
+         self.commands = []
+         self.observation_count = 0
+         self.report = {
+-            'schema': 'heptabao.mac-authbus-r2-recovery-cleanup.r3',
+-            'priorSignalRecoveryJob': '1a1b11e72f9-fc05-75ee',
++            'schema': 'heptabao.mac-fresh-synthetic-r1-recovery-cleanup.r1',
++            'failedSyntheticCampaignJob': '1a1b162f30c-fc05-7833',
+             'newOperationAllowsTerm': False,
+-            'oldR2FailurePreserved': True,
+-            'previousRecoveryPreflightFailureJob': '1a1b11278be-fc05-7587',
+-            'previousRecoveryMutationAttemptsWereEmpty': True,
++            'originalSyntheticFailurePreserved': True,
++            'knownReadonlyDiagnosticFailureJob': '1a1b167bf27-fc05-7867',
++            'originalQaSignalAndBootoutAttemptsWereEmpty': True,
+             'executedHelperSha256': globals().get('__source_sha256__'),
+             'ok': False, 'recoveryOutcomeUnknown': False, 'target': TARGET,
+             'expectedCurrentIdentity': EXPECTED_IDENTITY, 'readOnlyReconciliationJob': READONLY_JOB,
+-            'cleanupSeconds': CLEANUP_SECONDS, 'termGraceSeconds': TERM_GRACE_SECONDS,
++            'cleanupSeconds': CLEANUP_SECONDS, 'freshObservationSeconds': OBSERVATION_GRACE_SECONDS,
+             'killGraceSeconds': KILL_GRACE_SECONDS, 'querySeconds': QUERY_SECONDS,
+             'psSeconds': PS_SECONDS, 'originalBusinessDeadlineRenewed': False,
+             'originalFailedResultModified': False, 'oldManagerImported': False,
+@@ -235,18 +230,18 @@
+             raw, current = safe_read(path, maximum)
+             need(current == bound and sha(raw) == digest, 'original_input_changed')
+             self.remaining()
+-        for suffix in ('ready.public.json', 'admitted.private.json', 'exec-ready.public.json'):
+-            try:
+-                (ROOT / 'launchd' / ('server-initial.' + suffix)).lstat()
+-            except FileNotFoundError:
+-                continue
+-            raise Refused('unexpected_business_admission_artifact')
+-        if getattr(self, 'prior_term_verified', False):
++        if getattr(self, 'prior_failure_verified', False):
+             need(identity(PRIOR_JOURNAL.lstat()) == self.prior_journal_identity
+                  and sorted(os.listdir(PRIOR_JOURNAL)) == sorted(PRIOR_JOURNAL_PINS),
+-                 'prior_recovery_journal_identity_and_inventory_unchanged')
+-        if self.journal is not None:
+-            self.journal.check()
++                 'failed_campaign_journal_inventory_unchanged')
++            need(identity(Path('/bin/ps').lstat()) == self.system_ps_identity,
++                 'fixed_setuid_system_ps_identity_unchanged')
++            need(identity((ROOT/'bin/heptabao-server').lstat()) == self.binary_identity,
++                 'qualified_owned_binary_identity_unchanged')
++            info=self.BsdInfo();ctypes.set_errno(0)
++            count=self.reader.lib.proc_pidinfo(19659,3,0,ctypes.byref(info),ctypes.sizeof(info))
++            need(count==0 and ctypes.get_errno()==errno.ESRCH,'prior_unknown_readonly_helper_still_absent')
++        if self.journal is not None:self.journal.check()
+         self.remaining()
+ 
+     def call(self, label, argv, cap=QUERY_SECONDS):
+@@ -273,207 +268,148 @@
+ 
+     def preflight(self):
+         need(sys.platform == 'darwin' and os.geteuid() == 501, 'fixed_mac_operator')
+-        need(re.fullmatch(r'[0-9a-f]{64}', str(globals().get('__source_sha256__'))) is not None,
++        need(re.fullmatch(r'[0-9a-f]{64}',str(globals().get('__source_sha256__'))) is not None,
+              'source_hash_supplied_by_pinned_loader')
+-        raw = self.read_bound(ROOT / 'qa/mac_owned_launchd_r3.py', 65536,
+-                              'originalManager', MANAGER_SHA)
+-        source = raw.decode('utf-8', 'strict')
+-        need(source.count(OLD) == 1, 'one_known_parser_patch')
+-        candidate = source.replace(OLD, NEW, 1)
+-        need(sha(candidate.encode()) == CANDIDATE_SHA, 'pinned_readonly_parser')
+-        self.parse = extract(candidate, ['parse_print'], {'need': need, 're': re})['parse_print']
+-        observer = self.read_bound(ROOT / 'qa/mac_native_process_observer_r1.py', 65536,
+-                                   'libprocObserver', OBSERVER_SHA)
+-        ns = extract(observer, ['ObservationRefused', 'require', 'BsdInfo', 'ProcessReader'],
+-                     {'ctypes': ctypes, 'Path': Path, 'sys': sys})
+-        self.reader = ns['ProcessReader']()
+-        self.BsdInfo = ns['BsdInfo']
+-        self.read_bound(ROOT / 'qa/mac_current_server_owner_r1.py', 65536,
+-                        'originalWrapper', WRAPPER_SHA)
+-        self.read_bound(HOME / 'mac_current_server_owner_r1.py', 65536,
+-                        'homeWrapper', WRAPPER_SHA)
+-        raw = self.read_bound(ROOT / 'outer-native-r1/result.public.json', 524288,
+-                              'originalFailedPublicResult')
+-        original = json.loads(raw)
+-        manager = original.get('manager', {})
+-        need(manager.get('schema') == 'heptabao.mac-owned-launchd-manager.r3'
+-             and manager.get('ok') is False and manager.get('outcomeUnknown') is True
+-             and manager.get('failureCleanupAttempted') is True
+-             and manager.get('completedOperationCount') == 0,
+-             'original_failed_manager_unchanged')
+-        entries = manager.get('registrations')
+-        need(isinstance(entries, list) and len(entries) == 1, 'single_original_registration')
+-        entry = entries[0]
+-        need(entry.get('label') == LABEL and entry.get('generation') == 'server-initial'
+-             and entry.get('kind') == 'server' and entry.get('wrapperIdentity') is None
+-             and entry.get('execIdentity') is None and entry.get('knownOwnedGroups') == []
+-             and entry.get('registrationClosed') is False and entry.get('lineagesClosed') is False
+-             and entry.get('cleanupErrorCode') == 'typed_launchctl_integer',
+-             'original_unadmitted_registration')
+-        attempts = entry.get('attempts', {})
+-        need(set(attempts) == {'bootstrap'} and attempts['bootstrap'].get('attempted') is True
+-             and attempts['bootstrap'].get('complete') is True
+-             and attempts['bootstrap'].get('exitCode') == 0, 'original_bootstrap_only_ledger')
+-        commands = manager.get('ownedCommands', {})
+-        need(commands.get('allOwnedCommandsStopped') is True
+-             and commands.get('unknownCommandCount') == 0, 'original_helpers_closed')
+-        rows = commands.get('commands')
+-        need(isinstance(rows, list), 'original_command_rows_present')
+-        launches = [r for r in rows if isinstance(r.get('label'), str)
+-                    and r['label'].startswith('launchd-')]
+-        need(len(launches) == 6 and sum(r['label'] == 'launchd-bootstrap' for r in launches) == 1
+-             and all(r['label'] in ('launchd-print', 'launchd-bootstrap')
+-                     and r.get('outcomeUnknown') is False
+-                     and r.get('completeBeforeDeadline') is True for r in launches),
+-             'no_original_signal_or_bootout_dispatched')
+-        self.report['originalLedgerVerified'] = {
+-            'bootstrapCompleteExitZero': True, 'termKillBootoutNeverAttempted': True,
+-            'ownedCommandUnknownCount': 0, 'launchctlCommandCount': len(launches),
+-            'oldWrapperIdentityAbsent': True, 'oldExecIdentityAbsent': True,
+-        }
+-        event = json.loads(self.read_bound(
+-            ROOT / 'launchd/000-server-initial-bootstrap-intent.public.json', 4096,
+-            'originalBootstrapIntent'))
+-        cleanup = json.loads(self.read_bound(ROOT / 'launchd/server-initial.cleanup-intent.public.json',
+-                                            4096, 'originalCleanupIntent'))
+-        self.plist_path = HOME / 'server-initial.plist'
+-        plist_raw = self.read_bound(self.plist_path, 65536, 'originalPlist')
+-        plist = plistlib.loads(plist_raw)
+-        plan_raw = self.read_bound(ROOT / 'launchd/server-initial.private.json', 4096)
+-        detail = event.get('detail', {})
+-        need(event.get('schema') == 'heptabao.mac-owned-launchd-event.r3'
+-             and event.get('kind') == 'bootstrap-intent' and event.get('index') == 0
+-             and event.get('generation') == 'server-initial'
+-             and detail.get('argv') == ['/bin/launchctl', 'bootstrap', 'gui/501', str(self.plist_path)]
+-             and sha(plist_raw) == entry.get('plistSha256') == detail.get('plistSha256')
+-             and sha(plan_raw) == entry.get('planSha256') == detail.get('planSha256'),
+-             'original_plist_plan_bootstrap_binding')
+-        need(cleanup.get('schema') == 'heptabao.mac-owned-launchd-cleanup-intent.r3'
+-             and cleanup.get('generation') == 'server-initial' and cleanup.get('target') == TARGET
+-             and cleanup.get('termArgv') == ['/bin/launchctl', 'kill', 'SIGTERM', TARGET]
+-             and cleanup.get('killArgv') == ['/bin/launchctl', 'kill', 'SIGKILL', TARGET]
+-             and cleanup.get('bootoutArgv') == ['/bin/launchctl', 'bootout', TARGET]
+-             and cleanup.get('newCleanupSeconds') == CLEANUP_SECONDS,
+-             'original_fixed_cleanup_intent')
+-        self.args = plist.get('ProgramArguments')
+-        need(isinstance(self.args, list) and self.args[:5] == [LAUNCHER, '-I', '-S', '-B',
+-             str(HOME / 'mac_current_server_owner_r1.py')], 'exact_python_wrapper_prefix')
+-        expected_plist = {
+-            'Label': LABEL, 'ProgramArguments': self.args, 'RunAtLoad': True, 'KeepAlive': False,
+-            'AbandonProcessGroup': False, 'ProcessType': 'Background', 'ExitTimeOut': 10,
+-            'Umask': 0o077, 'WorkingDirectory': str(HOME),
+-            'StandardOutPath': str(HOME / 'server-initial.stdout.private'),
+-            'StandardErrorPath': str(HOME / 'server-initial.stderr.private'),
+-            'EnvironmentVariables': {'PATH': '/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin',
+-                                     'LANG': 'C', 'LC_ALL': 'C'},
+-        }
+-        need(plist == expected_plist, 'entire_original_plist_no_restart')
+-        self.report['originalPlistPlanAndSourceBindingsVerified'] = True
+-        self.report['privatePlanDigestPublished'] = False
++        manager=self.read_bound(ROOT/'qa/mac_owned_launchd_r3.py',65536,'pinnedSyntheticManager',MANAGER_SHA)
++        self.parse=extract(manager,['parse_print'],{'need':need,'re':re})['parse_print']
++        observer=self.read_bound(ROOT/'qa/mac_native_process_observer_r1.py',65536,'libprocObserver',OBSERVER_SHA)
++        ns=extract(observer,['ObservationRefused','require','BsdInfo','ProcessReader'],
++                   {'ctypes':ctypes,'Path':Path,'sys':sys})
++        self.reader=ns['ProcessReader']();self.BsdInfo=ns['BsdInfo']
++        for path in (ROOT/'qa/mac_current_server_owner_r1.py',HOME/'mac_current_server_owner_r1.py'):
++            self.read_bound(path,65536,'wrapper-'+str(path),WRAPPER_SHA)
+         self.verify_prior_recovery()
++        self.plist_path=HOME/'server-initial.plist'
++        plist_raw=self.read_bound(self.plist_path,65536,'originalPlist',CONTROL_PINS[str(self.plist_path)])
++        plist=plistlib.loads(plist_raw);self.args=plist.get('ProgramArguments')
++        need(isinstance(self.args,list) and self.args[:5]==[LAUNCHER,'-I','-S','-B',
++             str(HOME/'mac_current_server_owner_r1.py')],'exact_python_wrapper_prefix')
++        expected_plist={'Label':LABEL,'ProgramArguments':self.args,'RunAtLoad':True,'KeepAlive':False,
++            'AbandonProcessGroup':False,'ProcessType':'Background','ExitTimeOut':10,'Umask':0o077,
++            'WorkingDirectory':str(HOME),'StandardOutPath':str(HOME/'server-initial.stdout.private'),
++            'StandardErrorPath':str(HOME/'server-initial.stderr.private'),
++            'EnvironmentVariables':{'PATH':'/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','LC_ALL':'C'}}
++        need(plist==expected_plist,'entire_original_plist_no_restart')
++        for path,pin in CONTROL_PINS.items():
++            if Path(path)!=self.plist_path:self.read_bound(Path(path),65536,'original-control-'+Path(path).name,pin)
++        wrapper_raw=self.read_bound(HOME/'server-initial.stdout.private',65536,'actualWrapperTerminal',WRAPPER_STDOUT_SHA)
++        wrapper=json.loads(wrapper_raw)
++        wrapper_identity=dict(EXPECTED_IDENTITY,executable=KERNEL_PYTHON)
++        need(wrapper['ok'] is True and wrapper['readyToExec'] is True and wrapper['outcomeUnknown'] is False
++             and wrapper['wrapperIdentity']==wrapper_identity and wrapper['binarySha256']==BINARY_SHA
++             and wrapper['elapsedSeconds']<30 and wrapper['volumeGuardClosed']['allDescriptorsClosed'] is True
++             and wrapper['commands']['allOwnedCommandsStopped'] is True,'original_wrapper_completion_binding')
++        ready=json.loads(safe_read(ROOT/'launchd/server-initial.ready.public.json',4096)[0])
++        admission=json.loads(safe_read(ROOT/'launchd/server-initial.admitted.private.json',4096)[0])
++        need(ready['wrapperIdentity']==admission['wrapperIdentity']==wrapper_identity
++             and ready['planSha256']==admission['planSha256']=='a6bb86cf3ee2a85310841568ae88f0c87c396e8000994342a8bb78f4a83d6ee5',
++             'existing_ready_admission_are_original_not_replayed')
++        plan_raw=safe_read(ROOT/'launchd/server-initial.private.json',4096)[0]
++        plan=json.loads(plan_raw)
++        need(plan['binaryPath']==str(ROOT/'bin/heptabao-server') and plan['binarySha256']==BINARY_SHA
++             and plan['binaryBytes']==92359328 and plan['workRoot']==str(ROOT),'exact_original_server_plan')
++        self.read_bound(ROOT/'server/server.json',4096,'syntheticConfig',wrapper['configSha256'])
++        self.binary_identity=self.pin_executable(ROOT/'bin/heptabao-server',501,0o500,92359328,BINARY_SHA)
++        need(tuple(map(str,self.binary_identity))==tuple(wrapper['binaryIdentity']),'same_original_binary_file_identity')
++        self.system_ps_identity=self.pin_executable(Path('/bin/ps'),0,0o4755,170432,SYSTEM_PS_SHA)
++        self.prior_failure_verified=True
++        self.guard();first=self.observe();second=self.observe()
++        need(first['state'] in ('live','retired') and second['state'] in ('live','retired')
++             and not(first['state']=='retired' and second['state']=='live'),'current_full_birth_or_known_retirement')
++        self.report['initialObservation']=second
++        self.journal=Journal()
++        intent={'schema':'heptabao.mac-fresh-synthetic-independent-cleanup-intent.r1',
++            'target':TARGET,'expectedCurrentIdentity':EXPECTED_IDENTITY,
++            'publicInputSha256':self.report['publicInputSha256'],'readOnlyReconciliationJob':READONLY_JOB,
++            'originalCampaignJob':'1a1b162f30c-fc05-7833','originalCampaignRemainsFailed':True,
++            'originalBootstrapOnlyLedgerVerified':True,'priorUnknownPs19659NowAbsent':True,
++            'cleanupSeconds':60,'freshObservationSeconds':20,'killGraceSeconds':10,
++            'mutationOrder':['fresh-20-second-observation-if-live','optional-kill-once','bootout-once'],
++            'noTermDispatchBranch':True,'noBusinessReplay':True,'noOriginalResultRewrite':True,
++            'noNumericQaPidOrGroupSignals':True,'noDataFileDeletion':True,'initialObservation':second}
++        self.report['durableInitialIntentSha256']=self.journal.write_new('001-intent.public.json',intent)
+         self.guard()
+-        first = self.observe()
+-        second = self.observe()
+-        need(first['state'] in ('live', 'retired') and second['state'] in ('live', 'retired')
+-             and not (first['state'] == 'retired' and second['state'] == 'live'),
+-             'same_owned_wrapper_live_or_known_retired_before_recovery')
+-        self.report['initialObservation'] = second
+-        self.journal = Journal()
+-        intent = {
+-            'schema': 'heptabao.mac-authbus-r2-independent-cleanup-intent.r1',
+-            'target': TARGET, 'expectedCurrentIdentity': EXPECTED_IDENTITY,
+-            'readOnlyReconciliationJob': READONLY_JOB,
+-            'publicInputSha256': self.report['publicInputSha256'],
+-            'originalBootstrapOnlyLedgerVerified': True,
+-            'exactOriginalPlistAndAllRegisteredArgumentsVerified': True,
+-            'privatePlanDigestPublished': False, 'initialObservation': second,
+-            'cleanupSeconds': CLEANUP_SECONDS, 'termGraceSeconds': TERM_GRACE_SECONDS,
+-            'killGraceSeconds': KILL_GRACE_SECONDS,
+-            'mutationOrder': ['fresh-20-second-observation-if-live', 'optional-kill-once', 'bootout-once'],
+-            'noTermDispatchBranch': True,
+-            'priorKnownTerm': self.report['priorKnownTerm'],
+-            'newBudgetIsNotOldR2SuccessOrContinuation': True,
+-            'noBusinessReplay': True, 'noOriginalResultRewrite': True,
+-            'noNumericQaPidOrGroupSignals': True, 'noDataFileDeletion': True,
+-        }
+-        self.remaining()
+-        self.report['durableInitialIntentSha256'] = self.journal.write_new('001-intent.public.json', intent)
+-        self.guard()
++
++    def pin_executable(self,path,uid,mode,size,digest):
++        self.remaining();fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
++        try:
++            before=os.fstat(fd)
++            need(stat.S_ISREG(before.st_mode) and before.st_uid==uid and before.st_nlink==1
++                 and stat.S_IMODE(before.st_mode)==mode and before.st_size==size,'exact_executable_custody')
++            seen=0;hasher=hashlib.sha256()
++            while True:
++                self.remaining();block=os.read(fd,1048576)
++                if not block:break
++                seen+=len(block);need(seen<=size,'bounded_executable_read');hasher.update(block)
++            need(seen==size and hasher.hexdigest()==digest and identity(before)==identity(os.fstat(fd))
++                 ==identity(path.lstat()),'whole_exact_executable_pin')
++            return identity(before)
++        finally:os.close(fd)
+ 
+ 
+     def verify_prior_recovery(self):
+-        info = PRIOR_JOURNAL.lstat()
+-        need(stat.S_ISDIR(info.st_mode) and info.st_uid == 501
+-             and stat.S_IMODE(info.st_mode) == 0o700
+-             and sorted(os.listdir(PRIOR_JOURNAL)) == sorted(PRIOR_JOURNAL_PINS),
+-             'exact_prior_private_journal_and_inventory')
+-        self.prior_journal_identity = identity(info)
+-        values = {}
+-        for name, digest in PRIOR_JOURNAL_PINS.items():
+-            raw = self.read_bound(PRIOR_JOURNAL / name, 65536, 'priorJournal-' + name, digest)
+-            values[name] = json.loads(raw)
+-        terminal_raw = self.read_bound(PREPARATION / 'prior-terminal.public.json', 4096,
+-                                       'priorAuthoritativeTerminal', PRIOR_TERMINAL_SHA)
+-        stdout_raw = self.read_bound(PREPARATION / 'prior-stdout.original', 65536,
+-                                     'priorExactStdout', PRIOR_STDOUT_SHA)
+-        terminal = json.loads(terminal_raw)
+-        previous = json.loads(stdout_raw)
+-        need(terminal.get('job_id') == '1a1b11e72f9-fc05-75ee'
+-             and terminal.get('state') == 'failed' and terminal.get('exit_code') == 1
+-             and terminal.get('timed_out') is False and terminal.get('automatic_retry') is False
+-             and terminal.get('output_complete') is True and terminal.get('output_durable') is True
+-             and terminal.get('terminal_publication_confirmed') is True
+-             and terminal['log_bytes']['stdout']['stored'] == len(stdout_raw) == 10650
+-             and terminal['log_bytes']['stdout']['seen'] == len(stdout_raw)
+-             and terminal['log_bytes']['stderr']['stored'] == terminal['log_bytes']['stderr']['seen'] == 0,
+-             'prior_authoritative_failed_terminal_exact')
+-        attempts = previous.get('serviceMutationAttempts', {})
+-        need(previous.get('schema') == 'heptabao.mac-authbus-r2-recovery-cleanup.r2'
+-             and previous.get('executedHelperSha256') == '9dbdfd913b97d719ee6db710ce6b492df37147339f8988fb40bf83f3db0937d0'
+-             and previous.get('ok') is False and previous.get('recoveryOutcomeUnknown') is True
+-             and previous.get('errorCode') == 'typed_process_metadata'
+-             and previous.get('journalDescriptorClosed') is True
+-             and previous.get('expectedCurrentIdentity') == EXPECTED_IDENTITY
+-             and set(attempts) == {'term'} and attempts['term'].get('attempted') is True
+-             and attempts['term'].get('complete') is True and attempts['term'].get('exitCode') == 0
+-             and attempts['term'].get('intentSha256') == PRIOR_JOURNAL_PINS['010-term-intent.public.json'],
+-             'prior_exact_known_term_only_attempt')
+-        commands = previous.get('helperCommandReceipts')
+-        need(isinstance(commands, list) and len(commands) == 43
+-             and sum(c.get('label') == 'launchctl-term' for c in commands) == 1
+-             and all(c.get('label') in ('launchctl-print', 'ps-fixed-metadata', 'launchctl-term')
+-                     and c.get('complete') is True and c.get('outcomeUnknown') is False
+-                     and c.get('exitCode') == 0 for c in commands),
+-             'prior_complete_helper_ledger_no_kill_or_bootout')
+-        initial = values['001-intent.public.json']
+-        intent = values['010-term-intent.public.json']
+-        receipt = values['011-term-command.public.json']
+-        after = values['012-term-observed.public.json']
+-        unknown = values['999-unknown.public.json']
+-        need(initial.get('expectedCurrentIdentity') == EXPECTED_IDENTITY
+-             and initial.get('target') == TARGET and intent.get('operation') == 'term'
+-             and intent.get('argv') == ['/bin/launchctl', 'kill', 'SIGTERM', TARGET]
+-             and intent.get('expectedCurrentIdentity') == EXPECTED_IDENTITY
+-             and receipt.get('operation') == 'term'
+-             and receipt.get('stdout') == receipt.get('stderr') == ''
+-             and receipt['receipt'].get('label') == 'launchctl-term'
+-             and receipt['receipt'].get('complete') is True
+-             and receipt['receipt'].get('outcomeUnknown') is False
+-             and receipt['receipt'].get('exitCode') == 0
+-             and after.get('state') == 'live'
+-             and after.get('processIdentity') == EXPECTED_IDENTITY
+-             and after.get('directChildPids') == []
+-             and unknown.get('serviceMutationAttempts') == attempts
+-             and unknown.get('helperCommandReceipts') == commands,
+-             'five_prior_journal_files_conjoin_with_authoritative_terminal')
+-        self.prior_term_verified = True
+-        self.report['priorKnownTerm'] = {
+-            'jobId': terminal['job_id'], 'complete': True, 'exitCode': 0,
+-            'termDispatchCount': 1, 'killDispatchCount': 0, 'bootoutDispatchCount': 0,
+-            'termIntentSha256': PRIOR_JOURNAL_PINS['010-term-intent.public.json'],
+-            'commandReceiptSha256': PRIOR_JOURNAL_PINS['011-term-command.public.json'],
+-            'oldOperationRemainsFailed': True, 'oldBudgetRenewed': False,
+-        }
++        info=PRIOR_JOURNAL.lstat()
++        need(stat.S_ISDIR(info.st_mode) and info.st_uid==501 and stat.S_IMODE(info.st_mode)==0o700
++             and sorted(os.listdir(PRIOR_JOURNAL))==sorted(PRIOR_JOURNAL_PINS),'exact_failed_campaign_journal')
++        self.prior_journal_identity=identity(info);files={}
++        for name,pin in PRIOR_JOURNAL_PINS.items():
++            files[name]=json.loads(self.read_bound(PRIOR_JOURNAL/name,65536,'prior-'+name,pin))
++        terminal=json.loads(self.read_bound(PREPARATION/'failed-campaign-status.public.json',8192,
++            'authoritativeFailedCampaignTerminal',PRIOR_TERMINAL_SHA))
++        raw=self.read_bound(PREPARATION/'failed-campaign-stdout.original',65536,'exactFailedCampaignStdout',PRIOR_STDOUT_SHA)
++        prior=json.loads(raw)
++        need(terminal['job_id']=='1a1b162f30c-fc05-7833' and terminal['state']=='failed' and terminal['exit_code']==1
++             and terminal['output_complete'] is True and terminal['output_durable'] is True
++             and terminal['terminal_publication_confirmed'] is True and terminal['timed_out'] is False
++             and terminal['log_bytes']['stdout']=={'seen':len(raw),'stored':len(raw)}
++             and terminal['log_bytes']['stderr']=={'seen':0,'stored':0},'known_failed_original_campaign_terminal')
++        need(prior['ok'] is False and prior['errorCode']=='actual_complete_pinned_tls_health'
++             and prior['manager']['completedOperationCount']==1 and prior['manager']['outcomeUnknown'] is True
++             and prior['manager']['failureCleanupAttempted'] is True,'original_failure_preserved')
++        entries=prior['manager']['registrations'];need(len(entries)==1,'single_original_registration')
++        entry=entries[0];attempts=entry['attempts']
++        need(entry['label']==LABEL and entry['generation']=='server-initial' and entry['execIdentity']==EXPECTED_IDENTITY
++             and entry['knownOwnedGroups']==[PID] and not entry['registrationClosed'] and not entry['lineagesClosed']
++             and set(attempts)=={'bootstrap'} and attempts['bootstrap']['attempted'] is True
++             and attempts['bootstrap']['complete'] is True and attempts['bootstrap']['exitCode']==0
++             and attempts['bootstrap']['command']['outcomeUnknown'] is False,'original_bootstrap_only_no_signal_ledger')
++        commands=[]
++        for name in ('006-complete-command-batch.public.json','007-complete-command-batch.public.json'):
++            value=files[name]['value'];need(value['firstIndex']==len(commands),'original_command_order')
++            commands.extend(value['commands'])
++        unknown=[x for x in commands if x['outcomeUnknown']]
++        need(len(commands)==17 and len(unknown)==1 and unknown[0] is commands[-1]
++             and unknown[0]['argv']==['/bin/ps','-axo','pid=,ppid=,pgid=,uid=,stat=']
++             and unknown[0]['pid']==19659 and unknown[0]['cleanup']['errorCode']=='owned_child_scope_mismatch'
++             and unknown[0]['cleanup']['signals']==[] and unknown[0]['streamsClosed'] is True,
++             'exact_readonly_ps_unknown_not_qa_mutation')
++        need(all(x['completeBeforeDeadline'] is True and x['outcomeUnknown'] is False for x in commands[:-1]),
++             'all_prior_other_helpers_known')
++        launch=[x for x in commands if x['argv'] and x['argv'][0]=='/bin/launchctl']
++        need(sum(x['argv'][1]=='bootstrap' for x in launch)==1 and all(x['argv'][1] in ('print','bootstrap') for x in launch),
++             'no_prior_qa_signal_or_bootout_command')
++        intents=[x['value'] for x in files.values() if x['event']=='mutation-intent']
++        need(len(intents)==1 and intents[0]['operation']=='bootstrap','only_bootstrap_durable_intent')
++        self.report['priorCampaignLedger']={'commandCount':17,'priorUnknownReadonlyPsPid':19659,
++            'bootstrapKnownExitZero':True,'termKillBootoutAttempts':0,'originalCampaignRemainsFailed':True}
++        read_terminal=json.loads(self.read_bound(PREPARATION/'readonly-status.public.json',8192,
++            'readonlyReconciliationTerminal',READONLY_TERMINAL_SHA))
++        read_raw=self.read_bound(PREPARATION/'readonly-stdout.original',65536,'readonlyReconciliationStdout',READONLY_STDOUT_SHA)
++        evidence=[json.loads(line) for line in read_raw.splitlines()]
++        need(read_terminal['job_id']==READONLY_JOB and read_terminal['state']=='succeeded' and read_terminal['exit_code']==0
++             and read_terminal['output_complete'] is True and read_terminal['output_durable'] is True
++             and read_terminal['terminal_publication_confirmed'] is True and not read_terminal['timed_out']
++             and read_terminal['log_bytes']['stdout']=={'seen':len(read_raw),'stored':len(read_raw)},
++             'authoritative_readonly_reconciliation_terminal')
++        actual=evidence[-1]
++        need(len(evidence)==3 and actual['ok'] is True and actual['originalCampaignRemainsFailed'] is True
++             and actual['knownServerIdentity']==EXPECTED_IDENTITY and actual['nativeChildren']==[]
++             and actual['priorUnknownHelperFirst']==actual['priorUnknownHelperLast']=={'pid':19659,'bytes':0,'errno':3}
++             and actual['serviceSignals']==[] and actual['bootoutAttempted'] is False,
++             'readonly_current_birth_and_unknown_helper_absence')
++        self.report['rootSetuidPsObserved']={'path':'/bin/ps','mode':0o4755,'uid':0,'sha256':SYSTEM_PS_SHA,
++            'nativeReadDeniedIsNotOwnership':True,'serviceUidRemains501':True,
++            'foregroundRunnerInheritedFromReviewedRecoveryR3':True}
+ 
+     def query(self):
+         row, out, err = self.call('launchctl-print', ['/bin/launchctl', 'print', TARGET])
+@@ -583,13 +519,16 @@
+     def dispatch_once(self, operation):
+         need(operation in ('kill', 'bootout') and operation not in self.attempts,
+              'one_new_recovery_action_per_operation')
++        need(not self.report['recoveryOutcomeUnknown']
++             and all(c.get('complete') is True and not c.get('outcomeUnknown') for c in self.commands),
++             'all_new_helper_outcomes_known_before_mutation')
+         required_state = 'retired' if operation == 'bootout' else 'live'
+         before = self.observe()
+         need(before['state'] == required_state, 'mutation_precondition_exact_state')
+-        need(getattr(self, 'prior_term_verified', False), 'prior_known_term_required')
++        need(getattr(self, 'prior_failure_verified', False), 'pinned_failed_campaign_and_readonly_reconciliation_required')
+         if operation == 'kill':
+             need(self.report.get('newObservationGraceCompleted') is True
+-                 and self.report.get('newObservationGraceElapsedSeconds', 0) >= TERM_GRACE_SECONDS,
++                 and self.report.get('newObservationGraceElapsedSeconds', 0) >= OBSERVATION_GRACE_SECONDS,
+                  'kill_only_after_new_full_twenty_second_observation')
+         if operation == 'bootout':
+             need(all(a.get('complete') is True and a.get('exitCode') == 0 for a in self.attempts.values())
+@@ -599,7 +538,7 @@
+         argv = {'kill': ['/bin/launchctl', 'kill', 'SIGKILL', TARGET],
+                 'bootout': ['/bin/launchctl', 'bootout', TARGET]}[operation]
+         intent = {
+-            'schema': 'heptabao.mac-authbus-r2-cleanup-action-intent.r1',
++            'schema': 'heptabao.mac-fresh-synthetic-cleanup-action-intent.r1',
+             'operation': operation, 'argv': argv, 'expectedCurrentIdentity': EXPECTED_IDENTITY,
+             'inputBindingsSha256': self.report['publicInputSha256'],
+             'initialIntentSha256': self.report['durableInitialIntentSha256'],
+@@ -614,7 +553,7 @@
+         self.attempts[operation] = {'attempted': True, 'complete': False, 'intentSha256': digest}
+         row, out, err = self.call('launchctl-' + operation, argv)
+         self.attempts[operation].update(complete=True, exitCode=row['exitCode'])
+-        receipt = {'schema': 'heptabao.mac-authbus-r2-cleanup-command.r1',
++        receipt = {'schema': 'heptabao.mac-fresh-synthetic-cleanup-command.r1',
+                    'operation': operation, 'receipt': row,
+                    'stdout': out.decode('utf-8', 'strict'), 'stderr': err.decode('utf-8', 'strict')}
+         self.journal.write_new('%03d-%s-command.public.json' % (number + 1, operation), receipt)
+@@ -639,7 +578,7 @@
+             time.sleep(min(POLL_SECONDS, remaining))
+ 
+     def new_observation_grace(self):
+-        need(self.remaining() >= TERM_GRACE_SECONDS, 'enough_budget_for_new_full_grace')
++        need(self.remaining() >= OBSERVATION_GRACE_SECONDS, 'enough_budget_for_new_full_grace')
+         started = time.monotonic()
+         while True:
+             current = self.observe()
+@@ -647,12 +586,12 @@
+                 return current
+             need(current['state'] in ('live', 'retiring'), 'bounded_new_observation_state')
+             elapsed = time.monotonic() - started
+-            if elapsed >= TERM_GRACE_SECONDS:
++            if elapsed >= OBSERVATION_GRACE_SECONDS:
+                 need(current['state'] == 'live', 'full_grace_same_live_birth_required_for_kill')
+                 self.report['newObservationGraceElapsedSeconds'] = elapsed
+                 self.report['newObservationGraceCompleted'] = True
+                 return current
+-            time.sleep(min(POLL_SECONDS, TERM_GRACE_SECONDS - elapsed, self.remaining()))
++            time.sleep(min(POLL_SECONDS, OBSERVATION_GRACE_SECONDS - elapsed, self.remaining()))
+ 
+     def verify_retirement_terminal(self, retired):
+         need(retired.get('state') == 'retired', 'known_original_wrapper_retired')
+@@ -665,9 +604,8 @@
+         else:
+             signal_value = terminal.get('last terminating signal')
+             exit_value = terminal.get('last exit code')
+-            need(signal_value in ('15', 'SIGTERM', 'Terminated: 15', '15 (Terminated: 15)')
+-                 or (signal_value is None and type(exit_value) is int),
+-                 'known_prior_term_or_numeric_exit_retirement_terminal')
++            need(signal_value is None and type(exit_value) is int,
++                 'known_numeric_exit_without_unexplained_signal_required')
+         self.report['retirementTerminalVerified'] = True
+ 
+     def run(self):

@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.runtime-tool-read.v1",
+  "tool": "dc_start_process",
+  "original_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Process started with PID 1501476 (shell: /bin/bash)\nInitial output:\n{\"sdk_path\": \"/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw/dist/openai-chatgpt-oauth-flow.runtime-DOVvnAqe.js\", \"bytes\": 15711, \"links\": 1, \"sha256\": \"e3852eb201e21b907beed38facea3b115f1058a80ba66436dc7202d36c6df07d\"}\n{\"x230_return_code\": 0, \"stdout\": \"{\\\"observed_unix\\\": 1792381658.3876834, \\\"/proc/meminfo\\\": \\\"MemTotal:        7824912 kB\\\\nMemAvailable:    5668372 kB\\\\nSwapTotal:       2097148 kB\\\\nSwapFree:         924436 kB\\\\nCommitLimit:     6009604 kB\\\\nCommitted_AS:    6111100 kB\\\", \\\"/sys/fs/cgroup/memory.events\\\": {\\\"error\\\": \\\"FileNotFoundError\\\"}, \\\"/sys/fs/cgroup/memory.max\\\": {\\\"error\\\": \\\"FileNotFoundError\\\"}, \\\"/sys/fs/cgroup/memory.current\\\": {\\\"error\\\": \\\"FileNotFoundError\\\"}, \\\"/sys/fs/cgroup/memory.swap.max\\\": {\\\"error\\\": \\\"FileNotFoundError\\\"}, \\\"/sys/fs/cgroup/memory.swap.current\\\": {\\\"error\\\": \\\"FileNotFoundError\\\"}, \\\"kernel_oom\\\": {\\\"return_code\\\": 0, \\\"stdout\\\": \\\"2026-10-19T11:44:37+08:00 qian-ThinkPad-X230 kernel: Out of memory: Killed process 855799 (rustc) total-vm:10597708kB, anon-rss:6811172kB, file-rss:44kB, shmem-rss:0kB, UID:1000 pgtables:17364kB oom_score_adj:0\\\\n2026-10-19T11:44:37+08:00 qian-ThinkPad-X230 kernel: oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=user.slice,mems_allowed=0,global_oom,task_memcg=/user.slice/user-1000.slice/session-19938.scope,task=rustc,pid=855799,uid=1000\\\\n2026-10-19T11:44:37+08:00 qian-ThinkPad-X230 kernel: device poll invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=0\\\\n\\\", \\\"stderr\\\": \\\"\\\"}}\\n\", \"stderr\": \"\"}\n\n✅ Process completed with exit code 0"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

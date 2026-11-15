@@ -89,9 +89,9 @@ Missing, skipped, blocked, unknown, malformed or ancestor-only evidence fails th
 The consolidated workflow is the sole canonical technical evidence lane for
 this revision and must execute both `head` and distinct synthetic `merge`
 source kinds across all plan/Python, root-Rust, classified-P0 and H02-24-entry
-gates. Other legacy workflows may still be triggered for historical or
-diagnostic evidence; they are non-authoritative and cannot satisfy this
-closure's lane arbitration. Concurrency is scoped to a pull request and its
+gates. Other legacy workflows remain manual-only for historical or diagnostic
+evidence; they are non-authoritative and cannot satisfy this closure's lane
+arbitration. Concurrency is scoped to a pull request and its
 head SHA (with `source_kind` retained as the lane key): a newer head cancels an
 older run but does not erase its recorded history. The heavy source matrix uses
 `strategy.max-parallel: 1`; this bounds hosted-runner admission without

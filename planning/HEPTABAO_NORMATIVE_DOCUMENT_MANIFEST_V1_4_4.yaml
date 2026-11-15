@@ -36,8 +36,14 @@ documents:
   role: TEST
   source_binding: RESOLVE_FROM_EXACT_SOURCE
 - path: .github/workflows/plan-v1.4.4-module-documentation.yml
-  role: WORKFLOW
+  role: RETIRED_WORKFLOW_REFERENCE
   source_binding: RESOLVE_FROM_EXACT_SOURCE
+  archived_reference:
+    SHA256: df7c2a396094efa6b9afc5257e998c651a11ce38824f5f51567548a4858ea6a9
+    bytes: 2021
+    commit: a926d10f658c536b12c857658d2b27b7c56a8baa
+    fixture: tests/fixtures/retired-workflows/plan-v1.4.4-module-documentation.yml
+    git_blob: 0f47b7535ae813ec26efda610a2b41f235d99f69
 - path: README.md
   role: ROOT_README
   source_binding: RESOLVE_FROM_EXACT_SOURCE

@@ -1,0 +1,129 @@
+{
+  "binary_sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "build_exit_code": 0,
+  "elapsed_seconds": 1.3397936658002436,
+  "full_replacement_qualified": false,
+  "native_abi": "aarch64-apple-darwin",
+  "physical_ha_qualified": false,
+  "production_authority": false,
+  "provenance": {
+    "actual_artifacts": {
+      "heptabao-seed": {
+        "bytes": 86355760,
+        "identity": [
+          16777244,
+          72715486,
+          501,
+          20,
+          33216,
+          1,
+          86355760,
+          1793972706650231270,
+          1793972706673572216
+        ],
+        "mode": 448,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/artifacts/heptabao-seed",
+        "sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7"
+      },
+      "heptabao-server": {
+        "bytes": 92359328,
+        "identity": [
+          16777244,
+          72715483,
+          501,
+          20,
+          33216,
+          1,
+          92359328,
+          1793972706182042688,
+          1793972706204752176
+        ],
+        "mode": 448,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/artifacts/heptabao-server",
+        "sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c"
+      }
+    },
+    "candidate_until_projection_runtime_terminal": true,
+    "observations_are_cross_file_atomic": false,
+    "original_inputs": {
+      "receipt": {
+        "bytes": 181226,
+        "identity": [
+          16777244,
+          72716079,
+          501,
+          20,
+          33152,
+          1,
+          181226,
+          1793973422796865173,
+          1793973422800456088
+        ],
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/result.public.json",
+        "sha256": "90753d3b4f9b966c43d3e29919239f8d9aa879616c821a3d9ce0b6aa854054d6"
+      },
+      "selection": {
+        "bytes": 46133,
+        "identity": [
+          16777244,
+          72708505,
+          501,
+          20,
+          33152,
+          1,
+          46133,
+          1793972353214021390,
+          1793972420256833007
+        ],
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-4bde9-r1/test-selection.public.json",
+        "sha256": "7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595"
+      },
+      "terminal": {
+        "bytes": 733,
+        "identity": [
+          16777244,
+          72739524,
+          501,
+          20,
+          33152,
+          1,
+          733,
+          1793982393106526649,
+          1793982393106526649
+        ],
+        "mode": 384,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/ha-native-build-projection-20261106-r1/runtime-terminal.original.json",
+        "sha256": "76ec986884fc99d3bf96123ece9f361d21302a36af5b4ed2bd75f757a023c148"
+      }
+    },
+    "original_job_id": "1a1b116ba98-fc05-75a6",
+    "original_receipt_status": "passed",
+    "passed_cases": 107,
+    "projection_binary_executions": 0,
+    "projection_compiler_invocations": 0,
+    "source_directory": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+    "validator": {
+      "bytes": 72065,
+      "identity": [
+        16777244,
+        72739523,
+        501,
+        20,
+        33152,
+        1,
+        72065,
+        1793982393106149755,
+        1793982393106149755
+      ],
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/ha-native-build-projection-20261106-r1/kv2_native_fresh_directory_dr_live.py",
+      "sha256": "01993e6c367bf8b896b4832c7723b1f36900fefbc20fcc05394ce401ec6b4f67"
+    }
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_freeze_verified": true,
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e"
+}

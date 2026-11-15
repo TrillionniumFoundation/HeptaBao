@@ -1,0 +1,49 @@
+....invalid command line; use --help
+.....................invalid command line; use --help
+..............................................................................................................................................................................................................................................................................E...................invalid command line; use --help
+......s..................invalid command line; use --help
+.....................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................HEPTABAO-QA-RUNTIME-SCOPE {"case": "test_actual_execute_closes_descendant_after_successful_leader_exit", "host_system": "Linux", "scope": "actual_linux_kernel"}
+.HEPTABAO-QA-RUNTIME-SCOPE {"case": "test_already_reaped_leader_refuses_group_signal", "host_system": "Linux", "scope": "actual_linux_kernel"}
+.HEPTABAO-QA-RUNTIME-SCOPE {"case": "test_changed_owner_start_ticks_refuses_group_signal", "host_system": "Linux", "scope": "actual_linux_kernel"}
+.HEPTABAO-QA-RUNTIME-SCOPE {"case": "test_original_wait_deadline_leaves_leader_owned_for_cleanup", "host_system": "Linux", "scope": "actual_linux_kernel"}
+..........{"status": "failed", "cases": 0, "failure": "RuntimeError"}
+{"status": "failed", "cases": 0, "failure": "RuntimeError"}
+HEPTABAO-QA-RUNTIME-SCOPE {"case": "test_actual_local_system_elf_loader_observation_is_not_product_execution", "host_system": "Linux", "scope": "actual_linux_x86_64_loader"}
+E...........................................................................................................................................................................................................................................................................................................................................................................................................................................invalid command line; use --help
+invalid command line; use --help
+invalid command line; use --help
+..............................invalid command line; use --help
+..........invalid command line; use --help
+.....................................................................................................invalid command line; use --help
+..............s............s.............................................................
+======================================================================
+ERROR: test_long_private_directory_uses_same_fd_binding_as_real_proxy (test_client_consistency_contract.UnixFixtureDirectoryTests.test_long_private_directory_uses_same_fd_binding_as_real_proxy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/2f4a29078f7f/HeptaBao-dependency-fix/qa/openbao-acceptance/tests/test_client_consistency_contract.py", line 64, in test_long_private_directory_uses_same_fd_binding_as_real_proxy
+    with profile.StateDirectory(directory) as anchor, socket.socket(socket.AF_UNIX,socket.SOCK_STREAM) as listener:
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_actual_local_system_elf_loader_observation_is_not_product_execution (test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/2f4a29078f7f/HeptaBao-dependency-fix/qa/openbao-acceptance/tests/test_native_linux_artifact_run.py", line 248, in test_actual_local_system_elf_loader_observation_is_not_product_execution
+    result = lane.native_abi(path, Path(tmp), "synthetic-local-system-elf")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/2f4a29078f7f/HeptaBao-dependency-fix/qa/openbao-acceptance/native_linux_artifact_run.py", line 289, in native_abi
+    loader_identity = inspect_file(loader_path, limit=64 * 1024 ** 2, system=True)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/2f4a29078f7f/HeptaBao-dependency-fix/qa/openbao-acceptance/native_linux_artifact_run.py", line 77, in inspect_file
+    need(stat.S_ISREG(before.st_mode) and before.st_uid == (0 if system else os.geteuid())
+  File "/workspace/scratch/2f4a29078f7f/HeptaBao-dependency-fix/qa/openbao-acceptance/native_linux_artifact_run.py", line 49, in need
+    raise Refusal(label)
+tested_native_artifact_lane.Refusal: owned_bounded_regular_file_required
+
+----------------------------------------------------------------------
+Ran 1768 tests in 48.647s
+
+FAILED (errors=2, skipped=3)

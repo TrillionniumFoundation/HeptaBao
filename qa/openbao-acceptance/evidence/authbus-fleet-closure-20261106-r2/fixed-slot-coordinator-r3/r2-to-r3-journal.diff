@@ -1,0 +1,55 @@
+--- frozen-r2/private-journal.mjs
++++ candidate-r3/private-journal.mjs
+@@ -28,8 +28,15 @@
+     need(path.isAbsolute(stateDir) && fs.realpathSync(stateDir)===stateDir && parent.isDirectory()
+       && parent.uid===BigInt(process.getuid()) && (parent.mode&0o777n)===0o700n, 'journal_parent_custody');
+     this.#dir=path.join(stateDir,'operations');
+-    try { fs.mkdirSync(this.#dir,{mode:0o700});const parentFd=fs.openSync(stateDir,FLAGS|fs.constants.O_DIRECTORY);try{fs.fsyncSync(parentFd);}finally{fs.closeSync(parentFd);} }
++    try { fs.mkdirSync(this.#dir,{mode:0o700}); }
+     catch(error){if(error.code!=='EEXIST')throw error;}
++    // A prior mkdir may have completed before its parent fsync failed. Reopen
++    // the same parent and sync that exact directory entry on either path.
++    const parentFd=fs.openSync(stateDir,FLAGS|fs.constants.O_DIRECTORY);
++    try{const sameParent=()=>inode(fs.fstatSync(parentFd,{bigint:true}))===inode(parent)
++        &&inode(fs.lstatSync(stateDir,{bigint:true}))===inode(parent);
++      need(sameParent(),'journal_parent_replaced');fs.fsyncSync(parentFd);need(sameParent(),'journal_parent_replaced');
++    }finally{fs.closeSync(parentFd);}
+     const named=fs.lstatSync(this.#dir,{bigint:true});
+     need(named.isDirectory() && named.uid===BigInt(process.getuid()) && (named.mode&0o777n)===0o700n
+       && fs.realpathSync(this.#dir)===this.#dir, 'journal_directory_custody');
+@@ -41,15 +48,30 @@
+   #path(name){this.assertCustody();need(typeof name==='string'&&/^[a-f0-9]{64}(?:\.step-[0-9]{4}\.(?:intent|response|confirmed)|\.completed)?\.json$/.test(name),'journal_fixed_name');return path.join(this.#dir,name);}
+   read(name){const p=this.#path(name);let value;try{value=readPrivateJson(p);}catch(e){if(e.code==='ENOENT')return null;throw e;}this.assertCustody();return value;}
+   writeOnce(name,value){const filename=this.#path(name);const raw=Buffer.from(JSON.stringify(stable(value))+'\n');
+-    need(raw.length<=8*1024*1024,'journal_document_bound');let fd;
+-    try { fd=fs.openSync(filename,fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL|fs.constants.O_NOFOLLOW,0o600); }
+-    catch(error){if(error.code==='EEXIST'){need(equal(this.read(name),value),'journal_existing_document_mismatch');return;}throw error;}
+-    try { let offset=0;while(offset<raw.length){const n=fs.writeSync(fd,raw,offset,raw.length-offset,null);need(n>0,'journal_complete_write');offset+=n;}
++    need(raw.length<=8*1024*1024,'journal_document_bound');let fd,existing=false,readback;
++    try {
++      try{fd=fs.openSync(filename,fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL|fs.constants.O_NOFOLLOW,0o600);}
++      catch(error){if(error.code!=='EEXIST')throw error;
++        fd=fs.openSync(filename,fs.constants.O_RDWR|fs.constants.O_NOFOLLOW|fs.constants.O_NONBLOCK);existing=true;}
++      if(existing){
++        const before=fs.fstatSync(fd,{bigint:true});
++        need(before.isFile()&&before.uid===BigInt(process.getuid())&&(before.mode&0o777n)===0o600n
++          &&before.nlink===1n&&before.size===BigInt(raw.length),'journal_existing_file_custody');
++        readback=Buffer.alloc(raw.length+1);let offset=0;
++        while(offset<readback.length){const n=fs.readSync(fd,readback,offset,readback.length-offset,null);if(n===0)break;offset+=n;}
++        const unchanged=()=>identity(before).join(':')===identity(fs.fstatSync(fd,{bigint:true})).join(':')
++          &&identity(before).join(':')===identity(fs.lstatSync(filename,{bigint:true})).join(':');
++        need(offset===raw.length&&readback.subarray(0,offset).equals(raw)&&unchanged(),'journal_existing_document_mismatch');
++        this.assertCustody();fs.fsyncSync(fd);need(unchanged(),'journal_existing_file_changed_during_sync');
++        fs.fsyncSync(this.#fd);this.assertCustody();need(unchanged(),'journal_existing_file_changed_during_sync');
++        return;
++      }
++      let offset=0;while(offset<raw.length){const n=fs.writeSync(fd,raw,offset,raw.length-offset,null);need(n>0,'journal_complete_write');offset+=n;}
+       fs.fsyncSync(fd);const held=fs.fstatSync(fd,{bigint:true}),named=fs.lstatSync(filename,{bigint:true});
+       need(held.isFile()&&held.uid===BigInt(process.getuid())&&(held.mode&0o777n)===0o600n&&held.nlink===1n
+         &&held.size===BigInt(raw.length)&&identity(held).join(':')===identity(named).join(':'),'journal_durable_file_binding');
+       fs.fsyncSync(this.#fd);this.assertCustody();
+-    } finally { raw.fill(0);fs.closeSync(fd); }
++    }finally{raw.fill(0);readback?.fill(0);if(fd!==undefined)fs.closeSync(fd);}
+   }
+   close(){if(this.#closed)return;let error;try{this.assertCustody();}catch(e){error=e;}try{fs.closeSync(this.#fd);}catch(e){error??=e;}this.#closed=true;if(error)throw error;}
+ }

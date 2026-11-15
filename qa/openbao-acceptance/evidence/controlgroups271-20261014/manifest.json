@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.controlgroups271.evidence-manifest.v1",
+  "runtime_fix_commit": "22e1f0b0685c323ef0427a919e5cf310decc27b5",
+  "runtime_fix_native_validation": "pending_shared_cargo_release_or_root_integrated_build",
+  "validation_completed": [
+    "cargo fmt --all --check",
+    "git diff --check",
+    "python3 -m py_compile"
+  ],
+  "known_oracle_differences": [
+    {
+      "case": "documented identity.self_authorization",
+      "finding": "Official 2.7.1 parser recognizes control_group.self_auth_allowed; the identity field is ignored by official code."
+    },
+    {
+      "case": "approved wrapping token reuse",
+      "finding": "Independent actual HTTPS reproduction observes versions [1,2,3] with third use after SIGKILL/restart; candidate sees [1,1,1] and rejects repeats."
+    }
+  ],
+  "receipts": [
+    {
+      "file": "/home/qian-qi/work/heptabao-agent-controlgroups271-evidence-20261014/differential-r1.json",
+      "sha256": "c0d51d285182e71afa8a8d8164da35123fd0caf0238874cde0c957bbf5c2df28",
+      "status": "failed",
+      "failures": {
+        "candidate": "audit_enable",
+        "official": "audit_enable"
+      }
+    },
+    {
+      "file": "/home/qian-qi/work/heptabao-agent-controlgroups271-evidence-20261014/differential-r2.json",
+      "sha256": "51b307a183601666815d28181862c060291ecc2004306aae229272616d97688b",
+      "status": "failed",
+      "failures": {
+        "official": "FileNotFoundError"
+      }
+    },
+    {
+      "file": "/home/qian-qi/work/heptabao-agent-controlgroups271-evidence-20261014/differential-r4.json",
+      "sha256": "c5dedde4ef4b10d48f8f3e1850e0fed77f9aad5c645b4574390449b19375772a",
+      "status": "failed",
+      "failures": {
+        "official": "AttributeError"
+      }
+    },
+    {
+      "file": "/home/qian-qi/work/heptabao-agent-controlgroups271-evidence-20261014/differential-r5.json",
+      "sha256": "b7ba55453a840ae342ab00c5e0310ba1479b9c1bc5cf0fdd268efec9fc94f0d8",
+      "status": "failed",
+      "failures": {}
+    },
+    {
+      "file": "/home/qian-qi/work/heptabao-agent-controlgroups271-evidence-20261014/differential-r6.json",
+      "sha256": "b713f22f1a4aa1910c3e41dc7a66585673ea67f78597f1b9879383da8374905d",
+      "status": "failed",
+      "failures": {}
+    },
+    {
+      "file": "/home/qian-qi/work/heptabao-agent-controlgroups271-evidence-20261014/minimal-replay-r1.json",
+      "sha256": "27f1f1f1caf76155557ae05e1e6630f2163c2f71589732936ea219bc2b64a083",
+      "status": "HOLD",
+      "failures": {
+        "candidate": "setup_request_policy",
+        "official": "BaoError"
+      }
+    },
+    {
+      "file": "/home/qian-qi/work/heptabao-agent-controlgroups271-evidence-20261014/minimal-replay-r2.json",
+      "sha256": "8643163bc6553eef5e9c156a60d252791dd01f446c764ab7c702faa81cf5cf22",
+      "status": "HOLD",
+      "failures": {}
+    }
+  ],
+  "status": "HOLD",
+  "replacement_authority": false,
+  "production_authority": false
+}

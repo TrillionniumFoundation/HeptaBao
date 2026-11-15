@@ -1,0 +1,1 @@
+{"operation": "kill", "receipt": {"attempted": true, "complete": true, "exitCode": 0, "index": 142, "label": "launchctl-kill", "outcomeUnknown": false, "stderrBytes": 0, "stdoutBytes": 0}, "schema": "heptabao.mac-fresh-synthetic-cleanup-command.r1", "stderr": "", "stdout": ""}

@@ -1,0 +1,32 @@
+{
+  "status": "verified_exact_git_object_checkout",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de-object-git",
+  "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "verified_files": 3142,
+  "git_objects_written": 3428,
+  "source_dirty": false,
+  "git_fsck_returncode": 0,
+  "git_fsck_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "commit_object_bytes": 618,
+  "commit_object_sha256": "734853bc528c877c93e6bded9065c3071b6598e103101bf8e6fe73f3a5e63d2e",
+  "source_before": {
+    "verified_at_utc": "2026-10-19T08:25:51.667018+00:00",
+    "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "verified_files": 3142
+  },
+  "candidate_before_git": {
+    "verified_at_utc": "2026-10-19T08:25:52.213829+00:00",
+    "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "verified_files": 3142
+  },
+  "source_after": {
+    "verified_at_utc": "2026-10-19T08:25:54.038046+00:00",
+    "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+    "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+    "verified_files": 3142
+  },
+  "finished_utc": "2026-10-19T08:25:54.038226+00:00"
+}

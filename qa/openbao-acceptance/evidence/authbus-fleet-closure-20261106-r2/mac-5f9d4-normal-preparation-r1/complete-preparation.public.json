@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.mac5f9d4-normal-source-preparation.r1",
+  "executed": false,
+  "commit": "5f9d4263b136685244aba93e45a69139cb8aba41",
+  "tree": "2c69f04159c112a883abe57f0d367a2627197c7a",
+  "parent": "7d9e933d5ccab83d51c4de9ae7f028fe70e92302",
+  "controller": {
+    "bytes": 34437,
+    "sha256": "c37951667705d4aee25f40a84fe8bb87ffb9398d2f1a040517b7b09a28f5f264"
+  },
+  "selection": {
+    "bytes": 58766,
+    "sha256": "8ccaedc58a44bfcc6f7af7b6062bc8c0c35c099771bdbab45d865b13ea921bc1"
+  },
+  "originalController": {
+    "bytes": 32288,
+    "sha256": "76ab52614563287bdfe41cb9738c6992ae9360b3e34463c3b788701132a42d7c"
+  },
+  "originalSelection": {
+    "bytes": 46133,
+    "sha256": "7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595"
+  },
+  "changedFunctionDefinitions": [
+    "execute_group",
+    "main"
+  ],
+  "allOtherOriginalFunctionAstsUnchanged": true,
+  "sourceClone": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-4bde9-r1",
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "required_clean": true
+  },
+  "bundle": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/candidate-5f9d4-from-4bde9.bundle",
+    "bytes": 9985724,
+    "sha256": "e57a93e8f3c13f83259cc6f1a5ca1ddb2ebe8451a0da5ff677c38c83ee8d3d72",
+    "head": "5f9d4263b136685244aba93e45a69139cb8aba41",
+    "prerequisites": [
+      "4bde9aee03fcd27c59e13607e529b1cee594b249",
+      "09c14eae7a3b52dee8ce3af3175dad5900ac59ec"
+    ]
+  },
+  "output": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-5f9d4-r1",
+  "originalNormalCases": 107,
+  "directedCases": 15,
+  "newCandidateCases": 5,
+  "unchangedDirectedHmacAndMemoCases": 10,
+  "combinedDisjointCases": 122,
+  "linuxDirectedSelectionSha256": "552fef008859949cf501ba4205e121d518dc21516b458c57136d0a1c2b8e2faa",
+  "normal107OriginalNamesCommandsAndDenominatorUnchanged": true,
+  "candidateCasesReportedSeparately": true,
+  "originalOuterSeconds": 8280,
+  "originalEachBuildSeconds": 1800,
+  "originalEachGroupSeconds": 600,
+  "originalMacSourceAndTargetCacheCustodyUnchanged": true,
+  "oldRetainedArtifactCount": 21,
+  "normalNoFixtureFeatures": true,
+  "noProductionServiceStart": true,
+  "noCurrentCredentials": true,
+  "fullReplacementQualified": false,
+  "executionLoader": {
+    "bytes": 8688,
+    "sha256": "9abadf02425a7810e848fe6331a07462d8d1577ce54efcba83c71b8c0da77c30"
+  },
+  "stagingPlan": {
+    "schema": "heptabao.mac-normal5f9d4-create-only-staging-preparation.r1",
+    "executed": false,
+    "executionKey": "heptabao-mac-normal-5f9d4-source-staging-20261107-r1",
+    "launcher": {
+      "bytes": 142675,
+      "sha256": "4cd4ea46947c31170764f840f34e29ddeb80cf45383c73102ddb3a117f5d427f"
+    },
+    "body": {
+      "bytes": 7675,
+      "sha256": "ffd92abaeb00f5c9bd2f04ed37e537512ce35b489d5303faf88154e8157d88a8"
+    },
+    "helperPins": {
+      "mac_owned_commands_r1.py": {
+        "bytes": 6154,
+        "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+      },
+      "mac_owned_unreaped_r1.py": {
+        "bytes": 14877,
+        "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+      },
+      "mac_public_code_pin_excerpt_r1.py": {
+        "bytes": 1792,
+        "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+      },
+      "mac_normal_build_t5_guard_r1.py": {
+        "bytes": 13395,
+        "sha256": "dd56a94458d6cd8cde4ab9270b6f499b91e31be0bdf68817de2c22ac97916bb9"
+      }
+    },
+    "publishedFiles": {
+      "controller.original.py": {
+        "bytes": 34437,
+        "sha256": "c37951667705d4aee25f40a84fe8bb87ffb9398d2f1a040517b7b09a28f5f264"
+      },
+      "test-selection.public.json": {
+        "bytes": 58766,
+        "sha256": "8ccaedc58a44bfcc6f7af7b6062bc8c0c35c099771bdbab45d865b13ea921bc1"
+      }
+    },
+    "fixedT5Uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "expectedT5Device": "16777244",
+    "helperChange": "one ROOT literal only; original Commands/Unreaped/PublicCodePin byte-unchanged",
+    "parentSeconds": 45,
+    "volumeObservationSeconds": 10,
+    "supervisorSeconds": 70,
+    "newOutputDirectory": "build-test-5f9d4-r1",
+    "createdFiles": 2,
+    "sourceCheckoutNotPerformed": true,
+    "bundleUploadNotPerformed": true,
+    "productProcesses": 0,
+    "compilerCommands": 0,
+    "currentCredentialReads": 0,
+    "productionWrites": 0,
+    "normal107Qualified": false,
+    "directed15Qualified": false
+  },
+  "executionKey": "heptabao-mac-normal-5f9d4-107-and-directed15-20261107-r1",
+  "nativeSupervisorSeconds": 8400,
+  "nativeSupervisorIsSeparatelySelectedNotClaimedAsObservedOldRuntimeTimeout": true,
+  "controllerPassDeadlineUnchangedSeconds": 8280,
+  "loaderAdmissionSeconds": 10,
+  "durableOnceDispatchMarker": "dispatch-once.public.json",
+  "knownOriginalsRequiredBeforeBuild": [
+    "staging known0 and whole2-file readback",
+    "same-upload-ID committed bundle wholeSHA+size and independent file_info",
+    "complete exact loader/source/selection review"
+  ]
+}

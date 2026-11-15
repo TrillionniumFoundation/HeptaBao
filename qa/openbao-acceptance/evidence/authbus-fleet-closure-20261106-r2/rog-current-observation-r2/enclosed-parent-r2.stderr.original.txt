@@ -1,0 +1,19 @@
+test_actual_observer_uid_required (__main__.AdmissionCases.test_actual_observer_uid_required) ... ok
+test_directory_symlink_or_file_refused (__main__.AdmissionCases.test_directory_symlink_or_file_refused) ... ok
+test_exact_0700_private_boundary (__main__.AdmissionCases.test_exact_0700_private_boundary) ... ok
+test_exact_directory_mode (__main__.AdmissionCases.test_exact_directory_mode) ... ok
+test_exact_directory_owner_and_group (__main__.AdmissionCases.test_exact_directory_owner_and_group) ... ok
+test_exact_observed_public_directory (__main__.AdmissionCases.test_exact_observed_public_directory) ... ok
+test_no_private_input_exception (__main__.AdmissionCases.test_no_private_input_exception) ... ok
+test_no_unbound_private_ancestor (__main__.AdmissionCases.test_no_unbound_private_ancestor) ... ok
+test_only_one_exact_ancestor (__main__.AdmissionCases.test_only_one_exact_ancestor) ... ok
+test_only_registered_plugin_subtree (__main__.AdmissionCases.test_only_registered_plugin_subtree) ... ok
+test_original_held_parent_and_final_fences_unchanged (__main__.AdmissionCases.test_original_held_parent_and_final_fences_unchanged) ... ok
+test_private_boundary_alias_refused (__main__.AdmissionCases.test_private_boundary_alias_refused) ... ok
+test_private_boundary_identity_shape (__main__.AdmissionCases.test_private_boundary_identity_shape) ... ok
+test_private_boundary_owner_and_group (__main__.AdmissionCases.test_private_boundary_owner_and_group) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.014s
+
+OK

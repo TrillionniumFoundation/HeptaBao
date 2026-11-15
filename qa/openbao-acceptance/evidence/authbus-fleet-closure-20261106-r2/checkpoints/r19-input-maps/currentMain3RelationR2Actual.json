@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.evidence-path-blob-map.r1",
+  "scope": "current-main3-relation-actual-r2",
+  "preparedMapBlob": "8c340efb2535128f154f9cf285f8b00c52e9fb01",
+  "jobId": "1a1b4214deb-fc05-8668",
+  "entries": [
+    {
+      "path": "current-main3-relation-actual-r2/launch.original.json",
+      "bytes": 1499,
+      "sha256": "c47f17dba3a517314aabdf1815b966ef9294a1b60dea5395cce0a5dc2049308a",
+      "blob": "4700d7b16dba37c1ae8ebc4913fd8a8bfc9a0d92"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/read-00000.original.json",
+      "bytes": 53487,
+      "sha256": "b29b64d710340ce29f3c96393bbf09205b63f816c1accf333089833ad3e7c09e",
+      "blob": "4d49f7f2f780f74fa9aae57805fab7ccb3d3ced6"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/read-00000.parsed.json",
+      "bytes": 50754,
+      "sha256": "306f84f6be8699614b5f7b8c1429674fa65401e3204152af880883ab4ae3d94c",
+      "blob": "392c5ceae2aa6ee19c2189fed8bfd7f68f02c5be"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/read-16384.original.json",
+      "bytes": 3614,
+      "sha256": "77295d80e99468932f813cd0b504fca9851e9bbc0589e515b466c0e40f5f0d93",
+      "blob": "5db992dc91f3ba84b21ed7f13130afc1cb964847"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/read-16384.parsed.json",
+      "bytes": 3332,
+      "sha256": "cdb0c543235b32cdf491c1aaf144bbaaf277f9ab6874476a8f0aad3ae66bb04e",
+      "blob": "7fda08985790c249509ad14ed0f7ac71a0e1957d"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/scope.public.json",
+      "bytes": 1270,
+      "sha256": "b0624505d6f2cdd3179fae8cd5f031aad85392885e2daee88c3d022fd7192d0d",
+      "blob": "253eecaca4f0e5a3b32fe685755856ea467ccf85"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/stdout.original.hex.txt",
+      "bytes": 34737,
+      "sha256": "7b35c9bb438b7dd5ad13bc501d537e2f327e6e89574406fe11db1486f7fd5665",
+      "blob": "db39a1691522fd9d2abb866014902da3276b88b1"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/stdout.original.json",
+      "bytes": 17368,
+      "sha256": "64d072a33993adfae5485e412ae6f51893cb4660ec7808c1a99443c7cf0bcf01",
+      "blob": "6c7565430af54a330b30bd10fe17f535ed490c30"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/terminal.original.json",
+      "bytes": 956,
+      "sha256": "a872d203445986ca10cbb91003b12578293fbec1606a48a428f69174b3b8ec6b",
+      "blob": "ac93cabf4e234d64a75d73626695ec2b501f912c"
+    },
+    {
+      "path": "current-main3-relation-actual-r2/verification.public.json",
+      "bytes": 1250,
+      "sha256": "76e4d8155a806b9ee9ae16344f3f5b77e926568c57974e110904aa8e5a20c282",
+      "blob": "f28d475d5ddc34e7f6e1b81cf4e59e33cbfc55c5"
+    }
+  ]
+}

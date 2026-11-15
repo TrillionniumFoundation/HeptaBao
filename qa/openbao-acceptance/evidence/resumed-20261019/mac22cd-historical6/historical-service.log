@@ -1,0 +1,551 @@
+{"argv": ["/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "native_ha_historical_restore_", "--", "--nocapture", "--test-threads=1", "--color=never"]}
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+  --> crates/heptabao-server/src/ha_native_v6_publication.rs:73:19
+   |
+72 | impl NativeHaPublicationError {
+   | ----------------------------- method in this implementation
+73 |     pub(crate) fn root_attempted(&self) -> bool {
+   |                   ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `clients` and `servers` are never read
+  --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:46:16
+   |
+45 | pub(super) struct TlsFixture {
+   |                   ---------- fields in this struct
+46 |     pub(super) clients: BTreeMap<u64, Arc<ClientConfig>>,
+   |                ^^^^^^^
+47 |     pub(super) servers: BTreeMap<u64, Arc<ServerConfig>>,
+   |                ^^^^^^^
+
+warning: struct `LiveReceivers` is never constructed
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:156:19
+    |
+156 | pub(super) struct LiveReceivers {
+    |                   ^^^^^^^^^^^^^
+
+warning: associated items `start`, `start_conditioned`, and `transport` are never used
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:163:19
+    |
+162 | impl LiveReceivers {
+    | ------------------ associated items in this implementation
+163 |     pub(super) fn start(
+    |                   ^^^^^
+...
+173 |     fn start_conditioned(
+    |        ^^^^^^^^^^^^^^^^^
+...
+230 |     pub(super) fn transport(
+    |                   ^^^^^^^^^
+
+warning: method `root` is never used
+   --> crates/heptabao-server/src/service_native_v6_ha_objects.rs:295:19
+    |
+282 | impl NativeV6HaProposal {
+    | ----------------------- method in this implementation
+...
+295 |     pub(crate) fn root(&self) -> &RecordStateRootV6 {
+    |                   ^^^^
+
+warning: `heptabao-server` (lib test) generated 6 warnings (run `cargo fix --lib -p heptabao-server --tests` to apply 1 suggestion)
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.12s
+     Running unittests src/lib.rs (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_server-06d88c38db2d0ea8)
+
+running 6 tests
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=pre_vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=3 target=1 bytes=36120 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+native HA Service pipeline path=secret/data/pipeline/history status=404 errors=["no value found"]
+ok
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+
+thread 'service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement' (25820488) panicked at crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs:310:5:
+assertion `left == right` failed
+  left: [71, 248, 74, 77, 231, 216, 229, 37, 222, 148, 107, 108, 89, 220, 60, 48, 202, 106, 38, 169, 234, 23, 104, 81, 61, 172, 181, 139, 198, 229, 30, 169]
+ right: [80, 243, 252, 73, 91, 180, 136, 25, 7, 188, 153, 179, 87, 141, 108, 243, 13, 75, 6, 31, 130, 182, 201, 150, 228, 25, 186, 193, 183, 230, 66, 36]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=pre_vote source=2 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=vote source=2 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=2 target=1 bytes=27233 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+native HA Service pipeline path=historical-pending-cancellation status=400 errors=["pending restore reconciliation requires an empty body"]
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+ok
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=pre_vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=3 target=1 bytes=115 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+native HA Service pipeline path=historical-pending-cancellation status=400 errors=["pending restore reconciliation requires an empty body"]
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=pre_vote source=1 target=3 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=vote source=1 target=3 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=115 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+native HA Service pipeline path=secret/data/pipeline/history status=404 errors=["no value found"]
+ok
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+native HA Service pipeline path=historical-restore-complete status=400 errors=["invalid native snapshot archive"]
+ok
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=861 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+native HA Service pipeline path=secret/data/pipeline/history status=404 errors=["no value found"]
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+native HA Service pipeline path=secret/data/pipeline/history status=404 errors=["no value found"]
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=pre_vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=3 target=1 bytes=46725 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+heptabao-raft-rpc: kind=append source=3 target=1 bytes=158 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+ok
+
+failures:
+
+failures:
+    service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 2745 filtered out; finished in 72.15s
+
+error: test failed, to rerun pass `-p heptabao-server --lib`

@@ -1,0 +1,179 @@
+{
+  "causal_case_proof": false,
+  "fixed_policy_events": [],
+  "framework_events": [
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:03:23.884"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "activity_start"
+      ],
+      "fixture_activity_named": true,
+      "main_activity_named": false,
+      "time": "11-06 17:03:23.925"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "process_started"
+      ],
+      "fixture_activity_named": true,
+      "main_activity_named": false,
+      "time": "11-06 17:03:23.937"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "activity_start"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": true,
+      "time": "11-06 17:03:28.528"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "process_started"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": true,
+      "time": "11-06 17:03:28.605"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:03:32.824"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "process_killed"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:03:32.825"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "activity_start"
+      ],
+      "fixture_activity_named": true,
+      "main_activity_named": false,
+      "time": "11-06 17:03:32.860"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "process_started"
+      ],
+      "fixture_activity_named": true,
+      "main_activity_named": false,
+      "time": "11-06 17:03:32.873"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "activity_start"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": true,
+      "time": "11-06 17:04:06.426"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.037"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "process_killed"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.038"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.115"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.351"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "process_killed"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.360"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.375"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.520"
+    },
+    {
+      "auth_activity_named": false,
+      "categories": [
+        "force_stopping"
+      ],
+      "fixture_activity_named": false,
+      "main_activity_named": false,
+      "time": "11-06 17:04:11.546"
+    }
+  ],
+  "log_level_properties": {
+    "log.tag": "",
+    "log.tag.HeptaBaoPreview": "",
+    "persist.log.tag": "",
+    "persist.log.tag.HeptaBaoPreview": ""
+  },
+  "logcat_regex_supported": true,
+  "no_device_mutation": true,
+  "schema": 1,
+  "scope": "read_only_owned_application_log_metadata_after_run_r6",
+  "started_unix_ns": 1793956222474046185
+}

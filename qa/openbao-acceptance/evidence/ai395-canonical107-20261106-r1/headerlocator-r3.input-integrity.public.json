@@ -1,0 +1,39 @@
+{
+  "all_107_groups_and_names_unchanged": true,
+  "all_budget_values_unchanged": true,
+  "all_build_argv_unchanged": true,
+  "controller_only_out_constant_changed": true,
+  "environment_changed_keys": [
+    "BINDGEN_EXTRA_CLANG_ARGS",
+    "CARGO_TARGET_DIR"
+  ],
+  "normal107_qualified": false,
+  "pins": {
+    "controller.diff": {
+      "bytes": 451,
+      "sha256": "e49c6622258e9d006d4d94692b40bbd422796f0fe2b488bff5cf843f5b017dcc"
+    },
+    "controller.py": {
+      "bytes": 21726,
+      "sha256": "7dc5a72f2362b954f04d819ea22034602c64ed2e8c3c3664c66ceea006d1015a"
+    },
+    "header-locator-pins.original.public.json": {
+      "bytes": 36404,
+      "sha256": "3048a7aed1ce909f824a8a4e94afb19a920e9e4424303b90f4df55c974258cad"
+    },
+    "header-locator-probe.original.public.json": {
+      "bytes": 4522,
+      "sha256": "b08698ddfa50187e2c98a1fa3bac8832a7be944f70d035f08e1e5c1cd8f40057"
+    },
+    "test-selection.public.json": {
+      "bytes": 97920,
+      "sha256": "eaf290de034875266878d0094f261157d0c066752198521b5488ab7c763c7f5c"
+    }
+  },
+  "prior_retained_inputs_preserved": true,
+  "profile_feature_settings_unchanged": true,
+  "retained_file_count": 171,
+  "rust_build_executed": false,
+  "schema": "heptabao.ai395-header-locator-successor-input-review.v1",
+  "source_commit_unchanged": "4bde9aee03fcd27c59e13607e529b1cee594b249"
+}

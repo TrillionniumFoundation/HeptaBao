@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":320,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":320,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-fresh-synthetic-launchd-20261106-r2/bin/heptabao-server\",\"sha256\":\"5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c\",\"size\":92359328,\"version\":\"16777244:72739398:92359328:1793980445660835350:1793980445660900888\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

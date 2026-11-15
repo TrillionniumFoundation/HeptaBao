@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1b336834a-fc05-8119",
+  "stderr": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  },
+  "stdout": {
+    "bytes_hex": "496e636f6d696e6720636f6e6e656374696f6e20746f202f566f6c756d65732f54352f68657074612d766e6578742d7265636f766572792d32303236313031332f636f6e74696e756174696f6e2d32303236313130362d6b76322d68612d636f6e76657267656e63652d72312f6e61746976652d68612d34626465392d617574686275732d6e6f64652d72322f686570746162616f2d736572766572206973207065726d69747465642e0a",
+    "eof": true,
+    "next_offset": 171,
+    "offset": 0,
+    "size": 171,
+    "text": "Incoming connection to /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/native-ha-4bde9-authbus-node-r2/heptabao-server is permitted.\n"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.immutable-evidence-map.r1",
+  "scope": "fixed-slot coordinator same-store recovery-r2 source-only preparation; local12 only; no Mac execution",
+  "entries": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c25cc2ca779b13f677ad0ac37336985bd54a976f",
+      "bytes": 4171,
+      "sha256": "0c89a9308922ef889c26f30ab03d36c4e59236c0e347d6dc77780f7d8bffb2e6"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/coordinator_recovery_r2.body.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0cfd466a476dcc80866469bc7d5e067bcbfbab59",
+      "bytes": 50638,
+      "sha256": "6c21a9cfe130ab54b0896d4719631bdcb4902f2d4ad012452aa39adee23e66c4"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/coordinator_recovery_r2.template.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "87b556a0671d6081a77e527312281adb6466f270",
+      "bytes": 55503,
+      "sha256": "7e5616bb0f572033730f95466c4aba53a51a4a07a2cce3f159bb12337893a116"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/launch_coordinator_recovery_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3abcceddc7ab9db1c4ad43eabba9004886ab9a92",
+      "bytes": 250110,
+      "sha256": "26607ac1cff11a8478ebfc09c0cb7a699c1897c188070c0278ef2dd02a8100f0"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/original_initialized_fixture_r2.fragment.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b9e73ff337c00d0921a806a3d2561ac580dd9b9e",
+      "bytes": 10388,
+      "sha256": "0be7dc3ed894cf3e9d29b18f9668d0e58c7e126bdfc8cf8252808bf7d8c36630"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/prepare_coordinator_recovery_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6eee39cd389d2b3500fb18b9fc982ee33a47ac7",
+      "bytes": 14069,
+      "sha256": "de3e9a492f2290a781e600ea8042d88ae6dd70b4e85fd7eb294d1e615d43df3f"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/recovery-plan.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c3fe33806c85f6eaa54341be68c3e0aef8f3d8c9",
+      "bytes": 4800,
+      "sha256": "e384b2935430c723e6a968a83de94d0dae935dd669d6e67d2f2cbd7bfe18223f"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/actual-r1-to-recovery-r2.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94cafc4e031092aeace54ce18421c47e0e20eb8e",
+      "bytes": 26976,
+      "sha256": "c15b19b9b516d22a53d36bcc2dda7f68e9d77a2d5c4fc21d2282717b9cd55bcf"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/api-init-forbidden-r2.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9bb3bf4742f92cbfbb4e77d710a7e272a3eecfcb",
+      "bytes": 1259,
+      "sha256": "49b2885584bd1f2888c74bf07e52fbb3672c18c657a6304dc091ef54a9145dd8"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/qualify_recovery_admission_local_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f09c5249491dd4a231dbb062af4e8496439e288",
+      "bytes": 5389,
+      "sha256": "93fe2c2044b7e28629f361e20714234503e0a54f1a0510271c8eb65b9594940c"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/qualification.local.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aefbdcc4e8e47cb301bcf7d5ff0fce667dac2be6",
+      "bytes": 1309,
+      "sha256": "661a65d223caf3a5bfb3b77a0140dec9cb098c2c646337b5888010ff68508005"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/python-source/fixedslot_recovery_api_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3b4f1733ed99340efd31c761994545833dc90adb",
+      "bytes": 7375,
+      "sha256": "1092ae7833ab8eea9d0d1e02dd06d393f956c1a35ce4178cf23e20dd63600b2c"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/python-source/mac_fixedslot_t5_guard_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "26aea09305c1ae76046b674139460bb1a727d248",
+      "bytes": 13393,
+      "sha256": "a10dbbad79a0be44028594e3c25c7139097890e97a4f51ab2d4cf06b6a0bee9c"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/python-source/mac_owned_commands_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07012bd9ee202d26d30e66e9d3be51a46f29a57c",
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/python-source/mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee1292a24ef49e023082fb5e711b0d081cf4c0c9",
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/python-source/mac_public_code_pin_excerpt_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "689aea412a15277030b77983120956b8f5b7fe67",
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-normal-r1/recovery-r2-preparation/python-source/main3_http_complete.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "974df3c1bbbabe573a3803a7c004ea92a0fbc648",
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    }
+  ]
+}

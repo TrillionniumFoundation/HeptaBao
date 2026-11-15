@@ -1,0 +1,12 @@
+{
+  "actual_dr25_executed": false,
+  "budget_changed": false,
+  "elapsed_seconds": 0.951383457002521,
+  "exit_code": 0,
+  "limited_reexecution_of_prior_failure": true,
+  "log": "qa/openbao-acceptance/evidence/dr25-controller-local-20261106-r1/targeted-original-budget-r2.log",
+  "original_child_wait_timeout_seconds": 5,
+  "production_authority": false,
+  "production_servers_started": false,
+  "status": "passed"
+}

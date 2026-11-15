@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.finite-client-migration-scope.v1",
+  "recorded_at_utc": "2026-11-06T13:03:35.014379+00:00",
+  "source_scope_observed_at": "2026-11-04",
+  "scope_closed_for_planning": true,
+  "arbitrary_unregistered_manual_paths_are_not_an_added_gate": true,
+  "reopen_only_for_new_observed_active_bao_authbus_config_command_or_restore_entrypoint": true,
+  "not_a_host_wide_absence_claim": true,
+  "registered_backup_producers_in_selected_scope": 0,
+  "registered_backup_producers_observation_is_historical": true,
+  "current_cutover_qualified": false,
+  "current_cleanup_qualified": false,
+  "private_markers_config_fingerprints_or_credential_values_included": false,
+  "hosts": [
+    {
+      "host": "mac",
+      "actual_client": "ai.openclaw.gateway",
+      "legacy_relay_units": [
+        "ai.openclaw.authbus-relay.proxy",
+        "ai.openclaw.authbus-relay.bridge",
+        "ai.openclaw.authbus-relay.egressguard",
+        "ai.openclaw.authbus-relay.front"
+      ],
+      "bounded_current_config_observation": "AuthBus enabled; still references J3160",
+      "protected_non_bao_startup_inventory": [
+        "ai.openclaw.mlx-openai-server",
+        "com.openclaw.ssh-controller-x230"
+      ]
+    },
+    {
+      "host": "rog",
+      "actual_client": "openclaw-gateway.service",
+      "bounded_current_config_observation": "AuthBus disabled; retained address references J3160",
+      "held_helpers": [
+        "openclaw-authbus-accept-after-restart.service",
+        "openclaw-authbus-restart-when-idle.service"
+      ],
+      "held_helper_release_requires_existing_source_bound_readiness": true
+    },
+    {
+      "host": "pocket4",
+      "actual_client": "openclaw-gateway.service",
+      "bounded_current_config_observation": "AuthBus enabled in stored config; still references J3160",
+      "held_helpers": [
+        "openclaw-authbus-restart-when-idle.service"
+      ],
+      "held_helper_release_requires_existing_source_bound_readiness": true,
+      "automatic_hold_removal_permitted": false
+    },
+    {
+      "host": "x230",
+      "actual_standard_openclaw_client_found": false,
+      "create_synthetic_production_client_to_satisfy_cutover": false,
+      "role": "independent Linux qualification and recovery host",
+      "legacy_proxy": "openclaw-authbus-x230-openbao-proxy.service",
+      "proxy_current_observation": "disabled/inactive/dead; MainPID 0",
+      "legacy_oracle": "heptabao-openbao271-oracle-r46",
+      "oracle_current_observation": "running; network none; no mounts/ports; restart policy no",
+      "oracle_writable_layer_reviewed": false,
+      "legacy_oracle_is_current_native_comparison_oracle": false
+    }
+  ],
+  "common_cutover_requirements": [
+    "same-candidate formal KV2 complete fresh-directory recovery",
+    "same-candidate required physical HA",
+    "trusted credential source independent of J3160",
+    "actual AppRole/TLS/KV/policy/renewal/revocation and key custody",
+    "actual selected installed client consumption, cold restart, full rollback",
+    "backup and synchronization boundary within the fixed registration scope"
+  ],
+  "current_observation_sources": [
+    "existing 2026-11-06 four-host metadata collector, retained in the parent candidate",
+    "X230 exact container/proxy read in durable job 1a1b0ee3eb5-fc05-741b"
+  ],
+  "limitations": [
+    "Registered backup producer count is the retained finite scope observation, not a new exhaustive disk scan.",
+    "Real credential fixture passes and ordinary source test passes do not qualify installed production client migration.",
+    "No original gate was widened to arbitrary historical directories."
+  ]
+}

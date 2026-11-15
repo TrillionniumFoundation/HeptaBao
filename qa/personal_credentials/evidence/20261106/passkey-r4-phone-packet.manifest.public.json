@@ -1,0 +1,30 @@
+{
+  "files": {
+    "attempt-index.public.json": {
+      "bytes": 14324,
+      "sha256": "96893e13b5e6c495a73eccca55af363428a7d405ad3fba7cb97589137c2d7e9d"
+    },
+    "autofill-bridge-provenance.public.json": {
+      "bytes": 1347,
+      "sha256": "c078a27fd760598d291e55775c4aece81cca580a43fc277edcb32bca2916b049"
+    },
+    "autofill-correction.result.public.json": {
+      "bytes": 1228,
+      "sha256": "4d84f24da4ac8fe8cfd17ef0addebfa4cd8e02239a318fec20ddc44d0dd19369"
+    },
+    "case-results.public.json": {
+      "bytes": 13740,
+      "sha256": "4c5c2d0678cbdbbfd0629e54782338c49e42726c1a19b8a63eac463889cf2b72"
+    },
+    "cleanup.result.public.json": {
+      "bytes": 1276,
+      "sha256": "a89c4a4c0e3e3c24d4b6bde440ddd0a5094986fa8ff1a08370d00ccca270dd3d"
+    },
+    "profile.public.json": {
+      "bytes": 6893,
+      "sha256": "ca294b7f04877b6662afe2b05d0653651161d2b7820c0d8c3f03c5ad203524e8"
+    }
+  },
+  "schema": 1,
+  "scope": "r4_real_phone_attempt_failed_m01_and_cleaned"
+}

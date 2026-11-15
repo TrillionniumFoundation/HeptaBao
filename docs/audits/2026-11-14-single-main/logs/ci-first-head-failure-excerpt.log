@@ -1,0 +1,40 @@
+2026-11-15T02:42:53.5133405Z FAIL: test_external_prerequisites_cannot_be_skipped_or_substituted (test_replacement_fixture_progress.ReplacementFixtureProgressTests.test_external_prerequisites_cannot_be_skipped_or_substituted)
+2026-11-15T02:42:53.5134349Z ----------------------------------------------------------------------
+2026-11-15T02:42:53.5134706Z Traceback (most recent call last):
+2026-11-15T02:42:53.5135432Z   File "/home/runner/work/HeptaBao/HeptaBao/tests/repository/test_replacement_fixture_progress.py", line 101, in test_external_prerequisites_cannot_be_skipped_or_substituted
+2026-11-15T02:42:53.5136190Z     self.assert_bound_oracle_prerequisite(step)
+2026-11-15T02:42:53.5137026Z   File "/home/runner/work/HeptaBao/HeptaBao/tests/repository/test_replacement_fixture_progress.py", line 54, in assert_bound_oracle_prerequisite
+2026-11-15T02:42:53.5137718Z     self.assertIn('--oracle-version 2.7.1', step['run'])
+2026-11-15T02:42:53.5142514Z AssertionError: '--oracle-version 2.7.1' not found in 'set -euo pipefail\numask 077\ntest "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"\ntest -z "$(git status --porcelain=v1 --untracked-files=all)"\nmkdir -m 700 "$HB_ORACLE_WORK_ROOT"\nbinary_digest="$(sha256sum "$PWD/target/debug/heptabao-server" | cut -d \' \' -f 1)"\nreceipt_digest="$(sha256sum "$RUNNER_TEMP/heptabao-safe-reports/native-build.json" | cut -d \' \' -f 1)"\ntimeout 600 python qa/openbao-acceptance/kubernetes_renewal_271_cluster_live.py \\\n  --binary "$PWD/target/debug/heptabao-server" \\\n  --expected-binary-sha256 "$binary_digest" \\\n  --candidate-source-root "$PWD" \\\n  --source-commit "$EXPECTED_SOURCE" --source-tree "$(git rev-parse HEAD^{tree})" \\\n  --native-build-receipt "$RUNNER_TEMP/heptabao-safe-reports/native-build.json" \\\n  --expected-native-build-receipt-sha256 "$receipt_digest" \\\n  --kind "$RUNNER_TEMP/heptabao-kind-input/kind" \\\n  --work-root "$HB_ORACLE_WORK_ROOT/run" --allow-disposable-cluster\n# The unchanged runner enforces every one of its 79 checks, exact\n# expiry on denial, real TokenReview attribution and owned cleanup.\n# No failed mutation is replayed and no missing prerequisite is waived.\ntest "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"\ngit diff --exit-code\n'
+2026-11-15T02:42:53.5147036Z
+2026-11-15T02:42:53.5147153Z ======================================================================
+2026-11-15T02:42:53.5148064Z FAIL: test_oracle_lanes_cannot_swap_artifacts_or_readiness_requirements (test_replacement_fixture_progress.ReplacementFixtureProgressTests.test_oracle_lanes_cannot_swap_artifacts_or_readiness_requirements)
+2026-11-15T02:42:53.5148981Z ----------------------------------------------------------------------
+2026-11-15T02:42:53.5149334Z Traceback (most recent call last):
+2026-11-15T02:42:53.5150062Z   File "/home/runner/work/HeptaBao/HeptaBao/tests/repository/test_replacement_fixture_progress.py", line 84, in test_oracle_lanes_cannot_swap_artifacts_or_readiness_requirements
+2026-11-15T02:42:53.5150880Z     self.assert_bound_oracle_prerequisite(original)
+2026-11-15T02:42:53.5151544Z   File "/home/runner/work/HeptaBao/HeptaBao/tests/repository/test_replacement_fixture_progress.py", line 54, in assert_bound_oracle_prerequisite
+2026-11-15T02:42:53.5152366Z     self.assertIn('--oracle-version 2.7.1', step['run'])
+2026-11-15T02:42:53.5156814Z AssertionError: '--oracle-version 2.7.1' not found in 'set -euo pipefail\numask 077\ntest "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"\ntest -z "$(git status --porcelain=v1 --untracked-files=all)"\nmkdir -m 700 "$HB_ORACLE_WORK_ROOT"\nbinary_digest="$(sha256sum "$PWD/target/debug/heptabao-server" | cut -d \' \' -f 1)"\nreceipt_digest="$(sha256sum "$RUNNER_TEMP/heptabao-safe-reports/native-build.json" | cut -d \' \' -f 1)"\ntimeout 600 python qa/openbao-acceptance/kubernetes_renewal_271_cluster_live.py \\\n  --binary "$PWD/target/debug/heptabao-server" \\\n  --expected-binary-sha256 "$binary_digest" \\\n  --candidate-source-root "$PWD" \\\n  --source-commit "$EXPECTED_SOURCE" --source-tree "$(git rev-parse HEAD^{tree})" \\\n  --native-build-receipt "$RUNNER_TEMP/heptabao-safe-reports/native-build.json" \\\n  --expected-native-build-receipt-sha256 "$receipt_digest" \\\n  --kind "$RUNNER_TEMP/heptabao-kind-input/kind" \\\n  --work-root "$HB_ORACLE_WORK_ROOT/run" --allow-disposable-cluster\n# The unchanged runner enforces every one of its 79 checks, exact\n# expiry on denial, real TokenReview attribution and owned cleanup.\n# No failed mutation is replayed and no missing prerequisite is waived.\ntest "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"\ngit diff --exit-code\n'
+2026-11-15T02:42:53.5161443Z
+2026-11-15T02:42:53.5161589Z ----------------------------------------------------------------------
+2026-11-15T02:42:53.5162061Z Ran 304 tests in 55.557s
+2026-11-15T02:42:53.5162211Z
+2026-11-15T02:42:53.5162294Z FAILED (failures=2)
+2026-11-15T02:42:53.5324616Z ##[error]Process completed with exit code 1.
+2026-11-15T02:42:53.5963351Z Post job cleanup.
+2026-11-15T02:42:53.6856998Z [command]/usr/bin/git version
+2026-11-15T02:42:53.6909289Z git version 2.56.1
+2026-11-15T02:42:53.6952804Z Temporarily overriding HOME='/home/runner/work/_temp/55bab829-9d5c-4cf5-b259-c23ae7becf0c' before making global git config changes
+2026-11-15T02:42:53.6953847Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-15T02:42:53.6959146Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/HeptaBao/HeptaBao
+2026-11-15T02:42:53.7032145Z Removing SSH command configuration
+2026-11-15T02:42:53.7040509Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-15T02:42:53.7085765Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-15T02:42:53.7412644Z Removing HTTP extra header
+2026-11-15T02:42:53.7413830Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-15T02:42:53.7449654Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-15T02:42:53.7786050Z Removing includeIf entries pointing to credentials config files
+2026-11-15T02:42:53.7794209Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-15T02:42:53.7857752Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-15T02:42:53.8327733Z Cleaning up orphan processes

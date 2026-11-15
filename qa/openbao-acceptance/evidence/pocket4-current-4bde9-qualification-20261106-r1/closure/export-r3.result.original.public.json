@@ -1,0 +1,32 @@
+{
+  "at_utc": "2026-11-06T17:53:54.221075+00:00",
+  "both_original_linux_tree_hashes_equal": true,
+  "elapsed_seconds": 1.820742798037827,
+  "entry_count": 677,
+  "linux_selected_registry_package_count": 321,
+  "manifest": {
+    "bytes": 207549,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/pocket4-dependency-export-r3/manifest.public.json",
+    "sha256": "0d74878d414151a41fa85927ff0732ea2ab123dcdf0955aa8cd75c5be2216897"
+  },
+  "metadata_resolver_additional_archive_count": 2,
+  "metadata_resolver_additional_index_count": 56,
+  "offline_resolver_proof": {
+    "bytes": 5361,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/pocket4-dependency-export-r3/offline-resolver-proof.public.json",
+    "sha256": "da7f698027b1d97488aefda02556c807ae4b0a9d4baa435552b96efa626b8e28"
+  },
+  "payload": {
+    "bytes": 67880960,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/pocket4-dependency-export-r3/linux-locked-dependencies.tar",
+    "sha256": "8e771190e6df05560f8a41bbf7992586137ee4ab730123301c6dba0d595759c9"
+  },
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "rust_compilation_executed": false,
+  "schema": "heptabao.closed-linux-registry-export-result.v1",
+  "source_cache_modified": false,
+  "sparse_index_count": 353,
+  "status": "prepared",
+  "user_cargo_configuration_or_credentials_opened": false
+}

@@ -1,0 +1,91 @@
+{
+  "never_automatically_reissue_stage": true,
+  "reset_cases_require_independent_current_checkpoint_review": true,
+  "schema": 1,
+  "stages": {
+    "DOCUMENTS": {
+      "path": "runtime-sources/documents-prepare-r9.py",
+      "sha256": "4107b925ecf37f7930d3f1b06805e72e16b23fb3f593109eb6c050fff859cf89"
+    },
+    "G02_G06": {
+      "path": "runtime-sources/G02-G06-real-CM-guards-r9.py",
+      "sha256": "c7c8baad3f9b26894f1bd7b4bded39cec95d776d5010e8d0299dc7c0ffb7a6b5"
+    },
+    "G07": {
+      "path": "runtime-sources/G07-real-CM-cancel-r9.py",
+      "sha256": "c1b52486e9f8520612a5a845272b7b4acb14fc2c76acb7c7ef3f2620dea90c13"
+    },
+    "G11_OBSERVE": {
+      "path": "runtime-sources/reset-input-observer-r9.py",
+      "sha256": "5442708c50e8616fd803a86b3f842c28c192313205e2762bb9e5fe7e32155e6f"
+    },
+    "G11_RECOVERY_EXPORT": {
+      "path": "runtime-sources/G11-current-ordinary-saf-backup-r9.py",
+      "sha256": "6572507dfb9bdbea1af5285e59fd4574d7c9a29a54b51ac79a6022d7468e7e47"
+    },
+    "G11_RESET": {
+      "path": "passkey_reset_provider_r9.py",
+      "sha256": "c3d7da8f20fd03b7463eb59ad846718bcae5cad1668972eb626a7fd368aa4d30"
+    },
+    "G11_STALE": {
+      "path": "runtime-sources/G11-stale-saf-restore-real-cm-get-r9.py",
+      "sha256": "a03f794df6da0e09da423fbea87c32315e42d5d050a0d65d4f1bb71adcfab96f"
+    },
+    "M01": {
+      "path": "runtime-sources/M01-ordinary-saf-r9.py",
+      "sha256": "215a99236c454cafbf02b83b870109e4a5fe304c1c69f0dfe9427a5c67ef308f"
+    },
+    "M02": {
+      "path": "runtime-sources/M02-real-cm-create-r9.py",
+      "sha256": "2c147e1d2b90e21fb18789138a4c936471fe2c377923b59f01dea6b4810a6ec5"
+    },
+    "M03": {
+      "path": "runtime-sources/M03-real-cm-get-r9.py",
+      "sha256": "2560ac82f4a35b3834cb938fc01a1deb928e38c7d3eac1912ecc4a994f3c4052"
+    },
+    "M04": {
+      "path": "runtime-sources/M04-ordinary-saf-backup-r9.py",
+      "sha256": "c49ec9c5473ce911c9df63066c6a49258f69b9bc9ca62846317765a88aa8d2c6"
+    },
+    "M05_OBSERVE": {
+      "path": "runtime-sources/reset-input-observer-r9.py",
+      "sha256": "5442708c50e8616fd803a86b3f842c28c192313205e2762bb9e5fe7e32155e6f"
+    },
+    "M05_RESET": {
+      "path": "passkey_reset_provider_r9.py",
+      "sha256": "c3d7da8f20fd03b7463eb59ad846718bcae5cad1668972eb626a7fd368aa4d30"
+    },
+    "M05_RESTORE": {
+      "path": "runtime-sources/M05-fresh-process-saf-restore-r9.py",
+      "sha256": "6d3618c50bba58596aa65276b55255682c62b5aa3a2fd3ae546016eab2fa5e3b"
+    },
+    "M06": {
+      "path": "runtime-sources/M06-real-get-after-restore-r9.py",
+      "sha256": "3b27a1cc7826e6d6898243a44633645dfcbf136d25413e91488895068ef586c5"
+    },
+    "M07_CLEANUP": {
+      "path": "runtime-sources/M07-cleanup-r9.py",
+      "sha256": "3c61c5c3eb09d28e1811e60386b4803374c601779e5669d8962c9b0778e9d3e1"
+    },
+    "M07_RESTORE": {
+      "path": "runtime-sources/M07-core-compare-restore-r9.py",
+      "sha256": "b7b2ff3fc418f4fbac54116f49aff0b01d52906bdf94e6286acaed26cd281388"
+    },
+    "RELEASE": {
+      "path": "runtime-sources/independent-release-r9.py",
+      "sha256": "7009a3577780eedeaae9f5d8124f4811e4fe68651f2a8c8c2e7159c67486936f"
+    },
+    "RP": {
+      "path": "artifacts/passkey_rp.py",
+      "sha256": "386de84bb5335f21998a000b4a1267eaa17fadbde1e1753d5df1c30325709a63"
+    },
+    "SAF_GUARDS": {
+      "path": "runtime-sources/G01-G08-G09-G10-ordinary-SAF-guards-r9.py",
+      "sha256": "ad9ac360041028c8522df1330ade5305cbd1f612cff03830ee92a238cb944444"
+    },
+    "SETUP": {
+      "path": "runtime-sources/setup-r9.py",
+      "sha256": "d215bdf2d8d002b961b598f5f7d2e0ab73b898cf44ec3a7d4690c4876da5b66b"
+    }
+  }
+}

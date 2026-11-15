@@ -1,0 +1,17 @@
+LoadState=loaded
+ActiveState=inactive
+SubState=dead
+FragmentPath=/home/alex/.config/systemd/user/openclaw-gateway.service
+DropInPaths=/home/alex/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf /home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf
+UnitFileState=enabled
+InvocationID=
+MainPID=0
+
+LoadState=loaded
+ActiveState=inactive
+SubState=dead
+FragmentPath=/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service
+DropInPaths=/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf
+UnitFileState=static
+InvocationID=
+MainPID=0

@@ -1,0 +1,16 @@
+
+running 1 test
+test http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+
+thread 'http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals' (26202294) panicked at crates/heptabao-server/src/http_snapshot_accept_tests.rs:548:5:
+assertion failed: zero.body.windows(b"\"n\":-0".len()).any(|value| value == b"\"n\":-0")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2760 filtered out; finished in 1.64s
+

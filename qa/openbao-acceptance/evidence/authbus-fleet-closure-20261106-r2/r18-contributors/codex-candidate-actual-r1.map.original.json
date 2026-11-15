@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.authbus-evidence-immutable-map.r1",
+  "scope": "codex-candidate-actual-r1",
+  "originalJob": "1a1b400304a-fc05-85c6",
+  "actualReadOnlySucceeded": true,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "credentialValuesOrDigestsExported": false,
+  "effectiveRuntimeBackendQualified": false,
+  "currentMain3ComparisonPerformed": false,
+  "entries": [
+    {
+      "path": "codex-candidate-actual-r1/launch.original.json",
+      "blob": "c31eff2f10867839f5c96aa6dbeeb63cc6e49bca",
+      "bytes": 94125,
+      "sha256": "3cbcbb5aeeedb910f977c9ad96dd6974cb82395703d9c19b289de3be42762e66"
+    },
+    {
+      "path": "codex-candidate-actual-r1/read-00000.original.json",
+      "blob": "13ce68418f1ee5b9886aa907a540d47c5e8ddb60",
+      "bytes": 39991,
+      "sha256": "441a850dd7983eaf5fe3aa5af44466bdaae89fbfdfa285f0d3ab45a21f99e676"
+    },
+    {
+      "path": "codex-candidate-actual-r1/read-00000.parsed.json",
+      "blob": "21b79c0a87b9de91d3a98c67763d3d5b7693ef53",
+      "bytes": 38107,
+      "sha256": "db342216034c54057ed72b2570360f0de971999a6a5cbe2297e8c57cf07380d5"
+    },
+    {
+      "path": "codex-candidate-actual-r1/scope.public.json",
+      "blob": "7494beb3126173c40e145c5ea60c8f649c3f980e",
+      "bytes": 1441,
+      "sha256": "2aa7cafa15a5d2f865e6f188ebcc3d573627f4a558256d6369eaba33870efa5a"
+    },
+    {
+      "path": "codex-candidate-actual-r1/stdout.original.hex.txt",
+      "blob": "f31ca32491d034f680dd46b778ea980813445e65",
+      "bytes": 24621,
+      "sha256": "d31b61294f3db57f82346c67e9f5bcba81672dcf31174e175e42c612f5714ae1"
+    },
+    {
+      "path": "codex-candidate-actual-r1/stdout.original.json",
+      "blob": "437980536e0e925ee4ca5c97015f89eacdcf549f",
+      "bytes": 12310,
+      "sha256": "26c962b4843f2eb03320d86e75a17ad2f3747fa86ac211f2281fd9f827f91f94"
+    },
+    {
+      "path": "codex-candidate-actual-r1/terminal.original.json",
+      "blob": "4ce9ce41f4425ffe231beac8947b0dbcd5f9453e",
+      "bytes": 956,
+      "sha256": "5d7bcf51db165c9b01f2182faa11a4332e44f5f5b4d5192dc055acf28a82e3c3"
+    },
+    {
+      "path": "codex-candidate-actual-r1/verification.public.json",
+      "blob": "c6e8bc6e3943655a5fe15bb57ddf55f9ca9c0d14",
+      "bytes": 576,
+      "sha256": "480cd896554b150d232e9f71e1133acfd998bb2ec115210185a81b3e41ab0e28"
+    }
+  ]
+}

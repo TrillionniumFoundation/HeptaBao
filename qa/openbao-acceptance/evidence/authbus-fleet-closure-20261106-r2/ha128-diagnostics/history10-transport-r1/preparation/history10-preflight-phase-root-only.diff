@@ -1,0 +1,54 @@
+--- capture_ai395_ufw_phase_r3.py
++++ capture_ai395_ufw_phase_history10_r1.py
+@@ -17,7 +17,7 @@
+ import time
+ 
+ ROOT = Path('/home/qq/heptabao-ha-ufw-peer-ports-20261106-r2')
+-PHASES = {'before', 'after-add-mac', 'after-add-x230', 'after-delete-x230', 'after-delete-mac', 'before-delete-x230', 'before-ha-r3'}
++PHASES = {'before', 'after-add-mac', 'after-add-x230', 'after-delete-x230', 'after-delete-mac', 'before-delete-x230', 'before-ha-r3', 'before-history10-r1'}
+ CONFIGS = {
+  'etc-ufw-user.rules': '/etc/ufw/user.rules',
+  'etc-ufw-user6.rules': '/etc/ufw/user6.rules',
+--- verify_ai395_ufw_phase_r3.py
++++ verify_ai395_ufw_phase_history10_r1.py
+@@ -24,7 +24,8 @@
+         'after-add-x230':('192.168.0.8','192.168.0.13'),
+         'after-delete-x230':('192.168.0.8',), 'after-delete-mac':(),
+         'before-delete-x230':('192.168.0.8','192.168.0.13'),
+-        'before-ha-r3':('192.168.0.8','192.168.0.13')}
++        'before-ha-r3':('192.168.0.8','192.168.0.13'),
++        'before-history10-r1':('192.168.0.8','192.168.0.13')}
+ FILES={'etc-ufw-user.rules','etc-ufw-user6.rules','etc-ufw-before.rules','etc-ufw-after.rules',
+        'etc-ufw-before6.rules','etc-ufw-after6.rules','etc-ufw-ufw.conf','etc-default-ufw',
+        'nft.original.private.log','iptables-filter.original.private.log'}
+--- observe_linux_fixed_ports_roots_r3.py
++++ observe_linux_fixed_ports_roots_history10_r1.py
+@@ -33,7 +33,7 @@
+  report['candidatePortListeners']=matched
+  report['bothCandidateTcpPortsUnoccupiedInObservedKernelTables']=not matched
+  report['readOnlySnapshotDoesNotReservePorts']=True
+-root={'ai395':Path('/home/qq/heptabao-native-ha-4bde9-authbus-20261106-r3'),'qian-ThinkPad-X230':Path('/home/qian/heptabao-native-ha-4bde9-authbus-20261106-r3')}[platform.node()]
++root={'ai395':Path('/home/qq/heptabao-ha-history10-transport-20261107-r1'),'qian-ThinkPad-X230':Path('/home/qian/heptabao-ha-history10-transport-20261107-r1')}[platform.node()]
+ parent=root.parent;ps=parent.lstat();assert parent.resolve(strict=True)==parent and stat.S_ISDIR(ps.st_mode) and ps.st_uid==1000 and not ps.st_mode&0o022
+ try:
+  root.lstat();absent=False
+--- observe_mac_fixed_ports_roots_r3.py
++++ observe_mac_fixed_ports_roots_history10_r1.py
+@@ -77,7 +77,7 @@
+  sources={};owner=None;created=False
+  try:
+   need(sys.platform=='darwin' and os.getuid()==501 and platform.machine()=='arm64','fixed_mac_host')
+-  root=BASE/'ha128-fixed-port-observation-20261106-r3'
++  root=BASE/'ha-history10-fixed-port-observation-20261107-r1'
+   parent=root.parent.lstat()
+   need(root.parent.resolve(strict=True)==root.parent and stat.S_ISDIR(parent.st_mode) and parent.st_uid==501 and not parent.st_mode&0o022 and not root.exists() and not root.is_symlink(),'new_private_observation_root')
+   for name,(size,digest) in PINS.items():
+@@ -121,7 +121,7 @@
+    now,now_ident=read_public(path,max(32768,len(raw)))
+    need(now==raw and now_ident==ident,'source_or_tool_changed')
+   report['newOwnedHaRoots']=[]
+-  for name in ('ha128-current-launch-20261106-r3','native-ha-official-history-4bde9-authbus-r3','native-ha-4bde9-authbus-node-r3'):
++  for name in ('ha-history10-transport-launch-20261107-r1','ha-history10-transport-work-20261107-r1','ha-history10-transport-node-20261107-r1'):
+    path=BASE/name
+    try:path.lstat();absent=False
+    except FileNotFoundError:absent=True

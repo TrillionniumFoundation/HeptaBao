@@ -1,0 +1,636 @@
+{
+  "ambient_build_overrides_inherited": false,
+  "artifacts": {},
+  "authbus_migration_qualified": false,
+  "automatic_retry": false,
+  "build_environment_overrides": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_HOME": "/home/qq/.cargo",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "compiler_wrappers_disabled": true,
+  "controller_sha256": "2d5237fb1db25e6741f27685f99195f2e35afdeee7aa4b40adc094b0fa34fc1f",
+  "created_at_unix": 1793979748.9092083,
+  "deadline_renewed": false,
+  "elapsed_seconds": 109.217502,
+  "enumeration": {},
+  "executed_passed_cases": 0,
+  "expected_denominators": {
+    "ha_service_total": 17,
+    "http1_tls_new": 4,
+    "legacy_base": 44,
+    "legacy_cold_h2": 9,
+    "legacy_ingress": 7,
+    "legacy_same_root": 1,
+    "legacy_total": 61,
+    "native_jwt_new": 15,
+    "new_cases_total": 46,
+    "server_total": 90,
+    "snapshot_forward_new": 27,
+    "total_unique_cases": 107
+  },
+  "explicit_compiler": "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+  "failure": "13-normal-release-build_failed",
+  "finished_at_unix": 1793979858.1264968,
+  "formal_kv2_qualified": false,
+  "full_replacement_qualified": false,
+  "groups": [],
+  "not_qualified_cases": 107,
+  "old_retained_artifacts_after": {
+    "ai395_base_Cargo_lock": {
+      "bytes": 102584,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.lock",
+      "sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9"
+    },
+    "ai395_base_workspace_manifest": {
+      "bytes": 615,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    },
+    "ai395_bundle": {
+      "bytes": 387689,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle",
+      "sha256": "a2e6cfdca310a4a05e6f4093a04969543b606bd9d7af0fcbe2f7a4189e7d0349"
+    },
+    "ai395_linux_offline_dependency_receipt": {
+      "bytes": 4058,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/offline-dependencies.result.public.json",
+      "sha256": "bdd3e486af56b1dfb95e93975a48711c2c9aa5de44e51e506c303063ae8c54fa"
+    },
+    "ai395_preparation_claim": {
+      "bytes": 816,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/preparation-claim.public.json",
+      "sha256": "d3419078e2bacd4ad36eb8a92c17fe0a8f5f5b1963d125841b1859138ca82fcf"
+    },
+    "ai395_source_Cargo_lock": {
+      "bytes": 101193,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "ai395_source_preparation_receipt": {
+      "bytes": 7455,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/preparation.result.public.json",
+      "sha256": "e7a316906c2eca8a84724da374460cad014088f60ac96491ca9ba95d0d894fd6"
+    },
+    "ai395_source_preparation_script": {
+      "bytes": 8381,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/prepare_source.py",
+      "sha256": "1db42ea51907e226f6cf708116e1b43cc06652c67e33b0d77409c4b2b0fe70ee"
+    },
+    "ai395_source_workspace_manifest": {
+      "bytes": 615,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "old_retained_artifacts_before": {
+    "ai395_base_Cargo_lock": {
+      "bytes": 102584,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.lock",
+      "sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9"
+    },
+    "ai395_base_workspace_manifest": {
+      "bytes": 615,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-integration-preflight-c447536-20261106-r1/source/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    },
+    "ai395_bundle": {
+      "bytes": 387689,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle",
+      "sha256": "a2e6cfdca310a4a05e6f4093a04969543b606bd9d7af0fcbe2f7a4189e7d0349"
+    },
+    "ai395_linux_offline_dependency_receipt": {
+      "bytes": 4058,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/offline-dependencies.result.public.json",
+      "sha256": "bdd3e486af56b1dfb95e93975a48711c2c9aa5de44e51e506c303063ae8c54fa"
+    },
+    "ai395_preparation_claim": {
+      "bytes": 816,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/preparation-claim.public.json",
+      "sha256": "d3419078e2bacd4ad36eb8a92c17fe0a8f5f5b1963d125841b1859138ca82fcf"
+    },
+    "ai395_source_Cargo_lock": {
+      "bytes": 101193,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "ai395_source_preparation_receipt": {
+      "bytes": 7455,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/preparation.result.public.json",
+      "sha256": "e7a316906c2eca8a84724da374460cad014088f60ac96491ca9ba95d0d894fd6"
+    },
+    "ai395_source_preparation_script": {
+      "bytes": 8381,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/prepare_source.py",
+      "sha256": "1db42ea51907e226f6cf708116e1b43cc06652c67e33b0d77409c4b2b0fe70ee"
+    },
+    "ai395_source_workspace_manifest": {
+      "bytes": 615,
+      "matches_original": true,
+      "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9/Cargo.toml",
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    }
+  },
+  "outer_budget_seconds": 12000,
+  "physical_ha_qualified": false,
+  "postflight": {
+    "compiler_processes": [],
+    "disk_free_bytes": 436027228160,
+    "load_average": [
+      0.8720703125,
+      1.52783203125,
+      1.5146484375
+    ],
+    "mem_available_kib": 25354220,
+    "swap_free_kib": 176
+  },
+  "preflight": {
+    "compiler_processes": [],
+    "disk_free_bytes": 82244759552,
+    "load_average": [
+      0.505859375,
+      1.740234375,
+      1.57373046875
+    ],
+    "mem_available_kib": 25572732,
+    "swap_free_kib": 172
+  },
+  "production_changed": false,
+  "production_server_started": false,
+  "schema": "heptabao.convergence-normal-build-tests.v1",
+  "selection_sha256": "340e47e620fd963da419a0417a611ec3ba08a544b7962d908640fb14407569f9",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_parent": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "failed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551064,
+        "pgid": 675273,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675273,
+      "requested_cap_seconds": 30,
+      "seconds": 0.018806,
+      "started_at_unix": 1793979748.9891613,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e",
+      "step": "00-source-head",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--binary",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551066,
+        "pgid": 675274,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675274,
+      "requested_cap_seconds": 30,
+      "seconds": 0.082416,
+      "started_at_unix": 1793979749.0093572,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "01-preserved-format-diff",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551074,
+        "pgid": 675283,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675283,
+      "requested_cap_seconds": 30,
+      "seconds": 0.018345,
+      "started_at_unix": 1793979749.0932112,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "02-untracked",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "bundle",
+        "verify",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551076,
+        "pgid": 675284,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675284,
+      "requested_cap_seconds": 30,
+      "seconds": 0.032977,
+      "started_at_unix": 1793979749.1131783,
+      "stderr_bytes": 102,
+      "stderr_sha256": "737a47bc35e0e4638316f3f4295b205b89607887e7e10d6f997eebc72d676fc6",
+      "stdout_bytes": 190,
+      "stdout_sha256": "870a2735d15150cf5233a769b1a7d017aacce83124dd3c30db87d2474e8d2a48",
+      "step": "03-bundle-verify",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fetch",
+        "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/candidate.bundle",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551080,
+        "pgid": 675286,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675286,
+      "requested_cap_seconds": 30,
+      "seconds": 0.021094,
+      "started_at_unix": 1793979749.147561,
+      "stderr_bytes": 147,
+      "stderr_sha256": "5a533c1324f6b730954e261a5d6eaea9034c21cdcfaeec52dcebd3872fcb54b3",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "04-fetch",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249^{tree}"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551082,
+        "pgid": 675290,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675290,
+      "requested_cap_seconds": 30,
+      "seconds": 0.016274,
+      "started_at_unix": 1793979749.170242,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc",
+      "step": "05-canonical-tree",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249^"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551084,
+        "pgid": 675291,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675291,
+      "requested_cap_seconds": 30,
+      "seconds": 0.016754,
+      "started_at_unix": 1793979749.1879692,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c",
+      "step": "06-canonical-parent",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--update"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551086,
+        "pgid": 675292,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675292,
+      "requested_cap_seconds": 30,
+      "seconds": 0.082224,
+      "started_at_unix": 1793979749.2061858,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "07-stage-exact-format",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "write-tree"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551094,
+        "pgid": 675301,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675301,
+      "requested_cap_seconds": 30,
+      "seconds": 0.018198,
+      "started_at_unix": 1793979749.2900338,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc",
+      "step": "08-format-working-tree",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "--detach",
+        "4bde9aee03fcd27c59e13607e529b1cee594b249"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551096,
+        "pgid": 675302,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675302,
+      "requested_cap_seconds": 30,
+      "seconds": 0.01841,
+      "started_at_unix": 1793979749.3096466,
+      "stderr_bytes": 94,
+      "stderr_sha256": "4e2e3fac0326bc3b79af3bc68022de013b293c73c9bb7a177ed0a06b0923aed9",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "09-checkout-canonical",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551098,
+        "pgid": 675319,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675319,
+      "requested_cap_seconds": 30,
+      "seconds": 0.019713,
+      "started_at_unix": 1793979749.329318,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "10-clean-source",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 60,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551100,
+        "pgid": 675328,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675328,
+      "requested_cap_seconds": 60,
+      "seconds": 1.234193,
+      "started_at_unix": 1793979749.3504522,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "11-fsck",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 60,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551224,
+        "pgid": 675332,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675332,
+      "requested_cap_seconds": 60,
+      "seconds": 5.439746,
+      "started_at_unix": 1793979750.5863423,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "12-format-check",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 1800,
+      "exit_code": 101,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 100551768,
+        "pgid": 675353,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 675353,
+      "requested_cap_seconds": 1800,
+      "seconds": 102.09596,
+      "started_at_unix": 1793979756.0285606,
+      "stderr_bytes": 8135,
+      "stderr_sha256": "c908d73be0de8b39faa7f05bc51efa4f2d9f31d32dbfd530059fd7a1e0e858b9",
+      "stdout_bytes": 123848,
+      "stdout_sha256": "56a4bd10cbbafe96daba7372f701acbe991a96da16e4f9029121f85d66d57171",
+      "step": "13-normal-release-build",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    }
+  ],
+  "toolchain_pins": {
+    "cargo": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24",
+    "rustc": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2",
+    "rustfmt": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  }
+}

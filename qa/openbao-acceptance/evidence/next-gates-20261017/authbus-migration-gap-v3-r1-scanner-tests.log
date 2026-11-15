@@ -1,0 +1,19 @@
+test_config_projection_omits_inline_secrets_and_url_userinfo (__main__.MetadataSafetyTests.test_config_projection_omits_inline_secrets_and_url_userinfo) ... ok
+test_database_reads_only_magic_and_wal_never_read (__main__.MetadataSafetyTests.test_database_reads_only_magic_and_wal_never_read) ... ok
+test_embedded_plan_matches_reviewed_allowlist_and_exact_denominators (__main__.MetadataSafetyTests.test_embedded_plan_matches_reviewed_allowlist_and_exact_denominators) ... ok
+test_endpoint_projection_does_not_walk_credential_containers (__main__.MetadataSafetyTests.test_endpoint_projection_does_not_walk_credential_containers) ... ok
+test_host_owner_mismatch_fails_before_any_allowlisted_path_io (__main__.MetadataSafetyTests.test_host_owner_mismatch_fails_before_any_allowlisted_path_io) ... ok
+test_legacy_service_entrypoint_projects_config_path_without_running_command (__main__.MetadataSafetyTests.test_legacy_service_entrypoint_projects_config_path_without_running_command) ... ok
+test_new_config_path_is_reported_but_never_followed (__main__.MetadataSafetyTests.test_new_config_path_is_reported_but_never_followed) ... ok
+test_original_deadline_and_total_read_bound_are_not_extended (__main__.MetadataSafetyTests.test_original_deadline_and_total_read_bound_are_not_extended) ... ok
+test_plist_projection_drops_secret_args_and_environment_values (__main__.MetadataSafetyTests.test_plist_projection_drops_secret_args_and_environment_values) ... ok
+test_read_returning_after_deadline_is_charged_and_not_qualified (__main__.MetadataSafetyTests.test_read_returning_after_deadline_is_charged_and_not_qualified) ... ok
+test_replaced_file_is_rejected_after_actual_held_descriptor_read (__main__.MetadataSafetyTests.test_replaced_file_is_rejected_after_actual_held_descriptor_read) ... ok
+test_secret_and_key_files_cannot_be_opened_even_as_config (__main__.MetadataSafetyTests.test_secret_and_key_files_cannot_be_opened_even_as_config) ... ok
+test_symlink_and_outside_allowlist_never_followed (__main__.MetadataSafetyTests.test_symlink_and_outside_allowlist_never_followed) ... ok
+test_tree_depth_and_entry_bounds_are_visible (__main__.MetadataSafetyTests.test_tree_depth_and_entry_bounds_are_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.490s
+
+OK

@@ -1,0 +1,38 @@
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+
+thread 'service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract' (67674898) panicked at crates/heptabao-server/src/service_native_jwt_tests.rs:58:5:
+assertion `left == right` failed: JWT error shape=Some(Array [String("permission denied")])
+  left: 403
+ right: 204
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true

@@ -1,0 +1,6 @@
+{
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/payload-stream-hmac-proposal-r1/payload-stream-hmac-r1.diff": "8bb014f6eadab4527e63194bf5f0628fc43cda79",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/payload-stream-hmac-proposal-r1/original-pins.public.json": "eaf76b2925fe12be3cfe5808e34c3db6dfca494d",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/payload-stream-hmac-proposal-r1/preparation.public.json": "d3a9391798dd7a4c872cac46bbe1fa71e917e97d",
+  "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/ha128-diagnostics/payload-stream-hmac-proposal-r1/verification-plan.public.json": "064edec780ef5e0807e1a3f96b97feadf16a5a66"
+}

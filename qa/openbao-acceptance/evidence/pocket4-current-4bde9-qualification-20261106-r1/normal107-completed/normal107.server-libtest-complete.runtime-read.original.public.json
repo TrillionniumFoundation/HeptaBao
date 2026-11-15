@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b2367cb2-fc05-7cfc\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226576656e74223a2022737465705f66696e6973686564222c202273746570223a202231342d7365727665722d6c6962746573742d6275696c64222c2022657869745f636f6465223a20302c202274696d65645f6f7574223a2066616c73652c20227365636f6e6473223a20313435322e3330343832397d0a7b226576656e74223a2022737465705f73746172746564222c202273746570223a202231352d706565722d6c6962746573742d6275696c64222c20226275646765745f7365636f6e6473223a20333630307d0a\",\n    \"eof\": true,\n    \"next_offset\": 3076,\n    \"offset\": 2871,\n    \"size\": 3076,\n    \"text\": \"{\\\"event\\\": \\\"step_finished\\\", \\\"step\\\": \\\"14-server-libtest-build\\\", \\\"exit_code\\\": 0, \\\"timed_out\\\": false, \\\"seconds\\\": 1452.304829}\\n{\\\"event\\\": \\\"step_started\\\", \\\"step\\\": \\\"15-peer-libtest-build\\\", \\\"budget_seconds\\\": 3600}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

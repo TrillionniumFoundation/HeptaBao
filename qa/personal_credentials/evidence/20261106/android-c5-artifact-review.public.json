@@ -1,0 +1,24 @@
+{
+  "build_receipt_sha256": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047",
+  "checks": {
+    "auth_nonexported": true,
+    "backup_false": true,
+    "cloud_and_transfer_sections": true,
+    "data_extraction_rule_attached": true,
+    "debuggable_false": true,
+    "exclude_count": 18,
+    "no_internet_permission": true
+  },
+  "data_extraction_command": [
+    "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+    "dump",
+    "xmltree",
+    "--file",
+    "res/xml/data_extraction_rules.xml",
+    "/Users/qianqi/HeptaBaoAndroid-20261106-r1/build/candidate5/apks/provider.apk"
+  ],
+  "data_extraction_sha256": "03fd67f0e66d2b365809181cfac21f4cf8da2f9a54e8613a7351b8083dc7f03e",
+  "manifest_sha256": "7a2f23c3590f99e15ab590c55fe55ecd22536af2e43137c97f7bc207497643cd",
+  "provider_apk_sha256": "5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8",
+  "schema": 1
+}

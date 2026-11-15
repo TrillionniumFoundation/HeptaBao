@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b2805251-fc05-7e4a\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22737461747573223a20227472616e736665727265645f616e645f7665726966696564222c2022726573756c74223a20222f566f6c756d65732f54352f68657074612d766e6578742d7265636f766572792d32303236313031332f636f6e74696e756174696f6e2d32303236313130362d6b76322d68612d636f6e76657267656e63652d72312f7075626c69632d63757272656e742d6c696e75782d61727469666163742d7472616e736665722d32303236313130362d72312f726573756c742e7075626c69632e6a736f6e222c202272656d6f74655f656666656374735f756e6b6e6f776e223a2066616c73652c202270726f647563745f62696e6172795f657865637574696f6e73223a20307d0a\",\n    \"eof\": true,\n    \"next_offset\": 273,\n    \"offset\": 0,\n    \"size\": 273,\n    \"text\": \"{\\\"status\\\": \\\"transferred_and_verified\\\", \\\"result\\\": \\\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/public-current-linux-artifact-transfer-20261106-r1/result.public.json\\\", \\\"remote_effects_unknown\\\": false, \\\"product_binary_executions\\\": 0}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

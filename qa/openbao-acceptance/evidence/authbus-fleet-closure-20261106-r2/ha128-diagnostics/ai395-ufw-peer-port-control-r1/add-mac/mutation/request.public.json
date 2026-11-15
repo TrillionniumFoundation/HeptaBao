@@ -1,0 +1,26 @@
+{
+  "host": "ai395",
+  "executable": "/usr/sbin/ufw",
+  "args": [
+    "allow",
+    "in",
+    "on",
+    "br0",
+    "proto",
+    "tcp",
+    "from",
+    "192.168.0.8/32",
+    "to",
+    "192.168.0.11/32",
+    "port",
+    "31040:31041",
+    "comment",
+    "heptabao-ha4bde9-20261106-r2-mac"
+  ],
+  "non_interactive": true,
+  "fresh_auth": false,
+  "env": {
+    "LC_ALL": "C",
+    "LANG": "C"
+  }
+}

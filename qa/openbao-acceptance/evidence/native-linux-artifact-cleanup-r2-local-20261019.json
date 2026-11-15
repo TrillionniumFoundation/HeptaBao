@@ -1,0 +1,30 @@
+{
+  "actual_x230_result_changed": false,
+  "all_other_original_function_asts_and_top_level_statements_unchanged": true,
+  "base_runner_sha256": "d4206c72bded887e807563b85de45568a60b319f035097291d622160d91c3620",
+  "candidate_runner_sha256": "45a898ca7f902b4f179ea7035bd17b77fa41e34a9844470597d84bdcd63cf634",
+  "changed_existing_functions": [
+    "execute_command",
+    "probe_actual_server",
+    "stop_owned"
+  ],
+  "exit_code": 0,
+  "github_writes": 0,
+  "new_local_process_tests": 4,
+  "observed_passed_count": 10,
+  "observed_test_count": 10,
+  "original_cleanup_kill_seconds": 5,
+  "original_cleanup_term_seconds": 5,
+  "original_command_deadline_seconds": 1800,
+  "original_required_native_cases": 55,
+  "original_required_native_groups": 17,
+  "remote_or_product_execution_performed": false,
+  "runtime_calls": 0,
+  "schema": "heptabao.native-linux-artifact-cleanup-local.v1",
+  "test_log_sha256": "1dba01608d827cf517d7400453a1551e1178b88a35b94aa2021311a8fe02a38f",
+  "test_source_sha256": {
+    "qa/openbao-acceptance/tests/test_native_linux_artifact_cleanup.py": "c0c9498c309d91576bd9214ee6d85add8e14f9dc239897ac297b6b757ff5902e",
+    "qa/openbao-acceptance/tests/test_native_linux_artifact_run.py": "47c5a21061b393acf6f05ce894abb042edd5d426574ddf911a8f57b8cc95a241"
+  },
+  "unchanged_original_custody_tests": 6
+}

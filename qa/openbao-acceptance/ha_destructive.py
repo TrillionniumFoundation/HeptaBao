@@ -7,6 +7,8 @@ full linearizability proof, power-cut evidence, or rolling-version-upgrade evide
 from __future__ import annotations
 
 import argparse
+from contextlib import ExitStack
+from fixture_mounts import completed_kv2_mount_metadata, provision_secret_kv2
 import hashlib
 import json
 import os
@@ -15,15 +17,35 @@ import secrets
 import shutil
 import socket
 import ssl
+import owned_process
 import subprocess
 import sys
 import time
 import urllib.error
 import urllib.request
+import zlib
 
 
 class FixtureError(RuntimeError):
     """A safe fixed classification; never include credential-bearing responses."""
+
+
+MISBOUND_BOOTSTRAP_ERROR = (
+    "heptabao-server: HA bootstrap admission marker binding is invalid"
+)
+SNAPSHOT_WIRE_LIMIT = 32 * 1024 * 1024
+SNAPSHOT_EXPANDED_LIMIT = 64 * 1024 * 1024
+
+
+def exact_startup_rejection(returncode: int | None, log_delta: bytes,
+                            expected_line: str) -> bool:
+    """Admit only one exact, terminal fail-closed process rejection."""
+    try:
+        lines = [line.strip() for line in log_delta.decode("utf-8").splitlines()
+                 if line.strip()]
+    except UnicodeDecodeError:
+        return False
+    return returncode == 1 and bool(lines) and lines[-1] == expected_line
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -41,15 +63,33 @@ def private_write(path: Path, value: str | bytes) -> None:
 
 
 def openssl(*arguments: str) -> None:
-    subprocess.run(["openssl", *arguments], check=True, timeout=30,
+    owned_process.run(["openssl", *arguments], check=True, timeout=30,
                    stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL)
+                   stderr=subprocess.DEVNULL, label="ha_destructive.62")
+
+
+def free_ports(count: int) -> tuple[int, ...]:
+    """Select one bounded loopback batch while all selected sockets stay bound.
+
+    This prevents reuse within our own batch, not another process taking a port
+    after release. Actual bind/start failures still fail the campaign; no node
+    initialization or business request is retried.
+    """
+    if type(count) is not int or not 1 <= count <= 64:
+        raise FixtureError("invalid_ephemeral_port_count")
+    with ExitStack() as handles:
+        ports = []
+        for _ in range(count):
+            sock = handles.enter_context(socket.socket())
+            sock.bind(("127.0.0.1", 0))
+            ports.append(int(sock.getsockname()[1]))
+        if len(set(ports)) != count:
+            raise FixtureError("ephemeral_port_collision")
+        return tuple(ports)
 
 
 def free_port() -> int:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        return int(sock.getsockname()[1])
+    return free_ports(1)[0]
 
 
 def checked_binary(path: Path, expected: str) -> str:
@@ -62,11 +102,16 @@ def checked_binary(path: Path, expected: str) -> str:
 
 
 class Node:
-    def __init__(self, node_id: int, binary: Path, root: Path, context: ssl.SSLContext):
+    def __init__(self, node_id: int, binary: Path, root: Path, context: ssl.SSLContext,
+                 *, ports: tuple[int, int] | None = None):
         self.node_id, self.binary, self.root = node_id, binary, root
         self.context = context
         self.ha_config = root / "ha.json"
-        self.http_port, self.raft_port = free_port(), free_port()
+        selected = free_ports(2) if ports is None else ports
+        if (len(selected) != 2 or len(set(selected)) != 2
+                or any(type(port) is not int or not 1 <= port <= 65535 for port in selected)):
+            raise FixtureError("invalid_node_port_pair")
+        self.http_port, self.raft_port = selected
         self.process = None
         self.log = None
         self.started_pids: list[int] = []
@@ -75,12 +120,17 @@ class Node:
     def data_dir(self) -> Path:
         return self.root / "data"
 
-    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0):
+    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0, wrap_ttl: str | None = None):
         if not path or path.startswith("/") or "://" in path or ".." in path.split("/"):
             raise FixtureError("invalid_fixture_request_path")
-        headers = {"Content-Type": "application/json"}
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
         if token:
             headers["X-Vault-Token"] = token
+        if wrap_ttl is not None:
+            if not isinstance(wrap_ttl, str) or not 1 <= len(wrap_ttl) <= 64 or any(
+                    ord(c) < 33 or ord(c) > 126 for c in wrap_ttl):
+                raise FixtureError("invalid_fixture_wrapping_ttl")
+            headers["X-Vault-Wrap-TTL"] = wrap_ttl
         request = urllib.request.Request(
             f"https://127.0.0.1:{self.http_port}/v1/{path}",
             data=None if body is None else json.dumps(body).encode(), headers=headers, method=method)
@@ -99,8 +149,104 @@ class Node:
                 raise FixtureError("non_object_response")
             return int(response.status), parsed
 
-    def start(self, ha: bool = True) -> None:
-        if self.process is not None:
+    def download_snapshot(self, *, token: str, timeout: float = 12.0) -> dict[str, object]:
+        """Validate one bounded native gzip download; never parse it as JSON.
+
+        This checks transport and gzip framing only. It does not authenticate
+        archive contents or qualify restore. A failed or ambiguous GET is not
+        retried: snapshot creation is itself a server-side operation.
+        """
+        deadline = time.monotonic() + timeout
+        request = urllib.request.Request(
+            f"https://127.0.0.1:{self.http_port}/v1/sys/storage/raft/snapshot",
+            headers={"Accept": "application/gzip", "X-Vault-Token": token},
+            method="GET")
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(),
+                                             urllib.request.HTTPSHandler(context=self.context))
+        try:
+            response = opener.open(request, timeout=timeout)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            if response.status != 200:
+                raise FixtureError("snapshot_download_http_status")
+            if (response.headers.get_all("Content-Type") != ["application/gzip"]
+                    or response.headers.get_all("Transfer-Encoding")
+                    or response.headers.get_all("Content-Encoding")):
+                raise FixtureError("snapshot_download_framing")
+            lengths = response.headers.get_all("Content-Length")
+            if (not lengths or len(lengths) != 1 or not 1 <= len(lengths[0]) <= 8
+                    or any(c not in "0123456789" for c in lengths[0])
+                    or lengths[0].startswith("0")):
+                raise FixtureError("snapshot_download_length")
+            length = int(lengths[0])
+            if not 0 < length <= SNAPSHOT_WIRE_LIMIT:
+                raise FixtureError("snapshot_download_wire_bound")
+            raw = response.read(SNAPSHOT_WIRE_LIMIT + 1)
+            if time.monotonic() >= deadline:
+                raise FixtureError("snapshot_response_original_deadline")
+            if len(raw) != length:
+                raise FixtureError("snapshot_download_length_mismatch")
+        decoder = zlib.decompressobj(31)
+        try:
+            # max_length bounds allocation even for a highly compressed input.
+            expanded = len(decoder.decompress(raw, SNAPSHOT_EXPANDED_LIMIT + 1))
+        except zlib.error as error:
+            raise FixtureError("snapshot_download_invalid_gzip") from error
+        if expanded > SNAPSHOT_EXPANDED_LIMIT:
+            raise FixtureError("snapshot_download_expanded_bound")
+        if (expanded == 0 or not decoder.eof or decoder.unused_data
+                or decoder.unconsumed_tail):
+            raise FixtureError("snapshot_download_incomplete_or_trailing_gzip")
+        archive_sha256 = hashlib.sha256(raw).hexdigest()
+        if time.monotonic() >= deadline:
+            raise FixtureError("snapshot_response_original_deadline")
+        return {"http_status": 200, "content_type": "application/gzip",
+                "archive_bytes": len(raw), "archive_sha256": archive_sha256,
+                "expanded_bytes": expanded, "gzip_framing_verified": True,
+                "archive_authenticity_verified": False, "restore_verified": False}
+
+    def snapshot_after_compaction(self, *, token: str, timeout: float) -> dict[str, object]:
+        """Request Raft maintenance explicitly before the separate backup GET.
+
+        HTTP native export does not run the legacy JSON snapshot trigger. All
+        three requests share the caller's original budget; none is replayed.
+        A successful maintenance response is not proof that log purge finished.
+        """
+        deadline = time.monotonic() + timeout
+
+        def remaining() -> float:
+            value = deadline - time.monotonic()
+            if value <= 0:
+                raise FixtureError("snapshot_operation_deadline")
+            return value
+
+        status, body = self.call("GET", "sys/storage/raft/snapshot-status",
+                                 token=token, timeout=remaining())
+        data = body.get("data") if isinstance(body, dict) else None
+        if (status != 200 or not isinstance(data, dict)
+                or type(data.get("applied_index")) is not int
+                or not 0 < data["applied_index"] < 2 ** 64):
+            raise FixtureError("snapshot_pre_compaction_frontier_unavailable")
+        applied_index = data["applied_index"]
+        status, body = self.call("POST", "sys/storage/raft/compact", {},
+                                 token=token, timeout=remaining())
+        data = body.get("data") if isinstance(body, dict) else None
+        fields = ("generation", "retained_requests", "journal_bytes_before", "journal_bytes_after")
+        if (status != 200 or not isinstance(data, dict)
+                or any(type(data.get(key)) is not int or not 0 <= data[key] < 2 ** 64
+                       for key in fields)
+                or data["journal_bytes_after"] > data["journal_bytes_before"]):
+            raise FixtureError("snapshot_compaction_not_acknowledged")
+        compaction = {key: data[key] for key in fields}
+        snapshot = self.download_snapshot(token=token, timeout=remaining())
+        remaining()
+        return {**snapshot, "raft_compaction": {
+            "http_status": 200, "target_applied_index": applied_index,
+            **compaction, "purge_completion_verified": False}}
+
+    def start(self, ha: bool = True, *, wait: bool = True) -> None:
+        if self.process is not None or self.log is not None:
             raise FixtureError("node_already_running")
         # Created inside a fresh owner-only synthetic directory, never an existing log.
         fd = os.open(self.root / "process.log", os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
@@ -108,9 +254,25 @@ class Node:
         command = [str(self.binary), "--config", str(self.root / "server.json")]
         if ha:
             command.extend(["--ha-config", str(self.ha_config)])
-        self.process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
-                                        stdout=self.log, stderr=self.log, start_new_session=True)
-        self.started_pids.append(self.process.pid)
+        self.process = owned_process.popen(command, stdin=subprocess.DEVNULL,
+                                        stdout=self.log, stderr=self.log, start_new_session=True, label="ha_destructive.157", action="KILL", stop_timeout=10)
+        try:
+            self.started_pids.append(self.process.pid)
+            if not wait:
+                return
+            self.wait_ready()
+        except BaseException as error:
+            owned_process.abort(error, [self.stop])
+
+    def wait_ready(self) -> None:
+        """Wait for the HTTPS listener after all peers have had a chance to bind.
+
+        HA bootstrap can need a peer listener while the bootstrap process is
+        starting.  Starting every process first avoids making node 1's startup
+        depend on an incidental process scheduling order.
+        """
+        if self.process is None:
+            raise FixtureError("node_not_running")
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
@@ -123,20 +285,90 @@ class Node:
             time.sleep(0.05)
         raise FixtureError("node_listener_timeout")
 
-    def stop(self) -> None:
+    def expect_startup_rejection(self, expected_line: str) -> None:
+        """Require an exact nonzero process rejection before API admission."""
+        if self.process is not None:
+            raise FixtureError("node_already_running")
+        log_path = self.root / "process.log"
+        before = log_path.stat().st_size if log_path.exists() else 0
+        waited = False
+        process = log = returncode = None
         try:
-            if self.process is not None:
-                if self.process.poll() is None:
-                    self.process.kill()
-                self.process.wait(timeout=10)
-                self.process = None
+            self.start(wait=False)
+            process, log = self.process, self.log
+            try:
+                returncode = owned_process.wait(process, timeout=10)
+                waited = True
+            except subprocess.TimeoutExpired as error:
+                raise FixtureError("misbound_cluster_process_did_not_exit") from error
+            if self.log is None:
+                raise FixtureError("startup_rejection_log_unavailable")
+            self.log.flush()
+            with log_path.open("rb") as stream:
+                stream.seek(before)
+                delta = stream.read(64 * 1024 + 1)
+            if len(delta) > 64 * 1024 or not exact_startup_rejection(
+                    returncode, delta, expected_line):
+                raise FixtureError("unexpected_startup_rejection")
+        except BaseException as error:
+            # Preserve the actual rejection/readiness error, after closing the
+            # same original. An already waited negative must not be killed or
+            # subjected to the unrelated live-node SIGKILL/-9 contract.
+            owned_process.abort(error, [lambda: self._retire_waited(process, log, returncode)
+                                        if waited else self.stop()])
+        else:
+            self._retire_waited(process, log, returncode)
+
+    def _retire_waited(self, process, log, returncode) -> None:
+        if (process is None or process is not self.process or log is not self.log
+                or type(returncode) is not int or process.returncode != returncode):
+            raise FixtureError("startup_rejection_original_wait_unconfirmed")
+        try:
+            if log is not None and not log.closed:
+                log.close()
         finally:
-            if self.log is not None:
-                self.log.close()
+            self.process = None
+            if log is None or log.closed:
+                self.log = None
+
+    def stop(self) -> None:
+        process, log = self.process, self.log
+        wait_confirmed = process is None
+        def stop_live_original():
+            nonlocal wait_confirmed
+            if process is None:
+                return
+            observation_error = None
+            try:
+                already_exited = process.poll() is not None
+            except BaseException as error:
+                observation_error = error
+            returncode = owned_process.stop(process, action="KILL", timeout=10)
+            wait_confirmed = type(returncode) is int and process.returncode == returncode
+            if observation_error is not None:
+                raise observation_error
+            if not wait_confirmed:
+                raise FixtureError("node_original_wait_unconfirmed")
+            if already_exited:
+                raise FixtureError("node_exited_before_intentional_stop")
+            if returncode != -9:
+                raise FixtureError("node_intentional_stop_exit_code")
+        try:
+            owned_process.close_all([
+                stop_live_original,
+                lambda: log.close() if log is not None and not log.closed else None,
+            ])
+        finally:
+            # A failed wait must not discard the only handle that a later
+            # Cluster.close can use. No new node may replace that original.
+            if wait_confirmed:
+                self.process = None
+            if log is None or log.closed:
                 self.log = None
 
 
 class Cluster:
+    NODE_IDS = (1, 2, 3)
     def __init__(self, binary: Path, root: Path):
         if not root.is_absolute() or root.resolve() != root or root.exists() or not root.parent.is_dir():
             raise FixtureError("work_directory_must_be_new_absolute_non_symlink")
@@ -144,6 +376,8 @@ class Cluster:
         self.root, self.binary = root, binary
         self.nodes: list[Node] = []
         self.scenarios: list[str] = []
+        self.fixture_mount_setup: list[dict] = []
+        self.snapshot_downloads: list[dict[str, object]] = []
         self.root_token = ""
         self.unseal_key = ""
         self.cluster_id = ""
@@ -164,10 +398,11 @@ class Cluster:
         ca_key.chmod(0o600)
         context = ssl.create_default_context(cafile=str(ca_cert))
         peers = {}
-        for number in (1, 2, 3):
+        ports = iter(free_ports(2 * len(self.NODE_IDS)))
+        for number in self.NODE_IDS:
             root = self.root / f"node-{number}"
             root.mkdir(mode=0o700)
-            node = Node(number, self.binary, root, context)
+            node = Node(number, self.binary, root, context, ports=(next(ports), next(ports)))
             self.nodes.append(node)
             key, cert, csr = root / "tls.key", root / "tls.crt", root / "tls.csr"
             openssl("req", "-new", "-newkey", "rsa:2048", "-nodes", "-keyout", str(key),
@@ -186,7 +421,7 @@ class Cluster:
                 "max_connections": 32, "timeout_seconds": 5,
                 "rate_limit_per_second": 1000, "rate_limit_burst": 2000, "rate_limit_entries": 256}))
         ports = [port for node in self.nodes for port in (node.http_port, node.raft_port)]
-        if len(set(ports)) != 6:
+        if len(set(ports)) != 2 * len(self.NODE_IDS):
             raise FixtureError("ephemeral_port_collision")
         self.peers = peers
 
@@ -239,7 +474,9 @@ class Cluster:
                 except (OSError, urllib.error.URLError, TimeoutError):
                     continue
                 if status == 200:
-                    if health.get("ha_active") is not True or health.get("standby") is not False:
+                    if (health.get("ha_active") is not True
+                            or health.get("ha_application_ready") is not True
+                            or health.get("standby") is not False):
                         raise FixtureError("health_success_without_active_authority")
                     active.append(node)
             if len(active) > 1:
@@ -288,7 +525,13 @@ class Cluster:
         if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
             raise FixtureError("restart_unseal_failed")
 
-    def run(self) -> None:
+    def provision_seed_mounts(self, seed: Node) -> None:
+        provision_secret_kv2(
+            seed.call, token=self.root_token, error_type=FixtureError)
+        self.fixture_mount_setup.append(completed_kv2_mount_metadata())
+
+    def bootstrap(self) -> None:
+        """Start the synthetic three-voter cluster without unrelated fault cases."""
         seed = self.nodes[0]
         seed.start(ha=False)
         self.check("fresh_seed_uninitialized", seed.call("GET", "sys/health")[0] == 501)
@@ -296,6 +539,7 @@ class Cluster:
         self.check("fresh_seed_initialized", status == 200 and bool(body.get("root_token")) and bool(body.get("keys_base64")))
         self.root_token, self.unseal_key = body["root_token"], body["keys_base64"][0]
         self.check("seed_unsealed_before_ha", seed.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+        self.provision_seed_mounts(seed)
         status, health = seed.call("GET", "sys/health")
         self.check("seed_cluster_identity_read_back", status == 200 and isinstance(health.get("cluster_id"), str) and bool(health["cluster_id"]))
         self.cluster_id = health["cluster_id"]
@@ -303,27 +547,40 @@ class Cluster:
         self.configure_ha()
         for node in self.nodes[1:]:
             shutil.copytree(seed.data_dir, node.data_dir)
-        # Test that a legitimate peer cannot unseal a different application cluster.
+        # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
+        # Bootstrap every peer with the same cluster identity before exercising
+        # the hostile misbinding case.  The bootstrap voter may contact its
+        # peers during membership expansion, so bind every listener first.
+        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
+            node.start(wait=False)
+        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
+            node.wait_ready()
+        self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
+        self.wait_quorum()
+        for node in self.nodes:
+            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+
+    def assert_misbound_rejection(self, wrong: Node) -> None:
+        # Current candidates must reject the bound durable marker before API
+        # admission. Historical rolling fixtures override only this assertion.
+        wrong.expect_startup_rejection(MISBOUND_BOOTSTRAP_ERROR)
+        self.check("misbound_cluster_startup_rejected", True)
+
+    def run(self) -> None:
+        self.bootstrap()
+        # Test that a legitimate peer cannot unseal a different application
+        # cluster after it has already joined the committed three-voter set.
         wrong = self.nodes[2]
+        wrong.stop()
         wrong_config = json.loads((wrong.root / "ha.json").read_text())
         wrong_config["cluster_id"] = "deliberately-wrong-application-cluster"
         wrong.ha_config = wrong.root / "wrong-cluster.json"
         private_write(wrong.ha_config, json.dumps(wrong_config))
-        # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
-        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
-            node.start()
-        self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
-        self.wait_quorum()
-        status, denied = wrong.call("POST", "sys/unseal", {"key": self.unseal_key})
-        self.check("misbound_cluster_unseal_denied", status == 503 and denied.get("errors") == ["HA configuration belongs to a different cluster"])
-        status, health = wrong.call("GET", "sys/health")
-        self.check("misbound_cluster_remains_sealed", status == 503 and health.get("sealed") is True)
-        wrong.stop()
+        self.assert_misbound_rejection(wrong)
         wrong.ha_config = wrong.root / "ha.json"
         wrong.start()
         self.wait_quorum()
-        for node in self.nodes:
-            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+        self.check("restored_peer_unsealed", wrong.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
         leader = self.leader()
         marker = secrets.token_hex(16)
         self.write(leader, "ha-probe", marker)
@@ -338,7 +595,10 @@ class Cluster:
         standby.stop()
         for index in range(8):
             self.write(leader, f"snapshot-probe-{index}", secrets.token_hex(12))
-        self.check("leader_snapshot_trigger", leader.call("GET", "sys/storage/raft/snapshot", token=self.root_token, timeout=15)[0] == 200)
+        snapshot = leader.snapshot_after_compaction(token=self.root_token, timeout=15)
+        self.check("leader_snapshot_trigger", snapshot.get("http_status") == 200
+                   and snapshot.get("gzip_framing_verified") is True)
+        self.snapshot_downloads.append(snapshot)
         snapshot_value = secrets.token_hex(16)
         self.write(leader, "after-snapshot", snapshot_value)
         self.restart(standby)
@@ -372,14 +632,7 @@ class Cluster:
         self.check("all_three_rejoined_after_quorum_recovery", True)
 
     def close(self) -> None:
-        failed = False
-        for node in self.nodes:
-            try:
-                node.stop()
-            except (OSError, subprocess.SubprocessError):
-                failed = True
-        if failed:
-            raise FixtureError("node_cleanup_failed")
+        owned_process.close_all([node.stop for node in self.nodes])
 
 
 def main() -> int:
@@ -411,6 +664,8 @@ def main() -> int:
     finally:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
+            report["fixture_mount_setup"] = cluster.fixture_mount_setup
+            report["snapshot_downloads"] = cluster.snapshot_downloads
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):

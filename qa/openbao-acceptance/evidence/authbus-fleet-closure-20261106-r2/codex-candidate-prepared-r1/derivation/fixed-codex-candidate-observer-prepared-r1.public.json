@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.fixed-codex-candidate-observer-prepared.r1",
+  "source": "observe_fixed_codex_candidate_files_r1.py",
+  "bytes": 83443,
+  "sha256": "595334506609bd51c746f1d2dd81482a54e8f6602218512ecac8cc73896f8d40",
+  "sourcePins": {
+    "mac_owned_unreaped_r1.py": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_codex_backend_procargs_r1.py": "85fbf5a0502b9522e5df2a6dceef32c7cfc8fc263913b0c8b7661015355010be",
+    "mac_codex_candidate_backend_r1.py": "90def9a5976b94efa6e1794a0fd2d26ea2615f00922f18291e2cd331af802b87",
+    "mac_codex_fixed_candidate_inputs_r1.py": "b8fa9607c47635c3cd0b77d075a27b01ce689a3223075b8ce047b17f9935605e"
+  },
+  "originalR4Bytes": 56720,
+  "originalR4Sha256": "6c150f3a324b3200e658247e9841e1b9bccbe6e07c16c4b01edc0f072089acda",
+  "originalR4Unchanged": true,
+  "originalR4ActualEvidenceMap": "51080acf27ed134ba96fc228e03461f20faa544d",
+  "parentSeconds": 20,
+  "supervisorSeconds": 30,
+  "actualProcessesObservedByThisSource": 0,
+  "actualCandidateAuthFilesReadByThisSource": 0,
+  "sourceOnlyPrepared": true,
+  "fixedCredentialCandidateFileCount": 1,
+  "fixedUserConfigurationCandidateFileCount": 1,
+  "noCurrentMain3Read": true,
+  "noKeychainSqlProviderChildOrService": true,
+  "candidateFileRelationshipDoesNotProveRuntimeBackend": true
+}

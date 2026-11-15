@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.immutable-evidence-map.v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "scope": "Strict observed wrapper preparation; local21; actual Mac historical-private-copy parse only",
+  "entries": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/mac_gateway_local_fallback_r1.py",
+      "blob": "df3da4964cf4ffefcfbd371eceaecc636483d366",
+      "bytes": 11054,
+      "sha256": "d113b6009dfb5d0c6b4701ae382f62b11817cf9038f032547375d95c0e10d905"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/mac_gateway_parameter_wrapper_fallback_r1.py",
+      "blob": "9d7bb1d83b28e04a3f1e806c20ce9a9670aff5fc",
+      "bytes": 11715,
+      "sha256": "d4cb1ba02b067a30de0551146678fdca7773cffad8e8df83255054f3c37c56be"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/mac_current_parameter_wrapper_inputs_r1.py",
+      "blob": "8649d123ea6bf5d2d8d10a095eea7d15f7e637ad",
+      "bytes": 9995,
+      "sha256": "9d80bf964ccbcc83985214646ed4d834986c719289fd44d6d3b1be680ed5cabc"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/qualify_parameter_wrapper_fallback_local_r1.py",
+      "blob": "868e80ca7256aa52b49d553c17b65ff2ae09c479",
+      "bytes": 10739,
+      "sha256": "210ded0beb8129725ed918901858edff7578afc8240934fda7bf7d094ecc39f4"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/parameter-wrapper-local21.original.json",
+      "blob": "19fffa5324bc1c258f8ff0f0addf328b77a0a08a",
+      "bytes": 2175,
+      "sha256": "c8b80204719d8ae55453e16cc309083771fb1cc99f06e9de0c3498a3cd38a73b"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/qualify_parameter_wrapper_private_copies_r1.template.py",
+      "blob": "85920a0ee409c623ca700a92d3cf240af8198acb",
+      "bytes": 9952,
+      "sha256": "481550d00a26de130070a90c24750e31a0c33ff84b1cb6dd0399a57415ff7467"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/qualify_parameter_wrapper_private_copies_r1.py",
+      "blob": "cc25d741d48588df8216d32fe2809cf6f49f952b",
+      "bytes": 40554,
+      "sha256": "72f2c7daebe85fb9ff79faecd60403423bbe9e5fdbd12533f8681c5c86fd6e20"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/parameter-wrapper-copies-r1.start.original.json",
+      "blob": "21ec2faa99c09576a68fede935ba99322d853f04",
+      "bytes": 42506,
+      "sha256": "6cf255013ab96e07642b91fe4a631cb570eab371d761e0a15c5736a572990165"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/parameter-wrapper-copies-r1.terminal.original.json",
+      "blob": "77808411b1ea2707607fe671168c74de7821e4aa",
+      "bytes": 954,
+      "sha256": "084df90f7ff7405cfac83a885d0185420f05761e7f1fdbf20b35b27ba3a109e1"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/parameter-wrapper-copies-r1.read.original.json",
+      "blob": "44bc91365ec2db0488165be16e575dae50023a0d",
+      "bytes": 6734,
+      "sha256": "4ddb2487b8f723c44c2734606e1f3b3595c66d70a774d97bebb2d8abc9709d5d"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/parameter-wrapper-copies-r1.stdout.public.json",
+      "blob": "bb813fe43af7513d80cf50d93e7f0e15d1e71b38",
+      "bytes": 2241,
+      "sha256": "1c083c5f212cfa5574d7893d0fee90190640f6deea5d6b466a0465a63763b619"
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-parameter-wrapper-fallback-r1/parameter-wrapper-r1.README.md",
+      "blob": "13817bb4efe313b88bd83e2b055feb2428840dd5",
+      "bytes": 2869,
+      "sha256": "4fa0640a97a8385b5732ccc0246da594efa1ae756d114a4e16d25a2eb3da1040"
+    }
+  ],
+  "actualJob": "1a1b349e2ca-fc05-81c9",
+  "actualKnownSucceeded": true,
+  "productionFallbackQualified": false,
+  "providerCalls": 0,
+  "productionMutations": 0
+}

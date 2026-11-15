@@ -1,0 +1,41 @@
+{
+  "actual_api69_executions": 0,
+  "actual_dr25_executions": 0,
+  "actual_full34_executions": 0,
+  "full34_api69_workload_changed": false,
+  "full_replacement_qualified": false,
+  "last_authoritative_normal107_status": "running",
+  "legacy_cleanup": false,
+  "local_guard_tests": 30,
+  "normal107_job_id": "1a1b2367cb2-fc05-7cfc",
+  "observed_executed_product_tests": 0,
+  "oracle_binary_or_archive_pins_changed": false,
+  "original_api_comparison_cases_per_side": 69,
+  "original_full34_profile_checks": 31,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "producer": "pocket4",
+  "production_changed": false,
+  "production_cutover": false,
+  "receiver": "x230",
+  "release_step": {
+    "elapsed_seconds": 1122.493437,
+    "exit_code": 0,
+    "original_cap_seconds": 1800,
+    "timed_out": false
+  },
+  "required_actual_admission": [
+    "same current source/tree and complete original107 receipt with original terminal",
+    "whole current receiver binary and seed match original producer artifacts",
+    "successful current X230 ABI capture and original complete terminal",
+    "fresh receiver original/tools/libraries/alias/cache/interpreter recheck",
+    "new owned disjoint private output and loopback fixtures only"
+  ],
+  "schema": "heptabao.x230-current-pocket4-qualifier-preparation.v1",
+  "selection_sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+  "server_libtest_build_started_with_original_cap_seconds": 3600,
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_file_sha256": "de184a097a1c01883f1713ae1cd0ab52615dc888aae309b36eb6bc23bd2f86ad",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "prepared_not_executed"
+}

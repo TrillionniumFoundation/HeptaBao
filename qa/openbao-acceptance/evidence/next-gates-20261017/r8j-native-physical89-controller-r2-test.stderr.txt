@@ -1,0 +1,16 @@
+test_both_original_native_builds_reject_abi_binary_or_provenance_substitution (__main__.R2PhysicalControllerBindingTests.test_both_original_native_builds_reject_abi_binary_or_provenance_substitution) ... ok
+test_each_helper_and_harness_corruption_rejected_before_import (__main__.R2PhysicalControllerBindingTests.test_each_helper_and_harness_corruption_rejected_before_import) ... ok
+test_exact_dependency_closure_loads_from_verified_bytes (__main__.R2PhysicalControllerBindingTests.test_exact_dependency_closure_loads_from_verified_bytes) ... ok
+test_execute_is_opt_in_and_receipt_permissions_are_strict (__main__.R2PhysicalControllerBindingTests.test_execute_is_opt_in_and_receipt_permissions_are_strict) ... ok
+test_import_cache_cannot_override_a_pinned_helper (__main__.R2PhysicalControllerBindingTests.test_import_cache_cannot_override_a_pinned_helper) ... ok
+test_missing_extra_symlink_and_hardlink_are_rejected (__main__.R2PhysicalControllerBindingTests.test_missing_extra_symlink_and_hardlink_are_rejected) ... ok
+test_only_attempt_02_roots_and_original_binary_roots_survive_command (__main__.R2PhysicalControllerBindingTests.test_only_attempt_02_roots_and_original_binary_roots_survive_command) ... ok
+test_original_receipt_bytes_and_full_30_case_matrix_are_bound (__main__.R2PhysicalControllerBindingTests.test_original_receipt_bytes_and_full_30_case_matrix_are_bound) ... ok
+test_original_source_tree_cannot_be_relabelled_as_qa_overlay (__main__.R2PhysicalControllerBindingTests.test_original_source_tree_cannot_be_relabelled_as_qa_overlay) ... ok
+test_plan_and_report_expose_separate_qa_and_binary_bindings (__main__.R2PhysicalControllerBindingTests.test_plan_and_report_expose_separate_qa_and_binary_bindings) ... ok
+test_summary_requires_exact_89_checks_and_new_runner_hash (__main__.R2PhysicalControllerBindingTests.test_summary_requires_exact_89_checks_and_new_runner_hash) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.400s
+
+OK

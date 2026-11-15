@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.history10-preflight-actual-state.v1",
+  "freshFirewallKnownPassed": true,
+  "exactOwnedRules": 2,
+  "otherFirewallSemanticsUnchanged": true,
+  "firewallWrites": 0,
+  "hostPreflights": [
+    {
+      "host": "x230",
+      "jobId": "1a1b3a378a8-fc05-8402",
+      "knownSucceeded": true,
+      "portsFree": true,
+      "newRootsAbsent": true
+    },
+    {
+      "host": "ai395",
+      "jobId": "1a1b3a53d69-fc05-840d",
+      "knownSucceeded": true,
+      "portsFree": true,
+      "newRootsAbsent": true
+    },
+    {
+      "host": "mac",
+      "jobId": "1a1b3a6b7d7-fc05-8417",
+      "knownSucceeded": true,
+      "portsFree": true,
+      "newRootsAbsent": true
+    }
+  ],
+  "actualDiagnosticJob": "1a1b3a7eb2a-fc05-8421",
+  "actualState": "known-launched-not-yet-qualified",
+  "fullHa128Executed": false,
+  "fullReplacementQualified": false
+}

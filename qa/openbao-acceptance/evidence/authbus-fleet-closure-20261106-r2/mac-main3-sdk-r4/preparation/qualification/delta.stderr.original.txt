@@ -1,0 +1,13 @@
+test_capture_payload_preserves_all_original_non_scope_bytes (__main__.SdkR4Delta.test_capture_payload_preserves_all_original_non_scope_bytes) ... ok
+test_complete_package_and_product_budget_pins (__main__.SdkR4Delta.test_complete_package_and_product_budget_pins) ... ok
+test_new_inline_key_and_roots_are_explicit_not_reused (__main__.SdkR4Delta.test_new_inline_key_and_roots_are_explicit_not_reused) ... ok
+test_ownership_and_api_code_unchanged_except_new_identity_and_asset_binding (__main__.SdkR4Delta.test_ownership_and_api_code_unchanged_except_new_identity_and_asset_binding) ... ok
+test_plugins_and_cas_have_no_business_semantic_changes (__main__.SdkR4Delta.test_plugins_and_cas_have_no_business_semantic_changes) ... ok
+test_preparer_logic_unchanged_except_namespace_and_exact_pin_tables (__main__.SdkR4Delta.test_preparer_logic_unchanged_except_namespace_and_exact_pin_tables) ... ok
+test_sandbox_profile_is_byte_identical_after_fixture_root_binding (__main__.SdkR4Delta.test_sandbox_profile_is_byte_identical_after_fixture_root_binding) ... ok
+test_wire_original_budget_agent_and_failure_contract_are_retained (__main__.SdkR4Delta.test_wire_original_budget_agent_and_failure_contract_are_retained) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.150s
+
+OK

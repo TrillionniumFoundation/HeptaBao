@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1794010092118,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "ai395",
+    "id": "1a1b3559256-fc05-8228",
+    "idempotency_key": "ai395-ha128-r3-fixed-ports-root-readonly-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b3559256-fc05-8228",
+    "request_digest": "4e275085b0a966949423314d90046c7ed6a2a0629538857442ad08c43aaa00f0",
+    "request_fingerprint": 5631558394174858900,
+    "ssh_target": "ai395-lan",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b3559256-fc05-8228"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b3559256-fc05-8228"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

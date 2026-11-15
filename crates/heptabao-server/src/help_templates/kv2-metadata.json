@@ -1,0 +1,197 @@
+{
+  "help": "Request:        metadata/ocsp/plainkey\nMatching Route: ^metadata/(?P<path>.*)$\n\nAllows interaction with key metadata and settings in the KV store.\n\n## PARAMETERS\n\n    after (string)\n\n        Optional entry to list begin listing after, not required to exist. Only used for listing.\n\n    cas_required (bool)\n\n        If true the key will require the cas parameter to be set on all write requests.\n        If false, the backend’s configuration will be used.\n\n    custom_metadata (map)\n\n        User-provided key-value pairs that are used to describe arbitrary and\n        version-agnostic information about a secret.\n\n    delete_version_after (duration (sec))\n\n        The length of time before a version is deleted. If not set, the backend's\n        configured delete_version_after is used. Cannot be greater than the\n        backend's delete_version_after. A zero duration clears the current setting.\n        A negative duration will cause an error.\n\n    limit (int)\n\n        Optional number of entries to return; defaults to all entries. Only used for listing.\n\n    max_versions (int)\n\n        The number of versions to keep. If not set, the backend’s configured max\n        version is used.\n\n    metadata_cas (int)\n\n        Check-and-set parameter for metadata updates. Must match the current metadata version for the update to succeed. Set to 0 for initial metadata creation.\n\n    metadata_cas_required (bool)\n\n        If true the key will require the cas parameter to be set on all metadata update\n        requests. If false, the backend's configuration will be used.\n\n    path (string)\n\n        Location of the secret.\n\n## DESCRIPTION\n\nThis endpoint allows for reading key metadata in the key-value store, writing\nkey settings, or permanently deleting a key and all its versions.",
+  "openapi": {
+    "components": {
+      "schemas": {
+        "PatchMetadataPathRequest": {
+          "properties": {
+            "after": {
+              "description": "Optional entry to list begin listing after, not required to exist. Only used for listing.",
+              "type": "string"
+            },
+            "cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all write requests. If false, the backend’s configuration will be used.",
+              "type": "boolean"
+            },
+            "custom_metadata": {
+              "description": "User-provided key-value pairs that are used to describe arbitrary and version-agnostic information about a secret.",
+              "format": "map",
+              "type": "object"
+            },
+            "delete_version_after": {
+              "description": "The length of time before a version is deleted. If not set, the backend's configured delete_version_after is used. Cannot be greater than the backend's delete_version_after. A zero duration clears the current setting. A negative duration will cause an error.",
+              "format": "seconds",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Optional number of entries to return; defaults to all entries. Only used for listing.",
+              "type": "integer"
+            },
+            "max_versions": {
+              "description": "The number of versions to keep. If not set, the backend’s configured max version is used.",
+              "type": "integer"
+            },
+            "metadata_cas": {
+              "description": "Check-and-set parameter for metadata updates. Must match the current metadata version for the update to succeed. Set to 0 for initial metadata creation.",
+              "type": "integer"
+            },
+            "metadata_cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all metadata update requests. If false, the backend's configuration will be used.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "WriteMetadataPathRequest": {
+          "properties": {
+            "after": {
+              "description": "Optional entry to list begin listing after, not required to exist. Only used for listing.",
+              "type": "string"
+            },
+            "cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all write requests. If false, the backend’s configuration will be used.",
+              "type": "boolean"
+            },
+            "custom_metadata": {
+              "description": "User-provided key-value pairs that are used to describe arbitrary and version-agnostic information about a secret.",
+              "format": "map",
+              "type": "object"
+            },
+            "delete_version_after": {
+              "description": "The length of time before a version is deleted. If not set, the backend's configured delete_version_after is used. Cannot be greater than the backend's delete_version_after. A zero duration clears the current setting. A negative duration will cause an error.",
+              "format": "seconds",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Optional number of entries to return; defaults to all entries. Only used for listing.",
+              "type": "integer"
+            },
+            "max_versions": {
+              "description": "The number of versions to keep. If not set, the backend’s configured max version is used.",
+              "type": "integer"
+            },
+            "metadata_cas": {
+              "description": "Check-and-set parameter for metadata updates. Must match the current metadata version for the update to succeed. Set to 0 for initial metadata creation.",
+              "type": "integer"
+            },
+            "metadata_cas_required": {
+              "description": "If true the key will require the cas parameter to be set on all metadata update requests. If false, the backend's configuration will be used.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/metadata/{path}": {
+        "delete": {
+          "operationId": "delete-metadata-path",
+          "responses": {
+            "204": {
+              "description": "empty body"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "description": "Allows interaction with key metadata and settings in the KV store.",
+        "get": {
+          "operationId": "read-metadata-path",
+          "parameters": [
+            {
+              "description": "Return a list if `true`",
+              "in": "query",
+              "name": "list",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Return a recursive list if `true`",
+              "in": "query",
+              "name": "scan",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "patch": {
+          "operationId": "patch-metadata-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchMetadataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "post": {
+          "operationId": "write-metadata-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteMetadataPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      }
+    }
+  },
+  "see_also": null
+}

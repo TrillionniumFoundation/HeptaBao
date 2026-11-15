@@ -1,0 +1,52 @@
+{
+  "files": {
+    "r5-first-build-receipt.failed.json": {
+      "bytes": 18317,
+      "sha256": "d7a36b6292202d6487b4ae9c9c3252973256c9cbad6dd52e969d2eda29c79fb2"
+    },
+    "r5b-build-receipt.public.json": {
+      "bytes": 59317,
+      "sha256": "b46691b4da0fc2f461801ff7b8e3abf64cb461a55a03d2624f24d4713f20fc40"
+    },
+    "r5b-host-result.public.json": {
+      "bytes": 16248,
+      "sha256": "4db33700c86cd4f185fa56c1e1fe92af291c8a50f6da48fae53682438fc92bb2"
+    },
+    "r5b-seed-producer-wrapper.actual.py": {
+      "bytes": 2621,
+      "sha256": "9fc9472b4995cd469b6157819432bfb98cd4a709d3d36f0abbe90f16eafb587f"
+    },
+    "r5b-seed-producer-wrapper.binding.public.json": {
+      "bytes": 553,
+      "sha256": "5bebf6fb697a12578b81eba278fcf5ca48f35cba2f82ff65605d7116a2ae518b"
+    },
+    "r5b-seed-producer.public.json": {
+      "bytes": 1372,
+      "sha256": "533cb27055640f2da05b7e362a6c767203894f0bc05fc80b55acb01310308eb8"
+    },
+    "r5b-seed-receipt.public.json": {
+      "bytes": 473,
+      "sha256": "ab16e81f85823b75bea71a4648b701be6072b41ee6096926c13ded5282a814d3"
+    },
+    "transfer.manifest.public.json": {
+      "bytes": 4273,
+      "sha256": "115ccc878381063569d9f34f77c238287dc27d984ed18b7f35a56537c8c12799"
+    }
+  },
+  "no_phone_or_credential_manager_qualification_inferred": true,
+  "r5_first_compile_failure_preserved": true,
+  "r5b_build_commands_exit_zero": true,
+  "r5b_host_checks_passed": 10,
+  "r5b_host_negative_groups": [
+    17,
+    18
+  ],
+  "r5b_source_before_after_equal": true,
+  "r5b_source_files_match_frozen_archive": 28,
+  "retrieval_device_actions": 0,
+  "schema": 1,
+  "scope": "public_originals_preserved_with_cross_file_consistency_checks",
+  "seed_is_new_r5_ciphertext": true,
+  "seed_producer_is_frozen_a1_final_b0cccc": true,
+  "seed_wrapper_original_bytes_match_explicit_binding": true
+}

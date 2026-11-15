@@ -1,0 +1,101 @@
+{
+  "artifacts": [
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/unit-receipt.json",
+      "sha256": "052a232dbedef2c9688ead2e8b2239c7967767082e61c24a99dde1d8f46414ce"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/approle271-repaired-fa7e2c50.json",
+      "sha256": "8ed6015e97b17b9133290250166c7e8a7da37fd0e22bee1aa4f4b60a96456d78"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/finite-use-negative-fa7e2c50.json",
+      "sha256": "72f5492820fad7a9e65756a80885d2281151c5695f4af7a0c293fee464b8f2b8"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362556b4-b2f-1e7-stdout.log",
+      "sha256": "496de349a32758d4e33fb66dbb5ceed3c9adbed2c7ba3b7c483fe8fcf8998ab2"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362556b4-b2f-1e7-stderr.log",
+      "sha256": "e060d14daf6c5d3211d8d6b2333e9272413235d7b1c6c8bebe0519a1d76acff9"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362556b4-b2f-1e7-exit.json",
+      "sha256": "b3737eb0b22a6ba1977cdb8f27f474c1c9e5c7066a8cbf3e2c3747b28314c276"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362c3c71-b2f-219-stdout.log",
+      "sha256": "5c72c9cb2b64a280cde4830420ac11821fe78bb3f14e4954b503c1672118811d"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362c3c71-b2f-219-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362c3c71-b2f-219-exit.json",
+      "sha256": "5a345804dd294f9c3140e3674e0f5c8fa0b23055712f0a8a81f6cc85e6a6746b"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362ca500-b2f-21b-stdout.log",
+      "sha256": "e6cefbd25a84fb95f0039448169dab034dc18ad7e05888649033e3dd69aa3f98"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362ca500-b2f-21b-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/1a1362ca500-b2f-21b-exit.json",
+      "sha256": "8631243b21a8185480e3c24e1f37362bc7d99d6e3ad7f26afe36b80ae2accb00"
+    }
+  ],
+  "binary_sha256": "3af7f3ddffcfb7f987497cfc129fb180cb7c671e179ccb5c39d8364474baa715",
+  "build_command": "cargo +1.98.0 build --offline --locked -p heptabao-server --bin heptabao-server",
+  "build_cwd": "/home/qian-qi/work/heptabao-agent-custom-form-fix-20261013",
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/heptabao-agent-r1250-security-target-5702578c"
+  },
+  "build_job": "1a1362556b4-b2f-1e7",
+  "limits": [
+    "This evidence is a bounded native AppRole form/expiry observation, not whole OpenBao admission.",
+    "No Mac/X230 or physical-LAN execution of this candidate is included.",
+    "New form HA sender rejects at old receiver before dispatch; old sender provenance is not reconstructed; bidirectional rolling upgrade is not admitted.",
+    "sys/quotas/config and rate-limit CRUD remain a true 2.7.1 counterexample on baseline 570; form repair does not implement quotas."
+  ],
+  "native_binary": "/home/qian-qi/work/heptabao-agent-approle-form-fix-evidence-20261013/heptabao-server-fa7e2c50",
+  "observed_counterexample": {
+    "candidate_binary_sha256": "3a69d69a2c2376df9c8db0f0360220fe78d614880640aca1abc17baf6214fdee",
+    "candidate_status": null,
+    "case": "custom-approle_login_form",
+    "official_status": 200,
+    "receipt": "/home/qian-qi/work/heptabao-agent-r1250-security-evidence/approle271-differential-r3.json",
+    "source_commit": "5702578c7fa0ca7b91ba4eff4e83fb6131423839",
+    "transport_error": "BadStatusLine"
+  },
+  "official_2_7_1": {
+    "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
+  },
+  "production_authority": false,
+  "repair": {
+    "candidate_cases": 25,
+    "custom_form_status": 200,
+    "mismatches": 0,
+    "negative_custody_cases": 15,
+    "negative_custody_passed": 15,
+    "official_cases": 25,
+    "source_and_binary_unchanged": true
+  },
+  "replacement_authority": false,
+  "rust_fix_commit": "aa53ca355fa6d6a3dff4d0390f5cce9ee45c6879",
+  "rust_toolchain": "1.98.0",
+  "schema": "heptabao.approle-form-blocker-repair-evidence.v1",
+  "source_clean": true,
+  "source_commit": "fa7e2c5050b6c3e9fde39110ba293849ee123bf0",
+  "source_content_sha256": "d6fcf1a7c9fca1bf54cc8ba4442b5e70d06614510cf91158fe41a6b8a801a25d",
+  "source_tree": "26934971b713f6de1b2c9db24cb4ca3c845efc69",
+  "synthetic_only": true,
+  "tls_verified": true
+}

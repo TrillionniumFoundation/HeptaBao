@@ -1,0 +1,43 @@
+{
+  "candidatePorts": [
+    31040,
+    31041
+  ],
+  "expectedOwnedRulePeers": [
+    "192.168.0.8",
+    "192.168.0.13"
+  ],
+  "firewallWrites": 0,
+  "newPhase": "before-ha-r4",
+  "originalObserverCommandsUnchanged": true,
+  "originalUfwAllFunctionClassAstsEqual": true,
+  "preparedOnly": true,
+  "runtimeCalls": 0,
+  "schema": "heptabao.ha128-r4-preflight-source-preparation.v1",
+  "sourcePins": {
+    "capture_ai395_ufw_phase_r4.py": {
+      "bytes": 11639,
+      "onlyPhaseOrExactNewRootLiteralsChanged": true,
+      "priorSource": "capture_ai395_ufw_phase_history10_r1.py",
+      "sha256": "1fe57c3a998f99d7c8f66e449e6bfdfa173a4416beecb4de5370f36e7633aaa5"
+    },
+    "observe_linux_fixed_ports_roots_r4.py": {
+      "bytes": 3203,
+      "onlyPhaseOrExactNewRootLiteralsChanged": true,
+      "priorSource": "observe_linux_fixed_ports_roots_history10_r1.py",
+      "sha256": "532b21f6f02d1ccd4b4aafdcf6eee29ff838457aa4ee881e343fc86261125f96"
+    },
+    "observe_mac_fixed_ports_roots_r4.py": {
+      "bytes": 7390,
+      "onlyPhaseOrExactNewRootLiteralsChanged": true,
+      "priorSource": "observe_mac_fixed_ports_roots_history10_r1.py",
+      "sha256": "1e9ad7d0153f6656166129256c9bffe45c02c28fdfa56c997ad2ea5afd0878c7"
+    },
+    "verify_ai395_ufw_phase_r4.py": {
+      "bytes": 19688,
+      "onlyPhaseOrExactNewRootLiteralsChanged": true,
+      "priorSource": "verify_ai395_ufw_phase_history10_r1.py",
+      "sha256": "f4d6ceab50cf949ccffcd408352ea26e811426442d1a24bc86f9f720c7b44fc3"
+    }
+  }
+}

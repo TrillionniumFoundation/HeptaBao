@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,json,os,stat,sys,time,types,unittest\nfrom pathlib import Path\nQA=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-main3-api-20261106-r3/qa')\npath=QA/'main3_api_controller.py'\ndef identity(s):return tuple(str(getattr(s,k)) for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))\nfd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)\ntry:\n before=os.fstat(fd)\n assert stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600\n raw=os.read(fd,1048576)\n assert len(raw)==32340 and hashlib.sha256(raw).hexdigest()=='74daa03bfc8edcb4d577c47dc4d664cbd5fc065adc4c79a46d2d9f822eae483f'\n assert os.read(fd,1)==b'' and identity(before)==identity(os.fstat(fd))==identity(path.lstat())\nfinally:os.close(fd)\nmodule=types.ModuleType('main3_api_controller');module.__file__=str(path)\nsys.modules[module.__name__]=module\nexec(compile(raw,str(path),'exec'),module.__dict__)\nplan,pin=module.load_inputs()\nassert pin=='18798417435d55eea5c48823162e079bfdf910d1f36dcbd91f61993106353216'\nsys.path.insert(0,str(QA))\n\nfrom main3_source_fence import CapsuleFence,ident\nEVENTS=[[\"capture-r2-terminal\",1793986144685],[\"api-r3-preparation-submit\",1793986332016],[\"api-r3-preflight-submit\",1793986687020],[\"namespace-diagnostic-submit\",1793986788588]]\nSTART=time.monotonic();UNTIL=START+20\nr={'schema':'heptabao.main3-registry-ctime-interval-readonly.r1','ok':False,'sourceFilesModified':False,\n 'sourceSqlOpened':False,'credentialValuesOrDigestsPublished':False,'privateIdentityValuesPublished':False,\n 'timingBoundariesArePublicRuntimeReceipts':True,'rounds':[],'sourceFdsOpened':0,'serviceActions':[]}\nfence=None\ntry:\n fence=CapsuleFence(UNTIL)\n rows=fence.doc['registryGeneration']['sourceIdentities']\n def interval(ns):\n  previous='before-capture-r2-terminal'\n  for label,ms in EVENTS:\n   if ns<int(ms)*1000000:return previous+'..'+label\n   previous=label\n  return 'after-'+previous\n for round_number in range(2):\n  observation=[]\n  for name,expected in rows.items():\n   fence.remaining();before=Path(name).lstat();current=ident(before)\n   need_path=str(Path('/Users/qianqi/.openclaw/state/openclaw.sqlite'))\n   assert name in (need_path,need_path+'-wal',need_path+'-shm')\n   assert stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600\n   observation.append({'fileKind':'wal' if name.endswith('-wal') else 'shm' if name.endswith('-shm') else 'database',\n    'sameFirstEightIdentityFields':list(current[:8])==list(expected[:8]),\n    'expectedCtimeInterval':interval(int(expected[8])),'actualCtimeInterval':interval(before.st_ctime_ns),\n    'ctimeChangedSinceCapsule':current[8]!=expected[8],\n    'sameIdentityInThisRead':current==ident(Path(name).lstat())})\n  r['rounds'].append({'round':round_number+1,'rows':observation})\n  if round_number==0:\n   observed=tuple(ident(Path(name).lstat()) for name in rows)\n   time.sleep(min(2.0,fence.remaining()))\n  else:r['identitiesUnchangedDuringTwoSecondQuietInterval']=observed==tuple(ident(Path(name).lstat()) for name in rows)\n r['ok']=True\nexcept BaseException as error:r['errorType']=type(error).__name__\nfinally:\n r['allReturnedDescriptorsClosed']=fence is not None and fence.opened==fence.closed\n r['elapsedSeconds']=time.monotonic()-START\n r['ok']=bool(r['ok'] and r['allReturnedDescriptorsClosed'] and time.monotonic()<UNTIL)\n print(json.dumps(r,sort_keys=True),flush=True)\nraise SystemExit(0 if r['ok'] else 1)\n"
+    ],
+    "created_unix_ms": 1793986908582,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b1f3d1a6-fc05-7bb3",
+    "idempotency_key": "heptabao-mac-authbus-main3-registry-ctime-interval-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b1f3d1a6-fc05-7bb3",
+    "request_digest": "e69d637cbcc022d6a81a6a8c1d333d2bf67a4d448d7f170e00bcd52b77f8184e",
+    "request_fingerprint": 16617547587460801238,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b1f3d1a6-fc05-7bb3"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 1301,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b1f3d1a6-fc05-7bb3"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.authbus-adapter-provenance.v1",
+  "repositoryBaselineCommit": "8d75d26bb521e359090d28712385fca234c9eccc",
+  "packageSourceCommit": "6a80b787d006f59376c5bc4ec3f99f240a6b9809",
+  "originalPackagePath": "/home/qian-qi/heptabao-authbus-chain-tools-20261030-r11/production_authbus_v1",
+  "originalPackageManifestSha256": "cba57019c7ac852ff33e19c01894eda0a61a54f4ca60f7d2a29b058fbb50c7f5",
+  "files": {
+    "plugin/private-outbox-store.js": {
+      "originalSha256": "24c88b017679b9e61eae7e47d2768e055799f651ab0c0aae76703305e40c7955",
+      "originalBytes": 7990
+    },
+    "plugin/bounded-outbox.js": {
+      "originalSha256": "d72c45a334ea06c7d1862c7622b905c56f481d90e0406c412d39c29c98378734",
+      "originalBytes": 17576
+    },
+    "plugin/production-client.js": {
+      "originalSha256": "a8ce51ccce23ef75d2b42b21509154d7297b45d51b2a9053d7a197f5b3b7da92",
+      "originalBytes": 2447
+    },
+    "plugin/strict-bao-client.js": {
+      "originalSha256": "448bf680904b692aabfee38e2a6226008b5879a0bb68746200da21486afd35cd",
+      "originalBytes": 25614
+    }
+  }
+}

@@ -1,0 +1,2102 @@
+{
+  "runId": "hb-sync-20261106-r4",
+  "harnessSha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+  "sourceCommit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+  "sourceTree": "5f685c1aaf647f016afed0555a6710cd4a76c317",
+  "roles": {
+    "a": {
+      "host": "ai395",
+      "repo": "/home/qq/heptabao-personal-credentials-20261106-r1",
+      "root": "/home/qq/heptabao-two-device-20261106-r4-a",
+      "bin": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final",
+      "expectedBinarySha256": {
+        "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+        "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663"
+      },
+      "buildReceipt": {
+        "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/receipt.final.json",
+        "sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+        "verified": {
+          "metadata": {
+            "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "gid": 1000,
+            "link_count": 1,
+            "metadata_platform": "linux",
+            "mode": 384,
+            "uid": 1000,
+            "xattr_names": [],
+            "xattr_sha256": {}
+          },
+          "mode": 384,
+          "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/receipt.final.json",
+          "sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+          "size": 11000,
+          "version": "66306:46810565:11000:1793945316549942063:1793945316549942063"
+        }
+      },
+      "initialBin": "/home/qq/heptabao-personal-credentials-20261106-r1/target/debug",
+      "initialBuildReceipt": {
+        "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/receipt.json",
+        "sha256": "1726602e78f1fd04cd953996d3b3a70158743b815d38d40c4d870539af5658aa"
+      }
+    },
+    "b": {
+      "host": "rog",
+      "repo": "/home/qian-qi/heptabao-personal-credentials-20261106-r1",
+      "root": "/home/qian-qi/heptabao-two-device-20261106-r4-b",
+      "bin": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/edge-build-r1/bin",
+      "expectedBinarySha256": {
+        "heptabao-vault": "84f0a8a75b4f562e8794d494c634b0ef8f873dcec534627ca89dda05afb3e7d9",
+        "heptabao-sync": "6dc1880f60f134dc7196f16d8462268def061ccc47e183e1697d0c4f777b2452"
+      },
+      "buildReceipt": {
+        "path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/edge-build-r1/build.public.json",
+        "sha256": "9df70573ff4b7b02c689a8007cfdc0fdc236fd0ca8b0049369564f592e191ed3",
+        "verified": {
+          "metadata": {
+            "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "gid": 1000,
+            "link_count": 1,
+            "metadata_platform": "linux",
+            "mode": 384,
+            "uid": 1000,
+            "xattr_names": [],
+            "xattr_sha256": {}
+          },
+          "mode": 384,
+          "path": "/home/qian-qi/heptabao-personal-build-evidence-20261106-a1b6ff-r1/edge-build-r1/build.public.json",
+          "sha256": "9df70573ff4b7b02c689a8007cfdc0fdc236fd0ca8b0049369564f592e191ed3",
+          "size": 5519,
+          "version": "66306:28073520:5519:1793945020155542278:1793945020155542278"
+        }
+      }
+    },
+    "s": {
+      "host": "ai395",
+      "repo": "/home/qq/heptabao-personal-credentials-20261106-r1",
+      "root": "/home/qq/heptabao-two-device-20261106-r4-store",
+      "bin": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/bin-final",
+      "expectedBinarySha256": {
+        "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358",
+        "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663"
+      },
+      "buildReceipt": {
+        "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/receipt.final.json",
+        "sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+        "verified": {
+          "metadata": {
+            "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "gid": 1000,
+            "link_count": 1,
+            "metadata_platform": "linux",
+            "mode": 384,
+            "uid": 1000,
+            "xattr_names": [],
+            "xattr_sha256": {}
+          },
+          "mode": 384,
+          "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/receipt.final.json",
+          "sha256": "fa166952072d99490164cb355e1b9784e14791faf39cb48a2f226aed627ccdd4",
+          "size": 11000,
+          "version": "66306:46810565:11000:1793945316549942063:1793945316549942063"
+        }
+      },
+      "initialBin": "/home/qq/heptabao-personal-credentials-20261106-r1/target/debug",
+      "initialBuildReceipt": {
+        "path": "/home/qq/heptabao-personal-credentials-20261106-r1-build-a1b6ff4/receipt.json",
+        "sha256": "1726602e78f1fd04cd953996d3b3a70158743b815d38d40c4d870539af5658aa"
+      }
+    }
+  },
+  "jobs": [
+    {
+      "role": "a",
+      "host": "ai395",
+      "phase": "prepare-incoming",
+      "job_id": "1a1af7033d8-fc05-6881",
+      "observation": {
+        "prepared_private_incoming": [
+          "/home/qq/heptabao-two-device-20261106-r4-incoming-a",
+          "/home/qq/heptabao-two-device-20261106-r4-incoming-s"
+        ],
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "source_tree": "5f685c1aaf647f016afed0555a6710cd4a76c317",
+        "disk_free_bytes": 110208356352
+      }
+    },
+    {
+      "role": "b",
+      "host": "rog",
+      "phase": "verify-source",
+      "job_id": "1a1af706402-fc05-6883",
+      "observation": {
+        "client_root_absent": true,
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
+        "source_tree": "5f685c1aaf647f016afed0555a6710cd4a76c317",
+        "disk_free_bytes": 25754308608
+      }
+    },
+    {
+      "role": "b",
+      "host": "rog",
+      "phase": "prepare-peer",
+      "job_id": "1a1af7516b4-fc05-68b4",
+      "request_digest": "4e9063ee449e6a9b99d0336333a99bd7deab1a6b8c4059aa1712696126d126de",
+      "exit_code": 0,
+      "state": "succeeded",
+      "output": {
+        "manifest": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/prepare-peer.json",
+        "manifest_sha256": "ee7c359a4d725224c587fbc89fe1fa09efa24c55bf404636e6745270de682f11",
+        "ok": true,
+        "phase": "prepare-peer",
+        "results": {
+          "peer_public_sha256": "f3cfc9f2eb9188501bacd13581d56e2b5194993619e0f243322573f3ab584e84",
+          "private_key_exported": false
+        }
+      }
+    },
+    {
+      "role": "a",
+      "phase": "seed",
+      "host": "ai395",
+      "job_id": "1a1af76a5e2-fc05-68c7",
+      "request_digest": "0acacbe0441981414ee45f424a481c6ab19806158096be087edab8d56e6c0171",
+      "status": {
+        "at_unix_ms": 1793945158013,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af76a5e2-fc05-68c7",
+        "launch_nonce": "a8acc9c5256860f6e731106544b159ab",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 705,
+            "stored": 705
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-a/evidence/seed.json",
+        "manifest_sha256": "03a0e324c644d00aa34e56b9edd4a9b2bcf41187f38adb65dacdc5ac7ce15ade",
+        "ok": true,
+        "phase": "seed",
+        "results": {
+          "ciphertext_bytes": 994,
+          "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+          "enrollment_sha256": "7583a4111ac1c45ad0bf1ac961e288c34848a90331332a288cdd940fe7989b5c",
+          "item_sha256": "329cc01da6c8382100b81bb595cd6c7b166adde91e487899d675182f604cade3",
+          "label": "seed",
+          "peer_public": {
+            "bytes": 625,
+            "sha256": "f3cfc9f2eb9188501bacd13581d56e2b5194993619e0f243322573f3ab584e84"
+          },
+          "revision": 1,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        }
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-seed",
+      "host": "ai395",
+      "job_id": "1a1af77d7d1-fc05-68d0",
+      "request_digest": "e78bf1e41850fafcb24fb3de1af53e218c64faf8577501598a2403064f7a6b57",
+      "status": {
+        "at_unix_ms": 1793945230202,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af77d7d1-fc05-68d0",
+        "launch_nonce": "f7402de5fe95d97ba72c624b9957f0ee",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 677,
+            "stored": 677
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-seed.json",
+        "manifest_sha256": "016d16f094c82d6a07c4c6e3c9269f804ada70e841095868f97b4dde323d8e16",
+        "ok": true,
+        "phase": "store-seed",
+        "results": {
+          "exact_request_replay_stable": true,
+          "independent_process_receipt_recovery": true,
+          "initial_ciphertext_fetch_verified": true,
+          "receipt": {
+            "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+            "generation": 1,
+            "head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+            "operation_id": "hb-sync-20261106-r4-seed",
+            "request_sha256": "13f8a82355fda6d7368838871e73ea8561d875d0cfa94f2255b0ab0d0247b41c"
+          }
+        }
+      }
+    },
+    {
+      "role": "b",
+      "phase": "adopt",
+      "host": "rog",
+      "job_id": "1a1af788c64-fc05-68d6",
+      "request_digest": "bc36dc28726eb4ee6eb7db1c5d669a7b28d56c9d2d4e515a0ec28cd47e1fefea",
+      "status": {
+        "at_unix_ms": 1793945277521,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af788c64-fc05-68d6",
+        "launch_nonce": "57ef8e283bff909806fb1ce667605191",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 585,
+            "stored": 585
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/adopt.json",
+        "manifest_sha256": "db82bd577cdc106a32f0d3b61833d208a1c2fb5960065bc773009a49e4f90384",
+        "ok": true,
+        "phase": "adopt",
+        "results": {
+          "ciphertext_bytes": 994,
+          "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+          "enrollment_plaintext_exported": false,
+          "initial_copy_verified": true,
+          "item_sha256": "329cc01da6c8382100b81bb595cd6c7b166adde91e487899d675182f604cade3",
+          "label": "seed",
+          "revision": 1,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        }
+      }
+    },
+    {
+      "role": "a",
+      "phase": "offline-a",
+      "host": "ai395",
+      "job_id": "1a1af79076d-fc05-68dc",
+      "request_digest": "fcc271a0c6bbf28d9e3504bb7e2d7e2fe55291d9b7707b771091b3f85329974d",
+      "status": {
+        "at_unix_ms": 1793945316956,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af79076d-fc05-68dc",
+        "launch_nonce": "1b0eedd64d6fb2a1cdf8498eece6d499",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 670,
+            "stored": 670
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-a/evidence/offline-a.json",
+        "manifest_sha256": "0317323e4911f9e1b7269cb2846887fa718bce9d1ab92c576aad90bf779f60ac",
+        "ok": true,
+        "phase": "offline-a",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+          "edit_mode": "local_without_sync_calls",
+          "item_sha256": "7ee09057c63f279d9a7585cb6003333bb6384a770a60828c15938b77edc327cb",
+          "label": "a",
+          "observed_generation": 1,
+          "observed_head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        }
+      }
+    },
+    {
+      "role": "b",
+      "phase": "offline-b",
+      "host": "rog",
+      "job_id": "1a1af794798-fc05-68df",
+      "request_digest": "7ebe257375f7f76055dcd15bc7b3f8c7f9c162e9071ac5e3141466897992f7af",
+      "status": {
+        "at_unix_ms": 1793945324660,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af794798-fc05-68df",
+        "launch_nonce": "66b202302f9282e4c13c900fee7ff1db",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 675,
+            "stored": 675
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/offline-b.json",
+        "manifest_sha256": "7b9258ebc4275ca894f4c8eadb7b80ae6e2ef501f377153d0c8ff36055691120",
+        "ok": true,
+        "phase": "offline-b",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+          "edit_mode": "local_without_sync_calls",
+          "item_sha256": "f74e899a36494e10fb0efe28f9507a2935f3ec76c493f62b73129cc16e952f5b",
+          "label": "b",
+          "observed_generation": 1,
+          "observed_head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        }
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-a",
+      "host": "ai395",
+      "job_id": "1a1af7cff83-fc05-68fb",
+      "request_digest": "21cd9f4e45a3eab95a3e04c25702c0361bd9a5d9700ee7a52f0cea4b27242d06",
+      "status": {
+        "at_unix_ms": 1793945572612,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af7cff83-fc05-68fb",
+        "launch_nonce": "92371a9e67c4efd7431689160ffc92bb",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 625,
+            "stored": 625
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-a.json",
+        "manifest_sha256": "5c50e4c220dd66178d26771d982f069b8f68358567452f043e30f230885de544",
+        "ok": true,
+        "phase": "store-a",
+        "results": {
+          "exact_request_replay_stable": true,
+          "independent_process_receipt_recovery": true,
+          "receipt": {
+            "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+            "generation": 2,
+            "head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+            "operation_id": "hb-sync-20261106-r4-a",
+            "request_sha256": "e4b464037c95dd4936b61e1e12d646feea3c7da5dfa2b289a3e99b80a6e04a0d"
+          }
+        }
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-b-conflict",
+      "host": "ai395",
+      "job_id": "1a1af7de2bd-fc05-6905",
+      "request_digest": "0112379b045634cb47bafbc6a5eee28e4c7b0c1028be3480e3428cdc083a28a1",
+      "status": {
+        "at_unix_ms": 1793945631871,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af7de2bd-fc05-6905",
+        "launch_nonce": "869f10c840ef838e607f03c09cb62c42",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 894,
+            "stored": 894
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-b-conflict.json",
+        "manifest_sha256": "46c99b769ac5dbc08d723354cdc411a7bb07f7bb394babc8a9f47b1c5cb6f222",
+        "ok": true,
+        "phase": "store-b-conflict",
+        "results": {
+          "cli_exit_nonzero": true,
+          "error": "Conflict",
+          "head": {
+            "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+            "generation": 2,
+            "head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+            "operation_id": "hb-sync-20261106-r4-a",
+            "request_sha256": "e4b464037c95dd4936b61e1e12d646feea3c7da5dfa2b289a3e99b80a6e04a0d"
+          },
+          "head_unchanged": true,
+          "receipt_absent": true,
+          "rejected_ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+          "rejected_expected_head": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+          "rejected_operation_id": "hb-sync-20261106-r4-b"
+        }
+      }
+    },
+    {
+      "role": "a",
+      "phase": "verify-local",
+      "host": "ai395",
+      "job_id": "1a1af7f20c0-fc05-6912",
+      "request_digest": "084f4135aa599f1f0f4de4afeeeb42d073aa80b3899be49abe4f8d1fd608a400",
+      "status": {
+        "at_unix_ms": 1793945710765,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af7f20c0-fc05-6912",
+        "launch_nonce": "846c8d2e28554f45a8154ae4c2edba42",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 628,
+            "stored": 628
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-a/evidence/verify-local.json",
+        "manifest_sha256": "77dfdd65a57d350cbc5dcc665877c36dd211a91ff9451592d3d20f900da0d218",
+        "ok": true,
+        "phase": "verify-local",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+          "item_sha256": "7ee09057c63f279d9a7585cb6003333bb6384a770a60828c15938b77edc327cb",
+          "label": "a",
+          "local_vault_and_backup_preserved": true,
+          "plaintext_verified_locally": true,
+          "prior_publish": "accepted",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        }
+      }
+    },
+    {
+      "role": "b",
+      "phase": "verify-local",
+      "host": "rog",
+      "job_id": "1a1af7f8f41-fc05-6919",
+      "request_digest": "e401e746bea3e3223deb3c07f9bf9e1a618d22f77fa47320a988a6d4f076dae4",
+      "status": {
+        "at_unix_ms": 1793945742606,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af7f8f41-fc05-6919",
+        "launch_nonce": "ec2a6bbf3ea3aa05201d41093d68fd57",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 633,
+            "stored": 633
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/verify-local.json",
+        "manifest_sha256": "307217882f30f486dbe1191e0290dfcea18d2a30d6cd6cf14950e7e1a225999d",
+        "ok": true,
+        "phase": "verify-local",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+          "item_sha256": "f74e899a36494e10fb0efe28f9507a2935f3ec76c493f62b73129cc16e952f5b",
+          "label": "b",
+          "local_vault_and_backup_preserved": true,
+          "plaintext_verified_locally": true,
+          "prior_publish": "Conflict",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        }
+      }
+    },
+    {
+      "role": "b",
+      "phase": "resolve-b",
+      "host": "rog",
+      "job_id": "1a1af802ccf-fc05-6922",
+      "request_digest": "61f8f8fb6586fe08a6fd5da6cc6ed6f78c3e0aa1d2f451de7bd29a5a97f0e87c",
+      "status": {
+        "at_unix_ms": 1793945782027,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af802ccf-fc05-6922",
+        "launch_nonce": "55dd86504c0d0da9ff218bccd161493d",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 494,
+            "stored": 494
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/resolve-b.json",
+        "manifest_sha256": "18dd6ba00589a240f5c5701ea0f6df05ce8d3f535b146904c9cddfcf699a2747",
+        "ok": true,
+        "phase": "resolve-b",
+        "results": {
+          "automatic_merge": false,
+          "expected_generation": 2,
+          "expected_head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+          "explicit_branch_publication": true,
+          "local_ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092"
+        }
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-b-resolved",
+      "host": "ai395",
+      "job_id": "1a1af80f9ba-fc05-692f",
+      "request_digest": "900cb7792b27f756552456d3c0f2d13fa90dc708893667c795ef04138f85c542",
+      "status": {
+        "at_unix_ms": 1793945834357,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af80f9ba-fc05-692f",
+        "launch_nonce": "145d1d23da76348bd1b3ef302ab6f483",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 652,
+            "stored": 652
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-b-resolved.json",
+        "manifest_sha256": "bb3a3ef65dd1d3488f637a31ff1f77fbf702c7f658307529469f60ef1455733f",
+        "ok": true,
+        "phase": "store-b-resolved",
+        "results": {
+          "exact_request_replay_stable": true,
+          "independent_process_receipt_recovery": true,
+          "receipt": {
+            "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+            "generation": 3,
+            "head_id": "73f43a65fd577660d3ff1a5c9464ba15a706c669f6530744d7b8b675f87f7877",
+            "operation_id": "hb-sync-20261106-r4-b-resolved",
+            "request_sha256": "70e9820ed2906ac532805f7c088eb58bc5bf3ec1d94913a9e98bd7f411e8e959"
+          }
+        }
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-final",
+      "host": "ai395",
+      "job_id": "1a1af818863-fc05-6935",
+      "request_digest": "6c6f41c77a99af25a166db86495d4cae6ed28b16973b3c6596bbb8f1f00755f7",
+      "status": {
+        "at_unix_ms": 1793945865117,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af818863-fc05-6935",
+        "launch_nonce": "27306200274054aaa7ec846dd26ed6b9",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1954,
+            "stored": 1954
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-final.json",
+        "manifest_sha256": "7d065dac9d05a1e01fbbf558a38fabb8992efb75297e27db873f6dc9fc43325e",
+        "ok": true,
+        "phase": "store-final",
+        "results": {
+          "inventory": {
+            "ciphertext-0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09.bin": {
+              "bytes": 1012,
+              "sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09"
+            },
+            "ciphertext-2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b.bin": {
+              "bytes": 994,
+              "sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b"
+            },
+            "ciphertext-c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092.bin": {
+              "bytes": 1012,
+              "sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092"
+            },
+            "state.json": {
+              "bytes": 1389,
+              "sha256": "9acb97cba2078f98f4c50d577174adc93ebbd4f86d97ce24b07a785fcb885d23"
+            }
+          },
+          "receipts": {
+            "a": {
+              "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+              "generation": 2,
+              "head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+              "operation_id": "hb-sync-20261106-r4-a",
+              "request_sha256": "e4b464037c95dd4936b61e1e12d646feea3c7da5dfa2b289a3e99b80a6e04a0d"
+            },
+            "b": {
+              "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+              "generation": 3,
+              "head_id": "73f43a65fd577660d3ff1a5c9464ba15a706c669f6530744d7b8b675f87f7877",
+              "operation_id": "hb-sync-20261106-r4-b-resolved",
+              "request_sha256": "70e9820ed2906ac532805f7c088eb58bc5bf3ec1d94913a9e98bd7f411e8e959"
+            },
+            "seed": {
+              "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+              "generation": 1,
+              "head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+              "operation_id": "hb-sync-20261106-r4-seed",
+              "request_sha256": "13f8a82355fda6d7368838871e73ea8561d875d0cfa94f2255b0ab0d0247b41c"
+            }
+          },
+          "retained_initial_and_both_branches": true,
+          "server_received_unlock_material": false
+        }
+      }
+    },
+    {
+      "role": "b",
+      "phase": "recover",
+      "host": "rog",
+      "job_id": "1a1af832a96-fc05-6943",
+      "request_digest": "95782beb1b8d98983dfc7ecc008cf46dab3eab4641d01849ad57a9005cf35eaf",
+      "status": {
+        "at_unix_ms": 1793945972554,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1af832a96-fc05-6943",
+        "launch_nonce": "588956db95c3312ceb3d168a115e29b6",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1069,
+            "stored": 1069
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "output": {
+        "manifest": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/recover.json",
+        "manifest_sha256": "39da660b1d934f1ccbb9c92c9538935dc318958ef164b9778e1ae4afbec48e66",
+        "ok": true,
+        "phase": "recover",
+        "results": {
+          "both_histories_verified": true,
+          "different_plaintext_branches_verified": true,
+          "original_device_vault_preserved": true,
+          "restored": {
+            "a": {
+              "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+              "fresh_root_and_process": true,
+              "item_sha256": "7ee09057c63f279d9a7585cb6003333bb6384a770a60828c15938b77edc327cb",
+              "metadata": {
+                "format": 1,
+                "item_count": 1,
+                "revision": 2,
+                "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+              },
+              "unlock_method": "password"
+            },
+            "b": {
+              "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+              "fresh_root_and_process": true,
+              "item_sha256": "f74e899a36494e10fb0efe28f9507a2935f3ec76c493f62b73129cc16e952f5b",
+              "metadata": {
+                "format": 1,
+                "item_count": 1,
+                "revision": 2,
+                "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+              },
+              "unlock_method": "recovery_key"
+            }
+          },
+          "third_physical_host_claimed": false
+        }
+      }
+    }
+  ],
+  "transfers": [
+    {
+      "source_host": "rog",
+      "source_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/outbox/peer-public.pem",
+      "source_version": "66306:28073543:625:1793945049668846326:1793945049668846326",
+      "source_sha256": "f3cfc9f2eb9188501bacd13581d56e2b5194993619e0f243322573f3ab584e84",
+      "source_size": 625,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-incoming-a/peer-public.pem",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "f3cfc9f2eb9188501bacd13581d56e2b5194993619e0f243322573f3ab584e84",
+        "size": 625,
+        "version": "66306:46810522:625:1793945120787497627:1793945120803824351",
+        "written": 625
+      },
+      "classification": "public-enrollment-key"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-a/outbox/seed-public.json",
+      "source_version": "66306:46810534:288:1793945157974274771:1793945157974274771",
+      "source_sha256": "94e24d751d743794802a7bd68d36a7bb1d6472f6f42cfde207f73eff6d64ef95",
+      "source_size": 288,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-incoming-s/seed-public.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "94e24d751d743794802a7bd68d36a7bb1d6472f6f42cfde207f73eff6d64ef95",
+        "size": 288,
+        "version": "66306:46810540:288:1793945185572842671:1793945185628934449",
+        "written": 288
+      },
+      "classification": "public-metadata"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-a/outbox/seed-request.json",
+      "source_version": "66306:46810537:1424:1793945157980999956:1793945157981158074",
+      "source_sha256": "57149761a76cc40a2dd4afe7da47d7a7db6a47fc70375f231d581d7ef740cfa4",
+      "source_size": 1424,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-incoming-s/seed-request.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "57149761a76cc40a2dd4afe7da47d7a7db6a47fc70375f231d581d7ef740cfa4",
+        "size": 1424,
+        "version": "66306:46810542:1424:1793945197767461422:1793945197781400600",
+        "written": 1424
+      },
+      "classification": "ciphertext-publication-request"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-a/outbox/seed-public.json",
+      "source_version": "66306:46810534:288:1793945157974274771:1793945157974274771",
+      "source_sha256": "94e24d751d743794802a7bd68d36a7bb1d6472f6f42cfde207f73eff6d64ef95",
+      "source_size": 288,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/seed-public.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "94e24d751d743794802a7bd68d36a7bb1d6472f6f42cfde207f73eff6d64ef95",
+        "size": 288,
+        "version": "66306:28100866:288:1793945205096637067:1793945205099661089",
+        "written": 288
+      },
+      "classification": "public-metadata"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-a/outbox/enrollment.rsa",
+      "source_version": "66306:46810536:384:1793945157979850087:1793945157980158119",
+      "source_sha256": "7583a4111ac1c45ad0bf1ac961e288c34848a90331332a288cdd940fe7989b5c",
+      "source_size": 384,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/enrollment.rsa",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "7583a4111ac1c45ad0bf1ac961e288c34848a90331332a288cdd940fe7989b5c",
+        "size": 384,
+        "version": "66306:28100897:384:1793945212297335163:1793945212299609174",
+        "written": 384
+      },
+      "classification": "rsa-oaep-enrollment-ciphertext"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/seed.hbv",
+      "source_version": "66306:46810556:994:1793945230140816432:1793945230140990390",
+      "source_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+      "source_size": 994,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/seed.hbv",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+        "size": 994,
+        "version": "66306:28100952:994:1793945254864200151:1793945254866305153",
+        "written": 994
+      },
+      "classification": "vault-ciphertext"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/seed-receipt.json",
+      "source_version": "66306:46810555:319:1793945230138851276:1793945230138990477",
+      "source_sha256": "0d14f2af94d1d3564e6e220cfdb8874b022bb63d287974c768df1d3bfc082a60",
+      "source_size": 319,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-a/inbox/seed-receipt.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "0d14f2af94d1d3564e6e220cfdb8874b022bb63d287974c768df1d3bfc082a60",
+        "size": 319,
+        "version": "66306:46810559:319:1793945261855571174:1793945261883622303",
+        "written": 319
+      },
+      "classification": "publication-receipt"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/seed-receipt.json",
+      "source_version": "66306:46810555:319:1793945230138851276:1793945230138990477",
+      "source_sha256": "0d14f2af94d1d3564e6e220cfdb8874b022bb63d287974c768df1d3bfc082a60",
+      "source_size": 319,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/seed-receipt.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "0d14f2af94d1d3564e6e220cfdb8874b022bb63d287974c768df1d3bfc082a60",
+        "size": 319,
+        "version": "66306:28100961:319:1793945267666727602:1793945267670214640",
+        "written": 319
+      },
+      "classification": "publication-receipt"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-a/outbox/a-request.json",
+      "source_version": "66306:46810568:1507:1793945316772804439:1793945316772804439",
+      "source_sha256": "c4cc6766c05976e6a198a6b7128a1118cc8b010da90b6fca59b0197b4aadb151",
+      "source_size": 1507,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-store/inbox/a-request.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "c4cc6766c05976e6a198a6b7128a1118cc8b010da90b6fca59b0197b4aadb151",
+        "size": 1507,
+        "version": "66306:46814963:1507:1793945500144765425:1793945500146144710",
+        "written": 1507
+      },
+      "classification": "ciphertext-publication-request"
+    },
+    {
+      "source_host": "rog",
+      "source_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/outbox/b-request.json",
+      "source_version": "66306:28100977:1507:1793945324502492816:1793945324502817732",
+      "source_sha256": "5b46f9cfa216e9db17fca510aefed586a6989c55e3c09b3c8e9c18218a33ec37",
+      "source_size": 1507,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-store/inbox/b-request.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "5b46f9cfa216e9db17fca510aefed586a6989c55e3c09b3c8e9c18218a33ec37",
+        "size": 1507,
+        "version": "66306:46815191:1507:1793945514874776669:1793945514885159939",
+        "written": 1507
+      },
+      "classification": "ciphertext-publication-request"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-a/outbox/a-public.json",
+      "source_version": "66306:46810567:286:1793945316771423537:1793945316771423537",
+      "source_sha256": "cdfb4549f654bf402511bf5a5699ad28aaaf1fdb6f15cb177305e69e1fc653f2",
+      "source_size": 286,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/a-public.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "cdfb4549f654bf402511bf5a5699ad28aaaf1fdb6f15cb177305e69e1fc653f2",
+        "size": 286,
+        "version": "66306:28100998:286:1793945544163918478:1793945544166345696",
+        "written": 286
+      },
+      "classification": "public-metadata"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/a-receipt.json",
+      "source_version": "66306:46810554:316:1793945572598701067:1793945572598861402",
+      "source_sha256": "241834a77c24e67aabeabc0308984f14c12f5da5bfdb6ae3ca0c0c00c0072472",
+      "source_size": 316,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-a/inbox/a-receipt.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "241834a77c24e67aabeabc0308984f14c12f5da5bfdb6ae3ca0c0c00c0072472",
+        "size": 316,
+        "version": "66306:46815404:316:1793945692240783648:1793945692277173324",
+        "written": 316
+      },
+      "classification": "publication-receipt"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/a-receipt.json",
+      "source_version": "66306:46810554:316:1793945572598701067:1793945572598861402",
+      "source_sha256": "241834a77c24e67aabeabc0308984f14c12f5da5bfdb6ae3ca0c0c00c0072472",
+      "source_size": 316,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/a-receipt.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "241834a77c24e67aabeabc0308984f14c12f5da5bfdb6ae3ca0c0c00c0072472",
+        "size": 316,
+        "version": "66306:28101019:316:1793945695898478711:1793945695900372630",
+        "written": 316
+      },
+      "classification": "publication-receipt"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/b-conflict.json",
+      "source_version": "66306:46815401:568:1793945631853894830:1793945631853894830",
+      "source_sha256": "70aac79a34525bd42168765c5fc7503cdbf057e3634032fba04ab21a63b5d80e",
+      "source_size": 568,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/b-conflict.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "70aac79a34525bd42168765c5fc7503cdbf057e3634032fba04ab21a63b5d80e",
+        "size": 568,
+        "version": "66306:28101021:568:1793945698613001057:1793945698615355472",
+        "written": 568
+      },
+      "classification": "conflict-receipt"
+    },
+    {
+      "source_host": "rog",
+      "source_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/outbox/b-resolved-request.json",
+      "source_version": "66306:28101027:1516:1793945782000770936:1793945782000832193",
+      "source_sha256": "a7e832c9bcf622ce89518afff79a319c245b0d5f49760705921fd533313f1d44",
+      "source_size": 1516,
+      "destination_host": "ai395",
+      "destination_path": "/home/qq/heptabao-two-device-20261106-r4-store/inbox/b-resolved-request.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "a7e832c9bcf622ce89518afff79a319c245b0d5f49760705921fd533313f1d44",
+        "size": 1516,
+        "version": "66306:46815613:1516:1793945816064108952:1793945816066415739",
+        "written": 1516
+      },
+      "classification": "explicit-branch-publication-request"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/b-receipt.json",
+      "source_version": "66306:46815197:325:1793945834347099507:1793945834347099507",
+      "source_sha256": "70fa18c545bac8f73428c2f671c007db444175ed3c104f9a49ba6d80e36f0353",
+      "source_size": 325,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/b-receipt.json",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "70fa18c545bac8f73428c2f671c007db444175ed3c104f9a49ba6d80e36f0353",
+        "size": 325,
+        "version": "66306:28069170:325:1793945904135218641:1793945904138077063",
+        "written": 325
+      },
+      "classification": "publication-receipt"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/fetch-a.hbv",
+      "source_version": "66306:46815622:1012:1793945865096734031:1793945865096734031",
+      "source_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+      "source_size": 1012,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/fetch-a.hbv",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+        "size": 1012,
+        "version": "66306:28069191:1012:1793945927044209828:1793945927046936716",
+        "written": 1012
+      },
+      "classification": "historical-vault-ciphertext"
+    },
+    {
+      "source_host": "ai395",
+      "source_path": "/home/qq/heptabao-two-device-20261106-r4-store/outbox/fetch-b.hbv",
+      "source_version": "66306:46815850:1012:1793945865102601763:1793945865102601763",
+      "source_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+      "source_size": 1012,
+      "destination_host": "rog",
+      "destination_path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/inbox/fetch-b.hbv",
+      "destination_receipt": {
+        "mode": 384,
+        "sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+        "size": 1012,
+        "version": "66306:28069195:1012:1793945956316415823:1793945956318757917",
+        "written": 1012
+      },
+      "classification": "historical-vault-ciphertext"
+    }
+  ],
+  "manifests": [
+    {
+      "role": "a",
+      "phase": "seed",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-a/evidence/seed.json",
+      "sha256": "03a0e324c644d00aa34e56b9edd4a9b2bcf41187f38adb65dacdc5ac7ce15ade",
+      "version": "66306:46810538:1206:1793945157983867261:1793945157984157941",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120180457472,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "seed",
+        "results": {
+          "ciphertext_bytes": 994,
+          "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+          "enrollment_sha256": "7583a4111ac1c45ad0bf1ac961e288c34848a90331332a288cdd940fe7989b5c",
+          "item_sha256": "329cc01da6c8382100b81bb595cd6c7b166adde91e487899d675182f604cade3",
+          "label": "seed",
+          "peer_public": {
+            "bytes": 625,
+            "sha256": "f3cfc9f2eb9188501bacd13581d56e2b5194993619e0f243322573f3ab584e84"
+          },
+          "revision": 1,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945157
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-seed",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-seed.json",
+      "sha256": "016d16f094c82d6a07c4c6e3c9269f804ada70e841095868f97b4dde323d8e16",
+      "version": "66306:46810557:1172:1793945230143786945:1793945230143990260",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120180154368,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "store-seed",
+        "results": {
+          "exact_request_replay_stable": true,
+          "independent_process_receipt_recovery": true,
+          "initial_ciphertext_fetch_verified": true,
+          "receipt": {
+            "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+            "generation": 1,
+            "head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+            "operation_id": "hb-sync-20261106-r4-seed",
+            "request_sha256": "13f8a82355fda6d7368838871e73ea8561d875d0cfa94f2255b0ab0d0247b41c"
+          }
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945230
+      }
+    },
+    {
+      "role": "b",
+      "phase": "prepare-peer",
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/prepare-peer.json",
+      "sha256": "ee7c359a4d725224c587fbc89fe1fa09efa24c55bf404636e6745270de682f11",
+      "version": "66306:28073553:892:1793945049674599553:1793945049674821577",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "6dc1880f60f134dc7196f16d8462268def061ccc47e183e1697d0c4f777b2452",
+          "heptabao-vault": "84f0a8a75b4f562e8794d494c634b0ef8f873dcec534627ca89dda05afb3e7d9"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 25645723648,
+          "disk_total_bytes": 1005867986944,
+          "dmi_product": "ROG Flow Z13 GZ302EA_GZ302EA",
+          "dmi_vendor": "ASUSTeK COMPUTER INC.",
+          "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+          "machine_id_sha256": "4b27935315b59cc166310d64679b81db4c33980e7e91d738ce2ef34ed5e3be69",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "prepare-peer",
+        "results": {
+          "peer_public_sha256": "f3cfc9f2eb9188501bacd13581d56e2b5194993619e0f243322573f3ab584e84",
+          "private_key_exported": false
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945049
+      }
+    },
+    {
+      "role": "b",
+      "phase": "adopt",
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/adopt.json",
+      "sha256": "db82bd577cdc106a32f0d3b61833d208a1c2fb5960065bc773009a49e4f90384",
+      "version": "66306:28100969:1121:1793945277487699255:1793945277487699255",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "6dc1880f60f134dc7196f16d8462268def061ccc47e183e1697d0c4f777b2452",
+          "heptabao-vault": "84f0a8a75b4f562e8794d494c634b0ef8f873dcec534627ca89dda05afb3e7d9"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 24534413312,
+          "disk_total_bytes": 1005867986944,
+          "dmi_product": "ROG Flow Z13 GZ302EA_GZ302EA",
+          "dmi_vendor": "ASUSTeK COMPUTER INC.",
+          "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+          "machine_id_sha256": "4b27935315b59cc166310d64679b81db4c33980e7e91d738ce2ef34ed5e3be69",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "adopt",
+        "results": {
+          "ciphertext_bytes": 994,
+          "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+          "enrollment_plaintext_exported": false,
+          "initial_copy_verified": true,
+          "item_sha256": "329cc01da6c8382100b81bb595cd6c7b166adde91e487899d675182f604cade3",
+          "label": "seed",
+          "revision": 1,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945277
+      }
+    },
+    {
+      "role": "a",
+      "phase": "offline-a",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-a/evidence/offline-a.json",
+      "sha256": "0317323e4911f9e1b7269cb2846887fa718bce9d1ab92c576aad90bf779f60ac",
+      "version": "66306:46810569:1167:1793945316903851314:1793945316903851314",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120174067712,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "offline-a",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+          "edit_mode": "local_without_sync_calls",
+          "item_sha256": "7ee09057c63f279d9a7585cb6003333bb6384a770a60828c15938b77edc327cb",
+          "label": "a",
+          "observed_generation": 1,
+          "observed_head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945316
+      }
+    },
+    {
+      "role": "b",
+      "phase": "offline-b",
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/offline-b.json",
+      "sha256": "7b9258ebc4275ca894f4c8eadb7b80ae6e2ef501f377153d0c8ff36055691120",
+      "version": "66306:28100978:1205:1793945324636551890:1793945324636551890",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "6dc1880f60f134dc7196f16d8462268def061ccc47e183e1697d0c4f777b2452",
+          "heptabao-vault": "84f0a8a75b4f562e8794d494c634b0ef8f873dcec534627ca89dda05afb3e7d9"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 24539246592,
+          "disk_total_bytes": 1005867986944,
+          "dmi_product": "ROG Flow Z13 GZ302EA_GZ302EA",
+          "dmi_vendor": "ASUSTeK COMPUTER INC.",
+          "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+          "machine_id_sha256": "4b27935315b59cc166310d64679b81db4c33980e7e91d738ce2ef34ed5e3be69",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "offline-b",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+          "edit_mode": "local_without_sync_calls",
+          "item_sha256": "f74e899a36494e10fb0efe28f9507a2935f3ec76c493f62b73129cc16e952f5b",
+          "label": "b",
+          "observed_generation": 1,
+          "observed_head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945324
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-a",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-a.json",
+      "sha256": "5c50e4c220dd66178d26771d982f069b8f68358567452f043e30f230885de544",
+      "version": "66306:46815198:1125:1793945572601847134:1793945572601861283",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120084865024,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "store-a",
+        "results": {
+          "exact_request_replay_stable": true,
+          "independent_process_receipt_recovery": true,
+          "receipt": {
+            "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+            "generation": 2,
+            "head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+            "operation_id": "hb-sync-20261106-r4-a",
+            "request_sha256": "e4b464037c95dd4936b61e1e12d646feea3c7da5dfa2b289a3e99b80a6e04a0d"
+          }
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945572
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-b-conflict",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-b-conflict.json",
+      "sha256": "46c99b769ac5dbc08d723354cdc411a7bb07f7bb394babc8a9f47b1c5cb6f222",
+      "version": "66306:46815402:1375:1793945631857110857:1793945631857110857",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120082251776,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "store-b-conflict",
+        "results": {
+          "cli_exit_nonzero": true,
+          "error": "Conflict",
+          "head": {
+            "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+            "generation": 2,
+            "head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+            "operation_id": "hb-sync-20261106-r4-a",
+            "request_sha256": "e4b464037c95dd4936b61e1e12d646feea3c7da5dfa2b289a3e99b80a6e04a0d"
+          },
+          "head_unchanged": true,
+          "receipt_absent": true,
+          "rejected_ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+          "rejected_expected_head": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+          "rejected_operation_id": "hb-sync-20261106-r4-b"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945631
+      }
+    },
+    {
+      "role": "a",
+      "phase": "verify-local",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-a/evidence/verify-local.json",
+      "sha256": "77dfdd65a57d350cbc5dcc665877c36dd211a91ff9451592d3d20f900da0d218",
+      "version": "66306:46815405:1122:1793945710713534472:1793945710713534472",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120082079744,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "verify-local",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+          "item_sha256": "7ee09057c63f279d9a7585cb6003333bb6384a770a60828c15938b77edc327cb",
+          "label": "a",
+          "local_vault_and_backup_preserved": true,
+          "plaintext_verified_locally": true,
+          "prior_publish": "accepted",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945710
+      }
+    },
+    {
+      "role": "b",
+      "phase": "verify-local",
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/verify-local.json",
+      "sha256": "307217882f30f486dbe1191e0290dfcea18d2a30d6cd6cf14950e7e1a225999d",
+      "version": "66306:28101022:1160:1793945742555909457:1793945742556078859",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "6dc1880f60f134dc7196f16d8462268def061ccc47e183e1697d0c4f777b2452",
+          "heptabao-vault": "84f0a8a75b4f562e8794d494c634b0ef8f873dcec534627ca89dda05afb3e7d9"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 23439482880,
+          "disk_total_bytes": 1005867986944,
+          "dmi_product": "ROG Flow Z13 GZ302EA_GZ302EA",
+          "dmi_vendor": "ASUSTeK COMPUTER INC.",
+          "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+          "machine_id_sha256": "4b27935315b59cc166310d64679b81db4c33980e7e91d738ce2ef34ed5e3be69",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "verify-local",
+        "results": {
+          "ciphertext_bytes": 1012,
+          "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+          "item_sha256": "f74e899a36494e10fb0efe28f9507a2935f3ec76c493f62b73129cc16e952f5b",
+          "label": "b",
+          "local_vault_and_backup_preserved": true,
+          "plaintext_verified_locally": true,
+          "prior_publish": "Conflict",
+          "revision": 2,
+          "run_id": "hb-sync-20261106-r4",
+          "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945742
+      }
+    },
+    {
+      "role": "b",
+      "phase": "resolve-b",
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/resolve-b.json",
+      "sha256": "18dd6ba00589a240f5c5701ea0f6df05ce8d3f535b146904c9cddfcf699a2747",
+      "version": "66306:28101029:1034:1793945782004212610:1793945782004832169",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "6dc1880f60f134dc7196f16d8462268def061ccc47e183e1697d0c4f777b2452",
+          "heptabao-vault": "84f0a8a75b4f562e8794d494c634b0ef8f873dcec534627ca89dda05afb3e7d9"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 23366815744,
+          "disk_total_bytes": 1005867986944,
+          "dmi_product": "ROG Flow Z13 GZ302EA_GZ302EA",
+          "dmi_vendor": "ASUSTeK COMPUTER INC.",
+          "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+          "machine_id_sha256": "4b27935315b59cc166310d64679b81db4c33980e7e91d738ce2ef34ed5e3be69",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "resolve-b",
+        "results": {
+          "automatic_merge": false,
+          "expected_generation": 2,
+          "expected_head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+          "explicit_branch_publication": true,
+          "local_ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092"
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945782
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-b-resolved",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-b-resolved.json",
+      "sha256": "bb3a3ef65dd1d3488f637a31ff1f77fbf702c7f658307529469f60ef1455733f",
+      "version": "66306:46815619:1143:1793945834350017728:1793945834350017728",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120079253504,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "store-b-resolved",
+        "results": {
+          "exact_request_replay_stable": true,
+          "independent_process_receipt_recovery": true,
+          "receipt": {
+            "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+            "generation": 3,
+            "head_id": "73f43a65fd577660d3ff1a5c9464ba15a706c669f6530744d7b8b675f87f7877",
+            "operation_id": "hb-sync-20261106-r4-b-resolved",
+            "request_sha256": "70e9820ed2906ac532805f7c088eb58bc5bf3ec1d94913a9e98bd7f411e8e959"
+          }
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945834
+      }
+    },
+    {
+      "role": "s",
+      "phase": "store-final",
+      "host": "ai395",
+      "path": "/home/qq/heptabao-two-device-20261106-r4-store/evidence/store-final.json",
+      "sha256": "7d065dac9d05a1e01fbbf558a38fabb8992efb75297e27db873f6dc9fc43325e",
+      "version": "66306:46815868:2406:1793945865106194519:1793945865106194519",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+          "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 120076472320,
+          "disk_total_bytes": 1966736678912,
+          "dmi_product": "R1 PLUS",
+          "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+          "hostname": "ai395",
+          "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "store-final",
+        "results": {
+          "inventory": {
+            "ciphertext-0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09.bin": {
+              "bytes": 1012,
+              "sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09"
+            },
+            "ciphertext-2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b.bin": {
+              "bytes": 994,
+              "sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b"
+            },
+            "ciphertext-c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092.bin": {
+              "bytes": 1012,
+              "sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092"
+            },
+            "state.json": {
+              "bytes": 1389,
+              "sha256": "9acb97cba2078f98f4c50d577174adc93ebbd4f86d97ce24b07a785fcb885d23"
+            }
+          },
+          "receipts": {
+            "a": {
+              "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+              "generation": 2,
+              "head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+              "operation_id": "hb-sync-20261106-r4-a",
+              "request_sha256": "e4b464037c95dd4936b61e1e12d646feea3c7da5dfa2b289a3e99b80a6e04a0d"
+            },
+            "b": {
+              "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+              "generation": 3,
+              "head_id": "73f43a65fd577660d3ff1a5c9464ba15a706c669f6530744d7b8b675f87f7877",
+              "operation_id": "hb-sync-20261106-r4-b-resolved",
+              "request_sha256": "70e9820ed2906ac532805f7c088eb58bc5bf3ec1d94913a9e98bd7f411e8e959"
+            },
+            "seed": {
+              "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+              "generation": 1,
+              "head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+              "operation_id": "hb-sync-20261106-r4-seed",
+              "request_sha256": "13f8a82355fda6d7368838871e73ea8561d875d0cfa94f2255b0ab0d0247b41c"
+            }
+          },
+          "retained_initial_and_both_branches": true,
+          "server_received_unlock_material": false
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945865
+      }
+    },
+    {
+      "role": "b",
+      "phase": "recover",
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/evidence/recover.json",
+      "sha256": "39da660b1d934f1ccbb9c92c9538935dc318958ef164b9778e1ae4afbec48e66",
+      "version": "66306:28069679:1576:1793945972530450057:1793945972530450057",
+      "manifest": {
+        "binary_sha256": {
+          "heptabao-sync": "6dc1880f60f134dc7196f16d8462268def061ccc47e183e1697d0c4f777b2452",
+          "heptabao-vault": "84f0a8a75b4f562e8794d494c634b0ef8f873dcec534627ca89dda05afb3e7d9"
+        },
+        "harness_sha256": "ecc1ef7e15119f5c61d33db81b6a58d30ca1ddca79c86b766e152c1cf291d50e",
+        "host": {
+          "architecture": "x86_64",
+          "disk_free_bytes": 23371878400,
+          "disk_total_bytes": 1005867986944,
+          "dmi_product": "ROG Flow Z13 GZ302EA_GZ302EA",
+          "dmi_vendor": "ASUSTeK COMPUTER INC.",
+          "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+          "machine_id_sha256": "4b27935315b59cc166310d64679b81db4c33980e7e91d738ce2ef34ed5e3be69",
+          "system": "Linux"
+        },
+        "ok": true,
+        "phase": "recover",
+        "results": {
+          "both_histories_verified": true,
+          "different_plaintext_branches_verified": true,
+          "original_device_vault_preserved": true,
+          "restored": {
+            "a": {
+              "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+              "fresh_root_and_process": true,
+              "item_sha256": "7ee09057c63f279d9a7585cb6003333bb6384a770a60828c15938b77edc327cb",
+              "metadata": {
+                "format": 1,
+                "item_count": 1,
+                "revision": 2,
+                "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+              },
+              "unlock_method": "password"
+            },
+            "b": {
+              "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+              "fresh_root_and_process": true,
+              "item_sha256": "f74e899a36494e10fb0efe28f9507a2935f3ec76c493f62b73129cc16e952f5b",
+              "metadata": {
+                "format": 1,
+                "item_count": 1,
+                "revision": 2,
+                "vault_id": "tXTlnlVVuEykQmqgbFhqIA"
+              },
+              "unlock_method": "recovery_key"
+            }
+          },
+          "third_physical_host_claimed": false
+        },
+        "run_id": "hb-sync-20261106-r4",
+        "schema": "heptabao-two-device-qualification-v1",
+        "synthetic_only": true,
+        "unix_seconds": 1793945972
+      }
+    }
+  ],
+  "localHarness": {
+    "positiveStages": 14,
+    "negativeEvidenceCases": 8,
+    "passed": true,
+    "physicalDeviceQualification": false
+  },
+  "incomingA": "/home/qq/heptabao-two-device-20261106-r4-incoming-a",
+  "incomingS": "/home/qq/heptabao-two-device-20261106-r4-incoming-s",
+  "allInitialStagesMatchFinalBinaries": true,
+  "originalVaultFinal": {
+    "a": {
+      "host": "ai395",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qq/heptabao-two-device-20261106-r4-a/vault/vault.hbv",
+      "sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+      "size": 1012,
+      "version": "66306:46810566:1012:1793945316641078613:1793945316641295110",
+      "preserved": true
+    },
+    "b": {
+      "host": "rog",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-two-device-20261106-r4-b/vault/vault.hbv",
+      "sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+      "size": 1012,
+      "version": "66306:30563518:1012:1793945324362818700:1793945324363818693",
+      "preserved": true
+    }
+  },
+  "schema": "heptabao-physical-two-device-result-v1",
+  "result": "PASS",
+  "privateEvidenceContainsHostPaths": true,
+  "scope": {
+    "client_hosts": [
+      "ai395",
+      "rog"
+    ],
+    "store_host": "ai395",
+    "store_separate_private_directory": true,
+    "store_same_trusted_os_account_as_client_a": true,
+    "transport": "authenticated HeptaRuntime configured operator host aliases; bounded binary reads and create-only verified writes",
+    "enrollment": "QA-only RSA-3072 OAEP-SHA256 envelope; private key only on ROG",
+    "offline_edit": "local edit without sync calls; network isolation was not claimed",
+    "conflict_resolution": "explicit later publication of B; no automatic merge",
+    "recovery": "two fresh vault roots and independent CLI processes on ROG; no third physical host claimed",
+    "production_readiness_claimed": false,
+    "real_credentials_used": false,
+    "source_mutated_during_run": false
+  },
+  "summary": {
+    "phase_count": 14,
+    "verified_transport_count": 18,
+    "distinct_physical_client_hosts": true,
+    "initial_copy_from_store_verified": true,
+    "same_vault_id": "tXTlnlVVuEykQmqgbFhqIA",
+    "offline_distinct_content_verified": true,
+    "stale_head_conflict_rejected": true,
+    "both_local_vaults_and_backups_preserved": true,
+    "three_ciphertext_versions_retained": true,
+    "both_history_versions_restored": true,
+    "final_original_ciphertexts_unchanged": true,
+    "all_stage_harness_and_binary_hashes_match": true,
+    "publications": [
+      {
+        "ciphertext_sha256": "2394274bee877bd577133db7a171a187f804e430409e9da5f7f13518c904512b",
+        "generation": 1,
+        "head_id": "543e8c7ca2b2fef8e3eaec4b0dd9b4303512c6513f4772e444688202a277b5ba",
+        "operation_id": "hb-sync-20261106-r4-seed",
+        "request_sha256": "13f8a82355fda6d7368838871e73ea8561d875d0cfa94f2255b0ab0d0247b41c"
+      },
+      {
+        "ciphertext_sha256": "0201e735e35cb53cf74b4211dc8096ee280ff39acdf8f57c1acfe0df70ac9d09",
+        "generation": 2,
+        "head_id": "30fbd64b33c65a8169e8c9a81d0948d372a5843f56713c3f23b61c24099fb3a9",
+        "operation_id": "hb-sync-20261106-r4-a",
+        "request_sha256": "e4b464037c95dd4936b61e1e12d646feea3c7da5dfa2b289a3e99b80a6e04a0d"
+      },
+      {
+        "ciphertext_sha256": "c2cb230ec7c2b2673dd14bdf0557fc09e39b6dc46aa0eafd9d967fd000fbe092",
+        "generation": 3,
+        "head_id": "73f43a65fd577660d3ff1a5c9464ba15a706c669f6530744d7b8b675f87f7877",
+        "operation_id": "hb-sync-20261106-r4-b-resolved",
+        "request_sha256": "70e9820ed2906ac532805f7c088eb58bc5bf3ec1d94913a9e98bd7f411e8e959"
+      }
+    ],
+    "hosts": {
+      "a": {
+        "architecture": "x86_64",
+        "disk_free_bytes": 120180457472,
+        "disk_total_bytes": 1966736678912,
+        "dmi_product": "R1 PLUS",
+        "dmi_vendor": "Shanghai yinghe technology Co.,Ltd",
+        "hostname": "ai395",
+        "machine_id_sha256": "5ab6247f968a79d0b30c7a8e206a6de4eecbc25157bac4739e6e40dc5f557cd7",
+        "system": "Linux"
+      },
+      "b": {
+        "architecture": "x86_64",
+        "disk_free_bytes": 25645723648,
+        "disk_total_bytes": 1005867986944,
+        "dmi_product": "ROG Flow Z13 GZ302EA_GZ302EA",
+        "dmi_vendor": "ASUSTeK COMPUTER INC.",
+        "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+        "machine_id_sha256": "4b27935315b59cc166310d64679b81db4c33980e7e91d738ce2ef34ed5e3be69",
+        "system": "Linux"
+      }
+    }
+  },
+  "artifactBindingNote": "The initial ai395 build broadcast named an earlier build artifact; every actual stage manifest records the later test-build vault b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358 and sync c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663, matching the verified final immutable copy. Initial successful operations were not replayed."
+}

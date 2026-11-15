@@ -1,0 +1,121 @@
+--- actual-mac-4bde9-controller
++++ prepared-mac-5f9d4-controller
+@@ -16,10 +16,10 @@
+ 
+ os.umask(0o077)
+ ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
+-SOURCE = ROOT / 'source-4bde9-r1'
+-CLONE_SOURCE = ROOT / 'source-09c14-r1'
+-CLONE_HEAD = '09c14eae7a3b52dee8ce3af3175dad5900ac59ec'
+-CLONE_TREE = 'dfb0df97a2c74b1c0154f45342f3debb0ce438ab'
++SOURCE = ROOT / 'source-5f9d4-r1'
++CLONE_SOURCE = ROOT / 'source-4bde9-r1'
++CLONE_HEAD = '4bde9aee03fcd27c59e13607e529b1cee594b249'
++CLONE_TREE = 'f08493a23f8ea0637073651231865ea9607b790e'
+ PRESERVED_2B_SOURCE = ROOT / 'source-2b38-r2'
+ PRESERVED_2B_HEAD = '2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a'
+ PRESERVED_2B_TREE = 'e2da9354cf482a8d3ebd67898812e2fcb026832a'
+@@ -30,15 +30,15 @@
+ PRESERVED_868_HEAD = '868439e6df9f12291842898763ccba581e346bfb'
+ PRESERVED_868_TREE = 'c211d66343235fbb8a220744f3e97768559007c8'
+ OLD_SOURCE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source')
+-OUT = ROOT / 'build-test-4bde9-r1'
+-COMMIT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+-TREE = 'f08493a23f8ea0637073651231865ea9607b790e'
+-PARENT = '09c14eae7a3b52dee8ce3af3175dad5900ac59ec'
++OUT = ROOT / 'build-test-5f9d4-r1'
++COMMIT = '5f9d4263b136685244aba93e45a69139cb8aba41'
++TREE = '2c69f04159c112a883abe57f0d367a2627197c7a'
++PARENT = '7d9e933d5ccab83d51c4de9ae7f028fe70e92302'
+ OLD_HEAD = '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+ OLD_TREE = 'eba5e650bd080b8ad41ea52a2bc68867f541d255'
+-BUNDLE_SHA = '9808cfef28ce90733b636e81aed122aeeaf4fe81e0f34b1b84dde7e0ab0e11cd'
+-BUNDLE = ROOT / 'control/candidate-4bde9-from-09c14.bundle'
+-SELECTION_SHA = '7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595'
++BUNDLE_SHA = 'e57a93e8f3c13f83259cc6f1a5ca1ddb2ebe8451a0da5ff677c38c83ee8d3d72'
++BUNDLE = ROOT / 'control/candidate-5f9d4-from-4bde9.bundle'
++SELECTION_SHA = '8ccaedc58a44bfcc6f7af7b6062bc8c0c35c099771bdbab45d865b13ea921bc1'
+ PYTHON_SHA = 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'
+ TOOLCHAIN = Path('/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin')
+ PINS = {
+@@ -63,6 +63,8 @@
+     'toolchain_pins': PINS, 'build_environment_overrides': MANIFEST['original_build']['env'],
+     'expected_denominators': MANIFEST['denominators'],
+     'steps': [], 'artifacts': {}, 'groups': [], 'enumeration': {},
++    'candidate_groups': [], 'candidate_enumeration': {},
++    'expected_candidate_regressions': 15, 'candidate_regressions_qualified': False,
+     'production_changed': False, 'production_server_started': False,
+     'formal_kv2_qualified': False, 'physical_ha_qualified': False,
+     'authbus_migration_qualified': False, 'full_replacement_qualified': False,
+@@ -359,13 +361,14 @@
+     return result
+ 
+ 
+-def execute_group(index, group, binary):
++def execute_group(index, group, binary, *, collection='groups'):
+     started = time.monotonic()
+     end = min(DEADLINE, started + group['runtime_seconds'])
+     row = {'label': group['label'], 'crate': group['crate'], 'expected_count': group['expected_count'],
+            'original_group_budget_seconds': group['runtime_seconds'], 'budget_renewed_per_case': False,
+            'tests': group['tests'], 'passed': 0, 'results': [], 'status': 'running'}
+-    REPORT['groups'].append(row); checkpoint()
++    need(collection in ('groups', 'candidate_groups'), 'fixed_test_result_collection')
++    REPORT[collection].append(row); checkpoint()
+     suffixes = group.get('argv_suffixes', [group.get('argv_suffix')])
+     for n, suffix in enumerate(suffixes):
+         need(suffix is not None, 'test_argv_missing')
+@@ -400,6 +403,13 @@
+     need(sum(len(g['tests']) for g in groups if g['crate'] == 'heptabao-server') == 90, 'server90')
+     need(sum(len(g['tests']) for g in groups if g['crate'] == 'heptabao-ha-service') == 17, 'ha_service17')
+     need(all(g['runtime_seconds'] == 600 for g in groups), 'original_group_budgets')
++    candidate_groups = MANIFEST['candidate_groups']
++    candidate_names = [name for group in candidate_groups for name in group['tests']]
++    need(len(candidate_groups) == 1 and len(candidate_names) == len(set(candidate_names)) == 15
++         and not set(candidate_names).intersection(names), 'fifteen_disjoint_directed_candidate_tests')
++    need(all(g['runtime_seconds'] == 600 and g['crate'] == 'heptabao-server'
++         and g['selection_mode'] == 'per-test-exact' and g['default_features'] is True
++         and g['additional_features'] == [] for g in candidate_groups), 'candidate_original_profile_and_budget')
+     for name, sha in PINS.items():
+         need(digest(TOOLCHAIN / name) == sha, 'toolchain_pin_' + name)
+     REPORT['old_retained_artifacts_before'] = old_artifacts()
+@@ -422,7 +432,7 @@
+     admit_target_cache('01-cache-admission')
+     need(REPORT['preflight']['disk_free_bytes'] >= 8 * 1024**3, 'build_disk_headroom')
+     need(REPORT['preflight']['ram_total_bytes'] >= 32 * 1024**3, 'original_mac_ram')
+-    need(digest(BUNDLE) == BUNDLE_SHA and BUNDLE.stat().st_size == 1393, 'canonical_bundle_hash')
++    need(digest(BUNDLE) == BUNDLE_SHA and BUNDLE.stat().st_size == 9985724, 'canonical_bundle_hash')
+     need(not SOURCE.exists(), 'new_candidate_source_required')
+     git('02-independent-source-clone', ['clone', '--no-hardlinks', '--no-checkout', '--', str(CLONE_SOURCE), str(SOURCE)], 120, cwd=ROOT)
+     need((SOURCE / '.git').is_dir() and not (SOURCE / '.git').is_symlink()
+@@ -462,10 +472,18 @@
+             selected = {name for name in available if group['filter'] in name}
+         need(selected == expected and len(selected) == group['expected_count'], group['label'] + '_enumeration_mismatch')
+         REPORT['enumeration'][group['label']] = {'matched_names': sorted(selected), 'matched_count': len(selected)}
++    for group in candidate_groups:
++        expected = set(group['tests']); selected = all_names[group['crate']].intersection(expected)
++        need(selected == expected and len(selected) == group['expected_count'], 'candidate_exact_enumeration')
++        REPORT['candidate_enumeration'][group['label']] = {'matched_names': sorted(selected), 'matched_count': len(selected)}
+     checkpoint()
+     for index, group in enumerate(groups):
+         execute_group(index, group, binaries[group['crate']])
+     need(sum(g['passed'] for g in REPORT['groups']) == 107, 'final107')
++    for index, group in enumerate(candidate_groups, start=len(groups)):
++        execute_group(index, group, binaries[group['crate']], collection='candidate_groups')
++    need(sum(g['passed'] for g in REPORT['candidate_groups']) == 15, 'candidate_final15')
++    REPORT['candidate_regressions_qualified'] = True
+     need(git('99-final-source-head', ['rev-parse', 'HEAD']) == COMMIT, 'source_head_changed')
+     need(not git('99-final-source-clean', ['status', '--porcelain=v1', '--untracked-files=all']), 'source_dirty_after_execution')
+     need(git('99-final-source-tree', ['rev-parse', 'HEAD^{tree}']) == TREE, 'source_tree_changed')
+@@ -555,6 +573,12 @@
+         REPORT['observed_test_ignored_cases'] = sum(row['ignored'] for row in observed)
+         REPORT['observed_test_executed_cases'] = sum(row['passed'] + row['failed'] for row in observed)
+         REPORT['unexecuted_or_ignored_required_cases'] = 107 - REPORT['observed_test_executed_cases']
++        candidate_observed = [r for g in REPORT['candidate_groups'] for r in g['results']]
++        REPORT['candidate_passed_cases'] = sum(r['passed'] for r in candidate_observed)
++        REPORT['candidate_failed_cases'] = sum(r['failed'] for r in candidate_observed)
++        REPORT['candidate_ignored_cases'] = sum(r['ignored'] for r in candidate_observed)
++        REPORT['candidate_not_qualified_cases'] = 15 - sum(g['passed'] for g in REPORT['candidate_groups'])
++        REPORT['combined_disjoint_observed_passed_cases'] = REPORT['observed_test_passed_cases'] + REPORT['candidate_passed_cases']
+         publish(OUT / 'result.public.json', REPORT); checkpoint()
+         print(json.dumps(dict(event='terminal', status=REPORT['status'], failure=REPORT['failure'],
+                               executed_passed_cases=REPORT['executed_passed_cases'],

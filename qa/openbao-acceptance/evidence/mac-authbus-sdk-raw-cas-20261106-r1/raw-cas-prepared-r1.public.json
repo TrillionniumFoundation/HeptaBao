@@ -1,0 +1,38 @@
+{
+  "actualMacExecuted": false,
+  "candidateCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "localHarnessCases": 29,
+  "schema": "heptabao.sdk-raw-cas-prepared.r1",
+  "sdkPins": {
+    "dist/openclaw-agent-db-DKpxi-Ll.js": "5c99ab6de1ccc1419ed1bdbc783b79203afc34e564f794df4d91bf10e0b53360",
+    "dist/openclaw-state-db-DzSsA9Ji.js": "ba920b2e6f63293a27c34615fc31dcb16a20a68a1e1e34fbccdcac56a9608149",
+    "dist/runtime-snapshots-D6VA-VN8.js": "a1b70fb7664f40fd0a7e6a62f8d1215bca7d6aa465360a5762424100d0dafa4f",
+    "dist/sqlite-B1ze-fre.js": "ed940f0ba0877eea0f00b2da30e727714993db60156fefc6fe80ac8564984c50"
+  },
+  "sourcePins": {
+    "launch_raw_cas_qualification_r1.py": {
+      "bytes": 57654,
+      "sha256": "5a20a52b27231d24e6f21fe787994e7c154473892f1f175621391e5c3c8147b8"
+    },
+    "launch_raw_cas_qualification_r1.template.py": {
+      "bytes": 10246,
+      "sha256": "04eec3c9587431eff75601f11779bbfa8f82b74a9b400a2d0a46ac468cb0b5cb"
+    },
+    "mac_sdk_raw_owner_cas_qualification_r1.mjs": {
+      "bytes": 23885,
+      "sha256": "f52dba8d0a3b86b87aa0a233fefcd66fdf41ea004fec09bc4e76a7dc611de1b0"
+    },
+    "mac_sdk_raw_owner_cas_r1.mjs": {
+      "bytes": 19390,
+      "sha256": "73af96757ba8e012c94543eb03f188b75bb3de572061abcd9388f06a1fd21833"
+    },
+    "raw-cas-local-r3.result.public.json": {
+      "bytes": 26252,
+      "sha256": "0a84852c4510cff56b49327aedbbf141f1e62dbb3d4f9d56156f51b710088249"
+    },
+    "raw-cas-qualification-r1.payload.public.json": {
+      "bytes": 46307,
+      "sha256": "7ca988d46f2af697c90187cd672bef759a53e19b1e167d9732dcc2d70946444c"
+    }
+  }
+}

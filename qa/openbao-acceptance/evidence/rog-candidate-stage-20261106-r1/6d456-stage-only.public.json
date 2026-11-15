@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.rog-6d456-stage-only-record.v1",
+  "source_commit": "6d4562e75d72bcd71d13addb72174440a87e8041",
+  "source_tree": "ad2a5d2bd8c54c25d32917f391015b47b83990f0",
+  "status": "prepared_only_superseded_before_formal_build",
+  "canonical_candidate_selected_by_coordinator": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "canonical_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "formal_rust_build_started": false,
+  "formal_107_started": false,
+  "formal_107_qualified": false,
+  "normal_binary_qualified": false,
+  "production_changed": false,
+  "full_replacement_qualified": false,
+  "old_source": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-09c14-r8",
+  "prepared_source": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-6d456-r9",
+  "private_control": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-6d456-authbus-r1",
+  "original_generic_control_released": true,
+  "preparation": {
+    "job_id": "1a1b1267ee0-fc05-764b",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "receipt_sha256": "8d4b9befc07d0d24e51b91209438daae1b0eb9337f6bc038629609b0953ef3bf"
+  },
+  "relocation": {
+    "job_id": "1a1b13a0b5e-fc05-7719",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "receipt_sha256": "f0c995409ac616a67da05d7e4dd684764930ee0233b75f63b093058f67376c39",
+    "payload_files": 14,
+    "completed_upload_sidecars": 2,
+    "bytes_unchanged": true,
+    "earlier_guard_failures_before_any_rename": [
+      {
+        "job_id": "1a1b12a574c-fc05-766f",
+        "reason": "unattributed upload sidecars made exact 14-file set fail"
+      },
+      {
+        "job_id": "1a1b1352c19-fc05-76eb",
+        "reason": "tool sidecar naming contract had not yet been fully observed"
+      }
+    ],
+    "sidecar_attribution_basis": "Read-only metadata matched the original upload commit acknowledgment for target leaf, SHA256, bytes, mode and immutable version; acquired its existing nonblocking lock before the atomic move.",
+    "private_sidecar_names_or_hashes_published": false
+  },
+  "controller_prepared_locally_only": {
+    "relative_input_path": "rog-r9-inputs/controller.py",
+    "sha256": "13aa0e88b04c6d1a7ecceace3cbd1637b0f526c14cca82e93776b3a0118a5f1f",
+    "bytes": 21709,
+    "controller_not_installed_or_executed_on_rog": true,
+    "original_controller_sha256": "56b4696cc252d50d3ddeb9edad90465654e011045d2e3d9feba5919d42247c7f",
+    "changed_lines": 7,
+    "workload_body_and_budgets_unchanged": true,
+    "stale_generic_out_path_in_unexecuted_prototype_is_not_authority": true
+  },
+  "original_failed_r8": {
+    "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+    "receipt_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r8/result.public.json",
+    "receipt_sha256": "9cf27fbf78f3f976fb6397a693b1fa18ec3965bbea84d58cb0f8773aa4f2a5ff",
+    "status": "failed",
+    "observed_executed": 103,
+    "observed_passed": 102,
+    "observed_failed": 1,
+    "unexecuted_required": 4,
+    "failure": "native-jwt15_exact_test_result_failed",
+    "failed_test": "service::native_auth::jwt_tests::native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+    "observed_status": 403,
+    "expected_status": 204,
+    "jwt_stdout_sha256": "c1e9acedca2351b249f76b1e9632dd5aea35fc892a5c1e4404c3fed806d5f883",
+    "jwt_stderr_sha256": "f3924564678731602607aee1bdc0e042f252edfc22c9a346664d5ffe68977f3f"
+  },
+  "concurrency_observation": {
+    "source_commit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "durable_job_id": "1a1b10cad9b-fc05-7560",
+    "same_original_build_target": true,
+    "original_compiler_absence_gate_not_waived": true,
+    "owner_not_interrupted": true
+  },
+  "canonical_source_already_owned": {
+    "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-4bde9-r9",
+    "observed_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "observed_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "observed_clean": true,
+    "no_duplicate_source_or_formal_campaign_started_by_this_agent": true
+  }
+}

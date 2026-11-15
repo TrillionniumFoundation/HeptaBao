@@ -1,0 +1,32 @@
+--- ha_http_transport_observer_r1.py
++++ ha_http_transport_observer_formal_r1.py
+@@ -184,7 +184,7 @@
+ 
+     @functools.wraps(original)
+     def observed(context, node, method, path, body=None, token="", timeout=8.0, *, wrap_ttl=None):
+-        need(len(rows) < 512 and CURRENT.get() is None, "bounded_non_nested_api_observation")
++        need(len(rows) < 2048 and CURRENT.get() is None, "bounded_non_nested_api_observation")
+         need(type(node.node_id) is int and node.node_id in (1, 2, 3)
+              and method in METHODS and type(timeout) in (int, float) and 0 < timeout <= 15,
+              "original_fixed_api_scope")
+--- observe_history10_owned_x230_pid_r1.py
++++ observe_ha128_r4_owned_x230_pid.py
+@@ -16,7 +16,7 @@
+ import sys
+ import time
+ 
+-ROOT = Path('/home/qian/heptabao-ha-history10-transport-20261107-r1')
++ROOT = Path('/home/qian/heptabao-native-ha-4bde9-authbus-20261107-r4')
+ PORTS = (31040, 31041)
+ STATES = {'01': 'ESTABLISHED', '02': 'SYN_SENT', '03': 'SYN_RECV', '04': 'FIN_WAIT1',
+           '05': 'FIN_WAIT2', '06': 'TIME_WAIT', '07': 'CLOSE', '08': 'CLOSE_WAIT',
+@@ -220,6 +220,9 @@
+         if OPENED != CLOSED:
+             report['ok'] = False
+         report['elapsedSeconds'] = time.monotonic() - started
++        if report['elapsedSeconds'] >= 5:
++            report['ok'] = False
++            report.setdefault('failureCode', 'snapshot_deadline_after_closure')
+         print(json.dumps(report, sort_keys=True))
+     return 0 if report['ok'] else 1
+ 

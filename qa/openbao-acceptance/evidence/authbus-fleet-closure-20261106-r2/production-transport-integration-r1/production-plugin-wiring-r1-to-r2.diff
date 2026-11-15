@@ -1,0 +1,20 @@
+--- r1
++++ r2
+@@ -70,7 +70,7 @@
+     setAuthProfileOrder() { throw new Error('credential_write_forbidden_in_wiring_fixture'); },
+     upsertAuthProfileWithLock() { throw new Error('credential_write_forbidden_in_wiring_fixture'); },
+   };
+-  const context = vm.createContext({ Buffer, URL, console,
++  const context = vm.createContext({ Buffer, URL, console, process: Object.freeze({ pid: process.pid }),
+     setInterval(fn) { const timer = { fn, cleared: false, unref() {} }; intervals.push(timer); trace.push('interval'); return timer; },
+     clearInterval(timer) { timer.cleared = true; trace.push('clearInterval'); },
+     setTimeout, clearTimeout });
+@@ -198,7 +198,7 @@
+     } finally { f.dispose(); }
+   });
+ }
+-console.log(JSON.stringify({ schema: 'heptabao.production-plugin-wiring-fixture.r1', ok: true,
++console.log(JSON.stringify({ schema: 'heptabao.production-plugin-wiring-fixture.r2', ok: true,
+   checks, passed: checks.length, actualCompletePreparedPluginSourceLoaded: true,
+   sdkBoundarySubstituted: true, transportNetworkBoundarySubstituted: true,
+   originalLocalHelperSourcesLoaded: true, actualProviderCalls: 0, productionServiceActions: 0,

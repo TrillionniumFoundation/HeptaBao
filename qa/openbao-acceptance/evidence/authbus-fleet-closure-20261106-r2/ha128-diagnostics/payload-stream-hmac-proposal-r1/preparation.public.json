@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.payload-stream-hmac-scratch-preparation.v1",
+  "sourceCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "productRepositoryChanged": false,
+  "patch": {
+    "bytes": 15422,
+    "sha256": "e6ac88eeeceec7093fdf42a20f3b4c8461ce87855f7d67f3c2d69e93a38501ab"
+  },
+  "candidateFiles": {
+    "crates/heptabao-server/src/state_records.rs": {
+      "bytes": 18031,
+      "sha256": "b419525a98f096c85681869b6037fb8356837fc5b8664ad3c09d9e2adc609e45"
+    },
+    "crates/heptabao-server/src/state_records/tests.rs": {
+      "bytes": 33657,
+      "sha256": "2ce1ed3614bedf4531428df21dcdb3ccf938616a34f25cbdf867ef7b79a3c526"
+    },
+    "crates/heptabao-server/src/engines/kv2_native_paged.rs": {
+      "bytes": 53318,
+      "sha256": "10b4865f78284c702f2e9136b0917f35ecd545e697433dd874a4fa6688e9da2c"
+    },
+    "crates/heptabao-server/src/engines/kv2_native_payload_validation_tests.rs": {
+      "bytes": 14337,
+      "sha256": "35fa6c21b9d86fd66ab1216248614a01e19da453e12b73b1fcf6778c48e0dddb"
+    }
+  },
+  "originalTestBodiesBytePreserved": {
+    "crates/heptabao-server/src/state_records/tests.rs": true,
+    "crates/heptabao-server/src/engines/kv2_native_payload_validation_tests.rs": true
+  },
+  "addedRustTests": [
+    "address_value_stream_matches_previous_domain_encoding_and_block_boundaries",
+    "address_value_stream_rejects_length_bounds_producer_failure_and_ignored_overrun",
+    "payload_validation_streamed_hit_rejects_other_fully_keyed_blocks_by_complete_payload_mac",
+    "payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo",
+    "payload_validation_streamed_hit_rejects_memo_entry_replaced_during_actual_read"
+  ],
+  "gitApplyCheck": {
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "localRustAvailability": {
+    "cargo": null,
+    "rustc": null
+  },
+  "rustCompilationExecuted": false,
+  "rustTestsExecuted": false,
+  "benchmarkExecuted": false,
+  "full128Executed": false
+}

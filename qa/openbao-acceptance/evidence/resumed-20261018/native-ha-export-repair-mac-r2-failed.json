@@ -1,0 +1,60 @@
+{
+  "base_commit": "e0f95a38850a4a3b0220112eff27e2e32efb7742",
+  "base_unchanged": true,
+  "elapsed_seconds": 353.598,
+  "groups": [
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "--no-run"
+      ],
+      "elapsed_seconds": 322.669,
+      "exit_code": 0,
+      "group": "compile",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8p-export-repair-mac-verify-02/compile.log",
+      "log_sha256": "7587692d827a90164a02a1ab1d462553ad0d85fa461c6ce0ee6bfd6219fa19ef",
+      "summaries": []
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_snapshot_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 29.521,
+      "exit_code": 101,
+      "group": "archive-service",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8p-export-repair-mac-verify-02/archive-service.log",
+      "log_sha256": "db932b4e4566c6fbe7d520f2b50069cafd181b903b54e7e7c4588401087cd434",
+      "summaries": [
+        "test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 2714 filtered out; finished in 25.21s"
+      ]
+    }
+  ],
+  "host": "MacBook-Pro.local",
+  "ok": false,
+  "patch_sha256": "578bd33de16bb627a2b4a694d7034fbddd89b312c89da816ee7f5ee5fb359ea5",
+  "production_cutover": false,
+  "schema": "heptabao.native-ha-service-export-repair-candidate.v1",
+  "source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8p-export-repair-02",
+  "source_unchanged": true
+}

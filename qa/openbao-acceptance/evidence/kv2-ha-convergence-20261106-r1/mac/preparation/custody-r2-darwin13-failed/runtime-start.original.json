@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import pathlib,hashlib,os,json\nroot=pathlib.Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1\")\nfor name,sha in [[\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py\",\"5b6445687c1024e6bd1b2c47c8dd83175445ce70cfbdd3637834faf4a0316d54\"],[\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/tests/test_kv2_dr_process_custody.py\",\"74ca530db853dfb7786ccb9f53a920c1581685aff68c23a7f5d19d5af63fb193\"],[\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/owned_process.py\",\"0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0\"]]:\n p=pathlib.Path(name);assert p.is_file() and not p.is_symlink() and p.stat().st_uid==501 and p.stat().st_nlink==1\n assert hashlib.sha256(p.read_bytes()).hexdigest()==sha;p.chmod(0o600)\n(root/'control/custody-r2').chmod(0o700);(root/'control/custody-r2/tests').chmod(0o700)\npython='/opt/homebrew/bin/python3'\nassert hashlib.sha256(pathlib.Path(python).read_bytes()).hexdigest()=='cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'\nprint(json.dumps({'schema':'heptabao.mac-custody-selftest-input-pins.r2','pins_verified':True,'prior_failed_job':'1a1b066d692-fc05-7043','expected_tests':13,'original_child_caps_preserved':True}),flush=True)\nos.execv(python,[python,'-I','-S','-B','-m','unittest','discover','-s',str(root/'control/custody-r2/tests'),'-p','test_kv2_dr_process_custody.py','-v'])\n"
+    ],
+    "created_unix_ms": 1793961116932,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b06a4504-fc05-7060",
+    "idempotency_key": "heptabao-mac-convergence-custody-darwin13-20261106-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b06a4504-fc05-7060",
+    "request_digest": "2511ce84cb2bbe6d4aefac25c4b8871b8ffeb7bf0ac7c8251af638a1f2d9aa0b",
+    "request_fingerprint": 2671143123747061357,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b06a4504-fc05-7060"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 53589,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b06a4504-fc05-7060"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

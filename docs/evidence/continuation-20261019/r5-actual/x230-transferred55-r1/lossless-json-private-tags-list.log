@@ -1,0 +1,4 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion", "--list", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion: test
+
+1 test, 0 benchmarks

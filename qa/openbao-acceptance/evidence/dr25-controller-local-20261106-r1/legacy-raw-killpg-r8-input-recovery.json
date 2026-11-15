@@ -1,0 +1,10 @@
+{
+  "basis": "Reconstructed exactly by reversing only the two later mock-target changes, then required byte SHA to equal the source pin captured during r8. This is not claimed to be the original on-disk capture.",
+  "helper_git_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+  "helper_git_path": "qa/openbao-acceptance/kv2_dr_process_custody.py",
+  "helper_sha256": "c3d95e975f5eec7af5f39fd76a904bdc197bfd0415a9899974adbde081e86c17",
+  "production_authority": false,
+  "schema": "heptabao.regression-input-byte-recovery.v1",
+  "test_input": "qa/openbao-acceptance/evidence/dr25-controller-local-20261106-r1/legacy-raw-killpg-regression-before-fix-r8.tests.py.input",
+  "test_input_sha256": "870d8d24dcb03d138cd81ac3ecbf527067b10e39f67a760b7a081dda8f32af91"
+}

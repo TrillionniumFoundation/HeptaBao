@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.gateway-registration.stderr-safe-projection.r1",
+  "source": "original-r2-unit.stderr.private",
+  "bytes": 112,
+  "sameOriginalValidationWarning": true,
+  "containsFixedAuthBusConfigPath": true,
+  "knownWarningPrefix": true,
+  "knownDisabledAndPresent": true,
+  "actualProductionCredentialReads": 0,
+  "rawMessagePublished": false,
+  "rawPrivateFileHashPublished": false,
+  "exactOriginalIoDisabledInConfigWarning": true
+}

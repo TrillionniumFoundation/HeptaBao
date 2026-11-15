@@ -1,0 +1,44 @@
+{
+  "actualExecuted": false,
+  "apiDelta": "Original strict wire reader, per-request deadlines and owned socket closure; new independent CA; complete responses fsynced privately before JSON parsing.",
+  "currentCredentialsRead": false,
+  "eachApiPhaseSeconds": 120,
+  "launcher": {
+    "bytes": 82208,
+    "sha256": "709e228b497f84ed93df0b30bc484d60350a76b9d44944bdd951b0bb077482c7"
+  },
+  "newOriginalOnceSlot": "/Users/qianqi/heptabao-authbus-production-custody/bootstrap-r1",
+  "parentSeconds": 300,
+  "postRunServerStopped": true,
+  "providerCalls": 0,
+  "realNewPermanentStoreInitializedIfExecuted": true,
+  "schema": "heptabao.permanent-bootstrap-source.r1",
+  "serviceInstalled": false,
+  "sources": {
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_production_t5_guard_r1.py": {
+      "bytes": 13379,
+      "sha256": "9f0b032264c4dd5db45478f08c1cdbc92354ac3153b2ed4d18ef2aab30b139f1"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "main3_http_complete.py": {
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    },
+    "permanent_bootstrap_api_r1.py": {
+      "bytes": 7213,
+      "sha256": "ce40d15a5b837e1f8fe12c8c925a16241c0bca8f3b751dc5c445bf36bec88b09"
+    }
+  },
+  "supervisorSeconds": 330
+}

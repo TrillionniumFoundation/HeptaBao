@@ -1,0 +1,149 @@
+{
+  "actual_builder_clang_args": [
+    "-x",
+    "c",
+    "--target=x86_64-unknown-linux-gnu",
+    "-I",
+    "[locked-aws-lc-source]/include",
+    "-I",
+    "[locked-aws-lc-source]/generated-include",
+    "-I",
+    "[locked-aws-lc-source]/aws-lc/include",
+    "-DAWS_LC_RUST_INCLUDE_SSL"
+  ],
+  "actual_wrapper_relative_path": "include/rust_wrapper.h",
+  "all_observed_inputs_unchanged": true,
+  "at_utc": "2026-11-06T16:20:17.414735+00:00",
+  "cases": [
+    {
+      "added_header_locator": [],
+      "diagnostics": [
+        {
+          "message": "'stddef.h' file not found",
+          "severity": 4
+        }
+      ],
+      "fatal_or_error_count": 1,
+      "label": "original-no-resource-header",
+      "parser_return": 0
+    },
+    {
+      "added_header_locator": [
+        "-isystem",
+        "/usr/lib/gcc/x86_64-linux-gnu/15/include"
+      ],
+      "diagnostics": [],
+      "fatal_or_error_count": 0,
+      "label": "existing-gcc15-standard-header-locator",
+      "parser_return": 0
+    }
+  ],
+  "existing_toolchain_only": true,
+  "gcc_standard_header_tree": {
+    "files": 154,
+    "headers": {
+      "stdarg.h": "3014f1490722369be2ab7e10a3bd88a53435083fea5fc30fb8b6f87520684bb7",
+      "stddef.h": "472a84e536689fc48e861b2415b229742e133d09bbf1c8fd8e0fe89ab5712f04",
+      "stdint.h": "64ab730bb09eba38f01a62174fb8371ef281778ac33f141a6fa4217a9b39466a"
+    },
+    "manifest_sha256": "c18fe6489f262e798516b36c74d335959d8cba76aab06bc709525d94d61b82cc",
+    "path": "/usr/lib/gcc/x86_64-linux-gnu/15/include"
+  },
+  "host_tool_pins_after": {
+    "cc": {
+      "bytes": 1305304,
+      "identity": [
+        66306,
+        82182332,
+        33261,
+        0,
+        0,
+        1,
+        1774174097000000000,
+        1791034440131878913
+      ],
+      "path": "/usr/bin/cc",
+      "resolved": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88"
+    },
+    "libclang": {
+      "bytes": 32691984,
+      "identity": [
+        66306,
+        82190690,
+        33188,
+        0,
+        0,
+        1,
+        1773841930000000000,
+        1791032247408329160
+      ],
+      "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b"
+    }
+  },
+  "host_tool_pins_before": {
+    "cc": {
+      "bytes": 1305304,
+      "identity": [
+        66306,
+        82182332,
+        33261,
+        0,
+        0,
+        1,
+        1774174097000000000,
+        1791034440131878913
+      ],
+      "path": "/usr/bin/cc",
+      "resolved": "/usr/bin/x86_64-linux-gnu-gcc-15",
+      "sha256": "b5f1b773a7c733738352000c92a077dc5852a1a2fc6d836b1e411be1e9ec5f88"
+    },
+    "libclang": {
+      "bytes": 32691984,
+      "identity": [
+        66306,
+        82190690,
+        33188,
+        0,
+        0,
+        1,
+        1773841930000000000,
+        1791032247408329160
+      ],
+      "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "resolved": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+      "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b"
+    }
+  },
+  "libclang_version": "Ubuntu clang version 21.1.8 (6ubuntu1)",
+  "locked_aws_lc_source": {
+    "archive_sha256": "1a2f9779ce85b93ab6170dd940ad0169b5766ff848247aff13bb788b832fe3f4",
+    "base_header_sha256": "24fa70204530a41dc75b1fc05b166243c130114608e50a2a035473408ba81ba5",
+    "builder_main_sha256": "bde463f3e478df531f32da2c790ae281edf12310825f91ad9520e0e1d9a0f8f5",
+    "builder_sys_bindgen_sha256": "e3e1395f2f73a7ac697fb74f23ef5a773ef9365a434a7022afd7424f4ba2b145",
+    "source_manifest_sha256": "62b96809a709876ba885b52c773608e6275d149f878e440afcb417b82245ce9c",
+    "verified_source_files": 100,
+    "wrapper_sha256": "b0a3f8f3f36f979bf77c83e7f4643e2d76cda65eadbded5d7c1720d93925193d"
+  },
+  "normal107_qualified": false,
+  "not_a_complete_bindgen_or_normal107_result": true,
+  "original_package_features": [
+    "all-bindings",
+    "bindgen",
+    "default",
+    "ssl"
+  ],
+  "product_binary_executed": false,
+  "production_changed": false,
+  "proposed_environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include"
+  },
+  "registry_private_path_omitted": true,
+  "rust_build_executed": false,
+  "schema": "heptabao.ai395-actual-bindgen-wrapper-header-locator-probe.v2",
+  "specific_missing_header_failure_reproduced_and_resolved": true,
+  "status": "passed",
+  "tools_installed": false
+}

@@ -1,0 +1,36 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1794006756323,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "execution_mode": "operator",
+    "host": "main",
+    "id": "1a1b322abe3-fc05-80b8",
+    "idempotency_key": "mac-ha128-current-4bde9-authbus-20261106-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b322abe3-fc05-80b8",
+    "request_digest": "88f583f180a042a4c2543ab175332c1e7d5206f6b24401f312fbf4ca3388c896",
+    "request_fingerprint": 9868939231720653476,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b322abe3-fc05-80b8"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 19698,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b322abe3-fc05-80b8"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

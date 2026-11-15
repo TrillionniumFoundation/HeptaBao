@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.current-launchctl-observation.v1",
+  "observation_time_unix_ms": 1793970308849,
+  "job_id": "1a1b0f67109-fc05-7466",
+  "terminal_state": "succeeded",
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "observation": {
+    "schema": "heptabao.launchctl-safe-state.v1",
+    "target": "gui/501/org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "returncode": 0,
+    "stdout_bytes": 4489,
+    "stderr_bytes": 0,
+    "fields": {
+      "active count": "1",
+      "state": "running",
+      "runs": "1",
+      "pid": "32527",
+      "last exit code": "(never exited)"
+    },
+    "source_header_matches": true,
+    "elapsed_seconds": 0.0032795830000000026,
+    "raw_argv_environment_or_stderr_exported": false,
+    "service_mutation": false
+  },
+  "historical_failed_invocation_exact_field_known": false,
+  "source_patch_deployed": false,
+  "prior_service_relaunched": false,
+  "prior_service_stopped": false,
+  "production_mutated": false
+}

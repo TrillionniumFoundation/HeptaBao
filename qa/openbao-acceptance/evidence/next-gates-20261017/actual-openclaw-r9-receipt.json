@@ -1,0 +1,1402 @@
+{
+  "binary_sha256": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f",
+  "checks": [
+    {
+      "case": "source.schema",
+      "passed": true
+    },
+    {
+      "case": "source.real_google_api_key_shape",
+      "passed": true
+    },
+    {
+      "case": "source.profile_digest",
+      "passed": true
+    },
+    {
+      "case": "source.identity_digest",
+      "passed": true
+    },
+    {
+      "case": "source.manifest_single_verified_profile",
+      "passed": true
+    },
+    {
+      "case": "source.immutable_profile_key",
+      "passed": true
+    },
+    {
+      "case": "source.official_negative_and_positive_evidence",
+      "passed": true
+    },
+    {
+      "case": "source.fingerprint_current",
+      "passed": true
+    },
+    {
+      "case": "plugin_copy.index.js.bounded",
+      "passed": true
+    },
+    {
+      "case": "plugin_copy.order-policy.js.bounded",
+      "passed": true
+    },
+    {
+      "case": "plugin_copy.runtime-refresh-policy.js.bounded",
+      "passed": true
+    },
+    {
+      "case": "plugin_copy.codex-client-recycler.js.bounded",
+      "passed": true
+    },
+    {
+      "case": "plugin_copy.lease-assignments.js.bounded",
+      "passed": true
+    },
+    {
+      "case": "plugin_copy.provider-error-classifier.js.bounded",
+      "passed": true
+    },
+    {
+      "case": "plugin_copy.bad-refresh-quarantine.js.bounded",
+      "passed": true
+    },
+    {
+      "case": "server.init",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.bootstrap_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "server.activate_native_v6",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "server.native_capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "server.reader_format2",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.profile.cas0",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.profile",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.profile.version1",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.order_policy.cas0",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.order_policy",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.order_policy.version1",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.scheduler_assignments.cas0",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.scheduler_assignments",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.scheduler_assignments.version1",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.manifest.cas0",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.manifest",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.manifest.version1",
+      "passed": true
+    },
+    {
+      "case": "bootstrap.private_profile_readback",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bootstrap.exact_real_credential",
+      "passed": true
+    },
+    {
+      "case": "auth.policy",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "auth.fixed_approle_mount",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "auth.reusable_sid_role",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "auth.role_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "auth.secret_id",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "initial.captured_actual_plugin_token_shape",
+      "passed": true
+    },
+    {
+      "case": "initial.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "initial.public_receipt_redacted",
+      "passed": true
+    },
+    {
+      "case": "initial.exit",
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "initial.actual_plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "initial.actual_sdk_store_exact",
+      "passed": true
+    },
+    {
+      "case": "initial.default_main_scoped",
+      "passed": true
+    },
+    {
+      "case": "initial.real_login",
+      "passed": true
+    },
+    {
+      "case": "initial.real_verified_tls",
+      "passed": true
+    },
+    {
+      "case": "initial.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "initial.empty_isolated_store",
+      "passed": true
+    },
+    {
+      "case": "acl.profile_write_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "acl.other_host_inbox_denied",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "token.actual_plugin_renew_self",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "token.actual_plugin_bearer_retained",
+      "passed": true
+    },
+    {
+      "case": "token.actual_plugin_renewable",
+      "passed": true
+    },
+    {
+      "case": "backup.sqlite_bound.db",
+      "passed": true
+    },
+    {
+      "case": "backup.database_present",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "cold_restart.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold_restart.native_capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold_restart.native_reader_format2",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.real_profile_read",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "cold_restart.real_profile_exact",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.captured_actual_plugin_token_shape",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.public_receipt_redacted",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.exit",
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "cold_restart.actual_plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.actual_sdk_store_exact",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.default_main_scoped",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.real_login",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.real_verified_tls",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "cold_restart.actual_client_sqlite_survived",
+      "passed": true
+    },
+    {
+      "case": "bad_ca.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "bad_ca.public_receipt_redacted",
+      "passed": true
+    },
+    {
+      "case": "bad_ca.exit",
+      "exit_code": 3,
+      "expected": 3,
+      "passed": true
+    },
+    {
+      "case": "rollback.bad_ca_did_not_authenticate",
+      "passed": true
+    },
+    {
+      "case": "rollback.failed_binding_kept_exact_profile",
+      "passed": true
+    },
+    {
+      "case": "rollback.binding_exact_bytes",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.captured_actual_plugin_token_shape",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.public_receipt_redacted",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.exit",
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "binding_restored.actual_plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.actual_sdk_store_exact",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.default_main_scoped",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.real_login",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.real_verified_tls",
+      "passed": true
+    },
+    {
+      "case": "binding_restored.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.captured_actual_plugin_token_shape",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.public_receipt_redacted",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.exit",
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "case": "backup_restored.actual_plugin_ok",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.actual_sdk_store_exact",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.default_main_scoped",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.real_login",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.real_verified_tls",
+      "passed": true
+    },
+    {
+      "case": "backup_restored.fresh_full_tls_per_request",
+      "passed": true
+    },
+    {
+      "case": "backup.actual_sdk_restore",
+      "passed": true
+    },
+    {
+      "case": "plugin.actual_inbox_list",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "plugin.actual_host_reports_persisted",
+      "passed": true,
+      "reports": 4
+    },
+    {
+      "case": "plugin.report_read.0",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "plugin.report_contract.0",
+      "passed": true
+    },
+    {
+      "case": "plugin.report_read.1",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "plugin.report_contract.1",
+      "passed": true
+    },
+    {
+      "case": "plugin.report_read.2",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "plugin.report_contract.2",
+      "passed": true
+    },
+    {
+      "case": "plugin.report_read.3",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "plugin.report_contract.3",
+      "passed": true
+    },
+    {
+      "case": "revoke.actual_plugin_token.0",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.actual_plugin_token_denied.0",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.1",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.actual_plugin_token_denied.1",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.2",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.actual_plugin_token_denied.2",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.actual_plugin_token.3",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoke.actual_plugin_token_denied.3",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.secret_id_accessor",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "sid_revoked.diagnostics_redacted",
+      "passed": true
+    },
+    {
+      "case": "sid_revoked.public_receipt_redacted",
+      "passed": true
+    },
+    {
+      "case": "sid_revoked.exit",
+      "exit_code": 3,
+      "expected": 3,
+      "passed": true
+    },
+    {
+      "case": "revoke.actual_plugin_relogin_denied",
+      "passed": true
+    },
+    {
+      "case": "revocations_cold_restart.binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "revocations_cold_restart.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "revocations_cold_restart.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "revocations_cold_restart.native_capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "revocations_cold_restart.native_reader_format2",
+      "passed": true
+    },
+    {
+      "case": "revoke.persisted_token_denial.0",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.persisted_token_denial.1",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.persisted_token_denial.2",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.persisted_token_denial.3",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke.persisted_sid_denial",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "revoke.persisted_sid_exact_error",
+      "passed": true
+    },
+    {
+      "case": "source.environment_unchanged",
+      "passed": true
+    },
+    {
+      "case": "source.candidate_unchanged",
+      "passed": true
+    },
+    {
+      "case": "plugin.production_code_unchanged",
+      "passed": true
+    },
+    {
+      "case": "evidence.no_secret_values",
+      "passed": true
+    }
+  ],
+  "client_cycles": [
+    {
+      "actualSdkReadbackMatches": true,
+      "authentications": 1,
+      "case": "initial",
+      "createdDatabaseThroughActualSdk": true,
+      "credentialDigest": "16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "leaseDuration": 300,
+          "method": "POST",
+          "path": "/v1/auth/approle/login",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "renewable": true,
+          "requestSocketId": 1,
+          "service": "isolated_heptabao",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3",
+          "tokenSha256": "d5f7ec635ffbd5c5fa39afd0630efcbfb5469b2b2e8671c0fe5962723886d165"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/manifest",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 2,
+          "service": "isolated_heptabao",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/profiles/sha256-16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 3,
+          "service": "isolated_heptabao",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/order-policy",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 4,
+          "service": "isolated_heptabao",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/scheduler-assignments",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 5,
+          "service": "isolated_heptabao",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "path": "/v1/openclaw-auth/data/inbox/authbus-isolated-main/5b7cabfa-2e17-4f30-b575-9cb00ec26e74",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 6,
+          "service": "isolated_heptabao",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1beta/models?pageSize=1000",
+          "peerCertificateSha256": "ebd61d9a760b5a3c0874836daaa7f4b30d178f4f3e6b9c916c5b9ef7081f0062",
+          "requestSocketId": 7,
+          "service": "google_models",
+          "socketId": 7,
+          "status": 403,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1beta/models?pageSize=1000",
+          "peerCertificateSha256": "ebd61d9a760b5a3c0874836daaa7f4b30d178f4f3e6b9c916c5b9ef7081f0062",
+          "requestSocketId": 7,
+          "service": "google_models",
+          "socketId": 7,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "plugin": {
+        "agentStores": 1,
+        "effectiveMismatched": 0,
+        "effectiveMissing": 0,
+        "errorSha256": null,
+        "importedProfiles": 1,
+        "logCounts": {
+          "debug": 0,
+          "error": 0,
+          "info": 1,
+          "warn": 0
+        },
+        "manifestGeneration": 1,
+        "manifestProfiles": 1,
+        "ok": true,
+        "pendingRuntimeRefreshes": 0,
+        "schedulerReports": 1,
+        "verifiedStores": 1
+      },
+      "productionCutover": false,
+      "profileCountAfter": 1,
+      "profileCountBefore": 0,
+      "providerCanonical": "google",
+      "providerControl": {
+        "absoluteBudgetMs": 10000,
+        "addressFamily": 4,
+        "hasNextPage": false,
+        "httpStatus": 403,
+        "modelCountThisPage": 0,
+        "modelsArray": false,
+        "tlsAuthorized": true
+      },
+      "providerProbe": {
+        "absoluteBudgetMs": 10000,
+        "addressFamily": 4,
+        "hasNextPage": false,
+        "httpStatus": 200,
+        "modelCountThisPage": 63,
+        "modelsArray": true,
+        "tlsAuthorized": true
+      },
+      "schema": "actual-openclaw-authbus-consumer-v1",
+      "scope": {
+        "databasePath": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state/agents/main/agent/openclaw-agent.sqlite",
+        "defaultAgentDirScoped": true,
+        "externalCliSyncEnabled": false,
+        "immutablePluginCopy": true,
+        "oauthRefreshEnabled": false,
+        "stateDir": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state"
+      },
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdkReadbackMatches": true,
+      "authentications": 1,
+      "case": "cold_restart",
+      "credentialDigest": "16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "leaseDuration": 300,
+          "method": "POST",
+          "path": "/v1/auth/approle/login",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "renewable": true,
+          "requestSocketId": 1,
+          "service": "isolated_heptabao",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3",
+          "tokenSha256": "95f3d8dcc3a851c59febe09031d480078e9ed2ee383a1a13156ce3e042649dee"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/manifest",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 2,
+          "service": "isolated_heptabao",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/order-policy",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 3,
+          "service": "isolated_heptabao",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/scheduler-assignments",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 4,
+          "service": "isolated_heptabao",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "path": "/v1/openclaw-auth/data/inbox/authbus-isolated-main/ffeba66b-fc43-459a-a480-34b0921001a7",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 5,
+          "service": "isolated_heptabao",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "plugin": {
+        "agentStores": 1,
+        "effectiveMismatched": 0,
+        "effectiveMissing": 0,
+        "errorSha256": null,
+        "importedProfiles": 0,
+        "logCounts": {
+          "debug": 0,
+          "error": 0,
+          "info": 0,
+          "warn": 0
+        },
+        "manifestGeneration": 1,
+        "manifestProfiles": 1,
+        "ok": true,
+        "pendingRuntimeRefreshes": 0,
+        "schedulerReports": 1,
+        "verifiedStores": 1
+      },
+      "productionCutover": false,
+      "profileCountAfter": 1,
+      "profileCountBefore": 1,
+      "providerCanonical": "google",
+      "schema": "actual-openclaw-authbus-consumer-v1",
+      "scope": {
+        "databasePath": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state/agents/main/agent/openclaw-agent.sqlite",
+        "defaultAgentDirScoped": true,
+        "externalCliSyncEnabled": false,
+        "immutablePluginCopy": true,
+        "oauthRefreshEnabled": false,
+        "stateDir": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state"
+      },
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdkReadbackMatches": true,
+      "authentications": 0,
+      "case": "bad_ca",
+      "credentialDigest": "16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+      "error": "actual_plugin_cycle_failed",
+      "exit_code": 3,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "observations": [
+        {
+          "method": "POST",
+          "path": "/v1/auth/approle/login",
+          "requestSocketId": 1,
+          "service": "isolated_heptabao"
+        }
+      ],
+      "ok": false,
+      "phase": "actual_sdk_readback",
+      "plugin": {
+        "agentStores": null,
+        "effectiveMismatched": null,
+        "effectiveMissing": null,
+        "errorSha256": "e950de19e2f8f1787964436744a649fc93a8d774060dbf818ff3b3a553766b15",
+        "importedProfiles": null,
+        "logCounts": {
+          "debug": 0,
+          "error": 1,
+          "info": 0,
+          "warn": 0
+        },
+        "manifestGeneration": null,
+        "manifestProfiles": null,
+        "ok": false,
+        "pendingRuntimeRefreshes": null,
+        "schedulerReports": null,
+        "verifiedStores": null
+      },
+      "productionCutover": false,
+      "profileCountAfter": 1,
+      "profileCountBefore": 1,
+      "providerCanonical": "google",
+      "schema": "actual-openclaw-authbus-consumer-v1",
+      "scope": {
+        "databasePath": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state/agents/main/agent/openclaw-agent.sqlite",
+        "defaultAgentDirScoped": true,
+        "externalCliSyncEnabled": false,
+        "immutablePluginCopy": true,
+        "oauthRefreshEnabled": false,
+        "stateDir": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state"
+      },
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdkReadbackMatches": true,
+      "authentications": 1,
+      "case": "binding_restored",
+      "credentialDigest": "16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "leaseDuration": 300,
+          "method": "POST",
+          "path": "/v1/auth/approle/login",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "renewable": true,
+          "requestSocketId": 1,
+          "service": "isolated_heptabao",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3",
+          "tokenSha256": "d7b32f863dc4af9343831d46ef25a706592905b0cd756739f5628ab3a4dd70e4"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/manifest",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 2,
+          "service": "isolated_heptabao",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/order-policy",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 3,
+          "service": "isolated_heptabao",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/scheduler-assignments",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 4,
+          "service": "isolated_heptabao",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "path": "/v1/openclaw-auth/data/inbox/authbus-isolated-main/15e440cf-c073-4925-9e02-c390310df4d8",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 5,
+          "service": "isolated_heptabao",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "plugin": {
+        "agentStores": 1,
+        "effectiveMismatched": 0,
+        "effectiveMissing": 0,
+        "errorSha256": null,
+        "importedProfiles": 0,
+        "logCounts": {
+          "debug": 0,
+          "error": 0,
+          "info": 0,
+          "warn": 0
+        },
+        "manifestGeneration": 1,
+        "manifestProfiles": 1,
+        "ok": true,
+        "pendingRuntimeRefreshes": 0,
+        "schedulerReports": 1,
+        "verifiedStores": 1
+      },
+      "productionCutover": false,
+      "profileCountAfter": 1,
+      "profileCountBefore": 1,
+      "providerCanonical": "google",
+      "schema": "actual-openclaw-authbus-consumer-v1",
+      "scope": {
+        "databasePath": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state/agents/main/agent/openclaw-agent.sqlite",
+        "defaultAgentDirScoped": true,
+        "externalCliSyncEnabled": false,
+        "immutablePluginCopy": true,
+        "oauthRefreshEnabled": false,
+        "stateDir": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state"
+      },
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdkReadbackMatches": true,
+      "authentications": 1,
+      "case": "backup_restored",
+      "credentialDigest": "16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+      "exit_code": 0,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "leaseDuration": 300,
+          "method": "POST",
+          "path": "/v1/auth/approle/login",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "renewable": true,
+          "requestSocketId": 1,
+          "service": "isolated_heptabao",
+          "socketId": 1,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3",
+          "tokenSha256": "9f263d511a2d2638df17f56e3a1fb8b809c45feb86dbae5d16f804b09a59c3f7"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/manifest",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 2,
+          "service": "isolated_heptabao",
+          "socketId": 2,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/profiles/sha256-16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 3,
+          "service": "isolated_heptabao",
+          "socketId": 3,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/order-policy",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 4,
+          "service": "isolated_heptabao",
+          "socketId": 4,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1/openclaw-auth/data/scheduler-assignments",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 5,
+          "service": "isolated_heptabao",
+          "socketId": 5,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "path": "/v1/openclaw-auth/data/inbox/authbus-isolated-main/24094ceb-1763-497a-af24-c7ce099590ed",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 6,
+          "service": "isolated_heptabao",
+          "socketId": 6,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1beta/models?pageSize=1000",
+          "peerCertificateSha256": "ebd61d9a760b5a3c0874836daaa7f4b30d178f4f3e6b9c916c5b9ef7081f0062",
+          "requestSocketId": 7,
+          "service": "google_models",
+          "socketId": 7,
+          "status": 403,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        },
+        {
+          "isSessionReused": false,
+          "method": "GET",
+          "path": "/v1beta/models?pageSize=1000",
+          "peerCertificateSha256": "ebd61d9a760b5a3c0874836daaa7f4b30d178f4f3e6b9c916c5b9ef7081f0062",
+          "requestSocketId": 7,
+          "service": "google_models",
+          "socketId": 7,
+          "status": 200,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": true,
+      "phase": "complete",
+      "plugin": {
+        "agentStores": 1,
+        "effectiveMismatched": 0,
+        "effectiveMissing": 0,
+        "errorSha256": null,
+        "importedProfiles": 1,
+        "logCounts": {
+          "debug": 0,
+          "error": 0,
+          "info": 0,
+          "warn": 0
+        },
+        "manifestGeneration": 1,
+        "manifestProfiles": 1,
+        "ok": true,
+        "pendingRuntimeRefreshes": 0,
+        "schedulerReports": 1,
+        "verifiedStores": 1
+      },
+      "productionCutover": false,
+      "profileCountAfter": 1,
+      "profileCountBefore": 1,
+      "providerCanonical": "google",
+      "providerControl": {
+        "absoluteBudgetMs": 10000,
+        "addressFamily": 4,
+        "hasNextPage": false,
+        "httpStatus": 403,
+        "modelCountThisPage": 0,
+        "modelsArray": false,
+        "tlsAuthorized": true
+      },
+      "providerProbe": {
+        "absoluteBudgetMs": 10000,
+        "addressFamily": 4,
+        "hasNextPage": false,
+        "httpStatus": 200,
+        "modelCountThisPage": 63,
+        "modelsArray": true,
+        "tlsAuthorized": true
+      },
+      "schema": "actual-openclaw-authbus-consumer-v1",
+      "scope": {
+        "databasePath": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/restored-state/agents/main/agent/openclaw-agent.sqlite",
+        "defaultAgentDirScoped": true,
+        "externalCliSyncEnabled": false,
+        "immutablePluginCopy": true,
+        "oauthRefreshEnabled": false,
+        "stateDir": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/restored-state"
+      },
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdkReadbackMatches": true,
+      "authentications": 0,
+      "case": "sid_revoked",
+      "credentialDigest": "16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+      "error": "actual_plugin_cycle_failed",
+      "exit_code": 3,
+      "harnessTransport": {
+        "isolatedBaoAgent": "fresh_full_tls_handshake_per_request",
+        "keepAlive": false,
+        "maxCachedSessions": 0,
+        "productionPluginModified": false
+      },
+      "observations": [
+        {
+          "isSessionReused": false,
+          "method": "POST",
+          "path": "/v1/auth/approle/login",
+          "peerCertificateSha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+          "requestSocketId": 1,
+          "service": "isolated_heptabao",
+          "socketId": 1,
+          "status": 400,
+          "tlsAuthorized": true,
+          "tlsVersion": "TLSv1.3"
+        }
+      ],
+      "ok": false,
+      "phase": "actual_sdk_readback",
+      "plugin": {
+        "agentStores": null,
+        "effectiveMismatched": null,
+        "effectiveMissing": null,
+        "errorSha256": "5f5564471db8ccaabd6aba3216adb359531e94092fb06404d5e8b47164e9205c",
+        "importedProfiles": null,
+        "logCounts": {
+          "debug": 0,
+          "error": 1,
+          "info": 0,
+          "warn": 0
+        },
+        "manifestGeneration": null,
+        "manifestProfiles": null,
+        "ok": false,
+        "pendingRuntimeRefreshes": null,
+        "schedulerReports": null,
+        "verifiedStores": null
+      },
+      "productionCutover": false,
+      "profileCountAfter": 1,
+      "profileCountBefore": 1,
+      "providerCanonical": "google",
+      "schema": "actual-openclaw-authbus-consumer-v1",
+      "scope": {
+        "databasePath": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state/agents/main/agent/openclaw-agent.sqlite",
+        "defaultAgentDirScoped": true,
+        "externalCliSyncEnabled": false,
+        "immutablePluginCopy": true,
+        "oauthRefreshEnabled": false,
+        "stateDir": "/home/qian-qi/heptabao-next-gates-20261017/native-authbus-actual-openclaw-r9-20261017/openclaw-state"
+      },
+      "sdkVersion": "2026.7.1-2"
+    }
+  ],
+  "created_at": "2026-10-17T12:24:22.395872+00:00",
+  "credential_digest": "16900c8f2203da5c2a0a3de7aaf2edd0288d7b0e097b827646ca8bef6a5000dc",
+  "ha_qualification": false,
+  "harness_sha256": "6d785c4d69ad800b7c9ac5f8510397031362ff5bca9947be024700e91235c98a",
+  "j3160_contacted": false,
+  "legacy_oauth_migrated": false,
+  "native_v6_fixture": true,
+  "new_ca_sha256": "b4721f721002e30d147953ba68ab3cda2d1aca6afdaadbd0baaef9b9db013385",
+  "node_harness_sha256": "dde1f8097c190379b88f70292abf4c0a5fb45ba3db7a6c8c805843321b7c4cab",
+  "ok": true,
+  "plugin_source_sha256": {
+    "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+    "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+    "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+    "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+    "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+    "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+    "runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+  },
+  "production_cutover": false,
+  "profile_id": "google:authbus-source-main",
+  "real_owned_credential_used": true,
+  "schema": "native-v6-actual-openclaw-authbus-live-v1",
+  "server_cert_der_sha256": "ff6ea4d5bdfa056d36c61017ad5e54c40acd728d26c74d69c41a16e1fbd1b5ca",
+  "server_cycles": [
+    {
+      "case": "cold_restart",
+      "exit_code": -9,
+      "pid": 1904204,
+      "stop": "SIGKILL"
+    },
+    {
+      "case": "revocations_cold_restart",
+      "exit_code": -9,
+      "pid": 1904544,
+      "stop": "SIGKILL"
+    }
+  ],
+  "source_candidate_sha256": "80eefc93f15d596933658d25d7c4a3c666bfcbda6c1d498c46b60af1d7995c76",
+  "source_oauth_refreshed": false,
+  "sqlite_backup": [
+    {
+      "bytes": 110592,
+      "name": "openclaw-agent.sqlite",
+      "sha256": "1088fa046e972fce2ab624c8616d668d7c2a05495eb5dbf7701bb2dfe316babb"
+    }
+  ],
+  "verified_source_profiles": 1
+}
+

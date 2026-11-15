@@ -1,0 +1,83 @@
+{
+  "actual_artifact_identities": null,
+  "automatic_retry": false,
+  "compiled_on_executor": false,
+  "executor": "qian-ThinkPad-X230",
+  "files": [
+    {
+      "bytes": 2896,
+      "nested_remote_syntax_and_ast_checked": [],
+      "nonconstant_ast_skeleton_unchanged": true,
+      "original_sha256": "98ebfa9b225cb6589c7f10bd44d908b27f21380c353d7da391af82c1d4eeba32",
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r6-source-orchestration-r1/artifact-x230/launch_main_pack_07a3dda_r1.py",
+      "sha256": "7516d120257beca868debe10e9d68fdcf543c9fbbaec7a803a53079743c99a2d",
+      "syntax_compiles": true
+    },
+    {
+      "bytes": 4713,
+      "nested_remote_syntax_and_ast_checked": [],
+      "nonconstant_ast_skeleton_unchanged": true,
+      "original_sha256": "d301dee5b115e18b97324dcaa89bb51a796d1aab23f98bb211ee2ceb529ab4a7",
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r6-source-orchestration-r1/artifact-x230/materialize_x230_07a3dda_r1.py",
+      "sha256": "49c11181bb4e75d0d589b9bab71e807663329dd774fb71b06aee441a95f5f290",
+      "syntax_compiles": true
+    },
+    {
+      "bytes": 6222,
+      "nested_remote_syntax_and_ast_checked": [
+        "preflight",
+        "remote"
+      ],
+      "nonconstant_ast_skeleton_unchanged": true,
+      "original_sha256": "0441f1fd0cbf9397702129e8d502fa8dfd391ca61cbb9d9a196e35921c666f2b",
+      "path": "/workspace/scratch/915e5e680008/continuation-20261019/r6-source-orchestration-r1/artifact-x230/launch_x230_handoff_07a3dda_r1.py",
+      "sha256": "156e726f79b77a7a3a8d6ba201ebb31c9fafbb12366ceef304ca4145971f105b",
+      "syntax_compiles": true
+    }
+  ],
+  "free_disk_requirement": "strictly greater than max(minimum, actual capsule bytes)",
+  "handoff_command": [
+    "python3",
+    "-B",
+    "launch_x230_handoff_07a3dda_r1.py",
+    "--capsule-sha256",
+    "<actual R6 main capsule.json SHA256>"
+  ],
+  "local_syntax_and_AST_validation_passed": true,
+  "minimum_free_disk_bytes": 2400000000,
+  "original_artifact_runner_sha256": "45a898ca7f902b4f179ea7035bd17b77fa41e34a9844470597d84bdcd63cf634",
+  "original_cases": 55,
+  "original_groups": 17,
+  "original_host_runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "pack_command": [
+    "python3",
+    "-B",
+    "launch_main_pack_07a3dda_r1.py",
+    "--summary-sha256",
+    "<actual R6 main final summary SHA256>"
+  ],
+  "per_command_seconds": 1800,
+  "producer": "qian-qi (main)",
+  "raw_ELF_unchanged_no_strip": true,
+  "remote_execution_performed": false,
+  "required_real_capsule_sha256": null,
+  "required_real_producer_summary_sha256": null,
+  "schema": "heptabao.r6-main-to-x230-artifact-handoff-preparation.v1",
+  "scope": "Preparation only; actual main build must complete before packing. X230 source staging precedes one-shot artifact handoff; no source or result inheritance from b24.",
+  "scp_capsule_seconds": 300,
+  "source_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "source_only_staging_seconds": 120,
+  "source_stage_command": [
+    "python3",
+    "-B",
+    "materialize_x230_07a3dda_r1.py",
+    "--stager",
+    "<uploaded materialize_launch_07a3dda.py>",
+    "--packet",
+    "<uploaded source-materialize-packet.json.gz>"
+  ],
+  "source_tree": "8c2b23cd1c66ac16b466f16ea97c201e852125aa",
+  "ssh_step_seconds": 30,
+  "test_threads": 1,
+  "tool_and_host_runner_match_actual_R6_tree": true
+}

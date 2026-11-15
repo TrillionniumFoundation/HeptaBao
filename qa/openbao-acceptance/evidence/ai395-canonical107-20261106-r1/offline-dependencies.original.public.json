@@ -1,0 +1,147 @@
+{
+  "cargo_dependency_metadata_commands_executed": true,
+  "finished_at_unix": 1793978676.6689394,
+  "formal_107_qualified": false,
+  "missing_archive_source_checks": [
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "js-sys",
+      "source_present": false,
+      "version": "0.3.105"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "libredox",
+      "source_present": false,
+      "version": "0.1.24"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "redox_syscall",
+      "source_present": false,
+      "version": "0.9.4"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "schannel",
+      "source_present": false,
+      "version": "0.1.27"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen-macro",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen-macro-support",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "wasm-bindgen-shared",
+      "source_present": false,
+      "version": "0.2.128"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "xattr",
+      "source_present": false,
+      "version": "1.6.1"
+    },
+    {
+      "all_source_files_match": false,
+      "checksum_manifest_matches": false,
+      "file_count": 0,
+      "name": "zerocopy-derive",
+      "source_present": false,
+      "version": "0.8.62"
+    }
+  ],
+  "production_changed": false,
+  "rust_build_or_product_tests_executed": false,
+  "schema": "heptabao.ai395-linux-offline-dependencies.v1",
+  "selected_linux_dependency_closures_available": true,
+  "source_and_lock_unchanged": true,
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal,build,dev",
+        "--prefix",
+        "none",
+        "-p",
+        "heptabao-server"
+      ],
+      "cap_seconds": 60,
+      "exit_code": 0,
+      "label": "server",
+      "seconds": 0.365097,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 19276,
+      "stdout_sha256": "3d112e6e8671700cd9c87b10e7c3f917b95633d469189c63cadf747ed736e707"
+    },
+    {
+      "argv": [
+        "/home/qq/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--edges",
+        "normal,build,dev",
+        "--prefix",
+        "none",
+        "-p",
+        "heptabao-ha-service",
+        "--features",
+        "native-v6-peer-ingress"
+      ],
+      "cap_seconds": 60,
+      "exit_code": 0,
+      "label": "peer",
+      "seconds": 0.122262,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 5215,
+      "stdout_sha256": "40e70fe078077d01cb304131a61c2fa54c1dbbd9a871fe56151a321cc94c420f"
+    }
+  ]
+}

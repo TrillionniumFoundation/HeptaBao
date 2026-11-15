@@ -18,7 +18,7 @@ This package owns provider-neutral key lifecycle, wrapping context, secret buffe
 
 `KmsProvider` exposes only `wrap(WrapCommand) -> KmsOutcome<WrappedValue>` and `unwrap(UnwrapCommand) -> KmsOutcome<SecretValue>`, consuming owned commands. `GenerateDataKey` is a capability enum variant, not an implemented provider method. Commands bind operation ID, key ID/version and `WrappingContext` (namespace, purpose, nonzero associated-data digest). `WrappedValue::new` accepts 1 byte through 2 MiB; the provider must enforce actual cryptographic context binding and ciphertext format.
 
-`KmsOutcome::retry_disposition` permits a fresh operation only for `ProviderUnavailableBeforeEntry`; uncertainty is `ReconcileOnly`. Derived `Debug` redacts plaintext/wrapped buffers through their types but **does not redact** ordinary `Id` fields, including reconciliation references. Do not log whole outcome/command objects when identifiers are sensitive. This standalone contract is outside the current server dependency closure and supplies no cloud/HSM adapter, auto-unseal implementation or key custody evidence.
+`KmsOutcome::retry_disposition` permits a fresh operation only for `ProviderUnavailableBeforeEntry`; uncertainty is `ReconcileOnly`. Derived `Debug` redacts plaintext/wrapped buffers through their types but **does not redact** ordinary `Id` fields, including reconciliation references. Do not log whole outcome/command objects when identifiers are sensitive. This contract is in the current server dependency closure for the admitted KMS plugin consumer. The separate `heptabao-openbao-grpc` and server Linux/barrier owners compose the OpenBao Wrapper transport and auto-unseal lifecycle; these contract types alone supply no cloud/HSM adapter or key custody evidence.
 
 ### Historical V1.4.7 lexical snapshot
 
@@ -127,3 +127,7 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-kms-contracts.md).

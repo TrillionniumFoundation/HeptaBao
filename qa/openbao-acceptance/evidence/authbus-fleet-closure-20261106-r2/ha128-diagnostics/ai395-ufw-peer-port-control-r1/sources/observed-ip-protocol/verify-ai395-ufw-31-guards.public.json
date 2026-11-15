@@ -1,0 +1,59 @@
+{
+  "actualKernelPair": {
+    "afterUserInputCount": 20,
+    "allOtherCompleteNftSequenceAndIptablesSemanticsEqual": true,
+    "baseline": "earlier archived actual readonly kernel snapshot; privileged fresh before compared remotely separately",
+    "opaqueMatcherBoundToFullIptables": true,
+    "ownedOrdinal": 19,
+    "priorUserInputCount": 19
+  },
+  "actualPersistentProjection": {
+    "exactTagAndBody": true,
+    "sourcePin": {
+      "bytes": 5612,
+      "sha256": "dadf2a867a6b42b31619c95dbfbb6a989be8dc6f0224cb5d5a81c3ea0e82dd51"
+    },
+    "totalTuples": 21,
+    "tupleOrdinal": 20
+  },
+  "guards": {
+    "executed": 31,
+    "failed": 0,
+    "passed": 31,
+    "skipped": 0
+  },
+  "inputs": {
+    "test_verify_ai395_ufw_phase_r1.py": {
+      "bytes": 13898,
+      "sha256": "e94fc5f08832f1eb190859fa1d7eb9c1fcd0815cf396b72fc4a41546f2019a53"
+    },
+    "ufw-owned-tuple-projection.source.py": {
+      "bytes": 2872,
+      "sha256": "17fcf9eddb82e7bb541fbc63621367773753c868163b53d16cb468e2182a60d1"
+    },
+    "ufw-owned-tuple.original.public.json": {
+      "bytes": 603,
+      "sha256": "781e32d55e3ad39b4bf85ed0ba987f027dfbe763b9cb76dc03d7ab569b3f8f70"
+    },
+    "verify-ai395-ufw-31-guards.exec.original.json": {
+      "bytes": 3358,
+      "sha256": "2b4f08d403cdfa64abb18492d8d8f54e5daa63b8e3aaea4ac75d72bf503a958d"
+    },
+    "verify-ai395-ufw-31-guards.stdout.original.txt": {
+      "bytes": 3194,
+      "sha256": "9bfd117665a0ff4ce2c335b911cdfff44e779a3da5a473d2fa3540df8ad39f45"
+    },
+    "verify-ai395-ufw-observed-ip-protocol.diff": {
+      "bytes": 786,
+      "sha256": "56edba95b80a20b5d241e92b6a90d6350d4fcd6a3496e1a454d55ec54f2c47a7"
+    },
+    "verify_ai395_ufw_phase_r1.py": {
+      "bytes": 19455,
+      "sha256": "06a8f8a741d671b13eea1e9757b80162aeba87531cbca019ff71d33598716194"
+    }
+  },
+  "ok": true,
+  "remoteFullPhasePassed": false,
+  "schema": "heptabao.ai395-ufw-observed-tcp-selector-local-verification.r1",
+  "writesInThisVerification": 0
+}

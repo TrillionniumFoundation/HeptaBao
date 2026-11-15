@@ -1,0 +1,49 @@
+{
+  "expected_artifacts": {
+    "heptabao-seed": {
+      "bytes": 102211888,
+      "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-seed",
+      "sha256": "434c32ed59201c13d8af498f5a6b19f10935e744b085a4f8029c241523f4d968"
+    },
+    "heptabao-server": {
+      "bytes": 110799168,
+      "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/build-test-r1/artifacts/heptabao-server",
+      "sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c"
+    }
+  },
+  "interpreter_path": "/lib64/ld-linux-x86-64.so.2",
+  "interpreter_pin": {
+    "bytes": 236616,
+    "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+    "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+  },
+  "normal107_job_id": "1a1b2367cb2-fc05-7cfc",
+  "output_directory": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/capture",
+  "producer_job_id": "1a1b2770e68-fc05-7e1e",
+  "producer_receipt": {
+    "bytes": 37794,
+    "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/producer-abi.result.original.public.json",
+    "sha256": "d19c0efdebc27940a56ddef6c5ced9ff68bcc23465c2730d07d396fc915d1b4f"
+  },
+  "producer_terminal": {
+    "bytes": 729,
+    "path": "/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/producer-abi.terminal.exact-tool-text.json",
+    "sha256": "0f71a30b723ec5a58882d95bfbe88395553c97f4cd038058bdbc10cdf32e6051"
+  },
+  "role": "receiver",
+  "schema": "heptabao.current-native-static-abi-capture-inputs.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "tools": {
+    "ldconfig": {
+      "bytes": 1051280,
+      "path": "/usr/sbin/ldconfig.real",
+      "sha256": "d879c9a8a41240aeb7fd0f3221116fc4cf41cc6c64c24e10541d1bafbe537ab1"
+    },
+    "readelf": {
+      "bytes": 789280,
+      "path": "/usr/bin/x86_64-linux-gnu-readelf",
+      "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.closed-ha-r4-structural-reader-prepared.r1",
+  "originalProductJob": "1a1b3c982b3-fc05-84bc",
+  "source": {
+    "bytes": 16198,
+    "sha256": "d3c8038ed2bd9cb1ec5f2d12c484fd06e08c503f576ce6b23370607bd26290dc"
+  },
+  "changesFromQualifiedR3": "three exact closed fixture roots, docstring, and two report provenance strings only; parser/I/O/caps unchanged",
+  "unexecutedPreparedRootOnlyVersion": {
+    "sha256": "d7ae5db0d4e32cf1489263c1349b96b91cef2b908b7ecbb77d7f086d3179f7c3",
+    "executions": 0,
+    "reason": "caught stale r3 originalJob/schema before dispatch"
+  },
+  "innerSeconds": 12,
+  "outerSeconds": 20,
+  "fixedFiles": 5,
+  "perFileBytesCap": 8388608,
+  "totalBytesCap": 33554432,
+  "productExecutions": 0,
+  "keyFilesRead": 0,
+  "interpretation": "CRC/index/audit structural observations only; no key-value readability or authenticated audit proof"
+}

@@ -1,0 +1,45 @@
+{
+  "id": "openclaw-authbus",
+  "name": "OpenClaw AuthBus",
+  "description": "Synchronizes auth credentials through an OpenBao control plane",
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "address",
+      "caFile",
+      "roleIdFile",
+      "secretIdFile",
+      "hostId"
+    ],
+    "properties": {
+      "address": { "type": "string", "pattern": "^https://" },
+      "caFile": { "type": "string" },
+      "roleIdFile": { "type": "string" },
+      "secretIdFile": { "type": "string" },
+      "hostId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,62}$" },
+      "pollIntervalMs": { "type": "integer", "minimum": 5000, "maximum": 300000 },
+      "refreshMarginMs": { "type": "integer", "minimum": 300000, "maximum": 86400000 },
+      "maxRefreshesPerCycle": { "type": "integer", "minimum": 1, "maximum": 10 },
+      "leader": { "type": "boolean" },
+      "publishNew": { "type": "boolean" },
+      "manageOrder": { "type": "boolean" },
+      "schedulerMode": { "type": "string", "enum": ["shadow", "enforce"] },
+      "schedulerReportIntervalMs": { "type": "integer", "minimum": 15000, "maximum": 300000 },
+      "enforceRefreshLeases": { "type": "boolean" },
+      "releaseGeneration": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+      "orderExcludeAgentIds": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,127}$"
+        },
+        "uniqueItems": true,
+        "maxItems": 128
+      }
+    }
+  }
+}

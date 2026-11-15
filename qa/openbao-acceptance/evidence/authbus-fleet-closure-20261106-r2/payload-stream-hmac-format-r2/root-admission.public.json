@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.streaming-hmac-format-candidate-admission.r2",
+  "oldProductCommit": "49d3bb88f548d7647c44cefe21e5e7ab75a77fe9",
+  "actualFormatJob": "1a1b416db1b-fc05-8637",
+  "actualFormatOutcome": "known failed",
+  "formatOnlyPatch": {
+    "bytes": 2053,
+    "sha256": "ab7d30c951224319802f4ad741b3fddf2f24a8642dbf379d2dfec5a72ea36e44"
+  },
+  "commit": "5f9d4263b136685244aba93e45a69139cb8aba41",
+  "tree": "2c69f04159c112a883abe57f0d367a2627197c7a",
+  "parent": "7d9e933d5ccab83d51c4de9ae7f028fe70e92302",
+  "changedProductFiles": {
+    "crates/heptabao-server/src/engines/kv2_native_paged.rs": {
+      "bytes": 53305,
+      "sha256": "39dc30eb361590691ce4102446597037b485f600d9baf18cf6564653c024bc10"
+    },
+    "crates/heptabao-server/src/engines/kv2_native_payload_validation_tests.rs": {
+      "bytes": 14344,
+      "sha256": "9db53e2932ce7db1e0750966383e78b65a37d7c1079c158615ef6ecbdd7e246d"
+    }
+  },
+  "changes": "Four rustfmt hunks, including one trailing argument comma; no HMAC logic change.",
+  "originalRustCompileOrTestsRunForCandidate": false,
+  "oldFormatFailurePreserved": true,
+  "fullReplacementClaim": false
+}

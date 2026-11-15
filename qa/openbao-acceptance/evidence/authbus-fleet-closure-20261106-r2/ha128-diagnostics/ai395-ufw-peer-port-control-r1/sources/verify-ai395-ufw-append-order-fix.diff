@@ -1,0 +1,63 @@
+--- reviewed-before-append-order-fix
++++ final-append-order-fix
+@@ -114,10 +114,16 @@
+                 body=shlex.split(lines[index+1]); core=core_iptables(body)
+                 need(core==(own_peer,'ACCEPT'),'owned_tuple_exact_generated_body')
+                 need(index+2==len(lines) or lines[index+2].startswith('###'), 'single_owned_tuple_body')
+-                found.append(own_peer); index+=2; continue
++                found.append(own_peer)
++                need(found==list(expected[:len(found)]),'persistent_owned_tuple_append_order')
++                if len(found)==len(expected):
++                    need(index+2<len(lines) and lines[index+2]=='### END RULES ###',
++                         'last_owned_tuple_immediately_before_end_rules')
++                index+=2; continue
++            need(not found,'no_original_tuple_after_owned_append')
+         output.append(shlex.split(line) if line.startswith('-A ') else line)
+         index+=1
+-    need(set(found)==set(expected),'complete_persistent_owned_tuple_set')
++    need(found==list(expected),'complete_persistent_owned_tuple_set_and_order')
+     return output
+ 
+ 
+@@ -167,7 +173,7 @@
+ 
+ def nft_semantics(raw,owned_ordinals,user_count,ipv6):
+     parsed=json.loads(raw); need(set(parsed)=={'nftables'},'nft_top_schema')
+-    groups={}; index=0; matched=[]; opaque=0; chain_names=set()
++    sequence=[]; index=0; matched=[]; opaque=0; chain_names=set()
+     ordinals={ordinal:peer for peer,ordinal in owned_ordinals.items()}
+     need(len(ordinals)==len(owned_ordinals),'unique_owned_ordinals')
+     for entry in parsed['nftables']:
+@@ -181,19 +187,16 @@
+                     peer=ordinals[ordinal]; opaque+=int(exact_nft_owned(data,peer)); matched.append(peer); continue
+         elif kind=='chain':
+             chain_names.add((data.get('family'),data.get('table'),data.get('name')))
+-            key=(kind,data.get('family'),data.get('table'),data.get('name'))
+-        else:
+-            key=(kind,data.get('family'),data.get('table'),data.get('name'))
+         if kind in ('table','chain','rule','set','map','element','counter','quota','flowtable'):
+             data.pop('handle',None)
+         data=nft_counter_normalize(data)
+-        groups.setdefault(json.dumps(key),[]).append(data)
++        sequence.append({kind:data})
+     need(index==user_count and set(matched)==set(owned_ordinals),'nft_iptables_ordered_chain_binding')
+     for family,prefix in [('ip','ufw')]+([('ip6','ufw6')] if ipv6 else []):
+         for suffix in ('input','output','forward','limit','limit-accept'):
+             need((family,'filter',prefix+'-user-'+suffix) in chain_names,'existing_ufw_user_chain_complete')
+-    # Rule order and duplicate multiplicity are retained; only group enumeration order is normalized.
+-    return {key:groups[key] for key in sorted(groups)},opaque
++    # Preserve the complete entry sequence, including table/chain enumeration and duplicates.
++    return sequence,opaque
+ 
+ 
+ def compare(before,current,expected):
+@@ -204,6 +207,9 @@
+     left,_,left_count=iptables_semantics(before['iptables-filter.original.private.log'],())
+     right,ordinals,right_count=iptables_semantics(current['iptables-filter.original.private.log'],expected)
+     need(left==right,'all_other_iptables_semantics_unchanged')
++    need(right_count==left_count+len(expected) and
++         all(ordinals[peer]==left_count+index for index,peer in enumerate(expected)),
++         'owned_live_rules_appended_in_approved_order')
+     flags=re.findall(rb'(?m)^IPV6=(yes|no)\s*$',before['etc-default-ufw'])
+     need(len(flags)==1,'explicit_ipv6_configuration'); ipv6=flags[0]==b'yes'
+     left,_=nft_semantics(before['nft.original.private.log'],{},left_count,ipv6)

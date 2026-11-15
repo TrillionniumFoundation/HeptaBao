@@ -1,0 +1,90 @@
+[
+  {
+    "phase": "source_verified",
+    "source_commit": "8ce10a868c033b741d0f173e372a27984fc52d80",
+    "source_tree": "679a82c5ae94f1e7e5ac16e23936bf54db56d597",
+    "source_files": 2517,
+    "root": "/home/qian-qi/heptabao-next-gates-20261017/source-r8f"
+  },
+  {
+    "phase": "mac_matrix_finished",
+    "exit_code": 0,
+    "elapsed_seconds": 167.934,
+    "log_path": "/home/qian-qi/heptabao-next-gates-20261017/r8f-mac-server-matrix.log",
+    "log_sha256": "5781facb796d515515df548460f014ed5fc4b1dbd9dfd4f40169a8800d9d6ebf"
+  },
+  {
+    "phase": "source_verified",
+    "source_commit": "8ce10a868c033b741d0f173e372a27984fc52d80",
+    "source_tree": "679a82c5ae94f1e7e5ac16e23936bf54db56d597",
+    "source_files": 2517,
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8f"
+  },
+  {
+    "phase": "test_started",
+    "case": "native-ha-34mib-pinned-mtls",
+    "filter": "native_ha_actual_34mib_history_pinned_mtls_two_voters_original_15s_and_cold_rewrap"
+  },
+  {
+    "case": "native-ha-34mib-pinned-mtls",
+    "exit_code": 0,
+    "elapsed_seconds": 166.384,
+    "command": [
+      "cargo",
+      "test",
+      "--lib",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--features",
+      "experimental-native-v6-ha",
+      "native_ha_actual_34mib_history_pinned_mtls_two_voters_original_15s_and_cold_rewrap",
+      "--",
+      "--test-threads=1",
+      "--nocapture"
+    ],
+    "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8f-server-native-ha-34mib-pinned-mtls.log",
+    "log_sha256": "6b2f36d9aed91c0da49826c927bc54d955857f33b5bf2cf56fcb8d9274f2ae1d",
+    "summaries": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2695 filtered out; finished in 26.92s"
+    ]
+  },
+  {
+    "cases": [
+      {
+        "case": "native-ha-34mib-pinned-mtls",
+        "command": [
+          "cargo",
+          "test",
+          "--lib",
+          "--locked",
+          "--offline",
+          "-p",
+          "heptabao-server",
+          "--features",
+          "experimental-native-v6-ha",
+          "native_ha_actual_34mib_history_pinned_mtls_two_voters_original_15s_and_cold_rewrap",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ],
+        "elapsed_seconds": 166.384,
+        "exit_code": 0,
+        "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8f-server-native-ha-34mib-pinned-mtls.log",
+        "log_sha256": "6b2f36d9aed91c0da49826c927bc54d955857f33b5bf2cf56fcb8d9274f2ae1d",
+        "summaries": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2695 filtered out; finished in 26.92s"
+        ]
+      }
+    ],
+    "host_abi": "aarch64-apple-darwin",
+    "ok": true,
+    "production_cutover": false,
+    "schema": "heptabao.r8f-native-service-matrix.v1",
+    "source_commit": "8ce10a868c033b741d0f173e372a27984fc52d80",
+    "source_files": 2517,
+    "source_tree": "679a82c5ae94f1e7e5ac16e23936bf54db56d597",
+    "source_unchanged_after_tests": true
+  }
+]

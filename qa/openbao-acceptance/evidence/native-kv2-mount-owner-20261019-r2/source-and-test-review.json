@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.native-kv2-mount-owner-r2.source-review.v1",
+  "parent_source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "parent_source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "apply_after_overlay_sha256": "cde8d6f77ce1614c390a95a82dfc3a4f4a8a9dc0fee41168a9c38acbeaedd797",
+  "reviewed_terminal_writer_git_blob": "6220e98d3f5e4094e3db0993483a6ee08718d483",
+  "source_files": [
+    {
+      "path": "crates/heptabao-server/src/engine_native_kv2_mount.rs",
+      "base_git_blob": "b9a63206a6e6405298a76f8c1a3c5eb502af0e5f",
+      "base_sha256": "25e24a9c07d7da28ffbfd075f8a3fa4aa42724f36b6b0d82d450a340197d1052",
+      "git_blob": "fa24b10f7c2d5834f6fc4feae3a62d06c85aab1f",
+      "sha256": "771e6b82a6ea7a3145c8212d4105f8896c3ae2e85209c0ad7811921d59a420ab",
+      "size": 16619
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "base_git_blob": "c04ccd1f76e5d96998234a1108f1acf426433bc8",
+      "base_sha256": "c7d4d790941096489101137d64b5734a7ffbca885319942fef71d017f2e2b141",
+      "git_blob": "5ccb657101063ea657b4913a0897d7aca40c9c89",
+      "sha256": "375e12c3d94f45784f1a4f6bb0e46ace863300d901bd81a926e164f72851b288",
+      "size": 33060
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "base_git_blob": "a38415b13f84bd5e0d1b13da818e95ee339db181",
+      "base_sha256": "220b2b28a036799574357804d0c07b4388650d1761b542c8b7832b7a2d450f8c",
+      "git_blob": "adc9e406595ad10f5e5893e2d63b741bbe353408",
+      "sha256": "536068940482c7a62020d71a8b3c8c047163ae957f0c387db2e2ae6e0f7b725b",
+      "size": 20354
+    }
+  ],
+  "expected_existing_cases": 55,
+  "expected_live_full34_cases": 31,
+  "mount_cases_total": 3,
+  "added_names_beyond_mount_r1": [],
+  "mount_exact_cases": [
+    "service::native_auth::mount_tests::native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_history",
+    "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+    "service::native_auth::mount_tests::native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_committed_mount"
+  ],
+  "request_deadline_seconds": 15,
+  "command_deadline_seconds": 1800,
+  "test_threads": 1,
+  "local_review": {
+    "immutable_r1_verified": true,
+    "three_names_unchanged": true,
+    "auth_only_root_change_unchanged": true,
+    "terminal_receipt_writer_unchanged": true,
+    "check_installed_no_auth_mask": true,
+    "default_feature_changes": false
+  },
+  "rustfmt_executed": false,
+  "cargo_executed": false,
+  "rust_tests_executed": 0,
+  "external_actions": 0,
+  "remaining_actual_validation": [
+    "Rustfmt of explicit final R1+R2 Rust files without unrelated changes",
+    "same-profile compile and exact three new Service cases",
+    "native-service-only cfg compile",
+    "parent-selected affected existing Auth/HA checks without changing original 55/31"
+  ]
+}

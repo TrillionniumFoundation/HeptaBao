@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.mac-main3-api-r5-complete-originals-archive.r1",
+  "ok": true,
+  "kind": "archive inventory and recomputation from original receipts; no new service or business execution",
+  "executionJobId": "1a1b22ef858-fc05-7cd6",
+  "absenceJobId": "1a1b2329e56-fc05-7cea",
+  "originalArtifactCount": 313,
+  "journalFiles": 211,
+  "allJournalBytesAndSha256MatchOriginalInventory": true,
+  "launchdPublicEvents": 14,
+  "inlineCapturePublicFiles": 2,
+  "phases": [
+    {
+      "phase": "initial",
+      "checks": 78,
+      "passed": 78,
+      "requests": 52,
+      "complete": 52,
+      "chunked": 6,
+      "unknown": 0,
+      "socketsClosed": true
+    },
+    {
+      "phase": "cold-new-process",
+      "checks": 54,
+      "passed": 54,
+      "requests": 39,
+      "complete": 39,
+      "chunked": 6,
+      "unknown": 0,
+      "socketsClosed": true
+    }
+  ],
+  "completeOwnedCommandCount": 64,
+  "unknownOwnedCommands": 0,
+  "independentAbsenceRounds": 2,
+  "providerValid": false,
+  "providerCalled": false,
+  "productionChanged": false,
+  "productionCutover": false,
+  "actualPluginSdkPhaseExecuted": false,
+  "productionClientRollbackQualified": false,
+  "privateCredentialValuesOrDigestsPublished": false,
+  "innerOperationKeyErratum": {
+    "originalSourceAndReceiptLabel": "heptabao-mac-authbus-main3-api-inline-capture-20261106-r4",
+    "manifestClaimedLabel": "heptabao-mac-authbus-main3-api-inline-capture-20261106-r5",
+    "runtimeIdempotencyKey": "heptabao-mac-authbus-main3-api-two-generation-20261106-r5",
+    "innerLabelIsRuntimeIdempotencyKey": false,
+    "originalsModified": false
+  },
+  "run": {
+    "path": "run.stdout.original.json",
+    "bytes": 165620,
+    "blobSha": "44e4093ff5ff7d06cd2a272d43b83d8f361e39c8"
+  },
+  "finalJournal": {
+    "path": "journal/210-final-result.public.json",
+    "blobSha": "9afcf68b4dd1192b36833c9e5ddd1bb405a8eedb",
+    "bytes": 114315,
+    "sha256": "4fa236165be77911efa02d998db32b55f5d593dfc65f52940feeaacaa32d3d30"
+  }
+}

@@ -1,0 +1,44 @@
+{"argv": ["/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-ha-service", "--lib", "--features", "experimental-v6-peer-ingress,private-forward-stage-diagnostic", "--no-run"]}
+   Compiling futures-sink v0.3.34
+   Compiling futures-core v0.3.34
+   Compiling slab v0.4.12
+   Compiling futures-channel v0.3.34
+   Compiling num-traits v0.2.19
+   Compiling syn v2.0.119
+   Compiling futures-util v0.3.34
+   Compiling generic-array v0.14.7
+   Compiling cc v1.4.5
+   Compiling chrono v0.4.45
+   Compiling typenum v1.20.1
+   Compiling derive_more-impl v2.1.1
+   Compiling chrono-tz v0.8.6
+   Compiling tokio v1.53.1
+   Compiling openraft-rt v0.10.0-alpha.34
+   Compiling ring v0.17.14
+   Compiling tracing-attributes v0.1.31
+   Compiling tracing v0.1.44
+   Compiling openraft-rt-tokio v0.10.0-alpha.34
+   Compiling display-more v0.2.6
+   Compiling derive_more v2.1.1
+   Compiling futures-executor v0.3.34
+   Compiling smallvec v1.16.0
+   Compiling serde_json v1.0.151
+   Compiling rustix v1.1.4
+   Compiling openraft v0.10.0-alpha.34
+   Compiling futures v0.3.34
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling getrandom v0.2.17
+   Compiling linux-raw-sys v0.12.1
+   Compiling openraft-legacy v0.10.0-alpha.34
+   Compiling digest v0.10.7
+   Compiling rustls v0.23.44
+   Compiling sha2 v0.10.9
+   Compiling openraft-memstore v0.10.0-alpha.34
+   Compiling rustls-webpki v0.103.15
+   Compiling heptabao-filesystem-guard v0.1.0 (/home/qian-qi/heptabao-next-gates-20261017/source-0f1c/crates/heptabao-filesystem-guard)
+   Compiling subtle v2.6.1
+   Compiling heptabao-raft-runtime v0.1.0 (/home/qian-qi/heptabao-next-gates-20261017/source-0f1c/crates/heptabao-raft-runtime)
+   Compiling heptabao-ha-service v0.1.0 (/home/qian-qi/heptabao-next-gates-20261017/source-0f1c/crates/heptabao-ha-service)
+    Finished `test` profile [optimized + debuginfo] target(s) in 2m 48s
+  Executable unittests src/lib.rs (/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_ha_service-20c29c2340ce0577)

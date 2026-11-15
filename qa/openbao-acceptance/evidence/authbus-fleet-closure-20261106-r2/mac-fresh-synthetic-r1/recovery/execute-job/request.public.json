@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/Users/qianqi/heptabao-mac-fresh-synthetic-recovery-preparation-20261106-r1/pinned_loader_r1.py"
+  ],
+  "idempotency_key": "heptabao-mac-fresh-synthetic-recovery-cleanup-20261106-r1",
+  "timeout_seconds": 60
+}

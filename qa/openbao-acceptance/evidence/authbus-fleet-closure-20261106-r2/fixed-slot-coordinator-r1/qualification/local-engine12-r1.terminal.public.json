@@ -1,0 +1,12 @@
+{
+  "actualSqlite": true,
+  "elapsedSeconds": 0.6076133109963848,
+  "exitCode": 0,
+  "macExecuted": false,
+  "productionActions": 0,
+  "schema": "heptabao.coordinator-local-command-result.r1",
+  "stderrBytes": 0,
+  "stdoutBytes": 1315,
+  "stdoutSha256": "138b64ec2f57f0d0c403138e23fb7e98b38ac8140f35a061908e2fb4f7fd7103",
+  "syntheticRemote": true
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.ai395-exact-peer-ports-actual-state.r1",
+  "actualFirewallAdds": 2,
+  "mutatorsExecutedOnceEach": true,
+  "mutatorReplay": 0,
+  "host": "ai395",
+  "interface": "br0",
+  "destination": "192.168.0.11",
+  "peers": [
+    "192.168.0.8",
+    "192.168.0.13"
+  ],
+  "tcpPortRange": [
+    31040,
+    31041
+  ],
+  "privateBeforeBackupComplete": true,
+  "privateBackupRoot": "/home/qq/heptabao-ha-ufw-peer-ports-20261106-r2",
+  "originalCaptureStdoutAndNaturalExitVerified": true,
+  "firstParserFailurePreserved": {
+    "state": "known_failed",
+    "exit_code": 1,
+    "errorCode": "unknown_owned_nft_selector",
+    "firewallActionReplayed": false
+  },
+  "finalPhase": {
+    "state": "known_succeeded",
+    "exit_code": 0,
+    "wholeStdoutBytes": 604,
+    "wholeStdoutSha256": "ff7ec464259a95f222693d9bde083629bbc40920285c88e1f623b19b3225f0ae",
+    "exactOwnedRuleCount": 2,
+    "otherFullNftSequenceAndPersistentAndIptablesSemanticsUnchanged": true,
+    "fdOpened": 24,
+    "fdClosed": 24
+  },
+  "terminalCloseAcknowledgements": "already_exited/outcome_unknown preserved; natural exited0 complete EOF is authority, not acknowledgement",
+  "rawCompleteFirewallAndPersistentFiles": "retained only in original host private backup; limited public projections only",
+  "temporaryRulesRemainActive": true,
+  "rollback": {
+    "state": "not_yet_executed",
+    "reason": "waiting for unique HA128 r2 terminal and all owned processes closed",
+    "method": "original exact full specification and nonempty same comments, reverse order",
+    "declaredCounterResetSideEffect": true
+  },
+  "ha128r2": {
+    "jobId": "1a1b322abe3-fc05-80b8",
+    "state": "known_launched_terminal_pending",
+    "cases": 128,
+    "outerSeconds": 1800,
+    "passClaim": false
+  },
+  "productionClientActions": 0
+}

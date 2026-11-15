@@ -1,0 +1,873 @@
+--- original-r2/whole_sqlite_bundle_r2.py
++++ streaming-r1/whole_sqlite_streaming_r1.py
+@@ -7,15 +7,18 @@
+ itself. The first qualification uses only a new synthetic root and complete
+ schemas extracted from the pinned installed SDK.
+ 
+-The source's current WAL transaction is copied through SQLite's backup API.
+-An old keeper connection is never accepted as the backup source. All page bytes
+-are compared, excluding only documented SQLite header bookkeeping words at
+-24..27, 40..43 and 92..99. The new empty destination's schema cookie must be
+-exactly 1 after backup, and its complete sqlite_schema must equal the source.
+-The resulting standalone private archive is then bound by an
+-exact whole-file SHA256. Restore copies that exact archive, never regenerates
+-only known tables, and preserves old base/sidecar names in private quarantine.
+-All content-derived digests and namespace records are private.
++One fresh read transaction, including current WAL, is copied twice through
++SQLite's incremental backup API into two independent private disk files. An old
++keeper is never accepted as the latest source. Every page of the two outputs is
++compared with 1 MiB buffers, excluding only the original header bookkeeping
++words at 24..27, 40..43 and 92..99. This is a comparison of two SQLite API
++outputs, not an independent raw-source-page oracle. Each new destination's
++schema cookie must be 1, with exact source schema, capacity and integrity.
++The standalone archive is bound by a complete streamed SHA-256. Restore copies
++its exact bytes and preserves old base/sidecar names in private quarantine.
++No whole-database serialize call or materialization is used. The caller must
++use a dedicated owned Python process because SQLite's allocator ceiling is
++process-global. All content digests and namespace records remain private.
+ """
+ from __future__ import annotations
+ 
+@@ -32,7 +35,11 @@
+ 
+ SUFFIXES = ("", "-wal", "-shm", "-journal")
+ MIB = 1048576
+-MAX_DATABASE_BYTES = 64 * MIB
++MAX_DATABASE_BYTES = 4 * 1024 * MIB
++STREAM_BLOCK_BYTES = MIB
++MAX_METADATA_BYTES = 8 * MIB
++SQLITE_CACHE_KIB = 8192
++SQLITE_HEAP_LIMIT_BYTES = 256 * MIB
+ BOOKKEEPING_RANGES = ((24, 28), (40, 44), (92, 100))
+ 
+ 
+@@ -58,19 +65,6 @@
+ 
+ def sha(raw):
+     return hashlib.sha256(raw).hexdigest()
+-
+-
+-def page_image(data, maximum):
+-    need(isinstance(data, bytes) and 512 <= len(data) <= maximum
+-         and data[:16] == b"SQLite format 3\x00", "bounded_complete_sqlite_page_image")
+-    page_size = int.from_bytes(data[16:18], "big")
+-    page_size = 65536 if page_size == 1 else page_size
+-    need(512 <= page_size <= 65536 and page_size & (page_size - 1) == 0
+-         and len(data) % page_size == 0, "whole_sqlite_pages_only")
+-    normalized = bytearray(data)
+-    for first, last in BOOKKEEPING_RANGES:
+-        normalized[first:last] = bytes(last - first)
+-    return bytes(normalized)
+ 
+ 
+ class WholeStore:
+@@ -95,6 +89,9 @@
+         self.fds, self.connections, self.steps = [], [], []
+         self.close_errors = []
+         self.darwin_xattr_queries = []
++        self.stream_records = []
++        self.backup_records = []
++        self.query_bytes_maximum = 0
+         self.failed, self.restore_started, self.restore_complete = False, False, False
+         self._check_directory(self.root)
+         self._check_directory(self.source_root)
+@@ -152,7 +149,9 @@
+ 
+     def bytes(self, path, *, maximum=None):
+         self.remaining()
+-        maximum = self.maximum if maximum is None else maximum
++        maximum = MAX_METADATA_BYTES if maximum is None else maximum
++        need(type(maximum) is int and 0 <= maximum <= MAX_METADATA_BYTES,
++             "whole_database_materialization_not_permitted")
+         row = self.open(path, os.O_RDONLY | os.O_NONBLOCK)
+         try:
+             before = os.fstat(row["fd"])
+@@ -175,7 +174,7 @@
+             self.close_fd(row)
+ 
+     def create(self, path, data):
+-        need(isinstance(data, bytes) and len(data) <= self.maximum,
++        need(isinstance(data, bytes) and len(data) <= MAX_METADATA_BYTES,
+              "bounded_private_archive_write")
+         row = self.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+         try:
+@@ -189,6 +188,187 @@
+         finally:
+             self.close_fd(row)
+         self.fsync_dir(Path(path).parent)
++
++    def _stream_file(self, row, path, expected=None):
++        before = os.fstat(row["fd"])
++        need(stat.S_ISREG(before.st_mode) and before.st_uid == self.uid
++             and before.st_gid == self.gid and stat.S_IMODE(before.st_mode) == 0o600
++             and before.st_nlink == 1 and 0 <= before.st_size <= self.maximum,
++             "private_bounded_stream_file")
++        identity = full9(before)
++        need(identity == full9(Path(path).lstat())
++             and (expected is None or identity == tuple(expected)),
++             "stream_original_file_generation")
++        return before
++
++    def stream_identity(self, path, *, expected=None, sqlite_pages=False):
++        """Hash every byte using a bounded buffer; never materialize the file."""
++        self.remaining()
++        row = self.open(path, os.O_RDONLY | os.O_NONBLOCK)
++        entry = {"operation": "hash", "bytes": 0, "maximumBlockBytes": 0,
++                 "completed": False, "descriptorClosedOnce": False}
++        self.stream_records.append(entry)
++        try:
++            before = self._stream_file(row, path, expected)
++            digest, normalized = hashlib.sha256(), hashlib.sha256()
++            count, page_size = 0, None
++            while count < before.st_size:
++                self.remaining()
++                part = os.read(row["fd"], min(STREAM_BLOCK_BYTES, before.st_size - count))
++                need(bool(part), "complete_stream_file_before_eof")
++                entry["maximumBlockBytes"] = max(entry["maximumBlockBytes"], len(part))
++                digest.update(part)
++                if sqlite_pages and count == 0:
++                    need(len(part) >= 100 and part[:16] == b"SQLite format 3\x00",
++                         "stream_sqlite_file_header")
++                    page_size = int.from_bytes(part[16:18], "big")
++                    page_size = 65536 if page_size == 1 else page_size
++                    need(page_size in (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536)
++                         and before.st_size >= page_size and before.st_size % page_size == 0,
++                         "stream_complete_sqlite_pages")
++                    header = bytearray(part[:100])
++                    for first, last in BOOKKEEPING_RANGES:
++                        header[first:last] = bytes(last - first)
++                    normalized.update(header)
++                    normalized.update(memoryview(part)[100:])
++                elif sqlite_pages:
++                    normalized.update(part)
++                count += len(part)
++            need(os.read(row["fd"], 1) == b""
++                 and full9(before) == full9(os.fstat(row["fd"])) == full9(Path(path).lstat()),
++                 "stream_file_stable_through_eof")
++            entry.update(bytes=count, completed=True)
++            return {"bytes": count, "full9": full9(before), "sha256": digest.hexdigest(),
++                    "pageImageSha256": normalized.hexdigest() if sqlite_pages else None,
++                    "pageSize": page_size}
++        finally:
++            self.close_fd(row)
++            entry["descriptorClosedOnce"] = row["closed"] and row["closeAttempts"] == 1
++
++    def stream_copy(self, source, destination, *, expected, expected_sha256):
++        """Create one private exact staging file; partial output is retained."""
++        self.remaining()
++        source_row, destination_row = None, None
++        entry = {"operation": "copy", "bytes": 0, "maximumBlockBytes": 0,
++                 "completed": False, "descriptorClosedOnce": False}
++        self.stream_records.append(entry)
++        try:
++            source_row = self.open(source, os.O_RDONLY | os.O_NONBLOCK)
++            before = self._stream_file(source_row, source, expected)
++            destination_row = self.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
++            destination_initial = os.fstat(destination_row["fd"])
++            need(stat.S_ISREG(destination_initial.st_mode)
++                 and destination_initial.st_uid == self.uid and destination_initial.st_gid == self.gid
++                 and stat.S_IMODE(destination_initial.st_mode) == 0o600
++                 and destination_initial.st_nlink == 1 and destination_initial.st_size == 0,
++                 "new_empty_stream_destination")
++            digest, count = hashlib.sha256(), 0
++            while count < before.st_size:
++                self.remaining()
++                part = os.read(source_row["fd"], min(STREAM_BLOCK_BYTES, before.st_size - count))
++                need(bool(part), "complete_stream_copy_before_eof")
++                entry["maximumBlockBytes"] = max(entry["maximumBlockBytes"], len(part))
++                digest.update(part)
++                view = memoryview(part)
++                while view:
++                    self.remaining()
++                    written = os.write(destination_row["fd"], view)
++                    need(written > 0, "stream_copy_write_progress")
++                    view = view[written:]
++                count += len(part)
++            need(os.read(source_row["fd"], 1) == b"" and digest.hexdigest() == expected_sha256
++                 and full9(before) == full9(os.fstat(source_row["fd"])) == full9(Path(source).lstat()),
++                 "stream_copy_complete_original_pin")
++            os.fsync(destination_row["fd"])
++            after = os.fstat(destination_row["fd"])
++            need(full9(after) == full9(Path(destination).lstat()) and after.st_size == count
++                 and full9(after)[:6] == full9(destination_initial)[:6],
++                 "stream_copy_same_owned_destination")
++            entry.update(bytes=count, completed=True)
++        finally:
++            first_error = None
++            for original in (destination_row, source_row):
++                if original is not None:
++                    try:
++                        self.close_fd(original)
++                    except BaseException as error:
++                        if first_error is None:
++                            first_error = error
++            entry["descriptorClosedOnce"] = all(original is None
++                or original["closed"] and original["closeAttempts"] == 1
++                for original in (source_row, destination_row))
++            if first_error is not None:
++                raise first_error
++        self.fsync_dir(Path(destination).parent)
++        verified = self.stream_identity(destination)
++        need(verified["bytes"] == before.st_size and verified["sha256"] == expected_sha256,
++             "closed_stream_copy_exact_original")
++        return verified
++
++    def stream_compare_pages(self, left, right):
++        """Compare two closed SQLite outputs; this is not a raw source oracle."""
++        first, second = None, None
++        entry = {"operation": "compare-pages", "bytes": 0, "maximumBlockBytes": 0,
++                 "completed": False, "descriptorClosedOnce": False}
++        self.stream_records.append(entry)
++        try:
++            first = self.open(left, os.O_RDONLY | os.O_NONBLOCK)
++            second = self.open(right, os.O_RDONLY | os.O_NONBLOCK)
++            before = self._stream_file(first, left)
++            other = self._stream_file(second, right)
++            need(before.st_size == other.st_size and before.st_size >= 512,
++                 "whole_backup_outputs_equal_bounded_sizes")
++            count, page_size = 0, None
++            left_hash, right_hash, normalized = hashlib.sha256(), hashlib.sha256(), hashlib.sha256()
++            while count < before.st_size:
++                self.remaining()
++                size = min(STREAM_BLOCK_BYTES, before.st_size - count)
++                a, b = os.read(first["fd"], size), os.read(second["fd"], size)
++                need(len(a) == len(b) == size, "both_complete_backup_stream_blocks")
++                entry["maximumBlockBytes"] = max(entry["maximumBlockBytes"], size)
++                left_hash.update(a)
++                right_hash.update(b)
++                if count == 0:
++                    need(a[:16] == b[:16] == b"SQLite format 3\x00" and a[16:18] == b[16:18],
++                         "two_backup_outputs_same_sqlite_header")
++                    page_size = int.from_bytes(a[16:18], "big")
++                    page_size = 65536 if page_size == 1 else page_size
++                    need(page_size in (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536)
++                         and before.st_size % page_size == 0, "two_backup_outputs_complete_pages")
++                    ah, bh = bytearray(a[:100]), bytearray(b[:100])
++                    for start, end in BOOKKEEPING_RANGES:
++                        ah[start:end] = bytes(end - start)
++                        bh[start:end] = bytes(end - start)
++                    need(ah == bh and memoryview(a)[100:] == memoryview(b)[100:],
++                         "two_backup_outputs_page_one_equal")
++                    normalized.update(ah)
++                    normalized.update(memoryview(a)[100:])
++                else:
++                    need(a == b, "two_backup_outputs_every_page_equal")
++                    normalized.update(a)
++                count += size
++            need(os.read(first["fd"], 1) == os.read(second["fd"], 1) == b""
++                 and full9(before) == full9(os.fstat(first["fd"])) == full9(Path(left).lstat())
++                 and full9(other) == full9(os.fstat(second["fd"])) == full9(Path(right).lstat()),
++                 "two_closed_backup_outputs_stable")
++            entry.update(bytes=count, completed=True)
++            return {"bytes": count, "pageSize": page_size,
++                    "pageImageSha256": normalized.hexdigest(),
++                    "leftFull9": full9(before), "rightFull9": full9(other),
++                    "leftSha256": left_hash.hexdigest(), "rightSha256": right_hash.hexdigest()}
++        finally:
++            first_error = None
++            for original in (second, first):
++                if original is not None:
++                    try:
++                        self.close_fd(original)
++                    except BaseException as error:
++                        if first_error is None:
++                            first_error = error
++            entry["descriptorClosedOnce"] = all(original is None
++                or original["closed"] and original["closeAttempts"] == 1 for original in (first, second))
++            if first_error is not None:
++                raise first_error
+ 
+     def namespace(self, path):
+         path = self._path(path)
+@@ -261,9 +441,22 @@
+                "cursorsOpened": 0, "cursorsClosed": 0, "transaction": False}
+         self.connections.append(row)
+         db.enable_load_extension(False)
++        db.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, MAX_METADATA_BYTES)
++        db.setlimit(sqlite3.SQLITE_LIMIT_SQL_LENGTH, MAX_METADATA_BYTES)
+         db.set_progress_handler(lambda: int(time.monotonic() >= self.until), 1000)
++        # The executable outer must use a dedicated owned Python process.
++        # This SQLite allocator limit is process-global, not a database write.
++        self.query(row, "PRAGMA hard_heap_limit=" + str(SQLITE_HEAP_LIMIT_BYTES), limit=1)
++        need(self.query(row, "PRAGMA hard_heap_limit", limit=1) == [(SQLITE_HEAP_LIMIT_BYTES,)],
++             "dedicated_process_fixed_sqlite_heap_budget")
+         if readonly:
+             self.query(row, "PRAGMA query_only=ON")
++        self.query(row, "PRAGMA cache_size=-" + str(SQLITE_CACHE_KIB))
++        need(self.query(row, "PRAGMA cache_size", limit=1) == [(-SQLITE_CACHE_KIB,)],
++             "fixed_sqlite_connection_cache_budget")
++        self.query(row, "PRAGMA mmap_size=0", limit=1)
++        need(self.query(row, "PRAGMA mmap_size", limit=1) == [(0,)],
++             "whole_database_mmap_disabled")
+         self.query(row, "PRAGMA temp_store=MEMORY")
+         return row
+ 
+@@ -273,8 +466,24 @@
+         row["cursorsOpened"] += 1
+         try:
+             cursor.execute(sql, args)
+-            values = cursor.fetchmany(limit + 1) if cursor.description else []
+-            need(len(values) <= limit, "bounded_whole_database_sql_result")
++            values, returned_bytes = [], 0
++            if cursor.description:
++                while True:
++                    self.remaining()
++                    value = cursor.fetchone()
++                    if value is None:
++                        break
++                    need(type(value) is tuple and len(value) <= 16,
++                         "bounded_whole_database_sql_columns")
++                    for cell in value:
++                        need(cell is None or type(cell) in (str, bytes, int, float),
++                             "typed_whole_database_sql_scalar")
++                        returned_bytes += len(cell.encode()) if type(cell) is str else (
++                            len(cell) if type(cell) is bytes else 16)
++                    need(returned_bytes <= MAX_METADATA_BYTES and len(values) < limit,
++                         "bounded_whole_database_sql_result")
++                    values.append(value)
++            self.query_bytes_maximum = max(self.query_bytes_maximum, returned_bytes)
+             return values
+         finally:
+             cursor.close()
+@@ -292,15 +501,56 @@
+             raise
+         return True
+ 
++    def _backup_once(self, source, target, pages, *, purpose):
++        self.remaining()
++        need(source["transaction"] and source["db"].in_transaction,
++             "same_fresh_source_read_transaction_still_active")
++        record = {"purpose": purpose, "calls": 1, "progressCalls": 0,
++                  "pageCount": pages, "remaining": pages, "completed": False,
++                  "lastStatus": None}
++        self.backup_records.append(record)
++
++        def progress(status, remaining, total):
++            record["progressCalls"] += 1
++            record["lastStatus"] = status if type(status) is int else None
++            self.remaining()
++            need(type(status) is int and status in (sqlite3.SQLITE_OK, sqlite3.SQLITE_DONE),
++                 "backup_busy_or_error_no_retry")
++            need(type(total) is type(remaining) is int and total == pages
++                 and remaining == max(0, record["remaining"] - 128),
++                 "original_backup_incremental_page_progress_no_restart")
++            need(record["progressCalls"] <= (pages + 127) // 128,
++                 "original_backup_fixed_number_of_steps")
++            record["remaining"] = remaining
++            if status == sqlite3.SQLITE_DONE:
++                need(remaining == 0, "original_backup_done_at_zero_remaining")
++                record["completed"] = True
++            else:
++                need(remaining > 0, "original_backup_continues_with_remaining_pages")
++
++        source["db"].backup(target["db"], pages=128, progress=progress, sleep=0)
++        need(record["completed"] and record["remaining"] == 0,
++             "original_backup_completed")
++        need(source["transaction"] and source["db"].in_transaction,
++             "original_backup_did_not_end_source_transaction")
++        return record
++
+     def capture(self, path, expected, *, slot, phase):
+-        """Copy a fresh independent read transaction, including current WAL."""
++        """Two independent outputs from one fresh read transaction, including WAL.
++
++        SQLite's backup API is the source-content copying authority. This
++        compares its two complete closed outputs; it does not claim a separate
++        direct-source-page or custom WAL decoder as an oracle.
++        """
+         need(type(slot) is int and 0 <= slot < 6 and phase in ("baseline", "candidate"),
+              "closed_six_database_snapshot_slots")
+         path = self._path(path)
+         archive = self._path(self.root / (phase + "-" + str(slot) + ".sqlite"), archive=True)
++        verification = self._path(self.root / (phase + "-" + str(slot) + ".verification.sqlite"), archive=True)
+         need(self.namespace(path) == expected, "snapshot_exact_current_generation")
+         self.create(archive, b"")
+-        source, target, result = None, None, None
++        self.create(verification, b"")
++        source, target, verify_target, result = None, None, None, None
+         try:
+             nonempty = expected["-wal"] is not None and int(expected["-wal"][6]) > 0
+             source = self.connect(path, readonly=True, immutable=not nonempty, role=phase + "-source")
+@@ -311,49 +561,55 @@
+             sizes = self.query(source, "PRAGMA page_size", limit=1)
+             need(len(pages) == len(sizes) == 1 and len(pages[0]) == len(sizes[0]) == 1
+                  and type(pages[0][0]) is int and type(sizes[0][0]) is int
++                 and sizes[0][0] in (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536)
+                  and 0 < pages[0][0] * sizes[0][0] <= self.maximum,
+                  "whole_snapshot_size_bound_before_backup")
+             need(self.namespace(path) == expected, "snapshot_generation_after_begin")
++            objects = self.query(source, "SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY type,name")
+             target = self.connect(archive, readonly=False, role=phase + "-archive")
+-            states = []
+-
+-            def progress(status, remaining, total):
+-                self.remaining()
+-                need(status in (sqlite3.SQLITE_OK, sqlite3.SQLITE_DONE),
+-                     "backup_busy_or_error_no_retry")
+-                need(type(total) is int and 0 < total <= self.maximum // 512,
+-                     "bounded_backup_page_count")
+-                states.append((status, remaining, total))
+-
+-            source["db"].backup(target["db"], pages=128, progress=progress, sleep=0)
+-            need(states and states[-1][0] == sqlite3.SQLITE_DONE
+-                 and states[-1][1] == 0, "original_backup_completed")
++            first_backup = self._backup_once(source, target, pages[0][0], purpose=phase + "-archive")
+             # SQLite's backup invalidates statements on the destination by
+             # incrementing that empty destination's own schema cookie (0->1).
+             # Preserve this expected API behavior; do not write schema_version.
+             need(self.query(target, "PRAGMA schema_version", limit=1) == [(1,)],
+                  "new_backup_destination_schema_cookie_one")
+-            source_image = source["db"].serialize()
+-            target_image = target["db"].serialize()
+-            need(page_image(source_image, self.maximum) == page_image(target_image, self.maximum),
+-                 "complete_snapshot_page_image_matches")
+             need(self.query(target, "PRAGMA integrity_check", limit=1) == [("ok",)],
+                  "complete_snapshot_integrity")
+-            objects = self.query(target, "SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY type,name")
+-            need(objects == self.query(source, "SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY type,name"),
++            need(objects == self.query(target, "SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY type,name")
++                 and self.query(target, "PRAGMA page_count", limit=1) == pages
++                 and self.query(target, "PRAGMA page_size", limit=1) == sizes,
+                  "whole_source_and_backup_schema_exact")
++            self.close_connection(target)
++            need(target["closed"], "first_backup_target_known_closed")
++            need(self.namespace(path) == expected, "source_stable_between_two_original_backups")
++            verify_target = self.connect(verification, readonly=False, role=phase + "-verification")
++            second_backup = self._backup_once(source, verify_target, pages[0][0],
++                                               purpose=phase + "-verification")
++            need(self.query(verify_target, "PRAGMA schema_version", limit=1) == [(1,)]
++                 and self.query(verify_target, "PRAGMA integrity_check", limit=1) == [("ok",)]
++                 and self.query(verify_target, "PRAGMA page_count", limit=1) == pages
++                 and self.query(verify_target, "PRAGMA page_size", limit=1) == sizes
++                 and objects == self.query(verify_target,
++                     "SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY type,name"),
++                 "second_independent_backup_complete_and_integral")
++            self.close_connection(verify_target)
++            need(verify_target["closed"], "second_backup_target_known_closed")
+             need(self.namespace(path) == expected, "snapshot_source_unchanged_before_close")
+             self.query(source, "ROLLBACK")
+             source["transaction"] = False
+             result = {"slot": slot, "phase": phase, "sourcePath": str(path),
+                       "sourceNamespace": expected, "archivePath": str(archive),
+-                      "sqliteObjects": objects, "pageImageSha256": sha(page_image(source_image, self.maximum)),
++                      "verificationArchivePath": str(verification), "sqliteObjects": objects,
+                       "headerBookkeepingWordsOnlyMayDiffer": True,
+                       "freshIndependentTransaction": True, "keeperUsedAsLatestSource": False,
+-                      "backupCalls": 1, "backupProgressCalls": len(states)}
++                      "sourceContentCopyAuthority": "sqlite_online_backup_api",
++                      "directSourcePageOracleClaimed": False,
++                      "twoBackupsUseSameFreshReadTransaction": True,
++                      "backupCalls": 2,
++                      "backupProgressCalls": first_backup["progressCalls"] + second_backup["progressCalls"]}
+         finally:
+             close_error = None
+-            for original in (target, source):
++            for original in (verify_target, target, source):
+                 if original is not None:
+                     try:
+                         self.close_connection(original)
+@@ -363,18 +619,27 @@
+             if close_error is not None:
+                 raise close_error
+         need(self.namespace(path) == expected, "snapshot_source_unchanged_after_close")
+-        need(all(not Path(str(archive) + suffix).exists() for suffix in SUFFIXES[1:]),
++        need(all(not Path(str(file) + suffix).exists()
++                 for file in (archive, verification) for suffix in SUFFIXES[1:]),
+              "standalone_snapshot_sidecars_absent")
+-        raw = self.bytes(archive)
+-        need(page_image(raw, self.maximum) == page_image(source_image, self.maximum),
+-             "closed_snapshot_whole_image_matches")
+-        durable = self.open(archive, os.O_RDONLY)
+-        try:
+-            os.fsync(durable["fd"])
+-        finally:
+-            self.close_fd(durable)
++        compared = self.stream_compare_pages(archive, verification)
++        need(compared["bytes"] == pages[0][0] * sizes[0][0] and compared["pageSize"] == sizes[0][0],
++             "both_closed_backup_outputs_match_original_capacity")
++        for file in (archive, verification):
++            durable = self.open(file, os.O_RDONLY)
++            try:
++                os.fsync(durable["fd"])
++            finally:
++                self.close_fd(durable)
+         self.fsync_dir(archive.parent)
+-        result.update(archiveFull9=full9(archive.lstat()), archiveBytes=len(raw), archiveSha256=sha(raw))
++        need(compared["leftFull9"] == full9(archive.lstat())
++             and compared["rightFull9"] == full9(verification.lstat()),
++             "both_closed_backup_outputs_stable_after_durability")
++        result.update(archiveFull9=compared["leftFull9"], archiveBytes=compared["bytes"],
++                      archiveSha256=compared["leftSha256"], pageImageSha256=compared["pageImageSha256"],
++                      verificationArchiveFull9=compared["rightFull9"],
++                      verificationArchiveSha256=compared["rightSha256"],
++                      twoCompleteBackupOutputsEqual=True)
+         self.create(self.root / (phase + "-" + str(slot) + ".private.json"),
+                     (json.dumps(result, sort_keys=True, separators=(",", ":")) + "\n").encode())
+         return result
+@@ -402,8 +667,8 @@
+         for path, expected, item in zip(paths, expected_candidates, baselines):
+             need(self.namespace(path) == expected, "pre_restore_exact_candidate_generation")
+             archive = self._path(item["archivePath"], archive=True)
+-            need(full9(archive.lstat()) == tuple(item["archiveFull9"])
+-                 and sha(self.bytes(archive)) == item["archiveSha256"], "whole_baseline_archive_pin")
++            original = self.stream_identity(archive, expected=item["archiveFull9"])
++            need(original["sha256"] == item["archiveSha256"], "whole_baseline_archive_pin")
+         operation = self.root / "restore-once"
+         operation.mkdir(mode=0o700, exist_ok=False)
+         self.fsync_dir(self.root)
+@@ -412,8 +677,8 @@
+         staged = []
+         for slot, (path, item) in enumerate(zip(paths, baselines)):
+             stage = path.parent / (".hepta-whole-restore-stage-" + str(slot))
+-            self.create(stage, self.bytes(Path(item["archivePath"])))
+-            need(sha(self.bytes(stage)) == item["archiveSha256"], "staged_exact_whole_baseline")
++            self.stream_copy(Path(item["archivePath"]), stage,
++                             expected=item["archiveFull9"], expected_sha256=item["archiveSha256"])
+             staged.append(stage)
+         for slot, (path, stage, item, expected) in enumerate(zip(paths, staged, baselines, expected_candidates)):
+             need(self.namespace(path) == expected, "restore_slot_still_exact_candidate")
+@@ -444,7 +709,8 @@
+             step = self._intent("publish-baseline", {"slot": slot, "stage": stage_pin,
+                                                      "archiveSha256": item["archiveSha256"]})
+             need(all(not Path(str(path) + suffix).exists() for suffix in SUFFIXES)
+-                 and sha(self.bytes(stage)) == item["archiveSha256"], "only_empty_exact_restore_namespace")
++                 and self.stream_identity(stage, expected=stage_pin)["sha256"] == item["archiveSha256"],
++                 "only_empty_exact_restore_namespace")
+             os.link(stage, path, follow_symlinks=False)
+             linked = full9(path.lstat())
+             need(linked == full9(stage.lstat()) and stable_after_owned_link(stage_pin, linked, 2),
+@@ -455,7 +721,8 @@
+             need(full9(stage.lstat()) == linked == full9(path.lstat()), "stage_exact_before_unlink")
+             os.unlink(stage)
+             self.fsync_dir(path.parent)
+-            need(sha(self.bytes(path)) == item["archiveSha256"], "restored_whole_file_exact")
++            need(self.stream_identity(path)["sha256"] == item["archiveSha256"],
++                 "restored_whole_file_exact")
+             step["completed"] = True
+         final = [self.namespace(path) for path in paths]
+         need(all(all(item[suffix] is None for suffix in SUFFIXES[1:]) for item in final),
+@@ -495,6 +762,21 @@
+                 "restoreStarted": self.restore_started, "restoreCompleted": self.restore_complete,
+                 "restoreOperationCount": len(self.steps),
+                 "allRestoreOperationsCompleted": all(step["completed"] for step in self.steps),
++                "streamBlockByteLimit": STREAM_BLOCK_BYTES,
++                "streamOperations": [dict(item) for item in self.stream_records],
++                "allStreamOperationsCompleteAndClosed": all(item["completed"]
++                    and item["descriptorClosedOnce"] and item["maximumBlockBytes"] <= STREAM_BLOCK_BYTES
++                    for item in self.stream_records),
++                "maximumSqlResultBytes": self.query_bytes_maximum,
++                "sqlResultByteLimit": MAX_METADATA_BYTES,
++                "sqliteCacheKibPerHandle": SQLITE_CACHE_KIB,
++                "sqliteProcessHeapLimitBytes": SQLITE_HEAP_LIMIT_BYTES,
++                "databaseByteLimit": self.maximum,
++                "backupCalls": len(self.backup_records),
++                "backupSteps": sum(row["progressCalls"] for row in self.backup_records),
++                "allOriginalBackupsCompleted": all(row["completed"] for row in self.backup_records),
++                "databaseSerializeCalls": 0,
++                "directSourcePageOracleClaimed": False,
+                 "closeErrors": list(self.close_errors),
+                 "darwinXattrQueryCount": len(self.darwin_xattr_queries),
+                 "allDarwinXattrQueriesClosedAndAbsent": all(row["returnValue"] == 0 and row["errno"] == 0
+--- original-r2/qualify_whole_sqlite_bundle_r2.py
++++ streaming-r1/qualify_whole_sqlite_streaming_r1.py
+@@ -14,7 +14,7 @@
+ import sqlite3
+ import time
+ 
+-from whole_sqlite_bundle_r2 import WholeStore, SnapshotRefused, need, page_image, sha
++from whole_sqlite_streaming_r1 import WholeStore, SnapshotRefused, need, sha
+ 
+ AGENTS = ("main", "trnm", "hepta-ui", "hepta", "hepta-backend")
+ 
+@@ -32,7 +32,7 @@
+         paths.append(directory / "openclaw-agent.sqlite")
+     paths.append(root / "live/state/openclaw.sqlite")
+     store = WholeStore(root=root / "archive", source_root=root / "live", until=until, source_vfs=source_vfs)
+-    report = {"schema": "heptabao.synthetic-whole-sqlite-bundle-qualification.r2", "ok": False,
++    report = {"schema": "heptabao.synthetic-whole-sqlite-bundle-qualification.streaming.r1", "ok": False,
+               "syntheticOnly": True, "sourceDatabaseCount": 6, "productionReads": 0,
+               "productionWrites": 0, "sdkImported": False, "providerCalls": 0,
+               "serviceActions": 0, "gatewayRestartQualified": False,
+@@ -108,7 +108,8 @@
+         for ordinal, path in enumerate(paths):
+             baseline.append(store.capture(path, store.namespace(path), slot=ordinal, phase="baseline"))
+         check("six_fresh_independent_whole_snapshots", all(item["freshIndependentTransaction"]
+-              and item["backupCalls"] == 1 and not item["keeperUsedAsLatestSource"] for item in baseline))
++              and item["backupCalls"] == 2 and item["twoCompleteBackupOutputsEqual"]
++              and item["twoBackupsUseSameFreshReadTransaction"] and not item["directSourcePageOracleClaimed"] and not item["keeperUsedAsLatestSource"] for item in baseline))
+         check("six_keepers_remain_old", all(store.query(k, "SELECT value FROM opaque_extension WHERE id=1")
+               == [("synthetic-before-provider",)] for k in keepers))
+         for item in baseline:
+@@ -158,10 +159,10 @@
+         check("six_whole_files_restored_with_cold_sidecars_absent", all(item["-wal"] is None and item["-shm"] is None for item in restored))
+         check("eighteen_old_namespace_files_retained", len(list((root / "archive/restore-once").glob("old-*.private"))) == 18)
+         for ordinal, (path, item) in enumerate(zip(paths, baseline)):
+-            need(sha(store.bytes(path)) == item["archiveSha256"], "exact_closed_restored_baseline_bytes")
++            need(store.stream_identity(path)["sha256"] == item["archiveSha256"], "exact_closed_restored_baseline_bytes")
+             read = store.connect(path, readonly=True, immutable=True, role="restored-cold-read")
+             try:
+-                need(sha(page_image(read["db"].serialize(), store.maximum)) == item["pageImageSha256"],
++                need(store.stream_identity(path, sqlite_pages=True)["pageImageSha256"] == item["pageImageSha256"],
+                      "all_restored_page_bytes_and_schema_equal")
+                 need(store.query(read, "PRAGMA integrity_check", limit=1) == [("ok",)], "restored_database_integrity")
+                 need(store.query(read, "PRAGMA user_version", limit=1) == [(101,)], "restored_user_version")
+@@ -174,7 +175,7 @@
+                          "restore_does_not_rewind_fresh_provider_epoch")
+             finally:
+                 store.close_connection(read)
+-        check("all_tables_indexes_triggers_views_pages_and_non_auth_data_match", True)
++        check("all_archive_tables_indexes_triggers_views_pages_and_non_auth_data_match", True)
+         check("three_synthetic_fresh_credentials_not_rewound", True)
+ 
+         # An actual new SQLite writer epoch proves reopened trigger behavior.
+@@ -189,6 +190,8 @@
+             finally:
+                 store.close_connection(row)
+         check("six_cold_reopened_writers_and_restored_trigger_effects", True)
++        check("all_streams_and_original_backups_complete", store.public()["allStreamOperationsCompleteAndClosed"]
++              and store.public()["allOriginalBackupsCompleted"] and store.public()["databaseSerializeCalls"] == 0)
+         report.update(ok=True, wholeBaselineSnapshots=6, wholeCandidateSnapshots=6,
+                       closedRestoredDatabases=6, retainedOriginalNamespaceFiles=18,
+                       restoreDispatches=1, backupSourceIsFreshIndependentTransaction=True,
+@@ -212,3 +215,104 @@
+             "allFileDescriptorsClosedOnce", "allSqliteHandlesClosedOnce", "allExplicitCursorsClosed")):
+             report["ok"] = False
+     return report
++
++
++def run_snapshot_mechanism(root, *, until, source_vfs="unix-posix"):
++    """Actual API snapshot/Busy behavior in a separate tiny synthetic namespace."""
++    root = Path(root)
++    root.mkdir(mode=0o700, exist_ok=False)
++    for name in ("live", "archive"):
++        (root / name).mkdir(mode=0o700, exist_ok=False)
++    store = WholeStore(root=root / "archive", source_root=root / "live",
++                       until=until, source_vfs=source_vfs)
++    report = {"schema": "heptabao.actual-sqlite-streaming-snapshot-mechanism.r1", "ok": False,
++              "syntheticOnly": True, "productionReads": 0, "productionWrites": 0,
++              "sourceGenerationChangesIntentionalOnlyInThisSyntheticCase": True, "cases": []}
++
++    def check(name, value):
++        need(value, "snapshot_mechanism_" + name)
++        report["cases"].append({"id": name, "passed": True})
++
++    try:
++        path = root / "live/source.sqlite"
++        store.create(path, b"")
++        writer = store.connect(path, readonly=False, role="mechanism-writer")
++        need(store.query(writer, "PRAGMA journal_mode=WAL") == [("wal",)], "mechanism_actual_wal")
++        store.query(writer, "PRAGMA wal_autocheckpoint=0")
++        store.query(writer, "CREATE TABLE opaque(id INTEGER PRIMARY KEY, value TEXT)")
++        store.query(writer, "INSERT INTO opaque VALUES(1,'before')")
++        source = store.connect(path, readonly=True, role="mechanism-fresh-reader")
++        store.query(source, "BEGIN")
++        source["transaction"] = True
++        need(store.query(source, "SELECT value FROM opaque") == [("before",)], "mechanism_begin_read")
++        pages = store.query(source, "PRAGMA page_count")[0][0]
++        outputs = []
++        for ordinal in range(2):
++            destination = root / "archive" / ("output-" + str(ordinal) + ".sqlite")
++            store.create(destination, b"")
++            target = store.connect(destination, readonly=False, role="mechanism-output")
++            store._backup_once(source, target, pages, purpose="same-begin-independent-output")
++            need(store.query(target, "SELECT value FROM opaque") == [("before",)],
++                 "mechanism_output_keeps_original_snapshot")
++            store.close_connection(target)
++            outputs.append(destination)
++            if ordinal == 0:
++                store.query(writer, "UPDATE opaque SET value='after' WHERE id=1")
++        check("two_backups_retain_same_begin_snapshot_across_writer_commit", True)
++        check("two_closed_outputs_all_pages_equal", store.stream_compare_pages(*outputs)["bytes"] > 0)
++        latest = store.connect(path, readonly=True, role="mechanism-latest-reader")
++        check("independent_latest_reader_observes_new_writer_commit",
++              store.query(latest, "SELECT value FROM opaque") == [("after",)])
++
++        busy_path = root / "archive/busy.sqlite"
++        store.create(busy_path, b"")
++        busy_target = store.connect(busy_path, readonly=False, role="mechanism-busy-target")
++        blocker = store.connect(busy_path, readonly=False, role="mechanism-exclusive-blocker")
++        store.query(blocker, "BEGIN EXCLUSIVE")
++        blocker["transaction"] = True
++        caught = False
++        try:
++            store._backup_once(source, busy_target, pages, purpose="mechanism-busy-first-callback")
++        except SnapshotRefused as error:
++            caught = str(error) == "backup_busy_or_error_no_retry"
++        record = store.backup_records[-1]
++        check("busy_first_callback_refused_without_retry", caught and record["progressCalls"] == 1
++              and record["lastStatus"] == sqlite3.SQLITE_BUSY and not record["completed"])
++        store.query(blocker, "ROLLBACK")
++        blocker["transaction"] = False
++
++        # Alter one non-normalized byte in an owned output. No source is changed.
++        original = store.open(outputs[1], os.O_RDWR)
++        try:
++            byte = os.pread(original["fd"], 1, 68)
++            need(len(byte) == 1, "mechanism_one_synthetic_byte")
++            need(os.pwrite(original["fd"], bytes((byte[0] ^ 1,)), 68) == 1,
++                 "mechanism_owned_output_corruption")
++            os.fsync(original["fd"])
++        finally:
++            store.close_fd(original)
++        caught = False
++        try:
++            store.stream_compare_pages(*outputs)
++        except SnapshotRefused as error:
++            caught = str(error) == "two_backup_outputs_page_one_equal"
++        check("output_corruption_outside_three_header_ranges_refused", caught)
++        store.query(source, "ROLLBACK")
++        source["transaction"] = False
++        report["ok"] = True
++    except BaseException as error:
++        report["errorType"] = type(error).__name__
++        report["errorCode"] = str(error) if isinstance(error, SnapshotRefused) else "snapshot_mechanism_refused"
++    finally:
++        try:
++            store.close()
++        except BaseException:
++            report["ok"] = False
++            report["closureUnknown"] = True
++        report["resources"] = store.public()
++        if not all(report["resources"][name] for name in (
++            "allFileDescriptorsClosedOnce", "allSqliteHandlesClosedOnce", "allExplicitCursorsClosed")):
++            report["ok"] = False
++        if time.monotonic() >= until:
++            report["ok"] = False
++    return report
+--- original-r2/mac_whole_sqlite_worker_r2.py
++++ streaming-r1/mac_whole_sqlite_streaming_worker_r1.py
+@@ -6,20 +6,21 @@
+ import os
+ from pathlib import Path
+ import socket
++import resource
+ import sqlite3
+ import stat
+ import sys
+ import time
+ 
+-ROOT = Path("/Users/qianqi/heptabao-authbus-whole-database-qualification-20261106-r2")
++ROOT = Path("/Users/qianqi/heptabao-authbus-whole-database-streaming-small-20261106-r1")
+ START = time.monotonic()
+ UNTIL = float(sys.argv[1])
+ sys.path.insert(0, str(ROOT / "code"))
+-from qualify_whole_sqlite_bundle_r2 import run_qualification
+-from whole_sqlite_bundle_r2 import full9, need, SnapshotRefused
++from qualify_whole_sqlite_streaming_r1 import run_qualification, run_snapshot_mechanism
++from whole_sqlite_streaming_r1 import full9, need, SnapshotRefused
+ 
+ fds = []
+-report = {"schema": "heptabao.actual-mac-whole-sqlite-qualification-worker.r2", "ok": False,
++report = {"schema": "heptabao.actual-mac-whole-sqlite-qualification-worker.streaming.r1", "ok": False,
+           "productionReads": 0, "productionWrites": 0, "providerCalls": 0, "serviceActions": 0,
+           "sdkImported": False, "productionRollbackQualified": False}
+ 
+@@ -75,11 +76,11 @@
+     report["kernelReadWriteNetworkRefusalsObserved"] = True
+     report["originalProbeSocketClosed"] = sock.fileno() == -1
+     plan = json.loads(read(ROOT / "code/plan.public.json", 131072))
+-    need(plan["schema"] == "heptabao.synthetic-whole-sqlite-plan.r2"
+-         and plan["sourceVfs"] == "unix-posix" and plan["maximumDatabaseBytes"] == 67108864,
++    need(plan["schema"] == "heptabao.synthetic-whole-sqlite-plan.streaming.r1"
++         and plan["sourceVfs"] == "unix-posix" and plan["maximumDatabaseBytes"] == 4294967296,
+          "fixed_whole_database_plan")
+     for name, pin in plan["sourcePins"].items():
+-        need(name in ("whole_sqlite_bundle_r2.py", "qualify_whole_sqlite_bundle_r2.py", "mac_whole_sqlite_worker_r2.py"),
++        need(name in ("whole_sqlite_streaming_r1.py", "qualify_whole_sqlite_streaming_r1.py", "mac_whole_sqlite_streaming_worker_r1.py"),
+              "fixed_three_whole_sources")
+         need(hashlib.sha256(read(ROOT / "code" / name, 65536)).hexdigest() == pin,
+              "same_whole_database_source_bytes")
+@@ -91,6 +92,19 @@
+     result = run_qualification(ROOT / "output/fixture", agent.decode(), state.decode(),
+                                until=UNTIL, source_vfs="unix-posix")
+     report["qualification"] = result
++    need(result["ok"] and all(result["resources"][name] for name in (
++        "allFileDescriptorsClosedOnce", "allSqliteHandlesClosedOnce", "allExplicitCursorsClosed")),
++        "whole_streaming_six_bundle_original_known_complete")
++    mechanism = run_snapshot_mechanism(ROOT / "output/snapshot-mechanism", until=UNTIL,
++                                       source_vfs="unix-posix")
++    report["snapshotMechanism"] = mechanism
++    need(mechanism["ok"] and len(mechanism["cases"]) == 5,
++         "whole_streaming_snapshot_mechanism_complete")
++    report["processMaximumRssBytes"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
++    report["memoryBudgetBytes"] = 512 * 1048576
++    need(type(report["processMaximumRssBytes"]) is int
++         and 0 < report["processMaximumRssBytes"] <= report["memoryBudgetBytes"],
++         "actual_darwin_streaming_process_memory_budget")
+     report["pythonVersion"] = sys.version.split()[0]
+     report["sqliteVersion"] = sqlite3.sqlite_version
+     report["sourcePins"] = plan["sourcePins"]
+--- original-r2/launcher.template.py
++++ streaming-r1/launcher.template.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,os,re,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+45
+-ROOT=Path('/Users/qianqi/heptabao-authbus-whole-database-qualification-20261106-r2')
++ROOT=Path('/Users/qianqi/heptabao-authbus-whole-database-streaming-small-20261106-r1')
+ QUAL=Path('/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2')
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+@@ -13,10 +13,11 @@
+  '/usr/bin/sandbox-exec':'abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a'}
+ # PAYLOAD_PLACEHOLDER
+ codes=set();fds=[];owner=None;child=None;created=False
+-report={'schema':'heptabao.actual-mac-whole-database-qualification-launch.r2','ok':False,
++report={'schema':'heptabao.actual-mac-whole-database-qualification-launch.streaming.r1','ok':False,
+  'productionSourceReads':0,'productionWrites':0,'providerCalls':0,'serviceActions':0,
+  'sdkImported':False,'productionRollbackQualified':False,'sharedSeconds':45,'workerSeconds':30,
+- 'supervisorSeconds':70,'automaticRetry':False,'maximumDatabaseBytes':67108864,
++ 'supervisorSeconds':70,'automaticRetry':False,'maximumDatabaseBytes':4294967296,
++ 'largeDatabaseCapacityQualified':False,
+  'candidateCommit':'4bde9aee03fcd27c59e13607e529b1cee594b249'}
+ def need(v,code):
+  if not v:codes.add(code);raise RuntimeError(code)
+@@ -77,7 +78,7 @@
+  q=json.loads(proof);need(q['ok'] and q['allCasesMatched'] and q['allOwnedClosed']
+   and q['custody']['passed_process_custody'] and q['custody']['original_count']==18,'whole_complete_original_custody_cases')
+  public_fence()
+- need(set(PAYLOAD['sources'])=={'whole_sqlite_bundle_r2.py','qualify_whole_sqlite_bundle_r2.py','mac_whole_sqlite_worker_r2.py'},'three_exact_whole_modules')
++ need(set(PAYLOAD['sources'])=={'whole_sqlite_streaming_r1.py','qualify_whole_sqlite_streaming_r1.py','mac_whole_sqlite_streaming_worker_r1.py'},'three_exact_whole_modules')
+  for kind,relative,constant in [('agent','dist/openclaw-agent-db-DKpxi-Ll.js','OPENCLAW_AGENT_SCHEMA_SQL'),
+   ('state','dist/openclaw-state-db-DzSsA9Ji.js','OPENCLAW_STATE_SCHEMA_SQL')]:
+   raw=read(SDK/relative).decode();parts=re.findall(r'const '+constant+r' = `([\s\S]*?)`;',raw)
+@@ -89,7 +90,8 @@
+  for name,source in PAYLOAD['sources'].items():
+   need(sha(source.encode())==PAYLOAD['sourcePins'][name],'whole_prepared_source_hash');compile(source,name,'exec');private(ROOT/'code'/name,source)
+  for kind,sql in PAYLOAD['schemas'].items():private(ROOT/'code'/(kind+'-schema.sql'),sql)
+- plan={'schema':'heptabao.synthetic-whole-sqlite-plan.r2','sourceVfs':'unix-posix','maximumDatabaseBytes':67108864,
++ plan={'schema':'heptabao.synthetic-whole-sqlite-plan.streaming.r1','sourceVfs':'unix-posix','maximumDatabaseBytes':4294967296,
++ 'largeDatabaseCapacityQualified':False,
+   'sourcePins':PAYLOAD['sourcePins'],'schemaPins':PAYLOAD['schemaPins'],'installedSchemaSourcePins':PAYLOAD['installedSchemaSourcePins'],
+   'originalChildren':1,'sharedSeconds':45,'workerSeconds':30,'productionReadAuthorized':False,'productionWriteAuthorized':False}
+  private(ROOT/'code/plan.public.json',json.dumps(plan,sort_keys=True)+'\n')
+@@ -107,7 +109,7 @@
+  with custody.activated() as owner:
+   deadline=time.monotonic()+remaining(30)
+   child=subprocess.Popen(['/usr/bin/sandbox-exec','-f',str(ROOT/'qualification.sb'),PYTHON,'-I','-S','-B',
+-    str(ROOT/'code/mac_whole_sqlite_worker_r2.py'),repr(deadline)],stdin=subprocess.DEVNULL,
++    str(ROOT/'code/mac_whole_sqlite_streaming_worker_r1.py'),repr(deadline)],stdin=subprocess.DEVNULL,
+     stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=str(ROOT),
+     env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','HOME':'/Users/qianqi','LANG':'C','LC_ALL':'C'})
+   out,err=child.communicate(timeout=remaining(30));close_streams()
+@@ -119,11 +121,19 @@
+   value=json.loads(out);report['worker']=value
+   need(value['ok'] and value['kernelReadWriteNetworkRefusalsObserved'] and value['originalProbeSocketClosed']
+    and value['allExplicitInputDescriptorsClosedOnce'] and value['sqliteVersion']=='3.53.4','whole_actual_worker_qualified')
+-  qualified=value['qualification'];need(qualified['ok'] and len(qualified['cases'])==13
++  qualified=value['qualification'];need(qualified['ok'] and len(qualified['cases'])==14
+    and qualified['closedRestoredDatabases']==6 and qualified['retainedOriginalNamespaceFiles']==18
+    and qualified['resources']['restoreOperationCount']==48
+    and qualified['resources']['darwinXattrQueryCount']>0
+    and qualified['resources']['allDarwinXattrQueriesClosedAndAbsent']
++   and qualified['resources']['allStreamOperationsCompleteAndClosed']
++   and qualified['resources']['allOriginalBackupsCompleted']
++   and qualified['resources']['databaseSerializeCalls']==0
++   and qualified['resources']['backupCalls']==24
++   and value['snapshotMechanism']['ok'] and len(value['snapshotMechanism']['cases'])==5
++   and all(value['snapshotMechanism']['resources'][k] for k in ('allFileDescriptorsClosedOnce',
++    'allSqliteHandlesClosedOnce','allExplicitCursorsClosed'))
++   and 0<value['processMaximumRssBytes']<=value['memoryBudgetBytes']==536870912
+    and all(qualified['resources'][k] for k in ('allFileDescriptorsClosedOnce','allSqliteHandlesClosedOnce',
+     'allExplicitCursorsClosed','allRestoreOperationsCompleted')),'whole_complete_six_database_original_results')
+  public_fence();own_fence();remaining()

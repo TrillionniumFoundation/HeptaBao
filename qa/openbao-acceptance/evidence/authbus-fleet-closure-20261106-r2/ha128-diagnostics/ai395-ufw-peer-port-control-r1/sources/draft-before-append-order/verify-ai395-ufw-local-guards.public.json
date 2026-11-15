@@ -1,0 +1,71 @@
+{
+  "actualBeforeCaptureAuthorityValidated": {
+    "bytes": 3435,
+    "finalFdCounts": {
+      "allOpenedFdsKnownClosed": true,
+      "attemptedOnce": {
+        "created": 13,
+        "directory": 3,
+        "input": 19
+      },
+      "errorCount": 0,
+      "firstError": null,
+      "knownClosed": {
+        "created": 13,
+        "directory": 3,
+        "input": 19
+      },
+      "opened": {
+        "created": 13,
+        "directory": 3,
+        "input": 19
+      }
+    },
+    "sha256": "75d1d16a6410bc5b00fab7d8ad8902401f0f62c8aa298ba5bb2cab695a45bd89"
+  },
+  "errors": 0,
+  "failures": 0,
+  "firewallWrites": 0,
+  "inputs": {
+    "test_verify_ai395_ufw_phase_r1.py": {
+      "bytes": 10310,
+      "sha256": "5d651aa58af99db1c766916f849edbcb8aae1c05228722d449e9588e515ba6b2"
+    },
+    "verify-ai395-ufw-guards.stdout.original.txt": {
+      "bytes": 2365,
+      "sha256": "1622a094721f58b98af9fd079c38222af83808fee649ac76f23b227649bc280e"
+    },
+    "verify_ai395_ufw_phase_r1.py": {
+      "bytes": 19052,
+      "sha256": "4f54d7cbc8c87b80cd31bab417ae335789e0735139c288ffb25ef821eb01a91e"
+    }
+  },
+  "kernelParserBaseline": {
+    "persistentInputs": "synthetic_not_actual_privileged_backup",
+    "pins": {
+      "iptables-filter.original.private.log": {
+        "bytes": 8521,
+        "sha256": "5ce8a18b540a54b78fcf5510f1f686cd924f460df85ec67c16d0672ee912fa22"
+      },
+      "nft.original.private.log": {
+        "bytes": 100231,
+        "sha256": "e3709076a468edd11d1b8338d3e4e7be0d8833b02cacd3af8cf897afcca3393a"
+      }
+    },
+    "result": {
+      "allOtherPersistentAndKernelSemanticsUnchanged": true,
+      "countersAndNftHandlesExcludedOnlyAsDeclared": true,
+      "existingUfwUserChainsComplete": true,
+      "opaqueMultiportRulesBoundToFullIptablesSameOrdinal": 0,
+      "ownedPeerFlows": [],
+      "ownedRulesPerView": 0
+    },
+    "source": "actual_archived_readonly_ai395_kernel_views"
+  },
+  "ok": true,
+  "productTestsRun": 0,
+  "remoteOperationsInThisReceipt": 0,
+  "schema": "heptabao.ai395-ufw-verifier-local-guards.r1",
+  "skipped": 0,
+  "testsRun": 24
+}

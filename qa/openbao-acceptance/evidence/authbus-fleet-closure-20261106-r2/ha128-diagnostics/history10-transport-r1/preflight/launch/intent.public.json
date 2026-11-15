@@ -1,0 +1,12 @@
+{
+  "state": "single-dispatch-intent",
+  "key": "mac-ha-history10-transport-4bde9-20261107-r1",
+  "sourceSha256": "6c4444baa8d9c65cc6491c79b7007f7c4c0b26d079f0cadf4154d8239d01d7f5",
+  "sourceBytes": 155792,
+  "fullHa128": false,
+  "outerSeconds": 600,
+  "originalHttpSeconds": 15,
+  "freshFirewallVerified": true,
+  "allThreeHostPortsAndNewRootsVerified": true,
+  "automaticRetry": false
+}

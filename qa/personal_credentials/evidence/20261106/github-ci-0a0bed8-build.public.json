@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.personal-credentials.ci-build.v1",
+  "source_commit": "0a0bed8cb98e0e80fe3130bf43c43358ebbaad19",
+  "source_tree": "5141de6ecc3332334fb64a12f08aa5163a22061e",
+  "source_dirty": false,
+  "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "build_argv": [
+    "cargo",
+    "+1.98.0",
+    "build",
+    "--locked",
+    "-p",
+    "heptabao-credential-broker",
+    "-p",
+    "heptabao-personal-vault",
+    "-p",
+    "heptabao-personal-edge",
+    "--bins"
+  ],
+  "build_env": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "runner": {
+    "system": "Linux",
+    "release": "7.0.0-1017-azure",
+    "machine": "x86_64"
+  },
+  "github_run_id": "42181992169",
+  "github_run_attempt": "1",
+  "binary_sha256": {
+    "heptabao-credential-broker": "75d4e2d71cee5b3512a07f3225505caba5a49953f29193f19c009117a49e1094",
+    "heptabao-vault": "7351735e0caaf188320665620f867f1790892dbfe752b079f4e4fc98fd7b101b",
+    "heptabao-browser": "10645ec2b521429e2a54862da4c7f4362c06f6356790abcb09ac4ced34546893",
+    "heptabao-sync": "d1119eae7160c496874d8a1aa026b06cb862e39fe1aef7b2897e36bd76dd4f08"
+  },
+  "test_binaries_equal_to_post_test_build_asserted": false,
+  "synthetic_only": true,
+  "production_qualified": false,
+  "full_replacement_qualified": false,
+  "real_browser_qualified": false,
+  "android_qualified": false,
+  "physical_two_device_qualified": false,
+  "independent_security_review": false,
+  "p0_profile_executed": false,
+  "p0_service_qualified": false,
+  "p5_qualified": false
+}

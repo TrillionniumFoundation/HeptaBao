@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.mac-main3-api-r3-preserved-preflight-failure.r1",
+  "scope": "Mac canonical4b Layer A API attempt; only source preparation, guards and readonly preflight ran",
+  "canonicalCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "canonicalNormalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "staging": {
+    "job": "1a1b1eb0570-fc05-7b80",
+    "state": "succeeded",
+    "exitCode": 0,
+    "stdoutBytes": 8652,
+    "stderrBytes": 0,
+    "allOwnedClosed": true
+  },
+  "qualification": {
+    "job": "1a1b1f0702c-fc05-7b97",
+    "state": "failed",
+    "exitCode": 1,
+    "stdoutBytes": 18256,
+    "stderrBytes": 14374,
+    "guards": {
+      "passed": 108,
+      "skipped": 0,
+      "denominator": "QA custody, PS/TLS and main3 scope/HTTP/authority guards"
+    },
+    "errorCode": "current_source_full_generation_exact",
+    "elapsedSeconds": 0.2838986669667065,
+    "sourceCaptureJob": "1a1b1e80c81-fc05-7b6c",
+    "serviceActions": 0,
+    "httpRequests": 0,
+    "allOwnedClosed": true,
+    "executionLoaderInvoked": false
+  },
+  "namespaceDiagnostic": {
+    "job": "1a1b1f1fcec-fc05-7ba3",
+    "state": "succeeded",
+    "exitCode": 0,
+    "stdoutBytes": 5237,
+    "authSourceGenerationsExact": 5,
+    "registryChanges": [
+      "database.ctime_ns",
+      "shm.ctime_ns",
+      "wal.ctime_ns"
+    ],
+    "otherEightIdentityFieldsEqual": true,
+    "absenceMatches": true,
+    "credentialContentChangeInferred": false
+  },
+  "timingDiagnostic": {
+    "job": "1a1b1f3d1a6-fc05-7bb3",
+    "state": "succeeded",
+    "exitCode": 0,
+    "stdoutBytes": 2082,
+    "currentRegistryCtimeAllAfter": "namespace-diagnostic-submit",
+    "newestChangeAfterCaptureTerminal": true,
+    "identitiesStableAcrossTwoSecondQuietInterval": true,
+    "actualMutationActorIdentified": false
+  },
+  "fullNineFieldRequirementUnchanged": true,
+  "oldR2AndR3FailuresRetained": true,
+  "privateQualificationBindingRetained": true,
+  "sourceReadbackFiles": 20,
+  "sourceWholeFiles": 15,
+  "providerValid": false,
+  "providerCalled": false,
+  "providerRefreshAttempted": false,
+  "productionCutover": false,
+  "actualPluginSdkPhaseExecuted": false,
+  "productionClientRollbackQualified": false,
+  "credentialValuesOrDigestsPublished": false,
+  "privateIdentityValuesPublished": false,
+  "notes": [
+    "Public timing boundaries are runtime receipts; private registry timestamps are projected to named intervals.",
+    "SDK capsule selection authority remains the prior actual explicit-order receipt; current generation was reread by capsule r2.",
+    "The prepared execution loader was never invoked. A later combined capture/API attempt must use a new create-only root and key.",
+    "Quiet-interval observations do not establish continuous exclusion or identify the external writer."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.ha128.r3.closed-state-comparison.v1",
+  "originalHaJob": "1a1b357f5e0-fc05-8241",
+  "observerSourceSha256": "32ac702eae61c641451da6b5a88e90c896d8913444873495f4bbefeb7c204814",
+  "observed": {
+    "x230": {
+      "committedIndex": 34,
+      "appliedIndex": 34,
+      "latestObservedPublicationIndex": 34,
+      "proposedGeneration": 11,
+      "ciphertextBytes": 21026335,
+      "objects": 203,
+      "closedFds": 17
+    },
+    "ai395": {
+      "committedIndex": 34,
+      "appliedIndex": 34,
+      "latestObservedPublicationIndex": 34,
+      "proposedGeneration": 11,
+      "ciphertextBytes": 21026335,
+      "objects": 203,
+      "closedFds": 17
+    },
+    "mac": {
+      "committedIndex": 33,
+      "appliedIndex": 33,
+      "latestObservedPublicationIndex": 32,
+      "proposedGeneration": 10,
+      "ciphertextBytes": 18924751,
+      "objects": 184,
+      "closedFds": 19
+    }
+  },
+  "interpretation": "The two Linux voters have observed committed/applied index 34. The Mac journal ends at staging index 33 and lacks publication index 34. This is consistent with the original leader-to-Mac append transport failures, but does not establish the client GET connect/TLS/send failure's underlying reason.",
+  "limitations": [
+    "Structural CRC/epoch/index observations only; no audit authentication key was read.",
+    "Applied command metadata was parsed without re-executing application commands or reconstructing their rejection state.",
+    "No ciphertext closure, decrypted KV version, native restore, or HA128 success is established.",
+    "Audit times are request clock seconds, not response completion timestamps; no route/actor association is claimed."
+  ],
+  "allKnownSucceededAndFdsClosed": true,
+  "oldObserverR1FailurePreserved": true,
+  "oldR1Failure": "Read-only predicate rejected Rust-created 0775 directory under the actual held 0700 fixture/raft parent. Fixed metadata established exact 0775 directories and 0664 four Raft files; r2 changes only their private enclosure admission.",
+  "mutations": 0,
+  "productExecutions": 0,
+  "networkCalls": 0,
+  "keyReads": 0,
+  "permissionChanges": 0,
+  "oldFixtureRestarts": 0
+}

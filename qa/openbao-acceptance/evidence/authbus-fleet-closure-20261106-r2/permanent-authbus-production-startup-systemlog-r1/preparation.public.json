@@ -1,0 +1,25 @@
+{
+  "bytes": 34187,
+  "sha256": "b611efa5ea07a6438dab325511dd9a17db957de15761954509162179ac8fe134",
+  "sourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    }
+  },
+  "originalServiceJob": "1a1b4048166-fc05-85db",
+  "originalPid": 19077,
+  "fixedWindowEpoch": [
+    1794021555,
+    1794021590
+  ],
+  "noPrivateLogOrDigestPublished": true
+}

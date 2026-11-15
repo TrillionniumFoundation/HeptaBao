@@ -1,0 +1,1172 @@
+{
+  "all_transferred_whole_hashes_equal": true,
+  "automatic_retry": false,
+  "credential_files_copied": false,
+  "elapsed_seconds": 36.13664529193193,
+  "new_receiver_root": "/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1",
+  "producer_host": "pocket4",
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "receiver": {
+    "files": 19,
+    "product_binary_executions": 0,
+    "status": "complete_public_delivery"
+  },
+  "receiver_host": "x230",
+  "remote_effects_unknown": false,
+  "rust_build_executed": false,
+  "schema": "heptabao.mac-current-normal-artifact-relay.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_preparation_and_workloads_still_required": true,
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "ssh_aliases": [
+    "pocket4",
+    "x230"
+  ],
+  "status": "transferred_and_verified",
+  "steps": [
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-heptabao-server",
+      "owned_ssh_session_signals": [],
+      "pid": 64889,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 110799168,
+        "mode": 384,
+        "sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-heptabao-seed",
+      "owned_ssh_session_signals": [],
+      "pid": 64909,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 102211888,
+        "mode": 384,
+        "sha256": "434c32ed59201c13d8af498f5a6b19f10935e744b085a4f8029c241523f4d968",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-normal107.result.original.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64921,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 285431,
+        "mode": 384,
+        "sha256": "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-test-selection.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64925,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 142663,
+        "mode": 384,
+        "sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-normal107.controller.original.py",
+      "owned_ssh_session_signals": [],
+      "pid": 64929,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 21718,
+        "mode": 384,
+        "sha256": "c8ef09b133312149eecc1886322cc96dcecda18c637b0db9fc3a5e917b3f6564",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-normal107.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64933,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 733,
+        "mode": 384,
+        "sha256": "8ec1de7b5b992112d479afa5f64233fd9196e83ab323581041b3f6f99670ef63",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-candidate.bundle",
+      "owned_ssh_session_signals": [],
+      "pid": 64937,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 377715,
+        "mode": 384,
+        "sha256": "9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-native-build.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64941,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 3992,
+        "mode": 384,
+        "sha256": "25263aa341d5525570da0c950ff519ed808110fc301c63fab7b1611015b7fa8e",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-native-projection.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64953,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 729,
+        "mode": 384,
+        "sha256": "fa639c83f44a98ededc81a7a3deddb6a6c63a1db153972b573d6135990899d8f",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-producer-abi.result.original.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64957,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 37794,
+        "mode": 384,
+        "sha256": "d19c0efdebc27940a56ddef6c5ced9ff68bcc23465c2730d07d396fc915d1b4f",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-13-normal-release-build.stdout",
+      "owned_ssh_session_signals": [],
+      "pid": 64963,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 426720,
+        "mode": 384,
+        "sha256": "86d3c08fca966faa8c89030321be891b5585ed94bf4f73fd9e05059792995ca5",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-13-normal-release-build.stderr",
+      "owned_ssh_session_signals": [],
+      "pid": 64967,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 12124,
+        "mode": 384,
+        "sha256": "3af0957a299738eed655d7b639971e05b8cf1c5462e44e66d49c70f1d2465ede",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-x230_current_candidate_qualification.py",
+      "owned_ssh_session_signals": [],
+      "pid": 64971,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 33147,
+        "mode": 384,
+        "sha256": "448696002a72dbca1c9d2b070d826a34aac4ef0bc4ad7c3e77feab7a66fa7655",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-x230_native_abi_capture.py",
+      "owned_ssh_session_signals": [],
+      "pid": 64975,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 22881,
+        "mode": 384,
+        "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-x230_native_abi_admission.py",
+      "owned_ssh_session_signals": [],
+      "pid": 64979,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 14323,
+        "mode": 384,
+        "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-kv2_dr_process_custody.py",
+      "owned_ssh_session_signals": [],
+      "pid": 64983,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 26131,
+        "mode": 384,
+        "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-producer-abi.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64988,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 729,
+        "mode": 384,
+        "sha256": "0f71a30b723ec5a58882d95bfbe88395553c97f4cd038058bdbc10cdf32e6051",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-x230-static-abi.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64992,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 729,
+        "mode": 384,
+        "sha256": "083e3abfb39cbe4edb4270ebb5802906a59cb322192500723820bd6a51771f1c",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "pocket4",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "download-transfer.manifest.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 64996,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 8158,
+        "mode": 384,
+        "sha256": "782e3048c803228436ee0a8a0b71b61794c59df0b4e1707a4b2e2d0a0f26ca02",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 30,
+      "exit_code": 0,
+      "label": "prepare-x230-root",
+      "owned_ssh_session_signals": [],
+      "pid": 65000,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 43,
+        "mode": 384,
+        "sha256": "53177dc0f983b55cdcb45290f4a036e4534fb032c7f5c6e8d42c4123a2e90795",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-heptabao-server",
+      "owned_ssh_session_signals": [],
+      "pid": 65004,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 134,
+        "mode": 384,
+        "sha256": "5a5820d2446d34e4ea2db6ed313c2ce2f8b3c4c2a9c6d060fddc1dee2f0516a6",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-heptabao-seed",
+      "owned_ssh_session_signals": [],
+      "pid": 65094,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 134,
+        "mode": 384,
+        "sha256": "f896b1b45104af66e655103d4d56c0686f347a115765f50521ccf05eadfd3944",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-normal107.result.original.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65113,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 131,
+        "mode": 384,
+        "sha256": "f20aed1dd2d1b106ab3f6901f9706b53adfc5f64604a3291cb733a0b5fe54286",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-test-selection.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65119,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 131,
+        "mode": 384,
+        "sha256": "77149e34c7c406347a5350ff5dd01172ccd64b68788c233be0ff6d511f2ea3ac",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-normal107.controller.original.py",
+      "owned_ssh_session_signals": [],
+      "pid": 65123,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 130,
+        "mode": 384,
+        "sha256": "e1b5a8fa5694d85d4e4ebee71729001eb52b25f89c3a84efbc8d633ce034e949",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-normal107.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65127,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 128,
+        "mode": 384,
+        "sha256": "0e7249ad0f6bb19114f51298766c98fa90d9b68271fae98b8470b1cec9f74319",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-candidate.bundle",
+      "owned_ssh_session_signals": [],
+      "pid": 65131,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 131,
+        "mode": 384,
+        "sha256": "cb6d4645e7d8498c1b9785a5775580dc261805b49d2c44d9ca692fd3929d6029",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-native-build.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65135,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 129,
+        "mode": 384,
+        "sha256": "52583741ecd102c58b566ad5e0245d027fb9884bdb6e53e423f7b7e329f463fd",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-native-projection.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65139,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 128,
+        "mode": 384,
+        "sha256": "d4defddf037a7d0032220820386ae19f9c574236fb4be169d11bdbe9a6c784bb",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-producer-abi.result.original.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65143,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 130,
+        "mode": 384,
+        "sha256": "c4a557d9a730f406bea78d5ecdbcd428dd5b42ae11b7d45cf857a53e477f0742",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-13-normal-release-build.stdout",
+      "owned_ssh_session_signals": [],
+      "pid": 65147,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 131,
+        "mode": 384,
+        "sha256": "9473409a7f89610dba611a96cf01e43ebb05c6f49324db34761bac645cf3c07e",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-13-normal-release-build.stderr",
+      "owned_ssh_session_signals": [],
+      "pid": 65151,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 130,
+        "mode": 384,
+        "sha256": "aaa031b4536a7395a771f58d82318c4df5c7636ac264999d61302f03ed9d4e40",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-x230_current_candidate_qualification.py",
+      "owned_ssh_session_signals": [],
+      "pid": 65163,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 130,
+        "mode": 384,
+        "sha256": "a106c23e43770c7ec61104cfcaea0ad90a9575e788dd89dff9fe44944cad6d5a",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-x230_native_abi_capture.py",
+      "owned_ssh_session_signals": [],
+      "pid": 65169,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 130,
+        "mode": 384,
+        "sha256": "c096387776848953045e4e7bf9d512a55489eb5c831b9009ee0a95d02d6569ba",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-x230_native_abi_admission.py",
+      "owned_ssh_session_signals": [],
+      "pid": 65181,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 130,
+        "mode": 384,
+        "sha256": "e4cd9d038c8a1bc1de39bf564ce74d600f24cad2316b24caec37c53391b7b23f",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-kv2_dr_process_custody.py",
+      "owned_ssh_session_signals": [],
+      "pid": 65193,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 130,
+        "mode": 384,
+        "sha256": "7491a44f738fededa83efb54e4250c4eed1d450ae5f9e2d0434f3d191ed71106",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-producer-abi.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65205,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 128,
+        "mode": 384,
+        "sha256": "5d289def72a3337d493afa97d7380e1651ebc95b6c93fd661799de8537ddfd23",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-x230-static-abi.terminal.exact-tool-text.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65217,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 128,
+        "mode": 384,
+        "sha256": "763090768d13bb8465500e073c56a15c2c1f223578b029499c2f6928f3261068",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 180,
+      "exit_code": 0,
+      "label": "upload-transfer.manifest.public.json",
+      "owned_ssh_session_signals": [],
+      "pid": 65229,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": true,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 129,
+        "mode": 384,
+        "sha256": "cec41dc96294f449e5410dac1ce7f30165248a4c48ce533e1c08f73b5b9a5e98",
+        "uid": 501
+      },
+      "timed_out": false
+    },
+    {
+      "alias": "x230",
+      "attempts": 1,
+      "budget_seconds": 60,
+      "exit_code": 0,
+      "label": "verify-x230-delivery",
+      "owned_ssh_session_signals": [],
+      "pid": 65238,
+      "remote_effects_unknown": false,
+      "remote_mutation_dispatched": false,
+      "stderr": {
+        "bytes": 0,
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 84,
+        "mode": 384,
+        "sha256": "ab68315a5e71e1c6d1bd2fcaca8af6a743b8b570ac25e4f49a827cffdb0366a1",
+        "uid": 501
+      },
+      "timed_out": false
+    }
+  ],
+  "tools_after": {
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "bytes": 34640,
+      "mode": 493,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "uid": 501
+    },
+    "/usr/bin/ssh": {
+      "bytes": 1584576,
+      "mode": 493,
+      "sha256": "17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3",
+      "uid": 0
+    }
+  },
+  "tools_before": {
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14": {
+      "bytes": 34640,
+      "mode": 493,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "uid": 501
+    },
+    "/usr/bin/ssh": {
+      "bytes": 1584576,
+      "mode": 493,
+      "sha256": "17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3",
+      "uid": 0
+    }
+  },
+  "transferred_files": [
+    {
+      "bytes": 110799168,
+      "destination": "artifacts/heptabao-server",
+      "mode": 448,
+      "name": "heptabao-server",
+      "sha256": "85c1e21771cc1110e6442ba06cbda31db5ba7040d15f8b5c1930aa6fa40c5e5c",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 102211888,
+      "destination": "artifacts/heptabao-seed",
+      "mode": 448,
+      "name": "heptabao-seed",
+      "sha256": "434c32ed59201c13d8af498f5a6b19f10935e744b085a4f8029c241523f4d968",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 285431,
+      "destination": "provenance/normal107.result.original.public.json",
+      "mode": 384,
+      "name": "normal107.result.original.public.json",
+      "sha256": "b52b67303587b3f94f1bed5330dfd2b0edaecabb89feb93d3fd3ff81419a47f5",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 142663,
+      "destination": "provenance/test-selection.public.json",
+      "mode": 384,
+      "name": "test-selection.public.json",
+      "sha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 21718,
+      "destination": "provenance/normal107.controller.original.py",
+      "mode": 384,
+      "name": "normal107.controller.original.py",
+      "sha256": "c8ef09b133312149eecc1886322cc96dcecda18c637b0db9fc3a5e917b3f6564",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 733,
+      "destination": "provenance/normal107.terminal.exact-tool-text.json",
+      "mode": 384,
+      "name": "normal107.terminal.exact-tool-text.json",
+      "sha256": "8ec1de7b5b992112d479afa5f64233fd9196e83ab323581041b3f6f99670ef63",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 377715,
+      "destination": "provenance/candidate.bundle",
+      "mode": 384,
+      "name": "candidate.bundle",
+      "sha256": "9d7d937b2d324f73913f7f1fc144c6368ffa79593dad1dfede82e8033362f7b0",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 3992,
+      "destination": "provenance/native-build.public.json",
+      "mode": 384,
+      "name": "native-build.public.json",
+      "sha256": "25263aa341d5525570da0c950ff519ed808110fc301c63fab7b1611015b7fa8e",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 729,
+      "destination": "provenance/native-projection.terminal.exact-tool-text.json",
+      "mode": 384,
+      "name": "native-projection.terminal.exact-tool-text.json",
+      "sha256": "fa639c83f44a98ededc81a7a3deddb6a6c63a1db153972b573d6135990899d8f",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 37794,
+      "destination": "provenance/producer-abi.result.original.public.json",
+      "mode": 384,
+      "name": "producer-abi.result.original.public.json",
+      "sha256": "d19c0efdebc27940a56ddef6c5ced9ff68bcc23465c2730d07d396fc915d1b4f",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 426720,
+      "destination": "provenance/13-normal-release-build.stdout",
+      "mode": 384,
+      "name": "13-normal-release-build.stdout",
+      "sha256": "86d3c08fca966faa8c89030321be891b5585ed94bf4f73fd9e05059792995ca5",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 12124,
+      "destination": "provenance/13-normal-release-build.stderr",
+      "mode": 384,
+      "name": "13-normal-release-build.stderr",
+      "sha256": "3af0957a299738eed655d7b639971e05b8cf1c5462e44e66d49c70f1d2465ede",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 33147,
+      "destination": "control/x230_current_candidate_qualification.py",
+      "mode": 384,
+      "name": "x230_current_candidate_qualification.py",
+      "sha256": "448696002a72dbca1c9d2b070d826a34aac4ef0bc4ad7c3e77feab7a66fa7655",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 22881,
+      "destination": "control/x230_native_abi_capture.py",
+      "mode": 384,
+      "name": "x230_native_abi_capture.py",
+      "sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 14323,
+      "destination": "control/x230_native_abi_admission.py",
+      "mode": 384,
+      "name": "x230_native_abi_admission.py",
+      "sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 26131,
+      "destination": "control/kv2_dr_process_custody.py",
+      "mode": 384,
+      "name": "kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 729,
+      "destination": "provenance/producer-abi.terminal.exact-tool-text.json",
+      "mode": 384,
+      "name": "producer-abi.terminal.exact-tool-text.json",
+      "sha256": "0f71a30b723ec5a58882d95bfbe88395553c97f4cd038058bdbc10cdf32e6051",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 729,
+      "destination": "provenance/x230-static-abi.terminal.exact-tool-text.json",
+      "mode": 384,
+      "name": "x230-static-abi.terminal.exact-tool-text.json",
+      "sha256": "083e3abfb39cbe4edb4270ebb5802906a59cb322192500723820bd6a51771f1c",
+      "source_mac_receiver_hashes_equal": true
+    },
+    {
+      "bytes": 8158,
+      "destination": "provenance/transfer.manifest.public.json",
+      "mode": 384,
+      "name": "transfer.manifest.public.json",
+      "sha256": "782e3048c803228436ee0a8a0b71b61794c59df0b4e1707a4b2e2d0a0f26ca02",
+      "source_mac_receiver_hashes_equal": true
+    }
+  ],
+  "transport_grants_runtime_qualification": false
+}

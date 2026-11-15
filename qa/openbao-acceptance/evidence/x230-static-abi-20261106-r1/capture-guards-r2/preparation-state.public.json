@@ -1,0 +1,38 @@
+{
+  "actual_x230_runtime_qualified": false,
+  "actual_x230_static_compatibility_qualified": false,
+  "controller_sha256": "3f49130cc7dbf5c1a9bde8e0a83d26a7280d41eb59b03fb9c5f48a0dc7a1cd63",
+  "current_product_binary_executions": 0,
+  "full_replacement_qualified": false,
+  "last_observed_normal107_status": "running",
+  "last_observed_release_step": "13-normal-release-build",
+  "local_guard_tests": {
+    "executed": 22,
+    "failed": 0,
+    "passed": 22,
+    "scope": "local mock/file/parser only"
+  },
+  "mac_calls": 0,
+  "normal107_job_id": "1a1b2367cb2-fc05-7cfc",
+  "observed_product_tests": 0,
+  "parser_sha256": "1b6594238cfaf26a2411ec422a858f9958626c98e2d5dece8464f24ee8ed73b4",
+  "required_live_chain": [
+    "actual original normal107 succeeded complete durable terminal",
+    "actual native-build projection plus its succeeded complete durable terminal",
+    "actual producer ELF capture plus its succeeded complete durable terminal",
+    "actual fresh X230 loader/provider recursive version-set match plus its succeeded complete durable terminal",
+    "receiver binary whole-hash recheck and real full34/API69/DR workloads"
+  ],
+  "schema": "heptabao.x230-static-abi-capture-preparation.v1",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "status": "prepared_not_executed",
+  "unavailable_inputs_not_fabricated": [
+    "qualified normal artifact hashes",
+    "completed normal107 receipt",
+    "normal107 terminal",
+    "native projection receipt and terminal",
+    "Pocket4 readelf pin",
+    "actual X230 ldconfig.real pin"
+  ]
+}

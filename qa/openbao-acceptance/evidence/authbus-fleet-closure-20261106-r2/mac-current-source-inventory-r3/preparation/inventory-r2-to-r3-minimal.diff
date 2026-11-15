@@ -1,0 +1,207 @@
+--- r2/capture_current_database_inventory_r2.py
++++ r3/capture_current_database_inventory_r3.py
+@@ -20,7 +20,7 @@
+ import sys
+ import time
+ 
+-ROOT = Path("/Users/qianqi/heptabao-authbus-production-source-inventory-20261106-r2")
++ROOT = Path("/Users/qianqi/heptabao-authbus-production-source-inventory-20261106-r3")
+ QUAL = Path("/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2")
+ LIVE = Path("/Users/qianqi/.openclaw")
+ AGENTS = ("main", "trnm", "hepta-ui", "hepta", "hepta-backend")
+@@ -35,9 +35,10 @@
+ import mac_current_database_inventory_r1 as inventory
+ 
+ codes, guards, held = set(), [], []
++guard_close_attempts = {}
+ observed_metadata = {}
+ selector_holders = []
+-report = {"schema": "heptabao.current-database-source-inventory.public.r2", "ok": False,
++report = {"schema": "heptabao.current-database-source-inventory.public.r3", "ok": False,
+           "credentialRowsRead": 0, "providerCalls": 0, "sdkImported": False,
+           "productionWrites": 0, "serviceActions": 0, "productionCutover": False,
+           "wholeDatabaseBackupOrRestoreQualified": False,
+@@ -49,6 +50,68 @@
+     if not value:
+         codes.add(code)
+         raise RuntimeError(code)
++
++
++def close_guard_resources(items, attempts):
++    """Attempt every original guard close before any public projection.
++
++    A failed close call consumes this caller's slot. Original per-handle
++    ledgers remain authoritative; no uncertain close is repeated here.
++    """
++    for current in items:
++        token = id(current)
++        if token in attempts:
++            continue
++        row = {"closeCallAttempts": 1, "closeCallReturned": False}
++        attempts[token] = row
++        try:
++            current.close()
++            row["closeCallReturned"] = True
++        except BaseException:
++            row["closeErrorCode"] = "inventory_guard_close_unconfirmed"
++    resources = []
++    boolean_keys = (
++        "allOwnedDescriptorsClosed", "allHeldDescriptorsClosed", "allReturnedConnectionsClosed",
++        "allExplicitCursorsClosed", "allPublicCodeDescriptorsClosed")
++    vector_fields = (("connectionAttemptCount", "connect_attempts"),
++                     ("returnedConnectionCount", "connections"),
++                     ("cursorCount", "cursors"), ("queryCount", "queries"))
++    safe_errors = {"OSError", "ValueError", "RuntimeError", "PermissionError", "FileNotFoundError",
++                   "TimeoutError", "OperationalError", "DatabaseError", "ProgrammingError",
++                   "KeyboardInterrupt", "SystemExit"}
++    for ordinal, current in enumerate(items, 1):
++        row = {"ordinal": ordinal, **attempts[id(current)], "projectionComplete": False,
++               "allOwnedDescriptorsClosed": False}
++        try:
++            value = current.public()
++            need(type(value) is dict, "inventory_resource_public_dictionary")
++            selected = {key: value[key] for key in boolean_keys}
++            need(all(type(item) is bool for item in selected.values()),
++                 "inventory_resource_closure_booleans")
++            errors = value["closeErrors"]
++            need(type(errors) is list and all(type(item) is str for item in errors),
++                 "inventory_resource_close_errors_vector")
++            selected["closeErrors"] = [item if item in safe_errors else "OtherError" for item in errors]
++            for public_name, attribute in vector_fields:
++                vector = getattr(current, attribute)
++                need(type(vector) is list and all(type(item) is dict for item in vector),
++                     "inventory_original_resource_vector_type")
++                selected[public_name] = len(vector)
++            row.update(selected, projectionComplete=True)
++        except BaseException:
++            row["projectionErrorCode"] = "inventory_guard_resource_projection_refused"
++        resources.append(row)
++    return resources
++
++
++def public_database_kind_and_mode(result, primary, registry):
++    # The fixed query already reads this PRAGMA. No extra SQL or auth data.
++    mode = result["pragmas"]["journal_mode"]
++    need(type(mode) is str and mode in ("delete", "truncate", "persist", "memory", "wal", "off"),
++         "inventory_closed_journal_mode_enum")
++    return {"journalMode": mode, "databaseKind": "shared-state" if registry else "agent",
++            "configuredPrimaryAgentSlot": primary,
++            "credentialOwnerRevalidatedByThisInventory": False}
+ 
+ 
+ def remaining():
+@@ -365,7 +428,8 @@
+                           "generation": namespace_record(current)})
+         report["databaseObservations"].append({"ordinal": ordinal + 1,
+                                                **public_database_sizes(bundle),
+-                                               **inventory.public_inventory_counts(result)})
++                                               **inventory.public_inventory_counts(result),
++                                               **public_database_kind_and_mode(result, ordinal == 0, False)})
+     registry = auth.wal.WalInputs(until=UNTIL, critical=contextlib.nullcontext, cancelled=lambda: False)
+     guards.append(registry)
+     runtime = auth.wal.observed_runtime(registry)
+@@ -378,7 +442,8 @@
+     databases.append({"slot": 5, "kind": "shared-state", "inventory": result,
+                       "generation": namespace_record(registry)})
+     report["databaseObservations"].append({"ordinal": 6, **public_database_sizes(bundle),
+-                                           **inventory.public_inventory_counts(result)})
++                                           **inventory.public_inventory_counts(result),
++                                           **public_database_kind_and_mode(result, False, True)})
+     known = {str(LIVE / "agents" / agent / "agent" / "openclaw-agent.sqlite") for agent in AGENTS}
+     registered = result["registeredAgentDatabases"]
+     unexpected = [item for item in registered if item["path"] not in known]
+@@ -418,8 +483,10 @@
+     verify_selector_holders()
+     for current in guards:
+         current.verify()
+-        current.close()
+-        need(current.public()["allOwnedDescriptorsClosed"], "inventory_original_resources_closed")
++    closed_resources = close_guard_resources(guards, guard_close_attempts)
++    need(all(item["closeCallReturned"] and item["projectionComplete"]
++             and item["allOwnedDescriptorsClosed"] for item in closed_resources),
++         "inventory_original_resources_closed")
+     close_remaining_held()
+     final_named_fence(records, parents)
+     report.update(ok=True, completePrivateObservationPublished=True,
+@@ -441,17 +508,11 @@
+                        else auth.wal.failure_record(error))
+ finally:
+     close_remaining_held()
+-    resources = []
+-    for current in guards:
+-        current.close()
+-        value = current.public()
+-        resources.append({key: value[key] for key in (
+-            "allOwnedDescriptorsClosed", "allHeldDescriptorsClosed", "allReturnedConnectionsClosed",
+-            "allExplicitCursorsClosed", "allPublicCodeDescriptorsClosed", "closeErrors",
+-            "connectionAttemptCount", "returnedConnectionCount", "cursorCount", "queryCount")})
++    resources = close_guard_resources(guards, guard_close_attempts)
+     report["resources"] = resources
+     report["outputDescriptors"] = [{key: row[key] for key in ("closeAttempts", "closed")} for row in held]
+-    report["allOwnedResourcesClosed"] = (all(item["allOwnedDescriptorsClosed"] for item in resources)
++    report["allOwnedResourcesClosed"] = (all(item["closeCallReturned"] and item["projectionComplete"]
++        and item["allOwnedDescriptorsClosed"] for item in resources)
+         and all(row["closed"] and row["closeAttempts"] == 1 for row in held))
+     report["elapsedSeconds"] = time.monotonic() - START
+     if not report["allOwnedResourcesClosed"] or time.monotonic() >= UNTIL:
+--- r2/launch_current_database_inventory_r2.template.py
++++ r3/launch_current_database_inventory_r3.template.py
+@@ -18,7 +18,7 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 45
+-ROOT = Path('/Users/qianqi/heptabao-authbus-production-source-inventory-20261106-r2')
++ROOT = Path('/Users/qianqi/heptabao-authbus-production-source-inventory-20261106-r3')
+ QUAL = Path('/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2')
+ LIVE = Path('/Users/qianqi/.openclaw')
+ CALLER_HOME = Path('/Users/qianqi')
+@@ -47,7 +47,7 @@
+ owner = child = observer = commands = None
+ created = False
+ report = {
+-    'schema': 'heptabao.current-production-source-inventory-launch.public.r2', 'ok': False,
++    'schema': 'heptabao.current-production-source-inventory-launch.public.r3', 'ok': False,
+     'credentialRowsRead': 0, 'sdkImported': False, 'gatewayRpcCalls': 0,
+     'providerCalls': 0, 'serviceMutations': 0, 'productionWrites': 0,
+     'productionCutover': False, 'productionRollbackQualified': False,
+@@ -379,7 +379,7 @@
+     # original Python-child custody context.
+     with custody.activated() as owner:
+         child = subprocess.Popen(['/usr/bin/sandbox-exec', '-f', str(ROOT / 'inventory.sb'),
+-            PYTHON, '-I', '-S', '-B', str(ROOT / 'code/capture_current_database_inventory_r2.py'), repr(UNTIL)],
++            PYTHON, '-I', '-S', '-B', str(ROOT / 'code/capture_current_database_inventory_r3.py'), repr(UNTIL)],
+             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+             cwd=str(ROOT), env={'PATH': '/usr/bin:/bin:/usr/sbin:/sbin', 'HOME': str(CALLER_HOME),
+                                'LANG': 'C', 'LC_ALL': 'C'})
+--- r2/assemble_current_database_inventory_r2.py
++++ r3/assemble_current_database_inventory_r3.py
+@@ -10,7 +10,7 @@
+ SDK_QA = HERE.parent / 'main3-sdk-outer-r4-work/source-sdk-r4'
+ sha = lambda raw: hashlib.sha256(raw).hexdigest()
+ sources = {name: (HERE / name).read_text() for name in (
+-    'capture_current_database_inventory_r2.py', 'mac_current_database_inventory_r1.py')}
++    'capture_current_database_inventory_r3.py', 'mac_current_database_inventory_r1.py')}
+ for name in ('mac_current_gateway_observation_r2.py', 'mac_gateway_local_fallback_r1.py'):
+     sources[name] = (AUDIT / name).read_text()
+ dependencies = json.loads((AUDIT / 'current-gateway-observer-dependencies.public.json').read_bytes())
+@@ -40,16 +40,16 @@
+ assert sha(payload['registryProof'].encode()) == '7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82'
+ assert len(payload['registryAuthority'].encode()) == 733
+ assert sha(payload['registryAuthority'].encode()) == 'b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f'
+-template = (HERE / 'launch_current_database_inventory_r2.template.py').read_text()
++template = (HERE / 'launch_current_database_inventory_r3.template.py').read_text()
+ assert template.count('# PAYLOAD_PLACEHOLDER') == 1
+ assembled = template.replace('# PAYLOAD_PLACEHOLDER', 'PAYLOAD=' + repr(payload))
+-compile(assembled, 'launch_current_database_inventory_r2.py', 'exec')
++compile(assembled, 'launch_current_database_inventory_r3.py', 'exec')
+ parsed = ast.literal_eval(next(node.value for node in ast.parse(assembled).body
+     if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+         and target.id == 'PAYLOAD' for target in node.targets)))
+ assert parsed == payload
+-(HERE / 'launch_current_database_inventory_r2.py').write_text(assembled)
+-manifest = {'schema': 'heptabao.current-production-source-inventory-preparation.public.r2',
++(HERE / 'launch_current_database_inventory_r3.py').write_text(assembled)
++manifest = {'schema': 'heptabao.current-production-source-inventory-preparation.public.r3',
+     'sourcePins': payload['sourcePins'], 'launcherBytes': len(assembled.encode()),
+     'launcherSha256': sha(assembled.encode()), 'sharedSeconds': 45, 'supervisorSeconds': 70,
+     'inventoryOriginalChildren': 1, 'gatewayOriginalPrintCount': 2,

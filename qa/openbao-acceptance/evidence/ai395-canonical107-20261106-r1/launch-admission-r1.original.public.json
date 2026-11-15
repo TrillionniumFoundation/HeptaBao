@@ -1,0 +1,42 @@
+{
+  "admitted_to_one_controller_invocation": false,
+  "at_utc": "2026-11-06T15:32:50.544279+00:00",
+  "budget_renewed": false,
+  "controller_invocation_planned": false,
+  "controller_original_budget_seconds": 12000,
+  "controller_sha256": "2d5237fb1db25e6741f27685f99195f2e35afdeee7aa4b40adc094b0fa34fc1f",
+  "formal_test_result_not_observed_by_admission": true,
+  "host": "ai395",
+  "other_canonical_campaigns": [],
+  "production_changed": false,
+  "resources": {
+    "compiler_processes": [
+      {
+        "comm": "cargo",
+        "pid": 649441
+      },
+      {
+        "comm": "rustc",
+        "pid": 653479
+      },
+      {
+        "comm": "rustc",
+        "pid": 656327
+      }
+    ],
+    "disk_free_bytes": 97866850304,
+    "load_average": [
+      2.72509765625,
+      2.14892578125,
+      1.115234375
+    ],
+    "mem_available_kib": 22898392,
+    "swap_free_kib": 16
+  },
+  "rog_unknown_preparation_replayed": false,
+  "schema": "heptabao.ai395-canonical107-launch-admission.v1",
+  "selection_sha256": "340e47e620fd963da419a0417a611ec3ba08a544b7962d908640fb14407569f9",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "supervisor_timeout_seconds": 12000
+}

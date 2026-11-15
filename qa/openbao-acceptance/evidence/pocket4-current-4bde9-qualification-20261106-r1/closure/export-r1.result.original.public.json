@@ -1,0 +1,82 @@
+{
+  "at_utc": "2026-11-06T17:42:10.371473+00:00",
+  "elapsed_seconds": 0.5131684159860015,
+  "entry_count": 619,
+  "linux_selected_registry_package_count": 321,
+  "local_workspace_packages": [
+    [
+      "bcrypt",
+      "0.19.3"
+    ],
+    [
+      "heptabao-domain",
+      "0.1.0"
+    ],
+    [
+      "heptabao-durable-service",
+      "0.1.0"
+    ],
+    [
+      "heptabao-filesystem-guard",
+      "0.1.0"
+    ],
+    [
+      "heptabao-ha-service",
+      "0.1.0"
+    ],
+    [
+      "heptabao-kms-contracts",
+      "0.1.0"
+    ],
+    [
+      "heptabao-linux-parent-death",
+      "0.1.0"
+    ],
+    [
+      "heptabao-openbao-grpc",
+      "0.1.0"
+    ],
+    [
+      "heptabao-plugin-contracts",
+      "0.1.0"
+    ],
+    [
+      "heptabao-plugin-host",
+      "0.1.0"
+    ],
+    [
+      "heptabao-raft-runtime",
+      "0.1.0"
+    ],
+    [
+      "heptabao-server",
+      "0.1.0"
+    ],
+    [
+      "heptabao-workflow-template",
+      "0.6.1"
+    ],
+    [
+      "qrcode",
+      "0.14.1"
+    ]
+  ],
+  "manifest": {
+    "bytes": 172245,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/pocket4-dependency-export-r1/manifest.public.json",
+    "sha256": "1758c7ec1a969be00804c02dd90dddf1468dd5e8dcc4e24796c77f0f3f021f29"
+  },
+  "payload": {
+    "bytes": 63508480,
+    "path": "/home/qq/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/pocket4-dependency-export-r1/linux-locked-dependencies.tar",
+    "sha256": "8138b4e620f5d49cdd2593decf72cd2090e90eee9c620194c851b588c932cf6f"
+  },
+  "product_binary_executions": 0,
+  "production_changed": false,
+  "rust_compilation_executed": false,
+  "schema": "heptabao.closed-linux-registry-export-result.v1",
+  "source_cache_modified": false,
+  "sparse_index_count": 297,
+  "status": "prepared",
+  "user_cargo_configuration_or_credentials_opened": false
+}

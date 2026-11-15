@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.original-tcc-message-evidence-check.r2",
+  "jobId": "1a1b4250ceb-fc05-8677",
+  "sourceBytes": 34832,
+  "sourceSha256": "83ff24bbeac5a94a8ebd0ac0925532814e51b960ef2fc264699bdb515b272b41",
+  "completeLosslessStdoutBytes": 4857,
+  "stderrBytes": 0,
+  "originalEventCount": 1,
+  "onlyRequestEventObserved": true,
+  "requestResponseOrPromptOutcomeProven": false,
+  "startupCausalityProven": false,
+  "allOwnedCommandsStopped": true,
+  "unknownCommands": 0,
+  "allExplicitFdsClosed": true,
+  "serviceActions": 0,
+  "settingsChanged": false
+}

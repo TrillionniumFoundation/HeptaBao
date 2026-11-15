@@ -1,0 +1,180 @@
+{
+  "source_head": "21f9c5fa032fbdba6b7d9289c94b890581fea2fa",
+  "cargo_locks": [
+    {
+      "path": "Cargo.lock",
+      "all": 443,
+      "registry": 387,
+      "git": []
+    },
+    {
+      "path": "probes/h02/openraft-tokio/Cargo.lock",
+      "all": 123,
+      "registry": 121,
+      "git": [
+        {
+          "name": "validit",
+          "version": "0.2.5",
+          "source": "git+https://github.com/drmingdrmer/validit.git?rev=7016fa5e072a86092928144b3a3040381e6964e9#7016fa5e072a86092928144b3a3040381e6964e9",
+          "dependencies": [
+            "anyerror"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "probes/h02/rustls-aws-lc/Cargo.lock",
+      "all": 34,
+      "registry": 33,
+      "git": []
+    },
+    {
+      "path": "probes/h02/rustls-ring/Cargo.lock",
+      "all": 27,
+      "registry": 26,
+      "git": []
+    }
+  ],
+  "unique_registry_name_versions": 410,
+  "js_manifests": [
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-r1/package.json",
+      "name": "heptabao-fixed-slot-coordinator-candidate",
+      "version": "0.0.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {}
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-r2/package.json",
+      "name": "heptabao-fixed-slot-coordinator-candidate",
+      "version": "0.0.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {}
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/fixed-slot-coordinator-r3/package.json",
+      "name": "heptabao-fixed-slot-coordinator-candidate",
+      "version": "0.0.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {}
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-api-preflight/current-plugin-binding/source/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/mac-main3-sdk-r4/preparation/assets/plugin/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-plugin-r2/prepared/mac-rog/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.1-heptabao.2",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-plugin-r2/prepared/pocket4/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.3-heptabao.2",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-transport-integration-r1/pocket4-public-sources/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.3",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-transport-integration-r1/production-plugin-r1/mac-rog/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.1-heptabao.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-fleet-closure-20261106-r2/production-transport-integration-r1/production-plugin-r1/pocket4/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.3-heptabao.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r1/assets/plugin/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r2/assets/plugin/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/mac-authbus-main3-sdk-outer-preparation-20261106-r3/assets/plugin/package.json",
+      "name": "@local/openclaw-authbus",
+      "version": "0.3.1",
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {
+        "openclaw": ">=2026.7.1"
+      }
+    },
+    {
+      "path": "tools/authbus/production-transport/package.json",
+      "name": null,
+      "version": null,
+      "dependencies": {},
+      "devDependencies": {},
+      "peerDependencies": {}
+    }
+  ],
+  "python_requirements": {
+    "PyYAML": "6.0.2",
+    "jsonschema": "4.23.0",
+    "cryptography": "46.0.4"
+  },
+  "python_client_runtime_dependencies": [],
+  "python_build_requirement": "setuptools>=65 (not locked)"
+}

@@ -1,0 +1,15 @@
+test_actual_execute_closes_descendant_after_successful_leader_exit (test_native_linux_artifact_cleanup.LinuxArtifactOwnedCleanup.test_actual_execute_closes_descendant_after_successful_leader_exit) ... ok
+test_already_reaped_leader_refuses_group_signal (test_native_linux_artifact_cleanup.LinuxArtifactOwnedCleanup.test_already_reaped_leader_refuses_group_signal) ... ok
+test_changed_owner_start_ticks_refuses_group_signal (test_native_linux_artifact_cleanup.LinuxArtifactOwnedCleanup.test_changed_owner_start_ticks_refuses_group_signal) ... ok
+test_original_wait_deadline_leaves_leader_owned_for_cleanup (test_native_linux_artifact_cleanup.LinuxArtifactOwnedCleanup.test_original_wait_deadline_leaves_leader_owned_for_cleanup) ... ok
+test_actual_local_system_elf_loader_observation_is_not_product_execution (test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution) ... ok
+test_compile_artifact_requires_one_exact_absolute_target_path (test_native_linux_artifact_run.ArtifactCustodyRegression.test_compile_artifact_requires_one_exact_absolute_target_path) ... ok
+test_duplicate_missing_or_wrong_selector_name_counts_refuse (test_native_linux_artifact_run.ArtifactCustodyRegression.test_duplicate_missing_or_wrong_selector_name_counts_refuse) ... ok
+test_original_log_identity_and_selector_list_cannot_be_substituted (test_native_linux_artifact_run.ArtifactCustodyRegression.test_original_log_identity_and_selector_list_cannot_be_substituted) ... ok
+test_partial_failure_retains_counts_and_incomplete_or_duplicate_results_refuse (test_native_linux_artifact_run.ArtifactCustodyRegression.test_partial_failure_retains_counts_and_incomplete_or_duplicate_results_refuse) ... ok
+test_streamed_copy_preserves_bytes_and_rejects_links_or_overwrite (test_native_linux_artifact_run.ArtifactCustodyRegression.test_streamed_copy_preserves_bytes_and_rejects_links_or_overwrite) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 5.253s
+
+OK

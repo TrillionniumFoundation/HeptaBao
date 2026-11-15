@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.namespace-seal-bounded.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "create_namespace",
+      "passed": true
+    },
+    {
+      "case": "create_child_before_parent_seal",
+      "passed": true
+    },
+    {
+      "case": "seal_namespace",
+      "passed": true
+    },
+    {
+      "case": "sealed_state_readback",
+      "passed": true
+    },
+    {
+      "case": "seal_status",
+      "passed": true
+    },
+    {
+      "case": "sealed_child_fails_closed",
+      "passed": true
+    },
+    {
+      "case": "sealed_descendant_inherits_parent_fence",
+      "passed": true
+    },
+    {
+      "case": "unauthorized_seal_control_denied",
+      "passed": true
+    },
+    {
+      "case": "parent_unseal",
+      "passed": true
+    },
+    {
+      "case": "unsealed_child_reachable",
+      "passed": true
+    },
+    {
+      "case": "reseal",
+      "passed": true
+    },
+    {
+      "case": "restart_starts_globally_sealed",
+      "passed": true
+    },
+    {
+      "case": "global_unseal_preserves_namespace_seal",
+      "passed": true
+    },
+    {
+      "case": "namespace_seal_survives_restart",
+      "passed": true
+    },
+    {
+      "case": "post_restart_fence",
+      "passed": true
+    },
+    {
+      "case": "post_restart_parent_unseal",
+      "passed": true
+    }
+  ],
+  "bounded_profile": "durable namespace seal flag; ancestor request fence; parent-controlled unseal; global barrier custody",
+  "global_barrier_bound": true,
+  "independent_namespace_key_hierarchy": false,
+  "full_openbao_namespace_seal_compatibility": false,
+  "independent_qualification": false,
+  "candidate_binary_sha256": "cb0f2b3e52b4818781ef301a28a93feafc4485670be74e13adb2e25cfc433169",
+  "candidate_binary_source_head": "4fa64476e24d3b9ed260c6b3ea897ce5a300ce74",
+  "source_worktree_dirty": false,
+  "execution_platform": "Linux aarch64 guest (Ubuntu Noble)"
+}

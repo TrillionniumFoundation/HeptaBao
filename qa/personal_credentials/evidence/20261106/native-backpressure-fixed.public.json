@@ -1,0 +1,70 @@
+{
+  "binary_sha256": {
+    "heptabao-browser": "2fbb852c92dc59c3ac5c1305fc21bdd81941e948c31793e02d3a01ccd1a8d61d",
+    "heptabao-vault": "9269c070399493f634055bc9e002ea141988f1368cce8358fcc05bbf98d9bfb1"
+  },
+  "browser_or_production_qualified": false,
+  "checks": [
+    {
+      "case": "backpressure_capacity_established",
+      "passed": true
+    },
+    {
+      "case": "native_unlock_accepted",
+      "passed": true
+    },
+    {
+      "case": "native_exits_without_draining_stdout",
+      "passed": true
+    },
+    {
+      "case": "independent_process_reopens_vault",
+      "passed": true
+    },
+    {
+      "case": "native_reports_bounded_output_failure",
+      "passed": true
+    },
+    {
+      "case": "original_process_reaped",
+      "passed": true
+    },
+    {
+      "case": "diagnostics_redact_synthetic_credentials",
+      "passed": true
+    },
+    {
+      "case": "binary_identity_unchanged",
+      "passed": true
+    }
+  ],
+  "configured_unlock_seconds": 2,
+  "exit_code": 1,
+  "exit_wait_ms": 32.59,
+  "expected_count": 8,
+  "failure": null,
+  "fill_stdout_drained": false,
+  "finished_unix_ns": 1793944352505506299,
+  "missing_cases": [],
+  "original_pid": 8,
+  "passed_count": 8,
+  "pipe_capacity_bytes": 4096,
+  "profile_sha256": "90f2ed6133b838083d5374456b12e8623414c1bc9655f1ed0e8501412d603470",
+  "real_browser": false,
+  "real_native_process_and_pipe": true,
+  "required_cases": [
+    "backpressure_capacity_established",
+    "binary_identity_unchanged",
+    "diagnostics_redact_synthetic_credentials",
+    "independent_process_reopens_vault",
+    "native_exits_without_draining_stdout",
+    "native_reports_bounded_output_failure",
+    "native_unlock_accepted",
+    "original_process_reaped"
+  ],
+  "schema": "heptabao.personal-credentials.native-backpressure.v1",
+  "source_build_provenance_asserted": false,
+  "started_unix_ns": 1793944351399731861,
+  "status": "passed",
+  "synthetic_only": true
+}

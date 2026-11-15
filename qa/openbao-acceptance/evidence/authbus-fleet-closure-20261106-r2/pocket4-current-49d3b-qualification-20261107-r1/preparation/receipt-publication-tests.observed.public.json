@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.local-receipt-publication-tests.v1",
+  "source": "observed exec_command result; copied metadata, not a remote product receipt",
+  "chunk_id": "789dcb",
+  "exit_code": 0,
+  "tests": 3,
+  "passed": 3,
+  "failed": 0,
+  "testFile": "test_receipt_publication.py",
+  "sourceFileSha256": "9385c9f4d7815436cea734850d1f91fe183dc7d69858856b486568303822ddad",
+  "output": "test_close_error_continues_other_original_closes_and_never_claims_complete (__main__.ReceiptPublicationTests.test_close_error_continues_other_original_closes_and_never_claims_complete) ... ok\ntest_complete_readback_file_and_parent_sync_with_all_three_fds_closed (__main__.ReceiptPublicationTests.test_complete_readback_file_and_parent_sync_with_all_three_fds_closed) ... ok\ntest_existing_receipt_never_overwritten_and_parent_still_closed (__main__.ReceiptPublicationTests.test_existing_receipt_never_overwritten_and_parent_still_closed) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.015s\n\nOK\n",
+  "remoteJobsStarted": 0,
+  "rustTestsExecuted": 0,
+  "productServicesStarted": 0
+}

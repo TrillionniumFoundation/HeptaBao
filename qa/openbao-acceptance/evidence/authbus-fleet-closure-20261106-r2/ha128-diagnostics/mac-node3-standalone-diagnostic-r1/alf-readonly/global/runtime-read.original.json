@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1b33836ab-fc05-8127",
+  "stderr": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  },
+  "stdout": {
+    "bytes_hex": "4669726577616c6c20697320656e61626c65642e20285374617465203d2031290a",
+    "eof": true,
+    "next_offset": 33,
+    "offset": 0,
+    "size": 33,
+    "text": "Firewall is enabled. (State = 1)\n"
+  }
+}

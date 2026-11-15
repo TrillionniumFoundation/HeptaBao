@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b277e5bb-fc05-7e22\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22737461747573223a2022706173736564222c2022726f6c65223a20227265636569766572222c2022726573756c74223a20222f686f6d652f7169616e2f686570746162616f2d63757272656e742d34626465392d7374617469632d6162692d32303236313130362d72312f63757272656e742d706f636b6574342d636170747572652d72312f636170747572652f726573756c742e7075626c69632e6a736f6e222c20227461726765745f62696e6172795f657865637574696f6e73223a20302c202261637475616c5f783233305f72756e74696d655f7175616c6966696564223a2066616c73657d0a\",\n    \"eof\": true,\n    \"next_offset\": 236,\n    \"offset\": 0,\n    \"size\": 236,\n    \"text\": \"{\\\"status\\\": \\\"passed\\\", \\\"role\\\": \\\"receiver\\\", \\\"result\\\": \\\"/home/qian/heptabao-current-4bde9-static-abi-20261106-r1/current-pocket4-capture-r1/capture/result.public.json\\\", \\\"target_binary_executions\\\": 0, \\\"actual_x230_runtime_qualified\\\": false}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

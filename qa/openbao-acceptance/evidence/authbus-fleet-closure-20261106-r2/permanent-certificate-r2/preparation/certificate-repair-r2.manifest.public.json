@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.permanent-certificate-correction-source.r2",
+  "actualExecuted": false,
+  "launcherBytes": 62040,
+  "launcherSha256": "a7484edaf43fffae98636faf4c371abe29c17fe58478a55ba38bb2fc7ea68c58",
+  "originalBootstrapBytes": 82208,
+  "originalBootstrapSha256": "709e228b497f84ed93df0b30bc484d60350a76b9d44944bdd951b0bb077482c7",
+  "unchangedQualifiedSources": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_production_t5_guard_r1.py": {
+      "bytes": 13379,
+      "sha256": "9f0b032264c4dd5db45478f08c1cdbc92354ac3153b2ed4d18ef2aab30b139f1"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    }
+  },
+  "parentSeconds": 120,
+  "supervisorSeconds": 150,
+  "createdFilesOnly": true,
+  "sameCaAndServerPrivateKey": true,
+  "oldLeafStrictMemoryBioMustFailWithVerifyCode": 85,
+  "newLeafDefaultStrictMemoryBioMustSucceed": true,
+  "serverStartOrApiRequestOrStoreInit": false
+}

@@ -1,0 +1,361 @@
+{
+  "schema": "heptabao.pocket4-normal107-successor-delivery-plan.v1",
+  "status": "prepared_not_launched",
+  "candidate": {
+    "commit": "49d3bb88f548d7647c44cefe21e5e7ab75a77fe9",
+    "tree": "ad35130626cbfa172dddfaffa1d09d081c7ff4dc",
+    "parent": "6d9dadcfc9b90ca33822f63320a5f961332dc3a9",
+    "productPatchSha256": "e6ac88eeeceec7093fdf42a20f3b4c8461ce87855f7d67f3c2d69e93a38501ab"
+  },
+  "host": {
+    "alias": "pocket4",
+    "hostname": "alex-G1628-04",
+    "uid": 1000,
+    "platform": "Linux",
+    "architecture": "x86_64"
+  },
+  "newPaths": {
+    "root": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1",
+    "source": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/source-49d3b",
+    "controlAndOutput": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1",
+    "candidateBundle": "/home/alex/heptabao-kv2-ha-convergence-49d3b-authbus-20261107-r1/build-test-r1/candidate.bundle"
+  },
+  "existingSource": {
+    "path": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/source-4bde9",
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "cleanRequiredBeforeAndAfter": true,
+    "modificationsAllowed": false
+  },
+  "delivery": {
+    "requiredBundle": {
+      "tip": "49d3bb88f548d7647c44cefe21e5e7ab75a77fe9",
+      "advertisedRef": "HEAD",
+      "bytes": 9156680,
+      "sha256": "84bacab31b38ab80772ee29804859d6a29d8af0d65c63862dffdeeb2172230f0",
+      "actualVerifiedBundleAvailable": true,
+      "prerequisites": [
+        "4bde9aee03fcd27c59e13607e529b1cee594b249",
+        "09c14eae7a3b52dee8ce3af3175dad5900ac59ec"
+      ]
+    },
+    "transport": "configured runtime binary_upload, fixed upload_id/offsets, 512KiB chunks into exact newly owned control directory, expected_version absent/create-only; commit only after 9156680 bytes and exact SHA verification; same upload identity reconciles any unknown. No Mac SSH relay required.",
+    "preparationCommands": [
+      [
+        "/usr/bin/git",
+        "clone",
+        "--no-hardlinks",
+        "--no-local",
+        "--no-checkout",
+        "<old-clean-source>",
+        "<new-source>"
+      ],
+      [
+        "/usr/bin/git",
+        "-C",
+        "<new-source>",
+        "bundle",
+        "verify",
+        "<fixed-new-bundle>"
+      ],
+      [
+        "/usr/bin/git",
+        "-C",
+        "<new-source>",
+        "fetch",
+        "<fixed-new-bundle>",
+        "HEAD"
+      ],
+      [
+        "/usr/bin/git",
+        "-C",
+        "<new-source>",
+        "checkout",
+        "--detach",
+        "49d3bb88f548d7647c44cefe21e5e7ab75a77fe9"
+      ],
+      [
+        "/usr/bin/git",
+        "-C",
+        "<new-source>",
+        "fsck",
+        "--full",
+        "--strict"
+      ]
+    ],
+    "preparationCapsSeconds": {
+      "clone": 180,
+      "bundleVerify": 30,
+      "fetch": 30,
+      "checkout": 30,
+      "fsck": 60
+    },
+    "requiredChecks": [
+      "O_EXCL/new0700 roots/0600 bundle and sources",
+      "fixed whole bundle bytes and hash readback before Git",
+      "exact commit/tree/parent/source clean",
+      "new Git object files nlink1; no old source index/ref change",
+      "Cargo.lock and workspace manifest bytes unchanged vs4b",
+      "all four patch files equal product candidate tree; other product paths equal4b except those4",
+      "closed original dependency and host-tool input pins before/after",
+      "Both actual prerequisites must exist as commits in old clean source, with09c ancestor of4b; never mislabel bundle as single-prerequisite."
+    ]
+  },
+  "normalBuild": {
+    "controllerBaseSha256": "c8ef09b133312149eecc1886322cc96dcecda18c637b0db9fc3a5e917b3f6564",
+    "selectionBaseSha256": "869feff2d8672fe37a26a2fb671cdc853b3c9d7f889edfe76650eed8103f44e9",
+    "controllerOnlyChangedAssignments": [
+      "BUNDLE_SHA",
+      "COMMIT",
+      "OLD_HEAD",
+      "PARENT",
+      "ROOT",
+      "SOURCE",
+      "TREE"
+    ],
+    "restOfControllerAstUnchanged": true,
+    "commands": {
+      "peer_libtest": [
+        "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-ha-service",
+        "--features",
+        "native-v6-peer-ingress",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "server_libtest": [
+        "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "server_release": [
+        "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ]
+    },
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_HOME": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/cargo-home-public-linux-r1",
+      "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+      "CARGO_PROFILE_RELEASE_DEBUG": "0",
+      "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+      "CARGO_PROFILE_RELEASE_LTO": "false",
+      "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+      "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+      "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+      "CARGO_TARGET_DIR": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal",
+      "CARGO_TERM_COLOR": "never",
+      "PATH": "/home/alex/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+      "RUSTFLAGS": ""
+    },
+    "toolchainPins": {
+      "cargo": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24",
+      "rustc": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2",
+      "rustfmt": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+    },
+    "compilerWrappersDisabled": true,
+    "ambientRustFlagsInherited": false,
+    "serverBinaryCargoProfile": {
+      "opt_level": "3",
+      "debuginfo": 0,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": false
+    },
+    "serverLibtestCargoProfile": {
+      "opt_level": "3",
+      "debuginfo": 0,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": true
+    },
+    "featuresPerArtifact": {
+      "server": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "seed": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "server-libtest": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "peer-libtest": [
+        "default",
+        "native-v6-peer-ingress"
+      ]
+    },
+    "currentSourceEntryPackageAndCargoJsonEachArtifactRequired": true
+  },
+  "cache": {
+    "cargoHome": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/cargo-home-public-linux-r1",
+    "target": "/home/alex/heptabao-kv2-ha-convergence-4bde9-authbus-20261106-r1/target-normal",
+    "reuse": "existing owned dependency cache and previously qualified normal target only, same exclusive target flock; source/output new, retained old artifacts/results remain untouched",
+    "priorArtifactPassTransfer": false,
+    "inputPinsRetainedCount": 322,
+    "newInputPins": "add current source lock/workspace/bundle and actual source-preparation receipt once they exist; never fabricate known receipt"
+  },
+  "originalAdmission": {
+    "resourceDiskFreeBytes": 8589934592,
+    "resourceMemAvailableKiB": 12582912,
+    "wholeVisibleProcNoCompilerComms": [
+      "cargo",
+      "rustc",
+      "rustfmt",
+      "rust-lld"
+    ],
+    "currentCommitControllerProcessRefused": true,
+    "unobservableLiveControllerRefused": true,
+    "receiptScan": "new owned root only; old known107 retained separately, unknown current-source jobs remain same identity",
+    "targetExclusiveLock": ".heptabao-convergence-exclusive.lock",
+    "newOutputRequired": true
+  },
+  "unchangedBudgets": {
+    "outerSeconds": 12000,
+    "normalReleaseSeconds": 1800,
+    "serverLibtestSeconds": 3600,
+    "peerLibtestSeconds": 3600,
+    "listingSeconds": 30,
+    "eachOriginalGroupSeconds": 600,
+    "formatCheckSeconds": 60
+  },
+  "original107": {
+    "expected": 107,
+    "server": 90,
+    "peer": 17,
+    "groupCount": 16,
+    "groupDefinitionsAndExactAllNamesUnchanged": true,
+    "groups": [
+      {
+        "label": "ssh25",
+        "count": 25,
+        "seconds": 600
+      },
+      {
+        "label": "mount1",
+        "count": 1,
+        "seconds": 600
+      },
+      {
+        "label": "redirect5",
+        "count": 5,
+        "seconds": 600
+      },
+      {
+        "label": "actor2",
+        "count": 2,
+        "seconds": 600
+      },
+      {
+        "label": "ordinary5",
+        "count": 5,
+        "seconds": 600
+      },
+      {
+        "label": "no_forward6",
+        "count": 6,
+        "seconds": 600
+      },
+      {
+        "label": "legacy-ingress7",
+        "count": 7,
+        "seconds": 600
+      },
+      {
+        "label": "legacy-cold-h2-9",
+        "count": 9,
+        "seconds": 600
+      },
+      {
+        "label": "legacy-same-root1",
+        "count": 1,
+        "seconds": 600
+      },
+      {
+        "label": "snapshot-body10",
+        "count": 10,
+        "seconds": 600
+      },
+      {
+        "label": "snapshot-peer7",
+        "count": 7,
+        "seconds": 600
+      },
+      {
+        "label": "snapshot-actor2",
+        "count": 2,
+        "seconds": 600
+      },
+      {
+        "label": "snapshot-wire4",
+        "count": 4,
+        "seconds": 600
+      },
+      {
+        "label": "snapshot-audit4",
+        "count": 4,
+        "seconds": 600
+      },
+      {
+        "label": "native-jwt15",
+        "count": 15,
+        "seconds": 600
+      },
+      {
+        "label": "tls-close4",
+        "count": 4,
+        "seconds": 600
+      }
+    ]
+  },
+  "directed15": {
+    "separateReceipt": true,
+    "reuseNewRetainedServerLibtest": true,
+    "original107DenominatorUnchanged": true,
+    "expected": 15,
+    "new": 5,
+    "unchangedExisting": 10,
+    "requiresCurrentSourceActualCompilerJsonAndBinaryHash": true,
+    "noOldBinaryExecution": true,
+    "sameNormalReleaseEnvironment": true,
+    "executionNotStarted": true
+  },
+  "pending": [
+    "actual source-preparation known0 and pins",
+    "new full selection source and launch admission reviewed frozen hashes",
+    "actual resources and no-owner check",
+    "root dispatch authorization"
+  ],
+  "servicesStarted": 0,
+  "productionActions": 0,
+  "newRustBuildsExecuted": 0,
+  "newRustTestsExecuted": 0
+}

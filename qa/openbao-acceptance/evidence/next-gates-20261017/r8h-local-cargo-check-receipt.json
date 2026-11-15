@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao-local-cargo-check-receipt-v1",
+  "source": {
+    "commit": "b941bf3e4af6d15776328c4d3703251234265e03",
+    "tree": "98bdbb8992f036dd5e6c25b0ced9c13f2378f4ff",
+    "source": "/workspace/scratch/d090566e965e/source-r8h-local-check",
+    "archive_sha256": "d687009ff38fd5a4fa67568efb7a43f663adc1a7a3c9474f9814b74b2f3f0b43",
+    "archive_bytes": 43980800
+  },
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "architecture": "x86_64",
+  "toolchain": "1.98.0",
+  "cargo_operation": "check",
+  "targets": [
+    "bins",
+    "lib",
+    "tests"
+  ],
+  "features": [
+    "experimental-native-v6-ha"
+  ],
+  "locked": true,
+  "offline": true,
+  "incremental": false,
+  "exit_code": 0,
+  "runtime_tests_executed": false,
+  "log": "r8h-local-cargo-check.log",
+  "log_sha256": "14be741b04256724215c10ef60fce66862acbce6581b77f3bb613dc522947be5",
+  "log_bytes": 7361
+}

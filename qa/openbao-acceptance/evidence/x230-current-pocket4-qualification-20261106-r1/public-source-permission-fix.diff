@@ -1,0 +1,18 @@
+--- controller.original.py
++++ current-pocket4-qualifier.py
+@@ -258,10 +258,13 @@
+     for name, expected in (("x230_native_abi_capture", ABI_CAPTURE_SHA256),
+                            ("x230_native_abi_admission", ABI_PARSER_SHA256)):
+         path = Path(__file__).resolve().with_name(name + ".py")
+-        raw = dr.full.private_read(path, 65536)
+-        pin = dr.file_pin(path, private=True)
++        pin = dr.file_pin(path)
++        need(pin["uid"] == os.geteuid() and not pin["mode"] & 0o022 and pin["bytes"] <= 65536,
++             "owned_reviewed_abi_source_custody")
++        raw = path.read_bytes()
+         need(hashlib.sha256(raw).hexdigest() == expected == pin["sha256"],
+              "reviewed_adjacent_abi_guard_required")
++        need(dr.file_pin(path) == pin, "abi_guard_source_changed_while_reading")
+         namespace = {"__name__": "bound_" + name, "__file__": str(path)}
+         exec(compile(raw, str(path), "exec"), namespace)
+         modules[name], pins[name] = namespace, pin

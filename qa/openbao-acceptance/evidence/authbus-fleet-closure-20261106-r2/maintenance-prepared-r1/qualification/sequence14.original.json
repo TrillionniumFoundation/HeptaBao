@@ -1,0 +1,7 @@
+{
+  "chunk_id": "3b55c5",
+  "wall_time_seconds": 0.000040009,
+  "exit_code": 0,
+  "original_token_count": 324,
+  "output": "{\"actualConsumerFenceQualified\":false,\"actualMacQualified\":false,\"cases\":[{\"name\":\"all_five_each_round_and_full_six_baseline_restore_are_counted\",\"passed\":true},{\"name\":\"additional_main_wal_counts_in_all_clone_baseline_restore_outputs\",\"passed\":true},{\"name\":\"logical_backup_pages_cannot_be_underestimated_by_smaller_file\",\"passed\":true},{\"name\":\"boolean_page_count_not_capacity\",\"passed\":true},{\"name\":\"extra_registered_database_not_silently_omitted\",\"passed\":true},{\"name\":\"reordered_or_missing_original_slot_refused\",\"passed\":true},{\"name\":\"oversize_source_not_hidden_in_global_sum\",\"passed\":true},{\"name\":\"one_full_birth_original_handle_only_then_known_retained_wait\",\"passed\":true},{\"name\":\"unrelated_parent_never_temporarily_allowed\",\"passed\":true},{\"name\":\"other_executable_never_temporarily_allowed\",\"passed\":true},{\"name\":\"same_pid_other_birth_never_allowed\",\"passed\":true},{\"name\":\"child_descendant_cannot_enter_allowance\",\"passed\":true},{\"name\":\"missing_live_session_custody_never_allowed\",\"passed\":true},{\"name\":\"unconfirmed_original_group_retirement_keeps_allowance_owned\",\"passed\":true}],\"checks\":14,\"ok\":true,\"passed\":14,\"processReaderSynthetic\":true,\"productionSourceReads\":0,\"providerDispatches\":0,\"schema\":\"heptabao.maintenance-sequence-local-specific.r1\",\"serviceActions\":0}\n"
+}

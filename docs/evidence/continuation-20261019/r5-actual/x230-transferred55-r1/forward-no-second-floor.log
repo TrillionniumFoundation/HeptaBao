@@ -1,0 +1,9 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "completed_forward_precise_follower_audits_without_second_floor_or_use", "--nocapture", "--test-threads=1", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+
+running 1 test
+test service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=false
+[Root-completed-forward-leader-entry] elapsed_ms=56 status=200
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2927 filtered out; finished in 0.27s
+

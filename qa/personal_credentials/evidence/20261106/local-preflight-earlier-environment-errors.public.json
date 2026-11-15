@@ -1,0 +1,83 @@
+[
+  {
+    "suite": "repository",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/repository",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 78.558,
+    "log_sha256": "b7f163c32b40a84f3f92da2cdb4ffaa635d0b42a3a7c327450df355864de6241",
+    "tail": [
+      "heptabao-storage-api\tgit-tree=f8c11401c84d6a865b6949160f6a16651cea909e",
+      "heptabao-telemetry\tgit-tree=a8e6077b3233db20a40257452653aa5cc09a2708",
+      "heptabao-token\tgit-tree=c020a71353daf08709e74c3c7d6bf708e231e0ed",
+      "{\"status\": \"blocked_prerequisite\", \"reason\": \"OSError\", \"independent_qualification\": false, \"compatibility_claim\": false}",
+      "{\"status\": \"blocked_prerequisite\", \"reason\": \"OSError\", \"independent_qualification\": false, \"compatibility_claim\": false}",
+      "{\"status\": \"blocked_prerequisite\", \"reason\": \"OSError\", \"independent_qualification\": false, \"compatibility_claim\": false}",
+      "{\"status\": \"blocked_prerequisite\", \"reason\": \"OSError\", \"independent_qualification\": false, \"compatibility_claim\": false}",
+      "{\"status\": \"blocked_prerequisite\", \"reason\": \"OSError\", \"independent_qualification\": false, \"compatibility_claim\": false}"
+    ]
+  },
+  {
+    "suite": "acceptance",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/openbao-acceptance/tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "exit_code": 1,
+    "duration_seconds": 71.26,
+    "log_sha256": "0f887415bdc0c18654a716d5dd48ed9164484cd1af5af45a58e34a3645d418eb",
+    "tail": [
+      "  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 571, in run",
+      "    raise CalledProcessError(retcode, process.args,",
+      "subprocess.CalledProcessError: Command '['git', 'show', 'f9fac608ffdad930e7debd01e2695ed150de4544:bootstrap/postgresql/provider.sql']' returned non-zero exit status 128.",
+      "",
+      "----------------------------------------------------------------------",
+      "Ran 1510 tests in 66.172s",
+      "",
+      "FAILED (errors=4, skipped=1)"
+    ]
+  },
+  {
+    "suite": "python-client",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "clients/python/tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "exit_code": 1,
+    "duration_seconds": 4.222,
+    "log_sha256": "b07b0300b5e7bce8669d1b725230077a15d3041d19b969bf55044d5d6e844e94",
+    "tail": [
+      "  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py\", line 233, in __init__",
+      "    _socket.socket.__init__(self, family, type, proto, fileno)",
+      "PermissionError: [Errno 1] Operation not permitted",
+      "",
+      "----------------------------------------------------------------------",
+      "Ran 183 tests in 3.583s",
+      "",
+      "FAILED (errors=2, skipped=4)"
+    ]
+  }
+]

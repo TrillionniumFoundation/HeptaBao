@@ -1,0 +1,50 @@
+{
+  "cryptography": "50.0.0",
+  "openssl": "OpenSSL 4.0.1 9 Jun 2026",
+  "packages": [
+    {
+      "name": "attrs",
+      "version": "26.1.0"
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1"
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.0"
+    },
+    {
+      "name": "jsonschema",
+      "version": "4.23.0"
+    },
+    {
+      "name": "jsonschema-specifications",
+      "version": "2025.9.1"
+    },
+    {
+      "name": "pip",
+      "version": "25.0.1"
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.2"
+    },
+    {
+      "name": "referencing",
+      "version": "0.37.0"
+    },
+    {
+      "name": "rpds-py",
+      "version": "2026.9.1"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    }
+  ]
+}

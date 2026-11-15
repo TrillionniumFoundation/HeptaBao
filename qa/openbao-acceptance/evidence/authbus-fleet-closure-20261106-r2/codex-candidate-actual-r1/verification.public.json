@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.fixed-codex-candidate-read-original-verification.r1",
+  "jobId": "1a1b400304a-fc05-85c6",
+  "originalStdoutBytes": 12310,
+  "originalStdoutSha256": "26c962b4843f2eb03320d86e75a17ad2f3747fa86ac211f2281fd9f827f91f94",
+  "fullHexTextExact": true,
+  "completeEof": true,
+  "stderrBytes": 0,
+  "ok": true,
+  "elapsedSeconds": 0.02294225012883544,
+  "explicitDescriptorsClosedOnce": 48,
+  "sourceDescriptorsClosedOnce": 6,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "currentMain3ComparisonPerformed": false,
+  "effectiveRuntimeBackendQualified": false
+}

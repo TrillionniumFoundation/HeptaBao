@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.postgresql-scram-test-vectors.v1",
+  "verifier": {
+    "salt": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "password": "correct horse battery staple",
+    "expected": "SCRAM-SHA-256$4096:AAECAwQFBgcICQoLDA0ODw==$ONYbSJBXtKl6bP6PVqw8pm9e7EiacprLnoUQPFS80Hw=:IPOtHuGJ2HifEQg74W2XXqqCrCyQG55GbPRHa6g6n9w="
+  },
+  "rfc7677": {
+    "nonce": "rOprNGfwEbeRWgbNEkqO",
+    "bare": "n=user,r=rOprNGfwEbeRWgbNEkqO",
+    "server_first": "r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0,s=W22ZaJ0SNY7soEsUEjb6gQ==,i=4096",
+    "password": "pencil",
+    "client_final": "c=biws,r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0,p=dHzbZapWIk4jUhN+Ute9ytag9zjfMHgsqmmiz7AndVQ=",
+    "server_final": "v=6rriTRBi23WpRR/wtup+mMhUZUn/dB5nLTJRsjl95G4="
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.authbus-lifecycle-publication.v1",
+  "publicationScope": [
+    "tools/authbus/production-transport/**",
+    "qa/openbao-acceptance/authbus_lifecycle_live.py"
+  ],
+  "githubBranch": "agent/authbus-lifecycle-20261103-r1",
+  "githubBaseCommit": "1e8adb8e313e2d7e991a696f29f2db5684fe7ff1",
+  "localDevelopmentBase": "ee851bd11e1a9d261be1acbd291d1599ffbf8f88",
+  "localLifecycleFixCommit": "0f2843bb2f51c39b5292bf211a6f138e3b2fb2d2",
+  "localLiveEvidenceCommit": "f586520c4a19234a8c5a8ece0bcdcabab90b6567",
+  "gitHistoryIdentityPreserved": false,
+  "publicationMethod": "GitHub connector tree overlay of the complete AuthBus package and lifecycle driver on the published baseline; local commits are provenance, not GitHub parents.",
+  "unifiedNovember3RustSourceIncluded": false,
+  "liveServer": {
+    "sourceCommitAbbreviation": "4e2a6d7e",
+    "binarySha256": "187bcc477f3620c32d9ba549dc71e6c560417868a97faa8800d9fb14ffab1055",
+    "builtSeparatelyFromPublishedBranch": true,
+    "storageProfile": "native_v6_file",
+    "ordinaryConfigAndFormalActivation": true
+  },
+  "verification": {
+    "localX230Tests": 21,
+    "localMacT5Tests": 21,
+    "oldCodeTargetedRegressionsFailed": 6,
+    "actualHeptaBaoChecks": 68,
+    "realLeaseExpiryWaited": true,
+    "coldServerRestarts": 2,
+    "externalProviderCalled": false,
+    "productionModified": false,
+    "fullReplacementQualified": false
+  },
+  "sourceFiles": {
+    "tools/authbus/production-transport/README.md": "57a1c63d4488a08b81b41164dc4893ebf05e0980a7e35c383bda02b289e50da6",
+    "tools/authbus/production-transport/package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+    "tools/authbus/production-transport/plugin/bounded-outbox.js": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1",
+    "tools/authbus/production-transport/plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+    "tools/authbus/production-transport/plugin/production-client.js": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2",
+    "tools/authbus/production-transport/plugin/strict-bao-client.js": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294",
+    "tools/authbus/production-transport/provenance.json": "94dc27f9af243a6c305b6ae5bbca5c600463f75ab55a5eb29503223bc7a45c9e",
+    "tools/authbus/production-transport/qualification/lifecycle-20261103.json": "cad0e0be9503618ef6bc37955c5421f6cae6b46d22759201d39de4615331c553",
+    "tools/authbus/production-transport/qualification/lifecycle-20261103/baseline-x230.stdout": "cf6f6d98991d1fec2c3fd791d0065c18d3164e81c996950cad8d7565f437e315",
+    "tools/authbus/production-transport/qualification/lifecycle-20261103/candidate-mac-t5.stdout": "f7edea67a72ee65bc917715df990b080c3f169f777441b4727890f7b122479bb",
+    "tools/authbus/production-transport/qualification/lifecycle-20261103/candidate-x230.stdout": "d7f21bda8efe728877b842c272ee381224c595471360f69d34e0e2a3c9c25808",
+    "tools/authbus/production-transport/qualification/lifecycle-live-x230-20261103.json": "b61be9396f0c49e56e5803a75dd3045a5b6e6fc42b78eaf0167d3d52ae3cb2c8",
+    "tools/authbus/production-transport/qualification/verification-20261103.json": "b32a5955b35c87e410148a4b610f9439d38dafcd5329c10e7d4ef0d1b29656a2",
+    "tools/authbus/production-transport/tests/benchmark.mjs": "95e034cb894d117e93e8d2cb0e478fb32260db99762ab4ad5162094e93cd5375",
+    "tools/authbus/production-transport/tests/durability-child.mjs": "3ac44904b00dd4308c0998ac862b935a6e2a0f6694dda7a82b3d2322bc6459c6",
+    "tools/authbus/production-transport/tests/durability.test.mjs": "cc737cf86e87459040a5d71eb1fe30855e50f029bd4fb4887d09355a9699d5f4",
+    "tools/authbus/production-transport/tests/lifecycle-live-child.mjs": "a6d3fe8a27759399f1597eca32694595417441ffc328d288f2f1d50214dc3444",
+    "tools/authbus/production-transport/tests/lifecycle.test.mjs": "92c40832dc60f9407c4fd9842115162702675773b175f11fe2665529ea382de6",
+    "qa/openbao-acceptance/authbus_lifecycle_live.py": "f93d04b01bf44acfbc160b15e11f77658383fe4d9998c189007398caf570ae2f"
+  },
+  "reusedPublishedQaDependencies": [
+    {
+      "path": "qa/openbao-acceptance/native_v6_authbus_client_live.py",
+      "gitBlobSha": "f96eeaa2a9dd9145a5da565dac1f455829d6e164",
+      "localMatchesPublished": true
+    },
+    {
+      "path": "qa/openbao-acceptance/cert_auth_live.py",
+      "gitBlobSha": "1933898e17f423d1572375e34725d46ebba358eb",
+      "localMatchesPublished": true
+    },
+    {
+      "path": "qa/openbao-acceptance/owned_process.py",
+      "gitBlobSha": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+      "localMatchesPublished": true
+    },
+    {
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "gitBlobSha": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd",
+      "localMatchesPublished": true
+    },
+    {
+      "path": "qa/single-node/smoke.py",
+      "gitBlobSha": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8",
+      "localMatchesPublished": true
+    }
+  ]
+}

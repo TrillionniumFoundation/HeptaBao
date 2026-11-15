@@ -1,0 +1,19 @@
+{
+  "scope": "synthetic local config-preparation checks only; no Rust or remote execution",
+  "finished_utc": "2026-10-19T08:12:16.916161+00:00",
+  "source_sha256": "e92c8f5c9c0c3fe02603543ce459b6322f3d474cbe2d471af1ca3dccbece62a9",
+  "source_bytes": 6438,
+  "checks": [
+    {
+      "name": "derive exact native artifact and profile without execution",
+      "status": "passed",
+      "processes_started": 0
+    },
+    {
+      "name": "busy shared target refuses config and preserves receipt",
+      "status": "passed",
+      "processes_started": 0
+    }
+  ],
+  "actual_passed_checks": 2
+}

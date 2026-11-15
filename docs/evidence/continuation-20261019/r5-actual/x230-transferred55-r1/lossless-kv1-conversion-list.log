@@ -1,0 +1,4 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads", "--list", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads: test
+
+1 test, 0 benchmarks

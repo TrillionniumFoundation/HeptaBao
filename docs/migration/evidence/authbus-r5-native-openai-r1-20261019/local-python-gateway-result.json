@@ -1,0 +1,71 @@
+{
+  "schema": "authbus.native-openai.local-python-test-observation.v1",
+  "toolChunkId": "32be86",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_native_v6_authbus_openai_refresh"
+  ],
+  "exitCode": 0,
+  "runnerReportedSeconds": 1.976,
+  "checksPassed": 12,
+  "checks": [
+    {
+      "case": "test_duplicate_content_type_and_framing_rejected",
+      "passed": true
+    },
+    {
+      "case": "test_duplicate_or_foreign_host_rejected_before_native_read",
+      "passed": true
+    },
+    {
+      "case": "test_exact_sni_host_tls_and_form_positive",
+      "passed": true
+    },
+    {
+      "case": "test_wrong_sni_fails_tls_before_http_or_native_read",
+      "passed": true
+    },
+    {
+      "case": "test_duplicate_and_cold_send_remain_closed",
+      "passed": true
+    },
+    {
+      "case": "test_duplicate_missing_foreign_and_wrong_route_never_read_control",
+      "passed": true
+    },
+    {
+      "case": "test_fixed_five_scenarios_and_original_deadline",
+      "passed": true
+    },
+    {
+      "case": "test_form_response_requires_independent_unknown_read",
+      "passed": true
+    },
+    {
+      "case": "test_framing_rejects_duplicate_chunked_and_oversized_before_read",
+      "passed": true
+    },
+    {
+      "case": "test_original_deadline_rechecked_after_durable_observation",
+      "passed": true
+    },
+    {
+      "case": "test_provider_ack_loss_is_after_unknown_and_counted_once",
+      "passed": true
+    },
+    {
+      "case": "test_published_or_mismatched_owner_never_produces_response",
+      "passed": true
+    }
+  ],
+  "actualLoopbackTls": true,
+  "ownedProviderCertificateCommands": 2,
+  "actualSdk": false,
+  "actualNativeHeptaBao": false,
+  "realExternalProvider": false,
+  "nativeOracle": "explicit_NativeDouble_for_gateway_boundaries_only"
+}

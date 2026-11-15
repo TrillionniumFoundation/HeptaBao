@@ -1,0 +1,192 @@
+{
+  "all_checks_satisfied": true,
+  "broker_cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+  "check_count": 22,
+  "checks": {
+    "aarch64-apple-darwin_graph_hash": true,
+    "aarch64-apple-darwin_no_rsa_or_crypto_bigint": true,
+    "algorithm_policy_exact_tests": true,
+    "algorithm_policy_explicit_execution_binding": true,
+    "algorithm_policy_fixed_binary_before_after": true,
+    "algorithm_policy_raw_log_hash": true,
+    "builder_digest": true,
+    "bundle_digest": true,
+    "cargo_lock_local": true,
+    "continuation_digest": true,
+    "failed_first_receipt_retained": true,
+    "no_functional_upgrade_for_other_clis": true,
+    "old_four_binary_hashes_unchanged": true,
+    "process_e2e_exact_tests": true,
+    "process_e2e_explicit_execution_binding": true,
+    "process_e2e_fixed_binary_before_after": true,
+    "process_e2e_raw_log_hash": true,
+    "receipt_digest_matches_summary": true,
+    "source_commit_tree_local": true,
+    "source_states_identical": true,
+    "x86_64-unknown-linux-gnu_graph_hash": true,
+    "x86_64-unknown-linux-gnu_no_rsa_or_crypto_bigint": true
+  },
+  "checks_satisfied": 22,
+  "evidence": [
+    {
+      "bytes": 33544,
+      "file": "receipt.final.json",
+      "sha256": "d29fff92ecbcdab6e52c905e6a4a96217d4c712f2c453dd5c63214e47c0e88bb"
+    },
+    {
+      "bytes": 8088,
+      "file": "summary.public.json",
+      "sha256": "fd3c1f0b51af62cab868e2f8f9254fb2b0a17e9576bc06ffeab3690a5d379aa6"
+    },
+    {
+      "bytes": 804,
+      "file": "source.json",
+      "sha256": "e83b38d311c0bb11c7e20d55199265312b0375f756c11a3e471324a7638b906f"
+    },
+    {
+      "bytes": 13364,
+      "file": "run_remote.py",
+      "sha256": "de6b79f3f261a44f6be80a14af96fac8ea3e058e33ac3be490739fa471e7814e"
+    },
+    {
+      "bytes": 9104,
+      "file": "resume_remote.py",
+      "sha256": "77b35c50a5ce5addf53f513bcd54aa6ba5061888a43de4692207c078e7a82fac"
+    },
+    {
+      "bytes": 13028,
+      "file": "remote-first-receipt.failed.json",
+      "sha256": "53edc60020e3e538b2d23644f83912c6be0f3ceeeff43db15486921d17c54396"
+    },
+    {
+      "bytes": 895,
+      "file": "remote-execute-process_e2e.stdout",
+      "sha256": "3bd0f3665435635a9ed7c88a3832e2407a041c7eb74a1f55660157d6c97fda1b"
+    },
+    {
+      "bytes": 221,
+      "file": "remote-execute-algorithm_policy.stdout",
+      "sha256": "8163bd6a9d747c8b92ff55c84e3e695fb611e3e860c71dc2230b5b011d5712a0"
+    },
+    {
+      "bytes": 4133,
+      "file": "remote-selected-graph-x86_64-unknown-linux-gnu.stdout",
+      "sha256": "d22582bf4a8b42e26480255dd55bdc9c7f814370b8910e9b74ca1811da6ae512"
+    },
+    {
+      "bytes": 3937,
+      "file": "remote-selected-graph-aarch64-apple-darwin.stdout",
+      "sha256": "7fd4908fa66b5d1138be86a2abfb50552d1756139560d0cca66bccaaf8ca0883"
+    },
+    {
+      "bytes": 118,
+      "file": "workspace-linux.stderr",
+      "sha256": "be1eebb86b6e661a960df91eb607ee6859c66641f50ed46985ce5a56e65eb7a6"
+    },
+    {
+      "bytes": 119,
+      "file": "remote-workspace-graph-observation.stderr",
+      "sha256": "6ed706716a9ed84c8c6235bf5c6bc0728dc9a4c27267cc2c26100bb8f1f366d5"
+    }
+  ],
+  "execution_binding": {
+    "algorithm_policy": {
+      "after_execution": {
+        "cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "original_cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "test_sha256": "bdcfa6b8338ce16bfa1f7bbf4295d1e5b60edf14c4c5ca34d91592d2737360fe"
+      },
+      "before_execution": {
+        "cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "original_cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "test_sha256": "bdcfa6b8338ce16bfa1f7bbf4295d1e5b60edf14c4c5ca34d91592d2737360fe"
+      },
+      "failed": 0,
+      "fixed_cli_override_used": true,
+      "ignored": 0,
+      "passed": 2,
+      "process_exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "8163bd6a9d747c8b92ff55c84e3e695fb611e3e860c71dc2230b5b011d5712a0",
+      "test_names": [
+        "valid_ecdsa_key_is_rejected_by_sdk_and_cli",
+        "valid_rsa_key_is_rejected_by_sdk_and_cli"
+      ]
+    },
+    "process_e2e": {
+      "after_execution": {
+        "cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "original_cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "test_sha256": "af3a7b7f82acb262304989d0dc51e3fcc03b367d06e0bb78a744f37d2fd4eb43"
+      },
+      "before_execution": {
+        "cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "original_cli_sha256": "6fe0b6c78213e4bb1184ca4c4be7fc3e44dce4117f22097aab14efa567ac8a08",
+        "test_sha256": "af3a7b7f82acb262304989d0dc51e3fcc03b367d06e0bb78a744f37d2fd4eb43"
+      },
+      "failed": 0,
+      "fixed_cli_override_used": true,
+      "ignored": 0,
+      "passed": 11,
+      "process_exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3bd0f3665435635a9ed7c88a3832e2407a041c7eb74a1f55660157d6c97fda1b",
+      "test_names": [
+        "actual_cli_and_ed25519_git_sshsig_verify",
+        "actual_cli_denials_have_nonzero_exit_and_no_target_contact",
+        "actual_git_commit_signing_and_verify_commit_bind_repository_and_payload",
+        "cli_non_success_http_is_recorded_without_retry_and_queryable",
+        "killed_after_target_contact_remains_unknown_without_second_dispatch",
+        "owner_rejects_unscoped_targets_and_request_variants",
+        "private_permissions_symlinks_and_competing_writer_are_rejected",
+        "real_process_api_echo_is_not_released_and_result_survives_restart",
+        "redirect_is_not_followed_and_conflicting_id_is_rejected",
+        "revocation_survives_process_restart",
+        "wrong_target_body_task_signature_and_expired_grants_do_not_contact_target"
+      ]
+    }
+  },
+  "external_independent_security_review": false,
+  "limitations": [
+    "Review checks consistency of preserved source, scripts, receipts and original logs; it is not new runtime execution or cryptographic attestation.",
+    "Only the three selected normal dependency roots were resolved for Linux and macOS; macOS dependency resolution is not a macOS binary execution.",
+    "The local offline workspace graph failed on uncached axum 0.8.9; the remote offline workspace graph failed on uncached xattr 1.6.1. Neither is a clean workspace graph.",
+    "heptabao-server retains ssh-key std,crypto; wider feature unification can restore the removed dependencies.",
+    "No new P0/server, browser, vault or sync functional qualification follows from these broker tests.",
+    "Team-internal review does not fulfill external independent security review or P5 production adoption."
+  ],
+  "new_runtime_tests_executed_by_reviewer": 0,
+  "old_retained_binary_sha256_after": {
+    "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d",
+    "heptabao-credential-broker": "389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175",
+    "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+    "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+  },
+  "old_retained_binary_sha256_before": {
+    "heptabao-browser": "e6eaa6210b6d8a6480a20d4d1be65c221c548e08803ed76558a7b72eb3cd2f7d",
+    "heptabao-credential-broker": "389cc15a0926ef9f30cd149b56424a484dfad600a308252ed111f2869b5b9175",
+    "heptabao-sync": "c82a17b0c148423b6223dd4a77540cd9c188f354c76309944cbb2091f2836663",
+    "heptabao-vault": "b0cccc3c204d6be5e2e20ee5830e34cb1242d3ac03ea42cd3b7e26a3ea416358"
+  },
+  "original_process_tests_sha256": "b1bfa3a9a99df8c7005923286b17dde0ef3f0e62cc4bc27f579a59d67d8330f7",
+  "other_cli_functional_tests_in_this_run": {
+    "heptabao-browser": 0,
+    "heptabao-sync": 0,
+    "heptabao-vault": 0
+  },
+  "production_qualified": false,
+  "schema": 1,
+  "scope": "internal_read_only_evidence_consistency_review",
+  "source": {
+    "cargo_lock_sha256": "ef3b19cf8b1b360f7888f11e3e5b1523e464762d6c24ce7e92b64d0d7d5c99a9",
+    "head": "c447536ae0343731d84c18291d2dcd712b3bea08",
+    "status_clean": true,
+    "tree": "50835fd4df6e7bdd2b551941a3fa012281c931c2"
+  },
+  "source_bundle": {
+    "bytes": 501591,
+    "file": "broker-ed25519-source.bundle",
+    "sha256": "4973eb63705f49f1950568c838d67e403463a3753d5eca8c5c91bb6f482a1d8e"
+  },
+  "synthetic_only": true
+}

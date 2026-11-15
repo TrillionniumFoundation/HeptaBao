@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.ai395-exact-peer-ports-post-ha-state.r1",
+  "haJob": "1a1b322abe3-fc05-80b8",
+  "haState": "known_failed",
+  "haExitCode": 1,
+  "haStdoutBytes": 34608,
+  "haStdoutSha256": "df7e8a873347a083da3d7087b84018852327581b536386b7652e27b532f36ea1",
+  "passedChecks": 24,
+  "requiredChecks": 128,
+  "failureCode": "node_3_listener_timeout",
+  "failureStage": "native_ha_initial_start",
+  "mutations": {
+    "scope": "new_synthetic_owned_fixture_only",
+    "intents": 7,
+    "responses": 7,
+    "unknownOutcomes": 0,
+    "replayed": false
+  },
+  "allOwnedProcessesAndMeshClosed": true,
+  "sourceBeforeAfterExact": true,
+  "macOriginalProcessLog": {
+    "bytes": 52,
+    "sha256": "9760fd87ed3bef78518f753e695a69982a2d05f13586f9d055fa036a0dbcfef9",
+    "onlyLine": "HeptaBao HA TLS listener ready at 192.168.0.8:31040"
+  },
+  "temporaryFirewallRules": {
+    "active": 2,
+    "adds": 2,
+    "deletes": 0,
+    "reAdds": 0,
+    "reason": "Parent explicitly retains the same two exact QA peer rules for one concrete Mac node3 normal Rust TLS/listener diagnosis; no new HA campaign authorized.",
+    "removal": "Original exact reverse specification removal remains authorized after the concrete diagnosis has closed; current rules and ownership will be freshly verified."
+  },
+  "nextDiagnostic": {
+    "preparedNotStarted": true,
+    "noOldFixtureRestart": true,
+    "noInitOrTokenRequests": true
+  },
+  "productionClientActions": 0,
+  "fullReplacementQualified": false
+}

@@ -1,0 +1,31 @@
+{
+  "actual_dr25_executed": false,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/openbao-acceptance/tests",
+    "-p",
+    "test_kv2*dr*.py",
+    "-v"
+  ],
+  "darwin_execution_claim": false,
+  "elapsed_seconds": 1.1176642810023623,
+  "exit_code": 0,
+  "expected_tests": 35,
+  "log": "qa/openbao-acceptance/evidence/dr25-controller-local-20261106-r1/combined-after-darwin-zombie-fix-r6.log",
+  "production_authority": false,
+  "production_servers_started": false,
+  "reason_for_reexecution": "Concrete Darwin waitable-zombie fix adds two regression cases and requires a single combined integration rerun. The final gate fixture now uses resolved executable. All prior failures and per-test budgets retained.",
+  "schema": "heptabao.dr25-controller-regression-observation.v1",
+  "source_file_pins": {
+    "qa/openbao-acceptance/kv2_dr_process_custody.py": "c3d95e975f5eec7af5f39fd76a904bdc197bfd0415a9899974adbde081e86c17",
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": "723bce2b62133e1853214db1c93e29c0aea20ca6d298233f1ac2e1d3dc88c499",
+    "qa/openbao-acceptance/tests/test_kv2_dr_process_custody.py": "714ba53b63e482adda7bc8a4de3cac037c0330d69cfe6030f1a7a13274f66f78",
+    "qa/openbao-acceptance/tests/test_kv2_native_fresh_directory_dr_live.py": "acd490eec2832b8fc3d19b9b7bf53e15dce0a46e1ec0ffda0fd803490192c4cb"
+  },
+  "status": "passed"
+}

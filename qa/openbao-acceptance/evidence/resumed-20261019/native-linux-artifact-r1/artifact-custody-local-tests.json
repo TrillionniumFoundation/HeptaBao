@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.native-linux-artifact-local-custody-tests.v1",
+  "started_utc": "2026-10-19T05:37:37.920595+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/scratch/915e5e680008/continuation-20261019/native-linux-artifact-r1/work/qa/openbao-acceptance/tests",
+    "-p",
+    "test_native_linux_artifact_run.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.131676,
+  "log_sha256": "6c500a432b60238739011e008359d7f484cd1306121a0674d352c3f82886376f",
+  "actual_remote_operations": 0,
+  "actual_product_binary_executed": false,
+  "actual_x230_execution": false,
+  "actual_local_system_loader_observed": true,
+  "source_sha256": {
+    "qa/openbao-acceptance/native_linux_artifact_run.py": "02b2108fab2bbc90142fe7cf79eaddaec5ee5b79c1807669c9164964dadb5a02",
+    "qa/openbao-acceptance/tests/test_native_linux_artifact_run.py": "486df83888a93ce1c35e3a7c334011102763624e193c1c01b40d95dd1a9a8c7c"
+  }
+}

@@ -1,0 +1,104 @@
+{"argv": ["cargo", "+1.98.0", "test", "--locked", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "native_large_kv2_", "--", "--nocapture", "--test-threads=1", "--color=never"]}
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+  --> crates/heptabao-server/src/ha_native_v6_publication.rs:73:19
+   |
+72 | impl NativeHaPublicationError {
+   | ----------------------------- method in this implementation
+73 |     pub(crate) fn root_attempted(&self) -> bool {
+   |                   ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `clients` and `servers` are never read
+  --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:46:16
+   |
+45 | pub(super) struct TlsFixture {
+   |                   ---------- fields in this struct
+46 |     pub(super) clients: BTreeMap<u64, Arc<ClientConfig>>,
+   |                ^^^^^^^
+47 |     pub(super) servers: BTreeMap<u64, Arc<ServerConfig>>,
+   |                ^^^^^^^
+
+warning: struct `LiveReceivers` is never constructed
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:156:19
+    |
+156 | pub(super) struct LiveReceivers {
+    |                   ^^^^^^^^^^^^^
+
+warning: associated items `start`, `start_conditioned`, and `transport` are never used
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:163:19
+    |
+162 | impl LiveReceivers {
+    | ------------------ associated items in this implementation
+163 |     pub(super) fn start(
+    |                   ^^^^^
+...
+173 |     fn start_conditioned(
+    |        ^^^^^^^^^^^^^^^^^
+...
+230 |     pub(super) fn transport(
+    |                   ^^^^^^^^^
+
+warning: method `root` is never used
+   --> crates/heptabao-server/src/service_native_v6_ha_objects.rs:295:19
+    |
+282 | impl NativeV6HaProposal {
+    | ----------------------- method in this implementation
+...
+295 |     pub(crate) fn root(&self) -> &RecordStateRootV6 {
+    |                   ^^^^
+
+warning: `heptabao-server` (lib test) generated 6 warnings (run `cargo fix --lib -p heptabao-server --tests` to apply 1 suggestion)
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.32s
+     Running unittests src/lib.rs (/Users/runner/work/_temp/heptabao-native-recovery-target/debug/deps/heptabao_server-06d88c38db2d0ea8)
+
+running 15 tests
+test engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check ... ok
+test engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound ... ok
+test engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects ... ok
+test http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits ... ok
+test http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation ... ok
+test http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body ... ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBV6-SNAPSHOT-PHASE phase=authenticate-pack elapsed_ms=126
+HBV6-SNAPSHOT-PHASE phase=validate-typed-graph elapsed_ms=877
+HBV6-SNAPSHOT-PHASE phase=derive-clock-bound-graph elapsed_ms=879
+HBV6-RESTORE-STAGE objects=0 elapsed_ms=0
+HBV6-SNAPSHOT-PHASE phase=stage-objects-and-commit elapsed_ms=253
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+native KV2 graph import: path=sys/migration/openbao/kv2/native-large status=501
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+test service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 2746 filtered out; finished in 22.58s
+

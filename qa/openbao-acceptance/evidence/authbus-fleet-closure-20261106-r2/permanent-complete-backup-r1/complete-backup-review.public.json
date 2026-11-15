@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.permanent-complete-backup-source-review.r1",
+  "state": "reviewed-not-dispatched",
+  "launcherBytes": 118021,
+  "launcherSha256": "3c11cfe77a1f34331ae00ddeb6731605314272618249acc574e426806d00da2b",
+  "independentReview": "candidate_ha",
+  "wholeTemplateCoreAndApiReviewed": true,
+  "correctedFindings": [
+    "all final verifier descriptors each get exactly one close attempt even when another close fails; every failure blocks success",
+    "restored executable, CA, leaf, private key use original destination full-generation identities; recovery config and sandbox use original fsynced and read-back file identities; all restored parent namespaces remain bound across both exec/API/final phases",
+    "Canonical Rust startup remains sealed without acquiring the data writer fence; prove exclusion at actual unseal: known complete 400 under Python flock, same-process same-key unseal after release, reverse Python lock refusal while Rust is unsealed, then stop/reacquire for whole backup."
+  ],
+  "sourceLibraries": {
+    "qualifiedUnchanged": 5,
+    "newApiHasOnlyExplicitPhasesAndRestoredCaPath": true,
+    "completeRuntimeCopyAdmitsOneExactPublicExecutablePin": true,
+    "commands": [
+      "fixed diskutil info",
+      "kernel sandbox denial probe"
+    ]
+  },
+  "remainingQualification": "actual original Rust directory-lock interoperability, complete independent-filesystem backup and manifest-bound restore, kernel source denial, actual native-v6 decryption/cold lifecycle and every original terminal/resource closure",
+  "actualServerOrProductionExecution": false,
+  "canonicalSourceBasis": [
+    "crates/heptabao-server/src/service.rs::Service::new_inner",
+    "crates/heptabao-server/src/service_native_storage.rs::configure_native_v6_storage",
+    "crates/heptabao-server/src/service.rs::activate_barrier_with_cold_handoff"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.current-main3-candidate-root-review.r2",
+  "sourceBytes": 142913,
+  "sourceSha256": "c78da619ffac677736f3d8f6c48504997bf05a6f0dcbae04da8fa57d6b9c07c8",
+  "fiveCandidateModulesAndFourReaderPinsExact": true,
+  "fullParentWorkerCoreAndDiffReviewed": true,
+  "failureClosureUsesTypedAllowlist": true,
+  "oldCapsuleProvidesAuthorizedIdsOnly": true,
+  "currentValuesMustComeFromFreshRead": true,
+  "parentSeconds": 45,
+  "candidateWorkerSeconds": 20,
+  "querySeconds": 3,
+  "supervisorSeconds": 70,
+  "originalScopeAndBudgetsUnchanged": true,
+  "currentReadOnlyExecutionAuthorizedOnce": true,
+  "effectiveBackendQualified": false,
+  "cachedRelationQualified": false,
+  "productionRefreshAdmission": false
+}

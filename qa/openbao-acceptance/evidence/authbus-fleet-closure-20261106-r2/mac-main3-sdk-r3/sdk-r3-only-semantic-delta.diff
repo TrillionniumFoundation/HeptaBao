@@ -1,0 +1,14 @@
+--- normalized-frozen-r2
++++ actual-r3
+@@ -60,7 +60,10 @@
+                       '(allow file-write* (subpath '+json.dumps(str(ROOT/phase))+'))']
+         for item in (ROOT/'server/tls/server.crt',ROOT/'server/private/sdk-role-id',ROOT/'server/private/sdk-secret-id'):
+             lines.append('(allow file-read* (literal '+json.dumps(str(item))+'))')
+-        lines.append('(allow network-outbound (remote ip '+json.dumps('127.0.0.1:'+str(port))+'))')
++        # Actual SBPL allows one port across this machine's local addresses.
++        # The original wire separately pins IPv4 127.0.0.1, CA and leaf identity.
++        # This is not a claim of a kernel-only IPv4 destination restriction.
++        lines.append('(allow network-outbound (remote tcp '+json.dumps('localhost:'+str(port))+'))')
+     for item in ('/dev/null','/dev/urandom','/dev/random'):
+         lines.append('(allow file-read* (literal '+json.dumps(item)+'))')
+     lines.append('(allow file-write* (literal "/dev/null"))')

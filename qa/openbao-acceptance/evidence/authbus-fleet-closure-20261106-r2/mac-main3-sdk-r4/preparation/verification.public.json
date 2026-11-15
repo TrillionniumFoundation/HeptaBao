@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.mac-main3-sdk-r4-preparation-verification.r1",
+  "ok": true,
+  "preparedSourceOnly": true,
+  "sourceCount": 27,
+  "assetCount": 13,
+  "preparerCount": 1,
+  "exactStagingBytes": 746592,
+  "exactStagingSha256": "5a7e243d9b76ed9e0972e4f430b6f643581647324012b9a903bb46fc1cb510d3",
+  "wireSourceSha256": "e80c7eb22e2cd2fbc547eb085b8eb0b482e8e656baa8a59520e0cb93a4c0396c",
+  "localDeltaCases": 8,
+  "localInheritedGuardCases": 173,
+  "localSeedCases": 7,
+  "rootIndependentDerivationKnownPass": true,
+  "allOriginalBudgetsUnchanged": true,
+  "productChanged": false,
+  "installedPluginChanged": false,
+  "privateInputsPublished": false,
+  "actualMacRuntimeEvidence": "../RUNTIME-EVIDENCE.md"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.mac09-jwt-log-retrieval.v1",
+  "files": [
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-09c14-r1/test-14-native-jwt15-00.stdout",
+      "sha256": "fa843d8bb6f22954b457eb488aca95080fadd324323dc78e2221d82aa405cf70",
+      "size": 2107,
+      "version": "16777244:72701762:2107:1793970462881565552:1793970462881565552"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-09c14-r1/test-14-native-jwt15-00.stderr",
+      "sha256": "f95de1e001c2b81bd27d64e9c324df359eac5dcdbcbce90c5fd4f1d28fae6223",
+      "size": 5570,
+      "version": "16777244:72701763:5570:1793970462589064584:1793970462589064584"
+    }
+  ]
+}

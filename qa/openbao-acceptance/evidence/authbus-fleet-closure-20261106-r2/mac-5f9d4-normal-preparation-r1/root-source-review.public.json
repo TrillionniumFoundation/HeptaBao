@@ -1,0 +1,55 @@
+{
+  "allOldArtifactPinsPreserved": true,
+  "allOtherFunctionAstsUnchanged": true,
+  "changedFunctionsReviewed": [
+    "execute_group",
+    "main"
+  ],
+  "commit": "5f9d4263b136685244aba93e45a69139cb8aba41",
+  "completeLoaderAndBodyReviewed": true,
+  "controllerPin": {
+    "bytes": 34437,
+    "sha256": "c37951667705d4aee25f40a84fe8bb87ffb9398d2f1a040517b7b09a28f5f264"
+  },
+  "directed15Disjoint": true,
+  "fourStagingHelpersAndTwoPublicFilesExact": true,
+  "fullReplacementClaim": false,
+  "loaderPin": {
+    "bytes": 8688,
+    "sha256": "9abadf02425a7810e848fe6331a07462d8d1577ce54efcba83c71b8c0da77c30"
+  },
+  "newExplicitSupervisorSeconds": 8400,
+  "normal107NamesArgvEnvironmentAndBudgetsExact": true,
+  "oldRetainedArtifacts": 21,
+  "originalControllerBudgetSeconds": 8280,
+  "schema": "heptabao.mac5f9d4-root-full-source-review.r1",
+  "selectionPin": {
+    "bytes": 58766,
+    "sha256": "8ccaedc58a44bfcc6f7af7b6062bc8c0c35c099771bdbab45d865b13ea921bc1"
+  },
+  "stageActualRequiredBeforeBuild": true,
+  "stagingPin": {
+    "bytes": 142675,
+    "sha256": "4cd4ea46947c31170764f840f34e29ddeb80cf45383c73102ddb3a117f5d427f"
+  },
+  "t5GuardSingleRootChangeOnly": true,
+  "directedCaseNames": [
+    "state_records::tests::address_hmac_preserves_independent_fixed_vectors_and_streamed_bytes",
+    "state_records::tests::address_hmac_matches_previous_backend_at_domain_and_block_boundaries",
+    "state_records::tests::address_hmac_rejects_every_changed_mac_byte_and_wrong_length_or_domain",
+    "state_records::tests::address_hmac_shared_key_keeps_concurrent_contexts_independent",
+    "state_records::tests::address_value_stream_matches_previous_domain_encoding_and_block_boundaries",
+    "state_records::tests::address_value_stream_rejects_length_bounds_producer_failure_and_ignored_overrun",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_memo_hits_still_read_every_actual_block_and_reject_corruption",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_memo_cannot_cover_original_gate_loss_or_format_change",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_memo_binds_scoped_key_and_rechecks_current_lossless_floor",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_transition_memo_hits_still_read_every_actual_block_and_reject_corruption",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_transition_memo_cannot_cover_original_gate_loss_or_format_change",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_transition_memo_binds_scoped_key_and_rechecks_current_lossless_floor",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_streamed_hit_rejects_other_fully_keyed_blocks_by_complete_payload_mac",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_stream_rejects_descriptor_length_mismatch_with_warm_memo",
+    "engines::kv::native_records::paged::payload_validation_tests::payload_validation_streamed_hit_rejects_memo_entry_replaced_during_actual_read"
+  ],
+  "newDirectedCases": 5,
+  "unchangedDirectedCases": 10
+}

@@ -1,0 +1,276 @@
+{
+  "binary_sha256": "1e20753a54ea1f44508aac3f26bb1500462dca5637097479161266eeba912960",
+  "checks": [
+    {
+      "case": "initialize",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "unseal",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "mount_kv2",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "activate_native",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "native_capacity",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "reader_format2",
+      "passed": true
+    },
+    {
+      "case": "mount_approle",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "issuer.policy",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "issuer.role",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "issuer.role_id",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "issuer.secret_id",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "reader.policy",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "reader.role",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "reader.role_id",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "reader.secret_id",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "ready_owner",
+      "passed": true
+    },
+    {
+      "case": "fixed_entry",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_admission_authority_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_admission_authority_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_admission_registry_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_admission_registry_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_dispatch_registry_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_dispatch_registry_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_dispatch_sdk_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_dispatch_sdk_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_sdk_admission_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_sdk_admission_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_sdk_explicit_deny_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_sdk_explicit_deny_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_trusted_admission_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_trusted_admission_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_trusted_bootstrap_live.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_trusted_bootstrap_live.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_trusted_control_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_trusted_control_candidate.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.authbus_trusted_control_contract_test.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.authbus_trusted_control_contract_test.mjs",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.driver-r2.diff",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.driver-r2.diff",
+      "passed": true
+    },
+    {
+      "case": "candidate_name.source-manifest.json",
+      "passed": true
+    },
+    {
+      "case": "candidate_exact.source-manifest.json",
+      "passed": true
+    },
+    {
+      "case": "actual_driver_exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "control_after_driver",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "native_server_cold_restart.sigkill",
+      "passed": true
+    },
+    {
+      "case": "native_server_cold_restart.sealed",
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "native_server_cold_restart.unseal",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "control_after_server_restart",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "control_exact_after_server_restart",
+      "passed": true
+    },
+    {
+      "case": "issuer.destroy_secret_id",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "reader.destroy_secret_id",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revocations_cold_restart.sigkill",
+      "passed": true
+    },
+    {
+      "case": "revocations_cold_restart.sealed",
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "revocations_cold_restart.unseal",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "issuer.destroyed_secret_id_cold_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "reader.destroyed_secret_id_cold_denied",
+      "passed": true,
+      "status": 400
+    }
+  ],
+  "control_payload_sha256_before_server_restart": "4017a314daace5366f1177e24e669207af9eb5798ba35a2a2c1db184c47c8fa0",
+  "j3160_contacted": false,
+  "ok": true,
+  "owned_server_stopped": true,
+  "production_cutover": false,
+  "production_mutation": false,
+  "runner_manifest": {
+    "bundle_sha256": "249f3e939c143f3dc9e2babd397f7ccbff881049ebdf378f773fe8bf9eeadce1",
+    "entry": "authbus_trusted_bootstrap_live.mjs",
+    "files": {
+      "authbus_admission_authority_candidate.mjs": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b",
+      "authbus_admission_registry_candidate.mjs": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e",
+      "authbus_dispatch_registry_candidate.mjs": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0",
+      "authbus_dispatch_sdk_candidate.mjs": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674",
+      "authbus_sdk_admission_candidate.mjs": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33",
+      "authbus_sdk_explicit_deny_candidate.mjs": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2",
+      "authbus_trusted_admission_candidate.mjs": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad",
+      "authbus_trusted_bootstrap_live.mjs": "c938ccdc5240433bb867f9e892015c59416f2f7dd99d4f74a035b311982f528d",
+      "authbus_trusted_control_candidate.mjs": "cfd295f4a28d4ddce01152489960bafcf7795d8937b3da37c2ba296db0869129",
+      "authbus_trusted_control_contract_test.mjs": "6a04f2f39831ae1ac776e084cd144b85235302779ba919d8d76eef1101edf150",
+      "driver-r2.diff": "a41c5f627e88e3d3eea1a90755c3f04e24e9f9db6ead8cc68b58a6f178d23a25",
+      "source-manifest.json": "195d1a7e52861e098ce9fedaf7fe1b69e7879768ed2a5aaaff249d72f274a099"
+    }
+  },
+  "schema": "heptabao.authbus-trusted-r4-fixture-controller.v1",
+  "source_commit": "e0f95a38850a4a3b0220112eff27e2e32efb7742"
+}

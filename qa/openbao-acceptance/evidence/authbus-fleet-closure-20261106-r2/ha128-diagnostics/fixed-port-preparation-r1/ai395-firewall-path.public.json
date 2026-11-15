@@ -1,0 +1,954 @@
+{
+  "candidateRangeNotInheritedFromX230": true,
+  "counterDeltasNotMeasuredOrAttributedToOurProbe": true,
+  "livePortConnectivityProved": false,
+  "observationsAreNotAtomic": true,
+  "packets": [
+    {
+      "allEvaluatedInputChainsAccept": true,
+      "assumedNewLocalTcpPacket": {
+        "dport": 22,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.8"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "ACCEPT",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "ufw-user-input",
+          "counter": {
+            "bytes": 845832,
+            "packets": 14092
+          },
+          "ordinal": 1,
+          "target": "ACCEPT"
+        }
+      ]
+    },
+    {
+      "allEvaluatedInputChainsAccept": false,
+      "assumedNewLocalTcpPacket": {
+        "dport": 46230,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.8"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "DROP",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 109338378,
+            "packets": 504900
+          },
+          "ordinal": 2,
+          "target": "ufw-after-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 3,
+          "target": "ufw-after-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 4,
+          "target": "ufw-reject-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 5,
+          "target": "ufw-track-input"
+        }
+      ]
+    },
+    {
+      "allEvaluatedInputChainsAccept": false,
+      "assumedNewLocalTcpPacket": {
+        "dport": 31040,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.8"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "DROP",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 109338378,
+            "packets": 504900
+          },
+          "ordinal": 2,
+          "target": "ufw-after-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 3,
+          "target": "ufw-after-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 4,
+          "target": "ufw-reject-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 5,
+          "target": "ufw-track-input"
+        }
+      ]
+    },
+    {
+      "allEvaluatedInputChainsAccept": false,
+      "assumedNewLocalTcpPacket": {
+        "dport": 31041,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.8"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "DROP",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 109338378,
+            "packets": 504900
+          },
+          "ordinal": 2,
+          "target": "ufw-after-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 3,
+          "target": "ufw-after-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 4,
+          "target": "ufw-reject-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 5,
+          "target": "ufw-track-input"
+        }
+      ]
+    },
+    {
+      "allEvaluatedInputChainsAccept": true,
+      "assumedNewLocalTcpPacket": {
+        "dport": 22,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.13"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "ACCEPT",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "ufw-user-input",
+          "counter": {
+            "bytes": 845832,
+            "packets": 14092
+          },
+          "ordinal": 1,
+          "target": "ACCEPT"
+        }
+      ]
+    },
+    {
+      "allEvaluatedInputChainsAccept": false,
+      "assumedNewLocalTcpPacket": {
+        "dport": 46230,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.13"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "DROP",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 109338378,
+            "packets": 504900
+          },
+          "ordinal": 2,
+          "target": "ufw-after-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 3,
+          "target": "ufw-after-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 4,
+          "target": "ufw-reject-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 5,
+          "target": "ufw-track-input"
+        }
+      ]
+    },
+    {
+      "allEvaluatedInputChainsAccept": false,
+      "assumedNewLocalTcpPacket": {
+        "dport": 31040,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.13"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "DROP",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 109338378,
+            "packets": 504900
+          },
+          "ordinal": 2,
+          "target": "ufw-after-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 3,
+          "target": "ufw-after-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 4,
+          "target": "ufw-reject-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 5,
+          "target": "ufw-track-input"
+        }
+      ]
+    },
+    {
+      "allEvaluatedInputChainsAccept": false,
+      "assumedNewLocalTcpPacket": {
+        "dport": 31041,
+        "dst": "192.168.0.11",
+        "src": "192.168.0.13"
+      },
+      "ctStateAssumption": "NEW",
+      "inetBaseChainVerdicts": [
+        {
+          "chain": "input",
+          "family": "inet",
+          "handle": 35,
+          "matchedExpressions": [
+            {
+              "match": {
+                "left": {
+                  "payload": {
+                    "field": "saddr",
+                    "protocol": "ip"
+                  }
+                },
+                "op": "==",
+                "right": {
+                  "prefix": {
+                    "addr": "192.168.0.0",
+                    "len": 16
+                  }
+                }
+              }
+            }
+          ],
+          "ordinal": 30,
+          "table": "cloudflare-warp",
+          "verdict": "ACCEPT"
+        }
+      ],
+      "ingressInterface": "br0",
+      "ipv4FilterVerdict": "DROP",
+      "ipv4Path": [
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 0,
+          "target": "ufw-before-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 910342332031,
+            "packets": 481424616
+          },
+          "ordinal": 1,
+          "target": "ufw-before-input"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 385623240,
+            "packets": 1648768
+          },
+          "ordinal": 9,
+          "target": "ufw-not-local"
+        },
+        {
+          "chain": "ufw-not-local",
+          "counter": {
+            "bytes": 11468751,
+            "packets": 181499
+          },
+          "ordinal": 0,
+          "target": "RETURN"
+        },
+        {
+          "chain": "ufw-before-input",
+          "counter": {
+            "bytes": 120754106,
+            "packets": 685774
+          },
+          "ordinal": 12,
+          "target": "ufw-user-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 109338378,
+            "packets": 504900
+          },
+          "ordinal": 2,
+          "target": "ufw-after-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 3,
+          "target": "ufw-after-logging-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 4,
+          "target": "ufw-reject-input"
+        },
+        {
+          "chain": "INPUT",
+          "counter": {
+            "bytes": 3834744,
+            "packets": 118146
+          },
+          "ordinal": 5,
+          "target": "ufw-track-input"
+        }
+      ]
+    }
+  ],
+  "privateOriginalRulesPublished": false,
+  "rawPrivateSources": {
+    "iptablesFilter": {
+      "bytes": 8521,
+      "sha256": "5ce8a18b540a54b78fcf5510f1f686cd924f460df85ec67c16d0672ee912fa22"
+    },
+    "nft": {
+      "bytes": 100231,
+      "sha256": "e3709076a468edd11d1b8338d3e4e7be0d8833b02cacd3af8cf897afcca3393a"
+    }
+  },
+  "rulesChanged": false,
+  "schema": "heptabao.ai395-fixed-firewall-static-path-projection.r1",
+  "staticInferenceOnly": true,
+  "unknownExpressionsIgnored": false,
+  "userInputChainTotalRuleCount": 19
+}

@@ -1,0 +1,1 @@
+{"job_id":"1a1b22024b4-fc05-7c7e","host":"pocket4","idempotency_key":"pocket4-canonical-4bde9-received-public-linux-offline-closure-20261106-r2","launch_state":"launched","launch":{"backend":"systemd","launcher_pid":null,"ok":true,"unit":"hepta-runtime-job-1a1b22024b4-fc05-7c7e"}}

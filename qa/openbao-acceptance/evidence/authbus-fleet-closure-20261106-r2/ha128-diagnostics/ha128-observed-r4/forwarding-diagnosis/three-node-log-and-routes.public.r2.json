@@ -1,0 +1,156 @@
+{
+  "schema": "heptabao.ha128-r4-forward-failure-logs.public.r2",
+  "originalJob": "1a1b3c982b3-fc05-84bc",
+  "actualOperations": "readonly complete original process.log,server.json,ha.json per already-closed node",
+  "publicProjectionOnly": true,
+  "allOriginalProcessesAlreadyClosed": true,
+  "nodes": [
+    {
+      "role": "node1",
+      "processLog": {
+        "bytes": 16630,
+        "versionMatchedBetweenMetadataAndFullRead": true,
+        "completeNoTruncation": true
+      },
+      "routes": {
+        "node": 1,
+        "apiListen": "192.168.0.13:31040",
+        "apiTimeout": 15,
+        "raftListen": "192.168.0.13:31041",
+        "peerTimeoutMs": 1500,
+        "forwardTimeoutMs": 8000,
+        "maxInflight": 32,
+        "peers": {
+          "1": {
+            "address": "192.168.0.13:31041",
+            "api_address": "https://192.168.0.13:31040",
+            "cluster_address": "https://192.168.0.13:31041",
+            "node_name": "node-1",
+            "server_name": "node-1.heptabao.synthetic"
+          },
+          "2": {
+            "address": "192.168.0.11:31041",
+            "api_address": "https://192.168.0.11:31040",
+            "cluster_address": "https://192.168.0.11:31041",
+            "node_name": "node-2",
+            "server_name": "node-2.heptabao.synthetic"
+          },
+          "3": {
+            "address": "192.168.0.8:31041",
+            "api_address": "https://192.168.0.8:31040",
+            "cluster_address": "https://192.168.0.8:31041",
+            "node_name": "node-3",
+            "server_name": "node-3.heptabao.synthetic"
+          }
+        }
+      },
+      "diagnostics": [
+        {
+          "line": 29,
+          "text": "heptabao-forward-diagnostic: phase=source_seal guard=entry"
+        }
+      ],
+      "ordinaryTimingCount": 1,
+      "reasonsDigestsOtherLogContentWithheld": true
+    },
+    {
+      "role": "node2",
+      "processLog": {
+        "bytes": 12056,
+        "versionMatchedBetweenMetadataAndFullRead": true,
+        "completeNoTruncation": true
+      },
+      "routes": {
+        "node": 2,
+        "apiListen": "192.168.0.11:31040",
+        "apiTimeout": 15,
+        "raftListen": "192.168.0.11:31041",
+        "peerTimeoutMs": 1500,
+        "forwardTimeoutMs": 8000,
+        "maxInflight": 32,
+        "peers": {
+          "1": {
+            "address": "192.168.0.13:31041",
+            "api_address": "https://192.168.0.13:31040",
+            "cluster_address": "https://192.168.0.13:31041",
+            "node_name": "node-1",
+            "server_name": "node-1.heptabao.synthetic"
+          },
+          "2": {
+            "address": "192.168.0.11:31041",
+            "api_address": "https://192.168.0.11:31040",
+            "cluster_address": "https://192.168.0.11:31041",
+            "node_name": "node-2",
+            "server_name": "node-2.heptabao.synthetic"
+          },
+          "3": {
+            "address": "192.168.0.8:31041",
+            "api_address": "https://192.168.0.8:31040",
+            "cluster_address": "https://192.168.0.8:31041",
+            "node_name": "node-3",
+            "server_name": "node-3.heptabao.synthetic"
+          }
+        }
+      },
+      "diagnostics": [
+        {
+          "line": 7,
+          "phase": "completed_exchange_failure",
+          "category": "completion_proof",
+          "originalReasonAndDigestWithheld": true
+        },
+        {
+          "line": 8,
+          "phase": "pending_exchange_rejected"
+        }
+      ],
+      "ordinaryTimingCount": 1,
+      "reasonsDigestsOtherLogContentWithheld": true
+    },
+    {
+      "role": "node3",
+      "processLog": {
+        "bytes": 1725,
+        "versionMatchedBetweenMetadataAndFullRead": true,
+        "completeNoTruncation": true
+      },
+      "routes": {
+        "node": 3,
+        "apiListen": "192.168.0.8:31040",
+        "apiTimeout": 15,
+        "raftListen": "192.168.0.8:31041",
+        "peerTimeoutMs": 1500,
+        "forwardTimeoutMs": 8000,
+        "maxInflight": 32,
+        "peers": {
+          "1": {
+            "address": "192.168.0.13:31041",
+            "api_address": "https://192.168.0.13:31040",
+            "cluster_address": "https://192.168.0.13:31041",
+            "node_name": "node-1",
+            "server_name": "node-1.heptabao.synthetic"
+          },
+          "2": {
+            "address": "192.168.0.11:31041",
+            "api_address": "https://192.168.0.11:31040",
+            "cluster_address": "https://192.168.0.11:31041",
+            "node_name": "node-2",
+            "server_name": "node-2.heptabao.synthetic"
+          },
+          "3": {
+            "address": "192.168.0.8:31041",
+            "api_address": "https://192.168.0.8:31040",
+            "cluster_address": "https://192.168.0.8:31041",
+            "node_name": "node-3",
+            "server_name": "node-3.heptabao.synthetic"
+          }
+        }
+      },
+      "diagnostics": [],
+      "ordinaryTimingCount": 0,
+      "reasonsDigestsOtherLogContentWithheld": true
+    }
+  ],
+  "privateLogWholeDigestsAndOpaqueVersionsPublished": false,
+  "privateOriginalsRetained": true
+}

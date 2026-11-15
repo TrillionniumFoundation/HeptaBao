@@ -1,0 +1,274 @@
+{
+  "schema": "heptabao.mac-main3-sdk-outer-preparation.r4",
+  "status": "prepared-not-executed",
+  "sourcePins": {
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 14877,
+      "sha256": "d735a9e9330e1260d44ad9e4c854d50094e20d85fe5633ddd9042281b3346298"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 6154,
+      "sha256": "71a11bf9a0510c991b78c9bc3f094f315bf4914485b9cfda81c6e501eaf73530"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "bytes": 13385,
+      "sha256": "33686b28e6342f7930c62042875d57606425c7f2f8e70b15e137db691dd836e0"
+    },
+    "mac_owned_launchd_r3.py": {
+      "bytes": 58613,
+      "sha256": "2cad341335c5a0a227c134af68455b040b760651eeb137b284e4776eb664a374"
+    },
+    "mac_native_process_observer_r1.py": {
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_current_server_owner_r1.py": {
+      "bytes": 16143,
+      "sha256": "4f17d0b6b66a422d3473c3dd6d11ca78f8dee35719a1343d818c25165c0fdbf2"
+    },
+    "mac_public_code_pin_excerpt_r1.py": {
+      "bytes": 1792,
+      "sha256": "7ff262e7ff913eb97aab77855d988cb3a6af8cab5ea9c77940a2782afd91ca4f"
+    },
+    "tls_complete_http_probe.py": {
+      "bytes": 4750,
+      "sha256": "7e92967416e0dcdc80b9c5d56e0655775630cef9198aba5541fa75bbf98c42fc"
+    },
+    "test_suid_ps_tls_r2.py": {
+      "bytes": 16309,
+      "sha256": "261d38cdf25e873a99fc99c901d1cefcbdc0d434388877caa26d57cac7496bc6"
+    },
+    "main3_source_fence.py": {
+      "bytes": 16577,
+      "sha256": "c0cca09c9f46ff7c5b0bce462934b731d003a02b6bf98da5f8469e4ce0ffb25f"
+    },
+    "main3_api_cycle.py": {
+      "bytes": 17862,
+      "sha256": "44397a1a4c54ac29fef30a74dd808e2a0e5765641c4e3eadf2da506583a51df2"
+    },
+    "test_main3_api_guards.py": {
+      "bytes": 15130,
+      "sha256": "14f273d329325dd173e6ae995c309a62d0959595d144b85c04f31d83fc7148b6"
+    },
+    "main3_source_authority.py": {
+      "bytes": 2406,
+      "sha256": "1db9ebcbe9a2251acaff2f13a109c9f6613df9a538acdc59ad6301a165ddc290"
+    },
+    "main3_capture_payload_0.py": {
+      "bytes": 60008,
+      "sha256": "220e0620b337f3ab1f800e043a935bbdb8ee1a4eb4da92c820c6dde575e52eb8"
+    },
+    "main3_capture_payload_1.py": {
+      "bytes": 60008,
+      "sha256": "e2779f389949c85493974d633815becef08dc32209e47a8bd98d4a9b9a3383ac"
+    },
+    "main3_capture_payload_2.py": {
+      "bytes": 60008,
+      "sha256": "423fc9d17111b90bc1f16f008dacd383cf55d92d3a53c5883ec5ea50b363c9de"
+    },
+    "main3_capture_payload_3.py": {
+      "bytes": 36668,
+      "sha256": "742338b1acbc9ca240eab49d34f4ae586628c68773f48bb13c2ed15f51d9ef1e"
+    },
+    "main3_capture_launcher.py": {
+      "bytes": 30681,
+      "sha256": "6fe72ce9fe547d1d1f2167a2231752959529358ed11bd3f81369527a489214ea"
+    },
+    "main3_inline_capture.py": {
+      "bytes": 15731,
+      "sha256": "a57572b4acad331c502eb768c2a8f3922402e132986c74b127e9e1510cef4d7f"
+    },
+    "test_main3_inline_capture.py": {
+      "bytes": 9233,
+      "sha256": "a593238b2169dda93d191647f51623e6b7213d154a20c972e48aa1364ab8a235"
+    },
+    "main3_http_complete.py": {
+      "bytes": 9110,
+      "sha256": "ce02882b991e1abb1d135e05c571d2d112032e93a5857769a8b90d25425d5c96"
+    },
+    "test_main3_http_complete.py": {
+      "bytes": 10216,
+      "sha256": "2aaaa0225a1720f7bad4f1f4b2d9a0d1ed9a33469b45ed24cf951dc23a6a9f6c"
+    },
+    "qualify_main3_http_tls.py": {
+      "bytes": 8195,
+      "sha256": "85955fd71a7ec8a350e08d2022cfd8dd84066eeaa10655342ac5851763c44308"
+    },
+    "main3_sdk_public_pins.py": {
+      "bytes": 2391,
+      "sha256": "3db36703588e080187bc9aa2ae137d10ae1f7285c09c460168d13b13bfac23a4"
+    },
+    "main3_sdk_phase.py": {
+      "bytes": 24508,
+      "sha256": "ff596a663fcd0d8c6dda4e8a5a136d778fb8c454c7ce5fe271e0d31cc6108841"
+    },
+    "main3_sdk_controller.py": {
+      "bytes": 33429,
+      "sha256": "eb253c69eaa6f1f480f5f6e0a095066eb5e7a53b00c1060c52223072701720f1"
+    },
+    "test_main3_sdk_controller.py": {
+      "bytes": 11340,
+      "sha256": "6c0d1a96dea4caac4803b1331478b070de4411f3d80286d1601e8956afbeefc6"
+    }
+  },
+  "assetPins": {
+    "qa/main3_sdk_cycle_r2.mjs": {
+      "bytes": 31439,
+      "sha256": "4a67ca8ec0effa91e35cde4d92eaaa28a18a58b8cab647e4e9ac4315b476b383"
+    },
+    "qa/main3_auth_rows_cas_r1.mjs": {
+      "bytes": 3040,
+      "sha256": "4f3efdf344e61f5f1c95dadfd8b9c52f142f85ddc2794933f798142ab8324e9c"
+    },
+    "qa/main3_authbus_cache_cas_r1.mjs": {
+      "bytes": 6983,
+      "sha256": "7fa83d69c5c9713d3be642434ad009e070e688890d0e0a23db11f7b46d702302"
+    },
+    "qa/main3_sdk_seed_r1.mjs": {
+      "bytes": 7715,
+      "sha256": "6a156f3e8e0e51ad2492e76720a76e386a8020d991cfe66aa21131141f36e410"
+    },
+    "plugin/index.js": {
+      "bytes": 54455,
+      "sha256": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b"
+    },
+    "plugin/package.json": {
+      "bytes": 980,
+      "sha256": "e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334"
+    },
+    "plugin/order-policy.js": {
+      "bytes": 7376,
+      "sha256": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301"
+    },
+    "plugin/runtime-refresh-policy.js": {
+      "bytes": 956,
+      "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    "plugin/codex-client-recycler.js": {
+      "bytes": 2120,
+      "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+    },
+    "plugin/provider-error-classifier.js": {
+      "bytes": 4670,
+      "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77"
+    },
+    "plugin/bad-refresh-quarantine.js": {
+      "bytes": 5438,
+      "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286"
+    },
+    "plugin/lease-assignments.js": {
+      "bytes": 6932,
+      "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7"
+    },
+    "qa/main3_sdk_wire_r3.mjs": {
+      "bytes": 13346,
+      "sha256": "e80c7eb22e2cd2fbc547eb085b8eb0b482e8e656baa8a59520e0cb93a4c0396c"
+    }
+  },
+  "capturePins": {
+    "CAPTURE_WORKER_SHA": "130de20e8d76f68889ecd28925809b96667c5b7756cc34b1b23f934f4dc6b030",
+    "CAPTURE_LAUNCHER_SHA": "6fe72ce9fe547d1d1f2167a2231752959529358ed11bd3f81369527a489214ea",
+    "CAPTURE_GUARD_SHA": "f5fb13e04b394320a44b6687b474f06c0bb49b2ef1e194b956f528e454453d1f",
+    "CAPTURE_REGISTRY_SHA": "bbf04b5a60edd4e4213d9df60aee3cf6338683f553b534cdea449da350b95c3b",
+    "CAPTURE_PAYLOAD_SHA": "39d3b111e31a96f6c8bede7940cb853c55c93732e778605bdabb59a059cdf6d4"
+  },
+  "preparer": {
+    "bytes": 19405,
+    "sha256": "ca6cb48e1d74aafed1320ef7e29048b8d1f9b20d38247c3c64d7c717660aa774"
+  },
+  "staging": {
+    "bytes": 746592,
+    "sha256": "5a7e243d9b76ed9e0972e4f430b6f643581647324012b9a903bb46fc1cb510d3"
+  },
+  "canonicalProductCommit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "canonicalBinarySha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c",
+  "budgets": {
+    "outer": 600,
+    "phase": 120,
+    "sourceObservationMaximum": 45,
+    "wrapperReady": 30,
+    "execObservation": 10,
+    "health": 15,
+    "singleOtherHttp": 10,
+    "failureCleanup": 60
+  },
+  "sdkWireMaximumSeconds": 15,
+  "seedMaximumSeconds": 10,
+  "nodeWorkerSourcesUnchanged": false,
+  "nodeWireSourceUnchanged": false,
+  "nodeWorkerOriginalPins": {
+    "qa/main3_sdk_cycle_r2.mjs": {
+      "bytes": 31439,
+      "sha256": "be755ff0dfb7a833bf1c40a75f9c7dc68bc4c38ea12339b4af707f065e1abbe0"
+    },
+    "qa/main3_sdk_wire_r2.mjs": {
+      "bytes": 12400,
+      "sha256": "2b06342e30703611729788a522ba764ae30adfe1e47c4f4673b7aa8f647170e2"
+    },
+    "qa/main3_auth_rows_cas_r1.mjs": {
+      "bytes": 3040,
+      "sha256": "f2e2d923fa017a70af64fb71efd6e92abf3f5117ce6c4952443aa115b52aa5e5"
+    },
+    "qa/main3_authbus_cache_cas_r1.mjs": {
+      "bytes": 6983,
+      "sha256": "fffa956fb3f3fd6042ec010a47275118603c42284187877648360a7052320d78"
+    }
+  },
+  "nodeWorkerRootOnlyChanges": {
+    "qa/main3_auth_rows_cas_r1.mjs": {
+      "originalSha256": "f2e2d923fa017a70af64fb71efd6e92abf3f5117ce6c4952443aa115b52aa5e5",
+      "sha256": "4f3efdf344e61f5f1c95dadfd8b9c52f142f85ddc2794933f798142ab8324e9c",
+      "fixedRootLiteralReplacements": 1,
+      "allOtherBytesUnchanged": true
+    },
+    "qa/main3_authbus_cache_cas_r1.mjs": {
+      "originalSha256": "fffa956fb3f3fd6042ec010a47275118603c42284187877648360a7052320d78",
+      "sha256": "7fa83d69c5c9713d3be642434ad009e070e688890d0e0a23db11f7b46d702302",
+      "fixedRootLiteralReplacements": 1,
+      "allOtherBytesUnchanged": true
+    }
+  },
+  "installedPluginSourcesUnchanged": true,
+  "inlineCaptureOperationKey": "heptabao-mac-authbus-main3-sdk-inline-capture-20261106-r4",
+  "sandboxChange": "no change from r3: one actual-qualified localhost TCP port plus exact IPv4/CA/host/leaf wire admission",
+  "kernelIpv4OnlyDestinationClaimed": false,
+  "kernelLocalLanDeniedClaimed": false,
+  "wireEndpointAndTrustCodeUnchanged": false,
+  "localAddressScopeObserved": true,
+  "directoryLiteralAuthorityJob": "1a1b254ed7d-fc05-7d90",
+  "sandboxAuthorityJob": "1a1b27ad919-fc05-7e36",
+  "sandboxAuthorityResultSha256": "9f389465f8df39807c6718a93bf34d1384838e35f76d07bccb60c4008da4ab43",
+  "priorFailedScopeProbeJob": "1a1b271da51-fc05-7e0a",
+  "originalFailedSdkJob": "1a1b28a4d4c-fc05-7e81",
+  "productionChanged": false,
+  "providerCalled": false,
+  "productionRollbackQualified": false,
+  "actualMacSdkQualified": false,
+  "privateDigestOutputOnly": true,
+  "wireEndpointConfigurationUnchanged": true,
+  "wireResponsePeerValidationChanged": true,
+  "derivationBaseManifestSha256": "139be10ee23d51d572e9e4d190ecddd152194b4772e492290afaf7724b5e5b53",
+  "derivationBaseStagingSha256": "8cb911179b5e53822e364c467f10bf13cc0a23da833ee21ae3a12e124417adee",
+  "wirePriorSourceSha256": "2b06342e30703611729788a522ba764ae30adfe1e47c4f4673b7aa8f647170e2",
+  "wireSourceSha256": "e80c7eb22e2cd2fbc547eb085b8eb0b482e8e656baa8a59520e0cb93a4c0396c",
+  "wireDiagnosticAuthorityJob": "1a1b29bacf3-fc05-7ee7",
+  "wireDiagnosticOriginalResultSha256": "905f3173daa84153edfd59c6188158580c9ff89f5784fc01db0e74b6c8854182",
+  "wireChange": "retain stateless handshake CA/host/leaf; verify actual authorized IPv4/port and complete current peer host/leaf for each response; no request-local callback flag",
+  "actualMacWireCandidateQualified": false,
+  "priorOriginalSdkResultRemainsFailed": true,
+  "priorOriginalPluginUnknownResponseCount": 1,
+  "nodeWorkerRootAndWireModuleChanges": {
+    "qa/main3_sdk_cycle_r2.mjs": {
+      "originalSha256": "be755ff0dfb7a833bf1c40a75f9c7dc68bc4c38ea12339b4af707f065e1abbe0",
+      "sha256": "4a67ca8ec0effa91e35cde4d92eaaa28a18a58b8cab647e4e9ac4315b476b383",
+      "fixedRootLiteralReplacements": 1,
+      "fixedWireModuleNameReplacements": 2,
+      "allOtherBytesUnchanged": true
+    }
+  },
+  "seedRootOnlyChange": {
+    "originalSha256": "1d37d3d6e16586297883fc316ee7968038ae077938e800b6dba98a96b94da6c1",
+    "sha256": "6a156f3e8e0e51ad2492e76720a76e386a8020d991cfe66aa21131141f36e410",
+    "fixedRootLiteralReplacements": 1
+  }
+}

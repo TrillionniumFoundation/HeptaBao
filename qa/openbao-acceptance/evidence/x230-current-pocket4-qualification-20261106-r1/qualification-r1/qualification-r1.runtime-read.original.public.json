@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b287b00e-fc05-7e71\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22737461747573223a20226661696c6564222c202261646d6974746564223a2066616c73652c2022726573756c74223a20222f686f6d652f7169616e2f686570746162616f2d63757272656e742d706f636b6574342d34626465392d7175616c696669636174696f6e2d32303236313130362d72312f7175616c696669636174696f6e2d72312f726573756c742e7075626c69632e6a736f6e222c202266756c6c5f7265706c6163656d656e745f7175616c6966696564223a2066616c73657d0a\",\n    \"eof\": true,\n    \"next_offset\": 194,\n    \"offset\": 0,\n    \"size\": 194,\n    \"text\": \"{\\\"status\\\": \\\"failed\\\", \\\"admitted\\\": false, \\\"result\\\": \\\"/home/qian/heptabao-current-pocket4-4bde9-qualification-20261106-r1/qualification-r1/result.public.json\\\", \\\"full_replacement_qualified\\\": false}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

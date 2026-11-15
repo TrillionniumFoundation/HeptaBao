@@ -1,8 +1,7 @@
 name: h02-probe-sbom-msrv
 
 on:
-  push:
-    branches: ["codex/h02-probes-sbom-msrv"]
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
     inputs:
       run_candidate_probes:
@@ -10,7 +9,6 @@ on:
         required: true
         default: true
         type: boolean
-
 permissions:
   contents: read
 
@@ -24,7 +22,6 @@ env:
 
 jobs:
   validate-probe-contracts:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -68,7 +65,7 @@ jobs:
 
   candidate-probe:
     needs: validate-probe-contracts
-    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (github.event_name == 'push' || github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_candidate_probes)) }}
+    if: ${{ inputs.run_candidate_probes }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:

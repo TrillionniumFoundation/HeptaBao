@@ -1,0 +1,20 @@
+--- r2
++++ r3
+@@ -26,6 +26,8 @@
+ async function fixture(variant, options = {}) {
+   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'authbus-plugin-wiring-'));
+   fs.mkdirSync(path.join(root, 'agents/main/agent'), { recursive: true });
++  // The SDK is substituted; this marker only exercises the actual discovery predicate.
++  fs.writeFileSync(path.join(root, 'agents/main/agent/openclaw-agent.sqlite'), '', { mode: 0o600 });
+   const trace = [], constructed = [], intervals = [];
+   const entry = path.join(here, 'production-plugin-r1', variant, 'index.js');
+   let service, event;
+@@ -198,7 +200,7 @@
+     } finally { f.dispose(); }
+   });
+ }
+-console.log(JSON.stringify({ schema: 'heptabao.production-plugin-wiring-fixture.r2', ok: true,
++console.log(JSON.stringify({ schema: 'heptabao.production-plugin-wiring-fixture.r3', ok: true,
+   checks, passed: checks.length, actualCompletePreparedPluginSourceLoaded: true,
+   sdkBoundarySubstituted: true, transportNetworkBoundarySubstituted: true,
+   originalLocalHelperSourcesLoaded: true, actualProviderCalls: 0, productionServiceActions: 0,

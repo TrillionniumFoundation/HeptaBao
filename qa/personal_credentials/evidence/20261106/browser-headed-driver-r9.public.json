@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.personal-credentials.headed-driver.v1",
+  "synthetic_only": true,
+  "display_server": "Xvfb",
+  "window_manager": "openbox",
+  "real_headed_chromium": true,
+  "physical_monitor_claimed": false,
+  "owned_processes": [
+    {
+      "name": "openbox",
+      "pid": 2420464,
+      "returncode": 0,
+      "reaped": true
+    },
+    {
+      "name": "Xvfb",
+      "pid": 2420463,
+      "returncode": 0,
+      "reaped": true
+    }
+  ],
+  "bin_sha256": {
+    "Xvfb": "4adf27968d6f78f329f88beb71cbd3d181fa2018850a95ae3716afae2ae236c9",
+    "openbox": "3e20f93a61d47fbb5c2e4ec863226fc77517a5ec809e58f61c58bb20a904af8c"
+  },
+  "browser_exit_code": 1,
+  "browser_report_sha256": "d14c693bef8b8a02de586756c53c38817baf33dbce3a6089ae369576ea443795",
+  "browser_summary": {
+    "status": "failed",
+    "passed": 5,
+    "observed": 5,
+    "expected_count": 26,
+    "failed_case": "browser_operation_failed",
+    "error_type": "TimeoutError",
+    "failure_browser_state": [
+      {
+        "tabId": 1063999059,
+        "url": "https://login.example.test:39733/",
+        "active": true,
+        "window": {
+          "alwaysOnTop": false,
+          "focused": false,
+          "height": 851,
+          "id": 1063999058,
+          "incognito": false,
+          "left": 0,
+          "state": "normal",
+          "top": 10,
+          "type": "normal",
+          "width": 1288
+        }
+      }
+    ],
+    "failure_popup_status": [
+      "\u6b63\u5728\u672c\u5730\u89e3\u9501\u2026"
+    ],
+    "failure_document_state": {
+      "visibility": "visible",
+      "focused": true,
+      "url": "https://login.example.test:39733/"
+    },
+    "failure_popup_connections": [
+      {
+        "name": "vault-popup",
+        "senderId": "goclokplbbognlhkbmbaoceeenphhjhb",
+        "senderUrl": "chrome-extension://goclokplbbognlhkbmbaoceeenphhjhb/popup.html",
+        "documentId": null,
+        "origin": "chrome-extension://goclokplbbognlhkbmbaoceeenphhjhb",
+        "hasTab": false
+      }
+    ],
+    "failure_runtime_contexts": [
+      {
+        "contextId": "1da348a6-9369-4f38-8d5e-78b5f67163eb",
+        "contextType": "POPUP",
+        "documentId": "F4982A457A199DD0AD3538E037E64708",
+        "documentOrigin": "chrome-extension://goclokplbbognlhkbmbaoceeenphhjhb",
+        "documentUrl": "chrome-extension://goclokplbbognlhkbmbaoceeenphhjhb/popup.html",
+        "frameId": 0,
+        "incognito": false,
+        "tabId": -1,
+        "windowId": -1
+      }
+    ]
+  },
+  "status": "failed"
+}

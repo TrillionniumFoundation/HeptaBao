@@ -1,0 +1,57 @@
+{
+  "actualRun": false,
+  "assembled": {
+    "bytes": 105910,
+    "sha256": "1c33a955b8f07c23c45a852d441f5807f65270694eabea559ec974270b0d39fb"
+  },
+  "embeddedSourceBytesExact": true,
+  "expectedCases": 15,
+  "originalOuterChildren": 3,
+  "originalSharedSeconds": 45,
+  "publicPluginPins": {
+    "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+    "openclaw.plugin.json": "eac949fc687dfec38a1b647a9973fd0de901af3d4a0cd8b9de8d712a6aa454a5",
+    "package.json": "e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334"
+  },
+  "schema": "heptabao.gateway-registration-assembled-source.r1",
+  "sdkPins": {
+    "dist/config-env-vars-DlUfO5Q_.js": "fae1abf063f57a2f08dc9217238ac219f2b1c30a594efaf88c47ac57837db225",
+    "dist/config-state-CtMlHVRM.js": "af2e3bc003048755d820284d3e01a777fae907aff3be8bc4e281dee663f409c5",
+    "dist/config/config.js": "04d8b114cd44215eccc7a6b9537ee3f00693910ffcdea88cfd531dda7036e582",
+    "dist/dotenv-global-BWJcNSxD.js": "1d604bf0fc86323004f4196ec78d0ddf29b9c5665db5bc2371b72415b682fbfd",
+    "dist/dotenv-global-mWLbBl_z.js": "d88c53bfbb63ca5a107e2c1c8cdd2f51c52fa8c212f621cf7a0b9f051f6ddb32",
+    "dist/env-BDmU26qh.js": "f207472888bf0d1f8bf083b962e72720e6ce884db143adc7788dd021e95c4e4f",
+    "dist/env-CKdem44B.js": "0c0d74e743237f83c9c916309e704f400fe1881de511cc18970c683ec0e016ef",
+    "dist/env-vars-CxBOhHoc.js": "dcdfda2ef68d9a3564f78d8763668c776096dbdfa97d682a02a10bfa65c65a34",
+    "dist/future-config-guard-Dsfo4DuW.js": "7bc6e7326bc48227c8cff3521e41b806ee49b8a200650846b7e4dde83f8f967b",
+    "dist/hook-runner-global-BmIrGlLG.js": "c066170e97a2355603f0bdd3079a687bf835632856a741fa9a92683d7d4b2750",
+    "dist/io-By0s-a_s.js": "349721d31d9acc35da68b6246e8a4ff047e63d393ed4fe7b435d2afc8f7ee5d4",
+    "dist/loader-D8d2EvVh.js": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+    "dist/manifest-registry--UiRn6nq.js": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
+    "dist/openclaw-state-db-DzSsA9Ji.js": "ba920b2e6f63293a27c34615fc31dcb16a20a68a1e1e34fbccdcac56a9608149",
+    "dist/paths-BMBAvkNf.js": "099ff305aa7662710b2b0f1f925c99b203f30d283ab6b2ada34233a8188fab77",
+    "dist/paths-C6ahtu79.js": "46a7ab46a5611f9c47b9aa8c027e1b033c4b10a1844aa8823fcb808a94523b94",
+    "dist/plugin-activation-runtime-config-CAjq5WJb.js": "e303c994d9085fb3375ac8c49894c64293bab4062483b9cc56b085d31da8127c",
+    "dist/plugin-auto-enable-B2g1v2k7.js": "e33dfb6fa526241233ec3150d4b46f83026f23057547e7440c7304089c9144a5",
+    "dist/pre-bootstrap-8G8HyMEQ.js": "f2fb01d9d339e0d6261b4c51b751016a11c67eeb274a8624a88a93c148c00cd8",
+    "dist/runtime-D0xGMZdc.js": "a050a101e3c352345179b77f8c304da99596238fcde95cf03319ebc11dea8791",
+    "dist/runtime-hooks-Dp2OHV46.js": "76070ed3287f6d3e18bdbf381175d712d79d8d35b9c8a74521c1f66d143009c0",
+    "dist/server-plugin-bootstrap-CtU_XTUf.js": "a5e1ca52087063ead49e98bcf608a6fef026d050fdb74f3f002fb34ee0473632",
+    "dist/server-plugins-XoQmHCe9.js": "5f9842ae09566a1d9aa57ea12f2132cfd843301d1323ca58d9d251d18eefc50b",
+    "dist/shell-env-CQbFDviS.js": "2a08b123ac00224c93231f165c7005e45a2072497be95981156e658d1341e8c3",
+    "dist/shell-env-DaE9Xx3-.js": "5a700f5e8f4329f22d49d74805e88359bb3d67e6758f562fc59c55210582e583",
+    "dist/sqlite-wal-Bhk2Ro-u.js": "ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da",
+    "dist/state-dir-dotenv-COuz1wV3.js": "1084f1322326d4207b35be9034eb9b2090f8bd671c36f08294ce977db2e7eb0a",
+    "dist/utils-CRO4LGEB.js": "3b594044a26c9d2cf90ec2b245facbc9b9b9846567ce56ecda35bb81269c6893",
+    "dist/utils-DE-8o42N.js": "eeb3bf5bfe0e0c7e8c308f08c338c27c35a4150545145b0c39e4b07ed801fe7e"
+  },
+  "sourcePins": {
+    "mac_gateway_registration_cases_r1.mjs": "27c7709d10a28864aca2bcffc558bfd069c1a2fd2600ae6066616e4fb39d2e08",
+    "mac_gateway_registration_qualification_r1.mjs": "ce5ba2caa28906423a6c5c3c632ab5dab07427f6e5c3496bfba5a489b61fdf8f"
+  },
+  "supervisorSeconds": 70,
+  "template": {
+    "bytes": 13133,
+    "sha256": "c5718846781c2659a7cee11a2d9d5b10f15a95bf055ba3c3e3aa26e229e07a3f"
+  }
+}

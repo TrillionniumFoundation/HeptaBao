@@ -1,0 +1,15 @@
+{
+  "host": "main",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-"
+  ],
+  "cwd": "/Users/qianqi",
+  "idempotency_key": "heptabao-permanent-authbus-bootstrap-20261107-r1",
+  "timeout_seconds": 330,
+  "sourceBytes": 82208,
+  "sourceSha256": "709e228b497f84ed93df0b30bc484d60350a76b9d44944bdd951b0bb077482c7",
+  "scope": "new permanent loopback store initialization and temporary scoped credential lifecycle; no production clients/providers/LaunchAgent"
+}

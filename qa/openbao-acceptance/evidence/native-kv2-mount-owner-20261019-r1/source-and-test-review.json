@@ -1,0 +1,65 @@
+{
+  "base_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "base_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "git_blob": "c8836ee2cada4e9f4446002b0cd75335adc1586f",
+      "bytes": 447014,
+      "sha256": "a4d52f60d40b2af314f3f3aaafd13695f85778086e56cdd4feced641ad64184a"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines.rs",
+      "git_blob": "96f36f9f6be1f13321f6115250cc6cb8278fac6f",
+      "bytes": 149695,
+      "sha256": "fa15e089702e7ca3fa592d24d3b7623849158117446ca0572b438bcdc2077fa2"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "git_blob": "7379a5c1e2d4bfb5b874197fcf5e96a8add69928",
+      "bytes": 26729,
+      "sha256": "b9594b204fed1a3d939a82a55d67a6cb5212b9a0644a4a099d7a0fa370320dc1"
+    }
+  ],
+  "reviewed_unchanged_auth_tests": {
+    "path": "crates/heptabao-server/src/service_native_auth_tests.rs",
+    "git_blob": "e57857bbee7ffef16a4cbc1dcf746c0391549534",
+    "size": 33444,
+    "sha256": "25421d820be734393d9d6cd1083a43f5797396890cbdd73c12c813e6681c86b0"
+  },
+  "schema": "heptabao.native-kv2-mount-owner-source-review.v1",
+  "status": "candidate_unformatted_uncompiled_unexecuted",
+  "modified_rust_files": [
+    "crates/heptabao-server/src/service.rs",
+    "crates/heptabao-server/src/engines.rs",
+    "crates/heptabao-server/src/service_native_auth.rs"
+  ],
+  "new_rust_files": [
+    "crates/heptabao-server/src/engine_native_kv2_mount.rs",
+    "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+  ],
+  "test_module": "service::native_auth::mount_tests",
+  "new_exact_tests": [
+    "service::native_auth::mount_tests::native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_history",
+    "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+    "service::native_auth::mount_tests::native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_committed_mount"
+  ],
+  "new_expected_test_count": 3,
+  "existing_rust_cohort_unchanged": 55,
+  "existing_full34_cohort_unchanged": 31,
+  "request_budget_seconds": 15,
+  "command_budget_seconds": 1800,
+  "default_features_changed": false,
+  "HA_management_admitted": false,
+  "native_auth_root_guard_sha256_unchanged": "2fbe878ddb128ed9bcd5f9e60bdc3a449b90204499ff279275305a557a6efa45",
+  "native_auth_engine_identity_guard_unchanged": true,
+  "source_payload": {
+    "bytes": 132,
+    "canonical_sha256": "8718c7e5374c10f0559837fb3bc03b38d7099676f88543ab02c16b0b21b89f00"
+  },
+  "Rustfmt_performed": false,
+  "Rust_compilation_performed": false,
+  "Rust_tests_executed": 0,
+  "remote_operations_performed": false,
+  "unknown_mutations": []
+}

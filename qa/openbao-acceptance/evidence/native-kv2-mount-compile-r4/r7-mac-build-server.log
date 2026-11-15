@@ -1,0 +1,55 @@
+{"argv": ["/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo", "build", "--locked", "--offline", "-p", "heptabao-server", "--bin", "heptabao-server", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic"]}
+   Compiling heptabao-server v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-720340e/crates/heptabao-server)
+error[E0369]: binary operation `!=` cannot be applied to type `Vec<Kv2GraphRef>`
+   --> crates/heptabao-server/src/engine_native_kv2_mount.rs:330:31
+    |
+330 |             if normalized.kv2 != retained {
+    |                -------------- ^^ -------- Vec<Kv2GraphRef>
+    |                |
+    |                Vec<Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+error[E0369]: binary operation `!=` cannot be applied to type `Vec<Kv2GraphRef>`
+   --> crates/heptabao-server/src/engine_native_kv2_mount.rs:335:27
+    |
+335 |         if normalized.kv2 != prior.kv2 {
+    |            -------------- ^^ --------- Vec<Kv2GraphRef>
+    |            |
+    |            Vec<Kv2GraphRef>
+    |
+note: an implementation of `PartialEq` might be missing for `Kv2GraphRef`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 | pub(crate) struct Kv2GraphRef {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `PartialEq`
+help: consider annotating `Kv2GraphRef` with `#[derive(PartialEq)]`
+   --> crates/heptabao-server/src/state_record_root_v6.rs:76:1
+    |
+ 76 + #[derive(PartialEq)]
+ 77 | pub(crate) struct Kv2GraphRef {
+    |
+
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+For more information about this error, try `rustc --explain E0369`.
+warning: `heptabao-server` (lib) generated 1 warning
+error: could not compile `heptabao-server` (lib) due to 2 previous errors; 1 warning emitted

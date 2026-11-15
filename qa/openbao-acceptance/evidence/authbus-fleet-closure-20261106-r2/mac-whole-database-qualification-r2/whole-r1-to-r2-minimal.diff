@@ -1,0 +1,195 @@
+--- whole_sqlite_bundle_r1.py
++++ whole_sqlite_bundle_r2.py
+@@ -19,12 +19,14 @@
+ """
+ from __future__ import annotations
+ 
++import ctypes
+ import hashlib
+ import json
+ import os
+ from pathlib import Path
+ import sqlite3
+ import stat
++import sys
+ import time
+ from urllib.parse import quote
+ 
+@@ -92,6 +94,7 @@
+         self.uid, self.gid = os.getuid(), os.getgid()
+         self.fds, self.connections, self.steps = [], [], []
+         self.close_errors = []
++        self.darwin_xattr_queries = []
+         self.failed, self.restore_started, self.restore_complete = False, False, False
+         self._check_directory(self.root)
+         self._check_directory(self.source_root)
+@@ -201,7 +204,7 @@
+                  and info.st_gid == self.gid and stat.S_IMODE(info.st_mode) == 0o600
+                  and info.st_nlink == 1 and 0 <= info.st_size <= self.maximum,
+                  "exact_whole_database_namespace_custody")
+-            need(getattr(info, "st_flags", 0) == 0 and not os.listxattr(name, follow_symlinks=False),
++            need(getattr(info, "st_flags", 0) == 0 and self.no_xattrs(name, full9(info)),
+                  "unqualified_database_flags_or_xattrs")
+             result[suffix] = full9(info)
+         need(result[""] is not None and result["-journal"] is None,
+@@ -212,6 +215,38 @@
+             need(int(result["-wal"][6]) >= 32 and result["-shm"] is not None
+                  and int(result["-shm"][6]) > 0, "whole_database_existing_wal_and_shm")
+         return result
++
++    def no_xattrs(self, path, expected):
++        if sys.platform != "darwin":
++            return not os.listxattr(path, follow_symlinks=False)
++        # Python's Darwin os module does not expose listxattr. Query the same
++        # held regular-file descriptor through the native four-argument ABI.
++        # Only absence is admitted; no attribute name or value is read.
++        original = self.open(path, os.O_RDONLY | os.O_NONBLOCK)
++        record = {"returnValue": None, "errno": None, "sameHeldFileBeforeAfter": False,
++                  "descriptorClosedOnce": False}
++        self.darwin_xattr_queries.append(record)
++        try:
++            before = os.fstat(original["fd"])
++            need(full9(before) == tuple(expected) == full9(Path(path).lstat())
++                 and getattr(before, "st_flags", 0) == 0, "darwin_xattr_original_held_file")
++            libc = ctypes.CDLL("/usr/lib/libSystem.B.dylib", use_errno=True)
++            native = libc.flistxattr
++            native.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int]
++            native.restype = ctypes.c_ssize_t
++            ctypes.set_errno(0)
++            result = native(original["fd"], None, 0, 0)
++            error = ctypes.get_errno()
++            record.update(returnValue=result, errno=error)
++            need(result == 0 and error == 0, "darwin_xattr_nonempty_or_native_error_refused")
++            after = os.fstat(original["fd"])
++            need(full9(after) == tuple(expected) == full9(Path(path).lstat())
++                 and getattr(after, "st_flags", 0) == 0, "darwin_xattr_same_held_file_after_query")
++            record["sameHeldFileBeforeAfter"] = True
++            return True
++        finally:
++            self.close_fd(original)
++            record["descriptorClosedOnce"] = original["closed"] and original["closeAttempts"] == 1
+ 
+     def connect(self, path, *, readonly, immutable=False, role):
+         self.remaining()
+@@ -461,6 +496,9 @@
+                 "restoreOperationCount": len(self.steps),
+                 "allRestoreOperationsCompleted": all(step["completed"] for step in self.steps),
+                 "closeErrors": list(self.close_errors),
++                "darwinXattrQueryCount": len(self.darwin_xattr_queries),
++                "allDarwinXattrQueriesClosedAndAbsent": all(row["returnValue"] == 0 and row["errno"] == 0
++                    and row["sameHeldFileBeforeAfter"] and row["descriptorClosedOnce"] for row in self.darwin_xattr_queries),
+                 "contentValuesOrDigestsPublished": False,
+                 "productionConsumerQuiescenceEstablishedByThisLibrary": False,
+                 "providerEpochEstablishedByThisLibrary": False,
+--- qualify_whole_sqlite_bundle_r1.py
++++ qualify_whole_sqlite_bundle_r2.py
+@@ -14,7 +14,7 @@
+ import sqlite3
+ import time
+ 
+-from whole_sqlite_bundle_r1 import WholeStore, SnapshotRefused, need, page_image, sha
++from whole_sqlite_bundle_r2 import WholeStore, SnapshotRefused, need, page_image, sha
+ 
+ AGENTS = ("main", "trnm", "hepta-ui", "hepta", "hepta-backend")
+ 
+@@ -32,7 +32,7 @@
+         paths.append(directory / "openclaw-agent.sqlite")
+     paths.append(root / "live/state/openclaw.sqlite")
+     store = WholeStore(root=root / "archive", source_root=root / "live", until=until, source_vfs=source_vfs)
+-    report = {"schema": "heptabao.synthetic-whole-sqlite-bundle-qualification.r1", "ok": False,
++    report = {"schema": "heptabao.synthetic-whole-sqlite-bundle-qualification.r2", "ok": False,
+               "syntheticOnly": True, "sourceDatabaseCount": 6, "productionReads": 0,
+               "productionWrites": 0, "sdkImported": False, "providerCalls": 0,
+               "serviceActions": 0, "gatewayRestartQualified": False,
+--- mac_whole_sqlite_worker_r1.py
++++ mac_whole_sqlite_worker_r2.py
+@@ -11,15 +11,15 @@
+ import sys
+ import time
+ 
+-ROOT = Path("/Users/qianqi/heptabao-authbus-whole-database-qualification-20261106-r1")
++ROOT = Path("/Users/qianqi/heptabao-authbus-whole-database-qualification-20261106-r2")
+ START = time.monotonic()
+ UNTIL = float(sys.argv[1])
+ sys.path.insert(0, str(ROOT / "code"))
+-from qualify_whole_sqlite_bundle_r1 import run_qualification
+-from whole_sqlite_bundle_r1 import full9, need, SnapshotRefused
++from qualify_whole_sqlite_bundle_r2 import run_qualification
++from whole_sqlite_bundle_r2 import full9, need, SnapshotRefused
+ 
+ fds = []
+-report = {"schema": "heptabao.actual-mac-whole-sqlite-qualification-worker.r1", "ok": False,
++report = {"schema": "heptabao.actual-mac-whole-sqlite-qualification-worker.r2", "ok": False,
+           "productionReads": 0, "productionWrites": 0, "providerCalls": 0, "serviceActions": 0,
+           "sdkImported": False, "productionRollbackQualified": False}
+ 
+@@ -75,11 +75,11 @@
+     report["kernelReadWriteNetworkRefusalsObserved"] = True
+     report["originalProbeSocketClosed"] = sock.fileno() == -1
+     plan = json.loads(read(ROOT / "code/plan.public.json", 131072))
+-    need(plan["schema"] == "heptabao.synthetic-whole-sqlite-plan.r1"
++    need(plan["schema"] == "heptabao.synthetic-whole-sqlite-plan.r2"
+          and plan["sourceVfs"] == "unix-posix" and plan["maximumDatabaseBytes"] == 67108864,
+          "fixed_whole_database_plan")
+     for name, pin in plan["sourcePins"].items():
+-        need(name in ("whole_sqlite_bundle_r1.py", "qualify_whole_sqlite_bundle_r1.py", "mac_whole_sqlite_worker_r1.py"),
++        need(name in ("whole_sqlite_bundle_r2.py", "qualify_whole_sqlite_bundle_r2.py", "mac_whole_sqlite_worker_r2.py"),
+              "fixed_three_whole_sources")
+         need(hashlib.sha256(read(ROOT / "code" / name, 65536)).hexdigest() == pin,
+              "same_whole_database_source_bytes")
+--- launch_mac_whole_sqlite_qualification_r1.template.py
++++ launch_mac_whole_sqlite_qualification_r2.template.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,os,re,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+45
+-ROOT=Path('/Users/qianqi/heptabao-authbus-whole-database-qualification-20261106-r1')
++ROOT=Path('/Users/qianqi/heptabao-authbus-whole-database-qualification-20261106-r2')
+ QUAL=Path('/Users/qianqi/heptabao-authbus-auth-wal-qualification-20261106-r2')
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
+@@ -13,7 +13,7 @@
+  '/usr/bin/sandbox-exec':'abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a'}
+ # PAYLOAD_PLACEHOLDER
+ codes=set();fds=[];owner=None;child=None;created=False
+-report={'schema':'heptabao.actual-mac-whole-database-qualification-launch.r1','ok':False,
++report={'schema':'heptabao.actual-mac-whole-database-qualification-launch.r2','ok':False,
+  'productionSourceReads':0,'productionWrites':0,'providerCalls':0,'serviceActions':0,
+  'sdkImported':False,'productionRollbackQualified':False,'sharedSeconds':45,'workerSeconds':30,
+  'supervisorSeconds':70,'automaticRetry':False,'maximumDatabaseBytes':67108864,
+@@ -77,7 +77,7 @@
+  q=json.loads(proof);need(q['ok'] and q['allCasesMatched'] and q['allOwnedClosed']
+   and q['custody']['passed_process_custody'] and q['custody']['original_count']==18,'whole_complete_original_custody_cases')
+  public_fence()
+- need(set(PAYLOAD['sources'])=={'whole_sqlite_bundle_r1.py','qualify_whole_sqlite_bundle_r1.py','mac_whole_sqlite_worker_r1.py'},'three_exact_whole_modules')
++ need(set(PAYLOAD['sources'])=={'whole_sqlite_bundle_r2.py','qualify_whole_sqlite_bundle_r2.py','mac_whole_sqlite_worker_r2.py'},'three_exact_whole_modules')
+  for kind,relative,constant in [('agent','dist/openclaw-agent-db-DKpxi-Ll.js','OPENCLAW_AGENT_SCHEMA_SQL'),
+   ('state','dist/openclaw-state-db-DzSsA9Ji.js','OPENCLAW_STATE_SCHEMA_SQL')]:
+   raw=read(SDK/relative).decode();parts=re.findall(r'const '+constant+r' = `([\s\S]*?)`;',raw)
+@@ -89,7 +89,7 @@
+  for name,source in PAYLOAD['sources'].items():
+   need(sha(source.encode())==PAYLOAD['sourcePins'][name],'whole_prepared_source_hash');compile(source,name,'exec');private(ROOT/'code'/name,source)
+  for kind,sql in PAYLOAD['schemas'].items():private(ROOT/'code'/(kind+'-schema.sql'),sql)
+- plan={'schema':'heptabao.synthetic-whole-sqlite-plan.r1','sourceVfs':'unix-posix','maximumDatabaseBytes':67108864,
++ plan={'schema':'heptabao.synthetic-whole-sqlite-plan.r2','sourceVfs':'unix-posix','maximumDatabaseBytes':67108864,
+   'sourcePins':PAYLOAD['sourcePins'],'schemaPins':PAYLOAD['schemaPins'],'installedSchemaSourcePins':PAYLOAD['installedSchemaSourcePins'],
+   'originalChildren':1,'sharedSeconds':45,'workerSeconds':30,'productionReadAuthorized':False,'productionWriteAuthorized':False}
+  private(ROOT/'code/plan.public.json',json.dumps(plan,sort_keys=True)+'\n')
+@@ -107,7 +107,7 @@
+  with custody.activated() as owner:
+   deadline=time.monotonic()+remaining(30)
+   child=subprocess.Popen(['/usr/bin/sandbox-exec','-f',str(ROOT/'qualification.sb'),PYTHON,'-I','-S','-B',
+-    str(ROOT/'code/mac_whole_sqlite_worker_r1.py'),repr(deadline)],stdin=subprocess.DEVNULL,
++    str(ROOT/'code/mac_whole_sqlite_worker_r2.py'),repr(deadline)],stdin=subprocess.DEVNULL,
+     stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=str(ROOT),
+     env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','HOME':'/Users/qianqi','LANG':'C','LC_ALL':'C'})
+   out,err=child.communicate(timeout=remaining(30));close_streams()
+@@ -122,6 +122,8 @@
+   qualified=value['qualification'];need(qualified['ok'] and len(qualified['cases'])==13
+    and qualified['closedRestoredDatabases']==6 and qualified['retainedOriginalNamespaceFiles']==18
+    and qualified['resources']['restoreOperationCount']==48
++   and qualified['resources']['darwinXattrQueryCount']>0
++   and qualified['resources']['allDarwinXattrQueriesClosedAndAbsent']
+    and all(qualified['resources'][k] for k in ('allFileDescriptorsClosedOnce','allSqliteHandlesClosedOnce',
+     'allExplicitCursorsClosed','allRestoreOperationsCompleted')),'whole_complete_six_database_original_results')
+  public_fence();own_fence();remaining()

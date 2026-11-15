@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.private-pty-read-metadata-projection.r1",
+  "rawRulesKeptPrivate": true,
+  "projection": {
+    "archive_path": "/home/qian/.local/state/hepta-runtime-mac-worker/terminals/dpty-18e592fc97f5e860-fc05-2/output.log",
+    "available_end": 8632,
+    "chunk_sha256": "6d1824203ec159628cad0cf6c808f3b278263b9c5c88f7aa42fd15ad47501a68",
+    "host": "x230",
+    "next_offset": 8632,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-18e592fc97f5e860-fc05-2",
+    "status": {
+      "boot": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+      "bytes_seen": 8632,
+      "bytes_stored": 8632,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794001641456,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 332563,
+      "pid": 332565,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  }
+}

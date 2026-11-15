@@ -1,0 +1,222 @@
+[
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_admission_authority_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_admission_authority_candidate.mjs",
+      "mode": "100644",
+      "bytes": 16525,
+      "sha256": "a22974a765e47a9c350b2f2e46bea1f06401118cdecdb757ed1521260b9ac85b",
+      "git_blob": "9068784db2f7aa881e25450f06c0e5a0d1ca2d4e"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_admission_registry_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_admission_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 4294,
+      "sha256": "ef3df7b96554ffd9b4f74725ade77767c66bb01ae903f88923e7606abf2fec0e",
+      "git_blob": "4a4e02b7537629564d55787022df64eedcc82a46"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_dispatch_registry_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_dispatch_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 7113,
+      "sha256": "c59d4f832565abde156ff98b8c700a8d8ac93b82f556810cab1c696dfa8937f0",
+      "git_blob": "4b0c95b0da0df7996221a5e5faa2fd1b688ca53a"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_dispatch_sdk_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_dispatch_sdk_candidate.mjs",
+      "mode": "100644",
+      "bytes": 5556,
+      "sha256": "33f2817016b3a085885cd6e4a2a2c2c4cc8a065be063699599c424100ba77674",
+      "git_blob": "4cf6ea5812b22079f5f6ef0831cdc389ec3b8ea1"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_registry_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 7300,
+      "sha256": "c57bc679e9d5a658941d8e5e31b129547550b3323bdbd7f7d84881ed257ec57d",
+      "git_blob": "197f711516c69ab98966b0d5a76738d27af9c46f"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_caller_live.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_caller_live.mjs",
+      "mode": "100644",
+      "bytes": 37376,
+      "sha256": "10064164f06df7685cd90694d459a9233c2b40c307ac692d176044157be5e77e",
+      "git_blob": "d097ac593f1ab31f1242a579aa236bc295cb7d8a"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_candidate.mjs",
+      "mode": "100644",
+      "bytes": 25621,
+      "sha256": "42d91742365526b548c49d0a900d88ccfaf7d93ab57fa61bff3d97a86df663d3",
+      "git_blob": "6f22bb58b3252b9b82f20c4b0c4e751ef17cf67f"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_fixture.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_fixture.mjs",
+      "mode": "100644",
+      "bytes": 12274,
+      "sha256": "873b0ffc516901648da07da14089bc32ff16464b314f43458f7ac9eef06175c2",
+      "git_blob": "2b34ece80dfce65e990b3e0fd812aff553e176aa"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_openai_worker.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_native_worker.mjs",
+      "mode": "100644",
+      "bytes": 27026,
+      "sha256": "aa454c1ddaf3e546f68f0ffcd17fa61708e946fbcdfe2578cf50289c7e267224",
+      "git_blob": "72c178c01914523481ed2e2df748ba4f73c6b3dd"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_registry_candidate.mjs",
+      "mode": "100644",
+      "bytes": 19227,
+      "sha256": "c7985bd4c07c2143009802f74392adc92ec9b5388b909b51d2f7709ac7ddd01d",
+      "git_blob": "a72e64c812782713b671a35227de92ef86dad039"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_store_sdk_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_store_sdk_candidate.mjs",
+      "mode": "100644",
+      "bytes": 5017,
+      "sha256": "dc007135540ec0241bc114dee87732716eea9bd1f6d85125cfb54f339a64591a",
+      "git_blob": "78f61bf771d6376410d07f3ceef28d3726dae223"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_sdk_admission_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_sdk_admission_candidate.mjs",
+      "mode": "100644",
+      "bytes": 12203,
+      "sha256": "c3d8ebe29fbec5896c9acc140980064426c9e0eb8211c6da7883965f7ea7db33",
+      "git_blob": "e58a7a4d3dd2662956c1fc9d53cbceed9c6c8b68"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_sdk_explicit_deny_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_sdk_explicit_deny_candidate.mjs",
+      "mode": "100644",
+      "bytes": 8358,
+      "sha256": "839aa4bbefe7c2f8d72aeca9466550f188961be6f07ea19230377048a20a62a2",
+      "git_blob": "189f156ebdaef750ccf2fe5c2447918b3202d263"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_trusted_admission_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_trusted_admission_candidate.mjs",
+      "mode": "100644",
+      "bytes": 4929,
+      "sha256": "910d340ce5d31c2ba60179511802c734311ef5482d9a2a104c500a36211d7fad",
+      "git_blob": "d2911c5d940b94b76c516bd968156a7cd1c72c5a"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_trusted_control_candidate.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_trusted_control_candidate.mjs",
+      "mode": "100644",
+      "bytes": 30107,
+      "sha256": "c0088004bfcb18188d6439219204fe71c8955fa20fa9ce64e06b43db76652637",
+      "git_blob": "ff11df13ade8462b70a6cbe40c7c6a7c813236c6"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/cert_auth_live.py",
+    "origin": {
+      "path": "qa/openbao-acceptance/cert_auth_live.py",
+      "mode": "100644",
+      "bytes": 19737,
+      "sha256": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9",
+      "git_blob": "1933898e17f423d1572375e34725d46ebba358eb"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/fixture_mounts.py",
+    "origin": {
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "mode": "100644",
+      "bytes": 1560,
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+      "git_blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/native_v6_authbus_client_live.py",
+    "origin": {
+      "path": "qa/openbao-acceptance/native_v6_authbus_client_live.py",
+      "mode": "100644",
+      "bytes": 23329,
+      "sha256": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e",
+      "git_blob": "f96eeaa2a9dd9145a5da565dac1f455829d6e164"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/native_v6_authbus_openai_refresh_live.py",
+    "origin": {
+      "path": "qa/openbao-acceptance/native_v6_authbus_refresh_live.py",
+      "mode": "100644",
+      "bytes": 44571,
+      "sha256": "a1e284fda5a7aaf3615b50f46ade6bee58d67a302b0842b952eb5d69e2617f2f",
+      "git_blob": "d45776441d384465ad2e35b41f4f714eb621b13a"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/owned_process.py",
+    "origin": {
+      "path": "qa/openbao-acceptance/owned_process.py",
+      "mode": "100644",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "git_blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889"
+    }
+  },
+  {
+    "path": "qa/single-node/smoke.py",
+    "origin": {
+      "path": "qa/single-node/smoke.py",
+      "mode": "100644",
+      "bytes": 16470,
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+      "git_blob": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8"
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture.mjs",
+    "origin": {
+      "path": "qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_fixture.mjs",
+      "mode": "100644",
+      "bytes": 7179,
+      "sha256": "6a2298f27e366a2225182b5982bddf10589a1a530533fb3cfb14d4cc2c394539",
+      "git_blob": "630378f787117aad53fd0ef361b40d6d5fdfef30"
+    }
+  }
+]

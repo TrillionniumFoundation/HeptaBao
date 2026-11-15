@@ -1,0 +1,1 @@
+{"event":"mutation-observed","index":97,"schema":"heptabao.mac-main3-sdk-journal.r4","value":{"cleanupOnly":false,"generation":"server-cold-new-process","nativePidAbsence":{"bytes":0,"errno":3,"pid":92351},"operation":"bootout","state":null}}
