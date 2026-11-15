@@ -1310,6 +1310,7 @@ jobs:
           binary_digest="$(sha256sum "$PWD/target/debug/heptabao-server" | cut -d ' ' -f 1)"
           receipt_digest="$(sha256sum "$RUNNER_TEMP/heptabao-safe-reports/native-build.json" | cut -d ' ' -f 1)"
           timeout 600 python qa/openbao-acceptance/kubernetes_renewal_271_cluster_live.py \
+            --oracle-version 2.7.1 \
             --binary "$PWD/target/debug/heptabao-server" \
             --expected-binary-sha256 "$binary_digest" \
             --candidate-source-root "$PWD" \

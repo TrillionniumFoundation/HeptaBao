@@ -383,6 +383,8 @@ class Side:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--oracle-version", choices=("2.7.1",), default="2.7.1",
+                        help="fixed reference contract; other releases are not admitted")
     parser.add_argument("--binary", required=True, type=Path)
     parser.add_argument("--expected-binary-sha256", required=True)
     parser.add_argument("--candidate-source-root", required=True, type=Path)

@@ -195,8 +195,45 @@
     },
     {
       "check": "final-tree full GitHub Actions qualification",
-      "result": "pending_publication",
-      "note": "Fresh run URLs and final conclusions are recorded on the consolidation PR; prior runs are not inherited."
+      "result": "see_consolidation_pr_for_latest_frozen_head",
+      "note": "Fresh run URLs and final conclusions are recorded on the consolidation PR; prior runs are not inherited.",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/165"
+    },
+    {
+      "check": "first published exact-head and prospective-merge workflow trust",
+      "result": "passed",
+      "candidate": "a0a699b76c9efa1c254990c5c95450b656a1efef",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/43668896167"
+    },
+    {
+      "check": "first published personal credentials synthetic core",
+      "result": "passed",
+      "candidate": "a0a699b76c9efa1c254990c5c95450b656a1efef",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/43668883689",
+      "note": "Actual credential crate and native CLI/Firefox synthetic cases passed on GitHub; does not retroactively alter local host refusals."
+    },
+    {
+      "check": "first published full qualification",
+      "result": "failed",
+      "candidate": "a0a699b76c9efa1c254990c5c95450b656a1efef",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/43668896303",
+      "phase": "repository Python guards before acceptance/native qualification",
+      "tests": 304,
+      "failures": 2,
+      "reason": "Fixed Kubernetes 2.7.1 runner did not expose the explicit --oracle-version 2.7.1 argument required by the common prerequisite guard. Both head and merge failed the same two guard cases.",
+      "log": "logs/ci-first-head-failure-excerpt.log"
+    },
+    {
+      "check": "repository suite after fixed 2.7.1 CLI repair",
+      "result": "passed",
+      "passed": 304,
+      "log": "logs/pr165-repository-recheck.log"
+    },
+    {
+      "check": "current/historical Kubernetes fixture suite after CLI repair",
+      "result": "passed",
+      "passed": 35,
+      "note": "Includes actual subprocess invalid-version rejection before file creation or external cluster programs. Common oracle guards and pinned artifacts unchanged."
     }
   ],
   "retained_logs": [
@@ -294,6 +331,17 @@
       "path": "logs/af-unix-diagnostic.log",
       "bytes": 116,
       "sha256": "ea676a4d22f5d6eea778d4de228f59694fc7b7f28f69d70dd2521fa4d879a667"
+    },
+    {
+      "path": "logs/ci-first-head-failure-excerpt.log",
+      "bytes": 6768,
+      "sha256": "713aa6e87005b97fd878de52882c5d5a0c18dac3ffeaf13283dbbab0163a30d0",
+      "note": "GitHub head job excerpt with trailing whitespace removed; full original log remains available at its run URL"
+    },
+    {
+      "path": "logs/pr165-repository-recheck.log",
+      "bytes": 5311,
+      "sha256": "205a12840217ea7a7bfea62bb6bc9ba2c4b1c603f2f6d30d5c142d650b90791e"
     }
   ],
   "historical_failed_runs": [

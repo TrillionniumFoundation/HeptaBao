@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -10,6 +11,64 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import kubernetes_renewal_271_cluster_live as live
+
+
+class GenuineRenewalCliAdmission(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name).resolve()
+        self.work = self.root / 'never-created'
+        self.started = self.root / 'external-process-started'
+        self.bin = self.root / 'bin'
+        self.bin.mkdir(mode=0o700)
+        program = (f'#!{sys.executable}\nfrom pathlib import Path\n'
+                   f'Path({str(self.started)!r}).write_text("unexpected process")\n'
+                   'raise SystemExit(91)\n')
+        for name in ('candidate', 'kind', 'docker', 'git', 'bao'):
+            path = self.bin / name
+            path.write_text(program)
+            path.chmod(0o700)
+        self.argv = [sys.executable, '-B', str(Path(live.__file__).resolve()),
+                     '--binary', str(self.bin / 'candidate'),
+                     '--expected-binary-sha256', 'e' * 64,
+                     '--candidate-source-root', str(self.root),
+                     '--source-commit', 'c' * 40, '--source-tree', 'd' * 40,
+                     '--native-build-receipt', str(self.root / 'absent-receipt.json'),
+                     '--expected-native-build-receipt-sha256', 'f' * 64,
+                     '--kind', str(self.bin / 'kind'), '--work-root', str(self.work)]
+        self.before = {str(p.relative_to(self.root)): p.read_bytes()
+                       for p in self.root.rglob('*') if p.is_file()}
+
+    def invoke(self, *arguments):
+        result = subprocess.run(self.argv + list(arguments), cwd=self.root,
+                                env=dict(os.environ, PATH=str(self.bin)),
+                                stdin=subprocess.DEVNULL, capture_output=True,
+                                text=True, timeout=10, check=False)
+        self.assertFalse(self.work.exists())
+        self.assertFalse(self.started.exists())
+        self.assertEqual({str(p.relative_to(self.root)): p.read_bytes()
+                          for p in self.root.rglob('*') if p.is_file()}, self.before)
+        return result
+
+    def test_other_versions_fail_before_owned_files_or_cluster_processes(self):
+        # Execute the actual CLI with cluster permission present. A rejected
+        # release must never reach work-root creation or any external program.
+        for version in ('2.6.2', '2.7.0', 'latest', ''):
+            with self.subTest(version=version):
+                result = self.invoke('--oracle-version', version, '--allow-disposable-cluster')
+                self.assertEqual(result.returncode, 2)
+                self.assertIn('argument --oracle-version: invalid choice:', result.stderr)
+                self.assertEqual(result.stdout, '')
+
+    def test_fixed_default_and_explicit_271_still_require_cluster_permission(self):
+        for arguments in ((), ('--oracle-version', '2.7.1')):
+            with self.subTest(arguments=arguments):
+                result = self.invoke(*arguments)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn('explicit disposable cluster authorization required', result.stderr)
+                self.assertNotIn('invalid choice', result.stderr)
+                self.assertEqual(result.stdout, '')
 
 
 class GenuineRenewalBoundary(unittest.TestCase):
